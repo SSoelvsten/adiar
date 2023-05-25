@@ -237,37 +237,19 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
     if (adiar::bdd_pathcount(restricted_constraints) == 1) {
       solutions += 1;
 
-      // Obtain the lexicographically minimal true assignment. Well,
-      // only one exists, so we get the only one left.
-      adiar::assignment_file forced = adiar::bdd_satmin(restricted_constraints);
-
-      // Sort the variables back in order of the columns,
-      // rather than rows.
-      struct sort_by_column
-      {
-      private:
-        uint64_t N;
-
-      public:
-        explicit sort_by_column(const uint64_t N) : N(N) { }
-
-        bool operator()(const adiar::assignment &a,
-                        const adiar::assignment &b)
-        {
-          return j_of_label(N, a.var()) < j_of_label(N, b.var());
-        }
-      };
-
-      adiar::sort(forced, sort_by_column(N));
-
-      // Copy the rest of the assignment into 'partial_assignment'
-      adiar::internal::file_stream<adiar::assignment> fas(forced);
-      while (fas.can_pull()) {
-        adiar::assignment a = fas.pull();
-        if (a.value()) {
-          partial_assignment.push_back(i_of_label(N, a.var()));
-        }
+      // Add dummys in 'partial_assignment'
+      while (partial_assignment.size() < N) {
+        partial_assignment.push_back(-1);
       }
+
+      // Obtain the lexicographically minimal true assignment. Well, only one
+      // exists, so we get the only one left.
+      adiar::bdd_satmin(restricted_constraints, [&N, &partial_assignment](adiar::bdd::label_t x, bool v) {
+        // Skip all empty (false) locations
+        if (!v) { return; }
+
+        partial_assignment.at(j_of_label(N, x)) = i_of_label(N, x);
+      });
 
       n_queens_print_solution(partial_assignment);
 

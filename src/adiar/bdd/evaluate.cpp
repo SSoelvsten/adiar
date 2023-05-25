@@ -2,13 +2,14 @@
 
 #include <functional>
 
-#include <adiar/assignment.h>
+#include <adiar/internal/cut.h>
 #include <adiar/internal/assert.h>
 #include <adiar/internal/algorithms/traverse.h>
+#include <adiar/internal/data_types/level_info.h>
 #include <adiar/internal/io/file_stream.h>
 #include <adiar/internal/io/file_writer.h>
 #include <adiar/internal/io/levelized_file_stream.h>
-#include <adiar/internal/data_types/level_info.h>
+#include <adiar/internal/io/node_writer.h>
 
 namespace adiar
 {
@@ -85,21 +86,51 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  class bdd_sat_file_callback
+  class bdd_sat_bdd_callback
   {
-    shared_file<map_pair<bdd::label_t, boolean>> ef;
-    internal::file_writer<map_pair<bdd::label_t, boolean>> ew;
+    using e = map_pair<bdd::label_t, boolean>;
+
+    shared_file<e> ef;
+    internal::file_writer<e> ew;
 
   public:
-    bdd_sat_file_callback() : ew(ef)
+    bdd_sat_bdd_callback() : ew(ef)
     { }
 
     void operator() (bdd::label_t x, bool v)
     { ew << map_pair<bdd::label_t, boolean>(x, v); }
 
-    // TODO: replace with 'get_bdd()' conversion into BDD
-    const shared_file<map_pair<bdd::label_t, boolean>> get_file() const
-    { return ef; }
+    bdd get_bdd()
+    {
+      assert(ew.size() > 0);
+      ew.detach();
+      internal::file_stream<e, true> es(ef);
+
+      internal::shared_levelized_file<bdd::node_t> nf;
+      internal::node_writer nw(nf);
+
+      bdd::ptr_t latest = bdd::ptr_t(true);
+
+      while (es.can_pull()) {
+        const e kv = es.pull();
+
+        const bdd::node_t n(kv.key(), bdd::MAX_ID,
+                            kv.value() ? bdd::ptr_t(false) : latest,
+                            kv.value() ? latest : bdd::ptr_t(false));
+
+        nw.unsafe_push(n);
+        nw.unsafe_push(internal::level_info(kv.key(), 1u));
+
+        latest = n.uid();
+      }
+
+      nf->max_1level_cut[internal::cut_type::INTERNAL]       = 1u;
+      nf->max_1level_cut[internal::cut_type::INTERNAL_FALSE] = nf->number_of_terminals[false];
+      nf->max_1level_cut[internal::cut_type::INTERNAL_TRUE]  = 1u; // == nf->number_of_terminals[true]
+      nf->max_1level_cut[internal::cut_type::ALL]            = nf->number_of_terminals[false] + 1u;
+
+      return nf;
+    }
   };
 
   class bdd_sat_lambda_callback
@@ -154,12 +185,14 @@ namespace adiar
     }
   };
 
-  shared_file<map_pair<bdd::label_t, boolean>> bdd_satmin(const bdd &f)
+  bdd bdd_satmin(const bdd &f)
   {
-    bdd_sat_file_callback __cb;
-    bdd_sat_visitor<internal::traverse_satmin_visitor, bdd_sat_file_callback> v(f, __cb);
+    if (is_terminal(f)) { return f; }
+
+    bdd_sat_bdd_callback __cb;
+    bdd_sat_visitor<internal::traverse_satmin_visitor, bdd_sat_bdd_callback> v(f, __cb);
     internal::traverse(f,v);
-    return __cb.get_file();
+    return __cb.get_bdd();
   }
 
   void bdd_satmin(const bdd &f,
@@ -170,12 +203,14 @@ namespace adiar
     internal::traverse(f,v);
   }
 
-  shared_file<map_pair<bdd::label_t, boolean>> bdd_satmax(const bdd &f)
+  bdd bdd_satmax(const bdd &f)
   {
-    bdd_sat_file_callback __cb;
-    bdd_sat_visitor<internal::traverse_satmax_visitor, bdd_sat_file_callback> v(f, __cb);
+    if (is_terminal(f)) { return f; }
+
+    bdd_sat_bdd_callback __cb;
+    bdd_sat_visitor<internal::traverse_satmax_visitor, bdd_sat_bdd_callback> v(f, __cb);
     internal::traverse(f,v);
-    return __cb.get_file();
+    return __cb.get_bdd();
   }
 
   void bdd_satmax(const bdd &f,

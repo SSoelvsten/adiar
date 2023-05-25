@@ -483,101 +483,273 @@ go_bandit([]() {
       }
 
       describe("bdd_satmin(f)", [&]() {
-        it("should retrieve evaluation from true terminal", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmin(bdd_T);
-
-          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
-          AssertThat(out_evaluation.can_pull(), Is().False());
+        it("returns same file for true terminal", [&]() {
+          bdd out = bdd_satmin(bdd_T);
+          AssertThat(out.file_ptr(), Is().EqualTo(bdd_T));
         });
 
-        it("should retrieve evaluation from false terminal", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmin(bdd_F);
-
-          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
-          AssertThat(out_evaluation.can_pull(), Is().False());
+        it("returns same file for false terminal", [&]() {
+          bdd out = bdd_satmin(bdd_F);
+          AssertThat(out.file_ptr(), Is().EqualTo(bdd_F));
         });
 
         it("should retrieve evaluation of [0]", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmin(bdd_0);
-          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
+          bdd out = bdd_satmin(bdd_0);
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(0, true)));
+          // Check it looks all right
+          node_test_stream out_nodes(out);
 
-          AssertThat(out_evaluation.can_pull(), Is().False());
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
+
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
         });
 
         it("should retrieve evaluation [1]", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmin(bdd_1);
-          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
+          bdd out = bdd_satmin(bdd_1);
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(0, false)));
+          // Check it looks all right
+          node_test_stream out_nodes(out);
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(1, false)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         terminal_T)));
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(2, true)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(3, bdd::MAX_ID))));
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(3, true)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::MAX_ID,
+                                                         bdd::ptr_t(2, bdd::MAX_ID),
+                                                         terminal_F)));
 
-          AssertThat(out_evaluation.can_pull(), Is().False());
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::MAX_ID,
+                                                         bdd::ptr_t(1, bdd::MAX_ID),
+                                                         terminal_F)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(4u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(5u));
+
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(4u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(5u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(4u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
         });
 
         it("should retrieve evaluation [~1]", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmin(bdd_not(bdd_1));
-          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
+          bdd out  = bdd_satmin(bdd_not(bdd_1));
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(0, false)));
+          // Check it looks all right
+          node_test_stream out_nodes(out);
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(1, false)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::MAX_ID,
+                                                         terminal_T,
+                                                         terminal_F)));
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(2, false)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::MAX_ID,
+                                                         bdd::ptr_t(3, bdd::MAX_ID),
+                                                         terminal_F)));
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(3, false)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::MAX_ID,
+                                                         bdd::ptr_t(2, bdd::MAX_ID),
+                                                         terminal_F)));
 
-          AssertThat(out_evaluation.can_pull(), Is().False());
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::MAX_ID,
+                                                         bdd::ptr_t(1, bdd::MAX_ID),
+                                                         terminal_F)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(4u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(5u));
+
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(4u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(5u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(4u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
         });
 
         it("should retrieve evaluation [2]", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmin(bdd_2);
-          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
+          bdd out = bdd_satmin(bdd_2);
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(0, false)));
+          // Check it looks all right
+          node_test_stream out_nodes(out);
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(1, false)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::MAX_ID,
+                                                         terminal_T,
+                                                         terminal_F)));
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(2, true)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(3, bdd::MAX_ID))));
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(3, false)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::MAX_ID,
+                                                         bdd::ptr_t(2, bdd::MAX_ID),
+                                                         terminal_F)));
 
-          AssertThat(out_evaluation.can_pull(), Is().False());
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::MAX_ID,
+                                                         bdd::ptr_t(1, bdd::MAX_ID),
+                                                         terminal_F)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(4u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(5u));
+
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(4u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(5u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(4u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
         });
 
         it("should retrieve evaluation [3]", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmin(bdd_3);
-          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
+          bdd out = bdd_satmin(bdd_3);
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(1, false)));
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(3, false)));
+          // Check it looks all right
+          node_test_stream out_nodes(out);
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(5, false)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, bdd::MAX_ID,
+                                                         terminal_T,
+                                                         terminal_F)));
 
-          AssertThat(out_evaluation.can_pull(), Is().False());
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::MAX_ID,
+                                                         bdd::ptr_t(5, bdd::MAX_ID),
+                                                         terminal_F)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::MAX_ID,
+                                                         bdd::ptr_t(3, bdd::MAX_ID),
+                                                         terminal_F)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(3u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(4u));
+
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(3u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(3u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
         });
       });
 
@@ -684,111 +856,335 @@ go_bandit([]() {
 
       describe("bdd_satmax(f)", [&]() {
         it("should retrieve maximal evaluation [1]", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmax(bdd_1);
-          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
+          bdd out = bdd_satmax(bdd_1);
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(0, true)));
+          // Check it looks all right
+          node_test_stream out_nodes(out);
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(1, true)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         terminal_T)));
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(2, false)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::MAX_ID,
+                                                         bdd::ptr_t(3, bdd::MAX_ID),
+                                                         terminal_F)));
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(3, true)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(2, bdd::MAX_ID))));
 
-          AssertThat(out_evaluation.can_pull(), Is().False());
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(1, bdd::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(4u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(5u));
+
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(4u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(5u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(4u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
         });
 
         it("should retrieve maximal evaluation [~1]", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmax(bdd_not(bdd_1));
-          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
+          bdd out = bdd_satmax(bdd_not(bdd_1));
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(0, true)));
+          // Check it looks all right
+          node_test_stream out_nodes(out);
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(1, true)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         terminal_T)));
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(2, true)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(3, bdd::MAX_ID))));
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(3, true)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(2, bdd::MAX_ID))));
 
-          AssertThat(out_evaluation.can_pull(), Is().False());
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(1, bdd::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(4u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(5u));
+
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(4u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(5u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(4u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
         });
 
         it("should retrieve maximal evaluation [2]", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmax(bdd_2);
-          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
+          bdd out = bdd_satmax(bdd_2);
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(0, true)));
+          // Check it looks all right
+          node_test_stream out_nodes(out);
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(1, true)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         terminal_T)));
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(2, true)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(3, bdd::MAX_ID))));
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(3, true)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(2, bdd::MAX_ID))));
 
-          AssertThat(out_evaluation.can_pull(), Is().False());
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(1, bdd::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(4u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(5u));
+
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(4u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(5u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(4u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
         });
 
         it("should retrieve maximal evaluation [~2]", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmax(bdd_not(bdd_2));
-          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
+          bdd out = bdd_satmax(bdd_not(bdd_2));
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(0, true)));
+          // Check it looks all right
+          node_test_stream out_nodes(out);
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(1, true)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         terminal_T)));
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(2, false)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::MAX_ID,
+                                                         bdd::ptr_t(3, bdd::MAX_ID),
+                                                         terminal_F)));
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(3, true)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(2, bdd::MAX_ID))));
 
-          AssertThat(out_evaluation.can_pull(), Is().False());
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(1, bdd::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(4u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(5u));
+
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(4u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(5u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(4u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
         });
 
         it("should retrieve maximal evaluation [3]", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmax(bdd_3);
-          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
+          bdd out = bdd_satmax(bdd_3);
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(1, true)));
+          // Check it looks all right
+          node_test_stream out_nodes(out);
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(3, true)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         terminal_T)));
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(5, true)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(5, bdd::MAX_ID))));
 
-          AssertThat(out_evaluation.can_pull(), Is().False());
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(3, bdd::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(3u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(4u));
+
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(3u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(3u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
         });
 
         it("should retrieve maximal evaluation [~3]", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmax(bdd_not(bdd_3));
-          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
+          bdd out = bdd_satmax(bdd_not(bdd_3));
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(1, true)));
+          // Check it looks all right
+          node_test_stream out_nodes(out);
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(3, true)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, bdd::MAX_ID,
+                                                         terminal_T,
+                                                         terminal_F)));
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(5, false)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(5, bdd::MAX_ID))));
 
-          AssertThat(out_evaluation.can_pull(), Is().False());
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(3, bdd::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(3u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(4u));
+
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(3u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(3u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
         });
       });
 
