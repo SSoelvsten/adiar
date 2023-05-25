@@ -240,6 +240,9 @@ go_bandit([]() {
             const ptr_uint64 p_node_min = ptr_uint64(0,0);
             AssertThat(p_node_min.is_node(), Is().True());
 
+            const ptr_uint64 p_node_min_max = ptr_uint64(0, ptr_uint64::MAX_ID);
+            AssertThat(p_node_min_max.is_node(), Is().True());
+
             const ptr_uint64 p_node = ptr_uint64(42,18);
             AssertThat(p_node.is_node(), Is().True());
           });
@@ -252,6 +255,9 @@ go_bandit([]() {
 
             const ptr_uint64 p_node_min = flag(ptr_uint64(0,0));
             AssertThat(p_node_min.is_node(), Is().True());
+
+            const ptr_uint64 p_node_min_max = ptr_uint64(0, ptr_uint64::MAX_ID);
+            AssertThat(p_node_min_max.is_node(), Is().True());
 
             const ptr_uint64 p_node = flag(ptr_uint64(42,18));
             AssertThat(p_node.is_node(), Is().True());
