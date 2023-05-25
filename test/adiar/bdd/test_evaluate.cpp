@@ -387,6 +387,29 @@ go_bandit([]() {
       ptr_uint64 terminal_T = ptr_uint64(true);
       ptr_uint64 terminal_F = ptr_uint64(false);
 
+      shared_levelized_file<bdd::node_t> bdd_T;
+      {
+        node_writer nw(bdd_T);
+        nw << node(true);
+      }
+
+      shared_levelized_file<bdd::node_t> bdd_F;
+      {
+        node_writer nw(bdd_F);
+        nw << node(false);
+      }
+
+      shared_levelized_file<bdd::node_t> bdd_0;
+      /*
+      //              1      ---- x0
+      //             / \
+      //             F T
+      */
+      {
+        node_writer nw(bdd_0);
+        nw << node(0,0, terminal_F, terminal_T);
+      }
+
       shared_levelized_file<bdd::node_t> bdd_1;
       /*
       //              1      ---- x0
@@ -440,13 +463,13 @@ go_bandit([]() {
 
       shared_levelized_file<bdd::node_t> bdd_3;
       /*
-      //                      1     ---- x1
-      //                     / \
-      //                     2  \   ---- x3
-      //                    / \ /
-      //                   3   4    ---- x5
-      //                  / \ / \
-      //                  T F F T
+      //                1     ---- x1
+      //               / \
+      //               2  \   ---- x3
+      //              / \ /
+      //             3   4    ---- x5
+      //            / \ / \
+      //            T F F T
       */
 
       { // Garbage collect writer to free write-lock
@@ -461,46 +484,25 @@ go_bandit([]() {
 
       describe("bdd_satmin(f)", [&]() {
         it("should retrieve evaluation from true terminal", [&]() {
-          shared_levelized_file<bdd::node_t> T;
-          {
-            node_writer nw(T);
-            nw << node(true);
-          }
-
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmin(T);
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmin(bdd_T);
 
           adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
           AssertThat(out_evaluation.can_pull(), Is().False());
         });
 
         it("should retrieve evaluation from false terminal", [&]() {
-          shared_levelized_file<bdd::node_t> F;
-          {
-            node_writer nw(F);
-            nw << node(false);
-          }
-
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmin(false);
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmin(bdd_F);
 
           adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
           AssertThat(out_evaluation.can_pull(), Is().False());
         });
 
-        it("should retrieve evaluation [1]", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmin(bdd_1);
+        it("should retrieve evaluation of [0]", [&]() {
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmin(bdd_0);
           adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(0, false)));
-
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(1, false)));
-
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(2, true)));
-
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(3, true)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(0, true)));
 
           AssertThat(out_evaluation.can_pull(), Is().False());
         });
@@ -577,22 +579,107 @@ go_bandit([]() {
 
           AssertThat(out_evaluation.can_pull(), Is().False());
         });
+      });
 
-        it("should retrieve evaluation [3]", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmin(bdd_not(bdd_3));
-          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
+      describe("bdd_satmin(f, cb)", [&]() {
+        it("is never called for true terminal", [&]() {
+          size_t calls = 0u;
+          const auto cb = [&calls](bdd::label_t, bool) { calls++; };
 
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(1, false)));
-
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(3, false)));
-
-          AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(5, true)));
-
-          AssertThat(out_evaluation.can_pull(), Is().False());
+          bdd_satmin(bdd_T, cb);
+          AssertThat(calls, Is().EqualTo(0u));
         });
+
+        it("is never called for false terminal", [&]() {
+          size_t calls = 0u;
+          const auto cb = [&calls](bdd::label_t, bool) { calls++; };
+
+          bdd_satmin(bdd_F, cb);
+          AssertThat(calls, Is().EqualTo(0u));
+        });
+
+        it("is called once for [0]", [&]() {
+          size_t calls = 0u;
+          const auto cb = [&calls](bdd::label_t x, bool v) {
+            AssertThat(calls, Is().EqualTo(0u));
+            AssertThat(x, Is().EqualTo(0u));
+            AssertThat(v, Is().EqualTo(true));
+
+            calls++;
+          };
+
+          bdd_satmin(bdd_0, cb);
+          AssertThat(calls, Is().EqualTo(1u));
+        });
+
+        it("is called with expected evaluation [1]", [&]() {
+          size_t calls = 0;
+          std::vector<std::pair<bdd::label_t, bool>> expected =
+            { {0, false}, {1, false}, {2, true}, {3, true} };
+
+          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+            AssertThat(calls, Is().LessThan(expected.size()));
+            AssertThat(x, Is().EqualTo(expected.at(calls).first));
+            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            calls++;
+          };
+
+          bdd_satmin(bdd_1, cb);
+          AssertThat(calls, Is().EqualTo(4u));
+        });
+
+        it("is called with expected evaluation [~1]", [&]() {
+          size_t calls = 0;
+          std::vector<std::pair<bdd::label_t, bool>> expected =
+            { {0, false}, {1, false}, {2, false}, {3, false} };
+
+          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+            AssertThat(calls, Is().LessThan(expected.size()));
+            AssertThat(x, Is().EqualTo(expected.at(calls).first));
+            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            calls++;
+          };
+
+          bdd_satmin(bdd_not(bdd_1), cb);
+          AssertThat(calls, Is().EqualTo(4u));
+        });
+
+        it("is called with expected evaluation [2]", [&]() {
+          size_t calls = 0;
+          std::vector<std::pair<bdd::label_t, bool>> expected =
+            { {0, false}, {1, false}, {2, true}, {3, false} };
+
+          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+            AssertThat(calls, Is().LessThan(expected.size()));
+            AssertThat(x, Is().EqualTo(expected.at(calls).first));
+            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+
+            calls++;
+          };
+
+          bdd_satmin(bdd_2, cb);
+          AssertThat(calls, Is().EqualTo(4u));
+        });
+
+        it("is called with expected evaluation [3]", [&]() {
+          size_t calls = 0;
+          std::vector<std::pair<bdd::label_t, bool>> expected =
+            { {1, false}, {3, false}, {5, false} };
+
+          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+            AssertThat(calls, Is().LessThan(expected.size()));
+            AssertThat(x, Is().EqualTo(expected.at(calls).first));
+            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            calls++;
+          };
+
+          bdd_satmin(bdd_3, cb);
+          AssertThat(calls, Is().EqualTo(3u));
+        });
+      });
+
+      describe("bdd_satmin(f, begin, end)", [&]() {
+        // TODO
       });
 
       describe("bdd_satmax(f)", [&]() {
@@ -688,7 +775,7 @@ go_bandit([]() {
           AssertThat(out_evaluation.can_pull(), Is().False());
         });
 
-        it("should retrieve maximal evaluation [3]", [&]() {
+        it("should retrieve maximal evaluation [~3]", [&]() {
           adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmax(bdd_not(bdd_3));
           adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
 
@@ -703,6 +790,108 @@ go_bandit([]() {
 
           AssertThat(out_evaluation.can_pull(), Is().False());
         });
+      });
+
+      describe("bdd_satmax(f, cb)", [&]() {
+        it("should retrieve maximal evaluation [1]", [&]() {
+          size_t calls = 0;
+          std::vector<std::pair<bdd::label_t, bool>> expected =
+            { {0, true}, {1, true}, {2, false}, {3, true} };
+
+          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+            AssertThat(calls, Is().LessThan(expected.size()));
+            AssertThat(x, Is().EqualTo(expected.at(calls).first));
+            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            calls++;
+          };
+
+          bdd_satmax(bdd_1, cb);
+          AssertThat(calls, Is().EqualTo(4u));
+        });
+
+        it("should retrieve maximal evaluation [~1]", [&]() {
+          size_t calls = 0;
+          std::vector<std::pair<bdd::label_t, bool>> expected =
+            { {0, true}, {1, true}, {2, true}, {3, true} };
+
+          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+            AssertThat(calls, Is().LessThan(expected.size()));
+            AssertThat(x, Is().EqualTo(expected.at(calls).first));
+            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            calls++;
+          };
+
+          bdd_satmax(bdd_not(bdd_1), cb);
+          AssertThat(calls, Is().EqualTo(4u));
+        });
+
+        it("should retrieve maximal evaluation [2]", [&]() {
+          size_t calls = 0;
+          std::vector<std::pair<bdd::label_t, bool>> expected =
+            { {0, true}, {1, true}, {2, true}, {3, true} };
+
+          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+            AssertThat(calls, Is().LessThan(expected.size()));
+            AssertThat(x, Is().EqualTo(expected.at(calls).first));
+            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            calls++;
+          };
+
+          bdd_satmax(bdd_2, cb);
+          AssertThat(calls, Is().EqualTo(4u));
+        });
+
+        it("should retrieve maximal evaluation [~2]", [&]() {
+          size_t calls = 0;
+          std::vector<std::pair<bdd::label_t, bool>> expected =
+            { {0, true}, {1, true}, {2, false}, {3, true} };
+
+          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+            AssertThat(calls, Is().LessThan(expected.size()));
+            AssertThat(x, Is().EqualTo(expected.at(calls).first));
+            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            calls++;
+          };
+
+          bdd_satmax(bdd_not(bdd_2), cb);
+          AssertThat(calls, Is().EqualTo(4u));
+        });
+
+        it("should retrieve maximal evaluation [3]", [&]() {
+          size_t calls = 0;
+          std::vector<std::pair<bdd::label_t, bool>> expected =
+            { {1, true}, {3, true}, {5, true} };
+
+          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+            AssertThat(calls, Is().LessThan(expected.size()));
+            AssertThat(x, Is().EqualTo(expected.at(calls).first));
+            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            calls++;
+          };
+
+          bdd_satmax(bdd_3, cb);
+          AssertThat(calls, Is().EqualTo(3u));
+        });
+
+        it("should retrieve maximal evaluation [~3]", [&]() {
+          size_t calls = 0;
+          std::vector<std::pair<bdd::label_t, bool>> expected =
+            { {1, true}, {3, true}, {5, false} };
+
+          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+            AssertThat(calls, Is().LessThan(expected.size()));
+            AssertThat(x, Is().EqualTo(expected.at(calls).first));
+            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            calls++;
+          };
+
+          bdd_satmax(bdd_not(bdd_3), cb);
+          AssertThat(calls, Is().EqualTo(3u));
+        });
+      });
+
+      describe("bdd_satmax(f, begin, end)", [&]() {
+        // TODO
       });
     } // bdd_satmin, bdd_satmax
   });

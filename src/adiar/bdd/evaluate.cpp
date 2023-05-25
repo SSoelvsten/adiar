@@ -85,19 +85,47 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  template<typename visitor, bool skipped_value>
-  class bdd_sat_evaluation_writer_visitor
+  class bdd_sat_file_callback
   {
-    visitor __visitor;
-
     shared_file<map_pair<bdd::label_t, boolean>> ef;
     internal::file_writer<map_pair<bdd::label_t, boolean>> ew;
+
+  public:
+    bdd_sat_file_callback() : ew(ef)
+    { }
+
+    void operator() (bdd::label_t x, bool v)
+    { ew << map_pair<bdd::label_t, boolean>(x, v); }
+
+    // TODO: replace with 'get_bdd()' conversion into BDD
+    const shared_file<map_pair<bdd::label_t, boolean>> get_file() const
+    { return ef; }
+  };
+
+  class bdd_sat_lambda_callback
+  {
+    const std::function<void(bdd::label_t, bool)> &__lambda;
+
+  public:
+    bdd_sat_lambda_callback(const std::function<void(bdd::label_t, bool)> &lambda)
+      : __lambda(lambda)
+    { }
+
+    void operator() (bdd::label_t x, bool v) const
+    { __lambda(x,v); }
+  };
+
+  template<typename base_visitor, typename callback>
+  class bdd_sat_visitor
+  {
+    base_visitor  __visitor;
+    callback     &__callback;
 
     internal::level_info_stream<> lvls;
 
   public:
-    bdd_sat_evaluation_writer_visitor(const bdd& f)
-      : ew(ef), lvls(f)
+    bdd_sat_visitor(const bdd& f, callback &cb)
+      : __callback(cb), lvls(f) // <-- TODO: use domain if available
     { }
 
     bdd::ptr_t visit(const bdd::node_t &n)
@@ -107,12 +135,12 @@ namespace adiar
 
       // set default to all skipped levels
       while (lvls.peek().label() < label) {
-        ew << map_pair<bdd::label_t, boolean>(lvls.pull().label(), skipped_value);
+        __callback(lvls.pull().label(), base_visitor::default_direction);
       }
       adiar_debug(lvls.peek().label() == label,
                   "level given should exist in BDD");
 
-      ew << map_pair<bdd::label_t, boolean>(lvls.pull().label(), next_ptr == n.high());
+      __callback(lvls.pull().label(), next_ptr == n.high());
       return next_ptr;
     }
 
@@ -121,25 +149,40 @@ namespace adiar
       __visitor.visit(s);
 
       while (lvls.can_pull()) {
-        ew << map_pair<bdd::label_t, boolean>(lvls.pull().label(), skipped_value);
+        __callback(lvls.pull().label(), base_visitor::default_direction);
       }
     }
-
-    const shared_file<map_pair<bdd::label_t, boolean>> get_result() const
-    { return ef; }
   };
 
   shared_file<map_pair<bdd::label_t, boolean>> bdd_satmin(const bdd &f)
   {
-    bdd_sat_evaluation_writer_visitor<internal::traverse_satmin_visitor, false> v(f);
+    bdd_sat_file_callback __cb;
+    bdd_sat_visitor<internal::traverse_satmin_visitor, bdd_sat_file_callback> v(f, __cb);
     internal::traverse(f,v);
-    return v.get_result();
+    return __cb.get_file();
+  }
+
+  void bdd_satmin(const bdd &f,
+                  const std::function<void(bdd::label_t, bool)> &cb)
+  {
+    bdd_sat_lambda_callback __cb(cb);
+    bdd_sat_visitor<internal::traverse_satmin_visitor, bdd_sat_lambda_callback> v(f, __cb);
+    internal::traverse(f,v);
   }
 
   shared_file<map_pair<bdd::label_t, boolean>> bdd_satmax(const bdd &f)
   {
-    bdd_sat_evaluation_writer_visitor<internal::traverse_satmax_visitor, true> v(f);
+    bdd_sat_file_callback __cb;
+    bdd_sat_visitor<internal::traverse_satmax_visitor, bdd_sat_file_callback> v(f, __cb);
     internal::traverse(f,v);
-    return v.get_result();
+    return __cb.get_file();
+  }
+
+  void bdd_satmax(const bdd &f,
+                  const std::function<void(bdd::label_t, bool)> &cb)
+  {
+    bdd_sat_lambda_callback __cb(cb);
+    bdd_sat_visitor<internal::traverse_satmax_visitor, bdd_sat_lambda_callback> v(f, __cb);
+    internal::traverse(f,v);
   }
 }

@@ -728,6 +728,18 @@ namespace adiar
   shared_file<map_pair<bdd::label_t, boolean>> bdd_satmin(const bdd &f);
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief   The lexicographically smallest x such that f(x) is true.
+  ///
+  /// \param cb Callback function that is called in ascending order of the bdd's
+  ///           levels with the (var, value) pairs of the assignment.
+  //////////////////////////////////////////////////////////////////////////////
+  void bdd_satmin(const bdd &f,
+                  const std::function<void(bdd::label_t, bool)> &cb);
+
+  //////////////////////////////////////////////////////////////////////////////
+  // TODO: bdd_satmin(f, begin, end)
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically largest x such that f(x) is true.
   ///
   /// \details Outputs the trace of the high-most path to the true terminal. The
@@ -738,6 +750,18 @@ namespace adiar
   ///          variable mentioned by the given BDD.
   //////////////////////////////////////////////////////////////////////////////
   shared_file<map_pair<bdd::label_t, boolean>> bdd_satmax(const bdd &f);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief   The lexicographically largest x such that f(x) is true.
+  ///
+  /// \param cb Callback function that is called in ascending order of the bdd's
+  ///           levels with the (var, value) pairs of the assignment.
+  //////////////////////////////////////////////////////////////////////////////
+  void bdd_satmax(const bdd &f,
+                  const std::function<void(bdd::label_t, bool)> &cb);
+
+  //////////////////////////////////////////////////////////////////////////////
+  // TODO: bdd_satmax(f, begin, end)
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Evaluate a BDD according to an assignment to its variables.
