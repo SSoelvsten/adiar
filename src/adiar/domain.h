@@ -13,6 +13,7 @@
 
 #include <adiar/file.h>
 #include <adiar/internal/data_types/node.h> // <-- remove after TODO below.
+#include <adiar/internal/util.h>
 
 namespace adiar
 {
@@ -27,9 +28,37 @@ namespace adiar
   using domain_var_t = internal::node::label_t;
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief The maximum supported domain variable.
+  //////////////////////////////////////////////////////////////////////////////
+  constexpr domain_var_t MAX_DOMAIN_VAR = internal::node::MAX_LABEL;
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief Set the domain globally for all of Adiar to be [*0, varcount*).
   //////////////////////////////////////////////////////////////////////////////
   void adiar_set_domain(const domain_var_t varcount);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Set the domain globally for all of Adiar to be the variables
+  ///        produced by the given generator function.
+  ///
+  /// \param gen Generator function, that produces variables to be quantified in
+  ///            *ascending* order. When none are left to-be quantified, it must
+  ///            return a value greater than `MAX_DOMAIN_VAR`.
+  //////////////////////////////////////////////////////////////////////////////
+  void adiar_set_domain(const std::function<domain_var_t()> &gen);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Set the domain globally for all of Adiar to be the variables
+  ///        in the given range of iterators.
+  ///
+  /// \param begin Iterator that provides variables to be quantified in
+  ///              *ascending* order.
+  ///
+  /// \param end   Iterator that marks the end for `begin`.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename IT>
+  void adiar_set_domain(IT begin, IT end)
+  { return adiar_set_domain(internal::iterator_gen<domain_var_t>(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Set the domain globally for all of Adiar.
