@@ -33,11 +33,11 @@ namespace adiar::internal
     adiar_debug(essential(low.source()) == essential(high.source()),
                 "Source are the same origin");
 
-    adiar_debug(low.out_idx()  == false, "Out-index is correct on low arc");
-    adiar_debug(high.out_idx() == true,  "Out-index is correct on high arc");
+    adiar_debug(low.out_idx()  == 0u, "Out-index is correct on low arc");
+    adiar_debug(high.out_idx() == 1u,  "Out-index is correct on high arc");
 
-    adiar_debug(!low.target().is_node()  || low.target().out_idx()  == false, "Out-index is empty in low target");
-    adiar_debug(!high.target().is_node() || high.target().out_idx() == false, "Out-index is empty in high target");
+    adiar_debug(!low.target().is_node()  || low.target().out_idx()  == 0u, "Out-index is empty in low target");
+    adiar_debug(!high.target().is_node() || high.target().out_idx() == 0u, "Out-index is empty in high target");
 
     adiar_debug(low.source().is_flagged()  == false, "Source is not flagged on low arc");
     adiar_debug(high.source().is_flagged() == false, "Source is not flagged on high arc");
