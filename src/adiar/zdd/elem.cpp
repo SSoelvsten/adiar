@@ -42,14 +42,19 @@ namespace adiar
     { __lambda(x); }
   };
 
-  template<typename base_visitor, typename callback>
+  template<typename visitor_t, typename callback_t>
   class zdd_sat_visitor
   {
-    base_visitor  __visitor;
-    callback     &__callback;
+  private:
+    visitor_t   __visitor;
+    callback_t& __callback;
 
   public:
-    zdd_sat_visitor(callback &cb)
+    zdd_sat_visitor() = delete;
+    zdd_sat_visitor(const zdd_sat_visitor&) = delete;
+    zdd_sat_visitor(zdd_sat_visitor&&) = delete;
+
+    zdd_sat_visitor(callback_t &cb)
       : __callback(cb)
     { }
 
@@ -58,7 +63,7 @@ namespace adiar
       adiar_debug(!n.high().is_terminal() || n.high().value(), "high terminals are never false");
       const zdd::ptr_t next_ptr = __visitor.visit(n);
 
-      if (next_ptr == n.high() && (next_ptr != n.low() || base_visitor::default_direction)) {
+      if (next_ptr == n.high() && (next_ptr != n.low() || visitor_t::default_direction)) {
         __callback(n.label());
       }
 
