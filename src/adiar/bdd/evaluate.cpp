@@ -89,6 +89,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   class bdd_sat_bdd_callback
   {
+    // TODO: replace with TPIE's external stack
     using e = map_pair<bdd::label_t, boolean>;
 
     shared_file<e> ef;
@@ -147,17 +148,22 @@ namespace adiar
     { __lambda(x,v); }
   };
 
-  template<typename base_visitor, typename callback, typename lvl_stream_t, typename lvl_t>
+  template<typename visitor_t, typename callback_t, typename lvl_stream_t, typename lvl_t>
   class bdd_sat_visitor
   {
-    base_visitor  __visitor;
-    callback     &__callback;
+  private:
+    visitor_t   __visitor;
+    callback_t& __callback;
 
-    bdd::label_t lvl = bdd::MAX_LABEL+1;
+    bdd::label_t lvl = bdd::MAX_LABEL+1u;
     lvl_stream_t lvls;
 
   public:
-    bdd_sat_visitor(callback &cb, const lvl_t &lvl)
+    bdd_sat_visitor() = delete;
+    bdd_sat_visitor(const bdd_sat_visitor&) = delete;
+    bdd_sat_visitor(bdd_sat_visitor&&) = delete;
+
+    bdd_sat_visitor(callback_t &cb, const lvl_t &lvl)
       : __callback(cb), lvls(lvl)
     { }
 
@@ -168,7 +174,7 @@ namespace adiar
 
       // set default to all skipped levels
       while (lvls.can_pull() && internal::__level_of(lvls.peek()) < lvl) {
-        __callback(internal::__level_of(lvls.pull()), base_visitor::default_direction);
+        __callback(internal::__level_of(lvls.pull()), visitor_t::default_direction);
       }
       // skip visited level (if exists)
       if (lvls.can_pull() && internal::__level_of(lvls.peek()) == lvl) {
@@ -185,20 +191,20 @@ namespace adiar
 
       while (lvls.can_pull()) {
         if (internal::__level_of(lvls.peek()) <= lvl) { lvls.pull(); continue; };
-        __callback(internal::__level_of(lvls.pull()), base_visitor::default_direction);
+        __callback(internal::__level_of(lvls.pull()), visitor_t::default_direction);
       }
     }
   };
 
-  template<typename base_visitor, typename callback>
-  inline void __bdd_satX(const bdd &f, callback &__cb)
+  template<typename visitor_t, typename callback_t>
+  inline void __bdd_satX(const bdd &f, callback_t &__cb)
   {
     if (adiar_has_domain()) {
-      bdd_sat_visitor<base_visitor, callback, internal::file_stream<domain_var_t>, internal::shared_file<domain_var_t>>
+      bdd_sat_visitor<visitor_t, callback_t, internal::file_stream<domain_var_t>, internal::shared_file<domain_var_t>>
         v(__cb, adiar_get_domain());
       internal::traverse(f,v);
     } else {
-      bdd_sat_visitor<base_visitor, callback, internal::level_info_stream<>, bdd>
+      bdd_sat_visitor<visitor_t, callback_t, internal::level_info_stream<>, bdd>
         v(__cb, f);
       internal::traverse(f,v);
     }
