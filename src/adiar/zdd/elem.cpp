@@ -46,8 +46,8 @@ namespace adiar
   class zdd_sat_visitor
   {
   private:
-    visitor_t   __visitor;
-    callback_t& __callback;
+    visitor_t   _visitor;
+    callback_t& _callback;
 
   public:
     zdd_sat_visitor() = delete;
@@ -55,54 +55,54 @@ namespace adiar
     zdd_sat_visitor(zdd_sat_visitor&&) = delete;
 
     zdd_sat_visitor(callback_t &cb)
-      : __callback(cb)
+      : _callback(cb)
     { }
 
     zdd::ptr_t visit(const zdd::node_t n)
     {
       adiar_debug(!n.high().is_terminal() || n.high().value(), "high terminals are never false");
-      const zdd::ptr_t next_ptr = __visitor.visit(n);
+      const zdd::ptr_t next_ptr = _visitor.visit(n);
 
       if (next_ptr == n.high() && (next_ptr != n.low() || visitor_t::default_direction)) {
-        __callback(n.label());
+        _callback(n.label());
       }
 
       return next_ptr;
     }
 
     void visit(const bool s)
-    { __visitor.visit(s); }
+    { _visitor.visit(s); }
   };
 
   zdd zdd_minelem(const zdd &A)
   {
-    zdd_sat_zdd_callback __cb;
-    zdd_sat_visitor<internal::traverse_satmin_visitor, zdd_sat_zdd_callback> v(__cb);
+    zdd_sat_zdd_callback _cb;
+    zdd_sat_visitor<internal::traverse_satmin_visitor, zdd_sat_zdd_callback> v(_cb);
     internal::traverse(A, v);
-    return __cb.get_zdd();
+    return _cb.get_zdd();
   }
 
   void zdd_minelem(const zdd &A,
                   const std::function<void(zdd::label_t)> &cb)
   {
-    zdd_sat_lambda_callback __cb(cb);
-    zdd_sat_visitor<internal::traverse_satmin_visitor, zdd_sat_lambda_callback> v(__cb);
+    zdd_sat_lambda_callback _cb(cb);
+    zdd_sat_visitor<internal::traverse_satmin_visitor, zdd_sat_lambda_callback> v(_cb);
     internal::traverse(A, v);
   }
 
   zdd zdd_maxelem(const zdd &A)
   {
-    zdd_sat_zdd_callback __cb;
-    zdd_sat_visitor<internal::traverse_satmax_visitor, zdd_sat_zdd_callback> v(__cb);
+    zdd_sat_zdd_callback _cb;
+    zdd_sat_visitor<internal::traverse_satmax_visitor, zdd_sat_zdd_callback> v(_cb);
     internal::traverse(A, v);
-    return __cb.get_zdd();
+    return _cb.get_zdd();
   }
 
   void zdd_maxelem(const zdd &A,
                    const std::function<void(zdd::label_t)> &cb)
   {
-    zdd_sat_lambda_callback __cb(cb);
-    zdd_sat_visitor<internal::traverse_satmax_visitor, zdd_sat_lambda_callback> v(__cb);
+    zdd_sat_lambda_callback _cb(cb);
+    zdd_sat_visitor<internal::traverse_satmax_visitor, zdd_sat_lambda_callback> v(_cb);
     internal::traverse(A, v);
   }
 }
