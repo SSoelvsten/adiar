@@ -268,37 +268,19 @@ Printing each Solution</h1>
 <div class="line">    <span class="keywordflow">if</span> (<a class="code" href="group__module____bdd.html#gadd0becff66aaae9313c29248bc33750e">adiar::bdd_pathcount</a>(restricted_constraints) == 1) {</div>
 <div class="line">      solutions += 1;</div>
 <div class="line"> </div>
-<div class="line">      <span class="comment">// Obtain the lexicographically minimal true assignment. Well,</span></div>
-<div class="line">      <span class="comment">// only one exists, so we get the only one left.</span></div>
-<div class="line">      adiar::assignment_file forced = <a class="code" href="group__module____bdd.html#ga148b9daa892b01e14a13f1ae1decad9f">adiar::bdd_satmin</a>(restricted_constraints);</div>
-<div class="line"> </div>
-<div class="line">      <span class="comment">// Sort the variables back in order of the columns,</span></div>
-<div class="line">      <span class="comment">// rather than rows.</span></div>
-<div class="line">      <span class="keyword">struct </span>sort_by_column</div>
-<div class="line">      {</div>
-<div class="line">      <span class="keyword">private</span>:</div>
-<div class="line">        uint64_t N;</div>
-<div class="line"> </div>
-<div class="line">      <span class="keyword">public</span>:</div>
-<div class="line">        <span class="keyword">explicit</span> sort_by_column(<span class="keyword">const</span> uint64_t N) : N(N) { }</div>
-<div class="line"> </div>
-<div class="line">        <span class="keywordtype">bool</span> operator()(<span class="keyword">const</span> <a class="code" href="namespaceadiar.html#a723cfcc9239dfdc3cf4cdc74df0265c2">adiar::assignment</a> &amp;a,</div>
-<div class="line">                        <span class="keyword">const</span> <a class="code" href="namespaceadiar.html#a723cfcc9239dfdc3cf4cdc74df0265c2">adiar::assignment</a> &amp;b)</div>
-<div class="line">        {</div>
-<div class="line">          <span class="keywordflow">return</span> j_of_label(N, a.var()) &lt; j_of_label(N, b.var());</div>
-<div class="line">        }</div>
-<div class="line">      };</div>
-<div class="line"> </div>
-<div class="line">      adiar::sort(forced, sort_by_column(N));</div>
-<div class="line"> </div>
-<div class="line">      <span class="comment">// Copy the rest of the assignment into &#39;partial_assignment&#39;</span></div>
-<div class="line">      adiar::internal::file_stream&lt;adiar::assignment&gt; fas(forced);</div>
-<div class="line">      <span class="keywordflow">while</span> (fas.can_pull()) {</div>
-<div class="line">        <a class="code" href="namespaceadiar.html#a723cfcc9239dfdc3cf4cdc74df0265c2">adiar::assignment</a> a = fas.pull();</div>
-<div class="line">        <span class="keywordflow">if</span> (a.value()) {</div>
-<div class="line">          partial_assignment.push_back(i_of_label(N, a.var()));</div>
-<div class="line">        }</div>
+<div class="line">      <span class="comment">// Add dummys in &#39;partial_assignment&#39;</span></div>
+<div class="line">      <span class="keywordflow">while</span> (partial_assignment.size() &lt; N) {</div>
+<div class="line">        partial_assignment.push_back(-1);</div>
 <div class="line">      }</div>
+<div class="line"> </div>
+<div class="line">      <span class="comment">// Obtain the lexicographically minimal true assignment. Well, only one</span></div>
+<div class="line">      <span class="comment">// exists, so we get the only one left.</span></div>
+<div class="line">      <a class="code" href="group__module____bdd.html#ga82d50901064486da23984c7dfac196c0">adiar::bdd_satmin</a>(restricted_constraints, [&amp;N, &amp;partial_assignment](<a class="code" href="classadiar_1_1internal_1_1dd.html#acf51971b31ef654d9a89b6828f1c3e5d">adiar::bdd::label_t</a> x, <span class="keywordtype">bool</span> v) {</div>
+<div class="line">        <span class="comment">// Skip all empty (false) locations</span></div>
+<div class="line">        <span class="keywordflow">if</span> (!v) { <span class="keywordflow">return</span>; }</div>
+<div class="line"> </div>
+<div class="line">        partial_assignment.at(j_of_label(N, x)) = i_of_label(N, x);</div>
+<div class="line">      });</div>
 <div class="line"> </div>
 <div class="line">      n_queens_print_solution(partial_assignment);</div>
 <div class="line"> </div>
@@ -339,8 +321,8 @@ Printing each Solution</h1>
 <div class="line">  <span class="keywordflow">return</span> n_queens_list(N, 0, partial_assignment, board);</div>
 <div class="line">}</div>
 <div class="ttc" id="agroup__module____bdd_html_ga0e5de81efc49b8e0aaa137013e2422c1"><div class="ttname"><a href="group__module____bdd.html#ga0e5de81efc49b8e0aaa137013e2422c1">adiar::is_terminal</a></div><div class="ttdeci">bool is_terminal(const bdd &amp;f)</div><div class="ttdoc">Whether this BDD represents a terminal.</div><div class="ttdef"><b>Definition:</b> bdd.h:598</div></div>
-<div class="ttc" id="agroup__module____bdd_html_ga148b9daa892b01e14a13f1ae1decad9f"><div class="ttname"><a href="group__module____bdd.html#ga148b9daa892b01e14a13f1ae1decad9f">adiar::bdd_satmin</a></div><div class="ttdeci">shared_file&lt; map_pair&lt; bdd::label_t, boolean &gt; &gt; bdd_satmin(const bdd &amp;f)</div><div class="ttdoc">The lexicographically smallest x such that f(x) is true.</div></div>
 <div class="ttc" id="agroup__module____bdd_html_ga669be328589daa02ac9e609610ce64a1"><div class="ttname"><a href="group__module____bdd.html#ga669be328589daa02ac9e609610ce64a1">adiar::is_true</a></div><div class="ttdeci">bool is_true(const bdd &amp;f)</div><div class="ttdoc">Whether this BDD represents true terminal.</div><div class="ttdef"><b>Definition:</b> bdd.h:610</div></div>
+<div class="ttc" id="agroup__module____bdd_html_ga82d50901064486da23984c7dfac196c0"><div class="ttname"><a href="group__module____bdd.html#ga82d50901064486da23984c7dfac196c0">adiar::bdd_satmin</a></div><div class="ttdeci">bdd bdd_satmin(const bdd &amp;f)</div><div class="ttdoc">The lexicographically smallest x such that f(x) is true.</div></div>
 <div class="ttc" id="agroup__module____bdd_html_gaa770b1d0ae408db9345b064a4dd8390d"><div class="ttname"><a href="group__module____bdd.html#gaa770b1d0ae408db9345b064a4dd8390d">adiar::is_false</a></div><div class="ttdeci">bool is_false(const bdd &amp;f)</div><div class="ttdoc">Whether this BDD represents false terminal.</div><div class="ttdef"><b>Definition:</b> bdd.h:604</div></div>
 <div class="ttc" id="agroup__module____bdd_html_gadb286670a1afdfac65d51777e9f4346e"><div class="ttname"><a href="group__module____bdd.html#gadb286670a1afdfac65d51777e9f4346e">adiar::bdd_restrict</a></div><div class="ttdeci">__bdd bdd_restrict(const bdd &amp;f, const shared_file&lt; map_pair&lt; bdd::label_t, assignment &gt;&gt; &amp;xs)</div><div class="ttdoc">Restrict a subset of variables to constant values.</div></div>
 <div class="ttc" id="agroup__module____bdd_html_gadd0becff66aaae9313c29248bc33750e"><div class="ttname"><a href="group__module____bdd.html#gadd0becff66aaae9313c29248bc33750e">adiar::bdd_pathcount</a></div><div class="ttdeci">uint64_t bdd_pathcount(const bdd &amp;f)</div><div class="ttdoc">Count all unique (but not necessarily disjoint) paths to the true terminal.</div></div>
