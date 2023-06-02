@@ -94,7 +94,7 @@ in practice.
   In: *arXiv preprint*. (2021)
   ```bibtex
   @Misc{soelvsten2021:arXiv,
-    title         = {Efficient Binary Decision Diagram Manipulation in External Memory}, 
+    title         = {Efficient Binary Decision Diagram Manipulation in External Memory},
     author        = {S{\o}lvsten, Steffan Christ
                  and van de Pol, Jaco
                  and Jakobsen, Anna Blume
@@ -103,7 +103,7 @@ in practice.
     archivePrefix = {arXiv},
     eprint        = {2104.12101},
     primaryClass  = {cs.DS},
-    numPages      = {38},  
+    numPages      = {38},
     howPublished  = {arXiv},
     url           = {https://arxiv.org/abs/2104.12101},
   }
@@ -125,12 +125,14 @@ support for *Zero-suppressed Decision Diagrams* to *Adiar*.
                  and van de Pol, Jaco},
     year          = {2023},
     booktitle     = {NASA Formal Methods},
-    editor        = {Yvonne Rozier, Kristin
+    editor        = {Rozier, Kristin Yvonne
                  and Chaudhuri, Swarat},
+    pages         = {464--471},
     numPages      = {8},
-    publisher     = {Springer}, 
+    publisher     = {Springer},
     series        = {Lecture Notes in Computer Science},
     volume        = {13903},
+    doi           = {10.1007/978-3-031-33170-1\_28},
   }
   ```
 
