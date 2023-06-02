@@ -16,6 +16,13 @@ var group__module____statistics =
         ] ],
         [ "lpq", "structadiar_1_1stats__t_1_1____alg__base.html#a50829118ad63e1a074b9441e89fa54a4", null ]
       ] ],
+      [ "arc_file_t", "structadiar_1_1stats__t_1_1arc__file__t.html", [
+        [ "push_in_order", "structadiar_1_1stats__t_1_1arc__file__t.html#a7589b51a51e8e14b42bcb722514c83ff", null ],
+        [ "push_internal", "structadiar_1_1stats__t_1_1arc__file__t.html#a81ad7555ba9d48d111952ad97c315660", null ],
+        [ "push_level", "structadiar_1_1stats__t_1_1arc__file__t.html#a5d0e3cdfe6e859325a9534e51c77d50b", null ],
+        [ "push_out_of_order", "structadiar_1_1stats__t_1_1arc__file__t.html#a4eb19e2cdf6399836bc2ff8cf8626444", null ],
+        [ "sort_out_of_order", "structadiar_1_1stats__t_1_1arc__file__t.html#a9cda3be7490f6c5f41fd8b5ec00427a1", null ]
+      ] ],
       [ "count_t", "structadiar_1_1stats__t_1_1count__t.html", [
         [ "lpq", "structadiar_1_1stats__t_1_1count__t.html#a50829118ad63e1a074b9441e89fa54a4", null ]
       ] ],
@@ -49,6 +56,10 @@ var group__module____statistics =
         [ "sum_destructors", "structadiar_1_1stats__t_1_1levelized__priority__queue__t.html#ae1fcb08cfff11c545f9b39a6c451c7a0", null ],
         [ "sum_max_size_ratio", "structadiar_1_1stats__t_1_1levelized__priority__queue__t.html#a5154e57535210bd495f07828369b89f9", null ],
         [ "sum_predicted_max_size", "structadiar_1_1stats__t_1_1levelized__priority__queue__t.html#adbb00047f1127e2a664949e29533d83e", null ]
+      ] ],
+      [ "node_file_t", "structadiar_1_1stats__t_1_1node__file__t.html", [
+        [ "push_level", "structadiar_1_1stats__t_1_1node__file__t.html#a68c813f545fae87d4031b6a4a58d89c6", null ],
+        [ "push_node", "structadiar_1_1stats__t_1_1node__file__t.html#ad900e91b345d5f21c9587ac43c311b7f", null ]
       ] ],
       [ "prod2_t", "structadiar_1_1stats__t_1_1prod2__t.html", [
         [ "pq_t", "structadiar_1_1stats__t_1_1prod2__t_1_1pq__t.html", [
@@ -84,10 +95,12 @@ var group__module____statistics =
       [ "substitute_t", "structadiar_1_1stats__t_1_1substitute__t.html", [
         [ "lpq", "structadiar_1_1stats__t_1_1substitute__t.html#a50829118ad63e1a074b9441e89fa54a4", null ]
       ] ],
+      [ "arc_file", "structadiar_1_1stats__t.html#a5e7997d504fc1b9366c1bc9fd3d5dbd4", null ],
       [ "count", "structadiar_1_1stats__t.html#a9b328d7bcba90a84cdc1831417b90ac6", null ],
       [ "equality", "structadiar_1_1stats__t.html#af3845b53561e4530e77a0d77a9bc5a94", null ],
       [ "intercut", "structadiar_1_1stats__t.html#a769cb90756808cfe9b44edfec1d56abf", null ],
       [ "levelized_priority_queue", "structadiar_1_1stats__t.html#a7cc43b74af7d99fb2ebe3d5f983f7e12", null ],
+      [ "node_file", "structadiar_1_1stats__t.html#a0817aec56dcf7958d74e695919764347", null ],
       [ "prod2", "structadiar_1_1stats__t.html#a2e9f74327060f75270343e3409732b9b", null ],
       [ "prod3", "structadiar_1_1stats__t.html#a686c0cffb0d2ef94ffc9fdcf3d14204f", null ],
       [ "quantify", "structadiar_1_1stats__t.html#abeb7a86975f00ab8e3cc47fcd6721d14", null ],

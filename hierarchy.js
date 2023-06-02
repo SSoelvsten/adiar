@@ -15,6 +15,7 @@ var hierarchy =
       [ "adiar::__zdd", "classadiar_1_1____zdd.html", null ]
     ] ],
     [ "adiar::internal::arc", "classadiar_1_1internal_1_1arc.html", null ],
+    [ "adiar::stats_t::arc_file_t", "structadiar_1_1stats__t_1_1arc__file__t.html", null ],
     [ "adiar::internal::arc_source_lt", "structadiar_1_1internal_1_1arc__source__lt.html", null ],
     [ "adiar::internal::arc_target_lt", "structadiar_1_1internal_1_1arc__target__lt.html", null ],
     [ "adiar::builder< dd_policy >", "classadiar_1_1builder.html", null ],
@@ -34,6 +35,7 @@ var hierarchy =
     ] ],
     [ "adiar::map_pair< key_type, value_enum >", "classadiar_1_1map__pair.html", null ],
     [ "adiar::internal::node", "classadiar_1_1internal_1_1node.html", null ],
+    [ "adiar::stats_t::node_file_t", "structadiar_1_1stats__t_1_1node__file__t.html", null ],
     [ "adiar::stats_t::prod2_t::pq_t", "structadiar_1_1stats__t_1_1prod2__t_1_1pq__t.html", null ],
     [ "ptr_t", null, [
       [ "adiar::internal::__uid< ptr_t >", "classadiar_1_1internal_1_1____uid.html", null ]

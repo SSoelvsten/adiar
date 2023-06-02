@@ -3,7 +3,7 @@ var searchData=
   ['acc_5fwidth_8',['acc_width',['../structadiar_1_1stats__t_1_1prod2__t_1_1ra__t.html#a252ac36f0f361e6ad17d86988184659b',1,'adiar::stats_t::prod2_t::ra_t']]],
   ['access_5fmode_9',['access_mode',['../group__module____adiar.html#ga7d6776af40156e16b1dc9e4ca2b74b36',1,'adiar']]],
   ['access_5fmode_5ft_10',['access_mode_t',['../group__module____adiar.html#gaf478550fd9fee97c8357934d10e69ada',1,'adiar']]],
-  ['add_5fnode_11',['add_node',['../classadiar_1_1builder.html#ab6a82eebf191476fa81afd686c2888cd',1,'adiar::builder::add_node(typename dd_policy::label_t label, const builder_ptr&lt; dd_policy &gt; &amp;low, const builder_ptr&lt; dd_policy &gt; &amp;high)'],['../classadiar_1_1builder.html#a24c25db7a9953da4c18eab35fb3751a4',1,'adiar::builder::add_node(const typename dd_policy::label_t label, const bool low, const builder_ptr&lt; dd_policy &gt; &amp;high)'],['../classadiar_1_1builder.html#a4fe5511a6c274f4294f13a8aac52c48e',1,'adiar::builder::add_node(const typename dd_policy::label_t label, const builder_ptr&lt; dd_policy &gt; &amp;low, const bool high)'],['../classadiar_1_1builder.html#af0f95a97030c0d97e004e8471db15f6c',1,'adiar::builder::add_node(const typename dd_policy::label_t label, const bool low, const bool high)'],['../classadiar_1_1builder.html#a0cead7ac838b5461dd611b76603bfd5d',1,'adiar::builder::add_node(bool terminal_value)']]],
+  ['add_5fnode_11',['add_node',['../classadiar_1_1builder.html#a0cead7ac838b5461dd611b76603bfd5d',1,'adiar::builder::add_node(bool terminal_value)'],['../classadiar_1_1builder.html#ab6a82eebf191476fa81afd686c2888cd',1,'adiar::builder::add_node(typename dd_policy::label_t label, const builder_ptr&lt; dd_policy &gt; &amp;low, const builder_ptr&lt; dd_policy &gt; &amp;high)'],['../classadiar_1_1builder.html#a24c25db7a9953da4c18eab35fb3751a4',1,'adiar::builder::add_node(const typename dd_policy::label_t label, const bool low, const builder_ptr&lt; dd_policy &gt; &amp;high)'],['../classadiar_1_1builder.html#a4fe5511a6c274f4294f13a8aac52c48e',1,'adiar::builder::add_node(const typename dd_policy::label_t label, const builder_ptr&lt; dd_policy &gt; &amp;low, const bool high)'],['../classadiar_1_1builder.html#af0f95a97030c0d97e004e8471db15f6c',1,'adiar::builder::add_node(const typename dd_policy::label_t label, const bool low, const bool high)']]],
   ['adiar_12',['adiar',['../namespaceadiar.html',1,'']]],
   ['adiar_20kernel_13',['Adiar Kernel',['../group__module____adiar.html',1,'']]],
   ['adiar_5fdeinit_14',['adiar_deinit',['../group__module____adiar.html#ga9501bb9e871253964682b7ac1942f911',1,'adiar']]],
@@ -17,9 +17,11 @@ var searchData=
   ['adiar_5fstatsreset_22',['adiar_statsreset',['../group__module____statistics.html#ga9696190b20814a8f958716e78b7d2e64',1,'adiar']]],
   ['adiar_5funset_5fdomain_23',['adiar_unset_domain',['../group__module____domain.html#ga6d647e7ebfdf713ffff61da243a3472c',1,'adiar']]],
   ['and_5fop_24',['and_op',['../namespaceadiar.html#a12fffe1fcfe8d8beb664f37ff3d65fa5',1,'adiar']]],
-  ['arc_25',['arc',['../classadiar_1_1internal_1_1arc.html',1,'adiar::internal::arc'],['../classadiar_1_1internal_1_1arc.html#afff93084808f24d1bc103d1d21fcbfbe',1,'adiar::internal::arc::arc(const ptr_t &amp;source, const ptr_t &amp;target)'],['../classadiar_1_1internal_1_1arc.html#aa25d0ad1b221b24779cb149a575742c9',1,'adiar::internal::arc::arc(const uid_t &amp;source, const ptr_t::out_idx_t &amp;out_idx, const ptr_t &amp;target)']]],
-  ['arc_5fsource_5flt_26',['arc_source_lt',['../structadiar_1_1internal_1_1arc__source__lt.html',1,'adiar::internal']]],
-  ['arc_5ft_27',['arc_t',['../classadiar_1_1internal_1_1____dd.html#aff0e393c5d858856baec55c19c24fd22',1,'adiar::internal::__dd']]],
-  ['arc_5ftarget_5flt_28',['arc_target_lt',['../structadiar_1_1internal_1_1arc__target__lt.html',1,'adiar::internal']]],
-  ['assignment_29',['assignment',['../namespaceadiar.html#a723cfcc9239dfdc3cf4cdc74df0265c2',1,'adiar']]]
+  ['arc_25',['arc',['../classadiar_1_1internal_1_1arc.html',1,'adiar::internal::arc'],['../classadiar_1_1internal_1_1arc.html#aa25d0ad1b221b24779cb149a575742c9',1,'adiar::internal::arc::arc(const uid_t &amp;source, const ptr_t::out_idx_t &amp;out_idx, const ptr_t &amp;target)'],['../classadiar_1_1internal_1_1arc.html#afff93084808f24d1bc103d1d21fcbfbe',1,'adiar::internal::arc::arc(const ptr_t &amp;source, const ptr_t &amp;target)']]],
+  ['arc_5ffile_26',['arc_file',['../structadiar_1_1stats__t.html#a5e7997d504fc1b9366c1bc9fd3d5dbd4',1,'adiar::stats_t']]],
+  ['arc_5ffile_5ft_27',['arc_file_t',['../structadiar_1_1stats__t_1_1arc__file__t.html',1,'adiar::stats_t']]],
+  ['arc_5fsource_5flt_28',['arc_source_lt',['../structadiar_1_1internal_1_1arc__source__lt.html',1,'adiar::internal']]],
+  ['arc_5ft_29',['arc_t',['../classadiar_1_1internal_1_1____dd.html#aff0e393c5d858856baec55c19c24fd22',1,'adiar::internal::__dd']]],
+  ['arc_5ftarget_5flt_30',['arc_target_lt',['../structadiar_1_1internal_1_1arc__target__lt.html',1,'adiar::internal']]],
+  ['assignment_31',['assignment',['../namespaceadiar.html#a723cfcc9239dfdc3cf4cdc74df0265c2',1,'adiar']]]
 ];
