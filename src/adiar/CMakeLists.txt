@@ -152,13 +152,13 @@ else()
 endif()
 
 if (ADIAR_STATS)
-  target_compile_definitions(${PROJECT_NAME} PRIVATE ADIAR_STATS)
+  target_compile_definitions(${PROJECT_NAME} PUBLIC ADIAR_STATS)
 endif()
 
 # ============================================================================ #
 # Link dependencies
-target_link_libraries(${PROJECT_NAME} tpie)
-target_link_libraries(${PROJECT_NAME} Cnl)
+target_link_libraries(${PROJECT_NAME} PUBLIC tpie)
+target_link_libraries(${PROJECT_NAME} PUBLIC Cnl)
 
 # ============================================================================ #
 # Setup as library
