@@ -157,18 +157,6 @@ namespace snowhouse
       return stream.str();
     }
   };
-
-
-  template<>
-  struct Stringizer<adiar::cube::pair_t>
-  {
-    static std::string ToString(const adiar::cube::pair_t& cp)
-    {
-      std::stringstream stream;
-      stream << "cube::pair_t: [x" << cp.key() << "|->" << static_cast<size_t>(cp.value()) << "]";
-      return stream.str();
-    }
-  };
 }
 
 ////////////////////////////////////////////////////////////////////////////////
