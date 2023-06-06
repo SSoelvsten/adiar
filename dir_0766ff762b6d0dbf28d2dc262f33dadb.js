@@ -9,7 +9,6 @@ var dir_0766ff762b6d0dbf28d2dc262f33dadb =
     [ "bdd.h", "bdd_8h_source.html", null ],
     [ "bool_op.h", "bool__op_8h_source.html", null ],
     [ "builder.h", "builder_8h_source.html", null ],
-    [ "cube.h", "cube_8h_source.html", null ],
     [ "data.h", "data_8h_source.html", null ],
     [ "domain.h", "domain_8h_source.html", null ],
     [ "file.h", "file_8h_source.html", null ],

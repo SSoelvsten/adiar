@@ -34,8 +34,6 @@ var annotated_dup =
       [ "zdd", "classadiar_1_1zdd.html", "classadiar_1_1zdd" ],
       [ "builder", "classadiar_1_1builder.html", "classadiar_1_1builder" ],
       [ "builder_ptr", "classadiar_1_1builder__ptr.html", "classadiar_1_1builder__ptr" ],
-      [ "cube", "classadiar_1_1cube.html", "classadiar_1_1cube" ],
-      [ "cube_stream", "classadiar_1_1cube__stream.html", "classadiar_1_1cube__stream" ],
       [ "map_pair", "classadiar_1_1map__pair.html", "classadiar_1_1map__pair" ],
       [ "stats_t", "structadiar_1_1stats__t.html", "structadiar_1_1stats__t" ]
     ] ]

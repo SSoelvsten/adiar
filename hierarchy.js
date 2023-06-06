@@ -20,15 +20,11 @@ var hierarchy =
     [ "adiar::internal::arc_target_lt", "structadiar_1_1internal_1_1arc__target__lt.html", null ],
     [ "adiar::builder< dd_policy >", "classadiar_1_1builder.html", null ],
     [ "adiar::builder_ptr< dd_policy >", "classadiar_1_1builder__ptr.html", null ],
-    [ "adiar::cube", "classadiar_1_1cube.html", null ],
     [ "adiar::internal::dd", "classadiar_1_1internal_1_1dd.html", [
       [ "adiar::bdd", "classadiar_1_1bdd.html", null ],
       [ "adiar::zdd", "classadiar_1_1zdd.html", null ]
     ] ],
     [ "adiar::stats_t::equality_t::fast_t", "structadiar_1_1stats__t_1_1equality__t_1_1fast__t.html", null ],
-    [ "file_stream", null, [
-      [ "adiar::cube_stream", "classadiar_1_1cube__stream.html", null ]
-    ] ],
     [ "adiar::internal::level_info", "classadiar_1_1internal_1_1level__info.html", null ],
     [ "adiar::stats_t::levelized_priority_queue_t", "structadiar_1_1stats__t_1_1levelized__priority__queue__t.html", [
       [ "adiar::stats_t::__alg_base::__lpq", "structadiar_1_1stats__t_1_1____alg__base_1_1____lpq.html", null ]
