@@ -116,7 +116,7 @@ With [v1.1.0](https://github.com/SSoelvsten/adiar/releases/tag/v1.1.0) we add
 support for *Zero-suppressed Decision Diagrams* to *Adiar*.
 
 - Steffan Christ Sølvsten, Jaco van de Pol.
-  “[*Adiar 1:1: Zero-suppressed Decision Diagrams in External Memory*](https://link.springer.com/book/9783031331695)”.
+  “[*Adiar 1:1: Zero-suppressed Decision Diagrams in External Memory*](https://link.springer.com/chapter/10.1007/978-3-031-33170-1_28)”.
   In: *NASA Formal Methods* (NFM). (2023)
   ```bibtex
   @InProceedings{soelvsten2023:NFM,
