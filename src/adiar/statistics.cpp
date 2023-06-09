@@ -6,6 +6,7 @@
 #include <adiar/internal/algorithms/count.h>
 #include <adiar/internal/algorithms/reduce.h>
 #include <adiar/internal/algorithms/intercut.h>
+#include <adiar/internal/algorithms/nested_sweeping.h>
 #include <adiar/internal/algorithms/pred.h>
 #include <adiar/internal/algorithms/prod2.h>
 #include <adiar/internal/algorithms/quantify.h>
@@ -40,30 +41,36 @@ namespace adiar
       internal::stats_substitute,
 
       // bottom-up sweeps
-      internal::stats_reduce
+      internal::stats_reduce,
+
+      // other algorithms
+      internal::nested_sweeping::stats
     };
   }
 
   void adiar_statsreset()
   {
     // i/o
-    internal::stats_arc_file   = {};
-    internal::stats_node_file  = {};
+    internal::stats_arc_file                 = {};
+    internal::stats_node_file                = {};
 
     // data structures
     internal::stats_levelized_priority_queue = {};
 
     // top-down sweeps
-    internal::stats_count      = {};
-    internal::stats_equality   = {};
-    internal::stats_intercut   = {};
-    internal::stats_prod2      = {};
-    stats_prod3                = {};
-    internal::stats_quantify   = {};
-    internal::stats_substitute = {};
+    internal::stats_count                    = {};
+    internal::stats_equality                 = {};
+    internal::stats_intercut                 = {};
+    internal::stats_prod2                    = {};
+    stats_prod3                              = {};
+    internal::stats_quantify                 = {};
+    internal::stats_substitute               = {};
 
     // bottom-up sweeps
-    internal::stats_reduce     = {};
+    internal::stats_reduce                   = {};
+
+    // other algorithms
+    internal::nested_sweeping::stats         = {};
   }
 
   //////////////////////////////////////////////////////////////////////////////
