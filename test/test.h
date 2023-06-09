@@ -79,8 +79,13 @@ namespace snowhouse
     } else if (p.is_terminal()) {
       stream << p.value();
     } else { // p.is_node()
-      stream << "(x" << p.label() << ", " << p.id() << ")" ;
+      stream << "(x" << p.label() << ", " << p.id() << ")";
     }
+
+    if (p.is_flagged()) {
+      stream << "'";
+    }
+
     return stream.str();
   }
 
@@ -102,9 +107,9 @@ namespace snowhouse
     {
       std::stringstream stream;
       stream << "arc: "
-             << string_of_adiar_uid(a.source())
+             << string_of_adiar_ptr(a.source())
              << " " << (a.out_idx() ? "--->" : "- ->") << " "
-             << string_of_adiar_uid(a.target())
+             << string_of_adiar_ptr(a.target())
         ;
       return stream.str();
     }
@@ -122,9 +127,9 @@ namespace snowhouse
         stream << "node: ("
                << string_of_adiar_uid(n.uid())
                << ", "
-               << string_of_adiar_uid(n.low())
+               << string_of_adiar_ptr(n.low())
                << ", "
-               << string_of_adiar_uid(n.high())
+               << string_of_adiar_ptr(n.high())
                << ")"
           ;
       }
