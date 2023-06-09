@@ -128,6 +128,7 @@ set(SOURCES
   # adiar/internal/algorithms
   internal/algorithms/count.cpp
   internal/algorithms/intercut.cpp
+  internal/algorithms/nested_sweeping.cpp
   internal/algorithms/pred.cpp
   internal/algorithms/prod2.cpp
   internal/algorithms/quantify.cpp
