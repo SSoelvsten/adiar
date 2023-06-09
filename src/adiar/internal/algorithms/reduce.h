@@ -365,7 +365,7 @@ namespace adiar::internal
           : static_cast<ptr_uint64>(current_map.new_uid);
 
         adiar_debug(t.is_terminal() || t.out_idx() == false, "Created target is without an index");
-        reduce_pq.push({ s,t });
+        reduce_pq.push(arc(s,t));
       }
 
       // Update the mapping that was used
@@ -388,6 +388,9 @@ namespace adiar::internal
     // Update with 1-level cut below current level
     out_writer.unsafe_inc_1level_cut(local_1level_cut);
 
+    adiar_debug(reduce_pq.empty_level(),
+                "All forwarded arcs for 'label' should be processed");
+
     if (!reduce_pq.empty()) {
       adiar_debug(!arcs.can_pull_terminal() || arcs.peek_terminal().source().label() < label,
                   "All terminal arcs for 'label' should be processed");
@@ -395,23 +398,28 @@ namespace adiar::internal
       adiar_debug(!arcs.can_pull_internal() || arcs.peek_internal().target().label() < label,
                   "All internal arcs for 'label' should be processed");
 
-      adiar_debug(reduce_pq.empty() || !reduce_pq.can_pull(),
-                  "All forwarded arcs for 'label' should be processed");
-
       if (arcs.can_pull_terminal()) {
         reduce_pq.setup_next_level(arcs.peek_terminal().source().label());
       } else {
         reduce_pq.setup_next_level();
       }
+    } else if (reduce_pq.size() > 0) {
+      // NOTE: Being 'empty()' does not imply 'size() == 0', due to the
+      //       decorators for Nested Sweeping may claim the priority queue is
+      //       empty() but the size still includes arcs stored in another
+      //       priority queue.
+
+      adiar_debug(!arcs.can_pull_terminal() || arcs.peek_terminal().source().label() < label,
+                  "All terminal arcs for 'label' should be processed");
+
+      adiar_debug(!arcs.can_pull_internal() || arcs.peek_internal().target().label() < label,
+                  "All internal arcs for 'label' should be processed");
     } else if (!out_writer.has_pushed()) {
       adiar_debug(!arcs.can_pull_internal() && !arcs.can_pull_terminal(),
                   "All nodes should be processed at this point");
 
-      adiar_debug(reduce_pq.empty(),
-                  "Nothing has been pushed to a 'parent'");
-
-      adiar_debug(!out_writer.has_pushed(),
-                  "No nodes are pushed when it collapses to a terminal");
+      adiar_debug(reduce_pq.size() == 0 && reduce_pq.empty(),
+                  "'reduce_pq.size() == 0' -> 'reduce_pq.empty()', i.e. no parents have been forwarded to'");
 
       adiar_debug(next_red1.new_uid.is_terminal(),
                   "A node must have been suppressed in favour of a terminal");

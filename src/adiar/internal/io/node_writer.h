@@ -136,7 +136,7 @@ namespace adiar::internal
           unsafe_push(level_info(_latest_node.label(), _level_size));
         }
 
-        _level_size = 0u; // TODO: move to attach...?
+        _level_size = 0u; // TODO: remove?
 
         // 1-level cut
         _max_1level_short_internal = std::max(_max_1level_short_internal,
@@ -174,6 +174,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Adds separate cut before detaching (if need be)
     ////////////////////////////////////////////////////////////////////////////
+    // TODO: move out of 'detach(...)' responsibility and into something similar
+    //       to 'unsafe_inc_1level_cut'
     void detach(const cuts_t &c)
     {
       if (!attached()) { return; }
@@ -181,6 +183,7 @@ namespace adiar::internal
       for (size_t ct = 0u; ct < CUT_TYPES; ct++) {
         _file_ptr->max_1level_cut[ct] += c[ct];
       }
+
       detach();
     }
 
