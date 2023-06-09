@@ -413,6 +413,9 @@ namespace adiar::internal
       adiar_debug(!out_writer.has_pushed(),
                   "No nodes are pushed when it collapses to a terminal");
 
+      adiar_debug(next_red1.new_uid.is_terminal(),
+                  "A node must have been suppressed in favour of a terminal");
+
       const bool terminal_val = next_red1.new_uid.value();
 
       out_writer.unsafe_push(node(terminal_val));
