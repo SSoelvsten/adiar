@@ -245,6 +245,14 @@ namespace adiar::internal
       return file->max_2level_cut[negate_cut_type(ct)];
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief The number of elements in the node file.
+    ////////////////////////////////////////////////////////////////////////////
+    size_t size() const
+    {
+      return file->size();
+    }
+
   private:
     cut_type negate_cut_type(const cut_type ct) const
     {
