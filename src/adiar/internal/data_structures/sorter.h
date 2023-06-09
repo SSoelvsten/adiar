@@ -21,11 +21,11 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Wrapper for TPIE's internal vector with standard quick-sort.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename T, typename pred_t>
-  class sorter<memory_mode_t::INTERNAL, T, pred_t>
+  template <typename elem_t, typename pred_t>
+  class sorter<memory_mode_t::INTERNAL, elem_t, pred_t>
   {
   private:
-    tpie::array<T> _array;
+    tpie::array<elem_t> _array;
     pred_t _pred;
     size_t _size;
     size_t _front_idx;
@@ -34,7 +34,7 @@ namespace adiar::internal
     static tpie::memory_size_type
     unsafe_memory_usage(tpie::memory_size_type no_elements)
     {
-      return tpie::array<T>::memory_usage(no_elements);
+      return tpie::array<elem_t>::memory_usage(no_elements);
     }
 
     static tpie::memory_size_type
@@ -51,7 +51,7 @@ namespace adiar::internal
     static tpie::memory_size_type
     memory_fits(tpie::memory_size_type memory_bytes)
     {
-      const tpie::memory_size_type ret = tpie::array<T>::memory_fits(memory_bytes);
+      const tpie::memory_size_type ret = tpie::array<elem_t>::memory_fits(memory_bytes);
       adiar_assert(unsafe_memory_usage(ret) <= memory_bytes,
                    "memory_fits and memory_usage should agree.");
       return ret;
@@ -59,17 +59,18 @@ namespace adiar::internal
 
     static constexpr size_t DATA_STRUCTURES = 1u;
 
-    static unique_ptr<sorter<memory_mode_t::INTERNAL, T, pred_t>>
+    static unique_ptr<sorter<memory_mode_t::INTERNAL, elem_t, pred_t>>
     make_unique(size_t memory_bytes,
                 size_t no_elements,
                 size_t no_sorters = 1,
                 pred_t pred = pred_t())
     {
-      return adiar::make_unique<sorter<memory_mode_t::INTERNAL, T, pred_t>>(memory_bytes, no_elements, no_sorters, pred);
+      return adiar::make_unique<sorter<memory_mode_t::INTERNAL, elem_t, pred_t>>
+        (memory_bytes, no_elements, no_sorters, pred);
     }
 
     static void
-    reset_unique(unique_ptr<sorter<memory_mode_t::INTERNAL, T, pred_t>> &u_ptr,
+    reset_unique(unique_ptr<sorter<memory_mode_t::INTERNAL, elem_t, pred_t>> &u_ptr,
                  size_t /*memory_bytes*/,
                  size_t /*no_elements*/,
                  size_t /*no_sorters*/ = 1,
@@ -89,9 +90,11 @@ namespace adiar::internal
                   "Must be instantiated with enough memory.");
     }
 
-    void push(const T& t)
+  public:
+    void push(const elem_t& t)
     {
-      adiar_debug(_array.size() > _size, "Array in internal sorter is too small");
+      adiar_precondition(_array.size() > _size);
+      adiar_precondition(_front_idx == 0u);
       _array[_size++] = t;
     }
 
@@ -101,13 +104,21 @@ namespace adiar::internal
       _front_idx = 0;
     }
 
-    bool can_pull()
+    bool can_pull() const
     {
+      // TODO (debug): check it has been sorted
       return _size != _front_idx;
     }
 
-    T pull()
+    elem_t top() const
     {
+      adiar_precondition(can_pull());
+      return _array[_front_idx];
+    }
+
+    elem_t pull()
+    {
+      adiar_precondition(can_pull());
       return _array[_front_idx++];
     }
 
@@ -115,6 +126,16 @@ namespace adiar::internal
     {
       _size = 0;
       _front_idx = 0;
+    }
+
+    size_t size() const
+    {
+      return _size - _front_idx;
+    }
+
+    bool empty() const
+    {
+      return size() == 0;
     }
   };
 
@@ -135,27 +156,31 @@ namespace adiar::internal
   /// computations involved in deriving how much memory should be used and how
   /// it should be.
   //////////////////////////////////////////////////////////////////////////////
-  // TODO:
-  // - Peek function
-  template <typename T, typename pred_t>
-  class sorter<memory_mode_t::EXTERNAL, T, pred_t>
+  template <typename elem_t, typename pred_t>
+  class sorter<memory_mode_t::EXTERNAL, elem_t, pred_t>
   {
   private:
-    tpie::merge_sorter<T, false, pred_t> _sorter;
+    tpie::merge_sorter<elem_t, false, pred_t> _sorter;
+
+    bool   _has_peeked = false;
+    elem_t _peeked;
+
+    size_t _pulls = 0u;
 
   public:
     static constexpr size_t DATA_STRUCTURES = 1u;
 
-    static unique_ptr<sorter<memory_mode_t::EXTERNAL, T, pred_t>>
+    static unique_ptr<sorter<memory_mode_t::EXTERNAL, elem_t, pred_t>>
     make_unique(size_t memory_bytes,
                 size_t no_elements,
                 size_t no_sorters = 1,
                 pred_t pred = pred_t())
     {
-      return adiar::make_unique<sorter<memory_mode_t::EXTERNAL, T, pred_t>>(memory_bytes, no_elements, no_sorters, pred);
+      return adiar::make_unique<sorter<memory_mode_t::EXTERNAL, elem_t, pred_t>>
+        (memory_bytes, no_elements, no_sorters, pred);
     }
 
-    static void reset_unique(unique_ptr<sorter<memory_mode_t::EXTERNAL, T, pred_t>> &u_ptr,
+    static void reset_unique(unique_ptr<sorter<memory_mode_t::EXTERNAL, elem_t, pred_t>> &u_ptr,
                              size_t memory_bytes,
                              size_t no_elements,
                              size_t no_sorters = 1,
@@ -179,7 +204,7 @@ namespace adiar::internal
       // necessary to sort these elements in internal memory. We don't need to
       // allocate more than a constant of this for the external memory case.
       const tpie::memory_size_type no_elements_memory =
-        2 * sorter<memory_mode_t::INTERNAL, T, pred_t>::memory_usage(no_elements);
+        2 * sorter<memory_mode_t::INTERNAL, elem_t, pred_t>::memory_usage(no_elements);
 
       // =======================================================================
       // Case 1: A single sorter.
@@ -223,7 +248,7 @@ namespace adiar::internal
       // Phase 1 : Push Mergesort base cases
       //
       // Quickfix: Issue https://github.com/thomasmoelhave/tpie/issues/250
-      constexpr tpie::memory_size_type minimum_phase1 = sizeof(T) * 128 * 1024 + 5 * 1024 * 1024;
+      constexpr tpie::memory_size_type minimum_phase1 = sizeof(elem_t) * 128 * 1024 + 5 * 1024 * 1024;
 
       // Take up at most 1/(Sorter-1)'th of 1/16th of the total memory. The last
       // sorter is either in the same phase or another phase.
@@ -274,9 +299,9 @@ namespace adiar::internal
       _sorter.begin();
     }
 
-    void push(const T& t)
+    void push(const elem_t& e)
     {
-      _sorter.push(t);
+      _sorter.push(e);
     }
 
     void sort()
@@ -287,14 +312,42 @@ namespace adiar::internal
       _sorter.calc(dpi);
     }
 
-    bool can_pull()
+    bool can_pull() /*const*/
     {
-      return _sorter.can_pull();
+      return _has_peeked || _sorter.can_pull();
     }
 
-    T pull()
+    elem_t top()
     {
+      adiar_precondition(can_pull());
+      if (!_has_peeked) {
+        _has_peeked = true;
+        _peeked = _sorter.pull();
+      }
+      return _peeked;
+    }
+
+    elem_t pull()
+    {
+      adiar_precondition(can_pull());
+      _pulls++;
+      if (_has_peeked) {
+        _has_peeked = false;
+        return _peeked;
+      }
       return _sorter.pull();
+    }
+
+    size_t size() /*const*/
+    {
+      // '_sorter.item_count()' from TPIE only provides the number of .push(...)
+      // in phase 1, not the number of elements left in phase 3.
+      return _sorter.item_count() - _pulls;
+    }
+
+    bool empty() /*const*/
+    {
+      return size() == 0;
     }
   };
 
