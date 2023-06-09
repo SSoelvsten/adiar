@@ -1115,7 +1115,7 @@ go_bandit([]() {
           AssertThat(dec.current_level(), Is().EqualTo(2u));
         });
 
-        it("only provides arcs from Inner PQ", [&]() {
+        it("counts arcs from both Inner and Outer PQ", [&]() {
           outer_test_pq_t outer_pq({outer_dag}, pq_mem, 16);
           inner_test_pq_t inner_pq({inner_dag}, pq_mem, 16);
 
@@ -1127,7 +1127,7 @@ go_bandit([]() {
 
           AssertThat(outer_pq.size(), Is().EqualTo(1u));
 
-          AssertThat(dec.size(), Is().EqualTo(2u));
+          AssertThat(dec.size(), Is().EqualTo(3u));
           AssertThat(dec.empty(), Is().False());
 
           dec.setup_next_level();
@@ -1137,7 +1137,7 @@ go_bandit([]() {
           AssertThat(dec.top(),  Is().EqualTo(arc(n4, true, n5)));
           AssertThat(dec.pull(), Is().EqualTo(arc(n4, true, n5)));
 
-          AssertThat(dec.size(), Is().EqualTo(1u));
+          AssertThat(dec.size(), Is().EqualTo(2u));
           AssertThat(dec.empty(), Is().False());
 
           AssertThat(dec.empty_level(), Is().False());
@@ -1147,15 +1147,490 @@ go_bandit([]() {
 
           AssertThat(dec.empty_level(), Is().True());
           AssertThat(dec.can_pull(), Is().False());
-          AssertThat(dec.size(), Is().EqualTo(0u));
+          AssertThat(dec.size(), Is().EqualTo(1u));
           AssertThat(dec.empty(), Is().True());
 
           dec.push(arc(flag(with_out_idx(n3, false)), terminal_F)); // outer
           dec.push(arc(with_out_idx(n3, true),        n5));         // inner
 
           AssertThat(dec.empty_level(), Is().True());
-          AssertThat(dec.size(), Is().EqualTo(1u));
+          AssertThat(dec.size(), Is().EqualTo(3u));
           AssertThat(dec.empty(), Is().False());
+        });
+
+        it("empty() is independent of Outer PQ size", [&]() {
+          outer_test_pq_t outer_pq({outer_dag}, pq_mem, 16);
+          inner_test_pq_t inner_pq({inner_dag}, pq_mem, 16);
+
+          test_decorator dec(inner_pq, outer_pq);
+
+          dec.push(arc(flag(with_out_idx(n4, true)), n5));         // outer (x3)
+
+          AssertThat(dec.size(), Is().EqualTo(1u));
+          AssertThat(dec.empty(), Is().True());
+        });
+      });
+    });
+
+    describe("nested_sweeping:: _ ::sweeps", []() {
+      describe("inner::down(...)", []() {
+        // TODO: test with mock GC policy?
+      });
+
+      describe("inner::up(...)", []() {
+        using inner_up_sweep = nested_sweeping::inner::up__policy_t<bdd_policy>;
+        using outer_pq_t     = nested_sweeping::outer::up__pq_t<1, memory_mode_t::INTERNAL>;
+
+        /*
+        //       1         ---- x0
+        //      / \
+        //      F 2        ---- x1
+        //       / \
+        //       F 3       ---- x2
+        //        / \
+        //        F 4      ---- x3
+        //         / \
+        //         F 5     ---- x4
+        //          / \
+        //          F T
+        */
+
+        shared_levelized_file<arc> outer_dag;
+
+        {
+          const ptr_uint64 terminal_F(false);
+          const ptr_uint64 terminal_T(true);
+
+          const ptr_uint64 n1 = ptr_uint64(0,0);
+          const ptr_uint64 n2 = ptr_uint64(1,0);
+          const ptr_uint64 n3 = ptr_uint64(2,0);
+          const ptr_uint64 n4 = ptr_uint64(3,0);
+          const ptr_uint64 n5 = ptr_uint64(4,0);
+
+          arc_writer aw(outer_dag);
+
+          aw.push_internal({ n1, true, n2 });
+          aw.push_internal({ n2, true, n3 });
+          aw.push_internal({ n3, true, n4 });
+          aw.push_internal({ n4, true, n5 });
+
+          aw.push_terminal({ n1, false, terminal_F });
+          aw.push_terminal({ n2, false, terminal_F });
+          aw.push_terminal({ n3, false, terminal_F });
+          aw.push_terminal({ n4, false, terminal_F });
+          aw.push_terminal({ n5, false, terminal_F });
+          aw.push_terminal({ n5, true,  terminal_T });
+
+          aw.push(level_info(0,1u));
+          aw.push(level_info(1,1u));
+          aw.push(level_info(2,1u));
+          aw.push(level_info(3,1u));
+          aw.push(level_info(4,1u));
+        }
+
+        it("reduces forest and pushes roots back out", [&outer_dag]() {
+          /* input
+          //       1     _2_           ---- x1
+          //  -   - \ - / - \  -   -   -    -
+          //        3   4   5          ---- x2
+          //       / \ / \ / \
+          //       T | T | F T
+          //         \_ _/
+          //           6               ---- x3
+          //          / \
+          //          T F
+           */
+          const ptr_uint64 terminal_F(false);
+          const ptr_uint64 terminal_T(true);
+
+          const ptr_uint64 n1(1,0);
+          const ptr_uint64 n2(1,1);
+          const ptr_uint64 n3(2,0);
+          const ptr_uint64 n4(2,1);
+          const ptr_uint64 n5(2,2);
+          const ptr_uint64 n6(3,0);
+
+          shared_levelized_file<arc> in;
+
+          { // Garbage collect writer to free write-lock
+            arc_writer aw(in);
+
+            aw.push_internal({ flag(with_out_idx(n1, true)), n3 });
+            aw.push_internal({ flag(with_out_idx(n2, false)), n4 });
+            aw.push_internal({ flag(with_out_idx(n2, true)),  n5 });
+            aw.push_internal({ with_out_idx(n3, true), n6 });
+            aw.push_internal({ with_out_idx(n4, true), n6 });
+
+            aw.push_terminal({ n3, false, terminal_T });
+            aw.push_terminal({ n4, false, terminal_T });
+            aw.push_terminal({ n5, false, terminal_F });
+            aw.push_terminal({ n5, true,  terminal_T });
+            aw.push_terminal({ n6, false, terminal_T });
+            aw.push_terminal({ n6, true,  terminal_F });
+
+            // NOTE: 'level_info(1,2u)' is not a processable part of the forest;
+            aw.push(level_info(2,3u));
+            aw.push(level_info(3,1u));
+
+            in->max_1level_cut = 2;
+          }
+
+          shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
+          node_writer out_writer(out);
+
+          const size_t available_memory = memory_available();
+
+          outer_pq_t out_pq({outer_dag}, available_memory / 2, 8);
+
+          /* output
+          //      1   2           ---- x1
+          //  -   -\ /-\  -   -   -    -
+          //        3   5         ---- x2
+          //       / \ / \
+          //       T 6 F T        ---- x3
+          //        / \
+          //        T F
+          */
+          const auto global_1level_cut =
+            nested_sweeping::inner::up<inner_up_sweep>(in, out_pq, out_writer, available_memory / 2);
+
+          // Check 'global_1level_cut'
+          AssertThat(global_1level_cut, Is().EqualTo(cuts_t({ 0u, 0u, 0u, 0u })));
+
+          // Check meta variables before detach computations
+          AssertThat(out->width, Is().EqualTo(2u));
+
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
+
+          // Over-approximation, since T-terminal from level (2) is removed
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(3u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(4u));
+          AssertThat(out->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
+          AssertThat(out->max_1level_cut[cut_type::ALL], Is().LessThanOrEqualTo(6u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
+
+          // Check node and meta files are correct
+          out_writer.detach();
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                         terminal_T,
+                                                         terminal_F)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
+                                                         terminal_F,
+                                                         terminal_T)));
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID-1,
+                                                         terminal_T,
+                                                         ptr_uint64(3, ptr_uint64::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,2u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // Check outer priority queue is correct
+          AssertThat(out_pq.size(),  Is().EqualTo(3u));
+
+          out_pq.setup_next_level();
+
+          AssertThat(out_pq.can_pull(), Is().True());
+          AssertThat(out_pq.pull(), Is().EqualTo(arc(n2, true, ptr_uint64(2, ptr_uint64::MAX_ID))));
+
+          AssertThat(out_pq.can_pull(), Is().True());
+          AssertThat(out_pq.pull(), Is().EqualTo(arc(n2, false, ptr_uint64(2, ptr_uint64::MAX_ID-1))));
+
+          AssertThat(out_pq.can_pull(), Is().True());
+          AssertThat(out_pq.pull(), Is().EqualTo(arc(n1, true,  ptr_uint64(2, ptr_uint64::MAX_ID-1))));
+
+          AssertThat(out_pq.can_pull(), Is().False());
+        });
+
+        it("includes outer_pq terminals in cut size", [&outer_dag]() {
+          /* input
+          //     _1_            ---- x1
+          //  - / - \ -   -   -    -
+          //    F   2           ---- x3
+          //       / \
+          //       F T
+           */
+          const ptr_uint64 terminal_F(false);
+          const ptr_uint64 terminal_T(true);
+
+          const ptr_uint64 n1(1,0);
+          const ptr_uint64 n2(3,0);
+
+          shared_levelized_file<arc> in;
+
+          { // Garbage collect writer to free write-lock
+            arc_writer aw(in);
+
+            aw.push_internal({ flag(with_out_idx(n1, true)), n2 });
+
+            aw.push_terminal({ n2, false, terminal_F });
+            aw.push_terminal({ n2, true, terminal_T });
+
+            // NOTE: 'level_info(1,1u)' is not a processable part of the forest;
+            aw.push(level_info(3,1u));
+
+            in->max_1level_cut = 0;
+          }
+
+          shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
+          node_writer out_writer(out);
+
+          const size_t available_memory = memory_available();
+
+          outer_pq_t out_pq({outer_dag}, available_memory / 2, 8);
+          out_pq.push({ n1, false, terminal_F });
+
+          /* output
+          //     _1_            ---- x1
+          //  - / - \ -   -   -    -
+          //    F   2           ---- x3
+          //       / \
+          //       F T
+          */
+          const auto global_1level_cut =
+            nested_sweeping::inner::up<inner_up_sweep>(in, out_pq, out_writer, available_memory / 2);
+
+          // Check 'global_1level_cut'
+          AssertThat(global_1level_cut, Is().EqualTo(cuts_t({ 0u, 0u, 0u, 0u })));
+
+          // Check meta variables before detach computations
+          AssertThat(out->width, Is().EqualTo(1u));
+
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL],       Is().EqualTo(0u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE],  Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::ALL],            Is().EqualTo(3u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+
+          // Check node and meta files are correct
+          out_writer.detach();
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                         terminal_F,
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // Check outer priority queue is correct
+          AssertThat(out_pq.size(),  Is().EqualTo(2u));
+
+          out_pq.setup_next_level();
+
+          AssertThat(out_pq.can_pull(), Is().True());
+          AssertThat(out_pq.pull(), Is().EqualTo(arc(n1, true, ptr_uint64(3, ptr_uint64::MAX_ID))));
+
+          AssertThat(out_pq.can_pull(), Is().True());
+          AssertThat(out_pq.pull(), Is().EqualTo(arc(n1, false, terminal_F)));
+
+          AssertThat(out_pq.can_pull(), Is().False());
+        });
+
+        it("returns globally counted arcs for 1-level cut", [&outer_dag]() {
+          /* input
+          //      1_            ---- x1
+          //  -   - \ -   -   -    -
+          //        2           ---- x3
+          //       / \
+          //       F 3          ---- x4
+          //        / \
+          //        T T
+          */
+          const ptr_uint64 terminal_F(false);
+          const ptr_uint64 terminal_T(true);
+
+          const ptr_uint64 n1(1,0);
+          const ptr_uint64 n2(3,0);
+          const ptr_uint64 n3(4,0);
+
+          shared_levelized_file<arc> in;
+
+          { // Garbage collect writer to free write-lock
+            arc_writer aw(in);
+
+            aw.push_internal({ flag(with_out_idx(n1, true)), n2 });
+            aw.push_internal({ n2, true, n3 });
+
+            aw.push_terminal({ n2, false, terminal_F });
+            aw.push_terminal({ n3, false, terminal_T });
+            aw.push_terminal({ n3, true,  terminal_T });
+
+            // NOTE: 'level_info(1,1u)' is not a processable part of the forest;
+            aw.push(level_info(3,1u));
+            aw.push(level_info(4,1u));
+
+            in->max_1level_cut = 1;
+          }
+
+          shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
+          node_writer out_writer(out);
+
+          const size_t available_memory = memory_available();
+
+          outer_pq_t out_pq({outer_dag}, available_memory / 2, 8);
+
+          /* output
+          //      1_            ---- x1
+          //  -   - \ -   -   -    -
+          //        2           ---- x3
+          //       / \
+          //       F T <-- T counted in global cut
+          */
+          const auto global_1level_cut =
+            nested_sweeping::inner::up<inner_up_sweep>(in, out_pq, out_writer, available_memory / 2);
+
+          // Check 'global_1level_cut'
+          AssertThat(global_1level_cut, Is().EqualTo(cuts_t({ 0u, 0u, 1u, 1u })));
+
+          // Check meta variables before detach computations
+          AssertThat(out->width, Is().EqualTo(1u));
+
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL],       Is().EqualTo(0u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE],  Is().EqualTo(0u));
+          AssertThat(out->max_1level_cut[cut_type::ALL],            Is().EqualTo(1u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+
+          // Check node and meta files are correct
+          out_writer.detach();
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                         terminal_F,
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // Check outer priority queue is correct
+          AssertThat(out_pq.size(),  Is().EqualTo(1u));
+
+          out_pq.setup_next_level();
+
+          AssertThat(out_pq.can_pull(), Is().True());
+          AssertThat(out_pq.pull(), Is().EqualTo(arc(n1, true, ptr_uint64(3, ptr_uint64::MAX_ID))));
+
+          AssertThat(out_pq.can_pull(), Is().False());
+        });
+
+        it("leaves file empty if everything collapsed to a terminal", [&outer_dag]() {
+          /* input
+          //     _1_            ---- x1
+          //  - / - \ -   -   -    -
+          //    F   2           ---- x3
+          //       / \
+          //       T T
+          */
+          const ptr_uint64 terminal_F(false);
+          const ptr_uint64 terminal_T(true);
+
+          const ptr_uint64 n1(1,0);
+          const ptr_uint64 n2(3,0);
+
+          shared_levelized_file<arc> in;
+
+          { // Garbage collect writer to free write-lock
+            arc_writer aw(in);
+
+            aw.push_internal({ flag(with_out_idx(n1, true)), n2 });
+
+            aw.push_terminal({ n2, false, terminal_T });
+            aw.push_terminal({ n2, true,  terminal_T });
+
+            // NOTE: 'level_info(1,1u)' is not a processable part of the forest;
+            aw.push(level_info(3,1u));
+
+            in->max_1level_cut = 0;
+          }
+
+          shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
+          node_writer out_writer(out);
+
+          const size_t available_memory = memory_available();
+
+          outer_pq_t out_pq({outer_dag}, available_memory / 2, 8);
+
+          /* output
+          //      1_            ---- x1
+          //  -   - \ -   -   -    -
+          //        T <-- in 'out_pq', not in 'out'
+          */
+          const auto global_1level_cut =
+            nested_sweeping::inner::up<inner_up_sweep>(in, out_pq, out_writer, available_memory / 2);
+
+          // Check 'global_1level_cut'
+          AssertThat(global_1level_cut, Is().EqualTo(cuts_t({ 0u, 0u, 0u, 0u })));
+
+          // Check meta variables before detach computations
+          AssertThat(out->width, Is().EqualTo(0u));
+
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL],       Is().EqualTo(0u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE],  Is().EqualTo(0u));
+          AssertThat(out->max_1level_cut[cut_type::ALL],            Is().EqualTo(0u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(0u));
+
+          // Check node and meta files are correct
+          out_writer.detach();
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // Check outer priority queue is correct
+          AssertThat(out_pq.size(),  Is().EqualTo(1u));
+
+          out_pq.setup_next_level();
+
+          AssertThat(out_pq.can_pull(), Is().True()); // Edge is tainted by reduction rule 1
+          AssertThat(out_pq.pull(), Is().EqualTo(arc(n1, true, flag(terminal_T))));
+
+          AssertThat(out_pq.can_pull(), Is().False());
         });
       });
     });

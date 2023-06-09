@@ -41,8 +41,21 @@ namespace adiar::internal
     namespace outer
     {
       //////////////////////////////////////////////////////////////////////////
+      /// \brief Default priority queue for the Outer Up Sweep.
+      //////////////////////////////////////////////////////////////////////////
       template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
       using up__pq_t = reduce_priority_queue<LOOK_AHEAD, mem_mode>;
+
+      //////////////////////////////////////////////////////////////////////////
+      /// \brief Default policy for the Inner Up Sweep.
+      //////////////////////////////////////////////////////////////////////////
+      template<typename dd_policy>
+      class up__policy_t : public dd_policy
+      {
+      public:
+        template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
+        using pq_t = up__pq_t<LOOK_AHEAD, mem_mode>;
+      };
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief Decorator for the Reduce priority queue that either forwards
@@ -216,6 +229,10 @@ namespace adiar::internal
         unique_ptr<sorter_t> _sorter_ptr;
 
         ////////////////////////////////////////////////////////////////////////
+        // NOTE: There is not '_terminals[2]' like in the priority queue, since
+        //       there is as an invariant that the target is never a terminal.
+
+        ////////////////////////////////////////////////////////////////////////
         const size_t _memory_bytes;
         const size_t _no_arcs;
 
@@ -253,6 +270,9 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         void push(const reduce_arc& a)
         {
+          adiar_invariant(!a.target().is_terminal(),
+                          "Arcs to terminals always reside in the outer PQ");
+
           // TODO: support requests with more than just the source
 
           // TODO: Is there a better way to explicitly set the remainders of
@@ -499,16 +519,22 @@ namespace adiar::internal
       };
 
       //////////////////////////////////////////////////////////////////////////
-      /// \brief Execute the nested Inner Sweep given initial recursions in
+      /// \brief Start the nested sweep given initial recursions in
       ///        `inner_roots` on DAG in `outer_file`.
-      ///
-      /// \see nested_sweep
       //////////////////////////////////////////////////////////////////////////
       // TODO
 
       //////////////////////////////////////////////////////////////////////////
+      /// \brief Default priority queue for the Inner Up Sweep.
+      //////////////////////////////////////////////////////////////////////////
       template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
       using up__pq_t = outer::up__pq_t<LOOK_AHEAD, mem_mode>;
+
+      //////////////////////////////////////////////////////////////////////////
+      /// \brief Default policy for the Inner Up Sweep.
+      //////////////////////////////////////////////////////////////////////////
+      template<typename dd_policy>
+      using up__policy_t = outer::up__policy_t<dd_policy>;
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief Decorator for a (levelized) priority queue that either forwards
@@ -675,10 +701,32 @@ namespace adiar::internal
         { _inner_pq.pop(); }
 
         ////////////////////////////////////////////////////////////////////////
-        /// \brief The number of requests in the priority queue and the sorter.
+        /// \brief Number of terminals (of each type) placed within either of
+        ///        the priority queues.
         ////////////////////////////////////////////////////////////////////////
-        size_t size() /*const*/
-        { return _inner_pq.size(); }
+        size_t terminals(const bool terminal_value) const
+        {
+          return _outer_pq.terminals(terminal_value)
+               + _inner_pq.terminals(terminal_value);
+        }
+
+        ////////////////////////////////////////////////////////////////////////
+        /// \brief Numer of elements in both priority queues.
+        ////////////////////////////////////////////////////////////////////////
+        size_t size() const
+        {
+          return _outer_pq.size() + _inner_pq.size();
+        }
+
+        ////////////////////////////////////////////////////////////////////////
+        /// \brief Total number of arcs (across all levels) ignoring terminals
+        ///        in both priority queues.
+        ////////////////////////////////////////////////////////////////////////
+        size_t size_without_terminals() const
+        {
+          return _outer_pq.size_without_terminals()
+               + _inner_pq.size_without_terminals();
+        }
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief Whether the priority queue and the sorter are empty.
@@ -688,12 +736,103 @@ namespace adiar::internal
       };
 
       //////////////////////////////////////////////////////////////////////////
-      /// \brief Execute the Inner Up Sweep.
+      /// \brief Execute the Inner Up Sweep (part 2).
       ///
-      /// \see nested_sweep
+      /// \sa nested_sweep
       //////////////////////////////////////////////////////////////////////////
-      // TODO
+      template<typename inner_up_sweep, typename inner_pq_t, typename outer_pq_t>
+      inline cuts_t
+      up(const typename inner_up_sweep::shared_arcs_t &inner_unreduced,
+         outer_pq_t &outer_pq,
+         node_writer &outer_writer,
+         const size_t inner_pq_memory,
+         const size_t inner_pq_max_size,
+         const size_t inner_sorters_memory)
+      {
+        // Set up input
+        arc_stream<> inner_arcs(inner_unreduced);
+        level_info_stream<> inner_levels(inner_unreduced);
 
+        // Set up (decorated) priority queue
+        inner_pq_t inner_pq({inner_unreduced}, inner_pq_memory, inner_pq_max_size);
+
+        using decorator_t = up__pq_decorator<inner_pq_t, outer_pq_t>;
+        decorator_t decorated_pq(inner_pq, outer_pq);
+
+        // Run Reduce
+        return __reduce<inner_up_sweep>(inner_arcs, inner_levels,
+                                        decorated_pq,
+                                        outer_writer,
+                                        inner_sorters_memory);
+
+        // TODO (optimisation):
+        //   Since the 1-level cut is up to this (processed) level, we also know
+        //   that the already globally counted arcs can be added on-top of the
+        //   current maximum and then be forgotten.
+        //
+        //   This would (soundly?) decrease the over-approximation.
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      /// \brief Execute the Inner Up Sweep (part 1).
+      ///
+      /// \sa nested_sweep
+      //////////////////////////////////////////////////////////////////////////
+      template<typename inner_up_sweep, typename outer_pq_t>
+      cuts_t
+      up(const typename inner_up_sweep::shared_arcs_t &inner_unreduced,
+         outer_pq_t &outer_pq,
+         node_writer &outer_writer,
+         const size_t inner_memory)
+      {
+        // Compute amount of memory available for auxiliary data structures after
+        // having opened all streams.
+        //
+        // We then may derive an upper bound on the size of auxiliary data
+        // structures and check whether we can run them with a faster internal
+        // memory variant.
+
+        const size_t inner_aux_available_memory =
+          inner_memory - arc_stream<>::memory_usage() - level_info_stream<>::memory_usage();
+
+        const size_t inner_pq_memory = inner_aux_available_memory / 2;
+        const size_t inner_sorters_memory =
+          inner_aux_available_memory - inner_pq_memory - tpie::file_stream<mapping>::memory_usage();
+
+        const tpie::memory_size_type inner_pq_memory_fits =
+          inner_up_sweep::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::memory_fits(inner_pq_memory);
+
+        const size_t inner_pq_bound = inner_unreduced->max_1level_cut;
+
+        const size_t inner_pq_max_size = memory_mode == memory_mode_t::INTERNAL
+          ? std::min(inner_pq_memory_fits, inner_pq_bound)
+          : inner_pq_bound;
+
+        const bool external_only = memory_mode == memory_mode_t::EXTERNAL;
+        if (!external_only && inner_pq_max_size <= no_lookahead_bound(1)) {
+#ifdef ADIAR_STATS
+          stats.inner.up.lpq.unbucketed += 1u;
+#endif
+          using inner_pq_t = typename inner_up_sweep::template pq_t<0, memory_mode_t::INTERNAL>;
+          return up<inner_up_sweep, inner_pq_t>(inner_unreduced, outer_pq, outer_writer,
+                                                inner_pq_memory, inner_pq_max_size, inner_sorters_memory);
+
+        } else if(!external_only && inner_pq_max_size <= inner_pq_memory_fits) {
+#ifdef ADIAR_STATS
+          stats.inner.up.lpq.internal += 1u;
+#endif
+          using inner_pq_t = typename inner_up_sweep::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>;
+          return up<inner_up_sweep, inner_pq_t>(inner_unreduced, outer_pq, outer_writer,
+                                                inner_pq_memory, inner_pq_max_size, inner_sorters_memory);
+        } else {
+#ifdef ADIAR_STATS
+          stats.inner.up.lpq.external += 1u;
+#endif
+          using inner_pq_t = typename inner_up_sweep::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>;
+          return up<inner_up_sweep, inner_pq_t>(inner_unreduced, outer_pq, outer_writer,
+                                                inner_pq_memory, inner_pq_max_size, inner_sorters_memory);
+        }
+      }
     } // namespace inner
   } // namespace nested_sweeping
 
