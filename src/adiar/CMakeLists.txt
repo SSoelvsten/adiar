@@ -46,6 +46,7 @@ set(HEADERS
   internal/algorithms/convert.h
   internal/algorithms/count.h
   internal/algorithms/intercut.h
+  internal/algorithms/nested_sweeping.h
   internal/algorithms/pred.h
   internal/algorithms/prod2.h
   internal/algorithms/quantify.h
