@@ -354,7 +354,7 @@ namespace adiar::internal
                       || current_map.old_uid == arcs.peek_internal().target(),
                       "Mapping forwarded in sync with node_arcs");
 
-      // Find all arcs that have sources that match the current mapping's old_uid
+      // Find all arcs that have the target that match the current mapping's old_uid
       while (arcs.can_pull_internal() && current_map.old_uid == arcs.peek_internal().target()) {
         // The is_high flag is included in arc.source() pulled from node_arcs.
         const ptr_uint64 s = arcs.pull_internal().source();
@@ -516,11 +516,7 @@ namespace adiar::internal
       }
     }
 
-    // Add global_1level_cut to the maximum 1-level cut already present in 'out_file'.
-    for (size_t ct = 0u; ct < CUT_TYPES; ct++) {
-      out_file->max_1level_cut[ct] += global_1level_cut[ct];
-    }
-
+    out_writer.detach(global_1level_cut);
     return out_file;
   }
 

@@ -172,6 +172,19 @@ namespace adiar::internal
     }
 
     ////////////////////////////////////////////////////////////////////////////
+    /// \brief Adds separate cut before detaching (if need be)
+    ////////////////////////////////////////////////////////////////////////////
+    void detach(const cuts_t &c)
+    {
+      if (!attached()) { return; }
+
+      for (size_t ct = 0u; ct < CUT_TYPES; ct++) {
+        _file_ptr->max_1level_cut[ct] += c[ct];
+      }
+      detach();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
     /// \brief   Write the next node to the file (and check consistency).
     ///
     /// \details Writes the given node to the end of the file and also writes to
