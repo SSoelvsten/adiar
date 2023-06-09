@@ -73,6 +73,7 @@ go_bandit([]() {
 
 #include "adiar/internal/algorithms/test_convert.cpp"
 #include "adiar/internal/algorithms/test_isomorphism.cpp"
+#include "adiar/internal/algorithms/test_nested_sweeping.cpp"
 #include "adiar/internal/algorithms/test_reduce.cpp"
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -111,6 +111,9 @@ test/adiar/internal/algorithms/convert:
 test/adiar/internal/algorithms/isomorphism:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/algorithms TEST_NAME=isomorphism
 
+test/adiar/internal/algorithms/nested_sweeping:
+	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/algorithms TEST_NAME=nested_sweeping
+
 test/adiar/internal/algorithms/reduce:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/algorithms TEST_NAME=reduce
 
