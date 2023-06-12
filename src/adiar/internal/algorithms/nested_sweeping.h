@@ -522,7 +522,115 @@ namespace adiar::internal
       /// \brief Start the nested sweep given initial recursions in
       ///        `inner_roots` on DAG in `outer_file`.
       //////////////////////////////////////////////////////////////////////////
-      // TODO
+      template<typename inner_down_sweep, typename inner_roots_t>
+      typename inner_down_sweep::shared_arcs_t
+      down(inner_down_sweep &inner_impl,
+           const typename inner_down_sweep::shared_nodes_t &outer_file,
+           inner_roots_t &inner_roots,
+           const size_t inner_memory)
+      {
+        adiar_debug(inner_roots.size() > 0,
+                    "Nested Sweep needs one or more roots");
+
+        inner_roots.sort();
+
+        // Since we do not know anything about inner_impl, we cannot be sure of
+        // what type for its priority queue is optimal at this point in time.
+        // For example, it might choose to use random access which changes the
+        // sorting predicate (and hence the type).
+        //
+        // To avoid having to do the boiler-plate yourself, use
+        // `down__sweep_switch` below (assuming your algorithm fits).
+        return inner_impl.sweep(outer_file, inner_roots, inner_memory);
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      /// \brief Implements the default boiler-plate behaviour in the Inner Down
+      ///        Sweep to (1) switch based on `memory_mode` and (2) decorate the
+      ///        priority queue and the `roots_sorter`.
+      //////////////////////////////////////////////////////////////////////////
+      template<typename inner_down_sweep, typename inner_roots_t>
+      inline typename inner_down_sweep::shared_arcs_t
+      down__sweep_switch(inner_down_sweep &inner_impl,
+                         const typename inner_down_sweep::shared_nodes_t &outer_file,
+                         inner_roots_t &inner_roots,
+                         const size_t inner_memory)
+      {
+        // ---------------------------------------------------------------------
+
+        // Compute amount of memory available for auxiliary data structures after
+        // having opened all streams.
+        //
+        // We then may derive an upper bound on the size of auxiliary data
+        // structures and check whether we can run them with a faster internal
+        // memory variant.
+        const size_t inner_stream_memory = inner_down_sweep::stream_memory();
+        adiar_debug(inner_stream_memory <= inner_memory,
+                    "There should be enough memory to include all streams");
+
+        // ---------------------------------------------------------------------
+        // Case: Run Inner Sweep (with random access)
+        // TODO
+
+        // ---------------------------------------------------------------------
+        // Case: Run Inner Sweep (with priority queues)
+
+        const size_t inner_pq_memory = inner_down_sweep::pq_memory(inner_memory - inner_stream_memory);
+        adiar_debug(inner_pq_memory <= inner_memory - inner_stream_memory,
+                    "There should be enough memory to include all streams and priority queue");
+
+        const size_t inner_remaining_memory = inner_memory - inner_stream_memory - inner_pq_memory;
+
+        const size_t inner_pq_fits =
+          inner_down_sweep::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::memory_fits(inner_pq_memory);
+
+        const size_t inner_pq_bound = inner_down_sweep::pq_bound(outer_file, inner_roots.size());
+
+        const bool external_only = memory_mode == memory_mode_t::EXTERNAL;
+
+        const size_t inner_pq_max_size = memory_mode == memory_mode_t::INTERNAL
+          ? std::min(inner_pq_fits, inner_pq_bound)
+          : inner_pq_bound;
+
+        // TODO (bdd_compose): ask 'inner_down_sweep' implementation for the initalizer list
+        if(!external_only && inner_pq_max_size <= no_lookahead_bound(inner_roots_t::elem_t::cardinality)) {
+#ifdef ADIAR_STATS
+          stats.inner.down.lpq.unbucketed += 1u;
+#endif
+          adiar_debug(inner_pq_max_size <= inner_pq_fits,
+                      "'no_lookahead' implies it should (in practice) satisfy the '<='");
+
+          using inner_pq_t = typename inner_down_sweep::template pq_t<0, memory_mode_t::INTERNAL>;
+          inner_pq_t inner_pq({outer_file}, inner_pq_memory, inner_pq_max_size, stats.inner.down.lpq);
+
+          using decorator_t = down__pq_decorator<inner_pq_t, inner_roots_t>;
+          decorator_t decorated_pq(inner_pq, inner_roots);
+
+          return inner_impl.sweep_pq(outer_file, decorated_pq, inner_remaining_memory);
+        } else if(!external_only && inner_pq_max_size <= inner_pq_fits) {
+#ifdef ADIAR_STATS
+          stats.inner.down.lpq.internal += 1u;
+#endif
+          using inner_pq_t = typename inner_down_sweep::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>;
+          inner_pq_t inner_pq({outer_file}, inner_pq_memory, inner_pq_max_size, stats.inner.down.lpq);
+
+          using decorator_t = down__pq_decorator<inner_pq_t, inner_roots_t>;
+          decorator_t decorated_pq(inner_pq, inner_roots);
+
+          return inner_impl.sweep_pq(outer_file, decorated_pq, inner_remaining_memory);
+        } else {
+#ifdef ADIAR_STATS
+          stats.inner.down.lpq.external += 1u;
+#endif
+          using inner_pq_t = typename inner_down_sweep::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>;
+          inner_pq_t inner_pq({outer_file}, inner_pq_memory, inner_pq_max_size, stats.inner.down.lpq);
+
+          using decorator_t = down__pq_decorator<inner_pq_t, inner_roots_t>;
+          decorator_t decorated_pq(inner_pq, inner_roots);
+
+          return inner_impl.sweep_pq(outer_file, decorated_pq, inner_remaining_memory);
+        }
+      }
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief Default priority queue for the Inner Up Sweep.

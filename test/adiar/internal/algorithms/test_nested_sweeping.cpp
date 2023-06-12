@@ -1,8 +1,125 @@
 #include "../../../test.h"
 
+#include <adiar/bdd/bdd_policy.h>
+
 #include <adiar/internal/algorithms/nested_sweeping.h>
 #include <adiar/internal/algorithms/reduce.h>
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
+#include <adiar/internal/data_types/request.h>
+#include <adiar/statistics.h>
+
+////////////////////////////////////////////////////////////////////////////////
+/// Policy that provides the most simplistic top-down sweep to test the Inner
+/// Down Sweep in isolation. The algorithm within is a simple garbage collection
+/// (akin to a 'mark and sweep') from the initial given set of roots.
+////////////////////////////////////////////////////////////////////////////////
+class test_gc_sweep : public bdd_policy
+{
+private:
+  const size_t _nesting_modulo;
+  const level_info_stream<> _lis;
+
+public:
+  using request_t = request_data<1, with_parent, 0, 1>;
+
+  template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
+  using pq_t = levelized_node_priority_queue<request_t, request_fst_lt<request_t>,
+                                             LOOK_AHEAD, mem_mode>;
+
+public:
+  test_gc_sweep(const size_t nm, const shared_levelized_file<arc> &dag)
+    : _nesting_modulo(nm)
+    , _lis(dag)
+  { }
+
+public:
+  //////////////////////////////////////////////////////////////////////////////
+  static size_t stream_memory()
+  { return node_stream<>::memory_usage() + arc_writer::memory_usage(); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  static size_t pq_memory(const size_t inner_memory)
+  { return inner_memory; }
+
+  //////////////////////////////////////////////////////////////////////////////
+  static size_t pq_bound(const shared_levelized_file<node> &/*outer_file*/,
+                         const size_t /*outer_roots*/)
+  { return 8; }
+
+public:
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief The Sweep Logic for the PQ access mode case.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename inner_pq_t>
+  shared_levelized_file<arc>
+  sweep_pq(const shared_levelized_file<node> &outer_file,
+          inner_pq_t &inner_pq,
+          const size_t /*inner_remaining_memory == 0*/)
+  {
+    node_stream<> ns(outer_file);
+
+    shared_levelized_file<arc> af;
+    af->max_1level_cut = 0;
+
+    arc_writer aw(af);
+
+    while (!inner_pq.empty()) {
+      inner_pq.setup_next_level();
+
+      const node::label_t level_label = inner_pq.current_level();
+      node::id_t level_size = 0u;
+
+      while (!inner_pq.empty_level()) {
+        level_size++;
+
+        // Get target of next request
+        const node::ptr_t next = inner_pq.top().target.fst();
+
+        // Seek node in stream and forward its out-going edges
+        const node n = ns.seek(next);
+        forward_arc<false>(inner_pq, aw, n.uid(), n.low());
+        forward_arc<true >(inner_pq, aw, n.uid(), n.high());
+
+        // Output all in-going edges that match the target
+        while (inner_pq.can_pull() && inner_pq.top().target.fst() == next) {
+          request_t req = inner_pq.pull();
+          aw.push_internal({ req.data.source, req.target.fst() });
+        }
+      }
+
+      aw.push(level_info(level_label, level_size));
+      af->max_1level_cut = std::max(af->max_1level_cut, inner_pq.size());
+    }
+
+    return af;
+  }
+
+private:
+  //////////////////////////////////////////////////////////////////////////////
+  template<bool is_high, typename inner_pq_t>
+  void forward_arc(inner_pq_t &inner_pq, arc_writer &aw,
+                   const node::uid_t &uid, const node::ptr_t &c)
+  {
+    if (c.is_terminal()) {
+      aw.push_terminal({ uid, is_high, c });
+    } else {
+      inner_pq.push({{c}, {}, {uid.with(is_high)}});
+    }
+  }
+
+public:
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Pick PQ type and Run Sweep.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename inner_roots_t>
+  shared_levelized_file<arc>
+  sweep(const shared_levelized_file<node> &outer_file,
+        inner_roots_t &inner_roots,
+        const size_t inner_memory)
+  {
+    return nested_sweeping::inner::down__sweep_switch(*this, outer_file, inner_roots, inner_memory);
+  }
+};
 
 go_bandit([]() {
   describe("adiar/internal/algorithms/nested_sweeping.h", []() {
@@ -1123,9 +1240,175 @@ go_bandit([]() {
       });
     });
 
-    describe("nested_sweeping:: _ ::sweeps", [&outer_dag]() {
-      describe("inner::down(...)", []() {
-        // TODO: test with mock GC policy?
+    describe("nested_sweeping:: _ ::sweeps", [&terminal_F, &terminal_T, &outer_dag]() {
+      describe("inner::down(...)", [&]() {
+        using inner_down_sweep = test_gc_sweep;
+        using inner_roots_t =
+          nested_sweeping::inner::roots_sorter<memory_mode_t::INTERNAL,
+                                               inner_down_sweep::request_t,
+                                               request_fst_lt<inner_down_sweep::request_t>>;
+
+        /*
+        //       ?    ?        ---- x0
+        // -   -   -    -   -
+        //       2   3   4     ---- x1
+        //      / \ / \ / \
+        //      F T F  5  T    ---- x2
+        //            / \
+        //            F T
+        */
+
+        const node n5 = node(2,0, terminal_F, terminal_T);
+        const node n4 = node(1,2, n5.uid(),   terminal_F);
+        const node n3 = node(1,1, terminal_F, n5.uid());
+        const node n2 = node(1,0, terminal_F, terminal_T);
+
+        shared_levelized_file<node> outer_file;
+        { // Garbage collect writer to free write-lock
+          node_writer nw(outer_file);
+          nw << n5 << n4 << n3 << n2;
+        }
+
+        it("can be run from a single root", [&]() {
+          inner_down_sweep test_policy(2, outer_dag);
+
+          /*
+          //         _1_         ---- x0
+          // -   -  / - \   -
+          //        2   3   4    ---- x1
+          */
+          inner_roots_t inner_roots(1024, 8);
+          const node::uid_t u1 = node::uid_t(0,0);
+
+          inner_roots.push({{n2.uid()}, {}, {u1.with(false)}});
+          inner_roots.push({{n3.uid()}, {}, {u1.with(true)}});
+
+          const shared_levelized_file<arc> out =
+            nested_sweeping::inner::down(test_policy, outer_file, inner_roots, memory_available());
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True()); // From sorter
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(u1.with(false)), n2.uid() }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True()); // From sorter
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(u1.with(true)),  n3.uid() }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n3.uid(), true,  n5.uid() }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n2.uid(), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n2.uid(), true,  terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5.uid(), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5.uid(), true,  terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut, Is().EqualTo(1u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(3u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+        });
+
+        it("can be run from multiple roots", [&]() {
+          inner_down_sweep test_policy(2, outer_dag);
+
+          /*
+          //       0   1        ---- x0
+          // -   -/_\_/-\   -
+          //      2 3   |       ---- x1
+          //            |
+          //            5       ---- x2
+          //           / \
+          //           F T
+          */
+
+          inner_roots_t inner_roots(1024, 8);
+          const node::uid_t u0 = node::uid_t(0,0);
+          const node::uid_t u1 = node::uid_t(0,1);
+
+          inner_roots.push({{n2.uid()}, {}, {u0.with(false)}});
+          inner_roots.push({{n3.uid()}, {}, {u0.with(true)}});
+
+          inner_roots.push({{n2.uid()}, {}, {u1.with(false)}});
+          inner_roots.push({{n5.uid()}, {}, {u1.with(true)}});
+
+          const shared_levelized_file<arc> out =
+            nested_sweeping::inner::down(test_policy, outer_file, inner_roots, memory_available());
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True()); // From sorter
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(u0.with(false)), n2.uid() }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True()); // From sorter
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(u1.with(false)),  n2.uid() }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True()); // From sorter
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(u0.with(true)),  n3.uid() }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True()); // From sorter
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(u1.with(true)),   n5.uid() }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n3.uid(), true,  n5.uid() }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n2.uid(), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n2.uid(), true,  terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5.uid(), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5.uid(), true,  terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut, Is().EqualTo(2u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(3u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+        });
       });
 
       describe("inner::up(...)", [&outer_dag]() {
