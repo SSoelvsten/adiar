@@ -6,7 +6,56 @@
 
 go_bandit([]() {
   describe("adiar/internal/algorithms/nested_sweeping.h", []() {
-    describe("nested_sweeping:: _ ::decorators", []() {
+    // Outer PQ
+    using outer_test_pq_t = nested_sweeping::outer::up__pq_t<1, memory_mode_t::INTERNAL>;
+    /*
+    //       1         ---- x0
+    //      / \
+    //      F 2        ---- x1
+    //       / \
+    //       F 3       ---- x2
+    //        / \
+    //        F 4      ---- x3
+    //         / \
+    //         F 5     ---- x4
+    //          / \
+    //          F T
+    */
+
+    const ptr_uint64 terminal_F(false);
+    const ptr_uint64 terminal_T(true);
+
+    const ptr_uint64 outer_n1 = ptr_uint64(0,0);
+    const ptr_uint64 outer_n2 = ptr_uint64(1,0);
+    const ptr_uint64 outer_n3 = ptr_uint64(2,0);
+    const ptr_uint64 outer_n4 = ptr_uint64(3,0);
+    const ptr_uint64 outer_n5 = ptr_uint64(4,0);
+
+    shared_levelized_file<arc> outer_dag;
+
+    { // Garbage collect writer to free write-lock
+      arc_writer aw(outer_dag);
+
+      aw.push_internal({ outer_n1, true, outer_n2 });
+      aw.push_internal({ outer_n2, true, outer_n3 });
+      aw.push_internal({ outer_n3, true, outer_n4 });
+      aw.push_internal({ outer_n4, true, outer_n5 });
+
+      aw.push_terminal({ outer_n1, false, terminal_F });
+      aw.push_terminal({ outer_n2, false, terminal_F });
+      aw.push_terminal({ outer_n3, false, terminal_F });
+      aw.push_terminal({ outer_n4, false, terminal_F });
+      aw.push_terminal({ outer_n5, false, terminal_F });
+      aw.push_terminal({ outer_n5, true,  terminal_T });
+
+      aw.push(level_info(0,1u));
+      aw.push(level_info(1,1u));
+      aw.push(level_info(2,1u));
+      aw.push(level_info(3,1u));
+      aw.push(level_info(4,1u));
+    }
+
+    describe("nested_sweeping:: _ ::decorators", [&]() {
       describe("inner::roots_sorter", []() {
         it("can sort pushed 'requests_t' [cardinality = 2]", []() {
           using test_request_t = request_data<2, with_parent, 0, 1>;
@@ -252,7 +301,7 @@ go_bandit([]() {
         });
       });
 
-      describe("outer::up__pq_decorator", []() {
+      describe("outer::up__pq_decorator", [&]() {
         using test_request_t = request_data<2, with_parent, 0, 1>;
 
         using test_roots_sorter_t =
@@ -265,125 +314,78 @@ go_bandit([]() {
         using test_decorator =
           nested_sweeping::outer::up__pq_decorator<test_pq_t, test_roots_sorter_t>;
 
-        /*
-        //       1         ---- x0
-        //      / \
-        //      F 2        ---- x1
-        //       / \
-        //       F 3       ---- x2
-        //        / \
-        //        F 4      ---- x3
-        //         / \
-        //         F 5     ---- x4
-        //          / \
-        //          F T
-        */
-
-        const ptr_uint64 terminal_F(false);
-        const ptr_uint64 terminal_T(true);
-
-        const ptr_uint64 n1 = ptr_uint64(0,0);
-        const ptr_uint64 n2 = ptr_uint64(1,0);
-        const ptr_uint64 n3 = ptr_uint64(2,0);
-        const ptr_uint64 n4 = ptr_uint64(3,0);
-        const ptr_uint64 n5 = ptr_uint64(4,0);
-
-        shared_levelized_file<arc> dag;
-
-        { // Garbage collect writer to free write-lock
-          arc_writer aw(dag);
-
-          aw.push_internal({ n1, true, n2 });
-          aw.push_internal({ n2, true, n3 });
-          aw.push_internal({ n3, true, n4 });
-          aw.push_internal({ n4, true, n5 });
-
-          aw.push_terminal({ n1, false, terminal_F });
-          aw.push_terminal({ n2, false, terminal_F });
-          aw.push_terminal({ n3, false, terminal_F });
-          aw.push_terminal({ n4, false, terminal_F });
-          aw.push_terminal({ n5, false, terminal_F });
-          aw.push_terminal({ n5, true,  terminal_T });
-
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,1u));
-          aw.push(level_info(2,1u));
-          aw.push(level_info(3,1u));
-          aw.push(level_info(4,1u));
-        }
-
         it("forwards internal to PQ when below threshold", [&]() {
-          test_pq_t pq({dag}, memory_available(), 16);
+          test_pq_t pq({outer_dag}, memory_available(), 16);
           pq.setup_next_level(4u);
 
           test_roots_sorter_t sorter(1024, 16);
 
           test_decorator d(pq, sorter, 2);
 
-          d.push(arc(n4, false, n5));
+          d.push(arc(outer_n4, false, outer_n5));
 
           AssertThat(pq.size(), Is().EqualTo(1u));
           AssertThat(sorter.size(), Is().EqualTo(0u));
         });
 
         it("forwards internal to PQ when at threshold", [&]() {
-          test_pq_t pq({dag}, memory_available(), 16);
+          test_pq_t pq({outer_dag}, memory_available(), 16);
           pq.setup_next_level(4u);
 
           test_roots_sorter_t sorter(1024, 16);
 
           test_decorator d(pq, sorter, 2);
 
-          d.push(arc(n3, false, n5));
+          d.push(arc(outer_n3, false, outer_n5));
 
           AssertThat(pq.size(), Is().EqualTo(1u));
           AssertThat(sorter.size(), Is().EqualTo(0u));
         });
 
         it("forwards internal to Sorter when above threshold", [&]() {
-          test_pq_t pq({dag}, memory_available(), 16);
+          test_pq_t pq({outer_dag}, memory_available(), 16);
           pq.setup_next_level(4u);
 
           test_roots_sorter_t sorter(1024, 16);
 
           test_decorator d(pq, sorter, 2);
 
-          d.push(arc(n2, false, n5));
+          d.push(arc(outer_n2, false, outer_n5));
 
           AssertThat(pq.size(), Is().EqualTo(0u));
           AssertThat(sorter.size(), Is().EqualTo(1u));
         });
 
         it("forwards terminal to PQ even if at threshold", [&]() {
-          test_pq_t pq({dag}, memory_available(), 16);
+          test_pq_t pq({outer_dag}, memory_available(), 16);
           pq.setup_next_level(4u);
 
           test_roots_sorter_t sorter(1024, 16);
 
           test_decorator d(pq, sorter, 2);
 
-          d.push(arc(n3, false, terminal_F));
+          d.push(arc(outer_n3, false, terminal_F));
 
           AssertThat(pq.size(), Is().EqualTo(1u));
           AssertThat(sorter.size(), Is().EqualTo(0u));
         });
 
         it("forwards terminal to PQ even if above threshold", [&]() {
-          test_pq_t pq({dag}, memory_available(), 16);
+          test_pq_t pq({outer_dag}, memory_available(), 16);
           pq.setup_next_level(4u);
 
           test_roots_sorter_t sorter(1024, 16);
 
           test_decorator d(pq, sorter, 2);
 
-          d.push(arc(n2, false, terminal_T));
+          d.push(arc(outer_n2, false, terminal_T));
 
           AssertThat(pq.size(), Is().EqualTo(1u));
           AssertThat(sorter.size(), Is().EqualTo(0u));
         });
 
         it("forwards correctly with multiple requests", [&]() {
-          test_pq_t pq({dag}, memory_available(), 16);
+          test_pq_t pq({outer_dag}, memory_available(), 16);
           pq.setup_next_level(4u);
 
           test_roots_sorter_t sorter(1024, 16);
@@ -391,38 +393,38 @@ go_bandit([]() {
           test_decorator d(pq, sorter, 2);
 
           // internal below threshold
-          d.push(arc(n4, false, n5));
+          d.push(arc(outer_n4, false, outer_n5));
 
           AssertThat(pq.size(), Is().EqualTo(1u));
           AssertThat(sorter.size(), Is().EqualTo(0u));
 
           // terminal at threshold
-          d.push(arc(n3, false, terminal_F));
+          d.push(arc(outer_n3, false, terminal_F));
 
           AssertThat(pq.size(), Is().EqualTo(2u));
           AssertThat(sorter.size(), Is().EqualTo(0u));
 
           // internal at threshold
-          d.push(arc(n3, true, n5));
+          d.push(arc(outer_n3, true,  outer_n5));
 
           AssertThat(pq.size(), Is().EqualTo(3u));
           AssertThat(sorter.size(), Is().EqualTo(0u));
 
           // internal above threshold
-          d.push(arc(n2, false, n5));
+          d.push(arc(outer_n2, false, outer_n5));
 
           AssertThat(pq.size(), Is().EqualTo(3u));
           AssertThat(sorter.size(), Is().EqualTo(1u));
 
           // terminal above threshold
-          d.push(arc(n1, false, terminal_T));
+          d.push(arc(outer_n1, false, terminal_T));
 
           AssertThat(pq.size(), Is().EqualTo(4u));
           AssertThat(sorter.size(), Is().EqualTo(1u));
         });
 
         it("provides combined size (w and w/o terminals)", [&]() {
-          test_pq_t pq({dag}, memory_available(), 16);
+          test_pq_t pq({outer_dag}, memory_available(), 16);
           pq.setup_next_level(4u);
 
           test_roots_sorter_t sorter(1024, 16);
@@ -432,15 +434,15 @@ go_bandit([]() {
           AssertThat(d.empty(), Is().True());
 
           // internal below threshold
-          d.push(arc(n4, false, n5));
+          d.push(arc(outer_n4, false, outer_n5));
           // terminal at threshold
-          d.push(arc(n3, false, terminal_F));
+          d.push(arc(outer_n3, false, terminal_F));
           // internal at threshold
-          d.push(arc(n3, true, n5));
+          d.push(arc(outer_n3, true,  outer_n5));
           // internal above threshold
-          d.push(arc(n2, false, n5));
+          d.push(arc(outer_n2, false, outer_n5));
           // terminal above threshold
-          d.push(arc(n1, false, terminal_T));
+          d.push(arc(outer_n1, false, terminal_T));
 
           AssertThat(d.empty(), Is().False());
           AssertThat(d.size(), Is().EqualTo(5u));
@@ -450,16 +452,13 @@ go_bandit([]() {
         });
       });
 
-      describe("inner::down__pq_decorator", []() {
-        const ptr_uint64 terminal_F(false);
-        const ptr_uint64 terminal_T(true);
-
-        const uid_uint64 n1 = ptr_uint64(3,0);
-        const uid_uint64 n2 = ptr_uint64(3,1);
-        const uid_uint64 n3 = ptr_uint64(4,0);
-        const uid_uint64 n4 = ptr_uint64(4,1);
-        const uid_uint64 n5 = ptr_uint64(5,0);
-        const uid_uint64 n6 = ptr_uint64(5,1);
+      describe("inner::down__pq_decorator", [&terminal_F, &terminal_T]() {
+        const uid_uint64 inner_n1 = ptr_uint64(3,0);
+        const uid_uint64 inner_n2 = ptr_uint64(3,1);
+        const uid_uint64 inner_n3 = ptr_uint64(4,0);
+        const uid_uint64 inner_n4 = ptr_uint64(4,1);
+        const uid_uint64 inner_n5 = ptr_uint64(5,0);
+        const uid_uint64 inner_n6 = ptr_uint64(5,1);
 
         shared_levelized_file<node> dag;
 
@@ -476,12 +475,12 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           node_writer nw(dag);
 
-          nw << node(n6, terminal_F, terminal_T)
-             << node(n5, terminal_T, terminal_F)
-             << node(n4, terminal_T, n5)
-             << node(n3, terminal_F, terminal_T)
-             << node(n2, n4,         n6)
-             << node(n1, n3,         n4)
+          nw << node(inner_n6, terminal_F, terminal_T)
+             << node(inner_n5, terminal_T, terminal_F)
+             << node(inner_n4, terminal_T, inner_n5)
+             << node(inner_n3, terminal_F, terminal_T)
+             << node(inner_n2, inner_n4,   inner_n6)
+             << node(inner_n1, inner_n3,   inner_n4)
             ;
         }
 
@@ -492,9 +491,9 @@ go_bandit([]() {
                                                test_request_t,
                                                request_fst_lt<test_request_t>>;
 
-        const test_request_t root1({n1}, {}, {ptr_uint64(1,0, false)});
-        const test_request_t root2({n2}, {}, {ptr_uint64(1,0, true)});
-        const test_request_t root3({n6}, {}, {ptr_uint64(1,1, false)});
+        const test_request_t root1({inner_n1}, {}, {ptr_uint64(1,0, false)});
+        const test_request_t root2({inner_n2}, {}, {ptr_uint64(1,0, true)});
+        const test_request_t root3({inner_n6}, {}, {ptr_uint64(1,1, false)});
 
         /*
         //
@@ -548,7 +547,7 @@ go_bandit([]() {
         it("merges size of PQ and Sorter", [&]() {
           test_pq_t pq({dag}, memory_available(), 16, lpq_stats);
 
-          const test_request_t root4({n2}, {}, {ptr_uint64(1,2, false)});
+          const test_request_t root4({inner_n2}, {}, {ptr_uint64(1,2, false)});
           pq.push(root4);
 
           test_decorator dec(pq, sorter);
@@ -599,7 +598,7 @@ go_bandit([]() {
           test_pq_t pq({dag}, memory_available(), 16, lpq_stats);
 
           // Add new request to tie with sorter
-          const test_request_t root4({n2}, {}, {ptr_uint64(1,2, false)});
+          const test_request_t root4({inner_n2}, {}, {ptr_uint64(1,2, false)});
           pq.push(root4);
 
           test_decorator dec(pq, sorter);
@@ -640,7 +639,7 @@ go_bandit([]() {
           test_pq_t pq({dag}, memory_available(), 16, lpq_stats);
 
           // Add new request to tie with sorter
-          const test_request_t root4({n1}, {}, {ptr_uint64(1,2, false)});
+          const test_request_t root4({inner_n1}, {}, {ptr_uint64(1,2, false)});
           pq.push(root4);
 
           test_decorator dec(pq, sorter);
@@ -688,7 +687,7 @@ go_bandit([]() {
           test_pq_t pq({dag}, memory_available(), 16, lpq_stats);
 
           // Add new request to tie with sorter
-          const test_request_t root4({n1}, {}, {ptr_uint64(1,2, false)});
+          const test_request_t root4({inner_n1}, {}, {ptr_uint64(1,2, false)});
           pq.push(root4);
 
           test_decorator dec(pq, sorter);
@@ -740,7 +739,7 @@ go_bandit([]() {
         it("can top the same request from PQ multiple times", [&]() {
           test_pq_t pq({dag}, memory_available(), 16, lpq_stats);
 
-          const test_request_t root4({n1}, {}, {ptr_uint64(1,2, false)});
+          const test_request_t root4({inner_n1}, {}, {ptr_uint64(1,2, false)});
           pq.push(root4);
 
           test_decorator dec(pq, sorter);
@@ -814,7 +813,7 @@ go_bandit([]() {
           test_pq_t pq({dag}, memory_available(), 16, lpq_stats);
 
           // Add new request to tie with sorter
-          const test_request_t root4({n2}, {}, {ptr_uint64(1,2, false)});
+          const test_request_t root4({inner_n2}, {}, {ptr_uint64(1,2, false)});
           pq.push(root4);
 
           test_decorator dec(pq, sorter);
@@ -861,7 +860,7 @@ go_bandit([]() {
           test_pq_t pq({dag}, memory_available(), 16, lpq_stats);
 
           // Add new request to tie with sorter
-          const test_request_t root4({n1}, {}, {ptr_uint64(1,2, false)});
+          const test_request_t root4({inner_n1}, {}, {ptr_uint64(1,2, false)});
           pq.push(root4);
 
           test_decorator dec(pq, sorter);
@@ -915,7 +914,7 @@ go_bandit([]() {
           test_pq_t pq({dag}, memory_available(), 16, lpq_stats);
 
           // Add new request to tie with sorter
-          const test_request_t root4({n1}, {}, {ptr_uint64(1,2, false)});
+          const test_request_t root4({inner_n1}, {}, {ptr_uint64(1,2, false)});
           pq.push(root4);
 
           test_decorator dec(pq, sorter);
@@ -939,55 +938,7 @@ go_bandit([]() {
         });
       });
 
-      describe("inner::up__pq_decorator", []() {
-        // Outer PQ
-        using outer_test_pq_t = nested_sweeping::outer::up__pq_t<1, memory_mode_t::INTERNAL>;
-        /*
-        //       1         ---- x0
-        //      / \
-        //      F 2        ---- x1
-        //       / \
-        //       F 3       ---- x2
-        //        / \
-        //        F 4      ---- x3
-        //         / \
-        //         F 5     ---- x4
-        //          / \
-        //          F T
-        */
-
-        const ptr_uint64 terminal_F(false);
-        const ptr_uint64 terminal_T(true);
-
-        const ptr_uint64 n1 = ptr_uint64(0,0);
-        const ptr_uint64 n2 = ptr_uint64(1,0);
-        const ptr_uint64 n3 = ptr_uint64(2,0);
-        const ptr_uint64 n4 = ptr_uint64(3,0);
-        const ptr_uint64 n5 = ptr_uint64(4,0);
-
-        shared_levelized_file<arc> outer_dag;
-
-        { // Garbage collect writer to free write-lock
-          arc_writer aw(outer_dag);
-
-          aw.push_internal({ n1, true, n2 });
-          aw.push_internal({ n2, true, n3 });
-          aw.push_internal({ n3, true, n4 });
-          aw.push_internal({ n4, true, n5 });
-
-          aw.push_terminal({ n1, false, terminal_F });
-          aw.push_terminal({ n2, false, terminal_F });
-          aw.push_terminal({ n3, false, terminal_F });
-          aw.push_terminal({ n4, false, terminal_F });
-          aw.push_terminal({ n5, false, terminal_F });
-          aw.push_terminal({ n5, true,  terminal_T });
-
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,1u));
-          aw.push(level_info(2,1u));
-          aw.push(level_info(3,1u));
-          aw.push(level_info(4,1u));
-        }
+      describe("inner::up__pq_decorator", [&]() {
 
         // Inner PQ
         using inner_test_pq_t = nested_sweeping::inner::up__pq_t<1, memory_mode_t::INTERNAL>;
@@ -1007,13 +958,13 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(inner_dag);
 
-          aw.push_internal({ n3, true, n4 });
-          aw.push_internal({ n4, true, n5 });
+          aw.push_internal({ outer_n3, true, outer_n4 });
+          aw.push_internal({ outer_n4, true, outer_n5 });
 
-          aw.push_terminal({ n3, false, terminal_F });
-          aw.push_terminal({ n4, false, terminal_F });
-          aw.push_terminal({ n5, false, terminal_F });
-          aw.push_terminal({ n5, true,  terminal_T });
+          aw.push_terminal({ outer_n3, false, terminal_F });
+          aw.push_terminal({ outer_n4, false, terminal_F });
+          aw.push_terminal({ outer_n5, false, terminal_F });
+          aw.push_terminal({ outer_n5, true,  terminal_T });
 
           aw.push(level_info(2,1u));
           aw.push(level_info(3,1u));
@@ -1034,7 +985,7 @@ go_bandit([]() {
           AssertThat(outer_pq.size(), Is().EqualTo(0u));
           AssertThat(inner_pq.size(), Is().EqualTo(0u));
 
-          dec.push(arc(n4, false, terminal_F));
+          dec.push(arc(outer_n4, false, terminal_F));
 
           AssertThat(outer_pq.size(), Is().EqualTo(0u));
           AssertThat(inner_pq.size(), Is().EqualTo(1u));
@@ -1049,7 +1000,7 @@ go_bandit([]() {
           AssertThat(outer_pq.size(), Is().EqualTo(0u));
           AssertThat(inner_pq.size(), Is().EqualTo(0u));
 
-          dec.push(arc(n4, true, n5));
+          dec.push(arc(outer_n4, true, outer_n5));
 
           AssertThat(outer_pq.size(), Is().EqualTo(0u));
           AssertThat(inner_pq.size(), Is().EqualTo(1u));
@@ -1064,7 +1015,7 @@ go_bandit([]() {
           AssertThat(outer_pq.size(), Is().EqualTo(0u));
           AssertThat(inner_pq.size(), Is().EqualTo(0u));
 
-          dec.push(arc(flag(with_out_idx(n4, false)), terminal_F));
+          dec.push(arc(flag(with_out_idx(outer_n4, false)), terminal_F));
 
           AssertThat(outer_pq.size(), Is().EqualTo(1u));
           AssertThat(inner_pq.size(), Is().EqualTo(0u));
@@ -1079,7 +1030,7 @@ go_bandit([]() {
           AssertThat(outer_pq.size(), Is().EqualTo(0u));
           AssertThat(inner_pq.size(), Is().EqualTo(0u));
 
-          dec.push(arc(flag(with_out_idx(n4, true)), n5));
+          dec.push(arc(flag(with_out_idx(outer_n4, true)), outer_n5));
 
           AssertThat(outer_pq.size(), Is().EqualTo(1u));
           AssertThat(inner_pq.size(), Is().EqualTo(0u));
@@ -1090,13 +1041,13 @@ go_bandit([]() {
           inner_test_pq_t inner_pq({inner_dag}, pq_mem, 16);
 
           test_decorator dec(inner_pq, outer_pq);
-          dec.push(arc(flag(with_out_idx(n4, true)), n5));
+          dec.push(arc(flag(with_out_idx(outer_n4, true)), outer_n5));
 
           AssertThat(outer_pq.size(), Is().EqualTo(1u));
           outer_pq.setup_next_level();
 
           AssertThat(outer_pq.can_pull(), Is().True());
-          AssertThat(outer_pq.pull(), Is().EqualTo(arc(n4, true, n5)));
+          AssertThat(outer_pq.pull(), Is().EqualTo(arc(outer_n4, true, outer_n5)));
         });
 
         it("sets up next level only based on Inner PQ", [&]() {
@@ -1105,9 +1056,9 @@ go_bandit([]() {
 
           test_decorator dec(inner_pq, outer_pq);
 
-          dec.push(arc(with_out_idx(n3, false),      terminal_F)); // inner (x2)
-          dec.push(arc(flag(with_out_idx(n4, true)), n5));         // outer (x3)
-          dec.push(arc(with_out_idx(n3, true),       n5));         // inner (x2)
+          dec.push(arc(with_out_idx(outer_n3, false),      terminal_F)); // inner (x2)
+          dec.push(arc(flag(with_out_idx(outer_n4, true)), outer_n5));   // outer (x3)
+          dec.push(arc(with_out_idx(outer_n3, true),       outer_n5));   // inner (x2)
 
           dec.setup_next_level();
 
@@ -1121,9 +1072,9 @@ go_bandit([]() {
 
           test_decorator dec(inner_pq, outer_pq);
 
-          dec.push(arc(with_out_idx(n4, false),      terminal_F)); // inner (x3)
-          dec.push(arc(flag(with_out_idx(n4, true)), n5));         // outer (x3)
-          dec.push(arc(with_out_idx(n4, true),       n5));         // inner (x3)
+          dec.push(arc(with_out_idx(outer_n4, false),      terminal_F)); // inner (x3)
+          dec.push(arc(flag(with_out_idx(outer_n4, true)), outer_n5));   // outer (x3)
+          dec.push(arc(with_out_idx(outer_n4, true),       outer_n5));   // inner (x3)
 
           AssertThat(outer_pq.size(), Is().EqualTo(1u));
 
@@ -1134,24 +1085,24 @@ go_bandit([]() {
 
           AssertThat(dec.empty_level(), Is().False());
           AssertThat(dec.can_pull(), Is().True());
-          AssertThat(dec.top(),  Is().EqualTo(arc(n4, true, n5)));
-          AssertThat(dec.pull(), Is().EqualTo(arc(n4, true, n5)));
+          AssertThat(dec.top(),  Is().EqualTo(arc(outer_n4, true, outer_n5)));
+          AssertThat(dec.pull(), Is().EqualTo(arc(outer_n4, true, outer_n5)));
 
           AssertThat(dec.size(), Is().EqualTo(2u));
           AssertThat(dec.empty(), Is().False());
 
           AssertThat(dec.empty_level(), Is().False());
           AssertThat(dec.can_pull(), Is().True());
-          AssertThat(dec.top(),  Is().EqualTo(arc(n4, false, terminal_F)));
-          AssertThat(dec.pull(), Is().EqualTo(arc(n4, false, terminal_F)));
+          AssertThat(dec.top(),  Is().EqualTo(arc(outer_n4, false, terminal_F)));
+          AssertThat(dec.pull(), Is().EqualTo(arc(outer_n4, false, terminal_F)));
 
           AssertThat(dec.empty_level(), Is().True());
           AssertThat(dec.can_pull(), Is().False());
           AssertThat(dec.size(), Is().EqualTo(1u));
           AssertThat(dec.empty(), Is().True());
 
-          dec.push(arc(flag(with_out_idx(n3, false)), terminal_F)); // outer
-          dec.push(arc(with_out_idx(n3, true),        n5));         // inner
+          dec.push(arc(flag(with_out_idx(outer_n3, false)), terminal_F)); // outer
+          dec.push(arc(with_out_idx(outer_n3, true),        outer_n5));   // inner
 
           AssertThat(dec.empty_level(), Is().True());
           AssertThat(dec.size(), Is().EqualTo(3u));
@@ -1164,7 +1115,7 @@ go_bandit([]() {
 
           test_decorator dec(inner_pq, outer_pq);
 
-          dec.push(arc(flag(with_out_idx(n4, true)), n5));         // outer (x3)
+          dec.push(arc(flag(with_out_idx(outer_n4, true)), outer_n5));  // outer (x3)
 
           AssertThat(dec.size(), Is().EqualTo(1u));
           AssertThat(dec.empty(), Is().True());
@@ -1172,61 +1123,14 @@ go_bandit([]() {
       });
     });
 
-    describe("nested_sweeping:: _ ::sweeps", []() {
+    describe("nested_sweeping:: _ ::sweeps", [&outer_dag]() {
       describe("inner::down(...)", []() {
         // TODO: test with mock GC policy?
       });
 
-      describe("inner::up(...)", []() {
+      describe("inner::up(...)", [&outer_dag]() {
         using inner_up_sweep = nested_sweeping::inner::up__policy_t<bdd_policy>;
         using outer_pq_t     = nested_sweeping::outer::up__pq_t<1, memory_mode_t::INTERNAL>;
-
-        /*
-        //       1         ---- x0
-        //      / \
-        //      F 2        ---- x1
-        //       / \
-        //       F 3       ---- x2
-        //        / \
-        //        F 4      ---- x3
-        //         / \
-        //         F 5     ---- x4
-        //          / \
-        //          F T
-        */
-
-        shared_levelized_file<arc> outer_dag;
-
-        {
-          const ptr_uint64 terminal_F(false);
-          const ptr_uint64 terminal_T(true);
-
-          const ptr_uint64 n1 = ptr_uint64(0,0);
-          const ptr_uint64 n2 = ptr_uint64(1,0);
-          const ptr_uint64 n3 = ptr_uint64(2,0);
-          const ptr_uint64 n4 = ptr_uint64(3,0);
-          const ptr_uint64 n5 = ptr_uint64(4,0);
-
-          arc_writer aw(outer_dag);
-
-          aw.push_internal({ n1, true, n2 });
-          aw.push_internal({ n2, true, n3 });
-          aw.push_internal({ n3, true, n4 });
-          aw.push_internal({ n4, true, n5 });
-
-          aw.push_terminal({ n1, false, terminal_F });
-          aw.push_terminal({ n2, false, terminal_F });
-          aw.push_terminal({ n3, false, terminal_F });
-          aw.push_terminal({ n4, false, terminal_F });
-          aw.push_terminal({ n5, false, terminal_F });
-          aw.push_terminal({ n5, true,  terminal_T });
-
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,1u));
-          aw.push(level_info(2,1u));
-          aw.push(level_info(3,1u));
-          aw.push(level_info(4,1u));
-        }
 
         it("reduces forest and pushes roots back out", [&outer_dag]() {
           /* input
