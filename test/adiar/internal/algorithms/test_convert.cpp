@@ -1,6 +1,8 @@
 #include "../../../test.h"
 
 go_bandit([]() {
+  // TODO: tests are missing cut sizes
+
   describe("adiar/internal/algorithms/convert.h", []() {
     adiar::shared_file<node::label_t> dom_012;
     {
