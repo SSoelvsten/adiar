@@ -1330,6 +1330,10 @@ go_bandit([]() {
 
           AssertThat(out->number_of_terminals[false], Is().EqualTo(3u));
           AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+
+          // Side effects on `inner_roots`.
+          AssertThat(inner_roots.size(),  Is().EqualTo(0u));
+          AssertThat(inner_roots.can_push(),  Is().True());
         });
 
         it("can be run from multiple roots", [&]() {
@@ -1408,6 +1412,10 @@ go_bandit([]() {
 
           AssertThat(out->number_of_terminals[false], Is().EqualTo(3u));
           AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+
+          // Side effects on `inner_roots`.
+          AssertThat(inner_roots.size(),  Is().EqualTo(0u));
+          AssertThat(inner_roots.can_push(),  Is().True());
         });
       });
 

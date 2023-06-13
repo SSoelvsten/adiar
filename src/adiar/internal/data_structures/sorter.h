@@ -91,10 +91,14 @@ namespace adiar::internal
     }
 
   public:
+    bool can_push()
+    {
+      return _front_idx == 0u && _array.size() > _size;
+    }
+
     void push(const elem_t& t)
     {
-      adiar_precondition(_array.size() > _size);
-      adiar_precondition(_front_idx == 0u);
+      adiar_precondition(can_push());
       _array[_size++] = t;
     }
 
@@ -298,6 +302,9 @@ namespace adiar::internal
       _sorter.set_available_memory(phase1, phase2, phase3);
       _sorter.begin();
     }
+
+    bool can_push();
+    // TODO: Update TPIE merge sorter to access the current phase Enum.
 
     void push(const elem_t& e)
     {

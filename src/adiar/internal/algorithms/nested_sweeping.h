@@ -257,6 +257,14 @@ namespace adiar::internal
 
       public:
         ////////////////////////////////////////////////////////////////////////
+        /// \brief Whether a request can be pushed.
+        ////////////////////////////////////////////////////////////////////////
+        bool can_push()
+        {
+          return _sorter_ptr->can_push();
+        }
+
+        ////////////////////////////////////////////////////////////////////////
         /// \brief Push request (marked as from outer sweep).
         ////////////////////////////////////////////////////////////////////////
         void push(const elem_t& e)
@@ -521,6 +529,9 @@ namespace adiar::internal
       //////////////////////////////////////////////////////////////////////////
       /// \brief Start the nested sweep given initial recursions in
       ///        `inner_roots` on DAG in `outer_file`.
+      ///
+      /// \par Side Effects:
+      /// Sorts and resets the given `inner_roots` sorter.
       //////////////////////////////////////////////////////////////////////////
       template<typename inner_down_sweep, typename inner_roots_t>
       typename inner_down_sweep::shared_arcs_t
@@ -541,7 +552,11 @@ namespace adiar::internal
         //
         // To avoid having to do the boiler-plate yourself, use
         // `down__sweep_switch` below (assuming your algorithm fits).
-        return inner_impl.sweep(outer_file, inner_roots, inner_memory);
+        const typename inner_down_sweep::shared_arcs_t res =
+          inner_impl.sweep(outer_file, inner_roots, inner_memory);
+
+        inner_roots.reset();
+        return res;
       }
 
       //////////////////////////////////////////////////////////////////////////
