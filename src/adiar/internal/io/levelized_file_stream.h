@@ -50,6 +50,10 @@ namespace adiar::internal
     { }
 
     ////////////////////////////////////////////////////////////////////////////
+    levelized_file_stream(const levelized_file_stream<elem_t, reverse> &) = delete;
+    levelized_file_stream(levelized_file_stream<elem_t, reverse> &&) = delete;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a levelized file.
     ////////////////////////////////////////////////////////////////////////////
     levelized_file_stream(const levelized_file<elem_t> &lf,
@@ -181,6 +185,10 @@ namespace adiar::internal
     /// \brief Construct unattached to a levelized file.
     ////////////////////////////////////////////////////////////////////////////
     level_info_stream() = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    level_info_stream(const level_info_stream<REVERSE> &) = delete;
+    level_info_stream(level_info_stream<REVERSE> &&) = delete;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a file<level_info>.
