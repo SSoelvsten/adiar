@@ -24,20 +24,6 @@ namespace adiar::internal
     /// Struct to hold statistics
     extern stats_t::nested_sweeping_t stats;
 
-    //////////////////////////////////////////////////////////////////////////
-    /// \brief Return type for PQ size computations.
-    //////////////////////////////////////////////////////////////////////////
-    struct pq_type_results
-    {
-    public:
-      enum pq_choice_t { INTERNAL_PQ, INTERNAL_BUCKETED, EXTERNAL_BUCKETED };
-
-    public:
-      const pq_choice_t pq_choice;
-      const size_t      max_pq_memory;
-      const cut_size_t  max_pq_size;
-    };
-
     namespace outer
     {
       //////////////////////////////////////////////////////////////////////////
