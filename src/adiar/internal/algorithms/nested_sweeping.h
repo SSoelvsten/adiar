@@ -167,6 +167,46 @@ namespace adiar::internal
         bool empty() const
         { return size() == 0u; }
       };
+
+      //////////////////////////////////////////////////////////////////////////
+      /// \brief Class to obtain from the Inner Down Sweep what is the next
+      ///        level (ahead of the current one being processed).
+      //////////////////////////////////////////////////////////////////////////
+      template<typename inner_down_sweep>
+      class inner_iterator
+      {
+      public:
+        using level_t = typename inner_down_sweep::ptr_t::label_t;
+
+      private:
+        level_info_stream<>     _lis;
+        const inner_down_sweep &_inner_impl;
+
+      public:
+        inner_iterator(const typename inner_down_sweep::shared_arcs_t &dag,
+                       const inner_down_sweep &inner_impl)
+          : _lis(dag)
+          , _inner_impl(inner_impl)
+        { }
+
+      public:
+        static constexpr level_t NONE = static_cast<level_t>(-1);
+
+        ////////////////////////////////////////////////////////////////////////
+        /// \brief Obtain the next level to do an inner sweep to pull.
+        ///
+        /// \returns The next inner level that should be recursed on (or `NONE`
+        ///          if none are left)
+        ////////////////////////////////////////////////////////////////////////
+        level_t next_inner()
+        {
+          while (_lis.can_pull()) {
+            const level_t l = _lis.pull().level();
+            if (_inner_impl.has_sweep(l)) { return l; }
+          }
+          return NONE;
+        }
+      };
     } // namespace outer
 
     namespace inner

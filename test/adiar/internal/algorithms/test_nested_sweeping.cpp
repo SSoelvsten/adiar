@@ -17,7 +17,6 @@ class test_gc_sweep : public bdd_policy
 {
 private:
   const size_t _nesting_modulo;
-  const level_info_stream<> _lis;
 
 public:
   using request_t = request_data<1, with_parent, 0, 1>;
@@ -27,9 +26,8 @@ public:
                                              LOOK_AHEAD, mem_mode>;
 
 public:
-  test_gc_sweep(const size_t nm, const shared_levelized_file<arc> &dag)
+  test_gc_sweep(const size_t nm)
     : _nesting_modulo(nm)
-    , _lis(dag)
   { }
 
 public:
@@ -108,6 +106,14 @@ private:
   }
 
 public:
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether it wants to sweep on some level.
+  //////////////////////////////////////////////////////////////////////////////
+  bool has_sweep(node::ptr_t::label_t l) const
+  {
+    return (l % _nesting_modulo) == 0u;
+  }
+
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Pick PQ type and Run Sweep.
   //////////////////////////////////////////////////////////////////////////////
@@ -1055,6 +1061,137 @@ go_bandit([]() {
         });
       });
 
+      describe("outer::inner_iterator", [&terminal_F, &terminal_T]() {
+        using test_iter_t = nested_sweeping::outer::inner_iterator<test_gc_sweep>;
+
+        it("provides {NONE} for {3,2,1} % 4", [&]() {
+          /*
+          //
+          //         1       ---- x1
+          //        / \
+          //        F 2      ---- x2
+          //         / \
+          //         F 3     ---- x3
+          //          / \
+          //          F T
+          */
+          const node::ptr_t n1(1,0);
+          const node::ptr_t n2(2,0);
+          const node::ptr_t n3(3,0);
+
+          shared_levelized_file<arc> dag;
+
+          { // Garbage collect writer to free write-lock
+            arc_writer aw(dag);
+
+            aw.push_internal({ n1, true, n2 });
+            aw.push_internal({ n2, true, n3 });
+
+            aw.push_terminal({ n1, false, terminal_F });
+            aw.push_terminal({ n2, false, terminal_F });
+            aw.push_terminal({ n3, false, terminal_F });
+            aw.push_terminal({ n3, true,  terminal_T });
+
+            aw.push(level_info(1,1u));
+            aw.push(level_info(2,1u));
+            aw.push(level_info(3,1u));
+          }
+
+          test_gc_sweep inner_impl(4);
+          test_iter_t inner_iter(dag, inner_impl);
+
+          AssertThat(inner_iter.next_inner(), Is().EqualTo(test_iter_t::NONE));
+        });
+
+        it("provides {2, NONE} for {3,2,1} % 2", [&]() {
+          /*
+          //
+          //         1       ---- x1
+          //        / \
+          //        F 2      ---- x2
+          //         / \
+          //         F 3     ---- x3
+          //          / \
+          //          F T
+          */
+          const node::ptr_t n1(1,0);
+          const node::ptr_t n2(2,0);
+          const node::ptr_t n3(3,0);
+
+          shared_levelized_file<arc> dag;
+
+          { // Garbage collect writer to free write-lock
+            arc_writer aw(dag);
+
+            aw.push_internal({ n1, true, n2 });
+            aw.push_internal({ n2, true, n3 });
+
+            aw.push_terminal({ n1, false, terminal_F });
+            aw.push_terminal({ n2, false, terminal_F });
+            aw.push_terminal({ n3, false, terminal_F });
+            aw.push_terminal({ n3, true,  terminal_T });
+
+            aw.push(level_info(1,1u));
+            aw.push(level_info(2,1u));
+            aw.push(level_info(3,1u));
+          }
+
+          test_gc_sweep inner_impl(2);
+          test_iter_t inner_iter(dag, inner_impl);
+
+          AssertThat(inner_iter.next_inner(), Is().EqualTo(2u));
+          AssertThat(inner_iter.next_inner(), Is().EqualTo(test_iter_t::NONE));
+        });
+
+        it("provides {4, 2, 0, NONE} for {4,3,2,1} % 2", [&]() {
+          /*
+          //
+          //         1       ---- x0
+          //        / \
+          //        F 2      ---- x2
+          //         / \
+          //         F 3     ---- x3
+          //          / \
+          //          F 4    ---- x4
+          //           / \
+          //           F T
+          */
+          const node::ptr_t n1(0,0);
+          const node::ptr_t n2(2,0);
+          const node::ptr_t n3(3,0);
+          const node::ptr_t n4(4,0);
+
+          shared_levelized_file<arc> dag;
+
+          { // Garbage collect writer to free write-lock
+            arc_writer aw(dag);
+
+            aw.push_internal({ n1, true, n2 });
+            aw.push_internal({ n2, true, n3 });
+            aw.push_internal({ n3, true, n4 });
+
+            aw.push_terminal({ n1, false, terminal_F });
+            aw.push_terminal({ n2, false, terminal_F });
+            aw.push_terminal({ n3, false, terminal_F });
+            aw.push_terminal({ n4, false, terminal_F });
+            aw.push_terminal({ n4, true,  terminal_T });
+
+            aw.push(level_info(0,1u));
+            aw.push(level_info(2,1u));
+            aw.push(level_info(3,1u));
+            aw.push(level_info(4,1u));
+          }
+
+          test_gc_sweep inner_impl(2);
+          test_iter_t inner_iter(dag, inner_impl);
+
+          AssertThat(inner_iter.next_inner(), Is().EqualTo(4u));
+          AssertThat(inner_iter.next_inner(), Is().EqualTo(2u));
+          AssertThat(inner_iter.next_inner(), Is().EqualTo(0u));
+          AssertThat(inner_iter.next_inner(), Is().EqualTo(test_iter_t::NONE));
+        });
+      });
+
       describe("inner::up__pq_decorator", [&]() {
 
         // Inner PQ
@@ -1270,7 +1407,7 @@ go_bandit([]() {
         }
 
         it("can be run from a single root", [&]() {
-          inner_down_sweep test_policy(2, outer_dag);
+          inner_down_sweep test_policy(2);
 
           /*
           //         _1_         ---- x0
@@ -1337,7 +1474,7 @@ go_bandit([]() {
         });
 
         it("can be run from multiple roots", [&]() {
-          inner_down_sweep test_policy(2, outer_dag);
+          inner_down_sweep test_policy(2);
 
           /*
           //       0   1        ---- x0
