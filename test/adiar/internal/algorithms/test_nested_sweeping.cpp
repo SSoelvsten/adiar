@@ -179,12 +179,12 @@ go_bandit([]() {
     }
 
     describe("nested_sweeping:: _ ::decorators", [&]() {
-      describe("inner::roots_sorter", []() {
+      describe("outer::roots_sorter", []() {
         it("can sort pushed 'requests_t' [cardinality = 2]", []() {
           using test_request_t = request_data<2, with_parent, 0, 1>;
 
           using test_roots_sorter_t =
-            nested_sweeping::inner::roots_sorter<memory_mode_t::INTERNAL,
+            nested_sweeping::outer::roots_sorter<memory_mode_t::INTERNAL,
                                                  test_request_t,
                                                  request_fst_lt<test_request_t>>;
 
@@ -217,7 +217,7 @@ go_bandit([]() {
           using test_request_t = request_data<1, with_parent, 0, 1>;
 
           using test_roots_sorter_t =
-            nested_sweeping::inner::roots_sorter<memory_mode_t::INTERNAL,
+            nested_sweeping::outer::roots_sorter<memory_mode_t::INTERNAL,
                                                  test_request_t,
                                                  request_fst_lt<test_request_t>>;
 
@@ -254,7 +254,7 @@ go_bandit([]() {
           using test_request_t = request_data<2, with_parent, 0, 1>;
 
           using test_roots_sorter_t =
-            nested_sweeping::inner::roots_sorter<memory_mode_t::INTERNAL,
+            nested_sweeping::outer::roots_sorter<memory_mode_t::INTERNAL,
                                                  test_request_t,
                                                  request_fst_lt<test_request_t>>;
 
@@ -291,7 +291,7 @@ go_bandit([]() {
           using test_request_t = request_data<2, with_parent, 0, 1>;
 
           using test_roots_sorter_t =
-            nested_sweeping::inner::roots_sorter<memory_mode_t::INTERNAL,
+            nested_sweeping::outer::roots_sorter<memory_mode_t::INTERNAL,
                                                  test_request_t,
                                                  request_fst_lt<test_request_t>>;
 
@@ -342,7 +342,7 @@ go_bandit([]() {
           using test_request_t = request_data<2, with_parent, 0, 1>;
 
           using test_roots_sorter_t =
-            nested_sweeping::inner::roots_sorter<memory_mode_t::INTERNAL,
+            nested_sweeping::outer::roots_sorter<memory_mode_t::INTERNAL,
                                                  test_request_t,
                                                  request_fst_lt<test_request_t>>;
 
@@ -402,7 +402,7 @@ go_bandit([]() {
           using test_request_t = request_data<2, with_parent, 0, 1>;
 
           using test_roots_sorter_t =
-            nested_sweeping::inner::roots_sorter<memory_mode_t::INTERNAL,
+            nested_sweeping::outer::roots_sorter<memory_mode_t::INTERNAL,
                                                  test_request_t,
                                                  request_fst_lt<test_request_t>>;
 
@@ -428,7 +428,7 @@ go_bandit([]() {
         using test_request_t = request_data<2, with_parent, 0, 1>;
 
         using test_roots_sorter_t =
-          nested_sweeping::inner::roots_sorter<memory_mode_t::INTERNAL,
+          nested_sweeping::outer::roots_sorter<memory_mode_t::INTERNAL,
                                                test_request_t,
                                                request_fst_lt<test_request_t>>;
 
@@ -610,7 +610,7 @@ go_bandit([]() {
         using test_request_t = request_data<1, with_parent, 0, 1>;
 
         using test_roots_sorter_t =
-          nested_sweeping::inner::roots_sorter<memory_mode_t::INTERNAL,
+          nested_sweeping::outer::roots_sorter<memory_mode_t::INTERNAL,
                                                test_request_t,
                                                request_fst_lt<test_request_t>>;
 
@@ -1381,7 +1381,7 @@ go_bandit([]() {
       describe("inner::down(...)", [&]() {
         using inner_down_sweep = test_gc_sweep;
         using inner_roots_t =
-          nested_sweeping::inner::roots_sorter<memory_mode_t::INTERNAL,
+          nested_sweeping::outer::roots_sorter<memory_mode_t::INTERNAL,
                                                inner_down_sweep::request_t,
                                                request_fst_lt<inner_down_sweep::request_t>>;
 
