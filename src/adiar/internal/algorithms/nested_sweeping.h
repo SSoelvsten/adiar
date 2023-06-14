@@ -27,191 +27,6 @@ namespace adiar::internal
     namespace outer
     {
       //////////////////////////////////////////////////////////////////////////
-      /// \brief Default priority queue for the Outer Up Sweep.
-      //////////////////////////////////////////////////////////////////////////
-      template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
-      using up__pq_t = reduce_priority_queue<LOOK_AHEAD, mem_mode>;
-
-      //////////////////////////////////////////////////////////////////////////
-      /// \brief Default policy for the Inner Up Sweep.
-      //////////////////////////////////////////////////////////////////////////
-      template<typename dd_policy>
-      class up__policy_t : public dd_policy
-      {
-      public:
-        template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
-        using pq_t = up__pq_t<LOOK_AHEAD, mem_mode>;
-      };
-
-      //////////////////////////////////////////////////////////////////////////
-      /// \brief Decorator for the Reduce priority queue that either forwards
-      ///        to itself or to a sorter, depending on the level of the source.
-      ///
-      /// \details This is to be used in the *outer* sweep when forwarding
-      ///          information to a level above the current one.
-      ///
-      /// \sa pq_t, levelized_priority_queue, nested_sweep
-      //////////////////////////////////////////////////////////////////////////
-      template<typename outer_pq_t, typename inner_roots_t>
-      class up__pq_decorator
-      {
-      public:
-        ////////////////////////////////////////////////////////////////////////////
-        /// \brief Type of the elements.
-        ////////////////////////////////////////////////////////////////////////////
-        using elem_t = typename outer_pq_t::elem_t;
-
-        ////////////////////////////////////////////////////////////////////////////
-        /// \brief Type of the element comparator.
-        ////////////////////////////////////////////////////////////////////////////
-        using elem_comp_t = typename outer_pq_t::elem_comp_t;
-
-        ////////////////////////////////////////////////////////////////////////////
-        /// \brief Number of buckets.
-        ////////////////////////////////////////////////////////////////////////////
-        static constexpr memory_mode_t mem_mode = outer_pq_t::memory_mode;
-
-      private:
-        ////////////////////////////////////////////////////////////////////////
-        /// \brief Reference to the outer sweep's (levelized) priority queue.
-        ////////////////////////////////////////////////////////////////////////
-        // TODO (optimisation): public inheritance?
-        outer_pq_t &_outer_pq;
-
-        ////////////////////////////////////////////////////////////////////////
-        /// \brief Reference to the sorter in the outer sweep that contains the
-        ///        root requests generated for the next inner sweep.
-        ////////////////////////////////////////////////////////////////////////
-        inner_roots_t &_inner_roots;
-
-        ////////////////////////////////////////////////////////////////////////
-        /// \brief Type of a level.
-        ////////////////////////////////////////////////////////////////////////
-        using level_t = typename elem_t::ptr_t::label_t;
-
-        ////////////////////////////////////////////////////////////////////////
-        /// \brief The level of the next inner sweep;
-        ////////////////////////////////////////////////////////////////////////
-        // TODO: turn into signed value to allow using decorator above last
-        //       legal value of '_next_inner' (abusing negative numbers).
-        const level_t _next_inner;
-
-      public:
-        ////////////////////////////////////////////////////////////////////////
-        /// \brief Instantiate decorator.
-        ////////////////////////////////////////////////////////////////////////
-        up__pq_decorator(outer_pq_t &outer_pq,
-                         inner_roots_t &inner_roots,
-                         const level_t next_inner)
-          : _outer_pq(outer_pq)
-          , _inner_roots(inner_roots)
-          , _next_inner(next_inner)
-        { }
-
-      public:
-        ////////////////////////////////////////////////////////////////////////
-        /// \brief Number of terminals (of each type) placed within the priority
-        ///        queue.
-        ////////////////////////////////////////////////////////////////////////
-        size_t terminals(const bool terminal_value) const
-        { return _outer_pq.terminals(terminal_value); }
-
-        ////////////////////////////////////////////////////////////////////////
-        /// \brief Numer of elements in both the priority queue and the sorter.
-        ////////////////////////////////////////////////////////////////////////
-        size_t size() const
-        { return _outer_pq.size() + _inner_roots.size(); }
-
-        ////////////////////////////////////////////////////////////////////////
-        /// \brief Total number of arcs (across all levels) ignoring terminals.
-        ////////////////////////////////////////////////////////////////////////
-        size_t size_without_terminals() const
-        { return size() - terminals(false) - terminals(true); }
-
-        ////////////////////////////////////////////////////////////////////////
-        /// \brief Whether there are more elements to pull for this level.
-        ////////////////////////////////////////////////////////////////////////
-        bool can_pull() const
-        { return _outer_pq.can_pull(); }
-
-        ////////////////////////////////////////////////////////////////////////
-        /// \brief Obtain and remove the next element from this level.
-        ////////////////////////////////////////////////////////////////////////
-        reduce_arc pull()
-        { return _outer_pq.pull(); }
-
-        ////////////////////////////////////////////////////////////////////////
-        /// \brief Remove the top arc on the current level.
-        ////////////////////////////////////////////////////////////////////////
-        void pop()
-        { _outer_pq.pull(); }
-
-        ////////////////////////////////////////////////////////////////////////
-        /// \brief Adds an element to the priority queue or the sorter,
-        ///        depending on the level. Terminals always stay in the priority
-        ///        queue
-        ////////////////////////////////////////////////////////////////////////
-        void push(const reduce_arc &a)
-        {
-          // TODO: use outer_pq::level_comp_t instead of hardcoding '<'
-          if (a.source().label() < _next_inner && !a.target().is_terminal()) {
-            _inner_roots.push(a);
-          } else {
-            _outer_pq.push(a);
-          }
-        }
-
-        ////////////////////////////////////////////////////////////////////////
-        /// \brief Whether the priority queue and the sorter are empty.
-        ////////////////////////////////////////////////////////////////////////
-        bool empty() const
-        { return size() == 0u; }
-      };
-
-      //////////////////////////////////////////////////////////////////////////
-      /// \brief Class to obtain from the Inner Down Sweep what is the next
-      ///        level (ahead of the current one being processed).
-      //////////////////////////////////////////////////////////////////////////
-      template<typename inner_down_sweep>
-      class inner_iterator
-      {
-      public:
-        using level_t = typename inner_down_sweep::ptr_t::label_t;
-
-      private:
-        level_info_stream<>     _lis;
-        const inner_down_sweep &_inner_impl;
-
-      public:
-        inner_iterator(const typename inner_down_sweep::shared_arcs_t &dag,
-                       const inner_down_sweep &inner_impl)
-          : _lis(dag)
-          , _inner_impl(inner_impl)
-        { }
-
-      public:
-        static constexpr level_t NONE = static_cast<level_t>(-1);
-
-        ////////////////////////////////////////////////////////////////////////
-        /// \brief Obtain the next level to do an inner sweep to pull.
-        ///
-        /// \returns The next inner level that should be recursed on (or `NONE`
-        ///          if none are left)
-        ////////////////////////////////////////////////////////////////////////
-        level_t next_inner()
-        {
-          while (_lis.can_pull()) {
-            const level_t l = _lis.pull().level();
-            if (_inner_impl.has_sweep(l)) { return l; }
-          }
-          return NONE;
-        }
-      };
-    } // namespace outer
-
-    namespace inner
-    {
-      //////////////////////////////////////////////////////////////////////////
       /// \brief Sorter for root requests to inner sweep
       ///
       /// \details This is to be used as the bridge from the *outer* bottom-up
@@ -225,27 +40,29 @@ namespace adiar::internal
       class roots_sorter
       {
       public:
-        ////////////////////////////////////////////////////////////////////////////
+        static constexpr size_t DATA_STRUCTURES = 1u;
+
+        ////////////////////////////////////////////////////////////////////////
         /// \brief Type of the elements.
-        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////
         using elem_t = element_t;
 
         static_assert(elem_t::inputs == 1 && elem_t::sorted_target,
                       "Request should be on a single input, and hence sorted");
 
-        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////
         /// \brief Type of the element comparator.
-        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////
         using elem_comp_t = element_comp_t;
 
-        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////
         /// \brief Number of buckets.
-        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////
         static constexpr memory_mode_t mem_mode = memory_mode;
 
-        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////
         /// \brief Type of the sorter.
-        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////
         using sorter_t = sorter<mem_mode, elem_t, elem_comp_t>;
 
       private:
@@ -355,6 +172,191 @@ namespace adiar::internal
       };
 
       //////////////////////////////////////////////////////////////////////////
+      /// \brief Default priority queue for the Outer Up Sweep.
+      //////////////////////////////////////////////////////////////////////////
+      template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
+      using up__pq_t = reduce_priority_queue<LOOK_AHEAD, mem_mode>;
+
+      //////////////////////////////////////////////////////////////////////////
+      /// \brief Default policy for the Inner Up Sweep.
+      //////////////////////////////////////////////////////////////////////////
+      template<typename dd_policy>
+      class up__policy_t : public dd_policy
+      {
+      public:
+        template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
+        using pq_t = up__pq_t<LOOK_AHEAD, mem_mode>;
+      };
+
+      //////////////////////////////////////////////////////////////////////////
+      /// \brief Decorator for the Reduce priority queue that either forwards
+      ///        to itself or to a sorter, depending on the level of the source.
+      ///
+      /// \details This is to be used in the *outer* sweep when forwarding
+      ///          information to a level above the current one.
+      ///
+      /// \sa pq_t, levelized_priority_queue, nested_sweep
+      //////////////////////////////////////////////////////////////////////////
+      template<typename outer_pq_t, typename outer_roots_t>
+      class up__pq_decorator
+      {
+      public:
+        ////////////////////////////////////////////////////////////////////////////
+        /// \brief Type of the elements.
+        ////////////////////////////////////////////////////////////////////////////
+        using elem_t = typename outer_pq_t::elem_t;
+
+        ////////////////////////////////////////////////////////////////////////////
+        /// \brief Type of the element comparator.
+        ////////////////////////////////////////////////////////////////////////////
+        using elem_comp_t = typename outer_pq_t::elem_comp_t;
+
+        ////////////////////////////////////////////////////////////////////////////
+        /// \brief Number of buckets.
+        ////////////////////////////////////////////////////////////////////////////
+        static constexpr memory_mode_t mem_mode = outer_pq_t::memory_mode;
+
+      private:
+        ////////////////////////////////////////////////////////////////////////
+        /// \brief Reference to the outer sweep's (levelized) priority queue.
+        ////////////////////////////////////////////////////////////////////////
+        // TODO (optimisation): public inheritance?
+        outer_pq_t &_outer_pq;
+
+        ////////////////////////////////////////////////////////////////////////
+        /// \brief Reference to the sorter in the outer sweep that contains the
+        ///        root requests generated for the next inner sweep.
+        ////////////////////////////////////////////////////////////////////////
+        outer_roots_t &_outer_roots;
+
+        ////////////////////////////////////////////////////////////////////////
+        /// \brief Type of a level.
+        ////////////////////////////////////////////////////////////////////////
+        using level_t = typename elem_t::ptr_t::label_t;
+
+        ////////////////////////////////////////////////////////////////////////
+        /// \brief The level of the next inner sweep;
+        ////////////////////////////////////////////////////////////////////////
+        // TODO: turn into signed value to allow using decorator above last
+        //       legal value of '_next_inner' (abusing negative numbers).
+        const level_t _next_inner;
+
+      public:
+        ////////////////////////////////////////////////////////////////////////
+        /// \brief Instantiate decorator.
+        ////////////////////////////////////////////////////////////////////////
+        up__pq_decorator(outer_pq_t &outer_pq,
+                         outer_roots_t &outer_roots,
+                         const level_t next_inner)
+          : _outer_pq(outer_pq)
+          , _outer_roots(outer_roots)
+          , _next_inner(next_inner)
+        { }
+
+      public:
+        ////////////////////////////////////////////////////////////////////////
+        /// \brief Number of terminals (of each type) placed within the priority
+        ///        queue.
+        ////////////////////////////////////////////////////////////////////////
+        size_t terminals(const bool terminal_value) const
+        { return _outer_pq.terminals(terminal_value); }
+
+        ////////////////////////////////////////////////////////////////////////
+        /// \brief Numer of elements in both the priority queue and the sorter.
+        ////////////////////////////////////////////////////////////////////////
+        size_t size() const
+        { return _outer_pq.size() + _outer_roots.size(); }
+
+        ////////////////////////////////////////////////////////////////////////
+        /// \brief Total number of arcs (across all levels) ignoring terminals.
+        ////////////////////////////////////////////////////////////////////////
+        size_t size_without_terminals() const
+        { return size() - terminals(false) - terminals(true); }
+
+        ////////////////////////////////////////////////////////////////////////
+        /// \brief Whether there are more elements to pull for this level.
+        ////////////////////////////////////////////////////////////////////////
+        bool can_pull() const
+        { return _outer_pq.can_pull(); }
+
+        ////////////////////////////////////////////////////////////////////////
+        /// \brief Obtain and remove the next element from this level.
+        ////////////////////////////////////////////////////////////////////////
+        reduce_arc pull()
+        { return _outer_pq.pull(); }
+
+        ////////////////////////////////////////////////////////////////////////
+        /// \brief Remove the top arc on the current level.
+        ////////////////////////////////////////////////////////////////////////
+        void pop()
+        { _outer_pq.pull(); }
+
+        ////////////////////////////////////////////////////////////////////////
+        /// \brief Adds an element to the priority queue or the sorter,
+        ///        depending on the level. Terminals always stay in the priority
+        ///        queue
+        ////////////////////////////////////////////////////////////////////////
+        void push(const reduce_arc &a)
+        {
+          // TODO: use outer_pq::level_comp_t instead of hardcoding '<'
+          if (a.source().label() < _next_inner && !a.target().is_terminal()) {
+            _outer_roots.push(a);
+          } else {
+            _outer_pq.push(a);
+          }
+        }
+
+        ////////////////////////////////////////////////////////////////////////
+        /// \brief Whether the priority queue and the sorter are empty.
+        ////////////////////////////////////////////////////////////////////////
+        bool empty() const
+        { return size() == 0u; }
+      };
+
+      //////////////////////////////////////////////////////////////////////////
+      /// \brief Class to obtain from the Inner Down Sweep what is the next
+      ///        level (ahead of the current one being processed).
+      //////////////////////////////////////////////////////////////////////////
+      template<typename inner_down_sweep>
+      class inner_iterator
+      {
+      public:
+        using level_t = typename inner_down_sweep::ptr_t::label_t;
+
+      private:
+        level_info_stream<>     _lis;
+        const inner_down_sweep &_inner_impl;
+
+      public:
+        inner_iterator(const typename inner_down_sweep::shared_arcs_t &dag,
+                       const inner_down_sweep &inner_impl)
+          : _lis(dag)
+          , _inner_impl(inner_impl)
+        { }
+
+      public:
+        static constexpr level_t NONE = static_cast<level_t>(-1);
+
+        ////////////////////////////////////////////////////////////////////////
+        /// \brief Obtain the next level to do an inner sweep to pull.
+        ///
+        /// \returns The next inner level that should be recursed on (or `NONE`
+        ///          if none are left)
+        ////////////////////////////////////////////////////////////////////////
+        level_t next_inner()
+        {
+          while (_lis.can_pull()) {
+            const level_t l = _lis.pull().level();
+            if (_inner_impl.has_sweep(l)) { return l; }
+          }
+          return NONE;
+        }
+      };
+    } // namespace outer
+
+    namespace inner
+    {
+      //////////////////////////////////////////////////////////////////////////
       /// \brief Decorator for a (levelized) priority queue that merges the
       ///        requests created within the inner sweep with the (sorted) list
       ///        of requests from outer sweep.
@@ -364,7 +366,7 @@ namespace adiar::internal
       ///
       /// \sa levelized_priority_queue, nested_sweep
       //////////////////////////////////////////////////////////////////////////
-      template<typename inner_pq_t, typename inner_roots_t>
+      template<typename inner_pq_t, typename outer_roots_t>
       class down__pq_decorator
       {
       public:
@@ -373,7 +375,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////////
         using elem_t = typename inner_pq_t::elem_t;
 
-        // TODO: static_assert(inner_pq_t::elem_t == inner_roots_t::elem_t);
+        // TODO: static_assert(inner_pq_t::elem_t == outer_roots_t::elem_t);
 
         ////////////////////////////////////////////////////////////////////////////
         /// \brief Type of the element comparator.
@@ -406,7 +408,7 @@ namespace adiar::internal
         /// \brief Reference to the sorter in the outer sweep that contains the
         ///        root requests generated for the next inner sweep.
         ////////////////////////////////////////////////////////////////////////
-        inner_roots_t &_inner_roots;
+        outer_roots_t &_outer_roots;
 
       public:
         ////////////////////////////////////////////////////////////////////////////
@@ -418,9 +420,9 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         /// \brief Instantiate decorator.
         ////////////////////////////////////////////////////////////////////////
-        down__pq_decorator(inner_pq_t &inner_pq, inner_roots_t &inner_roots)
+        down__pq_decorator(inner_pq_t &inner_pq, outer_roots_t &outer_roots)
           : _inner_pq(inner_pq)
-          , _inner_roots(inner_roots)
+          , _outer_roots(outer_roots)
         { }
 
       public:
@@ -466,8 +468,8 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         void setup_next_level(level_t stop_level = NO_LABEL)
         {
-          if (_inner_roots.can_pull()) {
-            stop_level = std::min(stop_level, _inner_roots.top().level());
+          if (_outer_roots.can_pull()) {
+            stop_level = std::min(stop_level, _outer_roots.top().level());
           }
           _inner_pq.setup_next_level(stop_level);
         }
@@ -482,7 +484,7 @@ namespace adiar::internal
         bool empty_level() const
         {
           return _inner_pq.empty_level()
-            && (!_inner_roots.can_pull() || _inner_roots.top().level() != current_level());
+            && (!_outer_roots.can_pull() || _outer_roots.top().level() != current_level());
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -497,7 +499,7 @@ namespace adiar::internal
         /// \pre `can_pull() == true`
         ////////////////////////////////////////////////////////////////////////
         elem_t top()
-        { return pq_first() ? _inner_pq.top() : _inner_roots.top(); }
+        { return pq_first() ? _inner_pq.top() : _outer_roots.top(); }
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief Obtain the top request of this level.
@@ -513,7 +515,7 @@ namespace adiar::internal
         /// \pre `can_pull() == true`
         ////////////////////////////////////////////////////////////////////////
         elem_t pull()
-        { return pq_first() ? _inner_pq.pull() : _inner_roots.pull(); }
+        { return pq_first() ? _inner_pq.pull() : _outer_roots.pull(); }
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief Remove the top arc on the current level.
@@ -527,13 +529,13 @@ namespace adiar::internal
         /// \brief The number of requests in the priority queue and the sorter.
         ////////////////////////////////////////////////////////////////////////
         size_t size() /*const*/
-        { return _inner_pq.size() + _inner_roots.size(); }
+        { return _inner_pq.size() + _outer_roots.size(); }
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief Whether the priority queue and the sorter are empty.
         ////////////////////////////////////////////////////////////////////////
         bool empty() /*const*/
-        { return _inner_pq.empty() && _inner_roots.empty(); }
+        { return _inner_pq.empty() && _outer_roots.empty(); }
 
       private:
         ////////////////////////////////////////////////////////////////////////
@@ -543,33 +545,33 @@ namespace adiar::internal
         bool pq_first()
         {
           if (_inner_pq.empty_level())  { return false; }
-          if (!_inner_roots.can_pull()) { return true; }
+          if (!_outer_roots.can_pull()) { return true; }
 
-          const level_t _inner_roots_level = _inner_roots.top().level();
-          if (_inner_roots_level != current_level()) { return true; }
+          const level_t _outer_roots_level = _outer_roots.top().level();
+          if (_outer_roots_level != current_level()) { return true; }
 
-          return _e_comparator(_inner_pq.top(), _inner_roots.top());
+          return _e_comparator(_inner_pq.top(), _outer_roots.top());
         }
       };
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief Start the nested sweep given initial recursions in
-      ///        `inner_roots` on DAG in `outer_file`.
+      ///        `outer_roots` on DAG in `outer_file`.
       ///
       /// \par Side Effects:
-      /// Sorts and resets the given `inner_roots` sorter.
+      /// Sorts and resets the given `outer_roots` sorter.
       //////////////////////////////////////////////////////////////////////////
-      template<typename inner_down_sweep, typename inner_roots_t>
+      template<typename inner_down_sweep, typename outer_roots_t>
       typename inner_down_sweep::shared_arcs_t
       down(inner_down_sweep &inner_impl,
            const typename inner_down_sweep::shared_nodes_t &outer_file,
-           inner_roots_t &inner_roots,
+           outer_roots_t &outer_roots,
            const size_t inner_memory)
       {
-        adiar_debug(inner_roots.size() > 0,
+        adiar_debug(outer_roots.size() > 0,
                     "Nested Sweep needs one or more roots");
 
-        inner_roots.sort();
+        outer_roots.sort();
 
         // Since we do not know anything about inner_impl, we cannot be sure of
         // what type for its priority queue is optimal at this point in time.
@@ -579,9 +581,9 @@ namespace adiar::internal
         // To avoid having to do the boiler-plate yourself, use
         // `down__sweep_switch` below (assuming your algorithm fits).
         const typename inner_down_sweep::shared_arcs_t res =
-          inner_impl.sweep(outer_file, inner_roots, inner_memory);
+          inner_impl.sweep(outer_file, outer_roots, inner_memory);
 
-        inner_roots.reset();
+        outer_roots.reset();
         return res;
       }
 
@@ -590,11 +592,11 @@ namespace adiar::internal
       ///        Sweep to (1) switch based on `memory_mode` and (2) decorate the
       ///        priority queue and the `roots_sorter`.
       //////////////////////////////////////////////////////////////////////////
-      template<typename inner_down_sweep, typename inner_roots_t>
+      template<typename inner_down_sweep, typename outer_roots_t>
       inline typename inner_down_sweep::shared_arcs_t
       down__sweep_switch(inner_down_sweep &inner_impl,
                          const typename inner_down_sweep::shared_nodes_t &outer_file,
-                         inner_roots_t &inner_roots,
+                         outer_roots_t &outer_roots,
                          const size_t inner_memory)
       {
         // ---------------------------------------------------------------------
@@ -625,7 +627,7 @@ namespace adiar::internal
         const size_t inner_pq_fits =
           inner_down_sweep::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::memory_fits(inner_pq_memory);
 
-        const size_t inner_pq_bound = inner_down_sweep::pq_bound(outer_file, inner_roots.size());
+        const size_t inner_pq_bound = inner_down_sweep::pq_bound(outer_file, outer_roots.size());
 
         const bool external_only = memory_mode == memory_mode_t::EXTERNAL;
 
@@ -634,7 +636,7 @@ namespace adiar::internal
           : inner_pq_bound;
 
         // TODO (bdd_compose): ask 'inner_down_sweep' implementation for the initalizer list
-        if(!external_only && inner_pq_max_size <= no_lookahead_bound(inner_roots_t::elem_t::cardinality)) {
+        if(!external_only && inner_pq_max_size <= no_lookahead_bound(outer_roots_t::elem_t::cardinality)) {
 #ifdef ADIAR_STATS
           stats.inner.down.lpq.unbucketed += 1u;
 #endif
@@ -644,8 +646,8 @@ namespace adiar::internal
           using inner_pq_t = typename inner_down_sweep::template pq_t<0, memory_mode_t::INTERNAL>;
           inner_pq_t inner_pq({outer_file}, inner_pq_memory, inner_pq_max_size, stats.inner.down.lpq);
 
-          using decorator_t = down__pq_decorator<inner_pq_t, inner_roots_t>;
-          decorator_t decorated_pq(inner_pq, inner_roots);
+          using decorator_t = down__pq_decorator<inner_pq_t, outer_roots_t>;
+          decorator_t decorated_pq(inner_pq, outer_roots);
 
           return inner_impl.sweep_pq(outer_file, decorated_pq, inner_remaining_memory);
         } else if(!external_only && inner_pq_max_size <= inner_pq_fits) {
@@ -655,8 +657,8 @@ namespace adiar::internal
           using inner_pq_t = typename inner_down_sweep::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>;
           inner_pq_t inner_pq({outer_file}, inner_pq_memory, inner_pq_max_size, stats.inner.down.lpq);
 
-          using decorator_t = down__pq_decorator<inner_pq_t, inner_roots_t>;
-          decorator_t decorated_pq(inner_pq, inner_roots);
+          using decorator_t = down__pq_decorator<inner_pq_t, outer_roots_t>;
+          decorator_t decorated_pq(inner_pq, outer_roots);
 
           return inner_impl.sweep_pq(outer_file, decorated_pq, inner_remaining_memory);
         } else {
@@ -666,8 +668,8 @@ namespace adiar::internal
           using inner_pq_t = typename inner_down_sweep::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>;
           inner_pq_t inner_pq({outer_file}, inner_pq_memory, inner_pq_max_size, stats.inner.down.lpq);
 
-          using decorator_t = down__pq_decorator<inner_pq_t, inner_roots_t>;
-          decorator_t decorated_pq(inner_pq, inner_roots);
+          using decorator_t = down__pq_decorator<inner_pq_t, outer_roots_t>;
+          decorator_t decorated_pq(inner_pq, outer_roots);
 
           return inner_impl.sweep_pq(outer_file, decorated_pq, inner_remaining_memory);
         }
