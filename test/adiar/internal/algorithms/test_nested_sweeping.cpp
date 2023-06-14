@@ -657,7 +657,7 @@ go_bandit([]() {
           AssertThat(inner_iter.next_inner(), Is().EqualTo(test_iter_t::NONE));
         });
 
-        it("provides {4, 2, 0, NONE} for {4,3,2,1} % 2", [&]() {
+        it("provides {4, 2, 0, NONE} for {4,3,2,0} % 2", [&]() {
           /*
           //
           //         1       ---- x0
