@@ -242,6 +242,12 @@ namespace adiar::internal
         const level_t _next_inner;
 
       public:
+        ////////////////////////////////////////////////////////////////////////////
+        /// \brief Value to reflect 'out of levels'.
+        ////////////////////////////////////////////////////////////////////////////
+        static constexpr level_t NO_LABEL = outer_pq_t::NO_LABEL;
+
+      public:
         ////////////////////////////////////////////////////////////////////////
         /// \brief Instantiate decorator.
         ////////////////////////////////////////////////////////////////////////
@@ -299,11 +305,37 @@ namespace adiar::internal
         void push(const reduce_arc &a)
         {
           // TODO: use outer_pq::level_comp_t instead of hardcoding '<'
-          if (a.source().label() < _next_inner && !a.target().is_terminal()) {
+          if (a.source().label() < _next_inner && a.target().is_node()) {
             _outer_roots.push(a);
           } else {
             _outer_pq.push(a);
           }
+        }
+
+        ////////////////////////////////////////////////////////////////////////
+        /// \brief Push requests created at `_next_inner` to the priority queue
+        ///        if it only has terminals; otherwise pushes to roots for
+        ///        nested sweep.
+        ////////////////////////////////////////////////////////////////////////
+        void push(const typename outer_roots_t::elem_t &e)
+        {
+          adiar_precondition(e.data.source.label() < _next_inner);
+          if (e.target.fst().is_terminal()) {
+            _outer_pq.push({ e.data.source, e.target.fst() });
+          } else {
+            _outer_roots.push(e);
+          }
+        }
+
+        ////////////////////////////////////////////////////////////////////////
+        /// \brief Set up the next nonempty level in the priority queue and the
+        ///        sorter (down to the given `stop_level`).
+        ////////////////////////////////////////////////////////////////////////
+        void setup_next_level(level_t stop_level = NO_LABEL)
+        {
+          _outer_pq.setup_next_level(stop_level);
+          adiar_debug(_next_inner <= _outer_pq.current_level(),
+                      "Outer PQ stays below next Inner Level");
         }
 
         ////////////////////////////////////////////////////////////////////////
