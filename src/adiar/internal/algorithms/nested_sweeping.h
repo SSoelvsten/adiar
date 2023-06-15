@@ -887,21 +887,92 @@ namespace adiar::internal
       };
 
       //////////////////////////////////////////////////////////////////////////
+      /// \brief ...
+      //////////////////////////////////////////////////////////////////////////
+      class up__arc_stream__decorator
+      {
+      private:
+        arc_stream<> &_inner_arcs;
+        const arc_stream<> &_outer_arcs;
+
+      public:
+        up__arc_stream__decorator(arc_stream<> &inner_arcs,
+                                  const arc_stream<> &outer_arcs)
+          : _inner_arcs(inner_arcs), _outer_arcs(outer_arcs)
+        { }
+
+      public:
+        ////////////////////////////////////////////////////////////////////////////
+        /// \brief Whether the stream contains more internal arcs.
+        ////////////////////////////////////////////////////////////////////////////
+        bool can_pull_internal() const
+        { return _inner_arcs.can_pull_internal(); }
+
+        ////////////////////////////////////////////////////////////////////////////
+        /// \brief Obtain the next internal arc (and move the read head).
+        ////////////////////////////////////////////////////////////////////////////
+        const arc pull_internal()
+        { return _inner_arcs.pull_internal(); }
+
+        ////////////////////////////////////////////////////////////////////////////
+        /// \brief Obtain the next internal arc (but do not move the read head).
+        ////////////////////////////////////////////////////////////////////////////
+        const arc peek_internal()
+        { return _inner_arcs.peek_internal(); }
+
+        ////////////////////////////////////////////////////////////////////////////
+        /// \brief Obtain the number of unread terminals.
+        ////////////////////////////////////////////////////////////////////////////
+        size_t unread_terminals() const
+        { return _outer_arcs.unread_terminals() + _inner_arcs.unread_terminals(); }
+
+        ////////////////////////////////////////////////////////////////////////////
+        /// \brief Obtain the number of unread terminals of a specific value.
+        ////////////////////////////////////////////////////////////////////////////
+        size_t unread_terminals(const bool terminal_value) const
+        {
+          return _outer_arcs.unread_terminals(terminal_value)
+               + _inner_arcs.unread_terminals(terminal_value);
+        }
+
+        ////////////////////////////////////////////////////////////////////////////
+        /// \brief Whether the stream contains more terminal arcs.
+        ////////////////////////////////////////////////////////////////////////////
+        bool can_pull_terminal() const
+        { return _inner_arcs.can_pull_terminal(); }
+
+        ////////////////////////////////////////////////////////////////////////////
+        /// \brief Obtain the next arc (and move the read head).
+        ////////////////////////////////////////////////////////////////////////////
+        const arc pull_terminal()
+        { return _inner_arcs.pull_terminal(); }
+
+        ////////////////////////////////////////////////////////////////////////////
+        /// \brief Obtain the next arc (but do not move the read head).
+        ////////////////////////////////////////////////////////////////////////////
+        const arc peek_terminal()
+        { return _inner_arcs.peek_terminal(); }
+      };
+
+      //////////////////////////////////////////////////////////////////////////
       /// \brief Execute the Inner Up Sweep (part 2).
       ///
       /// \sa nested_sweep
       //////////////////////////////////////////////////////////////////////////
       template<typename inner_up_sweep, typename inner_pq_t, typename outer_pq_t>
       inline cuts_t
-      up(const typename inner_up_sweep::shared_arcs_t &inner_unreduced,
+      up(const arc_stream<> &outer_arcs,
          outer_pq_t &outer_pq,
          node_writer &outer_writer,
+         const typename inner_up_sweep::shared_arcs_t &inner_unreduced,
          const size_t inner_pq_memory,
          const size_t inner_pq_max_size,
          const size_t inner_sorters_memory)
       {
         // Set up input
         arc_stream<> inner_arcs(inner_unreduced);
+        up__arc_stream__decorator decorated_arcs(inner_arcs, outer_arcs);
+
         level_info_stream<> inner_levels(inner_unreduced);
 
         // Set up (decorated) priority queue
@@ -911,7 +982,7 @@ namespace adiar::internal
         decorator_t decorated_pq(inner_pq, outer_pq);
 
         // Run Reduce
-        return __reduce<inner_up_sweep>(inner_arcs, inner_levels,
+        return __reduce<inner_up_sweep>(decorated_arcs, inner_levels,
                                         decorated_pq,
                                         outer_writer,
                                         inner_sorters_memory);
@@ -931,9 +1002,10 @@ namespace adiar::internal
       //////////////////////////////////////////////////////////////////////////
       template<typename inner_up_sweep, typename outer_pq_t>
       cuts_t
-      up(const typename inner_up_sweep::shared_arcs_t &inner_unreduced,
+      up(const arc_stream<> &outer_arcs,
          outer_pq_t &outer_pq,
          node_writer &outer_writer,
+         const typename inner_up_sweep::shared_arcs_t &inner_unreduced,
          const size_t inner_memory)
       {
         // Compute amount of memory available for auxiliary data structures after
@@ -965,23 +1037,23 @@ namespace adiar::internal
           stats.inner.up.lpq.unbucketed += 1u;
 #endif
           using inner_pq_t = typename inner_up_sweep::template pq_t<0, memory_mode_t::INTERNAL>;
-          return up<inner_up_sweep, inner_pq_t>(inner_unreduced, outer_pq, outer_writer,
-                                                inner_pq_memory, inner_pq_max_size, inner_sorters_memory);
+          return up<inner_up_sweep, inner_pq_t>(outer_arcs, outer_pq, outer_writer,
+                                                inner_unreduced, inner_pq_memory, inner_pq_max_size, inner_sorters_memory);
 
         } else if(!external_only && inner_pq_max_size <= inner_pq_memory_fits) {
 #ifdef ADIAR_STATS
           stats.inner.up.lpq.internal += 1u;
 #endif
           using inner_pq_t = typename inner_up_sweep::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>;
-          return up<inner_up_sweep, inner_pq_t>(inner_unreduced, outer_pq, outer_writer,
-                                                inner_pq_memory, inner_pq_max_size, inner_sorters_memory);
+          return up<inner_up_sweep, inner_pq_t>(outer_arcs, outer_pq, outer_writer,
+                                                inner_unreduced, inner_pq_memory, inner_pq_max_size, inner_sorters_memory);
         } else {
 #ifdef ADIAR_STATS
           stats.inner.up.lpq.external += 1u;
 #endif
           using inner_pq_t = typename inner_up_sweep::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>;
-          return up<inner_up_sweep, inner_pq_t>(inner_unreduced, outer_pq, outer_writer,
-                                                inner_pq_memory, inner_pq_max_size, inner_sorters_memory);
+          return up<inner_up_sweep, inner_pq_t>(outer_arcs, outer_pq, outer_writer,
+                                                inner_unreduced, inner_pq_memory, inner_pq_max_size, inner_sorters_memory);
         }
       }
     } // namespace inner

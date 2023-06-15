@@ -195,8 +195,8 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Merging priority queue with terminal_arc stream.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename pq_t>
-  inline arc __reduce_get_next(pq_t &reduce_pq, arc_stream<> &arcs)
+  template <typename pq_t, typename arc_stream_t>
+  inline arc __reduce_get_next(pq_t &reduce_pq, arc_stream_t &arcs)
   {
     if (!reduce_pq.can_pull()
         || (arcs.can_pull_terminal()
@@ -235,9 +235,12 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Reduce a single level
   //////////////////////////////////////////////////////////////////////////////
-  template <typename dd_policy, typename pq_t, template<typename, typename> typename sorter_t>
+  template <typename dd_policy,
+            typename pq_t,
+            template<typename, typename> typename sorter_t,
+            typename arc_stream_t>
   void
-  __reduce_level(arc_stream<> &arcs,
+  __reduce_level(arc_stream_t &arcs,
                  const typename dd_policy::label_t label,
                  pq_t &reduce_pq,
                  node_writer &out_writer,
@@ -445,9 +448,9 @@ namespace adiar::internal
   ///
   /// \see nested_sweep
   //////////////////////////////////////////////////////////////////////////////
-  template<typename dd_policy, typename pq_t>
+  template<typename dd_policy, typename pq_t, typename arc_stream_t>
   inline cuts_t
-  __reduce(arc_stream<> &arcs,
+  __reduce(arc_stream_t &arcs,
            level_info_stream<> &levels,
            pq_t &reduce_pq,
            node_writer &out_writer,
