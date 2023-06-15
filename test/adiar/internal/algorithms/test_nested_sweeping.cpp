@@ -979,6 +979,30 @@ go_bandit([]() {
           AssertThat(dec.current_level(), Is().EqualTo(3u));
         });
 
+        it("setup_next_level(k) forward to Sorter's level if k is larger", [&]() {
+          test_pq_t pq({dag}, memory_available(), 16, lpq_stats);
+          test_decorator dec(pq, sorter);
+
+          AssertThat(dec.has_current_level(), Is().False());
+          dec.setup_next_level(5);
+
+          AssertThat(dec.has_current_level(), Is().True());
+          AssertThat(dec.current_level(), Is().EqualTo(3u));
+        });
+
+        it("setup_next_level(k) forward to level k if k is smaller", [&]() {
+          sorter.pull(); sorter.pull(); // Next is at level 6
+
+          test_pq_t pq({dag}, memory_available(), 16, lpq_stats);
+          test_decorator dec(pq, sorter);
+
+          AssertThat(dec.has_current_level(), Is().False());
+          dec.setup_next_level(4);
+
+          AssertThat(dec.has_current_level(), Is().True());
+          AssertThat(dec.current_level(), Is().EqualTo(4u));
+        });
+
         it("can pull requests from Sorter", [&]() {
           test_pq_t pq({dag}, memory_available(), 16, lpq_stats);
           test_decorator dec(pq, sorter);
