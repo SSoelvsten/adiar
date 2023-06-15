@@ -437,7 +437,7 @@ go_bandit([]() {
         using test_decorator =
           nested_sweeping::outer::up__pq_decorator<test_pq_t, test_roots_sorter_t>;
 
-        it("forwards internal to PQ when below threshold", [&]() {
+        it("forwards internal arcs to PQ when below threshold", [&]() {
           test_pq_t pq({outer_dag}, memory_available(), 16);
           pq.setup_next_level(4u);
 
@@ -451,7 +451,7 @@ go_bandit([]() {
           AssertThat(sorter.size(), Is().EqualTo(0u));
         });
 
-        it("forwards internal to PQ when at threshold", [&]() {
+        it("forwards internal arcs to PQ when at threshold", [&]() {
           test_pq_t pq({outer_dag}, memory_available(), 16);
           pq.setup_next_level(4u);
 
@@ -465,7 +465,7 @@ go_bandit([]() {
           AssertThat(sorter.size(), Is().EqualTo(0u));
         });
 
-        it("forwards internal to Sorter when above threshold", [&]() {
+        it("forwards internal arcs to Sorter when above threshold", [&]() {
           test_pq_t pq({outer_dag}, memory_available(), 16);
           pq.setup_next_level(4u);
 
@@ -479,7 +479,7 @@ go_bandit([]() {
           AssertThat(sorter.size(), Is().EqualTo(1u));
         });
 
-        it("forwards terminal to PQ even if at threshold", [&]() {
+        it("forwards terminal arcs to PQ even if at threshold", [&]() {
           test_pq_t pq({outer_dag}, memory_available(), 16);
           pq.setup_next_level(4u);
 
@@ -493,7 +493,7 @@ go_bandit([]() {
           AssertThat(sorter.size(), Is().EqualTo(0u));
         });
 
-        it("forwards terminal to PQ even if above threshold", [&]() {
+        it("forwards terminal arcs to PQ even if above threshold", [&]() {
           test_pq_t pq({outer_dag}, memory_available(), 16);
           pq.setup_next_level(4u);
 
@@ -507,7 +507,7 @@ go_bandit([]() {
           AssertThat(sorter.size(), Is().EqualTo(0u));
         });
 
-        it("forwards correctly with multiple requests", [&]() {
+        it("forwards correctly with multiple arcs", [&]() {
           test_pq_t pq({outer_dag}, memory_available(), 16);
           pq.setup_next_level(4u);
 
@@ -572,6 +572,36 @@ go_bandit([]() {
           AssertThat(d.terminals(false), Is().EqualTo(1u));
           AssertThat(d.terminals(true), Is().EqualTo(1u));
           AssertThat(d.size_without_terminals(), Is().EqualTo(3u));
+        });
+
+        it("forwards internal request to PQ", [&]() {
+          test_pq_t pq({outer_dag}, memory_available(), 16);
+          pq.setup_next_level(4u);
+
+          test_roots_sorter_t sorter(1024, 16);
+
+          test_decorator d(pq, sorter, 2);
+
+          // internal at threshold
+          d.push(test_request_t({outer_n5}, {}, {with_out_idx(outer_n1, true)}));
+
+          AssertThat(pq.size(), Is().EqualTo(0u));
+          AssertThat(sorter.size(), Is().EqualTo(1u));
+        });
+
+        it("forwards terminal request to PQ", [&]() {
+          test_pq_t pq({outer_dag}, memory_available(), 16);
+          pq.setup_next_level(4u);
+
+          test_roots_sorter_t sorter(1024, 16);
+
+          test_decorator d(pq, sorter, 2);
+
+          // internal at threshold
+          d.push(test_request_t({terminal_T}, {}, {outer_n1}));
+
+          AssertThat(pq.size(), Is().EqualTo(1u));
+          AssertThat(sorter.size(), Is().EqualTo(0u));
         });
       });
 
