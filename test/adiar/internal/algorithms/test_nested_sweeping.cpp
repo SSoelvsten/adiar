@@ -422,6 +422,135 @@ go_bandit([]() {
           s.push({ {arc::ptr_t(1,0)}, {}, {arc::ptr_t(0,0, true)} });
           AssertThat(s.size(), Is().EqualTo(1u));
         });
+
+        it("provides the deepest source from arcs [1]", []() {
+          using test_request_t = request_data<2, with_parent, 0, 1>;
+
+          using test_roots_sorter_t =
+            nested_sweeping::outer::roots_sorter<memory_mode_t::INTERNAL,
+                                                 test_request_t,
+                                                 request_fst_lt<test_request_t>>;
+
+          test_roots_sorter_t s(1024, 16);
+
+          AssertThat(s.deepest_source(), Is().EqualTo(test_roots_sorter_t::NO_LEVEL));
+
+          const reduce_arc a1 = arc(arc::ptr_t(0,0), false, arc::ptr_t(1,1));
+          s.push(a1);
+
+          AssertThat(s.deepest_source(), Is().EqualTo(0u));
+
+          const reduce_arc a2 = arc(arc::ptr_t(1,0), false, arc::ptr_t(2,0));
+          s.push(a2);
+
+          AssertThat(s.deepest_source(), Is().EqualTo(1u));
+
+          const reduce_arc a3 = arc(arc::ptr_t(0,0), true, arc::ptr_t(1,0));
+          s.push(a3);
+
+          AssertThat(s.deepest_source(), Is().EqualTo(1u));
+        });
+
+        it("provides the deepest source from arcs [2]", []() {
+          using test_request_t = request_data<2, with_parent, 0, 1>;
+
+          using test_roots_sorter_t =
+            nested_sweeping::outer::roots_sorter<memory_mode_t::INTERNAL,
+                                                 test_request_t,
+                                                 request_fst_lt<test_request_t>>;
+
+          test_roots_sorter_t s(1024, 16);
+
+          AssertThat(s.deepest_source(), Is().EqualTo(test_roots_sorter_t::NO_LEVEL));
+
+          const reduce_arc a1 = arc(arc::ptr_t(2,0), false, arc::ptr_t(3,1));
+          s.push(a1);
+
+          AssertThat(s.deepest_source(), Is().EqualTo(2u));
+
+          const reduce_arc a2 = arc(arc::ptr_t(1,0), false, arc::ptr_t(4,0));
+          s.push(a2);
+
+          AssertThat(s.deepest_source(), Is().EqualTo(2u));
+        });
+
+        it("provides the deepest source from requests [1]", []() {
+          using test_request_t = request_data<2, with_parent, 0, 1>;
+
+          using test_roots_sorter_t =
+            nested_sweeping::outer::roots_sorter<memory_mode_t::INTERNAL,
+                                                 test_request_t,
+                                                 request_fst_lt<test_request_t>>;
+
+          test_roots_sorter_t s(1024, 16);
+
+          AssertThat(s.deepest_source(), Is().EqualTo(test_roots_sorter_t::NO_LEVEL));
+
+          const test_request_t r1({arc::ptr_t(1,1)}, {}, {arc::ptr_t(0,0, false)});
+          s.push(r1);
+
+          AssertThat(s.deepest_source(), Is().EqualTo(0u));
+
+          const test_request_t r2({arc::ptr_t(2,0)}, {}, {arc::ptr_t(1,0, false)});
+          s.push(r2);
+
+          AssertThat(s.deepest_source(), Is().EqualTo(1u));
+
+          const test_request_t r3({arc::ptr_t(1,0)}, {}, {arc::ptr_t(0,0, true)});
+          s.push(r3);
+
+          AssertThat(s.deepest_source(), Is().EqualTo(1u));
+        });
+
+        it("provides the deepest source from requests [1]", []() {
+          using test_request_t = request_data<2, with_parent, 0, 1>;
+
+          using test_roots_sorter_t =
+            nested_sweeping::outer::roots_sorter<memory_mode_t::INTERNAL,
+                                                 test_request_t,
+                                                 request_fst_lt<test_request_t>>;
+
+          test_roots_sorter_t s(1024, 16);
+
+          AssertThat(s.deepest_source(), Is().EqualTo(test_roots_sorter_t::NO_LEVEL));
+
+          const test_request_t r1({arc::ptr_t(3,1)}, {}, {arc::ptr_t(2,0, false)});
+          s.push(r1);
+
+          AssertThat(s.deepest_source(), Is().EqualTo(2u));
+
+          const test_request_t r2({arc::ptr_t(4,0)}, {}, {arc::ptr_t(1,0, false)});
+          s.push(r2);
+
+          AssertThat(s.deepest_source(), Is().EqualTo(2u));
+        });
+
+        it("provides a different deepest source after reset", []() {
+          using test_request_t = request_data<2, with_parent, 0, 1>;
+
+          using test_roots_sorter_t =
+            nested_sweeping::outer::roots_sorter<memory_mode_t::INTERNAL,
+                                                 test_request_t,
+                                                 request_fst_lt<test_request_t>>;
+
+          test_roots_sorter_t s(1024, 16);
+
+          AssertThat(s.deepest_source(), Is().EqualTo(test_roots_sorter_t::NO_LEVEL));
+
+          const reduce_arc a1 = arc(arc::ptr_t(2,0), false, arc::ptr_t(1,1));
+          s.push(a1);
+
+          AssertThat(s.deepest_source(), Is().EqualTo(2u));
+
+          s.reset();
+
+          AssertThat(s.deepest_source(), Is().EqualTo(test_roots_sorter_t::NO_LEVEL));
+
+          const reduce_arc a2 = arc(arc::ptr_t(1,0), false, arc::ptr_t(2,0));
+          s.push(a2);
+
+          AssertThat(s.deepest_source(), Is().EqualTo(1u));
+        });
       });
 
       describe("outer::up__pq_decorator", [&]() {

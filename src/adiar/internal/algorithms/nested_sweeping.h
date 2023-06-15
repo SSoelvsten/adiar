@@ -65,11 +65,20 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         using sorter_t = sorter<mem_mode, elem_t, elem_comp_t>;
 
+        ////////////////////////////////////////////////////////////////////////
+        static constexpr typename elem_t::label_t NO_LEVEL =
+          static_cast<typename elem_t::label_t>(-1);
+
       private:
         ////////////////////////////////////////////////////////////////////////
         /// \brief Resetabble sorter for elements
         ////////////////////////////////////////////////////////////////////////
         unique_ptr<sorter_t> _sorter_ptr;
+
+        ////////////////////////////////////////////////////////////////////////
+        /// \brief Maximum source seen
+        ////////////////////////////////////////////////////////////////////////
+        typename elem_t::ptr_t _max_source = elem_t::ptr_t::NIL();
 
         ////////////////////////////////////////////////////////////////////////
         // NOTE: There is not '_terminals[2]' like in the priority queue, since
@@ -112,6 +121,13 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         void push(const elem_t& e)
         {
+          adiar_invariant(e.target.fst().is_node(),
+                          "Requests should have at least one internal node");
+
+          _max_source = _max_source.is_nil()
+            ? e.data.source
+            : std::max(_max_source, e.data.source);
+
           // TODO: support requests with more than just the source
           _sorter_ptr->push({ e.target, {}, {flag(e.data.source)} });
         }
@@ -130,9 +146,9 @@ namespace adiar::internal
           //       target to NIL?
 
           if constexpr (elem_t::cardinality == 1u) {
-            _sorter_ptr->push(elem_t({a.target()}, {}, {flag(a.source())}));
+            push(elem_t({a.target()}, {}, {flag(a.source())}));
           } else if constexpr (elem_t::cardinality == 2u) {
-            _sorter_ptr->push(elem_t({a.target(), elem_t::ptr_t::NIL()}, {}, {flag(a.source())}));
+            push(elem_t({a.target(), elem_t::ptr_t::NIL()}, {}, {a.source()}));
           } else {
             static_assert(elem_t::cardinality <= 2u,
                           "Missing implementation for larger than binary combinators");
@@ -161,7 +177,10 @@ namespace adiar::internal
 
         ////////////////////////////////////////////////////////////////////////
         void reset()
-        { sorter_t::reset_unique(_sorter_ptr, _memory_bytes, _no_arcs); }
+        {
+          sorter_t::reset_unique(_sorter_ptr, _memory_bytes, _no_arcs);
+          _max_source = elem_t::ptr_t::NIL();
+        }
 
         ////////////////////////////////////////////////////////////////////////
         size_t size() /*const*/
@@ -169,6 +188,12 @@ namespace adiar::internal
 
         bool empty() /*const*/
         { return _sorter_ptr->empty(); }
+
+        ////////////////////////////////////////////////////////////////////////
+        /// \brief Level of the deepest source
+        ////////////////////////////////////////////////////////////////////////
+        typename elem_t::label_t deepest_source()
+        { return _max_source.is_nil() ? NO_LEVEL : _max_source.label(); }
       };
 
       //////////////////////////////////////////////////////////////////////////
