@@ -244,7 +244,6 @@ namespace adiar::internal
                  const typename dd_policy::label_t label,
                  pq_t &reduce_pq,
                  node_writer &out_writer,
-                 cuts_t &global_1level_cut,
                  const size_t sorters_memory,
                  const size_t level_width)
   {
@@ -286,7 +285,8 @@ namespace adiar::internal
     }
 
     // Count number of arcs that cross this level
-    cuts_t local_1level_cut = {{ 0u, 0u, 0u, 0u }};
+    cuts_t local_1level_cut   = {{ 0u, 0u, 0u, 0u }};
+    cuts_t tainted_1level_cut = {{ 0u, 0u, 0u, 0u }};
 
     __reduce_cut_add(local_1level_cut,
                      reduce_pq.size_without_terminals(),
@@ -309,9 +309,9 @@ namespace adiar::internal
         adiar_debug(out_id > 0, "Has run out of ids");
         out_id--;
 
-        __reduce_cut_add(next_node.low().is_flagged() ? global_1level_cut : local_1level_cut,
+        __reduce_cut_add(next_node.low().is_flagged()  ? tainted_1level_cut : local_1level_cut,
                          out_node.low());
-        __reduce_cut_add(next_node.high().is_flagged() ? global_1level_cut : local_1level_cut,
+        __reduce_cut_add(next_node.high().is_flagged() ? tainted_1level_cut : local_1level_cut,
                          out_node.high());
       } else {
 #ifdef ADIAR_STATS
@@ -388,8 +388,11 @@ namespace adiar::internal
     // Move on to the next level
     red1_mapping.close();
 
-    // Update with 1-level cut below current level
-    out_writer.unsafe_inc_1level_cut(local_1level_cut);
+    // Update with new possible maximum 1-level cut (the one below the current level)
+    out_writer.unsafe_max_1level_cut(local_1level_cut);
+
+    // Add the tainted edges
+    out_writer.unsafe_inc_1level_cut(tainted_1level_cut);
 
     adiar_debug(reduce_pq.empty_level(),
                 "All forwarded arcs for 'label' should be processed");
@@ -449,15 +452,13 @@ namespace adiar::internal
   /// \see nested_sweep
   //////////////////////////////////////////////////////////////////////////////
   template<typename dd_policy, typename pq_t, typename arc_stream_t>
-  inline cuts_t
+  inline void
   __reduce(arc_stream_t &arcs,
            level_info_stream<> &levels,
            pq_t &reduce_pq,
            node_writer &out_writer,
            const size_t sorters_memory)
   {
-    cuts_t global_1level_cut = {{ 0u, 0u, 0u, 0u }};
-
     const size_t internal_sorter_can_fit = internal_sorter<node>::memory_fits(sorters_memory / 2);
 
     // Process bottom-up each level
@@ -472,14 +473,12 @@ namespace adiar::internal
 
       if(level_width <= internal_sorter_can_fit) {
         __reduce_level<dd_policy, pq_t, internal_sorter>
-          (arcs, level, reduce_pq, out_writer, global_1level_cut, sorters_memory, level_width);
+          (arcs, level, reduce_pq, out_writer, sorters_memory, level_width);
       } else {
         __reduce_level<dd_policy, pq_t, external_sorter>
-          (arcs, level, reduce_pq, out_writer, global_1level_cut, sorters_memory, level_width);
+          (arcs, level, reduce_pq, out_writer, sorters_memory, level_width);
       }
     }
-
-    return global_1level_cut;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -552,12 +551,7 @@ namespace adiar::internal
     // Initialize (levelized) priority queue and run Reduce algorithm
     pq_t reduce_pq({in_file}, lpq_memory, in_file->max_1level_cut);
 
-    cuts_t global_1level_cut = __reduce<dd_policy, pq_t>(arcs, levels,
-                                                         reduce_pq,
-                                                         out_writer,
-                                                         sorters_memory);
-
-    out_writer.detach(global_1level_cut);
+    __reduce<dd_policy, pq_t>(arcs, levels, reduce_pq, out_writer, sorters_memory);
     return out_file;
   }
 

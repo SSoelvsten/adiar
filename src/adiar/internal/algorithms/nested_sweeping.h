@@ -1017,7 +1017,7 @@ namespace adiar::internal
       /// \sa nested_sweep
       //////////////////////////////////////////////////////////////////////////
       template<typename inner_up_sweep, typename inner_pq_t, typename outer_pq_t>
-      inline cuts_t
+      inline void
       up(const arc_stream<> &outer_arcs,
          outer_pq_t &outer_pq,
          node_writer &outer_writer,
@@ -1039,17 +1039,10 @@ namespace adiar::internal
         decorator_t decorated_pq(inner_pq, outer_pq);
 
         // Run Reduce
-        return __reduce<inner_up_sweep>(decorated_arcs, inner_levels,
-                                        decorated_pq,
-                                        outer_writer,
-                                        inner_sorters_memory);
-
-        // TODO (optimisation):
-        //   Since the 1-level cut is up to this (processed) level, we also know
-        //   that the already globally counted arcs can be added on-top of the
-        //   current maximum and then be forgotten.
-        //
-        //   This would (soundly?) decrease the over-approximation.
+        __reduce<inner_up_sweep>(decorated_arcs, inner_levels,
+                                 decorated_pq,
+                                 outer_writer,
+                                 inner_sorters_memory);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -1058,7 +1051,7 @@ namespace adiar::internal
       /// \sa nested_sweep
       //////////////////////////////////////////////////////////////////////////
       template<typename inner_up_sweep, typename outer_pq_t>
-      cuts_t
+      void
       up(const arc_stream<> &outer_arcs,
          outer_pq_t &outer_pq,
          node_writer &outer_writer,
@@ -1094,23 +1087,23 @@ namespace adiar::internal
           stats.inner.up.lpq.unbucketed += 1u;
 #endif
           using inner_pq_t = typename inner_up_sweep::template pq_t<0, memory_mode_t::INTERNAL>;
-          return up<inner_up_sweep, inner_pq_t>(outer_arcs, outer_pq, outer_writer,
-                                                inner_unreduced, inner_pq_memory, inner_pq_max_size, inner_sorters_memory);
+          up<inner_up_sweep, inner_pq_t>(outer_arcs, outer_pq, outer_writer,
+                                         inner_unreduced, inner_pq_memory, inner_pq_max_size, inner_sorters_memory);
 
         } else if(!external_only && inner_pq_max_size <= inner_pq_memory_fits) {
 #ifdef ADIAR_STATS
           stats.inner.up.lpq.internal += 1u;
 #endif
           using inner_pq_t = typename inner_up_sweep::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>;
-          return up<inner_up_sweep, inner_pq_t>(outer_arcs, outer_pq, outer_writer,
-                                                inner_unreduced, inner_pq_memory, inner_pq_max_size, inner_sorters_memory);
+          up<inner_up_sweep, inner_pq_t>(outer_arcs, outer_pq, outer_writer,
+                                         inner_unreduced, inner_pq_memory, inner_pq_max_size, inner_sorters_memory);
         } else {
 #ifdef ADIAR_STATS
           stats.inner.up.lpq.external += 1u;
 #endif
           using inner_pq_t = typename inner_up_sweep::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>;
-          return up<inner_up_sweep, inner_pq_t>(outer_arcs, outer_pq, outer_writer,
-                                                inner_unreduced, inner_pq_memory, inner_pq_max_size, inner_sorters_memory);
+          up<inner_up_sweep, inner_pq_t>(outer_arcs, outer_pq, outer_writer,
+                                         inner_unreduced, inner_pq_memory, inner_pq_max_size, inner_sorters_memory);
         }
       }
     } // namespace inner

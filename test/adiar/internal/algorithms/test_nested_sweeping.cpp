@@ -1915,12 +1915,8 @@ go_bandit([]() {
           //        / \
           //        T F
           */
-          const auto global_1level_cut =
-            nested_sweeping::inner::up<inner_up_sweep>(stream_outer, out_pq, out_writer,
-                                                       in_inner, available_memory / 2);
-
-          // Check 'global_1level_cut'
-          AssertThat(global_1level_cut, Is().EqualTo(cuts_t({ 0u, 0u, 0u, 0u })));
+          nested_sweeping::inner::up<inner_up_sweep>(stream_outer, out_pq, out_writer,
+                                                     in_inner, available_memory / 2);
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(2u));
@@ -2044,12 +2040,8 @@ go_bandit([]() {
           //    |  / \
           //    F  F T
           */
-          const auto global_1level_cut =
-            nested_sweeping::inner::up<inner_up_sweep>(stream_outer, out_pq, out_writer,
-                                                       in_inner, available_memory / 2);
-
-          // Check 'global_1level_cut'
-          AssertThat(global_1level_cut, Is().EqualTo(cuts_t({ 0u, 0u, 0u, 0u })));
+          nested_sweeping::inner::up<inner_up_sweep>(stream_outer, out_pq, out_writer,
+                                                     in_inner, available_memory / 2);
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(1u));
@@ -2156,12 +2148,8 @@ go_bandit([]() {
           //       / \
           //       F T
           */
-          const auto global_1level_cut =
-            nested_sweeping::inner::up<inner_up_sweep>(stream_outer, out_pq, out_writer,
-                                                       in_inner, available_memory / 2);
-
-          // Check 'global_1level_cut'
-          AssertThat(global_1level_cut, Is().EqualTo(cuts_t({ 0u, 0u, 0u, 0u })));
+          nested_sweeping::inner::up<inner_up_sweep>(stream_outer, out_pq, out_writer,
+                                                     in_inner, available_memory / 2);
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(1u));
@@ -2204,7 +2192,7 @@ go_bandit([]() {
           AssertThat(out_pq.can_pull(), Is().False());
         });
 
-        it("returns globally counted arcs for 1-level cut", []() {
+        it("includes account for tainted arcs of 1-level cut", []() {
           /* input
           //      1_            ---- x1
           //  -   - \ -   -   -    -
@@ -2264,22 +2252,18 @@ go_bandit([]() {
           //  -   - \ -   -   -    -
           //        2           ---- x3
           //       / \
-          //       F T <-- T counted in global cut
+          //       F T <-- T tainted in global cut
           */
-          const auto global_1level_cut =
-            nested_sweeping::inner::up<inner_up_sweep>(stream_outer, out_pq, out_writer,
-                                                       in_inner, available_memory / 2);
-
-          // Check 'global_1level_cut'
-          AssertThat(global_1level_cut, Is().EqualTo(cuts_t({ 0u, 0u, 1u, 1u })));
+          nested_sweeping::inner::up<inner_up_sweep>(stream_outer, out_pq, out_writer,
+                                                     in_inner, available_memory / 2);
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(1u));
 
           AssertThat(out->max_1level_cut[cut_type::INTERNAL],       Is().EqualTo(0u));
           AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
-          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE],  Is().EqualTo(0u));
-          AssertThat(out->max_1level_cut[cut_type::ALL],            Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE],  Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::ALL],            Is().EqualTo(2u));
 
           AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
           AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
@@ -2368,12 +2352,8 @@ go_bandit([]() {
           //  -   - \ -   -   -    -
           //        T <-- in 'out_pq', not in 'out'
           */
-          const auto global_1level_cut =
-            nested_sweeping::inner::up<inner_up_sweep>(stream_outer, out_pq, out_writer,
-                                                       in_inner, available_memory / 2);
-
-          // Check 'global_1level_cut'
-          AssertThat(global_1level_cut, Is().EqualTo(cuts_t({ 0u, 0u, 0u, 0u })));
+          nested_sweeping::inner::up<inner_up_sweep>(stream_outer, out_pq, out_writer,
+                                                     in_inner, available_memory / 2);
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(0u));
