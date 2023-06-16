@@ -2249,16 +2249,152 @@ go_bandit([]() {
         AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
-      it("Merges nodes, despite of reduction rule 1 flag on child", [&]() {
+      it("applies tainted arcs eagerly to the maximum cut", [&]() {
         /*
-                _1_                       ---- x0
-               /   \
-               2   3     =>        2      ---- x1
-              / \ / \             / \
-              F 4 F T             F T     ---- x2
-               / \
-               T T
-         */
+        //          __1__                __1__         ---- x0
+        //         /     \              /     \
+        //        _2_   _3_            _2_   _3_       ---- x1
+        //       /   \ /   \          /   \ /   \
+        //       4    5    6    ==>   4    5    6      ---- x2
+        //      / \  / \  / \        / \  / \  / \
+        //      F T  F 7  T F        F T  F |  T F     ---- x3
+        //             ||                   |
+        //             8                    8          ---- x4
+        //            / \                  / \
+        //            F T                  F T
+        */
+
+        const ptr_uint64 n1  = ptr_uint64(0,0);
+        const ptr_uint64 n2  = ptr_uint64(1,0);
+        const ptr_uint64 n3  = ptr_uint64(1,1);
+        const ptr_uint64 n4  = ptr_uint64(2,0);
+        const ptr_uint64 n5  = ptr_uint64(2,1);
+        const ptr_uint64 n6  = ptr_uint64(2,2);
+        const ptr_uint64 n7  = ptr_uint64(3,0);
+        const ptr_uint64 n8  = ptr_uint64(4,0);
+
+        shared_levelized_file<arc> in;
+
+        { // Garbage collect writer to free write-lock
+          arc_writer aw(in);
+
+          aw.push_internal({ n1, false, n2 });
+          aw.push_internal({ n1, true,  n3 });
+          aw.push_internal({ n2, false, n4 });
+          aw.push_internal({ n2, true,  n5 });
+          aw.push_internal({ n3, false, n5 });
+          aw.push_internal({ n3, true,  n6 });
+          aw.push_internal({ n5, true,  n7 });
+          aw.push_internal({ n7, false, n8 });
+          aw.push_internal({ n7, true,  n8 });
+
+          aw.push_terminal({ n4, false, terminal_F });
+          aw.push_terminal({ n4, true,  terminal_T });
+          aw.push_terminal({ n5, false, terminal_F });
+          aw.push_terminal({ n6, false, terminal_T });
+          aw.push_terminal({ n6, true,  terminal_F });
+          aw.push_terminal({ n8, false, terminal_F });
+          aw.push_terminal({ n8, true,  terminal_T });
+
+          aw.push(level_info(0,1u));
+          aw.push(level_info(1,2u));
+          aw.push(level_info(2,3u));
+          aw.push(level_info(3,1u));
+          aw.push(level_info(4,1u));
+
+          in->max_1level_cut = 4;
+        }
+
+        // Reduce it
+        bdd out(in);
+
+        AssertThat(adiar::is_canonical(out), Is().True());
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True()); // n8
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID, terminal_F, terminal_T)));
+
+        AssertThat(out_nodes.can_pull(), Is().True()); // n4
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID, terminal_F, terminal_T)));
+
+        AssertThat(out_nodes.can_pull(), Is().True()); // n6
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID-1, terminal_T, terminal_F)));
+
+        AssertThat(out_nodes.can_pull(), Is().True()); // n5
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID-2, terminal_F, node::ptr_t(4, node::MAX_ID))));
+
+        AssertThat(out_nodes.can_pull(), Is().True()); // n3
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                       node::ptr_t(2, node::MAX_ID-2),
+                                                       node::ptr_t(2, node::MAX_ID-1))));
+
+        AssertThat(out_nodes.can_pull(), Is().True()); // n2
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID-1,
+                                                       node::ptr_t(2, node::MAX_ID),
+                                                       node::ptr_t(2, node::MAX_ID-2))));
+
+        AssertThat(out_nodes.can_pull(), Is().True()); // n2
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                       node::ptr_t(1, node::MAX_ID-1),
+                                                       node::ptr_t(1, node::MAX_ID))));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(4,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,3u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,2u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(3u));
+
+        // NOTE: the INTERNAL cut is only 4, since the tainted edge is accounted for below x1.
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(4u));
+
+        // Yet, of course the cut is still an over-approximation when the arc is
+        // tainting the levels below x2.
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(4u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(5u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(4u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(5u));
+        AssertThat(out->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(7u));
+        AssertThat(out->max_1level_cut[cut_type::ALL], Is().LessThanOrEqualTo(8u));
+
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(4u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(6u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(4u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(7u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(4u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(7u));
+        AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(7u));
+        AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(9u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(4u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
+      });
+
+      it("merges nodes, despite of reduction rule 1 flag on child", [&]() {
+        /*
+        //      _1_                       ---- x0
+        //     /   \
+        //     2   3     =>        2      ---- x1
+        //    / \ / \             / \
+        //    F 4 F T             F T     ---- x2
+        //     / \
+        //     T T
+        */
 
         const ptr_uint64 n1  = ptr_uint64(0,0);
         const ptr_uint64 n2  = ptr_uint64(1,0);

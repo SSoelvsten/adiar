@@ -174,8 +174,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Adds separate cut before detaching (if need be)
     ////////////////////////////////////////////////////////////////////////////
-    // TODO: move out of 'detach(...)' responsibility and into something similar
-    //       to 'unsafe_inc_1level_cut'
+    [[deprecated]]
     void detach(const cuts_t &c)
     {
       if (!attached()) { return; }
@@ -297,21 +296,20 @@ namespace adiar::internal
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Increase the 1-level cut size to the maximum of the current or
-    ///        the given cuts.
+    /// \brief Change the 1-level cut size to the maximum of the current or the
+    ///        given cuts.
+    ////////////////////////////////////////////////////////////////////////////
+    void unsafe_max_1level_cut(const cuts_t &o)
+    {
+      max_cut(_file_ptr->max_1level_cut, o);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Increase the current maximum 1-level cut size by the given cut.
     ////////////////////////////////////////////////////////////////////////////
     void unsafe_inc_1level_cut(const cuts_t &o)
     {
       inc_cut(_file_ptr->max_1level_cut, o);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Increase the 2-level cut size to the maximum of the current or
-    ///        the given cuts.
-    ////////////////////////////////////////////////////////////////////////////
-    void unsafe_inc_2level_cut(const cuts_t &o)
-    {
-      inc_cut(_file_ptr->max_2level_cut, o);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -414,10 +412,17 @@ namespace adiar::internal
       }
     }
 
-    void inc_cut(cuts_t &c, const cuts_t &o)
+    void max_cut(cuts_t &c, const cuts_t &o)
     {
       for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
         c[ct] = std::max(c[ct], o[ct]);
+      }
+    }
+
+    void inc_cut(cuts_t &c, const cuts_t &o)
+    {
+      for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
+        c[ct] += o[ct];
       }
     }
   };
