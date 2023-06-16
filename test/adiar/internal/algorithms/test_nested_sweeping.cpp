@@ -57,7 +57,7 @@ public:
     node_stream<> ns(outer_file);
 
     shared_levelized_file<arc> af;
-    af->max_1level_cut = 0;
+    af->max_1level_cut = 1;
 
     arc_writer aw(af);
 
@@ -2020,7 +2020,7 @@ go_bandit([]() {
             // NOTE: 'level_info(1,1u)' is not a processable part of the forest;
             aw.push(level_info(3,1u));
 
-            in_inner->max_1level_cut = 0;
+            in_inner->max_1level_cut = 1;
           }
 
           shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
@@ -2130,7 +2130,7 @@ go_bandit([]() {
             // NOTE: 'level_info(2,?u)' is not a processable part of the forest;
             aw.push(level_info(3,1u));
 
-            in_inner->max_1level_cut = 0;
+            in_inner->max_1level_cut = 1;
           }
 
           shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
@@ -2336,7 +2336,7 @@ go_bandit([]() {
             // NOTE: 'level_info(1,1u)' is not a processable part of the forest;
             aw.push(level_info(3,1u));
 
-            in_inner->max_1level_cut = 0;
+            in_inner->max_1level_cut = 1;
           }
 
           shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
