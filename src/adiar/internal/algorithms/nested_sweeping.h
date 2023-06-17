@@ -1043,6 +1043,14 @@ namespace adiar::internal
                                  decorated_pq,
                                  outer_writer,
                                  inner_sorters_memory);
+
+        // Forward arcs from outer sweep that collapsed to a sink.
+        while (inner_arcs.can_pull_terminal()) {
+          const arc a = inner_arcs.pull_terminal();
+          adiar_debug(a.source().is_flagged(),
+                      "Left-over terminal arcs are meant for outer sweep");
+          outer_pq.push(arc(unflag(a.source()), a.target()));
+        }
       }
 
       //////////////////////////////////////////////////////////////////////////

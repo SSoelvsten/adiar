@@ -2387,6 +2387,109 @@ go_bandit([]() {
 
           AssertThat(out_pq.can_pull(), Is().False());
         });
+
+        it("can deal with some root arcs go to a terminal", []() {
+          /* input
+          //     _1_            ---- x1
+          //  - / - \ -   -   -    -
+          //    |   2           ---- x3
+          //    |  / \
+          //    F  F T
+          */
+          const ptr_uint64 terminal_F(false);
+          const ptr_uint64 terminal_T(true);
+
+          const ptr_uint64 n1(1,0);
+          const ptr_uint64 n2(3,0);
+
+          shared_levelized_file<arc> in_outer;
+          { // Garbage collect writer to free write-lock
+            arc_writer aw(in_outer);
+
+            aw.push(level_info(1,1u));
+            aw.push(level_info(2,1u));
+
+            in_outer->max_1level_cut = 3;
+          }
+          arc_stream<> stream_outer(in_outer);
+
+          shared_levelized_file<arc> in_inner;
+
+          { // Garbage collect writer to free write-lock
+            arc_writer aw(in_inner);
+
+            aw.push_internal({ flag(with_out_idx(n1, true)), n2 });
+
+            aw.push_terminal({ flag(with_out_idx(n1, false)), terminal_F });
+            aw.push_terminal({ n2, false, terminal_F });
+            aw.push_terminal({ n2, true,  terminal_T });
+
+            // NOTE: 'level_info(1,1u)' is not a processable part of the forest;
+            aw.push(level_info(3,1u));
+
+            in_inner->max_1level_cut = 1;
+          }
+
+          shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
+          node_writer out_writer(out);
+
+          const size_t available_memory = memory_available();
+
+          outer_pq_t out_pq({in_outer}, available_memory / 2, in_outer->max_1level_cut);
+          out_pq.setup_next_level(2);
+
+          /* output
+          //     _1_            ---- x1
+          //  - / - \ -   -   -    -
+          //    |   2           ---- x3
+          //    |  / \
+          //    F  F T
+          */
+          nested_sweeping::inner::up<inner_up_sweep>(stream_outer, out_pq, out_writer,
+                                                     in_inner, available_memory / 2);
+
+          // Check meta variables before detach computations
+          AssertThat(out->width, Is().EqualTo(1u));
+
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL],       Is().EqualTo(0u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE],  Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::ALL],            Is().EqualTo(3u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+
+          // Check node and meta files are correct
+          out_writer.detach();
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                         terminal_F,
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // Check outer priority queue is correct
+          AssertThat(out_pq.size(),  Is().EqualTo(2u));
+
+          out_pq.setup_next_level();
+
+          AssertThat(out_pq.can_pull(), Is().True()); // Edge is tainted by reduction rule 1
+          AssertThat(out_pq.pull(), Is().EqualTo(arc(n1, true, node::ptr_t(3, node::MAX_ID))));
+          AssertThat(out_pq.can_pull(), Is().True()); // Edge is tainted by reduction rule 1
+          AssertThat(out_pq.pull(), Is().EqualTo(arc(n1, false, terminal_F)));
+
+          AssertThat(out_pq.can_pull(), Is().False());
+        });
       });
     });
   });
