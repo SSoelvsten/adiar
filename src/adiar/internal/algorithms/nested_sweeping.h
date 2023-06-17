@@ -944,7 +944,7 @@ namespace adiar::internal
         }
 
         ////////////////////////////////////////////////////////////////////////
-        /// \brief Numer of elements in both priority queues.
+        /// \brief Number of elements in both priority queues.
         ////////////////////////////////////////////////////////////////////////
         size_t size() const
         {
