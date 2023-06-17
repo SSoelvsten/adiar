@@ -305,6 +305,12 @@ namespace adiar::internal
         { return size() - terminals(false) - terminals(true); }
 
         ////////////////////////////////////////////////////////////////////////
+        /// \brief Whether the current level is empty.
+        ////////////////////////////////////////////////////////////////////////
+        bool empty_level() const
+        { return _outer_pq.empty_level(); }
+
+        ////////////////////////////////////////////////////////////////////////
         /// \brief Whether there are more elements to pull for this level.
         ////////////////////////////////////////////////////////////////////////
         bool can_pull() const
@@ -315,6 +321,12 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         reduce_arc pull()
         { return _outer_pq.pull(); }
+
+        ////////////////////////////////////////////////////////////////////////
+        /// \brief Obtain the next element from this level.
+        ////////////////////////////////////////////////////////////////////////
+        reduce_arc top()
+        { return _outer_pq.top(); }
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief Remove the top arc on the current level.
@@ -341,10 +353,17 @@ namespace adiar::internal
         /// \brief Push requests created at `_next_inner` to the priority queue
         ///        if it only has terminals; otherwise pushes to roots for
         ///        nested sweep.
+        ///
+        /// \param e The request with some `target` and `data.source`
+        ///
+        /// \pre   The request's source must be above `_next_inner` or `NIL`.
+        ///
+        /// \see request, request_with_data
         ////////////////////////////////////////////////////////////////////////
         void push(const typename outer_roots_t::elem_t &e)
         {
-          adiar_precondition(e.data.source.label() < _next_inner);
+          adiar_precondition(e.data.source.is_nil()
+                             || e.data.source.label() < _next_inner);
           if (e.target.fst().is_terminal()) {
             _outer_pq.push({ e.data.source, e.target.fst() });
           } else {
