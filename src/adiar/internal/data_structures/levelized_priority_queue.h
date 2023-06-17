@@ -46,7 +46,7 @@ namespace adiar::internal
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// The preprocessor variable ADIAR_PQ_LOOKAHEAD can be used to change the
+  /// The preprocessor variable ADIAR_LPQ_LOOKAHEAD can be used to change the
   /// number of buckets used by the levelized priority queue (if the number of
   /// elements are larger than the `no_lookahead_bound`).
   //////////////////////////////////////////////////////////////////////////////
