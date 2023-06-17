@@ -20,10 +20,34 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   namespace nested_sweeping
   {
-    //////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
     /// Struct to hold statistics
     extern stats_t::nested_sweeping_t stats;
 
+    ////////////////////////////////////////////////////////////////////////////
+    // A fast non-canonical `reduce_level`
+    //
+    // Enum with values:
+    //
+    // - ALWAYS_CANONICAL /* Always use the classic `reduce_level` */
+    //
+    // - FINAL_CANONICAL  /* Use the faster but non-canonical version as long as
+    //                       there is at least one Inner Down Sweep still to be
+    //                       done later. */
+    //
+    // - NEVER_CANONICAL  /* Always use the faster but non-canonical version */
+    //
+    // - AUTO             /* Quite similar to FINAL_CANONICAL, but it may use
+    //                       the slower version of `reduce_level` if we somehow
+    //                       have reason to believe it will remove nodes, e.g.
+    //                       the level is quite wide. */
+    ////////////////////////////////////////////////////////////////////////////
+    // TODO: enum
+    // TODO: `__reduce_level__fast`
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Algorithms and Decorators for the Outer sweep.
+    ////////////////////////////////////////////////////////////////////////////
     namespace outer
     {
       //////////////////////////////////////////////////////////////////////////
@@ -436,6 +460,9 @@ namespace adiar::internal
       };
     } // namespace outer
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Algorithms and Decorators for the Inner sweeps.
+    ////////////////////////////////////////////////////////////////////////////
     namespace inner
     {
       //////////////////////////////////////////////////////////////////////////
@@ -1143,7 +1170,407 @@ namespace adiar::internal
   } // namespace nested_sweeping
 
   //////////////////////////////////////////////////////////////////////////////
-  // TODO: nested sweep algorithm
+  // TODO: documentation
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename outer_up_sweep,
+           typename inner_down_sweep,
+           size_t outer_look_ahead,
+           memory_mode_t outer_mem_mode,
+           typename inner_up_sweep>
+  typename outer_up_sweep::reduced_t
+  __nested_sweep(const typename outer_up_sweep::shared_arcs_t &dag,
+                 inner_down_sweep &inner_impl,
+                 const size_t outer_pq_memory,
+                 const size_t outer_roots_memory,
+                 const size_t outer_pq_roots_max,
+                 const size_t inner_memory)
+  {
+    using inner_iter_t = nested_sweeping::outer::inner_iterator<inner_down_sweep>;
+    inner_iter_t inner_iter(dag, inner_impl);
+
+    using level_t = typename outer_up_sweep::label_t;
+    level_t next_inner = inner_iter.next_inner();
+
+    // If there are no levels to do an inner sweep, then bail out with the
+    // classic Reduce sweep.
+    if (next_inner == inner_iter_t::NONE) {
+#ifdef ADIAR_STATS
+      // TODO
+#endif
+      return reduce<outer_up_sweep>(dag);
+    }
+
+    // Set up input
+    arc_stream<> outer_arcs(dag);
+
+    // Set up (intermediate) output
+    typename outer_up_sweep::shared_nodes_t outer_file
+      = __reduce_init_output<outer_up_sweep>();
+
+    node_writer outer_writer(outer_file);
+
+    // Outer Up Sweep: Obtain access to the levels to get the inputs width.
+    level_info_stream outer_levels(dag);
+
+    // Outer Up Sweep: Instantiate the (levelized) priority queue and other
+    // Reduce state variables, e.g. i-level cuts.
+    adiar_debug(outer_pq_memory + outer_roots_memory + inner_memory < memory_available(),
+                "Enough memory should be left priority queue and inner sweep");
+
+    using outer_pq_t = typename outer_up_sweep::template pq_t<outer_look_ahead, outer_mem_mode>;
+    outer_pq_t outer_pq({dag}, outer_pq_memory, outer_pq_roots_max);
+
+    // Outer Up Sweep: Use the 'inner_memory' for the per-level data structures
+    // and streams. This is safe, since these data structures are only
+    // instantiated when the Inner Sweep is not.
+    const size_t outer_sorters_memory =
+      inner_memory - tpie::file_stream<mapping>::memory_usage();
+
+    const size_t outer_internal_sorter_can_fit =
+      internal_sorter<node>::memory_fits(outer_sorters_memory / 2);
+
+    // TODO: assert enough memory is still available for the remaining things
+
+    // Inner Down Sweep:
+    //
+    // 1. We need to create requests for roots of the Inner Down Sweep in (i)
+    //    the Outer Down Sweep and (ii) the Inner Up Sweep.
+    //
+    // 2. We want to change the memory type based on i-level cuts if possible.
+    //    To keep this at the compile-time level, we cannot instantiate the
+    //    priority queue at this level of the algorithm.
+    //
+    // Hence, we will have a special sorter of all nested root requests which is
+    // then merged with the recursion requests within the Inner Down Sweep.
+    //
+    // The arcs in 'outer_roots' are always between nodes that cross some
+    // level of the input. That is, these arcs always constitute a 1-level cut
+    // of the input.
+    using outer_roots_t =
+      nested_sweeping::outer::roots_sorter<outer_mem_mode,
+                                           typename inner_down_sweep::request_t,
+                                           typename inner_down_sweep::request_pred_t>;
+    outer_roots_t outer_roots(outer_roots_memory, outer_pq_roots_max);
+
+    // Decorator that acts as 'outer_pq' but moves arcs to 'outer_roots'.
+    using outer_pq_decorator_t =
+      nested_sweeping::outer::up__pq_decorator<outer_pq_t, outer_roots_t>;
+
+    while (outer_levels.can_pull()) {
+      adiar_debug(outer_arcs.can_pull_terminal() || !outer_pq.empty(),
+                  "If there is a level, then there should also be something for it.");
+
+      // Set up next level for outer reduce
+
+      const level_info outer_level = outer_levels.pull();
+
+      adiar_invariant(!outer_pq.has_current_level()
+                      || outer_level.level() == outer_pq.current_level(),
+                      "level and priority queue should be in sync");
+      adiar_invariant(next_inner == inner_iter_t::NONE || next_inner <= outer_level.level(),
+                      "next_inner level should (if it exists) be above current level (inclusive).");
+
+      // -----------------------------------------------------------------------
+      // CASE Unnested Level with no nested sweep above:
+      //   Reduce this level (as usual).
+      if (next_inner == inner_iter_t::NONE) {
+        if(outer_level.width() <= outer_internal_sorter_can_fit) {
+          __reduce_level<outer_up_sweep, outer_pq_t, internal_sorter>
+            (outer_arcs, outer_level.level(), outer_pq, outer_writer, outer_sorters_memory, outer_level.width());
+        } else {
+          __reduce_level<outer_up_sweep, outer_pq_t, external_sorter>
+            (outer_arcs, outer_level.level(), outer_pq, outer_writer, outer_sorters_memory, outer_level.width());
+        }
+
+        continue;
+      }
+
+      // -----------------------------------------------------------------------
+      // CASE: Unnested Level with a nested sweep above:
+      //   Reduce this level (but with a decorator to redirect requests).
+      if (next_inner < outer_level.level()) {
+        outer_pq_decorator_t outer_pq_decorator(outer_pq, outer_roots, next_inner);
+
+        if(outer_level.width() <= outer_internal_sorter_can_fit) {
+          __reduce_level<outer_up_sweep, outer_pq_decorator_t, internal_sorter>
+            (outer_arcs, outer_level.level(), outer_pq_decorator, outer_writer, outer_sorters_memory, outer_level.width());
+        } else {
+          __reduce_level<outer_up_sweep, outer_pq_decorator_t, external_sorter>
+            (outer_arcs, outer_level.level(), outer_pq_decorator, outer_writer, outer_sorters_memory, outer_level.width());
+        }
+
+        continue;
+      }
+
+      // -----------------------------------------------------------------------
+      // CASE Nested Level:
+      //   Sweep down re-reduce it back up to this level.
+      adiar_debug(outer_level.level() == next_inner,
+                  "'next_inner' level is not skipped");
+
+      // -----------------------------------------------------------------------
+      // Collect all recursions for this level
+      {
+        outer_pq_decorator_t outer_pq_decorator(outer_pq, outer_roots, next_inner);
+
+        // TODO:
+        // - Specify the node should be output (to create nodes on this level).
+        // - Keep track of whether any non-GC requests are made.
+        while ((outer_arcs.can_pull_terminal()
+                && outer_arcs.peek_terminal().source().label() == outer_level.level())
+               || outer_pq.can_pull()) {
+
+          const arc e_high = __reduce_get_next(outer_pq, outer_arcs);
+          const arc e_low  = __reduce_get_next(outer_pq, outer_arcs);
+
+          const node n = node_of(e_low, e_high);
+
+          // Apply Reduction rule 1?
+          const node::ptr_t reduction_rule_ret = outer_up_sweep::reduction_rule(n);
+          if (reduction_rule_ret != n.uid()) {
+            // If so, preserve node
+            if (!outer_levels.can_pull()) {
+              adiar_debug(!outer_arcs.can_pull_internal(), "Should not have any parents at top-most level");
+
+              if (reduction_rule_ret.is_terminal()) {
+                return typename outer_up_sweep::reduced_t(reduction_rule_ret.value());
+              }
+              outer_pq_decorator.push(arc(node::ptr_t::NIL(), reduction_rule_ret));
+            } else {
+              do {
+                outer_pq_decorator.push(arc(outer_arcs.pull_internal().source(), reduction_rule_ret));
+              } while (outer_arcs.can_pull_internal() && outer_arcs.peek_internal().target() == n.uid());
+            }
+          } else {
+            // Otherwise, create request
+            if (!outer_levels.can_pull()) {
+              adiar_debug(!outer_arcs.can_pull_internal(), "Should not have any parents at top-most level");
+
+              const typename inner_down_sweep::request_t r =
+                inner_down_sweep::request_from_node(n, node::ptr_t::NIL());
+
+              if (r.target.fst().is_terminal()) {
+                return typename outer_up_sweep::reduced_t(r.target.fst().value());
+              }
+              outer_pq_decorator.push(r);
+            } else {
+              do {
+                const typename inner_down_sweep::request_t r =
+                  inner_down_sweep::request_from_node(n, outer_arcs.pull_internal().source());
+                outer_pq_decorator.push(r);
+              } while (outer_arcs.can_pull_internal() && outer_arcs.peek_internal().target() == n.uid());
+            }
+          }
+        }
+      }
+
+      // -----------------------------------------------------------------------
+      // Obtain the next level to sweep nestedly on.
+      next_inner = inner_iter.next_inner();
+
+      const bool run_inner = outer_roots.size() > 0;
+      if (run_inner) {
+        // ---------------------------------------------------------------------
+        // Inner Down Sweep
+        adiar_debug(outer_roots.size() > 0,
+                    "Nested Sweep needs some number of requests");
+
+        outer_writer.detach();
+
+        const typename inner_down_sweep::unreduced_t inner_unreduced =
+          nested_sweeping::inner::down(inner_impl, outer_file, outer_roots, inner_memory);
+
+        if (inner_unreduced.template has<typename outer_up_sweep::shared_nodes_t>()) {
+          adiar_debug(!outer_levels.can_pull(),
+                      "Should only collapse to a node file case when at the very top-level.");
+          adiar_debug(inner_unreduced.template get<typename outer_up_sweep::shared_nodes_t>()->is_terminal(),
+                      "Should have collapsed to a terminal.");
+
+          return inner_unreduced.template get<typename outer_up_sweep::shared_nodes_t>();
+        }
+
+        // ---------------------------------------------------------------------
+        // Inner Up Sweep
+        adiar_debug(!inner_unreduced.template has<no_file>(),
+                    "Inner Sweep returned something");
+
+        const typename outer_up_sweep::shared_arcs_t inner_arcs =
+          inner_unreduced.template get<typename outer_up_sweep::shared_arcs_t>();
+
+        outer_file = __reduce_init_output<outer_up_sweep>();
+        outer_writer.attach(outer_file);
+
+        if (outer_up_sweep::ptr_t::MAX_LABEL < next_inner) {
+          nested_sweeping::inner::up<inner_up_sweep>(outer_arcs, outer_pq, outer_writer,
+                                                     inner_arcs, inner_memory);
+        } else {
+          adiar_debug(next_inner < outer_level.level(),
+                      "If 'next_inner' is not illegal, then it is above current level");
+
+          outer_pq_decorator_t outer_pq_decorator(outer_pq, outer_roots, next_inner);
+
+          nested_sweeping::inner::up<inner_up_sweep>(outer_arcs, outer_pq_decorator, outer_writer,
+                                                     inner_arcs, inner_memory);
+        }
+      } else if (outer_roots.size() > 0) {
+        // ---------------------------------------------------------------------
+        // Bail out of Inner Sweep
+
+        // TODO: keep track of whether any requests are manipulating the graph.
+        // TODO: forward tainting flag to ensure correct i-level cuts?
+        adiar_unreachable();
+      } else { // if (outer_roots.size() == 0) {
+        // ---------------------------------------------------------------------
+        // Nothing within 'outer_file' should survive.
+        if (outer_writer.size() != 0) {
+          outer_writer.detach();
+          outer_file = __reduce_init_output<outer_up_sweep>();
+          outer_writer.attach(outer_file);
+        }
+      }
+
+      // -----------------------------------------------------------------------
+      // Set up next level in Outer PQ
+      if (!outer_pq.empty() || !outer_roots.empty()) {
+        adiar_debug(!outer_arcs.can_pull_terminal() || outer_arcs.peek_terminal().source().label() < outer_level.level(),
+                    "All terminal arcs for 'label' should be processed");
+
+        adiar_debug(!outer_arcs.can_pull_internal() || outer_arcs.peek_internal().target().label() < outer_level.level(),
+                    "All internal arcs for 'label' should be processed");
+
+        adiar_debug(outer_pq.empty() || !outer_pq.can_pull(),
+                    "All forwarded arcs for 'label' should be processed");
+
+        const size_t terminal_stop_level =
+          outer_arcs.can_pull_terminal() ? outer_arcs.peek_terminal().source().label() : outer_pq_t::NO_LABEL;
+
+        const size_t outer_roots_stop_level =
+          !outer_roots.empty() ? outer_roots.deepest_source() : outer_pq_t::NO_LABEL;
+
+        adiar_debug(terminal_stop_level != outer_pq_t::NO_LABEL
+                    || outer_roots_stop_level != outer_pq_t::NO_LABEL
+                    || !outer_pq.empty(),
+                    "There must be some (known) level ready to be forwarded to.");
+
+        const size_t stop_level = terminal_stop_level == outer_pq_t::NO_LABEL    ? outer_roots_stop_level
+                                : outer_roots_stop_level == outer_pq_t::NO_LABEL ? terminal_stop_level
+                                : std::max(terminal_stop_level, outer_roots_stop_level)
+          ;
+
+        adiar_debug(stop_level != outer_pq_t::NO_LABEL || !outer_pq.empty(),
+                    "There must be some (known) level ready to be forwarded to.");
+
+        outer_pq.setup_next_level(stop_level);
+      } else if (outer_file->is_terminal()) {
+#ifdef ADIAR_STATS
+        // TODO
+#endif
+        return outer_file;
+      }
+    }
+
+    // Return (now not anymore 'intermediate') output
+    outer_writer.detach();
+    return outer_file;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Framework for I/O-efficient translation of recursive functions that
+  ///        re-recurse on intermediate results.
+  ///
+  /// \tparam outer_up_sweep   Policy for outer bottom-up (Reduce) sweep.
+  ///
+  /// \tparam inner_down_sweep Policy for the inner downwards sweep that
+  ///                          manipulates the graph.
+  ///
+  /// \tparam inner_up_sweep   Policy for inner bottom-up (Reduce) sweep.
+  ///
+  /// \param  dag  A possibly reduced input. If it has collapsed to a terminal,
+  ///              then that one is returned. If it is reduced, then it will be
+  ///              transposed before computation starts.
+  ///
+  /// \param  inner_impl Provides the non-static parts of the inner logic that
+  ///         determines when to start the nested sweep.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename outer_up_sweep,
+           typename inner_down_sweep,
+           typename inner_up_sweep = outer_up_sweep>
+  typename outer_up_sweep::reduced_t
+  nested_sweep(const typename outer_up_sweep::shared_arcs_t &dag,
+               inner_down_sweep &inner_impl)
+  {
+    // Compute amount of memory available for auxiliary data structures after
+    // having opened all streams.
+    //
+    // We then may derive an upper bound on the size of auxiliary data
+    // structures for the Outer Up Sweep. If small enough, we can run them with
+    // a faster internal memory variant.
+    //
+    // Here, we still need to keep in mind, that the available memory needs to
+    // be distributed across (up to) four priority queues!
+    const size_t total_memory = memory_available();
+
+    const size_t outer_memory = total_memory / 2;
+    const size_t inner_memory = total_memory - outer_memory;
+
+    const size_t aux_outer_memory = outer_memory
+      // Input streams
+      - arc_stream<>::memory_usage()
+      - level_info_stream<>::memory_usage()
+      // Inner Iterator
+      - nested_sweeping::outer::inner_iterator<inner_down_sweep>::memory_usage()
+      // Output streams
+      - node_writer::memory_usage();
+
+    constexpr size_t data_structures_in_pq =
+      outer_up_sweep::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::DATA_STRUCTURES;
+
+
+    using internal_roots_sorter_t =
+      nested_sweeping::outer::roots_sorter<memory_mode_t::INTERNAL,
+                                           typename inner_down_sweep::request_t,
+                                           typename inner_down_sweep::request_pred_t>;
+
+    constexpr size_t data_structures_in_roots = internal_roots_sorter_t::DATA_STRUCTURES;
+
+    const size_t outer_pq_memory =
+      (aux_outer_memory / (data_structures_in_pq + data_structures_in_roots)) * data_structures_in_pq;
+
+    const size_t outer_roots_memory = aux_outer_memory - outer_pq_memory;
+
+    const tpie::memory_size_type outer_pq_memory_fits =
+      outer_up_sweep::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::memory_fits(outer_pq_memory);
+
+    const tpie::memory_size_type outer_roots_memory_fits =
+      internal_roots_sorter_t::memory_fits(outer_pq_memory);
+
+    const size_t pq_roots_bound = dag->max_1level_cut;
+
+    const size_t outer_pq_roots_max = memory_mode == memory_mode_t::INTERNAL
+      ? std::min({outer_pq_memory_fits, outer_roots_memory_fits, pq_roots_bound})
+      : pq_roots_bound;
+
+    const bool external_only = memory_mode == memory_mode_t::EXTERNAL;
+    if (!external_only && outer_pq_roots_max <= no_lookahead_bound(1)) {
+#ifdef ADIAR_STATS
+      stats_reduce.lpq.unbucketed += 1u;
+#endif
+      return __nested_sweep<outer_up_sweep, inner_down_sweep, 0, memory_mode_t::INTERNAL, inner_up_sweep>
+        (dag, inner_impl, outer_pq_memory, outer_roots_memory, outer_pq_roots_max, inner_memory);
+    } else if(!external_only && outer_pq_roots_max <= outer_pq_memory_fits && outer_pq_roots_max <= outer_roots_memory_fits) {
+#ifdef ADIAR_STATS
+      stats_reduce.lpq.internal += 1u;
+#endif
+      return __nested_sweep<outer_up_sweep, inner_down_sweep, ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL, inner_up_sweep>
+        (dag, inner_impl, outer_pq_memory, outer_roots_memory, outer_pq_roots_max, inner_memory);
+    } else {
+#ifdef ADIAR_STATS
+      stats_reduce.lpq.external += 1u;
+#endif
+      return __nested_sweep<outer_up_sweep, inner_down_sweep, ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL, inner_up_sweep>
+        (dag, inner_impl, outer_pq_memory, outer_roots_memory, outer_pq_roots_max, inner_memory);
+    }
+  }
 }
 
 #endif // ADIAR_INTERNAL_ALGORITHMS_NESTED_SWEEPING_H
