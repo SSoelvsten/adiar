@@ -462,7 +462,9 @@ namespace adiar::internal
     const size_t internal_sorter_can_fit = internal_sorter<node>::memory_fits(sorters_memory / 2);
 
     // Process bottom-up each level
-    while (arcs.can_pull_terminal() || !reduce_pq.empty()) {
+    while (levels.can_pull()) {
+      adiar_debug(arcs.can_pull_terminal() || !reduce_pq.empty(),
+                  "If there is a level, then there should also be something for it.");
       const level_info current_level_info = levels.pull();
       const typename dd_policy::label_t level = current_level_info.level();
 
