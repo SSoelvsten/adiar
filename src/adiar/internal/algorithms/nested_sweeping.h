@@ -644,7 +644,7 @@ namespace adiar::internal
       /// Sorts and resets the given `outer_roots` sorter.
       //////////////////////////////////////////////////////////////////////////
       template<typename inner_down_sweep, typename outer_roots_t>
-      typename inner_down_sweep::shared_arcs_t
+      typename inner_down_sweep::unreduced_t
       down(inner_down_sweep &inner_impl,
            const typename inner_down_sweep::shared_nodes_t &outer_file,
            outer_roots_t &outer_roots,
@@ -662,7 +662,7 @@ namespace adiar::internal
         //
         // To avoid having to do the boiler-plate yourself, use
         // `down__sweep_switch` below (assuming your algorithm fits).
-        const typename inner_down_sweep::shared_arcs_t res =
+        const typename inner_down_sweep::unreduced_t res =
           inner_impl.sweep(outer_file, outer_roots, inner_memory);
 
         outer_roots.reset();
@@ -675,7 +675,7 @@ namespace adiar::internal
       ///        priority queue and the `roots_sorter`.
       //////////////////////////////////////////////////////////////////////////
       template<typename inner_down_sweep, typename outer_roots_t>
-      inline typename inner_down_sweep::shared_arcs_t
+      inline typename inner_down_sweep::unreduced_t
       down__sweep_switch(inner_down_sweep &inner_impl,
                          const typename inner_down_sweep::shared_nodes_t &outer_file,
                          outer_roots_t &outer_roots,
@@ -1046,19 +1046,19 @@ namespace adiar::internal
       up(const arc_stream<> &outer_arcs,
          outer_pq_t &outer_pq,
          node_writer &outer_writer,
-         const typename inner_up_sweep::shared_arcs_t &inner_unreduced,
+         const typename inner_up_sweep::shared_arcs_t &inner_arcs_file,
          const size_t inner_pq_memory,
          const size_t inner_pq_max_size,
          const size_t inner_sorters_memory)
       {
         // Set up input
-        arc_stream<> inner_arcs(inner_unreduced);
+        arc_stream<> inner_arcs(inner_arcs_file);
         up__arc_stream__decorator decorated_arcs(inner_arcs, outer_arcs);
 
-        level_info_stream<> inner_levels(inner_unreduced);
+        level_info_stream<> inner_levels(inner_arcs_file);
 
         // Set up (decorated) priority queue
-        inner_pq_t inner_pq({inner_unreduced}, inner_pq_memory, inner_pq_max_size);
+        inner_pq_t inner_pq({inner_arcs_file}, inner_pq_memory, inner_pq_max_size);
 
         using decorator_t = up__pq_decorator<inner_pq_t, outer_pq_t>;
         decorator_t decorated_pq(inner_pq, outer_pq);
@@ -1088,7 +1088,7 @@ namespace adiar::internal
       up(const arc_stream<> &outer_arcs,
          outer_pq_t &outer_pq,
          node_writer &outer_writer,
-         const typename inner_up_sweep::shared_arcs_t &inner_unreduced,
+         const typename inner_up_sweep::shared_arcs_t &inner_arcs_file,
          const size_t inner_memory)
       {
         // Compute amount of memory available for auxiliary data structures after
@@ -1108,7 +1108,7 @@ namespace adiar::internal
         const tpie::memory_size_type inner_pq_memory_fits =
           inner_up_sweep::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::memory_fits(inner_pq_memory);
 
-        const size_t inner_pq_bound = inner_unreduced->max_1level_cut;
+        const size_t inner_pq_bound = inner_arcs_file->max_1level_cut;
 
         const size_t inner_pq_max_size = memory_mode == memory_mode_t::INTERNAL
           ? std::min(inner_pq_memory_fits, inner_pq_bound)
@@ -1121,7 +1121,7 @@ namespace adiar::internal
 #endif
           using inner_pq_t = typename inner_up_sweep::template pq_t<0, memory_mode_t::INTERNAL>;
           up<inner_up_sweep, inner_pq_t>(outer_arcs, outer_pq, outer_writer,
-                                         inner_unreduced, inner_pq_memory, inner_pq_max_size, inner_sorters_memory);
+                                         inner_arcs_file, inner_pq_memory, inner_pq_max_size, inner_sorters_memory);
 
         } else if(!external_only && inner_pq_max_size <= inner_pq_memory_fits) {
 #ifdef ADIAR_STATS
@@ -1129,14 +1129,14 @@ namespace adiar::internal
 #endif
           using inner_pq_t = typename inner_up_sweep::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>;
           up<inner_up_sweep, inner_pq_t>(outer_arcs, outer_pq, outer_writer,
-                                         inner_unreduced, inner_pq_memory, inner_pq_max_size, inner_sorters_memory);
+                                         inner_arcs_file, inner_pq_memory, inner_pq_max_size, inner_sorters_memory);
         } else {
 #ifdef ADIAR_STATS
           stats.inner.up.lpq.external += 1u;
 #endif
           using inner_pq_t = typename inner_up_sweep::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>;
           up<inner_up_sweep, inner_pq_t>(outer_arcs, outer_pq, outer_writer,
-                                         inner_unreduced, inner_pq_memory, inner_pq_max_size, inner_sorters_memory);
+                                         inner_arcs_file, inner_pq_memory, inner_pq_max_size, inner_sorters_memory);
         }
       }
     } // namespace inner
