@@ -399,6 +399,12 @@ namespace adiar::internal
       public:
         using level_t = typename inner_down_sweep::ptr_t::label_t;
 
+      public:
+        ////////////////////////////////////////////////////////////////////////
+        static tpie::memory_size_type
+        memory_usage()
+        { return level_info_stream<>::memory_usage(); }
+
       private:
         level_info_stream<>     _lis;
         const inner_down_sweep &_inner_impl;
