@@ -182,6 +182,7 @@ namespace adiar::internal
     {
       adiar_precondition(attached());
       adiar_precondition(a.target().is_node());
+      adiar_precondition(!a.source().is_nil());
 #ifdef ADIAR_STATS
       stats_arc_file.push_internal += 1;
 #endif
@@ -197,6 +198,7 @@ namespace adiar::internal
     {
       adiar_precondition(attached());
       adiar_precondition(a.target().is_terminal());
+      adiar_precondition(!a.source().is_nil());
 
       if (!__has_latest_terminal || a.source() > __latest_terminal.source()) {
         // Given arc is 'in-order' compared to latest 'in-order' pushed
