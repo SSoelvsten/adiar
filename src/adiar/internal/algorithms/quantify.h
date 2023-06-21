@@ -5,10 +5,11 @@
 #include <functional>
 
 #include <adiar/bool_op.h>
+#include <adiar/quantify_mode.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/cnl.h>
+#include <adiar/internal/algorithms/nested_sweeping.h>
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
-
 #include <adiar/internal/data_types/tuple.h>
 #include <adiar/internal/data_types/request.h>
 #include <adiar/internal/io/arc_file.h>
@@ -395,6 +396,119 @@ namespace adiar::internal
   }
 
   //////////////////////////////////////////////////////////////////////////////
+  template<typename quantify_policy>
+  class multi_quantify_policy : public quantify_policy
+  {
+  private:
+    const bool_op &_op;
+
+  public:
+    using request_t = quantify_request<0>;
+    using request_pred_t = request_data_fst_lt<request_t>;
+
+    template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
+    using pq_t = quantify_priority_queue_1_t<LOOK_AHEAD, mem_mode>;
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    static size_t stream_memory()
+    { return node_stream<>::memory_usage() + arc_writer::memory_usage(); }
+
+    ////////////////////////////////////////////////////////////////////////////
+    static size_t pq_memory(const size_t inner_memory)
+    {
+      constexpr size_t data_structures_in_pq_1 =
+        quantify_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::DATA_STRUCTURES;
+
+      constexpr size_t data_structures_in_pq_2 =
+        quantify_priority_queue_2_t<memory_mode_t::INTERNAL>::DATA_STRUCTURES;
+
+      return  (inner_memory / (data_structures_in_pq_1 + data_structures_in_pq_2)) * data_structures_in_pq_1;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    size_t pq_bound(const typename quantify_policy::shared_nodes_t &outer_file,
+                    const size_t /*outer_roots*/)
+    {
+      return std::min(__quantify_ilevel_upper_bound<quantify_policy, get_2level_cut, 2u>(outer_file, _op),
+                      __quantify_ilevel_upper_bound<quantify_policy>(outer_file));
+    }
+
+  public:
+    multi_quantify_policy(const bool_op &op)
+      : _op(op)
+    { }
+
+  public:
+    // bool has_sweep(typename quantify_policy::label_t) const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Run Sweep with given priority queue.
+    ////////////////////////////////////////////////////////////////////////////
+    template<typename inner_pq_1_t>
+    typename quantify_policy::unreduced_t
+    sweep_pq(const shared_levelized_file<node> &outer_file,
+             inner_pq_1_t &inner_pq_1,
+             const size_t inner_remaining_memory)
+    {
+      const size_t pq_2_memory_fits =
+        quantify_priority_queue_2_t<memory_mode_t::INTERNAL>::memory_fits(inner_remaining_memory);
+
+      const size_t pq_2_bound =
+        __quantify_ilevel_upper_bound<quantify_policy, get_1level_cut, 0u>(outer_file, _op);
+
+      const size_t max_pq_2_size = memory_mode == memory_mode_t::INTERNAL
+        ? std::min(pq_2_memory_fits, pq_2_bound)
+        : pq_2_bound;
+
+      if(memory_mode != memory_mode_t::EXTERNAL && max_pq_2_size <= pq_2_memory_fits) {
+        using inner_pq_2_t = quantify_priority_queue_2_t<memory_mode_t::INTERNAL>;
+        inner_pq_2_t inner_pq_2(inner_remaining_memory, max_pq_2_size);
+
+        return __quantify<quantify_policy, inner_pq_1_t, inner_pq_2_t>
+          (outer_file, 0 /*dummy*/, _op, inner_pq_1, inner_pq_2);
+      } else {
+        using inner_pq_2_t = quantify_priority_queue_2_t<memory_mode_t::EXTERNAL>;
+        inner_pq_2_t inner_pq_2(inner_remaining_memory, max_pq_2_size);
+
+        return __quantify<quantify_policy, inner_pq_1_t, inner_pq_2_t>
+          (outer_file, 0 /*dummy*/, _op, inner_pq_1, inner_pq_2);
+      }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Pick PQ type and Run Sweep.
+    ////////////////////////////////////////////////////////////////////////////
+    template<typename outer_roots_t>
+    typename quantify_policy::unreduced_t
+    sweep(const shared_levelized_file<node> &outer_file,
+          outer_roots_t &outer_roots,
+          const size_t inner_memory)
+    {
+      return nested_sweeping::inner::down__sweep_switch(*this, outer_file, outer_roots, inner_memory);
+    }
+
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Create request
+    //////////////////////////////////////////////////////////////////////////////
+    inline request_t
+    request_from_node(const typename quantify_policy::node_t &n,
+                      const typename quantify_policy::ptr_t &parent)
+    {
+      // Shortcutting terminal?
+      const typename quantify_policy::ptr_t result =
+        quantify_policy::resolve_root(n, _op);
+
+      // Always pick high child
+      typename request_t::target_t tgt = result != n.uid()
+        ? request_t::target_t{ result, quantify_policy::ptr_t::NIL() }
+        : request_t::target_t{ fst(n.low(), n.high()), snd(n.low(), n.high()) };
+
+      return request_t(tgt, {}, {parent});
+    }
+  };
+
+  //////////////////////////////////////////////////////////////////////////////
   // Multi-variable (file)
   template<typename quantify_policy>
   typename quantify_policy::unreduced_t
@@ -461,23 +575,94 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   // Multi-variable (descending generator)
   template<typename quantify_policy>
+  class multi_quantify_policy__gen
+    : public multi_quantify_policy<quantify_policy>
+  {
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Generator of levels to sweep on (or not to sweep on) in
+    ///        descending order.
+    ////////////////////////////////////////////////////////////////////////////
+    using gen_t = std::function<typename quantify_policy::label_t()>;
+
+  private:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Generator of levels to sweep on (or not to sweep on) in
+    ///        descending order.
+    ////////////////////////////////////////////////////////////////////////////
+    const gen_t &_gen;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Buffer for to hold onto the generated next level.
+    ////////////////////////////////////////////////////////////////////////////
+    typename quantify_policy::label_t _next_level;
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    multi_quantify_policy__gen(const bool_op &op, const gen_t &gen)
+      : multi_quantify_policy<quantify_policy>(op), _gen(gen)
+    {
+      _next_level = _gen();
+    }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether the generator wants to sweep on some level.
+    ////////////////////////////////////////////////////////////////////////////
+    bool has_sweep(node::ptr_t::label_t l)
+    {
+      if (has_next_level() && l == _next_level) {
+        _next_level = _gen();
+        return quantify_policy::pred_value;
+      } else {
+        return !quantify_policy::pred_value;
+      }
+    }
+
+  private:
+    bool has_next_level() const
+    { return _next_level <= quantify_policy::MAX_LABEL; }
+  };
+
+  template<typename quantify_policy>
   typename quantify_policy::unreduced_t
   quantify(typename quantify_policy::reduced_t dd,
-           const std::function<typename quantify_policy::label_t()> &gen,
+           const typename multi_quantify_policy__gen<quantify_policy>::gen_t &gen,
            const bool_op &op)
   {
     typename quantify_policy::label_t label = gen();
     if (quantify_policy::MAX_LABEL < label) { return dd; }
 
-    typename quantify_policy::label_t next_label = gen();
-    while (next_label <= quantify_policy::MAX_LABEL) {
-      dd = quantify<quantify_policy>(dd, label, op);
-      if (is_terminal(dd)) { return dd; }
+    switch (quantify_mode) {
+    case quantify_mode_t::SINGLETON:
+    case quantify_mode_t::PARTIAL:
+      { // -------------------------------------------------------------------
+        // Case: Individual Quantification
+        typename quantify_policy::label_t next_label = gen();
+        while (next_label <= quantify_policy::MAX_LABEL) {
+          dd = quantify<quantify_policy>(dd, label, op);
+          if (is_terminal(dd)) { return dd; }
 
-      label = next_label;
-      next_label = gen();
+          label = next_label;
+          next_label = gen();
+        }
+        return quantify<quantify_policy>(dd, label, op);
+      }
+
+    case quantify_mode_t::NESTED:
+    case quantify_mode_t::AUTO:
+      { // ---------------------------------------------------------------------
+        // Case: Nested Sweeping
+        using outer_up_sweep = nested_sweeping::outer::up__policy_t<quantify_policy>;
+        multi_quantify_policy__gen<quantify_policy> inner_impl(op, gen);
+
+        return nested_sweep<outer_up_sweep>(quantify<quantify_policy>(dd, label, op), inner_impl);
+      }
+
+    default:
+      // ---------------------------------------------------------------------
+      adiar_unreachable();
     }
-    return quantify<quantify_policy>(dd, label, op);
   }
 }
 

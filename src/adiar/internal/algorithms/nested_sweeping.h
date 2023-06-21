@@ -432,12 +432,12 @@ namespace adiar::internal
         { return level_info_stream<>::memory_usage(); }
 
       private:
-        level_info_stream<>     _lis;
-        const inner_down_sweep &_inner_impl;
+        level_info_stream<> _lis;
+        inner_down_sweep    &_inner_impl;
 
       public:
         inner_iterator(const typename inner_down_sweep::shared_arcs_t &dag,
-                       const inner_down_sweep &inner_impl)
+                       inner_down_sweep &inner_impl)
           : _lis(dag)
           , _inner_impl(inner_impl)
         { }
@@ -729,7 +729,7 @@ namespace adiar::internal
         // ---------------------------------------------------------------------
         // Case: Run Inner Sweep (with priority queues)
 
-        const size_t inner_pq_memory = inner_down_sweep::pq_memory(inner_memory - inner_stream_memory);
+        const size_t inner_pq_memory = inner_impl.pq_memory(inner_memory - inner_stream_memory);
         adiar_debug(inner_pq_memory <= inner_memory - inner_stream_memory,
                     "There should be enough memory to include all streams and priority queue");
 
@@ -738,7 +738,7 @@ namespace adiar::internal
         const size_t inner_pq_fits =
           inner_down_sweep::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::memory_fits(inner_pq_memory);
 
-        const size_t inner_pq_bound = inner_down_sweep::pq_bound(outer_file, outer_roots.size());
+        const size_t inner_pq_bound = inner_impl.pq_bound(outer_file, outer_roots.size());
 
         const bool external_only = memory_mode == memory_mode_t::EXTERNAL;
 
@@ -1349,7 +1349,7 @@ namespace adiar::internal
               adiar_debug(!outer_arcs.can_pull_internal(), "Should not have any parents at top-most level");
 
               const typename inner_down_sweep::request_t r =
-                inner_down_sweep::request_from_node(n, node::ptr_t::NIL());
+                inner_impl.request_from_node(n, node::ptr_t::NIL());
 
               if (r.target.fst().is_terminal()) {
                 return typename outer_up_sweep::reduced_t(r.target.fst().value());
@@ -1358,7 +1358,7 @@ namespace adiar::internal
             } else {
               do {
                 const typename inner_down_sweep::request_t r =
-                  inner_down_sweep::request_from_node(n, outer_arcs.pull_internal().source());
+                  inner_impl.request_from_node(n, outer_arcs.pull_internal().source());
                 outer_pq_decorator.push(r);
               } while (outer_arcs.can_pull_internal() && outer_arcs.peek_internal().target() == n.uid());
             }
