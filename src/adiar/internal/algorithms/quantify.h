@@ -110,6 +110,12 @@ namespace adiar::internal
                                                    const size_t pq_1_memory, const size_t max_pq_1_size,
                                                    const size_t pq_2_memory, const size_t max_pq_2_size)
   {
+    // TODO (partial quantification) / (optimisation for nested sweeping):
+    //   Replace label with a 'quantify_impl' that provides a predicate whether
+    //   to quantify a certain level.
+    //
+    //   This should then also expose the operator instead.
+
     // Set up input
     node_stream<> in_nodes(in);
     typename quantify_policy::node_t v = in_nodes.pull();
