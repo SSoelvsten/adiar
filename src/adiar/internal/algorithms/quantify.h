@@ -107,7 +107,7 @@ namespace adiar::internal
   typename quantify_policy::unreduced_t __quantify(const typename quantify_policy::reduced_t &in,
                                                    const typename quantify_policy::label_t &label,
                                                    const bool_op &op,
-                                                   const size_t pq_1_memory, const size_t max_pq_1_size,
+                                                   pq_1_t &quantify_pq_1,
                                                    const size_t pq_2_memory, const size_t max_pq_2_size)
   {
     // TODO (partial quantification) / (optimisation for nested sweeping):
@@ -117,29 +117,17 @@ namespace adiar::internal
     //   This should then also expose the operator instead.
 
     // Set up input
+    // TODO: use '.seek(...)' with 'in_nodes' instead such that it only needs to
+    //       be opened once in the caller of this function.
     node_stream<> in_nodes(in);
     typename quantify_policy::node_t v = in_nodes.pull();
-
-    // Check for trivial terminal-only return on shortcutting the root
-    if (v.label() == label && (v.low().is_terminal() || v.high().is_terminal())) {
-      typename quantify_policy::unreduced_t maybe_resolved =
-        quantify_policy::resolve_terminal_root(v, op);
-
-      if (!maybe_resolved.empty()) {
-        return maybe_resolved;
-      }
-    }
-
-    // Set up cross-level priority queue
-    pq_1_t quantify_pq_1({in}, pq_1_memory, max_pq_1_size, stats_quantify.lpq);
-    quantify_pq_1.push({ { v.uid(), ptr_uint64::NIL() }, {}, {ptr_uint64::NIL()} });
-
-    // Set up per-level priority queue
-    pq_2_t quantify_pq_2(pq_2_memory, max_pq_2_size);
 
     // Set up output
     shared_levelized_file<arc> out_arcs;
     arc_writer aw(out_arcs);
+
+    // Set up per-level priority queue
+    pq_2_t quantify_pq_2(pq_2_memory, max_pq_2_size);
 
     // Process requests in topological order of both BDDs
     while(!quantify_pq_1.empty()) {
@@ -252,6 +240,38 @@ namespace adiar::internal
                                         out_arcs->max_1level_cut);
 
     return out_arcs;
+  }
+
+  template<typename quantify_policy, typename pq_1_t, typename pq_2_t>
+  typename quantify_policy::unreduced_t __quantify(const typename quantify_policy::reduced_t &in,
+                                                   const typename quantify_policy::label_t &label,
+                                                   const bool_op &op,
+                                                   const size_t pq_1_memory, const size_t max_pq_1_size,
+                                                   const size_t pq_2_memory, const size_t max_pq_2_size)
+  {
+    // Check for trivial terminal-only return on shortcutting the root
+    typename quantify_policy::node_t root;
+
+    { // Detach and garbage collect node_stream<>
+      node_stream<> in_nodes(in);
+      root = in_nodes.pull();
+
+      if (root.label() == label && (root.low().is_terminal() || root.high().is_terminal())) {
+        typename quantify_policy::unreduced_t maybe_resolved =
+          quantify_policy::resolve_terminal_root(root, op);
+
+        if (!maybe_resolved.empty()) {
+          return maybe_resolved;
+        }
+      }
+    }
+
+    // Set up cross-level priority queue
+    pq_1_t quantify_pq_1({in}, pq_1_memory, max_pq_1_size, stats_quantify.lpq);
+    quantify_pq_1.push({ { root.uid(), ptr_uint64::NIL() }, {}, {ptr_uint64::NIL()} });
+
+    return __quantify<quantify_policy, pq_1_t, pq_2_t>
+      (in, label, op, quantify_pq_1, pq_2_memory, max_pq_2_size);
   }
 
   //////////////////////////////////////////////////////////////////////////////
