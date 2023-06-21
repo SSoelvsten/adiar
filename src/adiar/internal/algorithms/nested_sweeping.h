@@ -82,7 +82,7 @@ namespace adiar::internal
         using elem_comp_t = element_comp_t;
 
         ////////////////////////////////////////////////////////////////////////
-        /// \brief Number of buckets.
+        /// \brief Memory mode of sorter.
         ////////////////////////////////////////////////////////////////////////
         static constexpr memory_mode_t mem_mode = memory_mode;
 
@@ -263,9 +263,9 @@ namespace adiar::internal
         using elem_comp_t = typename outer_pq_t::elem_comp_t;
 
         ////////////////////////////////////////////////////////////////////////////
-        /// \brief Number of buckets.
+        /// \brief Memory mode (same as decorated priority queue).
         ////////////////////////////////////////////////////////////////////////////
-        static constexpr memory_mode_t mem_mode = outer_pq_t::memory_mode;
+        static constexpr memory_mode_t mem_mode = outer_pq_t::mem_mode;
 
       private:
         ////////////////////////////////////////////////////////////////////////
@@ -494,9 +494,9 @@ namespace adiar::internal
         using elem_comp_t = typename inner_pq_t::elem_comp_t;
 
         ////////////////////////////////////////////////////////////////////////////
-        /// \brief Number of buckets.
+        /// \brief Memory mode (same as decorated priority queue).
         ////////////////////////////////////////////////////////////////////////////
-        static constexpr memory_mode_t mem_mode = inner_pq_t::memory_mode;
+        static constexpr memory_mode_t mem_mode = inner_pq_t::mem_mode;
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief Type of the elements in the priority queue / sorter.
@@ -823,9 +823,9 @@ namespace adiar::internal
         using elem_comp_t = typename inner_pq_t::elem_comp_t;
 
         ////////////////////////////////////////////////////////////////////////////
-        /// \brief Number of buckets.
+        /// \brief Memory mode (same as decorated priority queue).
         ////////////////////////////////////////////////////////////////////////////
-        static constexpr memory_mode_t mem_mode = inner_pq_t::memory_mode;
+        static constexpr memory_mode_t mem_mode = inner_pq_t::mem_mode;
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief Type of the elements in the priority queue / sorter.
