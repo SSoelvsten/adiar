@@ -1941,7 +1941,7 @@ go_bandit([]() {
       });
     });
 
-    describe("bdd_forall(const bdd&, const std::function<bool(bdd::label_t)>&)", [&]() {
+    describe("bdd_forall(const bdd&, const std::function<bdd::label_t()>&)", [&]() {
       it("quantifies 0, -2 in BDD 1 [const &]", [&]() {
         const bdd in = bdd_1;
 
