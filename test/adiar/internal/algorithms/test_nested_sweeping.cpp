@@ -3331,6 +3331,129 @@ go_bandit([]() {
         AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
       });
 
+      it("accumulates multiple nested sweeps with arcs that span multiple sweeps", []() {
+        // Here, we have an arc that spans multiple existing levels where an
+        // inner sweep has to be started on.
+
+        /* input
+        //           _1_        ---- x1
+        //          /   \
+        //          2    \      ---- x2 (%2)
+        //         / \   |
+        //         | 3   |      ---- x3
+        //         |/ \  /
+        //         4_ F /       ---- x4 (%2)
+        //        /  \ /
+        //        T   5         ---- x5
+        //           / \
+        //           F T
+        */
+
+        const ptr_uint64 terminal_F(false);
+        const ptr_uint64 terminal_T(true);
+
+        const ptr_uint64 n1(1,0);
+        const ptr_uint64 n2(2,0);
+        const ptr_uint64 n3(3,0);
+        const ptr_uint64 n4(4,0);
+        const ptr_uint64 n5(5,0);
+
+        shared_levelized_file<arc> in;
+
+        { // Garbage collect writer to free write-lock
+          arc_writer aw(in);
+
+          aw.push_internal({ n1, false, n2 });
+          aw.push_internal({ n2, true,  n3 });
+          aw.push_internal({ n2, false, n4 });
+          aw.push_internal({ n3, false, n4 });
+          aw.push_internal({ n1, true,  n5 });
+          aw.push_internal({ n4, true,  n5 });
+
+          aw.push_terminal({ n3, true,  terminal_F });
+          aw.push_terminal({ n4, false, terminal_T });
+          aw.push_terminal({ n5, false, terminal_F });
+          aw.push_terminal({ n5, true,  terminal_T });
+
+          aw.push(level_info(1,1u));
+          aw.push(level_info(2,1u));
+          aw.push(level_info(3,1u));
+          aw.push(level_info(4,1u));
+          aw.push(level_info(5,1u));
+
+          in->max_1level_cut = 3;
+        }
+
+        test_not_sweep inner_impl(2);
+
+        /* output
+        //         _1_       ---- x1
+        //        /   \
+        //        |   |      ---- x2
+        //        |   |
+        //        3   |      ---- x3
+        //       / \  /
+        //       \ T /       ---- x4
+        //        \ /
+        //         5         ---- x5
+        //        / \
+        //        F T
+        */
+        const bdd out
+          = nested_sweep<test_up_sweep, test_not_sweep>(in, inner_impl);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        // n5
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
+                                                       terminal_F,
+                                                       terminal_T)));
+
+        // n3
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                       node::ptr_t(5, node::MAX_ID),
+                                                       terminal_T)));
+
+        // n1
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                       node::ptr_t(3, node::MAX_ID),
+                                                       node::ptr_t(5, node::MAX_ID))));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(5,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(1u));
+
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(3u));
+        AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(3u));
+
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(3u));
+        AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(3u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+      });
+
       it("handles all root arcs collapsing into terminals", []() {
         // Here, the Inner Down Sweep collapses each arc to a terminal, but
         // the nodes above it in the Outer Sweep will remain alive.
@@ -3394,7 +3517,6 @@ go_bandit([]() {
         */
         const bdd out
           = nested_sweep<test_up_sweep, test_terminal_sweep>(in, inner_impl);
-
 
         // Check it looks all right
         node_test_stream out_nodes(out);
