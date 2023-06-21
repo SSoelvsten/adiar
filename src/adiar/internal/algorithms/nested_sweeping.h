@@ -6,11 +6,13 @@
 #include <adiar/statistics.h>
 
 #include <adiar/internal/cut.h>
+#include <adiar/internal/dd_func.h>
 #include <adiar/internal/algorithms/reduce.h>
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
 #include <adiar/internal/data_structures/sorter.h>
 #include <adiar/internal/data_types/request.h>
 #include <adiar/internal/memory.h>
+#include <adiar/internal/util.h>
 
 namespace adiar::internal
 {
@@ -1485,9 +1487,10 @@ namespace adiar::internal
   ///
   /// \tparam inner_up_sweep   Policy for inner bottom-up (Reduce) sweep.
   ///
-  /// \param  dag  A possibly reduced input. If it has collapsed to a terminal,
-  ///              then that one is returned. If it is reduced, then it will be
-  ///              transposed before computation starts.
+  /// \param input             A possibly reduced input. If it has collapsed to a
+  ///                          terminal, then that one is returned. If it is
+  ///                          reduced, then it will be transposed before
+  ///                          computation starts.
   ///
   /// \param  inner_impl Provides the non-static parts of the inner logic that
   ///         determines when to start the nested sweep.
@@ -1496,9 +1499,25 @@ namespace adiar::internal
            typename inner_down_sweep,
            typename inner_up_sweep = outer_up_sweep>
   typename outer_up_sweep::reduced_t
-  nested_sweep(const typename outer_up_sweep::shared_arcs_t &dag,
+  nested_sweep(const typename outer_up_sweep::unreduced_t &input,
                inner_down_sweep &inner_impl)
   {
+    adiar_debug(!input.empty(), "Input for Nested Sweeping should always be non-empty");
+
+    using shared_arcs_t  = typename outer_up_sweep::shared_arcs_t;
+    using shared_nodes_t = typename outer_up_sweep::shared_nodes_t;
+
+    // Is it a terminal?
+    if (input.template has<shared_nodes_t>() && input.template get<shared_nodes_t>()->is_terminal()) {
+      return typename outer_up_sweep::reduced_t(input.template get<shared_nodes_t>(),
+                                                input.negate);
+    }
+
+    // Otherwise obtain the semi-transposed DAG (construct it if necessary)
+    const typename outer_up_sweep::shared_arcs_t dag = input.template has<shared_arcs_t>()
+      ? input.template get<shared_arcs_t>()
+      : transpose(typename outer_up_sweep::reduced_t(input.template get<shared_nodes_t>(), input.negate));
+
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.
     //
