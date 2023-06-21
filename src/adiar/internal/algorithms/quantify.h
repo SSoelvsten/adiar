@@ -17,6 +17,7 @@
 #include <adiar/internal/io/file_stream.h>
 #include <adiar/internal/io/shared_file_ptr.h>
 #include <adiar/internal/io/node_stream.h>
+#include <adiar/internal/util.h>
 
 namespace adiar::internal
 {
@@ -98,22 +99,6 @@ namespace adiar::internal
       quantify_pq_2.pop();
     } else {
       return true;
-    }
-    return false;
-  }
-
-  // TODO: move to 'internal/util.h'
-  inline bool quantify_has_label(const dd::label_t label, const dd &in)
-  {
-    level_info_stream<> in_meta(in);
-    while(in_meta.can_pull()) {
-      level_info m = in_meta.pull();
-
-      // Are we already past where it should be?
-      if (label < m.label()) { return false; }
-
-      // Did we find it?
-      if (m.label() == label) { return true; }
     }
     return false;
   }
@@ -298,10 +283,10 @@ namespace adiar::internal
                                                  const typename quantify_policy::label_t label,
                                                  const bool_op &op)
   {
-    adiar_debug(is_commutative(op), "Noncommutative operator used");
+    adiar_debug(is_commutative(op), "A commutative operator must be used");
 
     // Check if there is no need to do any computation
-    if (is_terminal(in) || !quantify_has_label(label, in)) {
+    if (is_terminal(in) || !has_level(in, label)) {
       return in;
     }
 
