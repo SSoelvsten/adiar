@@ -261,11 +261,11 @@ namespace adiar::internal
       root = in_nodes.pull();
 
       if (root.label() == label && (root.low().is_terminal() || root.high().is_terminal())) {
-        typename quantify_policy::unreduced_t maybe_resolved =
-          quantify_policy::resolve_terminal_root(root, op);
+        typename quantify_policy::ptr_t result = quantify_policy::resolve_root(root, op);
 
-        if (!maybe_resolved.empty()) {
-          return maybe_resolved;
+        if (result != root.uid()) {
+          adiar_debug(result.is_terminal(), "Should shortcut to a terminal");
+          return typename quantify_policy::reduced_t(result.value());
         }
       }
     }

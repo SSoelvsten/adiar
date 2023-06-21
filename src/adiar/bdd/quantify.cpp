@@ -18,18 +18,19 @@ namespace adiar
   class bdd_quantify_policy : public bdd_policy
   {
   public:
-    static inline __bdd
-    resolve_terminal_root(const bdd::node_t v, const bool_op &op)
+    static inline bdd::ptr_t
+    resolve_root(const bdd::node_t &r, const bool_op &op)
     {
-      if (v.low().is_terminal() && can_left_shortcut(op, v.low())) {
-        return bdd_terminal(v.low().value());
+      // Return shortcutting terminal (including its tainting flag).
+      if (r.low().is_terminal() && can_left_shortcut(op, r.low())) {
+        return r.low();
+      }
+      if (r.high().is_terminal() && can_right_shortcut(op, r.high())) {
+        return r.high();
       }
 
-      if (v.high().is_terminal() && can_right_shortcut(op, v.high())) {
-        return bdd_terminal(v.high().value());
-      }
-
-      return __bdd(); // return nothing
+      // Otherwise return 'nothing'
+      return r.uid();
     }
 
   public:
