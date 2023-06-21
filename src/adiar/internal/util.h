@@ -92,8 +92,7 @@ namespace adiar::internal
   inline shared_levelized_file<arc>
   transpose(const dd_t &dd)
   {
-    adiar_debug(!dd->is_terminal(),
-                "Given diagram must be a non-terminal to transpose it.");
+    adiar_precondition(!dd->is_terminal());
 
     shared_levelized_file<arc> af;
 
@@ -105,8 +104,6 @@ namespace adiar::internal
           const typename dd_t::node_t n = ns.pull();
 
           // TODO (non-binary nodes):
-          //   This requires us to extend the 'ptr_t' to have more than a boolean
-          //   flag with the out-index.
           aw << low_arc_of(n);
           aw << high_arc_of(n);
         }
