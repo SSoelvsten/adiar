@@ -368,7 +368,7 @@ namespace adiar::internal
         void push(const reduce_arc &a)
         {
           // TODO: use outer_pq::level_comp_t instead of hardcoding '<'
-          if (a.source().label() < _next_inner && a.target().is_node()) {
+          if (a.source().is_nil() || (a.source().label() < _next_inner && a.target().is_node())) {
             _outer_roots.push(a);
           } else {
             _outer_pq.push(a);
@@ -1336,7 +1336,7 @@ namespace adiar::internal
           // Apply Reduction rule 1?
           const node::ptr_t reduction_rule_ret = outer_up_sweep::reduction_rule(n);
           if (reduction_rule_ret != n.uid()) {
-            // If so, preserve node
+            // If so, preserve child in inner sweep
             if (!outer_levels.can_pull()) {
               adiar_debug(!outer_arcs.can_pull_internal(), "Should not have any parents at top-most level");
 
