@@ -16,6 +16,7 @@ set(HEADERS
   file.h
   map.h
   memory_mode.h
+  quantify_mode.h
   statistics.h
 
   # adiar/bdd
@@ -98,6 +99,7 @@ set(SOURCES
   domain.cpp
   statistics.cpp
   memory_mode.cpp
+  quantify_mode.cpp
 
   # adiar/bdd/
   bdd/apply.cpp
