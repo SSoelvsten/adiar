@@ -130,10 +130,6 @@ namespace adiar::internal
       }
     }
 
-    // Set up output
-    shared_levelized_file<arc> out_arcs;
-    arc_writer aw(out_arcs);
-
     // Set up cross-level priority queue
     pq_1_t quantify_pq_1({in}, pq_1_memory, max_pq_1_size, stats_quantify.lpq);
     quantify_pq_1.push({ { v.uid(), ptr_uint64::NIL() }, {}, {ptr_uint64::NIL()} });
@@ -141,117 +137,113 @@ namespace adiar::internal
     // Set up per-level priority queue
     pq_2_t quantify_pq_2(pq_2_memory, max_pq_2_size);
 
+    // Set up output
+    shared_levelized_file<arc> out_arcs;
+    arc_writer aw(out_arcs);
+
     // Process requests in topological order of both BDDs
-    typename quantify_policy::label_t out_label = 0;
-    typename quantify_policy::id_t out_id = 0;
+    while(!quantify_pq_1.empty()) {
+      adiar_invariant(quantify_pq_2.empty(),
+                      "Secondary priority queue is only non-empty while processing each level");
 
-    size_t max_1level_cut = 0;
+      // Set up level
+      quantify_pq_1.setup_next_level();
+      const typename quantify_policy::label_t out_label = quantify_pq_1.current_level();
+      typename quantify_policy::id_t out_id = 0;
 
-    while(!quantify_pq_1.empty() || !quantify_pq_2.empty()) {
-      if (quantify_pq_1.empty_level() && quantify_pq_2.empty()) {
-        if (out_id > 0) {
-          aw.push(level_info(out_label, out_id));
+      while (!quantify_pq_1.empty_level() || !quantify_pq_2.empty()) {
+        // Merge requests from quantify_pq_1 and quantify_pq_2
+        quantify_request<1> req;
+
+        if (quantify_pq_1.can_pull()
+            && (quantify_pq_2.empty() || quantify_pq_1.top().target.fst() < quantify_pq_2.top().target.snd())) {
+          req = { quantify_pq_1.top().target,
+                  {{ { node::ptr_t::NIL(), node::ptr_t::NIL() } }},
+                  quantify_pq_1.top().data };
+          quantify_pq_1.pop();
+        } else {
+          req = quantify_pq_2.top();
+          quantify_pq_2.pop();
         }
 
-        quantify_pq_1.setup_next_level();
-        out_label = quantify_pq_1.current_level();
-        out_id = 0;
+        // Seek element from request in stream
+        const ptr_uint64 t_seek = req.empty_carry() ? req.target.fst() : req.target.snd();
 
-        max_1level_cut = std::max(max_1level_cut, quantify_pq_1.size());
-      }
-
-      quantify_request<1> req;
-
-      // Merge requests from quantify_pq_1 and quantify_pq_2
-      if (quantify_pq_1.can_pull()
-          && (quantify_pq_2.empty() || quantify_pq_1.top().target.fst() < quantify_pq_2.top().target.snd())) {
-        req = { quantify_pq_1.top().target,
-                {{ { node::ptr_t::NIL(), node::ptr_t::NIL() } }},
-                quantify_pq_1.top().data };
-        quantify_pq_1.pop();
-      } else {
-        req = quantify_pq_2.top();
-        quantify_pq_2.pop();
-      }
-
-      // Seek element from request in stream
-      const ptr_uint64 t_seek = req.empty_carry() ? req.target.fst() : req.target.snd();
-
-      while (v.uid() < t_seek) {
-        v = in_nodes.pull();
-      }
-
-      // Forward information of node t1 across the level if needed
-      if (req.empty_carry()
-          && req.target.snd().is_node()
-          && req.target.fst().label() == req.target.snd().label()) {
-        adiar_debug(!req.target.snd().is_nil(),
-                    "req.target.snd().is_node ==> !req.target.snd().is_nil()");
-
-        quantify_pq_2.push({ req.target, {v.children()}, req.data });
-
-        while (quantify_pq_1.can_pull() && (quantify_pq_1.top().target == req.target)) {
-          quantify_pq_2.push({ req.target, {v.children()}, quantify_pq_1.pull().data });
+        while (v.uid() < t_seek) {
+          v = in_nodes.pull();
         }
 
-        continue;
-      }
+        // Forward information of node t1 across the level if needed
+        if (req.empty_carry()
+            && req.target.snd().is_node()
+            && req.target.fst().label() == req.target.snd().label()) {
+          adiar_debug(!req.target.snd().is_nil(),
+                      "req.target.snd().is_node ==> !req.target.snd().is_nil()");
 
-      if (req.target.fst().label() == label) {
-        // The variable should be quantified: proceed somewhat as for the BDD
-        // Restrict algorithm by forwarding the request of source further to the
-        // children, though here we keep track of both possibilities.
-        adiar_debug(req.target.snd().is_nil(),
-                    "Ended in pairing case on request that already is a pair");
+          quantify_pq_2.push({ req.target, {v.children()}, req.data });
 
-        do {
-          __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op,
-                                                      req.data.source,
-                                                      v.children());
-        } while (!__quantify_update_source_or_break(quantify_pq_1, quantify_pq_2,
-                                                    req.data.source,
-                                                    req.target));
-      } else {
-        // The variable should stay: proceed as in the Product Construction by
-        // simulating both possibilities in parallel.
+          while (quantify_pq_1.can_pull() && (quantify_pq_1.top().target == req.target)) {
+            quantify_pq_2.push({ req.target, {v.children()}, quantify_pq_1.pull().data });
+          }
 
-        // Resolve current node and recurse.
-        const node::children_t children0 =
-          req.empty_carry() ? v.children() : req.node_carry[0];
+          continue;
+        }
 
-        const node::children_t children1 =
-          req.target.snd().on_level(out_label)
-          ? v.children()
-          : quantify_policy::reduction_rule_inv(req.target.snd());
+        if (req.target.fst().label() == label) {
+          // The variable should be quantified: proceed somewhat as for the BDD
+          // Restrict algorithm by forwarding the request of source further to the
+          // children, though here we keep track of both possibilities.
+          adiar_debug(req.target.snd().is_nil(),
+                      "Ended in pairing case on request that already is a pair");
 
-        adiar_debug(out_id < quantify_policy::MAX_ID, "Has run out of ids");
-        const node::uid_t out_uid(out_label, out_id++);
-
-        __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op,
-                                                    out_uid.with(false),
-                                                    { children0[false], children1[false] });
-
-        __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op,
-                                                    out_uid.with(true),
-                                                    { children0[true], children1[true] });
-
-        if (!req.data.source.is_nil()) {
           do {
-            arc out_arc = { req.data.source, out_uid };
-            aw.push_internal(out_arc);
+            __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op,
+                                                        req.data.source,
+                                                        v.children());
           } while (!__quantify_update_source_or_break(quantify_pq_1, quantify_pq_2,
                                                       req.data.source,
                                                       req.target));
+        } else {
+          // The variable should stay: proceed as in the Product Construction by
+          // simulating both possibilities in parallel.
+
+          // Resolve current node and recurse.
+          const node::children_t children0 =
+            req.empty_carry() ? v.children() : req.node_carry[0];
+
+          const node::children_t children1 =
+            req.target.snd().on_level(out_label)
+            ? v.children()
+            : quantify_policy::reduction_rule_inv(req.target.snd());
+
+          adiar_debug(out_id < quantify_policy::MAX_ID, "Has run out of ids");
+          const node::uid_t out_uid(out_label, out_id++);
+
+          __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op,
+                                                      out_uid.with(false),
+                                                      { children0[false], children1[false] });
+
+          __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op,
+                                                      out_uid.with(true),
+                                                      { children0[true], children1[true] });
+
+          if (!req.data.source.is_nil()) {
+            do {
+              arc out_arc = { req.data.source, out_uid };
+              aw.push_internal(out_arc);
+            } while (!__quantify_update_source_or_break(quantify_pq_1, quantify_pq_2,
+                                                        req.data.source,
+                                                        req.target));
+          }
         }
       }
-    }
 
-    // Push the level of the very last iteration
-    if (out_id > 0) {
-      aw.push(level_info(out_label, out_id));
-    }
+      if (out_id > 0) {
+        aw.push(level_info(out_label, out_id));
+      }
 
-    out_arcs->max_1level_cut = max_1level_cut;
+      out_arcs->max_1level_cut = std::max(out_arcs->max_1level_cut, quantify_pq_1.size());
+    }
 
     return out_arcs;
   }
