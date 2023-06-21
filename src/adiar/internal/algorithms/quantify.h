@@ -628,9 +628,11 @@ namespace adiar::internal
         return nested_sweep<outer_up_sweep>(quantify<quantify_policy>(dd, label, op), inner_impl);
       }
 
+      // LCOV_EXCL_START
     default:
       // ---------------------------------------------------------------------
       adiar_unreachable();
+      // LCOV_EXCL_STOP
     }
   }
 
@@ -721,9 +723,11 @@ namespace adiar::internal
         return nested_sweep<outer_up_sweep>(quantify<quantify_policy>(dd, label, op), inner_impl);
       }
 
+      // LCOV_EXCL_START
     default:
       // ---------------------------------------------------------------------
       adiar_unreachable();
+      // LCOV_EXCL_STOP
     }
   }
 }
