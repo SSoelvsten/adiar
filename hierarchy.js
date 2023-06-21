@@ -4,6 +4,8 @@ var hierarchy =
       [ "adiar::stats_t::count_t", "structadiar_1_1stats__t_1_1count__t.html", null ],
       [ "adiar::stats_t::equality_t", "structadiar_1_1stats__t_1_1equality__t.html", null ],
       [ "adiar::stats_t::intercut_t", "structadiar_1_1stats__t_1_1intercut__t.html", null ],
+      [ "adiar::stats_t::nested_sweeping_t::inner_t::down_t", "structadiar_1_1stats__t_1_1nested__sweeping__t_1_1inner__t_1_1down__t.html", null ],
+      [ "adiar::stats_t::nested_sweeping_t::inner_t::up_t", "structadiar_1_1stats__t_1_1nested__sweeping__t_1_1inner__t_1_1up__t.html", null ],
       [ "adiar::stats_t::prod2_t", "structadiar_1_1stats__t_1_1prod2__t.html", null ],
       [ "adiar::stats_t::prod3_t", "structadiar_1_1stats__t_1_1prod3__t.html", null ],
       [ "adiar::stats_t::quantify_t", "structadiar_1_1stats__t_1_1quantify__t.html", null ],
@@ -25,13 +27,16 @@ var hierarchy =
       [ "adiar::zdd", "classadiar_1_1zdd.html", null ]
     ] ],
     [ "adiar::stats_t::equality_t::fast_t", "structadiar_1_1stats__t_1_1equality__t_1_1fast__t.html", null ],
+    [ "adiar::stats_t::nested_sweeping_t::inner_t", "structadiar_1_1stats__t_1_1nested__sweeping__t_1_1inner__t.html", null ],
     [ "adiar::internal::level_info", "classadiar_1_1internal_1_1level__info.html", null ],
     [ "adiar::stats_t::levelized_priority_queue_t", "structadiar_1_1stats__t_1_1levelized__priority__queue__t.html", [
       [ "adiar::stats_t::__alg_base::__lpq", "structadiar_1_1stats__t_1_1____alg__base_1_1____lpq.html", null ]
     ] ],
     [ "adiar::map_pair< key_type, value_enum >", "classadiar_1_1map__pair.html", null ],
+    [ "adiar::stats_t::nested_sweeping_t", "structadiar_1_1stats__t_1_1nested__sweeping__t.html", null ],
     [ "adiar::internal::node", "classadiar_1_1internal_1_1node.html", null ],
     [ "adiar::stats_t::node_file_t", "structadiar_1_1stats__t_1_1node__file__t.html", null ],
+    [ "adiar::stats_t::nested_sweeping_t::outer_t", "structadiar_1_1stats__t_1_1nested__sweeping__t_1_1outer__t.html", null ],
     [ "adiar::stats_t::prod2_t::pq_t", "structadiar_1_1stats__t_1_1prod2__t_1_1pq__t.html", null ],
     [ "ptr_t", null, [
       [ "adiar::internal::__uid< ptr_t >", "classadiar_1_1internal_1_1____uid.html", null ]
@@ -62,5 +67,6 @@ var hierarchy =
     [ "adiar::internal::tuple_fst_lt< tuple_t >", "structadiar_1_1internal_1_1tuple__fst__lt.html", null ],
     [ "adiar::internal::tuple_snd_lt< tuple_t >", "structadiar_1_1internal_1_1tuple__snd__lt.html", null ],
     [ "adiar::internal::tuple_trd_lt< tuple_t >", "structadiar_1_1internal_1_1tuple__trd__lt.html", null ],
+    [ "adiar::stats_t::nested_sweeping_t::outer_t::up_t", "structadiar_1_1stats__t_1_1nested__sweeping__t_1_1outer__t_1_1up__t.html", null ],
     [ "adiar::internal::with_parent", "classadiar_1_1internal_1_1with__parent.html", null ]
 ];

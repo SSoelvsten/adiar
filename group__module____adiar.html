@@ -125,6 +125,20 @@ $(document).ready(function(){initNavTree('group__module____adiar.html',''); init
 <tr class="memdesc:ga7d6776af40156e16b1dc9e4ca2b74b36"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current access mode (default: <code>AUTO</code>).  <a href="group__module____adiar.html#ga7d6776af40156e16b1dc9e4ca2b74b36">More...</a><br /></td></tr>
 <tr class="separator:ga7d6776af40156e16b1dc9e4ca2b74b36"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader">Quantify Mode</h2></td></tr>
+<tr><td class="ititle" colspan="2"><p><a class="anchor" id="amgrpddea1c93324accc7be265035a4a04eb8"></a>Adiar’s supports multiple approaches to compute the quantification of multiple variables. </p>
+</td></tr>
+<tr class="memitem:gaf196668596378a31f3752af9d3059e87"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#gaf196668596378a31f3752af9d3059e87">adiar::quantify_mode_t</a> { <b>AUTO</b>
+, <b>NESTED</b>
+, <b>PARTIAL</b>
+, <b>SINGLETON</b>
+ }</td></tr>
+<tr class="memdesc:gaf196668596378a31f3752af9d3059e87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Which strategy Adiar should use to quantify/project variables.  <a href="group__module____adiar.html#gaf196668596378a31f3752af9d3059e87">More...</a><br /></td></tr>
+<tr class="separator:gaf196668596378a31f3752af9d3059e87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga99e435daedf83de1caaa609be49e9e99"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__module____adiar.html#gaf196668596378a31f3752af9d3059e87">quantify_mode_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#ga99e435daedf83de1caaa609be49e9e99">adiar::quantify_mode</a></td></tr>
+<tr class="memdesc:ga99e435daedf83de1caaa609be49e9e99"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current quantification mode (default: <code>AUTO</code>).  <a href="group__module____adiar.html#ga99e435daedf83de1caaa609be49e9e99">More...</a><br /></td></tr>
+<tr class="separator:ga99e435daedf83de1caaa609be49e9e99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader">Package Initialisation</h2></td></tr>
 <tr><td class="ititle" colspan="2"><p><a class="anchor" id="amgrp414c34eac6873267e452317bc52a184a"></a>After having linked the C++ source file with Adiar, one needs to include the <code>&lt;<a class="el" href="adiar_8h_source.html">adiar/adiar.h</a>&gt;</code> header, initialise the library before using any of its data structures, and finally remember to deinitialise the library again before the program terminates. </p>
 </td></tr>
@@ -211,6 +225,43 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone"><code>EXTERNAL</code>   </td><td class="markdownTableBodyNone">Always use <em>external</em> memory.   </td></tr>
 </table>
+
+</div>
+</div>
+<a id="gaf196668596378a31f3752af9d3059e87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaf196668596378a31f3752af9d3059e87">&#9670;&nbsp;</a></span>quantify_mode_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group__module____adiar.html#gaf196668596378a31f3752af9d3059e87">adiar::quantify_mode_t</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Which strategy Adiar should use to quantify/project variables. </p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Enum Value   </th><th class="markdownTableHeadNone">Effect    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>AUTO</code>   </td><td class="markdownTableBodyNone">Automatically decide on the approach to use.    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>NESTED</code>   </td><td class="markdownTableBodyNone">Use the <em>nested sweeping</em> framework.    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>PARTIAL</code>   </td><td class="markdownTableBodyNone">Use repeated <em>partial quantification</em>.    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>SINGLETON</code>   </td><td class="markdownTableBodyNone">Quantify each variable <em>independently</em> one at a time.   </td></tr>
+</table>
+<dl class="section remark"><dt>Remarks</dt><dd>Not all approaches can apply to each algorithm. If the desired approach does not apply, then an approach that is <em>less</em> than it is used instead, e.g. if <code>PARTIAL</code> is picked but not possible then <code>INDIVIDUAL</code> is used. </dd></dl>
 
 </div>
 </div>
@@ -338,6 +389,32 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
 <div class="ttc" id="agroup__module____adiar_html_gaa7f0e02f27b1884ce06f69040fb8ff89"><div class="ttname"><a href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89">adiar::memory_mode</a></div><div class="ttdeci">memory_mode_t memory_mode</div><div class="ttdoc">The current memory mode (default: AUTO).</div></div>
 </div><!-- fragment --><dl class="section warning"><dt>Warning</dt><dd>Using <code>INTERNAL</code> may lead to crashes if an input or output is too large! </dd></dl>
 
+</div>
+</div>
+<a id="ga99e435daedf83de1caaa609be49e9e99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga99e435daedf83de1caaa609be49e9e99">&#9670;&nbsp;</a></span>quantify_mode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__module____adiar.html#gaf196668596378a31f3752af9d3059e87">quantify_mode_t</a> adiar::quantify_mode</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The current quantification mode (default: <code>AUTO</code>). </p>
+<p>If you want to force <em>Adiar</em> to a specific quantify approach then you should set the global variable <code><a class="el" href="group__module____adiar.html#ga99e435daedf83de1caaa609be49e9e99" title="The current quantification mode (default: AUTO).">adiar::quantify_mode</a></code> to one of the above four values. For example, one can force <em>Adiar</em> always use nested sweeping with the following piece of code. </p><div class="fragment"><div class="line"><a class="code" href="group__module____adiar.html#ga99e435daedf83de1caaa609be49e9e99">adiar::quantify_mode</a> = adiar::quantify_mode_t::NESTED</div>
+<div class="ttc" id="agroup__module____adiar_html_ga99e435daedf83de1caaa609be49e9e99"><div class="ttname"><a href="group__module____adiar.html#ga99e435daedf83de1caaa609be49e9e99">adiar::quantify_mode</a></div><div class="ttdeci">quantify_mode_t quantify_mode</div><div class="ttdoc">The current quantification mode (default: AUTO).</div></div>
+</div><!-- fragment --> 
 </div>
 </div>
 </div><!-- contents -->

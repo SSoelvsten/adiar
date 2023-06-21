@@ -39,6 +39,7 @@ var group__module____zdd =
       [ "operator=", "classadiar_1_1zdd.html#ac2877bd6be4cf583d9a9160230da1724", null ],
       [ "operator=", "classadiar_1_1zdd.html#ae8cfa4b2465ee05d94a88ee7a22051ee", null ],
       [ "operator|=", "classadiar_1_1zdd.html#afd2bff4462b212467f2245b3479cbd16", null ],
+      [ "size", "classadiar_1_1zdd.html#adc08e814ccd31b2c213cae02421a7856", null ],
       [ "zdd_disjoint", "classadiar_1_1zdd.html#aa793636c96d6620484453a45142e1af4", null ],
       [ "zdd_nodecount", "classadiar_1_1zdd.html#a28e09b085cb2a73dee336defc2019ab7", null ],
       [ "zdd_subseteq", "classadiar_1_1zdd.html#abd6bcb2db5baf6e32fd5573a605770a2", null ],

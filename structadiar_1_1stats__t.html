@@ -107,7 +107,7 @@ $(document).ready(function(){initNavTree('structadiar_1_1stats__t.html',''); ini
 <div class="dynheader">
 Collaboration diagram for adiar::stats_t:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="structadiar_1_1stats__t__coll__graph.svg" width="1188" height="598"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="structadiar_1_1stats__t__coll__graph.svg" width="2028" height="836"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -130,6 +130,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structadiar_1_1stats__t_1_1levelized__priority__queue__t.html">levelized_priority_queue_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Levelized Priority Queue statistics.  <a href="structadiar_1_1stats__t_1_1levelized__priority__queue__t.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structadiar_1_1stats__t_1_1nested__sweeping__t.html">nested_sweeping_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nested Sweeping statistics.  <a href="structadiar_1_1stats__t_1_1nested__sweeping__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structadiar_1_1stats__t_1_1node__file__t.html">node_file_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Node Files statistics.  <a href="structadiar_1_1stats__t_1_1node__file__t.html#details">More...</a><br /></td></tr>
@@ -185,6 +188,9 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a1ecd21296b5e5e22343411c2ba4d9df5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structadiar_1_1stats__t_1_1reduce__t.html">adiar::stats_t::reduce_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structadiar_1_1stats__t.html#a1ecd21296b5e5e22343411c2ba4d9df5">reduce</a></td></tr>
 <tr class="memdesc:a1ecd21296b5e5e22343411c2ba4d9df5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reduce algorithm statistics.  <a href="structadiar_1_1stats__t.html#a1ecd21296b5e5e22343411c2ba4d9df5">More...</a><br /></td></tr>
 <tr class="separator:a1ecd21296b5e5e22343411c2ba4d9df5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef84f089d748bc8f6e0b5d5d58138b82"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="structadiar_1_1stats__t_1_1nested__sweeping__t.html">adiar::stats_t::nested_sweeping_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structadiar_1_1stats__t.html#aef84f089d748bc8f6e0b5d5d58138b82">nested_sweeping</a></td></tr>
+<tr class="memdesc:aef84f089d748bc8f6e0b5d5d58138b82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nested Sweeping statistics.  <a href="structadiar_1_1stats__t.html#aef84f089d748bc8f6e0b5d5d58138b82">More...</a><br /></td></tr>
+<tr class="separator:aef84f089d748bc8f6e0b5d5d58138b82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Available statistics from algorithm's and data structures. </p>
@@ -270,6 +276,24 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Levelized Priority Queue statistics. </p>
+
+</div>
+</div>
+<a id="aef84f089d748bc8f6e0b5d5d58138b82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef84f089d748bc8f6e0b5d5d58138b82">&#9670;&nbsp;</a></span>nested_sweeping</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structadiar_1_1stats__t_1_1nested__sweeping__t.html">adiar::stats_t::nested_sweeping_t</a> adiar::stats_t::nested_sweeping</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Nested Sweeping statistics. </p>
+<p>Statistics related to runs of <code>nested_sweep</code>; some of the statistics to each specific instantiation (e.g. <code>bdd_exists</code>) is found in the algorithm's respective statistics.</p>
+<dl class="section see"><dt>See also</dt><dd>nested_sweep </dd></dl>
 
 </div>
 </div>

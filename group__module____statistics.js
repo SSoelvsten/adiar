@@ -57,6 +57,24 @@ var group__module____statistics =
         [ "sum_max_size_ratio", "structadiar_1_1stats__t_1_1levelized__priority__queue__t.html#a5154e57535210bd495f07828369b89f9", null ],
         [ "sum_predicted_max_size", "structadiar_1_1stats__t_1_1levelized__priority__queue__t.html#adbb00047f1127e2a664949e29533d83e", null ]
       ] ],
+      [ "nested_sweeping_t", "structadiar_1_1stats__t_1_1nested__sweeping__t.html", [
+        [ "inner_t", "structadiar_1_1stats__t_1_1nested__sweeping__t_1_1inner__t.html", [
+          [ "down_t", "structadiar_1_1stats__t_1_1nested__sweeping__t_1_1inner__t_1_1down__t.html", [
+            [ "lpq", "structadiar_1_1stats__t_1_1nested__sweeping__t_1_1inner__t_1_1down__t.html#a50829118ad63e1a074b9441e89fa54a4", null ]
+          ] ],
+          [ "up_t", "structadiar_1_1stats__t_1_1nested__sweeping__t_1_1inner__t_1_1up__t.html", [
+            [ "lpq", "structadiar_1_1stats__t_1_1nested__sweeping__t_1_1inner__t_1_1up__t.html#a50829118ad63e1a074b9441e89fa54a4", null ]
+          ] ],
+          [ "down", "structadiar_1_1stats__t_1_1nested__sweeping__t_1_1inner__t.html#ac465a952f8b3c802714de3fe73e99540", null ],
+          [ "up", "structadiar_1_1stats__t_1_1nested__sweeping__t_1_1inner__t.html#a8f29c20f9eb504fa33e69784dc738079", null ]
+        ] ],
+        [ "outer_t", "structadiar_1_1stats__t_1_1nested__sweeping__t_1_1outer__t.html", [
+          [ "up_t", "structadiar_1_1stats__t_1_1nested__sweeping__t_1_1outer__t_1_1up__t.html", null ],
+          [ "up", "structadiar_1_1stats__t_1_1nested__sweeping__t_1_1outer__t.html#af169c9a62d23cadfa4109875e079e609", null ]
+        ] ],
+        [ "inner", "structadiar_1_1stats__t_1_1nested__sweeping__t.html#a1729eebfbce10a614183bc2c76443f0d", null ],
+        [ "outer", "structadiar_1_1stats__t_1_1nested__sweeping__t.html#adb72389e298e6c82ed94d4f4ee79c722", null ]
+      ] ],
       [ "node_file_t", "structadiar_1_1stats__t_1_1node__file__t.html", [
         [ "push_level", "structadiar_1_1stats__t_1_1node__file__t.html#a68c813f545fae87d4031b6a4a58d89c6", null ],
         [ "push_node", "structadiar_1_1stats__t_1_1node__file__t.html#ad900e91b345d5f21c9587ac43c311b7f", null ]
@@ -100,6 +118,7 @@ var group__module____statistics =
       [ "equality", "structadiar_1_1stats__t.html#af3845b53561e4530e77a0d77a9bc5a94", null ],
       [ "intercut", "structadiar_1_1stats__t.html#a769cb90756808cfe9b44edfec1d56abf", null ],
       [ "levelized_priority_queue", "structadiar_1_1stats__t.html#a7cc43b74af7d99fb2ebe3d5f983f7e12", null ],
+      [ "nested_sweeping", "structadiar_1_1stats__t.html#aef84f089d748bc8f6e0b5d5d58138b82", null ],
       [ "node_file", "structadiar_1_1stats__t.html#a0817aec56dcf7958d74e695919764347", null ],
       [ "prod2", "structadiar_1_1stats__t.html#a2e9f74327060f75270343e3409732b9b", null ],
       [ "prod3", "structadiar_1_1stats__t.html#a686c0cffb0d2ef94ffc9fdcf3d14204f", null ],

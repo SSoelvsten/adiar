@@ -94,6 +94,12 @@ var namespaceadiar =
       [ "INTERNAL", "group__module____adiar.html#ggaa457265c627a4561a55df8b29ed1375ca182fa1c42a2468f8488e6dcf75a81b81", null ],
       [ "EXTERNAL", "group__module____adiar.html#ggaa457265c627a4561a55df8b29ed1375ca3932d629fb5e2be9d09b3a4485b3cc9d", null ]
     ] ],
+    [ "quantify_mode_t", "group__module____adiar.html#gaf196668596378a31f3752af9d3059e87", [
+      [ "AUTO", "group__module____adiar.html#ggaf196668596378a31f3752af9d3059e87ae1f2d5134ed2543d38a0de9751cf75d9", null ],
+      [ "NESTED", "group__module____adiar.html#ggaf196668596378a31f3752af9d3059e87a7398e1727dc7944c94c699b50b30ab10", null ],
+      [ "PARTIAL", "group__module____adiar.html#ggaf196668596378a31f3752af9d3059e87afba5cdfa4bcb408f641c743519a0fe19", null ],
+      [ "SINGLETON", "group__module____adiar.html#ggaf196668596378a31f3752af9d3059e87aecf2a6aabcb0538532ba2a7d0d281557", null ]
+    ] ],
     [ "adiar_deinit", "group__module____adiar.html#ga9501bb9e871253964682b7ac1942f911", null ],
     [ "adiar_get_domain", "group__module____domain.html#gaa9d454d761ac5574556d61a391f7dc56", null ],
     [ "adiar_has_domain", "group__module____domain.html#ga7ff4243ba9fbb1225508f62bbf712a78", null ],
@@ -254,6 +260,7 @@ var namespaceadiar =
     [ "nand_op", "namespaceadiar.html#ab8229eb0cb1d012e1f6ce0ad3f8ef6db", null ],
     [ "nor_op", "namespaceadiar.html#ae9b3689b3adcb95bc273404fca58b21f", null ],
     [ "or_op", "namespaceadiar.html#aeaa9d1d4a583e160d9db913598b1c827", null ],
+    [ "quantify_mode", "group__module____adiar.html#ga99e435daedf83de1caaa609be49e9e99", null ],
     [ "xnor_op", "namespaceadiar.html#ae956ef704feace706586a391d3cc0d91", null ],
     [ "xor_op", "namespaceadiar.html#af4f487e39dded71f30fc122939acdbdd", null ]
 ];

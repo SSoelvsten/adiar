@@ -14,6 +14,7 @@ var dir_0766ff762b6d0dbf28d2dc262f33dadb =
     [ "file.h", "file_8h_source.html", null ],
     [ "map.h", "map_8h_source.html", null ],
     [ "memory_mode.h", "memory__mode_8h_source.html", null ],
+    [ "quantify_mode.h", "quantify__mode_8h_source.html", null ],
     [ "statistics.h", "statistics_8h_source.html", null ],
     [ "zdd.h", "zdd_8h_source.html", null ]
 ];

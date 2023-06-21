@@ -14,6 +14,7 @@ var classadiar_1_1internal_1_1dd =
     [ "max_1level_cut", "classadiar_1_1internal_1_1dd.html#aa7956ba576d3e5c71372399acfac00f0", null ],
     [ "max_2level_cut", "classadiar_1_1internal_1_1dd.html#ae2907e04387134c3cd19c37b47c28492", null ],
     [ "operator->", "classadiar_1_1internal_1_1dd.html#a9f6d48741e8cfbf2514618c82b477282", null ],
+    [ "size", "classadiar_1_1internal_1_1dd.html#adc08e814ccd31b2c213cae02421a7856", null ],
     [ "__dd", "classadiar_1_1internal_1_1dd.html#a73a1f3919e8a94357fba089164fcdbdf", null ],
     [ "comparison_check", "classadiar_1_1internal_1_1dd.html#ad49f9bc369b0fb2d7386d6b3b5097352", null ],
     [ "convert_dd_policy", "classadiar_1_1internal_1_1dd.html#ac603297de2949a5029075382d9be33d4", null ],
