@@ -32,6 +32,7 @@ namespace adiar::internal
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Obtain whether the levels in two files are disjoint.
   ////////////////////////////////////////////////////////////////////////////
+  // TODO: Move to dd_func
   template<typename in1_t = dd, typename stream1_t = level_info_stream<>,
            typename in2_t = dd, typename stream2_t = level_info_stream<>>
   bool
@@ -52,7 +53,26 @@ namespace adiar::internal
     return true;
   }
 
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether a certain level exists in a file.
+  ////////////////////////////////////////////////////////////////////////////
   // TODO: Move to dd_func
+  template<typename dd_t>
+  bool
+  has_level(const dd_t &in, const typename dd_t::label_t l)
+  {
+    level_info_stream<> in_meta(in);
+    while(in_meta.can_pull()) {
+      level_info m = in_meta.pull();
+
+      // Are we already past where it should be?
+      if (l < m.label())  { return false; }
+
+      // Did we find it?
+      if (m.label() == l) { return true; }
+    }
+    return false;
+  }
 
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Obtain the semi-transposition of a decision diagram.
@@ -67,6 +87,7 @@ namespace adiar::internal
   ///
   /// \see reduce
   ////////////////////////////////////////////////////////////////////////////
+  // TODO: Move to dd_func
   template <typename dd_t>
   inline shared_levelized_file<arc>
   transpose(const dd_t &dd)
