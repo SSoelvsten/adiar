@@ -245,6 +245,12 @@ namespace adiar::internal
       out_arcs->max_1level_cut = std::max(out_arcs->max_1level_cut, quantify_pq_1.size());
     }
 
+    // Ensure the edge case, where the in-going edge from NIL to the root pair
+    // does not dominate the max_1level_cut
+    out_arcs->max_1level_cut = std::min(aw.size() - out_arcs->number_of_terminals[false]
+                                                  - out_arcs->number_of_terminals[true],
+                                        out_arcs->max_1level_cut);
+
     return out_arcs;
   }
 
