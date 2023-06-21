@@ -104,11 +104,12 @@ namespace adiar::internal
   }
 
   template<typename quantify_policy, typename pq_1_t, typename pq_2_t>
-  typename quantify_policy::unreduced_t __quantify(const typename quantify_policy::reduced_t &in,
-                                                   const typename quantify_policy::label_t &label,
-                                                   const bool_op &op,
-                                                   pq_1_t &quantify_pq_1,
-                                                   const size_t pq_2_memory, const size_t max_pq_2_size)
+  typename quantify_policy::shared_arcs_t
+  __quantify(const typename quantify_policy::reduced_t &in,
+             const typename quantify_policy::label_t &label,
+             const bool_op &op,
+             pq_1_t &quantify_pq_1,
+             pq_2_t &quantify_pq_2)
   {
     // TODO (partial quantification) / (optimisation for nested sweeping):
     //   Replace label with a 'quantify_impl' that provides a predicate whether
@@ -126,9 +127,6 @@ namespace adiar::internal
     shared_levelized_file<arc> out_arcs;
     arc_writer aw(out_arcs);
 
-    // Set up per-level priority queue
-    pq_2_t quantify_pq_2(pq_2_memory, max_pq_2_size);
-
     // Process requests in topological order of both BDDs
     while(!quantify_pq_1.empty()) {
       adiar_invariant(quantify_pq_2.empty(),
@@ -138,6 +136,8 @@ namespace adiar::internal
       quantify_pq_1.setup_next_level();
       const typename quantify_policy::label_t out_label = quantify_pq_1.current_level();
       typename quantify_policy::id_t out_id = 0;
+
+      // TODO: move quantification test out here instead
 
       while (!quantify_pq_1.empty_level() || !quantify_pq_2.empty()) {
         // Merge requests from quantify_pq_1 and quantify_pq_2
@@ -178,6 +178,10 @@ namespace adiar::internal
         }
 
         if (req.target.fst().label() == label) {
+          // TODO:
+          // (1) Use policy impl instead to check whether to quantify
+          // (2) Add logic to output partially quantified nodes
+
           // The variable should be quantified: proceed somewhat as for the BDD
           // Restrict algorithm by forwarding the request of source further to the
           // children, though here we keep track of both possibilities.
@@ -270,8 +274,11 @@ namespace adiar::internal
     pq_1_t quantify_pq_1({in}, pq_1_memory, max_pq_1_size, stats_quantify.lpq);
     quantify_pq_1.push({ { root.uid(), ptr_uint64::NIL() }, {}, {ptr_uint64::NIL()} });
 
+    // Set up per-level priority queue
+    pq_2_t quantify_pq_2(pq_2_memory, max_pq_2_size);
+
     return __quantify<quantify_policy, pq_1_t, pq_2_t>
-      (in, label, op, quantify_pq_1, pq_2_memory, max_pq_2_size);
+      (in, label, op, quantify_pq_1, quantify_pq_2);
   }
 
   //////////////////////////////////////////////////////////////////////////////
