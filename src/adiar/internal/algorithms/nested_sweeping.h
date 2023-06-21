@@ -755,7 +755,9 @@ namespace adiar::internal
                       "'no_lookahead' implies it should (in practice) satisfy the '<='");
 
           using inner_pq_t = typename inner_down_sweep::template pq_t<0, memory_mode_t::INTERNAL>;
-          inner_pq_t inner_pq({outer_file}, inner_pq_memory, inner_pq_max_size, stats.inner.down.lpq);
+          inner_pq_t inner_pq({typename inner_down_sweep::reduced_t(outer_file)},
+                              inner_pq_memory, inner_pq_max_size,
+                              stats.inner.down.lpq);
 
           using decorator_t = down__pq_decorator<inner_pq_t, outer_roots_t>;
           decorator_t decorated_pq(inner_pq, outer_roots);
@@ -766,7 +768,9 @@ namespace adiar::internal
           stats.inner.down.lpq.internal += 1u;
 #endif
           using inner_pq_t = typename inner_down_sweep::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>;
-          inner_pq_t inner_pq({outer_file}, inner_pq_memory, inner_pq_max_size, stats.inner.down.lpq);
+          inner_pq_t inner_pq({typename inner_down_sweep::reduced_t(outer_file)},
+                              inner_pq_memory, inner_pq_max_size,
+                              stats.inner.down.lpq);
 
           using decorator_t = down__pq_decorator<inner_pq_t, outer_roots_t>;
           decorator_t decorated_pq(inner_pq, outer_roots);
@@ -777,7 +781,9 @@ namespace adiar::internal
           stats.inner.down.lpq.external += 1u;
 #endif
           using inner_pq_t = typename inner_down_sweep::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>;
-          inner_pq_t inner_pq({outer_file}, inner_pq_memory, inner_pq_max_size, stats.inner.down.lpq);
+          inner_pq_t inner_pq({typename inner_down_sweep::reduced_t(outer_file)},
+                              inner_pq_memory, inner_pq_max_size,
+                              stats.inner.down.lpq);
 
           using decorator_t = down__pq_decorator<inner_pq_t, outer_roots_t>;
           decorator_t decorated_pq(inner_pq, outer_roots);

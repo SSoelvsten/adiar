@@ -1081,7 +1081,7 @@ go_bandit([]() {
           nested_sweeping::inner::down__pq_decorator<test_pq_t, test_roots_sorter_t>;
 
         it("initializes with levels of PQ but with size of Sorter", [&]() {
-          test_pq_t pq({dag}, memory_available(), 16, lpq_stats);
+          test_pq_t pq({bdd(dag)}, memory_available(), 16, lpq_stats);
           test_decorator dec(pq, sorter);
 
           AssertThat(dec.has_current_level(), Is().False());
@@ -1094,7 +1094,7 @@ go_bandit([]() {
         });
 
         it("merges size of PQ and Sorter", [&]() {
-          test_pq_t pq({dag}, memory_available(), 16, lpq_stats);
+          test_pq_t pq({bdd(dag)}, memory_available(), 16, lpq_stats);
 
           const test_request_t root4({inner_n2}, {}, {ptr_uint64(1,2, false)});
           pq.push(root4);
@@ -1105,7 +1105,7 @@ go_bandit([]() {
         });
 
         it("setup_next_level() forward to first Sorter level", [&]() {
-          test_pq_t pq({dag}, memory_available(), 16, lpq_stats);
+          test_pq_t pq({bdd(dag)}, memory_available(), 16, lpq_stats);
           test_decorator dec(pq, sorter);
 
           AssertThat(dec.has_current_level(), Is().False());
@@ -1116,7 +1116,7 @@ go_bandit([]() {
         });
 
         it("setup_next_level(k) forward to Sorter's level if k is larger", [&]() {
-          test_pq_t pq({dag}, memory_available(), 16, lpq_stats);
+          test_pq_t pq({bdd(dag)}, memory_available(), 16, lpq_stats);
           test_decorator dec(pq, sorter);
 
           AssertThat(dec.has_current_level(), Is().False());
@@ -1129,7 +1129,7 @@ go_bandit([]() {
         it("setup_next_level(k) forward to level k if k is smaller", [&]() {
           sorter.pull(); sorter.pull(); // Next is at level 6
 
-          test_pq_t pq({dag}, memory_available(), 16, lpq_stats);
+          test_pq_t pq({bdd(dag)}, memory_available(), 16, lpq_stats);
           test_decorator dec(pq, sorter);
 
           AssertThat(dec.has_current_level(), Is().False());
@@ -1140,7 +1140,7 @@ go_bandit([]() {
         });
 
         it("can pull requests from Sorter", [&]() {
-          test_pq_t pq({dag}, memory_available(), 16, lpq_stats);
+          test_pq_t pq({bdd(dag)}, memory_available(), 16, lpq_stats);
           test_decorator dec(pq, sorter);
 
           dec.setup_next_level();
@@ -1168,7 +1168,7 @@ go_bandit([]() {
         });
 
         it("can pull merge of PQ and Sorter [tie on 'n2']", [&]() {
-          test_pq_t pq({dag}, memory_available(), 16, lpq_stats);
+          test_pq_t pq({bdd(dag)}, memory_available(), 16, lpq_stats);
 
           // Add new request to tie with sorter
           const test_request_t root4({inner_n2}, {}, {ptr_uint64(1,2, false)});
@@ -1209,7 +1209,7 @@ go_bandit([]() {
         });
 
         it("can pull merge of PQ and Sorter [tie on 'n1']", [&]() {
-          test_pq_t pq({dag}, memory_available(), 16, lpq_stats);
+          test_pq_t pq({bdd(dag)}, memory_available(), 16, lpq_stats);
 
           // Add new request to tie with sorter
           const test_request_t root4({inner_n1}, {}, {ptr_uint64(1,2, false)});
@@ -1257,7 +1257,7 @@ go_bandit([]() {
           AssertThat(sorter.empty(), Is().True());
 
           // Start test
-          test_pq_t pq({dag}, memory_available(), 16, lpq_stats);
+          test_pq_t pq({bdd(dag)}, memory_available(), 16, lpq_stats);
 
           // Add new request to tie with sorter
           const test_request_t root4({inner_n1}, {}, {ptr_uint64(1,2, false)});
@@ -1282,7 +1282,7 @@ go_bandit([]() {
         });
 
         it("can top the same request from Sorter multiple times", [&]() {
-          test_pq_t pq({dag}, memory_available(), 16, lpq_stats);
+          test_pq_t pq({bdd(dag)}, memory_available(), 16, lpq_stats);
           test_decorator dec(pq, sorter);
 
           dec.setup_next_level();
@@ -1310,7 +1310,7 @@ go_bandit([]() {
         });
 
         it("can top the same request from PQ multiple times", [&]() {
-          test_pq_t pq({dag}, memory_available(), 16, lpq_stats);
+          test_pq_t pq({bdd(dag)}, memory_available(), 16, lpq_stats);
 
           const test_request_t root4({inner_n1}, {}, {ptr_uint64(1,2, false)});
           pq.push(root4);
@@ -1351,7 +1351,7 @@ go_bandit([]() {
         });
 
         it("can top and pop requests from Sorter", [&]() {
-          test_pq_t pq({dag}, memory_available(), 16, lpq_stats);
+          test_pq_t pq({bdd(dag)}, memory_available(), 16, lpq_stats);
           test_decorator dec(pq, sorter);
 
           dec.setup_next_level();
@@ -1383,7 +1383,7 @@ go_bandit([]() {
         });
 
         it("can top and pop merge of PQ and Sorter [tie on 'n2']", [&]() {
-          test_pq_t pq({dag}, memory_available(), 16, lpq_stats);
+          test_pq_t pq({bdd(dag)}, memory_available(), 16, lpq_stats);
 
           // Add new request to tie with sorter
           const test_request_t root4({inner_n2}, {}, {ptr_uint64(1,2, false)});
@@ -1430,7 +1430,7 @@ go_bandit([]() {
         });
 
         it("can top and pop merge of PQ and Sorter [tie on 'n1']", [&]() {
-          test_pq_t pq({dag}, memory_available(), 16, lpq_stats);
+          test_pq_t pq({bdd(dag)}, memory_available(), 16, lpq_stats);
 
           // Add new request to tie with sorter
           const test_request_t root4({inner_n1}, {}, {ptr_uint64(1,2, false)});
@@ -1484,7 +1484,7 @@ go_bandit([]() {
           AssertThat(sorter.empty(), Is().True());
 
           // Start test
-          test_pq_t pq({dag}, memory_available(), 16, lpq_stats);
+          test_pq_t pq({bdd(dag)}, memory_available(), 16, lpq_stats);
 
           // Add new request to tie with sorter
           const test_request_t root4({inner_n1}, {}, {ptr_uint64(1,2, false)});
