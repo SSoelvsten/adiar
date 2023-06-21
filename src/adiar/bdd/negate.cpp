@@ -1,5 +1,7 @@
 #include <adiar/bdd.h>
 
+#include <utility>
+
 namespace adiar
 {
   bdd bdd_not(const bdd &in)
@@ -12,6 +14,6 @@ namespace adiar
   bdd bdd_not(bdd &&b)
   {
     b.negate = !b.negate;
-    return b;
+    return std::move(b);
   }
 }
