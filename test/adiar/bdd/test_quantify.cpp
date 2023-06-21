@@ -1176,104 +1176,202 @@ go_bandit([]() {
     });
 
     describe("bdd_exists(const bdd&, const std::function<bool(bdd::label_t)>&)", [&]() {
-      it("quantifies odd variables in BDD 4 [&&]", [&]() {
-        bdd out = bdd_exists(bdd_4, [](const bdd::label_t x) { return x % 2; });
-
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True()); // (3)
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
-                                                       ptr_uint64(false),
-                                                       ptr_uint64(true))));
-
-        AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
-                                                       ptr_uint64(2, ptr_uint64::MAX_ID),
-                                                       ptr_uint64(true))));
-
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream out_meta(out);
-
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u,1u)));
-
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
-
-        AssertThat(out_meta.can_pull(), Is().False());
-      });
-
-      it("quantifies even variables in BDD 4 [const &]", [&]() {
-        const bdd in = bdd_4;
-        const bdd out = bdd_exists(in, [](const bdd::label_t x) { return !(x % 2); });
-
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True()); // (5)
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
-                                                       ptr_uint64(false),
-                                                       ptr_uint64(true))));
-
-        AssertThat(out_nodes.can_pull(), Is().True()); // (2')
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
-                                                       ptr_uint64(3, ptr_uint64::MAX_ID),
-                                                       ptr_uint64(true))));
-
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream out_meta(out);
-
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
-
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
-
-        AssertThat(out_meta.can_pull(), Is().False());
-      });
-
-      it("quantifies odd variables in BDD 1 [&&]", [&]() {
-        bdd out = bdd_exists(bdd_1, [](const bdd::label_t x) { return x % 2; });
-
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
-
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream out_meta(out);
-
-        AssertThat(out_meta.can_pull(), Is().False());
-      });
-
-      it("terminates early when quantifying to a terminal in BDD 1 [&&]", [&]() {
-        // TODO: top-down dependant?
-        int calls = 0;
-
-        const bdd out = bdd_exists(bdd_1, [&calls](const bdd::label_t) {
-          calls++;
-          return true;
-        });
-
-        AssertThat(calls, Is().EqualTo(1));
-
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
-
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream out_meta(out);
-
-        AssertThat(out_meta.can_pull(), Is().False());
-      });
-
       it("returns input on always-false predicate BDD 1 [&&]", [&]() {
         __bdd out = bdd_exists(bdd_1, [](const bdd::label_t) { return false; });
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd_1));
+      });
+
+      describe("quantify_mode == SINGLETON", [&]() {
+        quantify_mode = quantify_mode_t::SINGLETON;
+
+        it("quantifies odd variables in BDD 4 [&&]", [&]() {
+          bdd out = bdd_exists(bdd_4, [](const bdd::label_t x) { return x % 2; });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (3)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
+                                                         ptr_uint64(false),
+                                                         ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                         ptr_uint64(2, ptr_uint64::MAX_ID),
+                                                         ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("quantifies even variables in BDD 4 [const &]", [&]() {
+          const bdd in = bdd_4;
+          const bdd out = bdd_exists(in, [](const bdd::label_t x) { return !(x % 2); });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                         ptr_uint64(false),
+                                                         ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                         ptr_uint64(3, ptr_uint64::MAX_ID),
+                                                         ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("quantifies odd variables in BDD 1 [&&]", [&]() {
+          bdd out = bdd_exists(bdd_1, [](const bdd::label_t x) { return x % 2; });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("terminates early when quantifying to a terminal in BDD 1 [&&]", [&]() {
+          // TODO: top-down dependant?
+          int calls = 0;
+
+          const bdd out = bdd_exists(bdd_1, [&calls](const bdd::label_t) {
+            calls++;
+            return true;
+          });
+
+          AssertThat(calls, Is().EqualTo(1));
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        quantify_mode = quantify_mode_t::AUTO;
+      });
+
+      describe("quantify_mode == PARTIAL", [&]() {
+        quantify_mode = quantify_mode_t::PARTIAL;
+
+        // TODO
+
+        quantify_mode = quantify_mode_t::AUTO;
+      });
+
+      describe("quantify_mode == NESTED", [&]() {
+        quantify_mode = quantify_mode_t::NESTED;
+
+        it("quantifies odd variables in BDD 4", [&]() {
+          bdd out = bdd_exists(bdd_4, [](const bdd::label_t x) { return x % 2; });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (3)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
+                                                         ptr_uint64(false),
+                                                         ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                         ptr_uint64(2, ptr_uint64::MAX_ID),
+                                                         ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("quantifies odd variables in BDD 1", [&]() {
+          bdd out = bdd_exists(bdd_1, [](const bdd::label_t x) { return x % 2; });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        quantify_mode = quantify_mode_t::AUTO;
+      });
+
+      describe("quantify_mode == AUTO", [&]() {
+        quantify_mode = quantify_mode_t::AUTO;
+
+        it("quantifies even variables in BDD 4 [const &]", [&]() {
+          const bdd in = bdd_4;
+          const bdd out = bdd_exists(in, [](const bdd::label_t x) { return !(x % 2); });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                         ptr_uint64(false),
+                                                         ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                         ptr_uint64(3, ptr_uint64::MAX_ID),
+                                                         ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        quantify_mode = quantify_mode_t::AUTO;
       });
     });
 
@@ -1938,73 +2036,139 @@ go_bandit([]() {
     });
 
     describe("bdd_forall(const bdd&, const std::function<bool(bdd::label_t)>&)", [&]() {
-      it("quantifies even variables in BDD 1 [const &]", [&]() {
-        const bdd in = bdd_1;
-        const bdd out = bdd_forall(in, [](const bdd::label_t x) { return !(x % 2); });
-
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
-                                                       ptr_uint64(false),
-                                                       ptr_uint64(true))));
-
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream out_meta(out);
-
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
-
-        AssertThat(out_meta.can_pull(), Is().False());
-      });
-
-      it("quantifies odd variables in BDD 1 [&&]", [&]() {
-        const bdd out = bdd_forall(bdd_1, [](const bdd::label_t x) { return x % 2; });
-
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
-                                                       ptr_uint64(true),
-                                                       ptr_uint64(false))));
-
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream out_meta(out);
-
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
-
-        AssertThat(out_meta.can_pull(), Is().False());
-      });
-
-      it("terminates early when quantifying to a terminal in BDD 1 [&&]", [&]() {
-        // TODO: top-down dependant?
-        int calls = 0;
-
-        const bdd out = bdd_forall(bdd_5, [&calls](const bdd::label_t) {
-          calls++;
-          return true;
-        });
-
-        AssertThat(calls, Is().EqualTo(1));
-
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
-
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream out_meta(out);
-
-        AssertThat(out_meta.can_pull(), Is().False());
-      });
-
       it("returns input on always-false predicate BDD 1 [&&]", [&]() {
         __bdd out = bdd_forall(bdd_1, [](const bdd::label_t) { return false; });
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd_1));
+      });
+
+      describe("quantify_mode == SINGLETON", [&]() {
+        quantify_mode = quantify_mode_t::SINGLETON;
+
+        it("quantifies even variables in BDD 1 [const &]", [&]() {
+          const bdd in = bdd_1;
+          const bdd out = bdd_forall(in, [](const bdd::label_t x) { return !(x % 2); });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                         ptr_uint64(false),
+                                                         ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("quantifies odd variables in BDD 1 [&&]", [&]() {
+          const bdd out = bdd_forall(bdd_1, [](const bdd::label_t x) { return x % 2; });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                         ptr_uint64(true),
+                                                         ptr_uint64(false))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("terminates early when quantifying to a terminal in BDD 1 [&&]", [&]() {
+          // TODO: top-down dependant?
+          int calls = 0;
+
+          const bdd out = bdd_forall(bdd_5, [&calls](const bdd::label_t) {
+            calls++;
+            return true;
+          });
+
+          AssertThat(calls, Is().EqualTo(1));
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        quantify_mode = quantify_mode_t::AUTO;
+      });
+
+      describe("quantify_mode == PARTIAL", [&]() {
+        quantify_mode = quantify_mode_t::PARTIAL;
+
+        // TODO
+
+        quantify_mode = quantify_mode_t::AUTO;
+      });
+
+      describe("quantify_mode == NESTED", [&]() {
+        quantify_mode = quantify_mode_t::NESTED;
+
+        it("quantifies even variables in BDD 1", [&]() {
+          const bdd out = bdd_forall(bdd_1, [](const bdd::label_t x) { return !(x % 2); });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                         ptr_uint64(false),
+                                                         ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        quantify_mode = quantify_mode_t::AUTO;
+      });
+
+      describe("quantify_mode == AUTO", [&]() {
+        quantify_mode = quantify_mode_t::AUTO;
+
+        it("quantifies odd variables in BDD 1", [&]() {
+          const bdd out = bdd_forall(bdd_1, [](const bdd::label_t x) { return x % 2; });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                         ptr_uint64(true),
+                                                         ptr_uint64(false))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        quantify_mode = quantify_mode_t::AUTO;
       });
     });
 

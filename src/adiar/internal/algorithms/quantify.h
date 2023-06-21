@@ -536,7 +536,38 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////
   // Multi-variable (predicate)
-  //
+  template<typename quantify_policy>
+  class multi_quantify_policy__pred
+    : public multi_quantify_policy<quantify_policy>
+  {
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Predicate for whether a level should be swept on (or not).
+    ////////////////////////////////////////////////////////////////////////////
+    using pred_t = std::function<bool(typename quantify_policy::label_t)>;
+
+  private:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Predicate for whether a level should be swept on (or not).
+    ////////////////////////////////////////////////////////////////////////////
+    const pred_t &_pred;
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    multi_quantify_policy__pred(const bool_op &op, const pred_t &pred)
+      : multi_quantify_policy<quantify_policy>(op), _pred(pred)
+    { }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether the generator wants to sweep on the given level.
+    ////////////////////////////////////////////////////////////////////////////
+    bool has_sweep(node::ptr_t::label_t l)
+    {
+      return _pred(l) == quantify_policy::pred_value;
+    }
+  };
+
   // TODO: optimisations
   //       - initial cheap check on is_terminal.
   //       - initial 'quantify__get_label' should not terminate early but
@@ -546,7 +577,7 @@ namespace adiar::internal
   quantify__get_label(const typename quantify_policy::reduced_t &dd,
                       const std::function<bool(typename quantify_policy::label_t)> &pred)
   {
-    level_info_stream<> lis(dd);
+    level_info_stream<true /* bottom-up */> lis(dd);
 
     while (lis.can_pull()) {
       const typename quantify_policy::label_t l = lis.pull().label();
@@ -562,14 +593,45 @@ namespace adiar::internal
            const bool_op &op)
   {
     typename quantify_policy::label_t label = quantify__get_label<quantify_policy>(dd, pred);
+    if (quantify_policy::MAX_LABEL < label) { return dd; }
 
-    while (label <= quantify_policy::MAX_LABEL) {
-      dd = quantify<quantify_policy>(dd, label, op);
-      if (is_terminal(dd)) { return dd; }
+    switch (quantify_mode) {
+    case quantify_mode_t::PARTIAL:
+      { // ---------------------------------------------------------------------
+        // Case: Repeated partial quantification
 
-      label = quantify__get_label<quantify_policy>(dd, pred);
+        // TODO: implement partial sweeping
+      }
+
+    case quantify_mode_t::SINGLETON:
+      { // -------------------------------------------------------------------
+        // Case: Repeated single variable quantification
+        while (label <= quantify_policy::MAX_LABEL) {
+          dd = quantify<quantify_policy>(dd, label, op);
+          if (is_terminal(dd)) { return dd; }
+
+          label = quantify__get_label<quantify_policy>(dd, pred);
+        }
+        return dd;
+      }
+
+    case quantify_mode_t::NESTED:
+    case quantify_mode_t::AUTO:
+      { // ---------------------------------------------------------------------
+        // Case: Nested Sweeping
+        using outer_up_sweep = nested_sweeping::outer::up__policy_t<quantify_policy>;
+        multi_quantify_policy__pred<quantify_policy> inner_impl(op, pred);
+
+        // TODO: If AUTO, apply partial quantification until result is larger
+        //       than some 1+epsilon factor.
+
+        return nested_sweep<outer_up_sweep>(quantify<quantify_policy>(dd, label, op), inner_impl);
+      }
+
+    default:
+      // ---------------------------------------------------------------------
+      adiar_unreachable();
     }
-    return dd;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -607,7 +669,7 @@ namespace adiar::internal
 
   public:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether the generator wants to sweep on some level.
+    /// \brief Whether the generator wants to sweep on the given level.
     ////////////////////////////////////////////////////////////////////////////
     bool has_sweep(node::ptr_t::label_t l)
     {
@@ -637,7 +699,7 @@ namespace adiar::internal
     case quantify_mode_t::SINGLETON:
     case quantify_mode_t::PARTIAL:
       { // -------------------------------------------------------------------
-        // Case: Individual Quantification
+        // Case: Repeated single variable quantification
         typename quantify_policy::label_t next_label = gen();
         while (next_label <= quantify_policy::MAX_LABEL) {
           dd = quantify<quantify_policy>(dd, label, op);
