@@ -14,17 +14,18 @@ namespace adiar
   class zdd_project_policy : public zdd_policy
   {
   public:
-    static inline __zdd
-    resolve_terminal_root(const zdd::node_t v, const bool_op &/* op */)
+    static inline zdd::ptr_t
+    resolve_root(const zdd::node_t &r, const bool_op &/*op*/)
     {
-      if (v.low().is_terminal() && v.high().is_terminal()) {
-        //adiar_debug(op == or_op, "Projection is only designed for the 'or_op'");
-        adiar_debug(v.low().value() || v.high().value(),
+      // Return the True terminal if any (including its tainting flags).
+      if (r.low().is_terminal() && r.high().is_terminal()) {
+        adiar_debug(r.low().value() || r.high().value(),
                     "At least one of the terminals should be True in a ZDD");
-        return zdd_null();
-      }
 
-      return __zdd(); // return nothing
+        return r.low().value() ? r.low() : r.high();
+      }
+      // Otherwise return 'nothing'
+      return r.uid();
     }
 
   public:
