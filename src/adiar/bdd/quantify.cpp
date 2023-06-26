@@ -69,20 +69,6 @@ namespace adiar
     return internal::quantify<bdd_quantify_policy>(f, var, or_op);
   }
 
-  // LCOV_EXCL_START
-  // TODO (deprecated): remove
-  __bdd bdd_exists(const bdd &f, const shared_file<bdd::label_t> &vars)
-  {
-    return internal::quantify<bdd_quantify_policy>(f, vars, or_op);
-  }
-
-  // TODO (deprecated): remove
-  __bdd bdd_exists(bdd &&f, const shared_file<bdd::label_t> &vars)
-  {
-    return internal::quantify<bdd_quantify_policy>(std::forward<bdd>(f), vars, or_op);
-  }
-  // LCOV_EXCL_STOP
-
   __bdd bdd_exists(const bdd &f, const std::function<bool(bdd::label_t)> &vars)
   {
     return internal::quantify<bdd_quantify_policy>(f, vars, or_op);
@@ -108,20 +94,6 @@ namespace adiar
   {
     return internal::quantify<bdd_quantify_policy>(f, var, and_op);
   }
-
-  // LCOV_EXCL_START
-  // TODO (deprecated): remove
-  __bdd bdd_forall(const bdd &f, const shared_file<bdd::label_t> &vars)
-  {
-    return internal::quantify<bdd_quantify_policy>(f, vars, and_op);
-  }
-
-  // TODO (deprecated): remove
-  __bdd bdd_forall(bdd &&f, const shared_file<bdd::label_t> &vars)
-  {
-    return internal::quantify<bdd_quantify_policy>(std::forward<bdd>(f), vars, and_op);
-  }
-  // LCOV_EXCL_STOP
 
   __bdd bdd_forall(const bdd &f, const std::function<bool(bdd::label_t)> &vars)
   {
