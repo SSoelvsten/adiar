@@ -568,24 +568,24 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     bool has_sweep(node::ptr_t::label_t l)
     {
-      return _pred(l) == quantify_policy::pred_value;
+      return _pred(l) == quantify_policy::quantify_onset;
     }
   };
 
   // TODO: optimisations
   //       - initial cheap check on is_terminal.
-  //       - initial 'quantify__get_label' should not terminate early but
+  //       - initial 'quantify__get_level' should not terminate early but
   //         determine whether any variable may "survive".
   template<typename quantify_policy>
   inline typename quantify_policy::label_t
-  quantify__get_label(const typename quantify_policy::reduced_t &dd,
+  quantify__get_level(const typename quantify_policy::reduced_t &dd,
                       const std::function<bool(typename quantify_policy::label_t)> &pred)
   {
     level_info_stream<true /* bottom-up */> lis(dd);
 
     while (lis.can_pull()) {
       const typename quantify_policy::label_t l = lis.pull().label();
-      if (pred(l) == quantify_policy::pred_value) { return l; }
+      if (pred(l) == quantify_policy::quantify_onset) { return l; }
     }
     return quantify_policy::MAX_LABEL+1;
   }
@@ -596,7 +596,7 @@ namespace adiar::internal
            const std::function<bool(typename quantify_policy::label_t)> &pred,
            const bool_op &op)
   {
-    typename quantify_policy::label_t label = quantify__get_label<quantify_policy>(dd, pred);
+    typename quantify_policy::label_t label = quantify__get_level<quantify_policy>(dd, pred);
     if (quantify_policy::MAX_LABEL < label) { return dd; }
 
     switch (quantify_mode) {
@@ -604,7 +604,7 @@ namespace adiar::internal
       { // ---------------------------------------------------------------------
         // Case: Repeated partial quantification
 
-        // TODO: implement partial sweeping
+        // TODO: implement partial sweeping (and move case below singleton)
       }
 
     case quantify_mode_t::SINGLETON:
@@ -614,12 +614,18 @@ namespace adiar::internal
           dd = quantify<quantify_policy>(dd, label, op);
           if (is_terminal(dd)) { return dd; }
 
-          label = quantify__get_label<quantify_policy>(dd, pred);
+          label = quantify__get_level<quantify_policy>(dd, pred);
         }
         return dd;
       }
 
     case quantify_mode_t::NESTED:
+      { // ---------------------------------------------------------------------
+        // Case: Nested Sweeping
+
+        // TODO: Copy the AUTO case up here, when we add the more complex
+        //       preprocessing with partial quantification.
+      }
     case quantify_mode_t::AUTO:
       { // ---------------------------------------------------------------------
         // Case: Nested Sweeping
@@ -677,19 +683,26 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the generator wants to sweep on the given level.
     ////////////////////////////////////////////////////////////////////////////
-    bool has_sweep(node::ptr_t::label_t l)
+    bool has_sweep(const node::ptr_t::label_t l)
     {
-      if (has_next_level() && l == _next_level) {
-        _next_level = _gen();
-        return quantify_policy::pred_value;
-      } else {
-        return !quantify_policy::pred_value;
-      }
+      return l == next_level(l)
+        ? quantify_policy::quantify_onset
+        : !quantify_policy::quantify_onset;
     }
 
   private:
-    bool has_next_level() const
+    bool
+    has_next_level() const
     { return _next_level <= quantify_policy::MAX_LABEL; }
+
+    const node::ptr_t::label_t&
+    next_level(const node::ptr_t::label_t l)
+    {
+      while (has_next_level() && l < _next_level) {
+        _next_level = _gen();
+      }
+      return _next_level;
+    }
   };
 
   template<typename quantify_policy>
@@ -698,12 +711,16 @@ namespace adiar::internal
            const typename multi_quantify_policy__gen<quantify_policy>::gen_t &gen,
            const bool_op &op)
   {
+    adiar_debug(is_commutative(op), "Operator must be commutative");
+
     typename quantify_policy::label_t label = gen();
     if (quantify_policy::MAX_LABEL < label) { return dd; }
 
+    // NOTE: read-once access with 'gen' makes partial quantification not
+    //       possible.
     switch (quantify_mode) {
-    case quantify_mode_t::SINGLETON:
     case quantify_mode_t::PARTIAL:
+    case quantify_mode_t::SINGLETON:
       { // -------------------------------------------------------------------
         // Case: Repeated single variable quantification
         typename quantify_policy::label_t next_label = gen();
@@ -717,10 +734,14 @@ namespace adiar::internal
         return quantify<quantify_policy>(dd, label, op);
       }
 
-    case quantify_mode_t::NESTED:
     case quantify_mode_t::AUTO:
+    case quantify_mode_t::NESTED:
       { // ---------------------------------------------------------------------
         // Case: Nested Sweeping
+        //
+        // NOTE: Despite partial quantification is not possible, we can
+        //       (assuming we have to quantify the on-set) still use the
+        //       bottom-most level to transpose the DAG.
         using outer_up_sweep = nested_sweeping::outer::up__policy_t<quantify_policy>;
         multi_quantify_policy__gen<quantify_policy> inner_impl(op, gen);
 
