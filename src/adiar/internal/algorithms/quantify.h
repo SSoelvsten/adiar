@@ -509,36 +509,6 @@ namespace adiar::internal
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  // Multi-variable (file)
-  // TODO (deprecated): Remove
-
-  // LCOV_EXCL_START
-  template<typename quantify_policy>
-  typename quantify_policy::unreduced_t
-  quantify(typename quantify_policy::reduced_t dd,
-           const shared_file<typename quantify_policy::label_t> labels,
-           const bool_op &op)
-  {
-    const size_t labels_size = labels->size();
-    if (labels_size == 0) { return dd; }
-
-    file_stream<typename quantify_policy::label_t> label_stream(labels);
-
-    for (size_t label_idx = 0u; label_idx < labels_size - 1; label_idx++) {
-      if (is_terminal(dd)) { return dd; }
-
-      adiar_debug(label_stream.can_pull(), "Should not exceed 'labels' size");
-      dd = quantify<quantify_policy>(dd, label_stream.pull(), op);
-    }
-
-    adiar_debug(label_stream.can_pull(), "Should not exceed 'labels' size");
-    const typename quantify_policy::label_t label = label_stream.pull();
-    adiar_debug(!label_stream.can_pull(), "Should pull final label");
-    return quantify<quantify_policy>(dd, label, op);
-  }
-  // LCOV_EXCL_STOP
-
-  //////////////////////////////////////////////////////////////////////////////
   // Multi-variable (predicate)
   template<typename quantify_policy>
   class multi_quantify_policy__pred
