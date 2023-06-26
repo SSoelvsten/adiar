@@ -333,23 +333,6 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Project family of sets onto a domain, i.e. remove from every
-  ///            set all variables not mentioned.
-  ///
-  /// \param A   Family of sets to project
-  ///
-  /// \param dom The domain to project onto (in ascending order)
-  ///
-  /// \returns
-  /// \f$ \prod_{\mathit{dom}}(A) = \{ a \setminus \mathit{dom}^c \mid a \in A \} \f$
-  //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_project(const zdd &A, const shared_file<zdd::label_t> &dom);
-
-  /// \cond
-  __zdd zdd_project(zdd &&A, const shared_file<zdd::label_t> &dom);
-  /// \endcond
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief     Project family of sets onto a domain, i.e. remove from every
   ///            set all variables not within the domain.
   ///
   /// \param A   Family of sets to project
@@ -363,6 +346,52 @@ namespace adiar
 
   /// \cond
   __zdd zdd_project(zdd &&A, const std::function<bool(zdd::label_t)> &dom);
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief     Project family of sets onto a domain, i.e. remove from every
+  ///            set all variables not within the domain.
+  ///
+  /// \param A   Family of sets to project
+  ///
+  /// \param gen Generator function, that produces the variables of the domain in
+  ///            *descending* order. When none are left to-be quantified, it
+  ///            returns a value larger than `bdd::MAX_LABEL`, e.g. -1.
+  ///
+  /// \returns
+  /// \f$ \prod_{\mathit{dom}}(A) = \{ a \setminus \mathit{dom}^c \mid a \in A \} \f$
+  //////////////////////////////////////////////////////////////////////////////
+  __zdd zdd_project(const zdd &A, const std::function<zdd::label_t()> &dom);
+
+  /// \cond
+  __zdd zdd_project(zdd &&A, const std::function<zdd::label_t()> &dom);
+  /// \endcond
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief     Project family of sets onto a domain, i.e. remove from every
+  ///            set all variables not within the domain.
+  ///
+  /// \param A   Family of sets to project
+  ///
+  /// \param begin Iterator that provides the domain in *descending* order.
+  ///
+  /// \returns
+  /// \f$ \prod_{\mathit{dom}}(A) = \{ a \setminus \mathit{dom}^c \mid a \in A \} \f$
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename IT>
+  __zdd zdd_project(const zdd &A, IT begin, IT end)
+  {
+    return zdd_project(A, internal::iterator_gen<bdd::label_t>(begin, end));
+  }
+
+  /// \cond
+  template<typename IT>
+  __zdd zdd_project(zdd &&A, IT begin, IT end)
+  {
+    return zdd_project(std::forward<zdd>(A),
+                       internal::iterator_gen<bdd::label_t>(begin, end));
+  }
   /// \endcond
 
   /// \}

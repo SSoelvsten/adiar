@@ -46,6 +46,25 @@ namespace adiar
   __bdd bdd_forall(bdd &&f, const shared_file<bdd::label_t> &vars);
   /// \endcond
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief     Project family of sets onto a domain, i.e. remove from every
+  ///            set all variables not mentioned.
+  ///
+  /// \param A   Family of sets to project
+  ///
+  /// \param dom The domain to project onto (in ascending order)
+  ///
+  /// \returns
+  /// \f$ \prod_{\mathit{dom}}(A) = \{ a \setminus \mathit{dom}^c \mid a \in A \} \f$
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced with using 'predicates' for multiple variables")]]
+  __zdd zdd_project(const zdd &A, const shared_file<zdd::label_t> &dom);
+
+  /// \cond
+  [[deprecated("Replaced with using 'predicates' for multiple variables")]]
+  __zdd zdd_project(zdd &&A, const shared_file<zdd::label_t> &dom);
+  /// \endcond
+
   // LCOV_EXCL_STOP
 }
 

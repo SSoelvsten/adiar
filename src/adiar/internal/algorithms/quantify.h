@@ -705,6 +705,27 @@ namespace adiar::internal
     }
   };
 
+  // TODO: optimisations
+  //       - initial cheap check on is_terminal.
+  //       - initial 'quantify__get_level' should not terminate early but
+  //         determine whether any variable may "survive".
+  template<typename quantify_policy>
+  inline typename quantify_policy::label_t
+  quantify__get_level(const typename quantify_policy::reduced_t &dd,
+                      const typename quantify_policy::label_t bot_level,
+                      const typename quantify_policy::label_t top_level)
+  {
+    level_info_stream<true /* bottom-up */> lis(dd);
+
+    while (lis.can_pull()) {
+      const typename quantify_policy::label_t l = lis.pull().label();
+      if ((top_level < l || quantify_policy::MAX_LABEL < top_level) && l < bot_level) {
+        return l;
+      }
+    }
+    return quantify_policy::MAX_LABEL+1;
+  }
+
   template<typename quantify_policy>
   typename quantify_policy::unreduced_t
   quantify(typename quantify_policy::reduced_t dd,
@@ -713,9 +734,6 @@ namespace adiar::internal
   {
     adiar_debug(is_commutative(op), "Operator must be commutative");
 
-    typename quantify_policy::label_t label = gen();
-    if (quantify_policy::MAX_LABEL < label) { return dd; }
-
     // NOTE: read-once access with 'gen' makes partial quantification not
     //       possible.
     switch (quantify_mode) {
@@ -723,15 +741,58 @@ namespace adiar::internal
     case quantify_mode_t::SINGLETON:
       { // -------------------------------------------------------------------
         // Case: Repeated single variable quantification
-        typename quantify_policy::label_t next_label = gen();
-        while (next_label <= quantify_policy::MAX_LABEL) {
-          dd = quantify<quantify_policy>(dd, label, op);
-          if (is_terminal(dd)) { return dd; }
+        // TODO: correctly handle quantify_policy::quantify_onset
+        typename quantify_policy::label_t on_level = gen();
 
-          label = next_label;
-          next_label = gen();
+        if (quantify_policy::quantify_onset) {
+          if (quantify_policy::MAX_LABEL < on_level) { return dd; }
+
+          typename quantify_policy::label_t next_on_level = gen();
+          while (next_on_level <= quantify_policy::MAX_LABEL) {
+            dd = quantify<quantify_policy>(dd, on_level, op);
+            if (is_terminal(dd)) { return dd; }
+
+            on_level = next_on_level;
+            next_on_level = gen();
+          }
+          return quantify<quantify_policy>(dd, on_level, op);
+        } else { // !quantify_policy::quantify_onset
+          // TODO: only designed for 'OR' at this point in time
+          if (quantify_policy::MAX_LABEL < on_level) {
+            return typename quantify_policy::reduced_t(dd->number_of_terminals[true] > 0);
+          }
+
+          // Quantify everything below 'label'
+          for (;;) {
+            const typename quantify_policy::label_t off_level =
+              quantify__get_level<quantify_policy>(dd, quantify_policy::MAX_LABEL, on_level);
+
+            if (quantify_policy::MAX_LABEL < off_level) { break; }
+
+            dd = quantify<quantify_policy>(dd, off_level, op);
+            if (is_terminal(dd)) { return dd; }
+          }
+
+          // Quantify everything strictly in between 'bot_level' and 'top_level'
+          typename quantify_policy::label_t bot_level = on_level;
+          typename quantify_policy::label_t top_level = gen();
+
+          while (bot_level <= quantify_policy::MAX_LABEL) {
+            for (;;) {
+              const typename quantify_policy::label_t off_level =
+                quantify__get_level<quantify_policy>(dd, bot_level, top_level);
+
+              if (quantify_policy::MAX_LABEL < off_level) { break; }
+
+              dd = quantify<quantify_policy>(dd, off_level, op);
+              if (is_terminal(dd)) { return dd; }
+            }
+
+            bot_level = top_level;
+            top_level = gen();
+          }
+          return dd;
         }
-        return quantify<quantify_policy>(dd, label, op);
       }
 
     case quantify_mode_t::AUTO:
@@ -743,9 +804,19 @@ namespace adiar::internal
         //       (assuming we have to quantify the on-set) still use the
         //       bottom-most level to transpose the DAG.
         using outer_up_sweep = nested_sweeping::outer::up__policy_t<quantify_policy>;
-        multi_quantify_policy__gen<quantify_policy> inner_impl(op, gen);
 
-        return nested_sweep<outer_up_sweep>(quantify<quantify_policy>(dd, label, op), inner_impl);
+        if constexpr (quantify_policy::quantify_onset) {
+          typename quantify_policy::label_t label = gen();
+          if (quantify_policy::MAX_LABEL < label) { return dd; }
+
+          // TODO: get bottom-most level that actually exists in DAG.
+
+          multi_quantify_policy__gen<quantify_policy> inner_impl(op, gen);
+          return nested_sweep<outer_up_sweep>(quantify<quantify_policy>(dd, label, op), inner_impl);
+        } else { // !quantify_policy::quantify_onset
+          multi_quantify_policy__gen<quantify_policy> inner_impl(op, gen);
+          return nested_sweep<outer_up_sweep>(dd, inner_impl);
+        }
       }
 
       // LCOV_EXCL_START
