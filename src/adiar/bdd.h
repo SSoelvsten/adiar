@@ -387,24 +387,6 @@ namespace adiar
   ///
   /// \param f    BDD to be quantified.
   ///
-  /// \param vars Variables to quantify in f (in order of their quantification)
-  ///
-  /// \returns    \f$ \exists x_{i_1}, \dots, x_{i_k} : f \f$
-  //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_exists(const bdd &f, const shared_file<bdd::label_t> &vars);
-
-  /// \cond
-  __bdd bdd_exists(bdd &&f, const shared_file<bdd::label_t> &vars);
-  /// \endcond
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief      Existential quantification of multiple variables.
-  ///
-  /// \details    Repeatedly calls `bdd_exists` for the given variables
-  ///             while optimising garbage collecting intermediate results.
-  ///
-  /// \param f    BDD to be quantified.
-  ///
   /// \param vars Predicate to identify the variables to quantify in f. You may
   ///             abuse the fact, that this predicate will only be invoked in
   ///             ascending/descending order of the levels in `f` (but, with
@@ -487,24 +469,6 @@ namespace adiar
   /// \cond
   inline __bdd bdd_forall(bdd &&f, bdd::label_t var)
   { return bdd_forall(f, var); }
-  /// \endcond
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief      Forall quantification of multiple variables.
-  ///
-  /// \details    Repeatedly calls `bdd_forall` for the given variables
-  ///             while optimising garbage collecting intermediate results.
-  ///
-  /// \param f    BDD to be quantified.
-  ///
-  /// \param vars Variables to quantify in f (in order of their quantification)
-  ///
-  /// \returns    \f$ \forall x_{i_1}, \dots, x_{i_k} : f \f$
-  //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_forall(const bdd &f, const shared_file<bdd::label_t> &vars);
-
-  /// \cond
-  __bdd bdd_forall(bdd &&f, const shared_file<bdd::label_t> &vars);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////

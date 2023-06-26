@@ -869,312 +869,6 @@ go_bandit([]() {
       });
     });
 
-    describe("bdd_exists(const bdd&, const shared_file<bdd::label_t>&)", [&]() {
-      it("quantifies [x1, x2] in terminal-only BDD [&&]", [&]() {
-        adiar::shared_file<bdd::label_t> labels;
-
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 1 << 2;
-        }
-
-        __bdd out = bdd_exists(terminal_T, labels);
-
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(terminal_T));
-        AssertThat(out.negate, Is().False());
-      });
-
-      it("quantifies [x1, x2] in terminal-only BDD [const &]", [&]() {
-        adiar::shared_file<bdd::label_t> labels;
-
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 1 << 2;
-        }
-
-        const bdd in_bdd = terminal_T;
-        __bdd out = bdd_exists(in_bdd, labels);
-
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(terminal_T));
-        AssertThat(out.negate, Is().False());
-      });
-
-      it("quantifies [x1, x2] in BDD 4 [&&]", [&]() {
-        adiar::shared_file<bdd::label_t> labels;
-
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 1 << 2;
-        }
-
-        bdd out = bdd_exists(bdd_4, labels);
-
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
-                                                       ptr_uint64(false),
-                                                       ptr_uint64(true))));
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
-                                                       ptr_uint64(3, ptr_uint64::MAX_ID),
-                                                       ptr_uint64(true))));
-
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream out_meta(out);
-
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
-
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
-
-        AssertThat(out_meta.can_pull(), Is().False());
-      });
-
-      it("quantifies [x2, x1] in BDD 4 [&&]", [&]() {
-        adiar::shared_file<bdd::label_t> labels;
-
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 2 << 1;
-        }
-
-        bdd out = bdd_exists(bdd_4, labels);
-
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
-                                                       ptr_uint64(false),
-                                                       ptr_uint64(true))));
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
-                                                       ptr_uint64(3, ptr_uint64::MAX_ID),
-                                                       ptr_uint64(true))));
-
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream out_meta(out);
-
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
-
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
-
-        AssertThat(out_meta.can_pull(), Is().False());
-      });
-
-      it("quantifies [x2] in BDD 4 [&&]", [&]() {
-        adiar::shared_file<bdd::label_t> labels;
-
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 2;
-        }
-
-        bdd out = bdd_exists(bdd_4, labels);
-
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
-                                                       ptr_uint64(false),
-                                                       ptr_uint64(true))));
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
-                                                       ptr_uint64(3, ptr_uint64::MAX_ID),
-                                                       ptr_uint64(true))));
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
-                                                       ptr_uint64(3, ptr_uint64::MAX_ID),
-                                                       ptr_uint64(1, ptr_uint64::MAX_ID))));
-
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream out_meta(out);
-
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
-
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
-
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
-
-        AssertThat(out_meta.can_pull(), Is().False());
-      });
-
-      it("quantifies [x1, x3] in BDD 4 [&&]", [&]() {
-        adiar::shared_file<bdd::label_t> labels;
-
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 1 << 3;
-        }
-
-        bdd out = bdd_exists(bdd_4, labels);
-
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
-                                                       ptr_uint64(false),
-                                                       ptr_uint64(true))));
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
-                                                       ptr_uint64(2, ptr_uint64::MAX_ID),
-                                                       ptr_uint64(true))));
-
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream out_meta(out);
-
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u,1u)));
-
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
-
-        AssertThat(out_meta.can_pull(), Is().False());
-      });
-
-      it("quantifies [x0, x2] in BDD 4 [&&]", [&]() {
-        adiar::shared_file<bdd::label_t> labels;
-
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 0 << 2;
-        }
-
-        bdd out = bdd_exists(bdd_4, labels);
-
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
-                                                       ptr_uint64(false),
-                                                       ptr_uint64(true))));
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
-                                                       ptr_uint64(3, ptr_uint64::MAX_ID),
-                                                       ptr_uint64(true))));
-
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream out_meta(out);
-
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
-
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
-
-        AssertThat(out_meta.can_pull(), Is().False());
-      });
-
-      it("quantifies [x0, x2] in BDD 4 [const &]", [&]() {
-        adiar::shared_file<bdd::label_t> labels;
-
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 0 << 2;
-        }
-
-        bdd in_bdd = bdd_4;
-        bdd out = bdd_exists(in_bdd, labels);
-
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
-                                                       ptr_uint64(false),
-                                                       ptr_uint64(true))));
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
-                                                       ptr_uint64(3, ptr_uint64::MAX_ID),
-                                                       ptr_uint64(true))));
-
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream out_meta(out);
-
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
-
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
-
-        AssertThat(out_meta.can_pull(), Is().False());
-      });
-
-      it("quantifies [x3, x1, x0, x2] where it is terminal-only already before x2 BDD 4 [&&]", [&]() {
-        adiar::shared_file<bdd::label_t> labels;
-
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 3 << 1 << 0 << 2;
-        }
-
-        bdd out = bdd_exists(bdd_4, labels);
-
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream ms(out);
-        AssertThat(ms.can_pull(), Is().False());
-      });
-
-      it("quantifies [x2, x1] into T terminal x2 [&&]", [&]() {
-        adiar::shared_file<bdd::label_t> labels;
-
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 2 << 1;
-        }
-
-        bdd out = bdd_exists(bdd_x2, labels);
-
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream ms(out);
-        AssertThat(ms.can_pull(), Is().False());
-      });
-
-      it("quantifies [] into the original file of BDD 3 [&&]", [&]() {
-        adiar::shared_file<bdd::label_t> labels;
-
-        // __bdd is used to access the shared_levelized_file<bdd::node_t>
-        __bdd out = bdd_exists(bdd_3, labels);
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd_3));
-      });
-
-      it("quantifies [] into the original file of BDD 3 [const &]", [&]() {
-        adiar::shared_file<bdd::label_t> labels;
-
-        bdd in_bdd = bdd_3;
-        __bdd out = bdd_exists(in_bdd, labels);
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd_3));
-      });
-    });
-
     describe("bdd_exists(const bdd&, const std::function<bool(bdd::label_t)>&)", [&]() {
       it("returns input on always-false predicate BDD 1 [&&]", [&]() {
         __bdd out = bdd_exists(bdd_1, [](const bdd::label_t) { return false; });
@@ -1212,6 +906,36 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
+        it("quantifies 1, 2 in BDD 4 [&&]", [&]() {
+          bdd out = bdd_exists(bdd_4, [](const bdd::label_t x) { return x == 1 || x == 2; });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                         ptr_uint64(false),
+                                                         ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                         ptr_uint64(3, ptr_uint64::MAX_ID),
+                                                         ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
+
         it("quantifies even variables in BDD 4 [const &]", [&]() {
           const bdd in = bdd_4;
           const bdd out = bdd_exists(in, [](const bdd::label_t x) { return !(x % 2); });
@@ -1239,6 +963,8 @@ go_bandit([]() {
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
         });
 
         it("quantifies odd variables in BDD 1 [&&]", [&]() {
@@ -1252,8 +978,9 @@ go_bandit([]() {
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
-
           AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
         });
 
         it("terminates early when quantifying to a terminal in BDD 1 [&&]", [&]() {
@@ -1275,8 +1002,24 @@ go_bandit([]() {
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
-
           AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
+
+        it("quantifies with always-true predicate in BDD 4 [&&]", [&]() {
+          bdd out = bdd_exists(bdd_4, [](const bdd::label_t) { return true; });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream ms(out);
+          AssertThat(ms.can_pull(), Is().False());
+
+          // TODO: meta variables...
         });
 
         quantify_mode = quantify_mode_t::AUTO;
@@ -1319,6 +1062,8 @@ go_bandit([]() {
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
         });
 
         it("quantifies odd variables in BDD 1", [&]() {
@@ -1334,6 +1079,23 @@ go_bandit([]() {
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
+
+        it("quantifies with always-true predicate in BDD 4 [&&]", [&]() {
+          bdd out = bdd_exists(bdd_4, [](const bdd::label_t) { return true; });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream ms(out);
+          AssertThat(ms.can_pull(), Is().False());
+
+          // TODO: meta variables...
         });
 
         quantify_mode = quantify_mode_t::AUTO;
@@ -1372,6 +1134,21 @@ go_bandit([]() {
         });
 
         quantify_mode = quantify_mode_t::AUTO;
+      });
+
+      it("quantifies with always-true predicate in BDD 4 [&&]", [&]() {
+        bdd out = bdd_exists(bdd_4, [](const bdd::label_t) { return true; });
+
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream ms(out);
+        AssertThat(ms.can_pull(), Is().False());
+
+        // TODO: meta variables...
       });
     });
 
@@ -1889,152 +1666,6 @@ go_bandit([]() {
       });
     });
 
-    describe("bdd_forall(const bdd&, shared_file<bdd::label_t>&)", [&]() {
-      it("quantifies [x0, x2, x1] in BDD 4 [&&]", [&]() {
-        adiar::shared_file<bdd::label_t> labels;
-
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 0 << 2 << 1;
-        }
-
-        __bdd out = bdd_forall(bdd_4, labels);
-
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream ms(out);
-        AssertThat(ms.can_pull(), Is().False());
-
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[true],  Is().EqualTo(0u));
-      });
-
-      it("quantifies [x0, x2, x1] in BDD 4 [const &]", [&]() {
-        adiar::shared_file<bdd::label_t> labels;
-
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 0 << 2 << 1;
-        }
-
-        const bdd in_bdd = bdd_4;
-        __bdd out = bdd_forall(in_bdd, labels);
-
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream ms(out);
-        AssertThat(ms.can_pull(), Is().False());
-
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[true],  Is().EqualTo(0u));
-      });
-
-      it("quantifies [x1] in BDD 4 [&&]", [&]() {
-        adiar::shared_file<bdd::label_t> labels;
-
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 1;
-        }
-
-        bdd out = bdd_forall(bdd_4, labels);
-
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True()); // (5,_) / (5,T)
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
-                                                       ptr_uint64(false),
-                                                       ptr_uint64(true))));
-
-        AssertThat(out_nodes.can_pull(), Is().True()); // (3,_) / (3,4)
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
-                                                       ptr_uint64(false),
-                                                       ptr_uint64(3, ptr_uint64::MAX_ID))));
-
-        // The node (1,_) is reduced away due to its low child is (3,_)
-        // and its high child is (3,4)
-
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream ms(out);
-
-        AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(3u,1u)));
-
-        AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(2u,1u)));
-
-        AssertThat(ms.can_pull(), Is().False());
-      });
-
-      it("quantifies [x1] in BDD 4 [const &]", [&]() {
-        adiar::shared_file<bdd::label_t> labels;
-
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 1;
-        }
-
-        const bdd in_bdd = bdd_4;
-        bdd out = bdd_forall(in_bdd, labels);
-
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True()); // (5,_) / (5,T)
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
-                                                       ptr_uint64(false),
-                                                       ptr_uint64(true))));
-
-        AssertThat(out_nodes.can_pull(), Is().True()); // (3,_) / (3,4)
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
-                                                       ptr_uint64(false),
-                                                       ptr_uint64(3, ptr_uint64::MAX_ID))));
-
-        // The node (1,_) is reduced away due to its low child is (3,_)
-        // and its high child is (3,4)
-
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream ms(out);
-
-        AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(3u,1u)));
-
-        AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(2u,1u)));
-
-        AssertThat(ms.can_pull(), Is().False());
-      });
-
-      it("quantifies [] into the original file of BDD 3 [&&]", [&]() {
-        adiar::shared_file<bdd::label_t> labels;
-
-        // __bdd is used to access the shared_levelized_file<bdd::node_t>
-        __bdd out = bdd_forall(bdd_3, labels);
-
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd_3));
-        AssertThat(out.negate, Is().False());
-      });
-
-      it("quantifies [] into the original file of BDD 3 [const &]", [&]() {
-        adiar::shared_file<bdd::label_t> labels;
-
-        const bdd in_bdd = bdd_3;
-        __bdd out = bdd_forall(in_bdd, labels);
-
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd_3));
-        AssertThat(out.negate, Is().False());
-      });
-    });
-
     describe("bdd_forall(const bdd&, const std::function<bool(bdd::label_t)>&)", [&]() {
       it("returns input on always-false predicate BDD 1 [&&]", [&]() {
         __bdd out = bdd_forall(bdd_1, [](const bdd::label_t) { return false; });
@@ -2063,6 +1694,8 @@ go_bandit([]() {
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
         });
 
         it("quantifies odd variables in BDD 1 [&&]", [&]() {
@@ -2083,6 +1716,24 @@ go_bandit([]() {
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
+
+        it("quantifies <= 2 variables in BDD 4 [&&]", [&]() {
+          const bdd out = bdd_forall(bdd_4, [](const bdd::label_t x) { return x <= 2; });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
         });
 
         it("terminates early when quantifying to a terminal in BDD 1 [&&]", [&]() {
@@ -2104,8 +1755,9 @@ go_bandit([]() {
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
-
           AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
         });
 
         quantify_mode = quantify_mode_t::AUTO;

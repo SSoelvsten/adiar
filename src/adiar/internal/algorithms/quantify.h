@@ -510,6 +510,9 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////
   // Multi-variable (file)
+  // TODO (deprecated): Remove
+
+  // LCOV_EXCL_START
   template<typename quantify_policy>
   typename quantify_policy::unreduced_t
   quantify(typename quantify_policy::reduced_t dd,
@@ -533,6 +536,7 @@ namespace adiar::internal
     adiar_debug(!label_stream.can_pull(), "Should pull final label");
     return quantify<quantify_policy>(dd, label, op);
   }
+  // LCOV_EXCL_STOP
 
   //////////////////////////////////////////////////////////////////////////////
   // Multi-variable (predicate)
