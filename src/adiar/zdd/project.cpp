@@ -59,6 +59,9 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
+  // LCOV_EXCL_START
+  // TODO (deprecated): remove
+
   shared_file<zdd::label_t>
   extract_non_dom(const zdd &dd, const shared_file<zdd::label_t> &dom)
   {
@@ -98,12 +101,6 @@ namespace adiar
     return internal::quantify<zdd_project_policy>(std::forward<zdd>(A), dom_inv, or_op);
   }
 
-  inline __zdd zdd_project_multi(zdd &&A, const std::function<bool(zdd::label_t)> &dom)
-  {
-    return internal::quantify<zdd_project_policy>(std::forward<zdd>(A), dom, or_op);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_project(const zdd &A, const shared_file<zdd::label_t> &dom)
   {
     return zdd_project_multi(zdd(A), dom);
@@ -114,13 +111,25 @@ namespace adiar
     return zdd_project_multi(std::forward<zdd>(A), dom);
   }
 
+  // LCOV_EXCL_STOP
+  //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_project(const zdd &A, const std::function<bool(zdd::label_t)> &dom)
   {
-    return zdd_project_multi(zdd(A), dom);
+    return internal::quantify<zdd_project_policy>(A, dom, or_op);
   }
 
   __zdd zdd_project(zdd &&A, const std::function<bool(zdd::label_t)> &dom)
   {
-    return zdd_project_multi(std::forward<zdd>(A), dom);
+    return internal::quantify<zdd_project_policy>(std::forward<zdd>(A), dom, or_op);
+  }
+
+  __zdd zdd_project(const zdd &A, const std::function<zdd::label_t()> &dom)
+  {
+    return internal::quantify<zdd_project_policy>(A, dom, or_op);
+  }
+
+  __zdd zdd_project(zdd &&A, const std::function<zdd::label_t()> &dom)
+  {
+    return internal::quantify<zdd_project_policy>(A, dom, or_op);
   }
 }
