@@ -60,7 +60,7 @@ namespace adiar
     }
 
   public:
-    static constexpr bool pred_value = true;
+    static constexpr bool quantify_onset = true;
   };
 
   //////////////////////////////////////////////////////////////////////////////

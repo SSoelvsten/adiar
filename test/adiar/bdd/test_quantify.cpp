@@ -1312,6 +1312,40 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
+        it("quantifies 7, 5, 3, 1, -1 in BDD 6 [&&]", [&]() {
+          bdd::label_t var = 7;
+
+          /* expected
+          //
+          //         _1_
+          //        /   \
+          //        *   *
+          //         \ /
+          //          |
+          //          /
+          //         /
+          //        *
+          //        |
+          //        T
+           */
+          bdd out = bdd_exists(bdd_6, [&var]() {
+            const bdd::label_t ret = var;
+            var -= 2;
+            return ret;
+          });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
         it("quantifies 1, -1 variables in BDD 1 [&&]", [&]() {
           bdd::label_t var = 1;
 
