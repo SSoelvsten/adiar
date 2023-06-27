@@ -10,6 +10,7 @@
 #include <adiar/internal/algorithms/reduce.h>
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
 #include <adiar/internal/data_structures/sorter.h>
+#include <adiar/internal/data_types/ptr.h>
 #include <adiar/internal/data_types/request.h>
 #include <adiar/internal/memory.h>
 #include <adiar/internal/util.h>
@@ -622,7 +623,11 @@ namespace adiar::internal
         /// \pre `can_pull() == true`
         ////////////////////////////////////////////////////////////////////////
         elem_t top()
-        { return pq_first() ? _inner_pq.top() : _outer_roots.top(); }
+        {
+          return __pq_first()
+            ? _inner_pq.top()
+            : __essential(_outer_roots.top());
+        }
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief Obtain the top request of this level.
@@ -638,7 +643,11 @@ namespace adiar::internal
         /// \pre `can_pull() == true`
         ////////////////////////////////////////////////////////////////////////
         elem_t pull()
-        { return pq_first() ? _inner_pq.pull() : _outer_roots.pull(); }
+        {
+          return __pq_first()
+            ? _inner_pq.pull()
+            : __essential(_outer_roots.pull());
+        }
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief Remove the top arc on the current level.
@@ -665,7 +674,7 @@ namespace adiar::internal
         /// \brief Predicate whether to take the next element from the priority
         ///        queue or not. If not, it should be take from the sorter.
         ////////////////////////////////////////////////////////////////////////
-        bool pq_first()
+        bool __pq_first()
         {
           if (_inner_pq.empty_level())  { return false; }
           if (!_outer_roots.can_pull()) { return true; }
@@ -674,6 +683,24 @@ namespace adiar::internal
           if (_outer_roots_level != current_level()) { return true; }
 
           return _e_comparator(_inner_pq.top(), _outer_roots.top());
+        }
+
+        elem_t __essential(const elem_t &r)
+        {
+          // TODO: generalize into a `map(r.target, essential)` in
+          //       <adiar/internal/data_types/tuple.h>. Ensure everything can be
+          //       inlined at compile-time.
+          static_assert(elem_t::cardinality <= 2,
+                        "No need to support higher cardinality (yet)");
+
+          typename elem_t::target_t r_tgt;
+          if constexpr (elem_t::cardinality == 1) {
+            r_tgt = typename elem_t::target_t(essential(r.target[0]));
+          } else {// if constexpr (elem_t::cardinality == 2) {
+            r_tgt = typename elem_t::target_t(essential(r.target[0]),
+                                              essential(r.target[1]));
+          }
+          return elem_t(r_tgt, {}, r.data);
         }
       };
 

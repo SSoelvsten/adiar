@@ -1623,6 +1623,86 @@ go_bandit([]() {
 
           AssertThat(dec.can_pull(), Is().False());
         });
+
+        it("cleans taint flags on targets from outer roots", [&]() {
+          sorter.reset(); // ignore 'before_each' and do our own setup
+
+          const test_request_t root1_taint({flag(inner_n1)}, {}, {ptr_uint64(1,0, false)});
+          sorter.push(root1_taint);
+          sorter.push(root2);
+          sorter.push(root3);
+
+          sorter.sort();
+
+          test_pq_t pq({bdd(dag)}, memory_available(), 16, lpq_stats);
+          test_decorator dec(pq, sorter);
+
+          dec.setup_next_level();
+
+          AssertThat(dec.empty_level(), Is().False());
+          AssertThat(dec.size(), Is().EqualTo(3u));
+
+          AssertThat(dec.can_pull(), Is().True());
+          const auto r1 = dec.pull();
+          AssertThat(r1.target,      Is().EqualTo(root1.target));
+          AssertThat(r1.data.source, Is().EqualTo(flag(root1.data.source)));
+
+          AssertThat(dec.empty_level(), Is().False());
+          AssertThat(dec.size(), Is().EqualTo(2u));
+        });
+
+        it("cleans taint flags on targets from outer roots [cardinality == 1]", [&]() {
+          sorter.reset(); // ignore 'before_each' and do our own setup
+
+          const test_request_t root1_taint({flag(inner_n1)}, {}, {ptr_uint64(1,0, false)});
+          sorter.push(root1_taint);
+
+          sorter.sort();
+
+          test_pq_t pq({bdd(dag)}, memory_available(), 16, lpq_stats);
+          test_decorator dec(pq, sorter);
+
+          dec.setup_next_level();
+
+          AssertThat(dec.can_pull(), Is().True());
+          const auto r1 = dec.pull();
+          AssertThat(r1.target,      Is().EqualTo(root1.target));
+          AssertThat(r1.data.source, Is().EqualTo(flag(root1.data.source)));
+        });
+
+        it("cleans taint flags on targets from outer roots [cardinality == 2]",
+           [&dag, &inner_n1, &inner_n2, &lpq_stats]() {
+          using test_request_t = request_data<2, with_parent, 0, 1>;
+
+          using test_roots_sorter_t =
+            nested_sweeping::outer::roots_sorter<memory_mode_t::INTERNAL,
+                                                 test_request_t,
+                                                 request_fst_lt<test_request_t>>;
+
+          using test_pq_t = levelized_node_priority_queue<test_request_t,
+                                                          request_fst_lt<test_request_t>,
+                                                          1, memory_mode_t::INTERNAL,
+                                                          1,
+                                                          0 /* <-- this is important for nested sweeping */>;
+
+          using test_decorator =
+            nested_sweeping::inner::down__pq_decorator<test_pq_t, test_roots_sorter_t>;
+
+          test_roots_sorter_t sorter(1024, 16);
+
+          const test_request_t req({flag(inner_n1), flag(inner_n2)}, {}, {ptr_uint64(1,0, false)});
+          sorter.push(req);
+
+          test_pq_t pq({bdd(dag)}, memory_available(), 16, lpq_stats);
+          test_decorator dec(pq, sorter);
+
+          dec.setup_next_level();
+
+          AssertThat(dec.can_pull(), Is().True());
+          const auto r1 = dec.pull();
+          AssertThat(r1.target,      Is().EqualTo(test_request_t::target_t(inner_n1, inner_n2)));
+          AssertThat(r1.data.source, Is().EqualTo(flag(req.data.source)));
+        });
       });
 
       describe("inner::up__pq_decorator", [&]() {
