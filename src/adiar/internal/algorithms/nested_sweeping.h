@@ -1357,12 +1357,15 @@ namespace adiar::internal
 
       // -----------------------------------------------------------------------
       // Collect all recursions for this level
+
+      // Keep track of whether a non-GC request has been made.
+      bool non_gc_request = false;
       {
         outer_pq_decorator_t outer_pq_decorator(outer_pq, outer_roots, next_inner);
 
-        // TODO:
-        // - Specify the node should be output (to create nodes on this level).
-        // - Keep track of whether any non-GC requests are made.
+        // TODO (bdd_compose):
+        //   Support creating nodes on this level.
+
         while ((outer_arcs.can_pull_terminal()
                 && outer_arcs.peek_terminal().source().label() == outer_level.level())
                || outer_pq.can_pull()) {
@@ -1382,10 +1385,10 @@ namespace adiar::internal
               if (reduction_rule_ret.is_terminal()) {
                 return typename outer_up_sweep::reduced_t(reduction_rule_ret.value());
               }
-              outer_pq_decorator.push(arc(node::ptr_t::NIL(), reduction_rule_ret));
+              outer_pq_decorator.push(arc(node::ptr_t::NIL(), flag(reduction_rule_ret)));
             } else {
               do {
-                outer_pq_decorator.push(arc(outer_arcs.pull_internal().source(), reduction_rule_ret));
+                outer_pq_decorator.push(arc(outer_arcs.pull_internal().source(), flag(reduction_rule_ret)));
               } while (outer_arcs.can_pull_internal() && outer_arcs.peek_internal().target() == n.uid());
             }
           } else {
@@ -1396,6 +1399,9 @@ namespace adiar::internal
               const typename inner_down_sweep::request_t r =
                 inner_impl.request_from_node(n, node::ptr_t::NIL());
 
+              adiar_debug(r.targets() > 0, "Requests are always to something");
+              non_gc_request |= r.targets() > 1;
+
               if (r.target.fst().is_terminal()) {
                 return typename outer_up_sweep::reduced_t(r.target.fst().value());
               }
@@ -1404,6 +1410,10 @@ namespace adiar::internal
               do {
                 const typename inner_down_sweep::request_t r =
                   inner_impl.request_from_node(n, outer_arcs.pull_internal().source());
+
+                adiar_debug(r.targets() > 0, "Requests are always to something");
+                non_gc_request |= r.targets() > 1;
+
                 outer_pq_decorator.push(r);
               } while (outer_arcs.can_pull_internal() && outer_arcs.peek_internal().target() == n.uid());
             }
@@ -1415,14 +1425,29 @@ namespace adiar::internal
       // Obtain the next level to sweep nestedly on.
       next_inner = inner_iter.next_inner();
 
-      const bool run_inner = outer_roots.size() > 0;
+      const bool is_last_inner = next_inner == inner_iter_t::NONE;
+
+      const bool run_inner =
+        // We have some requests to sweep on
+        outer_roots.size() > 0
+        // There are some requests that change the subgraph, or this is the last
+        // down sweep (meaning we have to go down to ensure dead subtrees are
+        // garbage collected and nodes are canonical)
+        && (non_gc_request || is_last_inner);
+
       if (run_inner) {
         // ---------------------------------------------------------------------
         // Inner Down Sweep
+#ifdef ADIAR_STATS
+        // TODO
+#endif
         adiar_debug(outer_roots.size() > 0,
                     "Nested Sweep needs some number of requests");
 
         outer_writer.detach();
+
+        // TODO (optimisation): is_last_inner && !non_gc_request
+        //   Use a simpler (and hence faster?) algorithm for a GC-only sweep.
 
         const typename inner_down_sweep::unreduced_t inner_unreduced =
           nested_sweeping::inner::down(inner_impl, outer_file, outer_roots, inner_memory);
@@ -1447,7 +1472,7 @@ namespace adiar::internal
         outer_file = __reduce_init_output<outer_up_sweep>();
         outer_writer.attach(outer_file);
 
-        if (outer_up_sweep::ptr_t::MAX_LABEL < next_inner) {
+        if (is_last_inner) {
           nested_sweeping::inner::up<inner_up_sweep>(outer_arcs, outer_pq, outer_writer,
                                                      inner_arcs, inner_memory);
         } else {
@@ -1461,14 +1486,35 @@ namespace adiar::internal
         }
       } else if (outer_roots.size() > 0) {
         // ---------------------------------------------------------------------
-        // Bail out of Inner Sweep
+        // Bail out requests for a GC-only Inner Sweep (postponing doing so for
+        // a later sweep)
+#ifdef ADIAR_STATS
+        // TODO
+#endif
+        adiar_debug(next_inner <= outer_up_sweep::ptr_t::MAX_LABEL,
+                    "Has another later sweep to do possible garbage collection");
 
-        // TODO: keep track of whether any requests are manipulating the graph.
-        // TODO: forward tainting flag to ensure correct i-level cuts?
-        adiar_unreachable();
+        adiar_debug(outer_roots_memory <= inner_memory,
+                    "Enough memory is left for a temporary root sorter");
+
+        outer_roots_t tmp_outer_roots(outer_roots_memory, outer_pq_roots_max);
+        outer_pq_decorator_t outer_pq_decorator(outer_pq, tmp_outer_roots, next_inner);
+
+        outer_roots.sort();
+        while (outer_roots.can_pull()) {
+          const typename inner_down_sweep::request_t r = outer_roots.pull();
+          adiar_debug(r.targets() == 1, "Has exactly one child");
+
+          outer_pq_decorator.push(arc(unflag(r.data.source), r.target.fst()));
+        }
+
+        outer_roots.move(tmp_outer_roots);
       } else { // if (outer_roots.size() == 0) {
         // ---------------------------------------------------------------------
-        // Nothing within 'outer_file' should survive.
+        // Nothing within 'outer_file' should survive
+#ifdef ADIAR_STATS
+        // TODO
+#endif
         if (outer_writer.size() != 0) {
           outer_writer.detach();
           outer_file = __reduce_init_output<outer_up_sweep>();
