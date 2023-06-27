@@ -32,6 +32,9 @@ namespace adiar::internal
   // TODO (QMDD):
   //   Add 4-ary tuples
 
+  // TODO (Nested Sweeping Clean Up):
+  //   - Map function to create a tuple<B> from tupla<A> and f : A -> B
+
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Tuple holding two elements and providing an ordered access.
   ///
