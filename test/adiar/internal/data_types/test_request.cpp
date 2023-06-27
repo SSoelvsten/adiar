@@ -73,6 +73,33 @@ go_bandit([]() {
           AssertThat(req.empty_carry(), Is().True());
         });
       });
+
+      describe(".targets()", []() {
+        it("is 0 for NIL target", []() {
+          const request<1> req(request<1>::ptr_t::NIL(), {});
+          AssertThat(req.targets(), Is().EqualTo(0));
+        });
+
+        it("is 1 for (0,0) target", []() {
+          const request<1> req(request<1>::ptr_t(0,0), {});
+          AssertThat(req.targets(), Is().EqualTo(1));
+        });
+
+        it("is 1 for (MAX,MAX) target", []() {
+          const request<1> req(request<1>::ptr_t(request<1>::ptr_t::MAX_LABEL,request<1>::ptr_t::MAX_ID), {});
+          AssertThat(req.targets(), Is().EqualTo(1));
+        });
+
+        it("is 1 for F target", []() {
+          const request<1> req(request<1>::ptr_t(false), {});
+          AssertThat(req.targets(), Is().EqualTo(1));
+        });
+
+        it("is 1 for T target", []() {
+          const request<1> req(request<1>::ptr_t(true), {});
+          AssertThat(req.targets(), Is().EqualTo(1));
+        });
+      });
     });
 
     describe("request<cardinality = 2>", []() {
@@ -188,6 +215,58 @@ go_bandit([]() {
           const request<2,1> req({request<2>::ptr_t(1u,1u), request<2>::ptr_t(1u,0u)},
                                  {{ {request<2>::ptr_t(2u,1u), request<2>::ptr_t(2u,0u)} }});
           AssertThat(req.empty_carry(), Is().False());
+        });
+      });
+
+      describe(".targets()", []() {
+        it("is 0 for {NIL, NIL} target [unsorted]", []() {
+          const request<2>req({request<2>::ptr_t::NIL(), request<2>::ptr_t::NIL()}, {});
+          AssertThat(req.targets(), Is().EqualTo(0));
+        });
+
+        it("is 0 for {NIL, NIL} target [sorted]", []() {
+          const request<2,0,1> req({request<2>::ptr_t::NIL(), request<2>::ptr_t::NIL()}, {});
+          AssertThat(req.targets(), Is().EqualTo(0));
+        });
+
+        it("is 1 for {(0,0), NIL} target [unsorted]", []() {
+          const request<2> req({request<2>::ptr_t(0,0), request<2>::ptr_t::NIL()}, {});
+          AssertThat(req.targets(), Is().EqualTo(1));
+        });
+
+        it("is 1 for {NIL, (0,0)} target [unsorted]", []() {
+          const request<2> req({request<2>::ptr_t(0,0), request<2>::ptr_t::NIL()}, {});
+          AssertThat(req.targets(), Is().EqualTo(1));
+        });
+
+        it("is 1 for {(0,0), NIL} target [sorted]", []() {
+          const request<2,0,1> req({request<2>::ptr_t(0,0), request<2>::ptr_t::NIL()}, {});
+          AssertThat(req.targets(), Is().EqualTo(1));
+        });
+
+        it("is 1 for {F, NIL} target [unsorted]", []() {
+          const request<2> req({request<2>::ptr_t(false), request<2>::ptr_t::NIL()}, {});
+          AssertThat(req.targets(), Is().EqualTo(1));
+        });
+
+        it("is 1 for {T, NIL} target [sorted]", []() {
+          const request<2,0,1> req({request<2>::ptr_t(true), request<2>::ptr_t::NIL()}, {});
+          AssertThat(req.targets(), Is().EqualTo(1));
+        });
+
+        it("is 2 for {(0,0), T} target [unsorted]", []() {
+          const request<2> req({request<2>::ptr_t(0,0), request<2>::ptr_t(true)}, {});
+          AssertThat(req.targets(), Is().EqualTo(2));
+        });
+
+        it("is 2 for {F, (1,0)} target [unsorted]", []() {
+          const request<2> req({request<2>::ptr_t(false), request<2>::ptr_t(1,0)}, {});
+          AssertThat(req.targets(), Is().EqualTo(2));
+        });
+
+        it("is 2 for {(0,0), T} target [sorted]", []() {
+          const request<2,0,1> req({request<2>::ptr_t(0,0), request<2>::ptr_t(true)}, {});
+          AssertThat(req.targets(), Is().EqualTo(2));
         });
       });
     });
@@ -366,6 +445,68 @@ go_bandit([]() {
                                  {{ {request<3>::ptr_t(2u,1u), request<3>::ptr_t(2u,0u)},
                                     {request<3>::ptr_t(2u,1u), request<3>::ptr_t(2u,0u)} }});
           AssertThat(req.empty_carry(), Is().False());
+        });
+      });
+
+      describe(".targets()", []() {
+        it("is 0 for {NIL, NIL, NIL} target [unsorted]", []() {
+          const request<3>req({request<3>::ptr_t::NIL(), request<3>::ptr_t::NIL(), request<3>::ptr_t::NIL()}, {});
+          AssertThat(req.targets(), Is().EqualTo(0));
+        });
+
+        it("is 0 for {NIL, NIL, NIL} target [sorted]", []() {
+          const request<3,0,1> req({request<3>::ptr_t::NIL(), request<3>::ptr_t::NIL(), request<3>::ptr_t::NIL()}, {});
+          AssertThat(req.targets(), Is().EqualTo(0));
+        });
+
+        it("is 1 for {NIL, T, NIL} target [unsorted]", []() {
+          const request<3> req({request<3>::ptr_t::NIL(), request<3>::ptr_t(true), request<3>::ptr_t::NIL()}, {});
+          AssertThat(req.targets(), Is().EqualTo(1));
+        });
+
+        it("is 1 for {(1,0), NIL, NIL} target [unsorted]", []() {
+          const request<3> req({request<3>::ptr_t(1,0), request<3>::ptr_t::NIL(), request<3>::ptr_t::NIL()}, {});
+          AssertThat(req.targets(), Is().EqualTo(1));
+        });
+
+        it("is 1 for {NIL, NIL, (0,0)} target [unsorted]", []() {
+          const request<3> req({request<3>::ptr_t::NIL(), request<3>::ptr_t::NIL(), request<3>::ptr_t(0,0)}, {});
+          AssertThat(req.targets(), Is().EqualTo(1));
+        });
+
+        it("is 1 for {T, NIL, NIL} target [sorted]", []() {
+          const request<3,0,1> req({request<3>::ptr_t(true), request<3>::ptr_t::NIL(), request<3>::ptr_t::NIL()}, {});
+          AssertThat(req.targets(), Is().EqualTo(1));
+        });
+
+        it("is 2 for {T, NIL, (0,0)} target [unsorted]", []() {
+          const request<3> req({request<3>::ptr_t(true), request<3>::ptr_t::NIL(), request<3>::ptr_t(0,0)}, {});
+          AssertThat(req.targets(), Is().EqualTo(2));
+        });
+
+        it("is 2 for {NIL, (42,0), (0,0)} target [unsorted]", []() {
+          const request<3> req({request<3>::ptr_t::NIL(), request<3>::ptr_t(42,0), request<3>::ptr_t(0,0)}, {});
+          AssertThat(req.targets(), Is().EqualTo(2));
+        });
+
+        it("is 2 for {(42,0), (0,0), NIL} target [unsorted]", []() {
+          const request<3> req({request<3>::ptr_t(42,0), request<3>::ptr_t(0,0), request<3>::ptr_t::NIL()}, {});
+          AssertThat(req.targets(), Is().EqualTo(2));
+        });
+
+        it("is 2 for {(2,8), F, NIL} target [sorted]", []() {
+          const request<3,0,1> req({request<3>::ptr_t(2,8), request<3>::ptr_t(false), request<3>::ptr_t::NIL()}, {});
+          AssertThat(req.targets(), Is().EqualTo(2));
+        });
+
+        it("is 3 for {(2,8), F, (3,0)} target [unsorted]", []() {
+          const request<3> req({request<3>::ptr_t(2,8), request<3>::ptr_t(false), request<3>::ptr_t(3,0)}, {});
+          AssertThat(req.targets(), Is().EqualTo(3));
+        });
+
+        it("is 3 for {(2,8), (3,0), T} target [sorted]", []() {
+          const request<3,0,1> req({request<3>::ptr_t(2,8), request<3>::ptr_t(3,0), request<3>::ptr_t(true)}, {});
+          AssertThat(req.targets(), Is().EqualTo(3));
         });
       });
     });
