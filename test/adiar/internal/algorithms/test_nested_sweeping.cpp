@@ -3173,7 +3173,6 @@ go_bandit([]() {
         AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
-      // TODO (bail-out optimisation): add non-gc and non-terminal policy.
       it("accumulates multiple nested sweeps [excl. root]", []() {
         /* input
         //     _1_          ---- x1
@@ -3629,6 +3628,280 @@ go_bandit([]() {
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+      });
+
+      it("bails out of inner sweep when all requests are subtree-preserving", []() {
+        /* input
+        //         _1_       ---- x1
+        //        /   \
+        //        2   3      ---- x2 (%2)
+        //       / \ / \
+        //       T  4   5    ---- x3
+        //         / \ / \
+        //         T  6  F   ---- x4 (%2) <-- skipped
+        //           / \
+        //           F 7     ---- x5
+        //            / \
+        //            F T
+        */
+        const ptr_uint64 terminal_F(false);
+        const ptr_uint64 terminal_T(true);
+
+        const ptr_uint64 n1(1,0);
+        const ptr_uint64 n2(2,0);
+        const ptr_uint64 n3(2,1);
+        const ptr_uint64 n4(3,0);
+        const ptr_uint64 n5(3,1);
+        const ptr_uint64 n6(4,0);
+        const ptr_uint64 n7(5,0);
+
+        shared_levelized_file<arc> in;
+
+        { // Garbage collect writer to free write-lock
+          arc_writer aw(in);
+
+          aw.push_internal({ n1, false, n2 });
+          aw.push_internal({ n1, true,  n3 });
+          aw.push_internal({ n2, true,  n4 });
+          aw.push_internal({ n3, false, n4 });
+          aw.push_internal({ n3, true,  n5 });
+          aw.push_internal({ n4, true,  n6 });
+          aw.push_internal({ n5, false, n6 });
+          aw.push_internal({ n6, true,  n7 });
+
+          aw.push_terminal({ n2, false, terminal_T });
+          aw.push_terminal({ n4, false, terminal_T });
+          aw.push_terminal({ n5, true,  terminal_F });
+          aw.push_terminal({ n6, false, terminal_F });
+          aw.push_terminal({ n7, false, terminal_F });
+          aw.push_terminal({ n7, true,  terminal_T });
+
+          aw.push(level_info(1,1u));
+          aw.push(level_info(2,2u));
+          aw.push(level_info(3,2u));
+          aw.push(level_info(4,1u));
+          aw.push(level_info(5,1u));
+
+          in->max_1level_cut = 3;
+        }
+
+        test_not_sweep<true> inner_impl(2);
+
+        /* output
+        //        _1_      ---- x1
+        //       /   \
+        //       |   |     ---- x2
+        //       |   |
+        //       4   5     ---- x3
+        //      / \ / \
+        //      F | |  T    ---- x4
+        //        \ /
+        //         7       ---- x5
+        //        / \
+        //        T F      <--- NOTE: only negated once!
+        */
+        const bdd out
+          = nested_sweep<test_up_sweep, test_not_sweep<true>>(in, inner_impl);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        // n7
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
+                                                       terminal_T,
+                                                       terminal_F)));
+
+        // n5
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                       node::ptr_t(5, node::MAX_ID),
+                                                       terminal_T)));
+
+        // n4
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID-1,
+                                                       terminal_F,
+                                                       node::ptr_t(5, node::MAX_ID))));
+
+        // n1
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                       node::ptr_t(3, node::MAX_ID-1),
+                                                       node::ptr_t(3, node::MAX_ID))));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(5,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,2u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(2u));
+
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(3u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(3u));
+        AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(4u));
+
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(3u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(3u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(4u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(3u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(4u));
+        AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
+        AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(5u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+      });
+
+      it("handles node suppression cut-taint when bailing out", []() {
+        /* input
+        //         __1__      ---- x1
+        //        /     \
+        //        2     3     ---- x2 (%2)
+        //       / \    ||
+        //       T 4    5     ---- x3
+        //        / \  / \
+        //        T 6  F 7    ---- x4 (%2) <-- skipped
+        //         / \  / \
+        //         F 8  T F   ---- x5
+        //          / \
+        //          F T
+        */
+        const ptr_uint64 terminal_F(false);
+        const ptr_uint64 terminal_T(true);
+
+        const ptr_uint64 n1(1,0);
+        const ptr_uint64 n2(2,0);
+        const ptr_uint64 n3(2,1);
+        const ptr_uint64 n4(3,0);
+        const ptr_uint64 n5(3,1);
+        const ptr_uint64 n6(4,0);
+        const ptr_uint64 n7(4,1);
+        const ptr_uint64 n8(5,0);
+
+        shared_levelized_file<arc> in;
+
+        { // Garbage collect writer to free write-lock
+          arc_writer aw(in);
+
+          aw.push_internal({ n1, false, n2 });
+          aw.push_internal({ n1, true,  n3 });
+          aw.push_internal({ n2, true,  n4 });
+          aw.push_internal({ n3, false, n5 });
+          aw.push_internal({ n3, true,  n5 });
+          aw.push_internal({ n4, true,  n6 });
+          aw.push_internal({ n5, true,  n7 });
+          aw.push_internal({ n6, true,  n8 });
+
+          aw.push_terminal({ n2, false, terminal_T });
+          aw.push_terminal({ n4, false, terminal_T });
+          aw.push_terminal({ n5, false, terminal_F });
+          aw.push_terminal({ n6, false, terminal_F });
+          aw.push_terminal({ n7, false, terminal_T });
+          aw.push_terminal({ n7, true,  terminal_F });
+          aw.push_terminal({ n8, false, terminal_F });
+          aw.push_terminal({ n8, true,  terminal_T });
+
+          aw.push(level_info(1,1u));
+          aw.push(level_info(2,2u));
+          aw.push(level_info(3,2u));
+          aw.push(level_info(4,2u));
+          aw.push(level_info(5,1u));
+
+          in->max_1level_cut = 3;
+        }
+
+        test_not_sweep<true> inner_impl(2);
+
+        /* output
+        //        _1_      ---- x1
+        //       /   \
+        //       |   F     ---- x2
+        //       |
+        //       4         ---- x3
+        //      / \
+        //      F |        ---- x4
+        //        |
+        //        7        ---- x5
+        //       / \
+        //       T F       <--- NOTE: only negated once!
+        */
+
+        const bdd out
+          = nested_sweep<test_up_sweep, test_not_sweep<true>>(in, inner_impl);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        // n7
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
+                                                       terminal_T,
+                                                       terminal_F)));
+
+        // n5
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                       terminal_F,
+                                                       node::ptr_t(5, node::MAX_ID))));
+
+        // n1
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                       node::ptr_t(3, node::MAX_ID),
+                                                       terminal_F)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(5,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(1u));
+
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+
+        // NOTE: Since the outer priority queue includes a tainted arc to F, it
+        //       is in fact counted twice: first it is counted in the inner
+        //       sweep to then be counted once more in the outer
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(3u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(4u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
+        AssertThat(out->max_1level_cut[cut_type::ALL], Is().LessThanOrEqualTo(5u));
+
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+
+        // NOTE: See above
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(3u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(4u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
+        AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(4u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(3u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("handles all root arcs collapsing into terminals", []() {
