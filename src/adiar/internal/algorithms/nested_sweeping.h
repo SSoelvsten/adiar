@@ -209,6 +209,18 @@ namespace adiar::internal
         }
 
         ////////////////////////////////////////////////////////////////////////
+        /// \brief Take ownership of another root sorter's content.
+        ///
+        /// \details This leaves the other in an illegal state that requires a
+        ///          call to `reset()`.
+        ////////////////////////////////////////////////////////////////////////
+        void move(roots_sorter<memory_mode, element_t, element_comp_t> &o)
+        {
+          _sorter_ptr = std::move(o._sorter_ptr);
+          _max_source = o._max_source;
+        }
+
+        ////////////////////////////////////////////////////////////////////////
         size_t size() /*const*/
         { return _sorter_ptr->size(); }
 

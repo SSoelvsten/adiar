@@ -550,6 +550,87 @@ go_bandit([]() {
           AssertThat(s.can_pull(), Is().False());
         });
 
+        it("can move from another sorter", []() {
+          using test_request_t = request_data<1, with_parent, 0, 1>;
+
+          using test_roots_sorter_t =
+            nested_sweeping::outer::roots_sorter<memory_mode_t::INTERNAL,
+                                                 test_request_t,
+                                                 request_fst_lt<test_request_t>>;
+
+          test_roots_sorter_t s1(1024, 16);
+          test_roots_sorter_t s2(1024, 16);
+
+          const test_request_t i1({arc::ptr_t(3,2)}, {}, {arc::ptr_t(2,0, false)});
+          const test_request_t i2({arc::ptr_t(3,1)}, {}, {arc::ptr_t(2,1, true)});
+
+          s1.push(i1);
+          s1.push(i2);
+
+          s2.move(s1); // From hereon forward s1 is in an illegal state
+          s2.sort();
+
+          AssertThat(s2.can_pull(), Is().True());
+          const test_request_t o1 = s2.pull();
+
+          AssertThat(o1.target,      Is().EqualTo(i2.target));
+          AssertThat(o1.data.source, Is().EqualTo(flag(i2.data.source)));
+
+          AssertThat(s2.can_pull(), Is().True());
+          const test_request_t o2 = s2.pull();
+
+          AssertThat(o2.target,      Is().EqualTo(i1.target));
+          AssertThat(o2.data.source, Is().EqualTo(flag(i1.data.source)));
+
+          AssertThat(s2.can_pull(), Is().False());
+        });
+
+
+        it("can move from another sorter and push more elements", []() {
+          using test_request_t = request_data<1, with_parent, 0, 1>;
+
+          using test_roots_sorter_t =
+            nested_sweeping::outer::roots_sorter<memory_mode_t::INTERNAL,
+                                                 test_request_t,
+                                                 request_fst_lt<test_request_t>>;
+
+          test_roots_sorter_t s1(1024, 16);
+          test_roots_sorter_t s2(1024, 16);
+
+          const test_request_t i1({arc::ptr_t(3,3)}, {}, {arc::ptr_t(2,0, false)});
+          const test_request_t i2({arc::ptr_t(3,1)}, {}, {arc::ptr_t(2,1, true)});
+
+          s1.push(i1);
+          s1.push(i2);
+
+          s2.move(s1); // From hereon forward s1 is in an illegal state
+
+          const test_request_t i3({arc::ptr_t(3,2)}, {}, {arc::ptr_t(2,1, false)});
+          s2.push(i3);
+
+          s2.sort();
+
+          AssertThat(s2.can_pull(), Is().True());
+          const test_request_t o1 = s2.pull();
+
+          AssertThat(o1.target,      Is().EqualTo(i2.target));
+          AssertThat(o1.data.source, Is().EqualTo(flag(i2.data.source)));
+
+          AssertThat(s2.can_pull(), Is().True());
+          const test_request_t o2 = s2.pull();
+
+          AssertThat(o2.target,      Is().EqualTo(i3.target));
+          AssertThat(o2.data.source, Is().EqualTo(flag(i3.data.source)));
+
+          AssertThat(s2.can_pull(), Is().True());
+          const test_request_t o3 = s2.pull();
+
+          AssertThat(o3.target,      Is().EqualTo(i1.target));
+          AssertThat(o3.data.source, Is().EqualTo(flag(i1.data.source)));
+
+          AssertThat(s2.can_pull(), Is().False());
+        });
+
         it("updates its 'size'", []() {
           using test_request_t = request_data<2, with_parent, 0, 1>;
 
