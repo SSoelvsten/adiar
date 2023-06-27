@@ -13,15 +13,24 @@
 /// Down Sweep in isolation. The algorithm within is a simple 'mark and sweep'
 /// GC that somewhat negates the entire DAG (but kills the nodes on the nesting
 /// level).
+///
+/// \tparam only_gc when set to true, then each request created will only have a
+///                 single non-nil member, i.e. it is a request preserving a
+///                 subtree but (presumably) not changing it.
 ////////////////////////////////////////////////////////////////////////////////
+template<bool only_gc = false>
 class test_not_sweep : public bdd_policy
 {
 private:
   const size_t _nesting_modulo;
 
 public:
-  using request_t = request_data<1, with_parent, 0, 1>;
-  using request_pred_t = request_fst_lt<request_t>;
+  // HACK: The request is for a 'tuple' to allow us to 'lie' to the Nested
+  //       Sweeping framework that we are not "just" preserving some node
+  //       underneath or inversely that we are not "changing" subgraph.
+  using request_t = request_data<2, with_parent, 0, 1>;
+
+  using request_pred_t = request_data_fst_lt<request_t>;
 
   template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
   using pq_t = levelized_node_priority_queue<request_t, request_pred_t,
@@ -74,6 +83,9 @@ public:
         const node::uid_t u(level_label, level_size++);
 
         // Get target of next request
+        adiar_debug(!inner_pq.top().target.fst().is_flagged(),
+                    "Double checking decorator indeed hides taint");
+
         const node::ptr_t next = inner_pq.top().target.fst();
 
         // Seek node in stream and forward its out-going edges
@@ -108,7 +120,7 @@ private:
     if (c.is_terminal()) {
       aw.push_terminal({ uid, is_high, ~c });
     } else {
-      inner_pq.push({{c}, {}, {uid.with(is_high)}});
+      inner_pq.push({{c, node::ptr_t::NIL()}, {}, {uid.with(is_high)}});
     }
   }
 
@@ -138,7 +150,9 @@ public:
   request_from_node(const node &n, const ptr_uint64 &parent)
   {
     // Always pick high child
-    return request_t({n.high()}, {}, {parent});
+    return request_t({n.high(), only_gc ? node::ptr_t::NIL() : n.high()},
+                     {},
+                     {parent});
   }
 };
 
@@ -148,7 +162,9 @@ private:
   const size_t _nesting_modulo;
 
 public:
-  using request_t = request_data<1, with_parent, 0, 1>;
+  // HACK: The request is for a 'tuple' to allow us to tell the Nested Sweeping
+  //       framework we are indeed changing subgraph.
+  using request_t = request_data<2, with_parent, 0, 1>;
   using request_pred_t = request_fst_lt<request_t>;
 
   template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
@@ -888,7 +904,7 @@ go_bandit([]() {
       });
 
       describe("outer::inner_iterator", [&terminal_F, &terminal_T]() {
-        using test_iter_t = nested_sweeping::outer::inner_iterator<test_not_sweep>;
+        using test_iter_t = nested_sweeping::outer::inner_iterator<test_not_sweep<>>;
 
         it("provides {NONE} for {3,2,1} % 4", [&]() {
           /*
@@ -923,7 +939,7 @@ go_bandit([]() {
             aw.push(level_info(3,1u));
           }
 
-          test_not_sweep inner_impl(4);
+          test_not_sweep<> inner_impl(4);
           test_iter_t inner_iter(dag, inner_impl);
 
           AssertThat(inner_iter.next_inner(), Is().EqualTo(test_iter_t::NONE));
@@ -962,7 +978,7 @@ go_bandit([]() {
             aw.push(level_info(3,1u));
           }
 
-          test_not_sweep inner_impl(2);
+          test_not_sweep<> inner_impl(2);
           test_iter_t inner_iter(dag, inner_impl);
 
           AssertThat(inner_iter.next_inner(), Is().EqualTo(2u));
@@ -1008,7 +1024,7 @@ go_bandit([]() {
             aw.push(level_info(4,1u));
           }
 
-          test_not_sweep inner_impl(2);
+          test_not_sweep<> inner_impl(2);
           test_iter_t inner_iter(dag, inner_impl);
 
           AssertThat(inner_iter.next_inner(), Is().EqualTo(4u));
@@ -1804,7 +1820,7 @@ go_bandit([]() {
 
     describe("nested_sweeping:: _ ::sweeps", [&terminal_F, &terminal_T, &outer_dag]() {
       describe("inner::down(...)", [&]() {
-        using inner_down_sweep = test_not_sweep;
+        using inner_down_sweep = test_not_sweep<>;
         using inner_roots_t =
           nested_sweeping::outer::roots_sorter<memory_mode_t::INTERNAL,
                                                inner_down_sweep::request_t,
@@ -2715,10 +2731,10 @@ go_bandit([]() {
           nw << node(true);
         }
 
-        test_not_sweep inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         const bdd out
-          = nested_sweep<test_up_sweep, test_not_sweep>(in, inner_impl);
+          = nested_sweep<test_up_sweep, test_not_sweep<>>(in, inner_impl);
 
         AssertThat(out.file_ptr(), Is().EqualTo(in));
       });
@@ -2763,7 +2779,7 @@ go_bandit([]() {
           in->max_1level_cut = 3;
         }
 
-        test_not_sweep inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         /* output
         //     1      ---- x1
@@ -2775,7 +2791,7 @@ go_bandit([]() {
         //     T F
         */
         const bdd out
-          = nested_sweep<test_up_sweep, test_not_sweep>(in, inner_impl);
+          = nested_sweep<test_up_sweep, test_not_sweep<>>(in, inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -2860,7 +2876,7 @@ go_bandit([]() {
           in->max_1level_cut = 3;
         }
 
-        test_not_sweep inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         /* output
         //       1     ---- x1
@@ -2872,7 +2888,7 @@ go_bandit([]() {
         //     T F
         */
         const bdd out
-          = nested_sweep<test_up_sweep, test_not_sweep>(in, inner_impl);
+          = nested_sweep<test_up_sweep, test_not_sweep<>>(in, inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -2952,7 +2968,7 @@ go_bandit([]() {
           in->max_1level_cut = 1;
         }
 
-        test_not_sweep inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         /* output
         //             ---- x0
@@ -2962,7 +2978,7 @@ go_bandit([]() {
         //    T F
         */
         const bdd out
-          = nested_sweep<test_up_sweep, test_not_sweep>(in, inner_impl);
+          = nested_sweep<test_up_sweep, test_not_sweep<>>(in, inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -3055,7 +3071,7 @@ go_bandit([]() {
           in->max_1level_cut = 3;
         }
 
-        test_not_sweep inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         /* output (note, they are doubly-negated!)
         //       1     ---- x1
@@ -3071,7 +3087,7 @@ go_bandit([]() {
         //     T F  T
         */
         const bdd out
-          = nested_sweep<test_up_sweep, test_not_sweep>(in, inner_impl);
+          = nested_sweep<test_up_sweep, test_not_sweep<>>(in, inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -3179,7 +3195,7 @@ go_bandit([]() {
           in->max_1level_cut = 3;
         }
 
-        test_not_sweep inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         /* output
         //                    ---- x0
@@ -3193,7 +3209,7 @@ go_bandit([]() {
         //      F T
         */
         const bdd out
-          = nested_sweep<test_up_sweep, test_not_sweep>(in, inner_impl);
+          = nested_sweep<test_up_sweep, test_not_sweep<>>(in, inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -3266,13 +3282,13 @@ go_bandit([]() {
         // Just a sanity check we created the input as intended
         AssertThat(in->canonical, Is().True());
 
-        test_not_sweep inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         /* output
         // See 'accumulates multiple nested sweeps [excl. root]' above.
         */
         const bdd out
-          = nested_sweep<test_up_sweep, test_not_sweep>(in, inner_impl);
+          = nested_sweep<test_up_sweep, test_not_sweep<>>(in, inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -3384,7 +3400,7 @@ go_bandit([]() {
           in->max_1level_cut = 3;
         }
 
-        test_not_sweep inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         /* output
         //         _1_       ---- x1
@@ -3400,7 +3416,7 @@ go_bandit([]() {
         //        F T
         */
         const bdd out
-          = nested_sweep<test_up_sweep, test_not_sweep>(in, inner_impl);
+          = nested_sweep<test_up_sweep, test_not_sweep<>>(in, inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -3694,7 +3710,7 @@ go_bandit([]() {
           in->max_1level_cut = 1;
         }
 
-        test_not_sweep inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         /* output
         //     1       ---- x1
@@ -3702,7 +3718,7 @@ go_bandit([]() {
         //    F T
         */
         const bdd out
-          = nested_sweep<test_up_sweep, test_not_sweep>(in, inner_impl);
+          = nested_sweep<test_up_sweep, test_not_sweep<>>(in, inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -3774,7 +3790,7 @@ go_bandit([]() {
           in->max_1level_cut = 1;
         }
 
-        test_not_sweep inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         /* output
         //     1       ---- x1
@@ -3782,7 +3798,7 @@ go_bandit([]() {
         //    F T
         */
         const bdd out
-          = nested_sweep<test_up_sweep, test_not_sweep>(in, inner_impl);
+          = nested_sweep<test_up_sweep, test_not_sweep<>>(in, inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -3848,13 +3864,13 @@ go_bandit([]() {
           in->max_1level_cut = 1;
         }
 
-        test_not_sweep inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         /* output
         //     T
         */
         const bdd out
-          = nested_sweep<test_up_sweep, test_not_sweep>(in, inner_impl);
+          = nested_sweep<test_up_sweep, test_not_sweep<>>(in, inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -3916,7 +3932,7 @@ go_bandit([]() {
           in->max_1level_cut = 2;
         }
 
-        test_not_sweep inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         /* output
         //     2         ---- x1
@@ -3924,7 +3940,7 @@ go_bandit([]() {
         //    T F
         */
         const bdd out
-          = nested_sweep<test_up_sweep, test_not_sweep>(in, inner_impl);
+          = nested_sweep<test_up_sweep, test_not_sweep<>>(in, inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -3988,13 +4004,13 @@ go_bandit([]() {
           in->max_1level_cut = 1;
         }
 
-        test_not_sweep inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         /* output
         //     T
         */
         const bdd out
-          = nested_sweep<test_up_sweep, test_not_sweep>(in, inner_impl);
+          = nested_sweep<test_up_sweep, test_not_sweep<>>(in, inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -4055,13 +4071,13 @@ go_bandit([]() {
           in->max_1level_cut = 1;
         }
 
-        test_not_sweep inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         /* output
         //     F
         */
         const bdd out
-          = nested_sweep<test_up_sweep, test_not_sweep>(in, inner_impl);
+          = nested_sweep<test_up_sweep, test_not_sweep<>>(in, inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
