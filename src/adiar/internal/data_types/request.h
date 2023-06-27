@@ -113,6 +113,27 @@ namespace adiar::internal
     bool empty_carry() const
     { return true; }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief The number of non-nil target values.
+    ////////////////////////////////////////////////////////////////////////////
+    uint8_t targets() const
+    {
+      if constexpr (sorted_target) {
+        // Since NIL is the greatest value, we can look for the first nil entry
+        // (if any).
+        for (uint8_t i = 0u; i < cardinality; i++) {
+          if (target[i] == ptr_t::NIL()) { return i; }
+        }
+        return cardinality;
+      } else { // !sorted_target
+        uint8_t sum = 0u;
+        for (uint8_t i = 0u; i < cardinality; i++) {
+          if (target[i] != ptr_t::NIL()) { sum++; }
+        }
+        return sum;
+      }
+    }
+
     /* ============================ CONSTRUCTORS ============================ */
   public:
     // Provide 'default' constructors to ensure it being a 'POD' inside of TPIE.
