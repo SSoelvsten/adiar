@@ -352,6 +352,62 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
         });
 
+        it("bails out of inner sweep for zdd_4 with dom = { x | x % 2 == 0 } [const &]", [&](){
+          const zdd in = zdd_1;
+
+          /* Expected: { Ø, {0}, {2}, {4} }
+          //
+          //         1       ---- x0
+          //        / \
+          //        3 T      ---- x2
+          //       / \
+          //       5 T       ---- x4
+          //      / \
+          //      T T
+          */
+          zdd out = zdd_project(in, [](const zdd::label_t x) { return x % 2 == 0; });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID,
+                                                         terminal_T,
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
+                                                         ptr_uint64(4, ptr_uint64::MAX_ID),
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                         ptr_uint64(2, ptr_uint64::MAX_ID),
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream ms(out);
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(4,1u)));
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
+
+          AssertThat(ms.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(4u));
+          AssertThat(out->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(4u));
+        });
+
         quantify_mode = quantify_mode_t::AUTO;
       });
 
@@ -1567,6 +1623,67 @@ go_bandit([]() {
 
           AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
           AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
+        });
+
+        it("bails out of inner sweep for zdd_4 with dom = { x | x % 2 == 0 } [const &]", [&](){
+          const zdd in = zdd_1;
+
+          /* Expected: { Ø, {0}, {2}, {4} }
+          //
+          //         1       ---- x0
+          //        / \
+          //        3 T      ---- x2
+          //       / \
+          //       5 T       ---- x4
+          //      / \
+          //      T T
+          */
+          zdd::label_t var = 8;
+          zdd out = zdd_project(in, [&var]() {
+            const zdd::label_t res = var;
+            var -= 2;
+            return res;
+          });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID,
+                                                         terminal_T,
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
+                                                         ptr_uint64(4, ptr_uint64::MAX_ID),
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                         ptr_uint64(2, ptr_uint64::MAX_ID),
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream ms(out);
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(4,1u)));
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
+
+          AssertThat(ms.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(4u));
+          AssertThat(out->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(4u));
         });
 
         quantify_mode = quantify_mode_t::AUTO;

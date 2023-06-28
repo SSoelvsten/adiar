@@ -17,6 +17,8 @@ namespace adiar
     static inline zdd::ptr_t
     resolve_root(const zdd::node_t &r, const bool_op &/*op*/)
     {
+      // TODO: should all but the last case not have a 'suppression taint'?
+
       // Return the True terminal if any (including its tainting flags).
       if (r.low().is_terminal() && r.high().is_terminal()) {
         adiar_debug(r.low().value() || r.high().value(),
@@ -24,7 +26,14 @@ namespace adiar
 
         return r.low().value() ? r.low() : r.high();
       }
-      // Otherwise return 'nothing'
+
+      // Will one of the two options "fall out"?
+      if (r.low().is_terminal() && !r.low().value()) {
+        return r.high();
+      }
+      // if (r.high().is_terminal() && !r.high().value()) { NEVER HAPPENS }
+
+      // Otherwise return as-is
       return r.uid();
     }
 
