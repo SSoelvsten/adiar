@@ -1695,7 +1695,7 @@ go_bandit([]() {
       // double-check with a few tests.
 
       describe("quantify_mode == SINGLETON / PARTIAL", [&]() {
-        quantify_mode = quantify_mode_t::NESTED;
+        quantify_mode = quantify_mode_t::SINGLETON;
 
         it("computes zdd_2 with dom = {4,3,2} [&&]", [&](){
           const std::vector<int> dom = {4,3,2};
