@@ -21,12 +21,22 @@ namespace adiar
     static inline bdd::ptr_t
     resolve_root(const bdd::node_t &r, const bool_op &op)
     {
+      // TODO: should all but the last case not have a 'suppression taint'?
+
       // Return shortcutting terminal (including its tainting flag).
       if (r.low().is_terminal() && can_left_shortcut(op, r.low())) {
         return r.low();
       }
       if (r.high().is_terminal() && can_right_shortcut(op, r.high())) {
         return r.high();
+      }
+
+      // Return other child (including its tainting flag) for irrelevant terminals.
+      if (r.low().is_terminal() && is_left_irrelevant(op, r.low())) {
+        return r.high();
+      }
+      if (r.high().is_terminal() && is_right_irrelevant(op, r.high())) {
+        return r.low();
       }
 
       // Otherwise return 'nothing'

@@ -264,12 +264,13 @@ namespace adiar::internal
       if (root.label() == label && (root.low().is_terminal() || root.high().is_terminal())) {
         typename quantify_policy::ptr_t result = quantify_policy::resolve_root(root, op);
 
-        if (result != root.uid()) {
-          adiar_debug(result.is_terminal(), "Should shortcut to a terminal");
+        if (result != root.uid() && result.is_terminal()) {
           return typename quantify_policy::reduced_t(result.value());
         }
       }
     }
+
+    // TODO: use 'result' above rather than 'root.uid()' for root request
 
     // Set up cross-level priority queue
     pq_1_t quantify_pq_1({in}, pq_1_memory, max_pq_1_size, stats_quantify.lpq);
@@ -495,13 +496,14 @@ namespace adiar::internal
     request_from_node(const typename quantify_policy::node_t &n,
                       const typename quantify_policy::ptr_t &parent)
     {
-      // Shortcutting terminal?
+      // Shortcutting or Irrelevant terminal?
       const typename quantify_policy::ptr_t result =
         quantify_policy::resolve_root(n, _op);
 
-      // Always pick high child
       typename request_t::target_t tgt = result != n.uid()
+        // If able to shortcut, preserve result.
         ? request_t::target_t{ result, quantify_policy::ptr_t::NIL() }
+        // Otherwise, create product of children
         : request_t::target_t{ fst(n.low(), n.high()), snd(n.low(), n.high()) };
 
       return request_t(tgt, {}, {parent});
