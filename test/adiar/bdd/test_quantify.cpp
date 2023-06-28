@@ -162,11 +162,29 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw_6(bdd_6);
-      nw_6 << node(3, node::MAX_ID,   ptr_uint64(false),      ptr_uint64(true))       // 8
-           << node(3, node::MAX_ID-1, ptr_uint64(true),       ptr_uint64(false))      // 7
-           << node(2, node::MAX_ID,   ptr_uint64(3, ptr_uint64::MAX_ID),   ptr_uint64(true))       // 6
-           << node(2, node::MAX_ID-1, ptr_uint64(3, ptr_uint64::MAX_ID-1), ptr_uint64(false))      // 5
-           << node(2, node::MAX_ID-2, ptr_uint64(false),      ptr_uint64(3, ptr_uint64::MAX_ID))   // 4
+      nw_6 << node(3, node::MAX_ID,   ptr_uint64(false),                   ptr_uint64(true))                    // 8
+           << node(3, node::MAX_ID-1, ptr_uint64(true),                    ptr_uint64(false))                   // 7
+           << node(2, node::MAX_ID,   ptr_uint64(3, ptr_uint64::MAX_ID),   ptr_uint64(true))                    // 6
+           << node(2, node::MAX_ID-1, ptr_uint64(3, ptr_uint64::MAX_ID-1), ptr_uint64(false))                   // 5
+           << node(2, node::MAX_ID-2, ptr_uint64(false),                   ptr_uint64(3, ptr_uint64::MAX_ID))   // 4
+           << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID-2), ptr_uint64(2, ptr_uint64::MAX_ID))   // 3
+           << node(1, node::MAX_ID-1, ptr_uint64(2, ptr_uint64::MAX_ID),   ptr_uint64(2, ptr_uint64::MAX_ID-1)) // 2
+           << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID),   ptr_uint64(1, ptr_uint64::MAX_ID-1)) // 1
+        ;
+    }
+
+    // BDD 6 with an 'x4' instead of T that can collapse to T during the
+    // transposition sweep
+    shared_levelized_file<bdd::node_t> bdd_6_x4T;
+
+    { // Garbage collect writer to free write-lock
+      node_writer nw_6(bdd_6_x4T);
+      nw_6 << node(4, node::MAX_ID,   ptr_uint64(false),                   ptr_uint64(true))                    // T
+           << node(3, node::MAX_ID,   ptr_uint64(false),                   ptr_uint64(4, ptr_uint64::MAX_ID))   // 8
+           << node(3, node::MAX_ID-1, ptr_uint64(4, ptr_uint64::MAX_ID),   ptr_uint64(false))                   // 7
+           << node(2, node::MAX_ID,   ptr_uint64(3, ptr_uint64::MAX_ID),   ptr_uint64(4, ptr_uint64::MAX_ID))   // 6
+           << node(2, node::MAX_ID-1, ptr_uint64(3, ptr_uint64::MAX_ID-1), ptr_uint64(false))                   // 5
+           << node(2, node::MAX_ID-2, ptr_uint64(false),                   ptr_uint64(3, ptr_uint64::MAX_ID))   // 4
            << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID-2), ptr_uint64(2, ptr_uint64::MAX_ID))   // 3
            << node(1, node::MAX_ID-1, ptr_uint64(2, ptr_uint64::MAX_ID),   ptr_uint64(2, ptr_uint64::MAX_ID-1)) // 2
            << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID),   ptr_uint64(1, ptr_uint64::MAX_ID-1)) // 1
@@ -232,6 +250,102 @@ go_bandit([]() {
             << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(2, ptr_uint64::MAX_ID))   // 2
             << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID),   ptr_uint64(3, ptr_uint64::MAX_ID))   // 1
         ;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // BDD 9 (T terminal)
+    /*
+    //           _1_       ---- x1
+    //          /   \
+    //          2   3      ---- x2 (inner sweep)
+    //         / \ / \
+    //         4  5  |     ---- x3
+    //        / \/ \ |
+    //        6 F  T |     ---- x4 (skippable sweep)
+    //       / \__ __/
+    //       |    7        ---- x5
+    //       |   / \
+    //       8   F T       ---- x6 (transposition sweep)
+    //      / \
+    //      F T
+    */
+    node n9T_8 = node(6, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
+    node n9T_7 = node(5, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
+    node n9T_6 = node(4, node::MAX_ID,   n9T_8.uid(),       n9T_7.uid());
+    node n9T_5 = node(3, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
+    node n9T_4 = node(3, node::MAX_ID-1, n9T_6.uid(),       ptr_uint64(false));
+    node n9T_3 = node(2, node::MAX_ID,   n9T_5.uid(),       n9T_7.uid());
+    node n9T_2 = node(2, node::MAX_ID-1, n9T_4.uid(),       n9T_5.uid());
+    node n9T_1 = node(1, node::MAX_ID,   n9T_2.uid(),       n9T_3.uid());
+
+    shared_levelized_file<bdd::node_t> bdd_9T;
+    { // Garbage collect writer to free write-lock
+      node_writer nw(bdd_9T);
+      nw << n9T_8 << n9T_7 << n9T_6 << n9T_5 << n9T_4 << n9T_3 << n9T_2 << n9T_1;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // BDD 9 (F terminal)
+    /* input
+    //           _1_       ---- x1
+    //          /   \
+    //          2   3      ---- x2 (final sweep)
+    //         / \ / \
+    //         4  5  |     ---- x3
+    //        / \/ \ |
+    //        6 F  T |     ---- x4 (skippable sweep)
+    //       / \__ __/
+    //       F    7        ---- x5
+    //           / \
+    //           F 8       ---- x6 (transposition sweep)
+    //            / \
+    //            F T
+    */
+    node n9F_8 = node(6, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
+    node n9F_7 = node(5, node::MAX_ID,   ptr_uint64(false), n9F_8.uid());
+    node n9F_6 = node(4, node::MAX_ID,   ptr_uint64(false), n9F_7.uid());
+    node n9F_5 = node(3, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
+    node n9F_4 = node(3, node::MAX_ID-1, n9F_6.uid(),       ptr_uint64(false));
+    node n9F_3 = node(2, node::MAX_ID,   n9F_5.uid(),       n9F_7.uid());
+    node n9F_2 = node(2, node::MAX_ID-1, n9F_4.uid(),       n9F_5.uid());
+    node n9F_1 = node(1, node::MAX_ID,   n9F_2.uid(),       n9F_3.uid());
+
+    shared_levelized_file<bdd::node_t> bdd_9F;
+
+    { // Garbage collect writer to free write-lock
+      node_writer nw(bdd_9F);
+      nw << n9F_8 << n9F_7 << n9F_6 << n9F_5 << n9F_4 << n9F_3 << n9F_2 << n9F_1;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // BDD 10 : node (8) dies when quantifying x2 and x3
+    /*
+    //          _1_           ---- x0
+    //         /   \
+    //         F   _2_        ---- x1
+    //            /   \
+    //            3   4       ---- x2
+    //           / \ / \
+    //           5  6  7      ---- x3
+    //          / \| |/ \
+    //          T   8   T     ---- x4
+    //             / \
+    //             F T
+    */
+    node n10_8 = node(4, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
+    node n10_7 = node(3, node::MAX_ID,   n10_8.uid(),       ptr_uint64(true));
+    node n10_6 = node(3, node::MAX_ID-1, n10_8.uid(),       n10_8.uid());
+    node n10_5 = node(3, node::MAX_ID-2, ptr_uint64(true),  n10_8.uid());
+    node n10_4 = node(2, node::MAX_ID,   n10_6.uid(),       n10_7.uid());
+    node n10_3 = node(2, node::MAX_ID-1, n10_5.uid(),       n10_6.uid());
+    node n10_2 = node(1, node::MAX_ID,   n10_3.uid(),       n10_4.uid());
+    node n10_1 = node(0, node::MAX_ID,   ptr_uint64(false), n10_2.uid());
+
+    shared_levelized_file<bdd::node_t> bdd_10;
+
+    { // Garbage collect writer to free write-lock
+      node_writer nw(bdd_10);
+      nw << n10_8 << n10_7 << n10_6 << n10_5 << n10_4 << n10_3 << n10_2 << n10_1;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -373,6 +487,57 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(3u));
+      });
+
+      it("should quantify root with F terminal [BDD 5]", [&]() {
+        __bdd out = bdd_exists(bdd_5, 0);
+
+        arc_test_stream arcs(out);
+
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,0) }));
+
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(2,1) }));
+
+        AssertThat(arcs.can_pull_internal(), Is().False());
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), // true due to 4.low()
+                   Is().EqualTo(arc { ptr_uint64(2,0), false, ptr_uint64(false) }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), // true due to 5.high()
+                   Is().EqualTo(arc { ptr_uint64(2,0), true,  ptr_uint64(true) }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), // true due to 5.high()
+                   Is().EqualTo(arc { ptr_uint64(2,1), false, ptr_uint64(true) }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), // false due to its own leaf
+                   Is().EqualTo(arc { ptr_uint64(2,1), true,  ptr_uint64(false) }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().False());
+
+        level_info_test_stream levels(out);
+
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1u,1u)));
+
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2u,2u)));
+
+        AssertThat(levels.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(2u));
+
+        // TODO: meta variables...
       });
 
       it("should quantify nodes with terminal or nodes as children [BDD 2]", [&]() {
@@ -1098,6 +1263,150 @@ go_bandit([]() {
           // TODO: meta variables...
         });
 
+        it("bails out on a level that only shortcuts", [&bdd_9T]() {
+          bdd out = bdd_exists(bdd_9T, [](const bdd::label_t x) { return !(x % 2); });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (7')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
+                                                         ptr_uint64(false),
+                                                         ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                         ptr_uint64(5, node::MAX_ID),
+                                                         ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                         ptr_uint64(true),
+                                                         ptr_uint64(3, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
+
+        it("bails out on a level that only is irrelevant", [&bdd_9F]() {
+          bdd out = bdd_exists(bdd_9F, [](const bdd::label_t x) { return !(x % 2); });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (7')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
+                                                         ptr_uint64(false),
+                                                         ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                         ptr_uint64(5, node::MAX_ID),
+                                                         ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
+
+        it("bails out on a level that both shortcuts and is irrelevant", [&bdd_6_x4T]() {
+          bdd out = bdd_exists(bdd_6_x4T, [](const bdd::label_t x) { return x == 4 || x == 2 || x == 1; });
+
+          // TODO predict output!
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (7')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
+
+        it("kills intermediate dead partial solution", [&bdd_10]() {
+          bdd out = bdd_exists(bdd_10, [](const bdd::label_t x) { return x == 3 || x == 2; });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                         ptr_uint64(false),
+                                                         ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
+
+        it("kills intermediate dead partial solutions multiple times", [&]() {
+          bdd::label_t var = 7;
+
+          /* expected
+          //
+          //         _1_
+          //        /   \
+          //        *   *
+          //         \ /
+          //          |
+          //          /
+          //         /
+          //        *
+          //        |
+          //        T
+          */
+          bdd out = bdd_exists(bdd_6, [&var]() {
+            const bdd::label_t ret = var;
+            var -= 2;
+            return ret;
+          });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
+
         quantify_mode = quantify_mode_t::AUTO;
       });
 
@@ -1312,40 +1621,6 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
-        it("quantifies 7, 5, 3, 1, -1 in BDD 6 [&&]", [&]() {
-          bdd::label_t var = 7;
-
-          /* expected
-          //
-          //         _1_
-          //        /   \
-          //        *   *
-          //         \ /
-          //          |
-          //          /
-          //         /
-          //        *
-          //        |
-          //        T
-           */
-          bdd out = bdd_exists(bdd_6, [&var]() {
-            const bdd::label_t ret = var;
-            var -= 2;
-            return ret;
-          });
-
-          node_test_stream out_nodes(out);
-
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
-
-          AssertThat(out_nodes.can_pull(), Is().False());
-
-          level_info_test_stream out_meta(out);
-
-          AssertThat(out_meta.can_pull(), Is().False());
-        });
-
         it("quantifies 1, -1 variables in BDD 1 [&&]", [&]() {
           bdd::label_t var = 1;
 
@@ -1365,6 +1640,175 @@ go_bandit([]() {
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("bails out on a level that only shortcuts", [&bdd_9T]() {
+          bdd::label_t var = 6;
+          bdd out = bdd_exists(bdd_9T, [&var]() {
+            const bdd::label_t res = var;
+            var -= 2;
+            return res;
+          });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (7')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
+                                                         ptr_uint64(false),
+                                                         ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                         ptr_uint64(5, node::MAX_ID),
+                                                         ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                         ptr_uint64(true),
+                                                         ptr_uint64(3, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
+
+        it("bails out on a level that only is irrelevant", [&bdd_9F]() {
+          bdd::label_t var = 6;
+          bdd out = bdd_exists(bdd_9F, [&var]() {
+            const bdd::label_t res = var;
+            var -= 2;
+            return res;
+          });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (7')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
+                                                         ptr_uint64(false),
+                                                         ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                         ptr_uint64(5, node::MAX_ID),
+                                                         ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
+
+        it("bails out on a level that both shortcuts and is irrelevant", [&bdd_6_x4T]() {
+          bdd::label_t var = 4;
+          bdd out = bdd_exists(bdd_6_x4T, [&var]() {
+            const bdd::label_t res = var;
+            switch (var) {
+            case 4:  { var = 2;  break; } // <-- 4: transposing
+            case 2:  { var = 1;  break; } // <-- 2: shortuctting / irrelevant
+            default: { var = -1; break; } // <-- 1: final sweep
+            }
+            return res;
+          });
+
+          // TODO predict output!
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (7')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
+
+        it("kills intermediate dead partial solution", [&bdd_10]() {
+          bdd::label_t var = 3;
+          bdd out = bdd_exists(bdd_10, [&var]() {
+            const bdd::label_t res = var;
+            if (2 < var) { var -= 1; }
+            else         { var = -1; }
+            return res;
+          });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                         ptr_uint64(false),
+                                                         ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
+
+        it("kills intermediate dead partial solutions multiple times", [&]() {
+          bdd::label_t var = 7;
+
+          /* expected
+          //
+          //         _1_
+          //        /   \
+          //        *   *
+          //         \ /
+          //          |
+          //          /
+          //         /
+          //        *
+          //        |
+          //        T
+          */
+          bdd out = bdd_exists(bdd_6, [&var]() {
+            const bdd::label_t ret = var;
+            var -= 2;
+            return ret;
+          });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables
         });
 
         quantify_mode = quantify_mode_t::AUTO;
@@ -1828,6 +2272,74 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
+        it("bails out on a level that only shortcuts", [&bdd_9T]() {
+          bdd out = bdd_forall(bdd_not(bdd_9T), [](const bdd::label_t x) { return !(x % 2); });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (7')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
+                                                         ptr_uint64(true),
+                                                         ptr_uint64(false))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                         ptr_uint64(5, node::MAX_ID),
+                                                         ptr_uint64(false))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                         ptr_uint64(false),
+                                                         ptr_uint64(3, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
+
+        it("bails out on a level that only is irrelevant", [&bdd_9F]() {
+          bdd out = bdd_forall(bdd_not(bdd_9F), [](const bdd::label_t x) { return !(x % 2); });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (7')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
+                                                         ptr_uint64(true),
+                                                         ptr_uint64(false))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                         ptr_uint64(5, node::MAX_ID),
+                                                         ptr_uint64(false))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
+
         quantify_mode = quantify_mode_t::AUTO;
       });
 
@@ -1997,6 +2509,84 @@ go_bandit([]() {
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("bails out on a level that only shortcuts", [&bdd_9T]() {
+          bdd::label_t var = 6;
+          bdd out = bdd_forall(bdd_not(bdd_9T), [&var]() {
+            const bdd::label_t res = var;
+            var -= 2;
+            return res;
+          });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (7')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
+                                                         ptr_uint64(true),
+                                                         ptr_uint64(false))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                         ptr_uint64(5, node::MAX_ID),
+                                                         ptr_uint64(false))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                         ptr_uint64(false),
+                                                         ptr_uint64(3, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
+
+        it("bails out on a level that only is irrelevant", [&bdd_9F]() {
+          bdd::label_t var = 6;
+          bdd out = bdd_forall(bdd_not(bdd_9F), [&var]() {
+            const bdd::label_t res = var;
+            var -= 2;
+            return res;
+          });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (7')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
+                                                         ptr_uint64(true),
+                                                         ptr_uint64(false))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                         ptr_uint64(5, node::MAX_ID),
+                                                         ptr_uint64(false))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables
         });
 
         quantify_mode = quantify_mode_t::AUTO;
