@@ -12,5 +12,6 @@ var classadiar_1_1internal_1_1request_3_01CARDINALITY_00_010_00_01INPUTS_01_4 =
     [ "empty_carry", "classadiar_1_1internal_1_1request_3_01CARDINALITY_00_010_00_01INPUTS_01_4.html#a996d2ce7c9088e97123c519846722dea", null ],
     [ "level", "classadiar_1_1internal_1_1request_3_01CARDINALITY_00_010_00_01INPUTS_01_4.html#a405a1a36f3887387f0ebb2948f33da23", null ],
     [ "nodes_carried", "classadiar_1_1internal_1_1request_3_01CARDINALITY_00_010_00_01INPUTS_01_4.html#a7cc69bb6c277f3206675ad9b521c8803", null ],
+    [ "targets", "classadiar_1_1internal_1_1request_3_01CARDINALITY_00_010_00_01INPUTS_01_4.html#ac1df6ecf24d9db2df84671c0cdb17878", null ],
     [ "target", "classadiar_1_1internal_1_1request_3_01CARDINALITY_00_010_00_01INPUTS_01_4.html#a43c77bb9ca0ab9244f8eca2a191b7d6b", null ]
 ];
