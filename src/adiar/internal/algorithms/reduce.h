@@ -321,7 +321,7 @@ namespace adiar::internal
     }
 
     // Add number of nodes to level information, if any nodes were pushed to the output.
-    if (!out_node.low().is_nil() /* && !out_node.high().is_nil() */) {
+    if (out_id != dd_policy::MAX_ID) {
       const size_t width = dd_policy::MAX_ID - out_id;
       out_writer.unsafe_push(level_info(label, width));
     }
