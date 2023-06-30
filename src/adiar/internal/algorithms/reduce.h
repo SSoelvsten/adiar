@@ -284,6 +284,7 @@ namespace adiar::internal
       const arc e_low  = __reduce_get_next(reduce_pq, arcs);
 
       const node n = node_of(e_low, e_high);
+      adiar_debug(n.label() == label, "Label is for desired level");
 
       // Apply Reduction rule 1
       const node::ptr_t reduction_rule_ret = dd_policy::reduction_rule(n);
@@ -369,11 +370,11 @@ namespace adiar::internal
 
       adiar_invariant(!arcs.can_pull_internal()
                       || current_map.old_uid == arcs.peek_internal().target(),
-                      "Mapping forwarded in sync with node_arcs");
+                      "Mapping forwarded in sync with internal arcs");
 
       // Find all arcs that have the target that match the current mapping's old_uid
       while (arcs.can_pull_internal() && current_map.old_uid == arcs.peek_internal().target()) {
-        // The is_high flag is included in arc.source() pulled from node_arcs.
+        // The out_idx is included in arc.source() pulled from the internal arcs.
         const ptr_uint64 s = arcs.pull_internal().source();
 
         // If Reduction Rule 1 was used, then tell the parents to add to the global cut.

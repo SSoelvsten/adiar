@@ -45,8 +45,108 @@ namespace adiar::internal
     //                       have reason to believe it will remove nodes, e.g.
     //                       the level is quite wide. */
     ////////////////////////////////////////////////////////////////////////////
-    // TODO: enum
-    // TODO: `__reduce_level__fast`
+    enum reduce_algorithm
+    {
+      ALWAYS_CANONICAL//,
+      // FINAL_CANONICAL,
+      // NEVER_CANONICAL,
+      // AUTO
+    };
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   A faster alternative to `__reduce_level`.
+    ///
+    /// \details The `__reduce_level` algorithm merges duplicate subtrees by use
+    ///          of two sorting steps. Yet, these cost I/Os and computation
+    ///          time. This is an alternative, that does not merge subtrees.
+    ///
+    /// \see __reduce_level
+    ////////////////////////////////////////////////////////////////////////////
+    template <typename dd_policy,
+              typename pq_t,
+              typename arc_stream_t>
+    void
+    __reduce_level__fast(arc_stream_t &arcs,
+                         const typename dd_policy::label_t label,
+                         pq_t &pq,
+                         node_writer &out_writer)
+    {
+      // TODO: mark non-canonical!
+
+      // Count number of arcs that cross this level (including tainted ones)
+      // TODO: move into helper function
+      cuts_t level_1level_cut   = {{ 0u, 0u, 0u, 0u }};
+      __reduce_cut_add(level_1level_cut,
+                       pq.size_without_terminals(),
+                       pq.terminals(false) + arcs.unread_terminals(false),
+                       pq.terminals(true)  + arcs.unread_terminals(true));
+
+      // Remember the latest terminal value due to Reduction Rule 1
+      bool terminal_val = false /* <-- dummy value */;
+
+      // Pull out all nodes from pq and terminal_arcs for this level
+      typename dd_policy::id_t out_id = dd_policy::MAX_ID;
+
+      while (pq.can_pull() || (arcs.can_pull_terminal() && arcs.peek_terminal().source().label() == label)) {
+        // TODO (MDD / QMDD):
+        //   Use __reduce_get_next node_t::OUTDEGREE times to create a node_t::children_t.
+        const arc e_high = __reduce_get_next(pq, arcs);
+        const arc e_low  = __reduce_get_next(pq, arcs);
+
+        const node n = node_of(e_low, e_high);
+        adiar_debug(n.label() == label, "Label is for desired level");
+
+        // TODO (dd_replace):
+        //   Disable the following if-statement for faster performance
+
+        // Apply Reduction rule 1
+        const node::ptr_t reduction_rule_ret = dd_policy::reduction_rule(n);
+        if (reduction_rule_ret != n.uid()) {
+#ifdef ADIAR_STATS
+          stats_reduce.removed_by_rule_1 += 1u;
+#endif
+          // Forward child
+          // Tell the parents this arc is tainted by Reduction Rule 1.
+          const node::ptr_t t = flag(reduction_rule_ret);
+          adiar_debug(t.is_terminal() || t.out_idx() == false, "Created target is without an index");
+          if (t.is_terminal()) { terminal_val = t.value(); }
+
+          // TODO: Decrement i-level cut
+
+          while (arcs.can_pull_internal() && arcs.peek_internal().target() == n.uid()) {
+            // The out_idx is included in arc.source() pulled from the internal arcs.
+            const node::ptr_t s = arcs.pull_internal().source();
+            pq.push(arc(s,t));
+          }
+        } else {
+          // Output node
+          adiar_debug(out_id > 0, "Should still have more ids left");
+          const node next_node(label, out_id--, unflag(n.low()), unflag(n.high()));
+          out_writer.unsafe_push(next_node);
+
+          // Forward new node to parents
+          const node::ptr_t t = next_node.uid();
+          adiar_debug(t.is_terminal() || t.out_idx() == false, "Created target is without an index");
+
+          while (arcs.can_pull_internal() && arcs.peek_internal().target() == n.uid()) {
+            // The out_idx is included in arc.source() pulled from the internal arcs.
+            const node::ptr_t s = arcs.pull_internal().source();
+            pq.push(arc(s,t));
+          }
+        }
+      }
+
+      out_writer.unsafe_max_1level_cut(level_1level_cut);
+
+      // Add number of nodes to level information, if any nodes were pushed to the output.
+      if (out_id != dd_policy::MAX_ID) {
+        const size_t width = dd_policy::MAX_ID - out_id;
+        out_writer.unsafe_push(level_info(label, width));
+      }
+
+      // Set up priority queue for next level (or collapse to a terminal)
+      __reduce_level__epilogue<>(arcs, label, pq, out_writer, terminal_val);
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Algorithms and Decorators for the Outer sweep.
