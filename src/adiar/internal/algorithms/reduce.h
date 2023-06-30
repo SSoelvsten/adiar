@@ -303,11 +303,9 @@ namespace adiar::internal
       const node next_node = child_grouping.pull();
 
       if (out_node.low() != unflag(next_node.low()) || out_node.high() != unflag(next_node.high())) {
-        out_node = node(label, out_id, unflag(next_node.low()), unflag(next_node.high()));
+        adiar_debug(0 <= out_id, "Should still have more ids left");
+        out_node = node(label, out_id--, unflag(next_node.low()), unflag(next_node.high()));
         out_writer.unsafe_push(out_node);
-
-        adiar_debug(out_id > 0, "Has run out of ids");
-        out_id--;
 
         __reduce_cut_add(next_node.low().is_flagged()  ? tainted_1level_cut : local_1level_cut,
                          out_node.low());
