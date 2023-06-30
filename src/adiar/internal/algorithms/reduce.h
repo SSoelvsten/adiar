@@ -233,6 +233,22 @@ namespace adiar::internal
   // Algorithm functions
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief Epilogue of `__reduce_level` setting the priority queue up for the
+  ///        next level (or outputting a terminal).
+  ///
+  /// \see __reduce_level
+  //////////////////////////////////////////////////////////////////////////////
+  template <typename arc_stream_t,
+            typename label_t,
+            typename pq_t>
+  inline void
+  __reduce_level__epilogue(arc_stream_t &arcs,
+                           label_t label,
+                           pq_t &reduce_pq,
+                           node_writer &out_writer,
+                           const bool terminal_val);
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief Reduce a single level
   //////////////////////////////////////////////////////////////////////////////
   template <typename dd_policy,
@@ -392,6 +408,22 @@ namespace adiar::internal
     // Add the tainted edges
     out_writer.unsafe_inc_1level_cut(tainted_1level_cut);
 
+    const bool terminal_value = next_red1.new_uid.is_terminal() && next_red1.new_uid.value();
+    __reduce_level__epilogue<>(arcs, label, reduce_pq, out_writer, terminal_value);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  template <typename arc_stream_t,
+            typename label_t,
+            typename pq_t>
+  inline void
+  __reduce_level__epilogue(arc_stream_t &arcs,
+                           label_t label,
+                           pq_t &reduce_pq,
+                           node_writer &out_writer,
+                           const bool terminal_val)
+  {
+
     adiar_debug(reduce_pq.empty_level(),
                 "All forwarded arcs for 'label' should be processed");
 
@@ -425,13 +457,14 @@ namespace adiar::internal
       adiar_debug(reduce_pq.size() == 0 && reduce_pq.empty(),
                   "'reduce_pq.size() == 0' -> 'reduce_pq.empty()', i.e. no parents have been forwarded to'");
 
-      adiar_debug(next_red1.new_uid.is_terminal(),
-                  "A node must have been suppressed in favour of a terminal");
-
-      const bool terminal_val = next_red1.new_uid.value();
+      //adiar_debug(next_red1.new_uid.is_terminal(),
+      //            "A node must have been suppressed in favour of a terminal");
 
       out_writer.unsafe_push(node(terminal_val));
       out_writer.unsafe_set_number_of_terminals(!terminal_val, terminal_val);
+
+      // NOTE: We do not need to update the cuts, since this is taken care of in
+      //       `~out_writer() = out_writer.detach()`.
     }
   }
 
