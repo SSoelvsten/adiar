@@ -236,8 +236,8 @@ namespace adiar::internal
   /// \brief Reduce a single level
   //////////////////////////////////////////////////////////////////////////////
   template <typename dd_policy,
-            typename pq_t,
             template<typename, typename> typename sorter_t,
+            typename pq_t,
             typename arc_stream_t>
   void
   __reduce_level(arc_stream_t &arcs,
@@ -439,52 +439,6 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Reduce an entire decision diagram bottom-up.
-  ///
-  /// \details Unlike the one below, here the priority queue and the input/output
-  ///          streams are already initialised. This allows us to use the Reduce
-  ///          algorithm when the owner of one or more of these is another of
-  ///          algorithm, e.g. Nested Sweeping.
-  ///
-  /// \returns Cut for arcs that suddenly cross much further down than they did
-  ///          initially in the input, e.g. when a node was removed due to
-  ///          Reduction Rule 1.
-  ///
-  /// \see nested_sweep
-  //////////////////////////////////////////////////////////////////////////////
-  template<typename dd_policy, typename pq_t, typename arc_stream_t>
-  inline void
-  __reduce(arc_stream_t &arcs,
-           level_info_stream<> &levels,
-           pq_t &reduce_pq,
-           node_writer &out_writer,
-           const size_t sorters_memory)
-  {
-    const size_t internal_sorter_can_fit = internal_sorter<node>::memory_fits(sorters_memory / 2);
-
-    // Process bottom-up each level
-    while (levels.can_pull()) {
-      adiar_debug(arcs.can_pull_terminal() || !reduce_pq.empty(),
-                  "If there is a level, then there should also be something for it.");
-      const level_info current_level_info = levels.pull();
-      const typename dd_policy::label_t level = current_level_info.level();
-
-      adiar_invariant(!reduce_pq.has_current_level() || level == reduce_pq.current_level(),
-                      "level and priority queue should be in sync");
-
-      const size_t level_width = current_level_info.width();
-
-      if(level_width <= internal_sorter_can_fit) {
-        __reduce_level<dd_policy, pq_t, internal_sorter>
-          (arcs, level, reduce_pq, out_writer, sorters_memory, level_width);
-      } else {
-        __reduce_level<dd_policy, pq_t, external_sorter>
-          (arcs, level, reduce_pq, out_writer, sorters_memory, level_width);
-      }
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Reduce an entire decision diagram bottom-up.
   //////////////////////////////////////////////////////////////////////////////
   template<typename dd_policy, typename pq_t>
   shared_levelized_file<typename dd_policy::node_t>
@@ -553,7 +507,28 @@ namespace adiar::internal
     // Initialize (levelized) priority queue and run Reduce algorithm
     pq_t reduce_pq({in_file}, lpq_memory, in_file->max_1level_cut);
 
-    __reduce<dd_policy, pq_t>(arcs, levels, reduce_pq, out_writer, sorters_memory);
+    const size_t internal_sorter_can_fit = internal_sorter<node>::memory_fits(sorters_memory / 2);
+
+    // Process bottom-up each level
+    while (levels.can_pull()) {
+      adiar_debug(arcs.can_pull_terminal() || !reduce_pq.empty(),
+                  "If there is a level, then there should also be something for it.");
+      const level_info current_level_info = levels.pull();
+      const typename dd_policy::label_t level = current_level_info.level();
+      const size_t level_width = current_level_info.width();
+
+      adiar_invariant(!reduce_pq.has_current_level() || level == reduce_pq.current_level(),
+                      "level and priority queue should be in sync");
+
+      if(level_width <= internal_sorter_can_fit) {
+        __reduce_level<dd_policy, internal_sorter>
+          (arcs, level, reduce_pq, out_writer, sorters_memory, level_width);
+      } else {
+        __reduce_level<dd_policy, external_sorter>
+          (arcs, level, reduce_pq, out_writer, sorters_memory, level_width);
+      }
+    }
+
     return out_file;
   }
 

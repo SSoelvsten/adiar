@@ -1137,11 +1137,37 @@ namespace adiar::internal
         using decorator_t = up__pq_decorator<inner_pq_t, outer_pq_t>;
         decorator_t decorated_pq(inner_pq, outer_pq);
 
-        // Run Reduce
-        __reduce<inner_up_sweep>(decorated_arcs, inner_levels,
-                                 decorated_pq,
-                                 outer_writer,
-                                 inner_sorters_memory);
+        const size_t internal_sorter_can_fit =
+          internal_sorter<node>::memory_fits(inner_sorters_memory / 2);
+
+        // Process bottom-up each level
+        while (inner_levels.can_pull()) {
+          adiar_debug(decorated_arcs.can_pull_terminal() || !decorated_pq.empty(),
+                      "If there is a level, then there should also be something for it.");
+          const level_info inner_level_info = inner_levels.pull();
+
+          const typename inner_up_sweep::label_t level = inner_level_info.level();
+          const size_t level_width = inner_level_info.width();
+
+          adiar_invariant(!decorated_pq.has_current_level() || level == decorated_pq.current_level(),
+                          "level and priority queue should be in sync");
+
+          // TODO (optimisation):
+          //   use '__reduce_level__fast(...)' iff
+          //   - 'NEVER_CANONICAL' (constexpr)
+          //   - 'FINAL_CANONICAL' (constexpr)
+          //   - 'AUTO' and 'fast_reduce_threshold()' is satisfiable (!constexpr)
+          //     NOTE: This probably should be a (possibly) different
+          //           threshold than for the outer
+
+          if(level_width <= internal_sorter_can_fit) {
+            __reduce_level<inner_up_sweep, internal_sorter>
+              (decorated_arcs, level, decorated_pq, outer_writer, inner_sorters_memory, level_width);
+          } else {
+            __reduce_level<inner_up_sweep, external_sorter>
+              (decorated_arcs, level, decorated_pq, outer_writer, inner_sorters_memory, level_width);
+          }
+        }
 
         // Forward arcs from outer sweep that collapsed to a sink.
         while (inner_arcs.can_pull_terminal()) {
@@ -1321,12 +1347,17 @@ namespace adiar::internal
       // CASE Unnested Level with no nested sweep above:
       //   Reduce this level (as usual).
       if (next_inner == inner_iter_t::NONE) {
+        // TODO (optimisation):
+        //   use '__reduce_level__fast(...)' iff 'NEVER_CANONICAL' (constexpr).
+
         if(outer_level.width() <= outer_internal_sorter_can_fit) {
-          __reduce_level<outer_up_sweep, outer_pq_t, internal_sorter>
-            (outer_arcs, outer_level.level(), outer_pq, outer_writer, outer_sorters_memory, outer_level.width());
+          __reduce_level<outer_up_sweep, internal_sorter>
+            (outer_arcs, outer_level.level(), outer_pq, outer_writer,
+             outer_sorters_memory, outer_level.width());
         } else {
-          __reduce_level<outer_up_sweep, outer_pq_t, external_sorter>
-            (outer_arcs, outer_level.level(), outer_pq, outer_writer, outer_sorters_memory, outer_level.width());
+          __reduce_level<outer_up_sweep, external_sorter>
+            (outer_arcs, outer_level.level(), outer_pq, outer_writer,
+             outer_sorters_memory, outer_level.width());
         }
 
         continue;
@@ -1338,12 +1369,22 @@ namespace adiar::internal
       if (next_inner < outer_level.level()) {
         outer_pq_decorator_t outer_pq_decorator(outer_pq, outer_roots, next_inner);
 
+        // TODO (optimisation):
+        //   use '__reduce_level__fast(...)' iff
+        //   - 'NEVER_CANONICAL' (constexpr)
+        //   - 'FINAL_CANONICAL' (constexpr)
+        //   - 'AUTO' and 'fast_reduce_threshold()' is satisfiable (!constexpr)
+        //     NOTE: This probably should be a (possibly) different threshold
+        //           than for the inner
+
         if(outer_level.width() <= outer_internal_sorter_can_fit) {
-          __reduce_level<outer_up_sweep, outer_pq_decorator_t, internal_sorter>
-            (outer_arcs, outer_level.level(), outer_pq_decorator, outer_writer, outer_sorters_memory, outer_level.width());
+          __reduce_level<outer_up_sweep, internal_sorter>
+            (outer_arcs, outer_level.level(), outer_pq_decorator, outer_writer,
+             outer_sorters_memory, outer_level.width());
         } else {
-          __reduce_level<outer_up_sweep, outer_pq_decorator_t, external_sorter>
-            (outer_arcs, outer_level.level(), outer_pq_decorator, outer_writer, outer_sorters_memory, outer_level.width());
+          __reduce_level<outer_up_sweep, external_sorter>
+            (outer_arcs, outer_level.level(), outer_pq_decorator, outer_writer,
+             outer_sorters_memory, outer_level.width());
         }
 
         continue;
