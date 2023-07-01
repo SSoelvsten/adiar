@@ -62,7 +62,7 @@ namespace adiar::internal
   {
     return terminal_val
       ? cut >= cut_type::INTERNAL_TRUE
-      : cut <= cut_type::INTERNAL_FALSE;
+      : cut == cut_type::INTERNAL_FALSE || cut == cut_type::ALL;
   }
 
   inline bool includes_terminal(const size_t cut, const bool terminal_val)
