@@ -2054,11 +2054,10 @@ go_bandit([]() {
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(1u));
 
-          // Over-approximation due to assuming entire level is output as-is;
-          AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(4u));
-          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(4u));
-          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(4u));
-          AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(4u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
 
           AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
           AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
@@ -2368,6 +2367,217 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
+        it("only includes unsuppressed contribution to 1-level cut [internal arc]", []() {
+          /*
+          //          _1_      ---- x0
+          //         /   \
+          //         2   3     ---- x1 (being reduced)
+          //        / \ //
+          //        | T ||
+          //         \ //
+          //          4       ---- x2
+          //         / \
+          //         F T
+          */
+          const arc::ptr_t terminal_F(false);
+          const arc::ptr_t terminal_T(true);
+
+          const arc::ptr_t n1(0,0);
+          const arc::ptr_t n2(1,0);
+          const arc::ptr_t n3(1,1);
+          const arc::ptr_t n4(2,0);
+
+          shared_levelized_file<arc> in;
+
+          { // Garbage collect writer to free write-lock
+            arc_writer aw(in);
+
+            aw.push_internal({ n1, false, n2 });
+            aw.push_internal({ n1, true,  n3 });
+            aw.push_internal({ n2, false, n4 });
+            aw.push_internal({ n3, false, n4 });
+            aw.push_internal({ n3, true,  n4 });
+
+            aw.push_terminal({ n2, true,  terminal_T });
+            aw.push_terminal({ n4, false, terminal_T });
+            aw.push_terminal({ n4, true,  terminal_F });
+
+            aw.push(level_info(0,1u));
+            aw.push(level_info(1,2u));
+            aw.push(level_info(2,2u));
+          }
+
+          // Outer state
+          shared_levelized_file<node> out =  __reduce_init_output<bdd_policy>();
+
+          node_writer out_writer(out);
+
+          arc_stream arcs(in);
+
+          pq_t pq({in}, memory_available(), 16);
+
+          // Simulate reduction of x2
+          arcs.pull_terminal(); // 4 ---> T
+          arcs.pull_terminal(); // 4 - -> F
+          out_writer.unsafe_push(node(2, node::MAX_ID, terminal_F, terminal_T));
+
+          out_writer.unsafe_push(level_info(2, 1));
+          out_writer.unsafe_max_1level_cut({ 0, 1, 2, 2 });
+
+          // 3 ---> 4
+          pq.push(arc(arcs.pull_internal().source(), node::ptr_t(2, node::MAX_ID)));
+          // 3 - -> 4
+          pq.push(arc(arcs.pull_internal().source(), node::ptr_t(2, node::MAX_ID)));
+          // 2 - -> 4
+          pq.push(arc(arcs.pull_internal().source(), node::ptr_t(2, node::MAX_ID)));
+
+          pq.setup_next_level(1);
+
+          // Reduce level x1
+          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 1, pq, out_writer);
+
+          // Check meta variables before detach computations
+          AssertThat(out->width, Is().EqualTo(1u));
+
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u)); // <-- NOTE: not '3u'
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
+          AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+
+          // Check node and meta files are correct
+          out_writer.detach();
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
+                                                         terminal_F,
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                         node::ptr_t(2, node::MAX_ID),
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("only includes unsuppressed contribution to 1-level cut [terminal]", []() {
+          /*
+          //          _1_      ---- x0
+          //         /   \
+          //         2   3     ---- x1 (being reduced)
+          //        / \ / \
+          //        4 T F F    ---- x2
+          //       / \
+          //       F T
+          */
+          const arc::ptr_t terminal_F(false);
+          const arc::ptr_t terminal_T(true);
+
+          const arc::ptr_t n1(0,0);
+          const arc::ptr_t n2(1,0);
+          const arc::ptr_t n3(1,1);
+          const arc::ptr_t n4(2,0);
+
+          shared_levelized_file<arc> in;
+
+          { // Garbage collect writer to free write-lock
+            arc_writer aw(in);
+
+            aw.push_internal({ n1, false, n2 });
+            aw.push_internal({ n1, true,  n3 });
+            aw.push_internal({ n2, false, n4 });
+
+            aw.push_terminal({ n2, true,  terminal_T });
+            aw.push_terminal({ n3, false, terminal_F });
+            aw.push_terminal({ n3, true,  terminal_F });
+            aw.push_terminal({ n4, false, terminal_T });
+            aw.push_terminal({ n4, true,  terminal_F });
+
+            aw.push(level_info(0,1u));
+            aw.push(level_info(1,2u));
+            aw.push(level_info(2,2u));
+          }
+
+          // Outer state
+          shared_levelized_file<node> out =  __reduce_init_output<bdd_policy>();
+
+          node_writer out_writer(out);
+
+          arc_stream arcs(in);
+
+          pq_t pq({in}, memory_available(), 16);
+
+          // Simulate reduction of x2
+          arcs.pull_terminal(); // 4 ---> T
+          arcs.pull_terminal(); // 4 - -> F
+          out_writer.unsafe_push(node(2, node::MAX_ID, terminal_F, terminal_T));
+
+          out_writer.unsafe_push(level_info(2, 1));
+
+          // HACK: do not set 1-level cut to see desired behaviour
+
+          // 2 - -> 4
+          pq.push(arc(arcs.pull_internal().source(), node::ptr_t(2, node::MAX_ID)));
+
+          pq.setup_next_level(1);
+
+          // Reduce level x1
+          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 1, pq, out_writer);
+
+          // Check meta variables before detach computations
+          AssertThat(out->width, Is().EqualTo(1u));
+
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
+          AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+
+          // Check node and meta files are correct
+          out_writer.detach();
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
+                                                         terminal_F,
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                         node::ptr_t(2, node::MAX_ID),
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
         it("does not merge duplicates", []() {
           /*
           //      _1_     ---- x0
@@ -2530,11 +2740,10 @@ go_bandit([]() {
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(0u));
 
-          // Over-approximation due to assuming entire level is output as-is;
           AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
           AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
-          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
-          AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+          AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(0u));
 
           AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
           AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
@@ -2616,11 +2825,10 @@ go_bandit([]() {
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(0u));
 
-          // Over-approximation due to assuming entire level is output as-is;
           AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
           AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
-          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
-          AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+          AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(0u));
 
           AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
           AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));

@@ -53,6 +53,20 @@ namespace adiar::internal
       // AUTO
     };
 
+    template<typename ptr_t>
+    inline void
+    __reduce_decrement_cut(cuts_t &c, const ptr_t& p)
+    {
+      if (p.is_terminal()) {
+        c[cut_type::ALL]--;
+        c[cut_type_with(!p.value(), p.value())]--;
+      } else {
+        for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
+          c[ct]--;
+        }
+      }
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   A faster alternative to `__reduce_level`.
     ///
@@ -75,8 +89,8 @@ namespace adiar::internal
 
       // Count number of arcs that cross this level (including tainted ones)
       // TODO: move into helper function
-      cuts_t level_1level_cut   = {{ 0u, 0u, 0u, 0u }};
-      __reduce_cut_add(level_1level_cut,
+      cuts_t one_level_cut   = {{ 0u, 0u, 0u, 0u }};
+      __reduce_cut_add(one_level_cut,
                        pq.size_without_terminals(),
                        pq.terminals(false) + arcs.unread_terminals(false),
                        pq.terminals(true)  + arcs.unread_terminals(true));
@@ -111,13 +125,15 @@ namespace adiar::internal
           adiar_debug(t.is_terminal() || t.out_idx() == false, "Created target is without an index");
           if (t.is_terminal()) { terminal_val = t.value(); }
 
-          // TODO: Decrement i-level cut
-
           while (arcs.can_pull_internal() && arcs.peek_internal().target() == n.uid()) {
             // The out_idx is included in arc.source() pulled from the internal arcs.
             const node::ptr_t s = arcs.pull_internal().source();
             pq.push(arc(s,t));
           }
+
+          // Decrease 1-level cut over-approximation
+          __reduce_decrement_cut(one_level_cut, n.low());
+          __reduce_decrement_cut(one_level_cut, n.high());
         } else {
           // Output node
           adiar_debug(out_id > 0, "Should still have more ids left");
@@ -136,7 +152,7 @@ namespace adiar::internal
         }
       }
 
-      out_writer.unsafe_max_1level_cut(level_1level_cut);
+      out_writer.unsafe_max_1level_cut(one_level_cut);
 
       // Add number of nodes to level information, if any nodes were pushed to the output.
       if (out_id != dd_policy::MAX_ID) {

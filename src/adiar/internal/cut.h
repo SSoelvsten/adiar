@@ -106,8 +106,6 @@ namespace adiar::internal
       return dd.max_2level_cut(ct);
     }
   };
-
-  // TODO: Exact top-down sweep computation of 1-level and 2-level cuts.
 }
 
 #endif // ADIAR_INTERNAL_CUT_H
