@@ -419,7 +419,7 @@ namespace adiar::internal
             typename pq_t>
   inline void
   __reduce_level__epilogue(arc_stream_t &arcs,
-                           label_t label,
+                           [[maybe_unused]] label_t label,
                            pq_t &reduce_pq,
                            node_writer &out_writer,
                            const bool terminal_val)
