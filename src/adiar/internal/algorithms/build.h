@@ -14,10 +14,12 @@ namespace adiar::internal
   inline shared_levelized_file<node> build_terminal(bool value)
   {
     shared_levelized_file<node> nf;
-    node_writer nw(nf);
-    nw.unsafe_push(node(value));
-
-    nf->number_of_terminals[value] = 1;
+    {
+      node_writer nw(nf);
+      nw.unsafe_push(node(value));
+      nw.unsafe_set_number_of_terminals(!value, value);
+      nw.unsafe_set_canonical(true);
+    }
 
     return nf;
   }
@@ -34,6 +36,7 @@ namespace adiar::internal
                           ptr_uint64(true)));
 
       nw.unsafe_push(level_info(label,1u));
+      nw.unsafe_set_canonical(true);
     }
 
     return nf;
@@ -161,6 +164,8 @@ namespace adiar::internal
       if (nw.size() == 0u) {
         return build_terminal(chain_policy::init_terminal);
       }
+
+      nw.unsafe_set_canonical(true);
 
       // 1-level cuts
       nf->max_1level_cut[cut_type::INTERNAL] = max_internal_cut;

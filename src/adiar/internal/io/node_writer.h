@@ -127,10 +127,10 @@ namespace adiar::internal
     {
       if (!attached()) { return; }
 
-      _file_ptr -> canonical = _canonical;
-
       // Has '.push' been used?
       if (_latest_node != dummy()) {
+        _file_ptr->canonical = _canonical;
+
         // Output level information of the final level
         if (!_latest_node.is_terminal()) {
           unsafe_push(level_info(_latest_node.label(), _level_size));
