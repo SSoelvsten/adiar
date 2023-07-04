@@ -112,15 +112,14 @@ namespace adiar::internal
              pq_1_t &quantify_pq_1,
              pq_2_t &quantify_pq_2)
   {
-    // TODO (partial quantification) / (optimisation for nested sweeping):
-    //   Replace label with a 'quantify_impl' that provides a predicate whether
-    //   to quantify a certain level.
-    //
-    //   This should then also expose the operator instead.
+    // TODO (optimisation):
+    //   Merge 'op' into 'policy_impl'.
 
     // Set up input
-    // TODO: use '.seek(...)' with 'in_nodes' instead such that it only needs to
-    //       be opened once in the caller of this function.
+
+    // TODO (optimisation):
+    //   Use '.seek(...)' with 'in_nodes' instead such that it only needs to be
+    //   opened once in the caller of this function.
     node_stream<> in_nodes(in);
     typename quantify_policy::node_t v = in_nodes.pull();
 
@@ -181,17 +180,12 @@ namespace adiar::internal
         adiar_invariant(req.target.fst().label() == out_label,
                         "Level of requests always ought to match the one currently processed");
 
-        if (policy_impl.should_quantify(out_label)) {
-          // TODO:
-          // (1) Use policy impl instead to check whether to quantify
-          // (2) Add logic to output partially quantified nodes
-
-          // The variable should be quantified: proceed somewhat as for the BDD
-          // Restrict algorithm by forwarding the request of source further to the
-          // children, though here we keep track of both possibilities.
-          adiar_debug(req.target.snd().is_nil(),
-                      "Ended in pairing case on request that already is a pair");
-
+        // Recreate children of the two targeted nodes (or possibly the
+        // suppressed node for target.snd()).
+        if (policy_impl.should_quantify(out_label) &&
+            (!quantify_policy::partial_quantification || req.target.snd().is_nil())) {
+          // -------------------------------------------------------------------
+          // CASE A: to-be quantified level for singleton f into (f[0], f[1]).
           do {
             __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op,
                                                         req.data.source,
@@ -199,11 +193,18 @@ namespace adiar::internal
           } while (!__quantify_update_source_or_break(quantify_pq_1, quantify_pq_2,
                                                       req.data.source,
                                                       req.target));
-        } else {
-          // The variable should stay: proceed as in the Product Construction by
-          // simulating both possibilities in parallel.
 
-          // Resolve current node and recurse.
+          // TODO: to-be quantified level for tuple (f,g) where the strategy
+          //       gets access to all four children simultaneously.
+        } else {
+          // -------------------------------------------------------------------
+          // CASE B.1: regular level
+          //   The variable should stay: proceed as in the Product Construction
+          //   by simulating both possibilities in parallel.
+          //
+          // CASE B.2: to-be quantified level for tuple (f,g)
+          //   Proceed with the product construction of (f,g), ignoring that it
+          //   needs to be quantified. This is left to be done in a later sweep.
           const node::children_t children0 =
             req.empty_carry() ? v.children() : req.node_carry[0];
 
@@ -225,8 +226,7 @@ namespace adiar::internal
 
           if (!req.data.source.is_nil()) {
             do {
-              arc out_arc = { req.data.source, out_uid };
-              aw.push_internal(out_arc);
+              aw.push_internal(arc(req.data.source, out_uid));
             } while (!__quantify_update_source_or_break(quantify_pq_1, quantify_pq_2,
                                                         req.data.source,
                                                         req.target));
@@ -234,6 +234,7 @@ namespace adiar::internal
         }
       }
 
+      // Update meta information
       if (out_id > 0) {
         aw.push(level_info(out_label, out_id));
       }
@@ -278,29 +279,9 @@ namespace adiar::internal
     return to_size(in_size * in_size + 1u + 2u);
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  // Single-variable (common)
-  template<typename quantify_policy>
-  class single_quantify_policy : public quantify_policy
-  {
-  private:
-    const typename quantify_policy::label_t _level;
-
-  public:
-    ////////////////////////////////////////////////////////////////////////////
-    single_quantify_policy(typename quantify_policy::label_t level)
-      : _level(level)
-    { }
-
-    ////////////////////////////////////////////////////////////////////////////
-    inline bool
-    should_quantify(typename quantify_policy::label_t level) const
-    { return _level == level; }
-  };
-
   template<typename pq_1_t, typename pq_2_t, typename quantify_policy>
   typename quantify_policy::unreduced_t __quantify(const typename quantify_policy::reduced_t &in,
-                                                   const typename quantify_policy::label_t &label,
+                                                   const quantify_policy &policy_impl,
                                                    const bool_op &op,
                                                    const size_t pq_1_memory, const size_t max_pq_1_size,
                                                    const size_t pq_2_memory, const size_t max_pq_2_size)
@@ -312,7 +293,7 @@ namespace adiar::internal
       node_stream<> in_nodes(in);
       root = in_nodes.pull();
 
-      if (root.label() == label && (root.low().is_terminal() || root.high().is_terminal())) {
+      if (policy_impl.should_quantify(root.label()) && (root.low().is_terminal() || root.high().is_terminal())) {
         typename quantify_policy::ptr_t result = quantify_policy::resolve_root(root, op);
 
         if (result != root.uid() && result.is_terminal()) {
@@ -330,24 +311,16 @@ namespace adiar::internal
     // Set up per-level priority queue
     pq_2_t quantify_pq_2(pq_2_memory, max_pq_2_size);
 
-    // Set up policy
-    single_quantify_policy<quantify_policy> policy_impl(label);
-
     return __quantify<pq_1_t, pq_2_t>
       (in, policy_impl, op, quantify_pq_1, quantify_pq_2);
   }
 
   template<typename quantify_policy>
   typename quantify_policy::unreduced_t quantify(const typename quantify_policy::reduced_t &in,
-                                                 const typename quantify_policy::label_t label,
+                                                 const quantify_policy &policy_impl,
                                                  const bool_op &op)
   {
     adiar_debug(is_commutative(op), "A commutative operator must be used");
-
-    // Check if there is no need to do any computation
-    if (is_terminal(in) || !has_level(in, label)) {
-      return in;
-    }
 
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.
@@ -396,18 +369,16 @@ namespace adiar::internal
       stats_quantify.lpq.unbucketed += 1u;
 #endif
       return __quantify<quantify_priority_queue_1_t<0, memory_mode_t::INTERNAL>,
-                        quantify_priority_queue_2_t<memory_mode_t::INTERNAL>,
-                        quantify_policy>
-        (in, label, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
+                        quantify_priority_queue_2_t<memory_mode_t::INTERNAL>>
+        (in, policy_impl, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
     } else if(!external_only && max_pq_1_size <= pq_1_memory_fits
                              && max_pq_2_size <= pq_2_memory_fits) {
 #ifdef ADIAR_STATS
       stats_quantify.lpq.internal += 1u;
 #endif
       return __quantify<quantify_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>,
-                        quantify_priority_queue_2_t<memory_mode_t::INTERNAL>,
-                        quantify_policy>
-        (in, label, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
+                        quantify_priority_queue_2_t<memory_mode_t::INTERNAL>>
+        (in, policy_impl, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
     } else {
 #ifdef ADIAR_STATS
       stats_quantify.lpq.external += 1u;
@@ -416,10 +387,49 @@ namespace adiar::internal
       const size_t pq_2_memory = pq_1_memory;
 
       return __quantify<quantify_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>,
-                        quantify_priority_queue_2_t<memory_mode_t::EXTERNAL>,
-                        quantify_policy>
-        (in, label, op, pq_1_memory, max_pq_1_size, pq_2_memory, max_pq_2_size);
+                        quantify_priority_queue_2_t<memory_mode_t::EXTERNAL>>
+        (in, policy_impl, op, pq_1_memory, max_pq_1_size, pq_2_memory, max_pq_2_size);
     }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Single-variable
+  template<typename quantify_policy>
+  class single_quantify_policy : public quantify_policy
+  {
+  private:
+    const typename quantify_policy::label_t _level;
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    single_quantify_policy(typename quantify_policy::label_t level)
+      : _level(level)
+    { }
+
+    ////////////////////////////////////////////////////////////////////////////
+    inline bool
+    should_quantify(typename quantify_policy::label_t level) const
+    { return _level == level; }
+
+    ////////////////////////////////////////////////////////////////////////////
+    static constexpr bool partial_quantification = false;
+  };
+
+
+  template<typename quantify_policy>
+  typename quantify_policy::unreduced_t quantify(const typename quantify_policy::reduced_t &in,
+                                                 const typename quantify_policy::label_t label,
+                                                 const bool_op &op)
+  {
+
+    // Trivial cases, where there is no need to do any computation
+    if (is_terminal(in) || !has_level(in, label)) {
+      return in;
+    }
+
+    // Set up policy and run sweep
+    single_quantify_policy<quantify_policy> policy_impl(label);
+    return quantify(in, policy_impl, op);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -468,6 +478,18 @@ namespace adiar::internal
     { }
 
   public:
+    //////////////////////////////////////////////////////////////////////////////
+    /// As an invariant, the Inner Sweep only ever touches levels beneath the
+    /// deepest yet to-be quantified level. Hence, we can provide an
+    /// always-false predicate that is immediate to the compiler.
+    //////////////////////////////////////////////////////////////////////////////
+    constexpr bool
+    should_quantify(typename quantify_policy::label_t /*level*/) const
+    { return false; }
+
+    ////////////////////////////////////////////////////////////////////////////
+    static constexpr bool partial_quantification = false;
+
     // bool has_sweep(typename quantify_policy::label_t) const;
 
     ////////////////////////////////////////////////////////////////////////////
@@ -537,15 +559,6 @@ namespace adiar::internal
       return request_t(tgt, {}, {parent});
     }
 
-    //////////////////////////////////////////////////////////////////////////////
-    /// As an invariant, the Inner Sweep only ever touches levels beneath the
-    /// deepest yet to-be quantified level. Hence, we can provide an
-    /// always-false predicate that is immediate to the compiler.
-    //////////////////////////////////////////////////////////////////////////////
-    constexpr bool
-    should_quantify(typename quantify_policy::label_t /*level*/) const
-    { return false; }
-
     ////////////////////////////////////////////////////////////////////////////
     static constexpr internal::nested_sweeping::reduce_strategy reduce_strategy =
       internal::nested_sweeping::AUTO;
@@ -553,6 +566,37 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////
   // Multi-variable (predicate)
+  template<typename quantify_policy>
+  class partial_quantify_policy
+    : public quantify_policy
+  {
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Predicate for whether a level should be swept on (or not).
+    ////////////////////////////////////////////////////////////////////////////
+    using pred_t = std::function<bool(typename quantify_policy::label_t)>;
+
+  private:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Predicate for whether a level should be swept on (or not).
+    ////////////////////////////////////////////////////////////////////////////
+    const pred_t &_pred;
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    partial_quantify_policy(const pred_t &pred)
+      : _pred(pred)
+    { }
+
+    ////////////////////////////////////////////////////////////////////////////
+    inline bool
+    should_quantify(typename quantify_policy::label_t level) const
+    { return _pred(level) == quantify_policy::quantify_onset; }
+
+    ////////////////////////////////////////////////////////////////////////////
+    static constexpr bool partial_quantification = true;
+  };
+
   template<typename quantify_policy>
   class multi_quantify_policy__pred
     : public multi_quantify_policy<quantify_policy>
@@ -617,11 +661,11 @@ namespace adiar::internal
       { // ---------------------------------------------------------------------
         // Case: Repeated partial quantification
 
-        // TODO: implement partial sweeping (and move case below singleton)
+        // TODO: Run until no levels are left to be quantified.
       }
 
     case quantify_mode_t::SINGLETON:
-      { // -------------------------------------------------------------------
+      { // ---------------------------------------------------------------------
         // Case: Repeated single variable quantification
         while (label <= quantify_policy::MAX_LABEL) {
           dd = quantify<quantify_policy>(dd, label, op);
@@ -635,19 +679,20 @@ namespace adiar::internal
     case quantify_mode_t::NESTED:
       { // ---------------------------------------------------------------------
         // Case: Nested Sweeping
-
-        // TODO: Copy the AUTO case up here, when we add the more complex
-        //       preprocessing with partial quantification.
+        multi_quantify_policy__pred<quantify_policy> inner_impl(op, pred);
+        return nested_sweep<>(quantify<quantify_policy>(dd, label, op), inner_impl);
       }
     case quantify_mode_t::AUTO:
       { // ---------------------------------------------------------------------
-        // Case: Nested Sweeping
+        // Case: Partial Quantification + Nested Sweeping
+        partial_quantify_policy<quantify_policy> partial_impl(pred);
+
+        // TODO: Rerun partial quantification if smaller than a 1+epsilon factor.
+        typename quantify_policy::unreduced_t partial_prerun =
+          quantify<>(dd, partial_impl, op);
+
         multi_quantify_policy__pred<quantify_policy> inner_impl(op, pred);
-
-        // TODO: If AUTO, apply partial quantification until result is larger
-        //       than some 1+epsilon factor.
-
-        return nested_sweep<>(quantify<quantify_policy>(dd, label, op), inner_impl);
+        return nested_sweep<>(std::move(partial_prerun), inner_impl);
       }
 
       // LCOV_EXCL_START
