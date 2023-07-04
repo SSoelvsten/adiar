@@ -340,9 +340,9 @@ namespace adiar::internal
     }
 
     // Add number of nodes to level information, if any nodes were pushed to the output.
-    if (out_id != dd_policy::MAX_ID) {
-      const size_t width = dd_policy::MAX_ID - out_id;
-      out_writer.unsafe_push(level_info(label, width));
+    const size_t reduced_width = dd_policy::MAX_ID - out_id;
+    if (reduced_width > 0) {
+      out_writer.unsafe_push(level_info(label, reduced_width));
     }
 
     // Sort mappings for Reduction rule 2 back in order of arcs.internal
@@ -413,6 +413,11 @@ namespace adiar::internal
 
     const bool terminal_value = next_red1.new_uid.is_terminal() && next_red1.new_uid.value();
     __reduce_level__epilogue<>(arcs, label, reduce_pq, out_writer, terminal_value);
+
+    adiar_debug(reduced_width <= unreduced_width,
+                "Reduction should only ever remove nodes");
+
+    return reduced_width;
   }
 
   //////////////////////////////////////////////////////////////////////////////
