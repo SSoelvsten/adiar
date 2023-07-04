@@ -85,8 +85,6 @@ namespace adiar::internal
                          pq_t &pq,
                          node_writer &out_writer)
     {
-      // TODO: mark non-canonical!
-
       // Count number of arcs that cross this level (including tainted ones)
       // TODO: move into helper function
       cuts_t one_level_cut   = {{ 0u, 0u, 0u, 0u }};
@@ -154,10 +152,16 @@ namespace adiar::internal
 
       out_writer.unsafe_max_1level_cut(one_level_cut);
 
-      // Add number of nodes to level information, if any nodes were pushed to the output.
+      // Add number of nodes to level information, if any nodes were pushed to
+      // the output. Furthermore, mark as non-canonical if at least two nodes
+      // were output (their order might very much have been wrong).
       if (out_id != dd_policy::MAX_ID) {
         const size_t width = dd_policy::MAX_ID - out_id;
         out_writer.unsafe_push(level_info(label, width));
+
+        if (width > 1u) {
+          out_writer.unsafe_set_canonical(false);
+        }
       }
 
       // Set up priority queue for next level (or collapse to a terminal)
