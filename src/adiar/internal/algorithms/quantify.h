@@ -511,9 +511,8 @@ namespace adiar::internal
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    // TODO: set to AUTO and add heuristic hooks
     static constexpr internal::nested_sweeping::reduce_strategy reduce_strategy =
-      internal::nested_sweeping::ALWAYS_CANONICAL;
+      internal::nested_sweeping::AUTO;
   };
 
   //////////////////////////////////////////////////////////////////////////////

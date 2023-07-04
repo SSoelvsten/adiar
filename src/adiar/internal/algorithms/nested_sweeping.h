@@ -1438,6 +1438,8 @@ namespace adiar::internal
     using outer_pq_decorator_t =
       nested_sweeping::outer::up__pq_decorator<outer_pq_t, outer_roots_t>;
 
+    bool auto_fast_reduce = false;
+
     while (outer_levels.can_pull()) {
       adiar_debug(outer_arcs.can_pull_terminal() || !outer_pq.empty(),
                   "If there is a level, then there should also be something for it.");
@@ -1488,8 +1490,8 @@ namespace adiar::internal
         outer_pq_decorator_t outer_pq_decorator(outer_pq, outer_roots, next_inner);
 
         if (/*constexpr*/ nesting_policy::reduce_strategy == nested_sweeping::NEVER_CANONICAL ||
-            /*constexpr*/ nesting_policy::reduce_strategy == nested_sweeping::FINAL_CANONICAL
-            /*TODO: AUTO (probably with a different threshold than for the inner up-sweep)*/) {
+            /*constexpr*/ nesting_policy::reduce_strategy == nested_sweeping::FINAL_CANONICAL ||
+            (nesting_policy::reduce_strategy == nested_sweeping::AUTO && auto_fast_reduce)) {
 #ifdef ADIAR_STATS
           // TODO
 #endif
@@ -1500,14 +1502,27 @@ namespace adiar::internal
           // TODO
 #endif
           const size_t unreduced_width = outer_level.width();
+          size_t reduced_width;
+
           if(unreduced_width <= outer_internal_sorter_can_fit) {
-            __reduce_level<nesting_policy, internal_sorter>
+            reduced_width = __reduce_level<nesting_policy, internal_sorter>
               (outer_arcs, outer_level.level(), outer_pq_decorator, outer_writer,
                outer_sorters_memory, unreduced_width);
           } else {
-            __reduce_level<nesting_policy, external_sorter>
+            reduced_width = __reduce_level<nesting_policy, external_sorter>
               (outer_arcs, outer_level.level(), outer_pq_decorator, outer_writer,
                outer_sorters_memory, unreduced_width);
+          }
+
+          // AUTO Strategy: Use the fast reduce from the next level (until next
+          // inner sweep) if this level did not change considerably in size.
+          if constexpr (nesting_policy::reduce_strategy == nested_sweeping::AUTO) {
+            const double threshold = 0.05;
+
+            const double prior = static_cast<double>(unreduced_width);
+            const double delta = static_cast<double>(unreduced_width - reduced_width);
+
+            auto_fast_reduce |= (delta / prior) < threshold;
           }
         }
 
@@ -1519,6 +1534,9 @@ namespace adiar::internal
       //   Sweep down re-reduce it back up to this level.
       adiar_debug(outer_level.level() == next_inner,
                   "'next_inner' level is not skipped");
+
+      // Reset fast reduce for AUTO strategy.
+      auto_fast_reduce = false;
 
       // -----------------------------------------------------------------------
       // Collect all recursions for this level
