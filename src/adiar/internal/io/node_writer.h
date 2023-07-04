@@ -300,10 +300,19 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Overwrite the number of false and true arcs.
     ////////////////////////////////////////////////////////////////////////////
-    void unsafe_set_number_of_terminals(size_t number_of_false, size_t number_of_true)
+    void unsafe_set_number_of_terminals(const size_t number_of_false,
+                                        const size_t number_of_true)
     {
       _file_ptr->number_of_terminals[false] = number_of_false;
       _file_ptr->number_of_terminals[true]  = number_of_true;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Overwrite the canonicity flag.
+    ////////////////////////////////////////////////////////////////////////////
+    void unsafe_set_canonical(const bool canonical)
+    {
+      _file_ptr->canonical = canonical;
     }
 
     ////////////////////////////////////////////////////////////////////////////

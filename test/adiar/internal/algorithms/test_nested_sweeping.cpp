@@ -2054,6 +2054,8 @@ go_bandit([]() {
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(1u));
 
+          AssertThat(out->canonical, Is().True());
+
           AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
           AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
           AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
@@ -2128,6 +2130,8 @@ go_bandit([]() {
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(2u));
+
+          AssertThat(out->canonical, Is().False());
 
           AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
           AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
@@ -2208,6 +2212,8 @@ go_bandit([]() {
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(2u));
+
+          AssertThat(out->canonical, Is().False());
 
           AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
           AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
@@ -2320,6 +2326,8 @@ go_bandit([]() {
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(2u));
+
+          AssertThat(out->canonical, Is().False());
 
           AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(3u));
           AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(3u));
@@ -2439,6 +2447,8 @@ go_bandit([]() {
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(1u));
 
+          AssertThat(out->canonical, Is().True());
+
           AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u)); // <-- NOTE: not '3u'
           AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
           AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
@@ -2541,6 +2551,8 @@ go_bandit([]() {
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(1u));
+
+          AssertThat(out->canonical, Is().True());
 
           AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
           AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
@@ -2657,6 +2669,8 @@ go_bandit([]() {
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(2u));
 
+          AssertThat(out->canonical, Is().False());
+
           AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(4u));
           AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(4u));
           AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(4u));
@@ -2740,6 +2754,8 @@ go_bandit([]() {
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(0u));
 
+          AssertThat(out->canonical, Is().True());
+
           AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
           AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
           AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
@@ -2816,7 +2832,6 @@ go_bandit([]() {
           // 1 - -> 2 (T)
           pq.push(arc(arcs.pull_internal().source(), terminal_T));
 
-          // Reduce level x0
           pq.setup_next_level(0);
 
           // Reduce level x0
@@ -2824,6 +2839,8 @@ go_bandit([]() {
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(0u));
+
+          AssertThat(out->canonical, Is().True());
 
           AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
           AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
@@ -2859,8 +2876,8 @@ go_bandit([]() {
                                                request_fst_lt<inner_down_sweep::request_t>>;
 
         /*
-        //       ?    ?        ---- x0
-        // -   -   -    -   -
+        //       ?   ?         ---- x0
+        // -   -   -   -   -
         //       2   3   4     ---- x1
         //      / \ / \ / \
         //      F T F  5  T    ---- x2
