@@ -250,28 +250,30 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Reduce a single level
+  ///
+  /// \returns width of output level
   //////////////////////////////////////////////////////////////////////////////
   template <typename dd_policy,
             template<typename, typename> typename sorter_t,
             typename pq_t,
             typename arc_stream_t>
-  void
+  size_t
   __reduce_level(arc_stream_t &arcs,
                  const typename dd_policy::label_t label,
                  pq_t &reduce_pq,
                  node_writer &out_writer,
                  const size_t sorters_memory,
-                 const size_t level_width)
+                 const size_t unreduced_width)
   {
     // Temporary file for Reduction Rule 1 mappings (opened later if need be)
     tpie::file_stream<mapping> red1_mapping;
 
     // Sorter to find Reduction Rule 2 mappings
     sorter_t<node, reduce_node_children_lt>
-      child_grouping(sorters_memory, level_width, 2);
+      child_grouping(sorters_memory, unreduced_width, 2);
 
     sorter_t<mapping, reduce_uid_lt>
-      red2_mapping(sorters_memory, level_width, 2);
+      red2_mapping(sorters_memory, unreduced_width, 2);
 
     // Pull out all nodes from reduce_pq and terminal_arcs for this level
     while ((arcs.can_pull_terminal() && arcs.peek_terminal().source().label() == label)
@@ -547,17 +549,17 @@ namespace adiar::internal
                   "If there is a level, then there should also be something for it.");
       const level_info current_level_info = levels.pull();
       const typename dd_policy::label_t level = current_level_info.level();
-      const size_t level_width = current_level_info.width();
 
       adiar_invariant(!reduce_pq.has_current_level() || level == reduce_pq.current_level(),
                       "level and priority queue should be in sync");
 
-      if(level_width <= internal_sorter_can_fit) {
+      const size_t unreduced_width = current_level_info.width();
+      if(unreduced_width <= internal_sorter_can_fit) {
         __reduce_level<dd_policy, internal_sorter>
-          (arcs, level, reduce_pq, out_writer, sorters_memory, level_width);
+          (arcs, level, reduce_pq, out_writer, sorters_memory, unreduced_width);
       } else {
         __reduce_level<dd_policy, external_sorter>
-          (arcs, level, reduce_pq, out_writer, sorters_memory, level_width);
+          (arcs, level, reduce_pq, out_writer, sorters_memory, unreduced_width);
       }
     }
 
