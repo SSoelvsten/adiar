@@ -397,6 +397,7 @@ namespace adiar::internal
   }
 
   //////////////////////////////////////////////////////////////////////////////
+  // Multi-variable (common)
   template<typename quantify_policy>
   class multi_quantify_policy : public quantify_policy
   {
@@ -508,6 +509,11 @@ namespace adiar::internal
 
       return request_t(tgt, {}, {parent});
     }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // TODO: set to AUTO and add heuristic hooks
+    static constexpr internal::nested_sweeping::reduce_strategy reduce_strategy =
+      internal::nested_sweeping::ALWAYS_CANONICAL;
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -601,13 +607,12 @@ namespace adiar::internal
     case quantify_mode_t::AUTO:
       { // ---------------------------------------------------------------------
         // Case: Nested Sweeping
-        using outer_up_sweep = nested_sweeping::outer::up__policy_t<quantify_policy>;
         multi_quantify_policy__pred<quantify_policy> inner_impl(op, pred);
 
         // TODO: If AUTO, apply partial quantification until result is larger
         //       than some 1+epsilon factor.
 
-        return nested_sweep<outer_up_sweep>(quantify<quantify_policy>(dd, label, op), inner_impl);
+        return nested_sweep<>(quantify<quantify_policy>(dd, label, op), inner_impl);
       }
 
       // LCOV_EXCL_START
@@ -775,8 +780,6 @@ namespace adiar::internal
         // NOTE: Despite partial quantification is not possible, we can
         //       (assuming we have to quantify the on-set) still use the
         //       bottom-most level to transpose the DAG.
-        using outer_up_sweep = nested_sweeping::outer::up__policy_t<quantify_policy>;
-
         if constexpr (quantify_policy::quantify_onset) {
           typename quantify_policy::label_t label = gen();
           if (quantify_policy::MAX_LABEL < label) { return dd; }
@@ -784,10 +787,10 @@ namespace adiar::internal
           // TODO: get bottom-most level that actually exists in DAG.
 
           multi_quantify_policy__gen<quantify_policy> inner_impl(op, gen);
-          return nested_sweep<outer_up_sweep>(quantify<quantify_policy>(dd, label, op), inner_impl);
+          return nested_sweep<>(quantify<quantify_policy>(dd, label, op), inner_impl);
         } else { // !quantify_policy::quantify_onset
           multi_quantify_policy__gen<quantify_policy> inner_impl(op, gen);
-          return nested_sweep<outer_up_sweep>(dd, inner_impl);
+          return nested_sweep<>(dd, inner_impl);
         }
       }
 
