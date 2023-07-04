@@ -349,6 +349,29 @@ go_bandit([]() {
     }
 
     ////////////////////////////////////////////////////////////////////////////
+    // BDD 11 : Same as BDD 3, but with gaps in-between the levelsn
+    /*
+    //       1       ---- x2
+    //      / \
+    //      |  2     ---- x4
+    //      \ / \
+    //       3   4   ---- x6
+    //      / \ / \
+    //      T F F T
+    */
+    shared_levelized_file<bdd::node_t> bdd_11;
+
+    node n11_4 = node(6, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
+    node n11_3 = node(6, node::MAX_ID-1, ptr_uint64(true),  ptr_uint64(false));
+    node n11_2 = node(4, node::MAX_ID,   n11_3.uid(),       n11_4.uid());
+    node n11_1 = node(2, node::MAX_ID,   n11_3.uid(),       n11_2.uid());
+
+    { // Garbage collect writer to free write-lock
+      node_writer nw_11(bdd_11);
+      nw_11 << n11_4 << n11_3 << n11_2 << n11_1;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
     describe("bdd_exists(const bdd&, bdd::label_t)", [&]() {
       it("should quantify T terminal-only BDD as itself", [&]() {
         __bdd out = bdd_exists(terminal_T, 42);
@@ -1816,6 +1839,27 @@ go_bandit([]() {
     });
 
     describe("bdd_exists(const bdd&, IT begin, IT end)", [&]() {
+      it("returns original file for [].begin() in BDD 1 [&]", [&]() {
+        const std::vector<bdd::label_t> vars = { };
+        const bdd out = bdd_exists(bdd_1, vars.begin(), vars.end());
+
+        AssertThat(out.file_ptr(), Is().EqualTo(bdd_1));
+      });
+
+      it("returns original file for [3, 5].rbegin() in BDD 11 [&]", [&]() {
+        const std::vector<bdd::label_t> vars = { 3,5 };
+        const bdd out = bdd_exists(bdd_11, vars.rbegin(), vars.rend());
+
+        AssertThat(out.file_ptr(), Is().EqualTo(bdd_11));
+      });
+
+      it("returns original file for [0, 3].rbegin() in BDD 11 [&]", [&]() {
+        const std::vector<bdd::label_t> vars = { 0,3 };
+        const bdd out = bdd_exists(bdd_11, vars.rbegin(), vars.rend());
+
+        AssertThat(out.file_ptr(), Is().EqualTo(bdd_11));
+      });
+
       it("quantifies [1, 3].rbegin() in BDD 4 [&&]", [&]() {
         std::vector<bdd::label_t> vars = { 1 , 3 };
 
@@ -1849,6 +1893,37 @@ go_bandit([]() {
       it("quantifies [2, 0].begin() in BDD 4 [const &]", [&]() {
         const bdd in = bdd_4;
         const std::vector<bdd::label_t> vars = { 2, 0 };
+
+        bdd out = bdd_exists(in, vars.begin(), vars.end());
+
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True()); // (5)
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                       ptr_uint64(false),
+                                                       ptr_uint64(true))));
+
+        AssertThat(out_nodes.can_pull(), Is().True()); // (2')
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                       ptr_uint64(3, ptr_uint64::MAX_ID),
+                                                       ptr_uint64(true))));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
+      });
+
+      it("quantifies [4, 2, 0].begin() in BDD 4 [const &]", [&]() {
+        const bdd in = bdd_4;
+        const std::vector<bdd::label_t> vars = { 4, 2, 0 };
 
         bdd out = bdd_exists(in, vars.begin(), vars.end());
 

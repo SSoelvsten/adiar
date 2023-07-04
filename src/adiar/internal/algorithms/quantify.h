@@ -780,13 +780,46 @@ namespace adiar::internal
         //       (assuming we have to quantify the on-set) still use the
         //       bottom-most level to transpose the DAG.
         if constexpr (quantify_policy::quantify_onset) {
-          typename quantify_policy::label_t label = gen();
-          if (quantify_policy::MAX_LABEL < label) { return dd; }
+          // Obtain the bottom-most onset level that exists in the diagram.
+          typename quantify_policy::label_t transposition_level = gen();
+          if (quantify_policy::MAX_LABEL < transposition_level) { return dd; }
 
-          // TODO: get bottom-most level that actually exists in DAG.
+          {
+            level_info_stream<true> in_meta(dd);
+            typename quantify_policy::label_t dd_level = in_meta.pull().level();
 
+            while (true) {
+              // Go forward in the diagram's levels, until we are at or above
+              // the current candidate
+              while (in_meta.can_pull() && transposition_level < dd_level) {
+                dd_level = in_meta.pull().level();
+              }
+              // There is no onset level in the diagram? If so, then nothing is
+              // going to change and we may just return the input.
+              if (!in_meta.can_pull() && transposition_level < dd_level) {
+                return dd;
+              }
+
+              adiar_debug(dd_level <= transposition_level,
+                          "Must be at or above candidate level");
+
+              // Did we find the current candidate or skipped past it?
+              if (dd_level == transposition_level) {
+                break;
+              } else { // dd_level < transposition_level
+                transposition_level = gen();
+
+                // Did we run out of 'onset' levels?
+                if (quantify_policy::MAX_LABEL < transposition_level) {
+                  return dd;
+                }
+              }
+            }
+          }
+
+          // Quantify the 'transposition_level' as part of the initial transposition step
           multi_quantify_policy__gen<quantify_policy> inner_impl(op, gen);
-          return nested_sweep<>(quantify<quantify_policy>(dd, label, op), inner_impl);
+          return nested_sweep<>(quantify<quantify_policy>(dd, transposition_level, op), inner_impl);
         } else { // !quantify_policy::quantify_onset
           multi_quantify_policy__gen<quantify_policy> inner_impl(op, gen);
           return nested_sweep<>(dd, inner_impl);
