@@ -39,9 +39,31 @@ namespace adiar::internal
   inline elem_t third(const elem_t t1, const elem_t t2, const elem_t t3)
   { return std::max({t1, t2, t3}); }
 
-  // TODO (QMDD):
-  //   Add 4-ary tuples
+  //////////////////////////////////////////////////////////////////////////////
+  // Ordered access to four elements.
+  template<typename elem_t>
+  inline elem_t first(const elem_t t1, const elem_t t2, const elem_t t3, const elem_t t4)
+  { return std::min({t1, t2, t3, t4}); }
 
+  template<typename elem_t>
+  inline elem_t second(const elem_t t1, const elem_t t2, const elem_t t3, const elem_t t4)
+  {
+    return std::min(std::min(std::max(t1,t2), std::max(t3,t4)),
+                    std::max(std::min(t1,t2), std::min(t3,t4)));
+  }
+
+  template<typename elem_t>
+  inline elem_t third(const elem_t t1, const elem_t t2, const elem_t t3, const elem_t t4)
+  {
+    return std::max(std::min(std::max(t1,t2), std::max(t3,t4)),
+                    std::max(std::min(t1,t2), std::min(t3,t4)));
+  }
+
+  template<typename elem_t>
+  inline elem_t fourth(const elem_t t1, const elem_t t2, const elem_t t3, const elem_t t4)
+  { return std::max({t1, t2, t3, t4}); }
+
+  //////////////////////////////////////////////////////////////////////////////
   // TODO (Nested Sweeping Clean Up):
   //   - Map function to create a tuple<B> from tupla<A> and f : A -> B
 
@@ -73,7 +95,7 @@ namespace adiar::internal
     static constexpr uint8_t cardinality = CARDINALITY;
 
     static_assert(CARDINALITY > 0, "A tuple cannot be 'unit' type.");
-    static_assert(CARDINALITY <= 3, "No support (yet) for tuples of that cardinality.");
+    static_assert(CARDINALITY <= 4, "No support (yet) for tuples of that cardinality.");
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether elements are supposed to be in sorted order.
@@ -111,6 +133,8 @@ namespace adiar::internal
         return adiar::internal::first(_elems[0], _elems[1]);
       } else if constexpr (cardinality == 3) {
         return adiar::internal::first(_elems[0], _elems[1], _elems[2]);
+      } else if constexpr (cardinality == 4) {
+        return adiar::internal::first(_elems[0], _elems[1], _elems[2], _elems[3]);
       }
     }
 
@@ -128,6 +152,8 @@ namespace adiar::internal
         return adiar::internal::second(_elems[0], _elems[1]);
       } else if constexpr (cardinality == 3) {
         return adiar::internal::second(_elems[0], _elems[1], _elems[2]);
+      } else if constexpr (cardinality == 4) {
+        return adiar::internal::second(_elems[0], _elems[1], _elems[2], _elems[3]);
       }
     }
 
@@ -143,6 +169,23 @@ namespace adiar::internal
         return _elems[2];
       } else if constexpr (cardinality == 3) {
         return adiar::internal::third(_elems[0], _elems[1], _elems[2]);
+      } else if constexpr (cardinality == 4) {
+        return adiar::internal::third(_elems[0], _elems[1], _elems[2], _elems[3]);
+      }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Access to the second element wrt. the elements ordering.
+    ////////////////////////////////////////////////////////////////////////////
+    inline elem_t fourth() const
+    {
+      static_assert(3 <= cardinality,
+                    "Must at least be a 4-ary tuple to retrieve the fourth element.");
+
+      if constexpr (is_sorted) {
+        return _elems[3];
+      } else if constexpr (cardinality == 4) {
+        return adiar::internal::fourth(_elems[0], _elems[1], _elems[2], _elems[3]);
       }
     }
 
@@ -165,6 +208,7 @@ namespace adiar::internal
       // TODO: replace with a (templated) default value (?)
       if constexpr (2 <= CARDINALITY) _elems[1] = elem;
       if constexpr (3 <= CARDINALITY) _elems[2] = elem;
+      if constexpr (4 <= CARDINALITY) _elems[3] = elem;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -194,6 +238,25 @@ namespace adiar::internal
         adiar_precondition(elem1 <= elem2);
         adiar_precondition(elem2 <= elem3);
         }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Create a 4-ary tuple with the three given elements.
+    ////////////////////////////////////////////////////////////////////////////
+    tuple(const elem_t &elem1,
+          const elem_t &elem2,
+          const elem_t &elem3,
+          const elem_t &elem4)
+      : _elems{elem1,elem2,elem3,elem4}
+    {
+      static_assert(cardinality == 4,
+                    "Constructor is only designed for 4-ary tuples.");
+
+      if constexpr (is_sorted) {
+        adiar_precondition(elem1 <= elem2);
+        adiar_precondition(elem2 <= elem3);
+        adiar_precondition(elem3 <= elem4);
+      }
     }
 
     /* ============================== COMPARATORS =========================== */
@@ -286,6 +349,18 @@ namespace adiar::internal
       return a.third() < b.third() ||
         // Sort secondly lexicographically.
         (a.third() == b.third() && a < b);
+    }
+  };
+
+  template<class tuple_t>
+  struct tuple_fourth_lt
+  {
+    inline bool operator()(const tuple_t &a, const tuple_t &b)
+    {
+      // Sort primarily by the element to be encountered fourth
+      return a.fourth() < b.fourth() ||
+        // Sort secondly lexicographically.
+        (a.fourth() == b.fourth() && a < b);
     }
   };
 }
