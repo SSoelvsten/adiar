@@ -139,6 +139,8 @@ namespace adiar::internal
 
       // TODO: move quantification test out here instead
 
+      const bool should_quantify = policy_impl.should_quantify(out_label);
+
       while (!quantify_pq_1.empty_level() || !quantify_pq_2.empty()) {
         // Merge requests from quantify_pq_1 and quantify_pq_2
         quantify_request<1> req;
@@ -182,7 +184,7 @@ namespace adiar::internal
 
         // Recreate children of the two targeted nodes (or possibly the
         // suppressed node for target.snd()).
-        if (policy_impl.should_quantify(out_label) &&
+        if (should_quantify &&
             (!quantify_policy::partial_quantification || req.target.snd().is_nil())) {
           // -------------------------------------------------------------------
           // CASE A: to-be quantified level for singleton f into (f[0], f[1]).
