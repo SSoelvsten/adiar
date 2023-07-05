@@ -1077,7 +1077,93 @@ go_bandit([]() {
       });
 
       describe("tuple_trd_lt", []() {
-        // TODO
+        it("claims   {2, 0, 1}  < {4, 1, 0}", []() {
+          const tuple<int,3> t1 = { 2, 0, 0 };
+          const tuple<int,3> t2 = { 4, 1, 0 };
+
+          const bool lt_lr = tuple_trd_lt<tuple<int,3>>()(t1,t2);
+          AssertThat(lt_lr, Is().True());
+
+          const bool lt_rl = tuple_trd_lt<tuple<int,3>>()(t2,t1);
+          AssertThat(lt_rl, Is().False());
+        });
+
+        it("claims   {1, 2, 1}  < {1, 3, 1}", []() {
+          const tuple<int,3> t1 = { 1, 2, 1 };
+          const tuple<int,3> t2 = { 1, 3, 1 };
+
+          const bool lt_lr = tuple_trd_lt<tuple<int,3>>()(t1,t2);
+          AssertThat(lt_lr, Is().True());
+
+          const bool lt_rl = tuple_trd_lt<tuple<int,3>>()(t2,t1);
+          AssertThat(lt_rl, Is().False());
+        });
+
+        it("claims   {1, 0, 4}  < {1, 0, 5}", []() {
+          const tuple<int,3> t1 = { 1, 0, 4 };
+          const tuple<int,3> t2 = { 1, 0, 5 };
+
+          const bool lt_lr = tuple_trd_lt<tuple<int,3>>()(t1,t2);
+          AssertThat(lt_lr, Is().True());
+
+          const bool lt_rl = tuple_trd_lt<tuple<int,3>>()(t2,t1);
+          AssertThat(lt_rl, Is().False());
+        });
+
+        it("claims   {1, 0, 4}  < {2, 0, 4}", []() {
+          const tuple<int,3> t1 = { 1, 0, 4 };
+          const tuple<int,3> t2 = { 2, 0, 4 };
+
+          const bool lt_lr = tuple_trd_lt<tuple<int,3>>()(t1,t2);
+          AssertThat(lt_lr, Is().True());
+
+          const bool lt_rl = tuple_trd_lt<tuple<int,3>>()(t2,t1);
+          AssertThat(lt_rl, Is().False());
+        });
+
+        it("claims   {1, 0, 3}  < {1, 1, 3}", []() {
+          const tuple<int,3> t1 = { 1, 0, 4 };
+          const tuple<int,3> t2 = { 1, 1, 4 };
+
+          const bool lt_lr = tuple_trd_lt<tuple<int,3>>()(t1,t2);
+          AssertThat(lt_lr, Is().True());
+
+          const bool lt_rl = tuple_trd_lt<tuple<int,3>>()(t2,t1);
+          AssertThat(lt_rl, Is().False());
+        });
+
+        it("claims   {1, 4, 2}  < {1, 4, 3}", []() {
+          const tuple<int,3> t1 = { 1, 4, 2 };
+          const tuple<int,3> t2 = { 1, 4, 3 };
+
+          const bool lt_lr = tuple_trd_lt<tuple<int,3>>()(t1,t2);
+          AssertThat(lt_lr, Is().True());
+
+          const bool lt_rl = tuple_trd_lt<tuple<int,3>>()(t2,t1);
+          AssertThat(lt_rl, Is().False());
+        });
+
+        it("claims   {0, 0, 0} !< {0, 0, 0}", []() {
+          const tuple<int,3> t1 = { 0, 0, 0 };
+          const tuple<int,3> t2 = { 0, 0, 0 };
+
+          const bool lt_lr = tuple_trd_lt<tuple<int,3>>()(t1,t2);
+          AssertThat(lt_lr, Is().False());
+
+          const bool lt_rl = tuple_trd_lt<tuple<int,3>>()(t2,t1);
+          AssertThat(lt_rl, Is().False());
+        });
+
+        it("claims   {1, 0, 1} !< {1, 0, 1}", []() {
+          const tuple<int,3> t1 = { 1, 0, 1 };
+          const tuple<int,3> t2 = { 1, 0, 1 };
+
+          const bool lt_lr = tuple_trd_lt<tuple<int,3>>()(t1,t2);
+          AssertThat(lt_lr, Is().False());
+
+          const bool lt_rl = tuple_trd_lt<tuple<int,3>>()(t2,t1);
+          AssertThat(lt_rl, Is().False());
+        });
       });
     });
 
