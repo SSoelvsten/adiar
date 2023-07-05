@@ -1,14 +1,19 @@
 #ifndef ADIAR_INTERNAL_DATA_TYPES_TUPLE_H
 #define ADIAR_INTERNAL_DATA_TYPES_TUPLE_H
 
+#include <algorithm>
+
 #include <adiar/internal/data_types/ptr.h>
 
 namespace adiar::internal
 {
   //////////////////////////////////////////////////////////////////////////////
-  // Ordered access to a set of arguments.
-  // TODO: move into tuple template when no longer used anywhere else but here.
+  // Ordered access to one elements.
 
+  // 'fst(t1)' is not needed, it's just the one element...
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Ordered access to two elements.
   template<typename elem_t>
   inline elem_t fst(const elem_t t1, const elem_t t2)
   { return std::min(t1, t2); }
@@ -17,6 +22,8 @@ namespace adiar::internal
   inline elem_t snd(const elem_t t1, const elem_t t2)
   { return std::max(t1, t2); }
 
+  //////////////////////////////////////////////////////////////////////////////
+  // Ordered access to three elements.
   template<typename elem_t>
   inline elem_t fst(const elem_t t1, const elem_t t2, const elem_t t3)
   { return std::min({t1, t2, t3}); }
@@ -188,56 +195,50 @@ namespace adiar::internal
     /* ============================== COMPARATORS =========================== */
   public:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Lexicographical '<'.
+    /// \brief Lexicographical Less-Than.
     ////////////////////////////////////////////////////////////////////////////
     inline bool operator< (const tuple &o) const
     {
-      // TODO: turn into a loop and trust the compiler?
-      const bool lt_1 = this->_elems[0] < o._elems[0];
-      if constexpr (cardinality == 1) return lt_1;
-
-      const bool lt_2 = lt_1 || (this->_elems[0] == o._elems[0]
-                                 && this->_elems[1] < o._elems[1]);
-      if constexpr (cardinality == 2) return lt_2;
-
-      const bool lt_3 = lt_2 || (this->_elems[0] == o._elems[0]
-                                 && this->_elems[1] == o._elems[1]
-                                 && this->_elems[2] < o._elems[2]);
-      return lt_3;
+      // TODO: manual loop unrolling?
+      for (size_t i = 0; i < cardinality; i++) {
+        if (this->_elems[i] < o._elems[i]) { return true; };
+        if (this->_elems[i] > o._elems[i]) { return false; };
+      }
+      return false;
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Lexicographical '>'.
+    /// \brief Lexicographical Greater-Than.
     ////////////////////////////////////////////////////////////////////////////
     inline bool operator> (const tuple &o) const
     { return (o < *this); }
 
     ////////////////////////////////////////////////////////////////////////////
+    /// \brief Point-wise Equality.
+    ////////////////////////////////////////////////////////////////////////////
     inline bool operator== (const tuple &o) const
     {
-      // TODO: turn into a loop and trust the compiler?
-      const bool eq_1 = this->_elems[0] == o._elems[0];
-      if constexpr (cardinality == 1) return eq_1;
-
-      const bool eq_2 = eq_1 && this->_elems[1] == o._elems[1];
-      if constexpr (cardinality == 2) return eq_2;
-
-      const bool eq_3 = eq_2 && this->_elems[2] == o._elems[2];
-      return eq_3;
+      // TODO: manual loop unrolling?
+      for (size_t i = 0; i < cardinality; i++) {
+        if (this->_elems[i] != o._elems[i]) { return false; };
+      }
+      return true;
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Point-wise Inequality.
     ////////////////////////////////////////////////////////////////////////////
     inline bool operator!= (const tuple &o) const
     { return !(*this == o); }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Lexicographical '<='.
+    /// \brief Lexicographical Less-Than and Equality.
     ////////////////////////////////////////////////////////////////////////////
     inline bool operator<= (const tuple &o) const
     { return (*this < o) || (*this == o); }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Lexicographical '>='.
+    /// \brief Lexicographical Greater-Than and Equality.
     ////////////////////////////////////////////////////////////////////////////
     inline bool operator>= (const tuple &o) const
     { return (*this > o) || (*this == o); }
@@ -277,7 +278,7 @@ namespace adiar::internal
   {
     inline bool operator()(const tuple_t &a, const tuple_t &b)
     {
-      // Sort primarily by the element to be encountered second
+      // Sort primarily by the element to be encountered third
       return a.trd() < b.trd() ||
         // Sort secondly lexicographically.
         (a.trd() == b.trd() && a < b);
