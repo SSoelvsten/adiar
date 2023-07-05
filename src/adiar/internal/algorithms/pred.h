@@ -58,7 +58,7 @@ namespace adiar::internal
 
   template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
   using comparison_priority_queue_1_t =
-    levelized_node_priority_queue<pred_request<0>, request_fst_lt<pred_request<0>>,
+    levelized_node_priority_queue<pred_request<0>, request_first_lt<pred_request<0>>,
                                   LOOK_AHEAD,
                                   mem_mode,
                                   2u,
@@ -68,7 +68,7 @@ namespace adiar::internal
 
   template<memory_mode_t mem_mode>
   using comparison_priority_queue_2_t =
-    priority_queue<mem_mode, pred_request<1>, request_snd_lt<pred_request<1>>>;
+    priority_queue<mem_mode, pred_request<1>, request_second_lt<pred_request<1>>>;
 
   template<typename comp_policy, typename pq_1_t, typename pq_2_t>
   bool __comparison_check(const shared_levelized_file<node> &f0,
@@ -118,7 +118,7 @@ namespace adiar::internal
 
       // Merge requests from comparison_pq_1 and comparison_pq_2
       if (comparison_pq_1.can_pull() && (comparison_pq_2.empty() ||
-                                         comparison_pq_1.top().target.fst() < comparison_pq_2.top().target.snd())) {
+                                         comparison_pq_1.top().target.first() < comparison_pq_2.top().target.second())) {
         req = { comparison_pq_1.top().target,
                 { {{ node::ptr_t::NIL(), node::ptr_t::NIL() }} } };
         comparison_pq_1.pop();
@@ -129,7 +129,7 @@ namespace adiar::internal
 
       // Seek request partially in stream
       const typename comp_policy::ptr_t t_seek =
-        req.empty_carry() ? req.target.fst() : req.target.snd();
+        req.empty_carry() ? req.target.first() : req.target.second();
 
       while (v0.uid() < t_seek && in_nodes_0.can_pull()) {
         v0 = in_nodes_0.pull();

@@ -25,7 +25,7 @@ namespace adiar::internal
   /// \tparam nodes_carried Number of children being forwarded with the request.
   ///                       This is used when `cardinality` is greater than 1
   ///                       and a per-level priority queue forwards the children
-  ///                       of `target.fst()` to `target.snd()` and so on.
+  ///                       of `target.first()` to `target.second()` and so on.
   //////////////////////////////////////////////////////////////////////////////
   template<uint8_t CARDINALITY,
            uint8_t NODE_CARRY_SIZE = 0u,
@@ -81,7 +81,7 @@ namespace adiar::internal
     /// \brief The level at which this request should be resolved.
     ////////////////////////////////////////////////////////////////////////////
     ptr_t::label_t level() const
-    { return target.fst().label(); }
+    { return target.first().label(); }
 
     /* ============================= NODE CARRY ============================= */
 
@@ -244,8 +244,8 @@ namespace adiar::internal
   {
     inline bool operator()(const request_t &a, const request_t &b)
     {
-      const typename request_t::label_t label_a = a.target.fst().label();
-      const typename request_t::label_t label_b = b.target.fst().label();
+      const typename request_t::label_t label_a = a.target.first().label();
+      const typename request_t::label_t label_b = b.target.first().label();
       
       if constexpr (request_t::cardinality == 2) {
         constexpr size_t o_idx = 1u - idx;
@@ -262,29 +262,29 @@ namespace adiar::internal
   };
 
   template<class request_t>
-  struct request_fst_lt
+  struct request_first_lt
   {
     inline bool operator()(const request_t &a, const request_t &b)
     {
-      return tuple_fst_lt<typename request_t::target_t>()(a.target, b.target);
+      return tuple_first_lt<typename request_t::target_t>()(a.target, b.target);
     }
   };
 
   template<class request_t>
-  struct request_snd_lt
+  struct request_second_lt
   {
     inline bool operator()(const request_t &a, const request_t &b)
     {
-      return tuple_snd_lt<typename request_t::target_t>()(a.target, b.target);
+      return tuple_second_lt<typename request_t::target_t>()(a.target, b.target);
     }
   };
 
   template<class request_t>
-  struct request_trd_lt
+  struct request_third_lt
   {
     inline bool operator()(const request_t &a, const request_t &b)
     {
-      return tuple_trd_lt<typename request_t::target_t>()(a.target, b.target);
+      return tuple_third_lt<typename request_t::target_t>()(a.target, b.target);
     }
   };
 
@@ -346,38 +346,38 @@ namespace adiar::internal
   };
 
   template<class request_t>
-  struct request_data_fst_lt
+  struct request_data_first_lt
   {
     inline bool operator()(const request_t &a, const request_t &b)
     {
       if (request_t::data_t::sort_on_tiebreak && a.target == b.target) {
         return a.data < b.data;
       }
-      return request_fst_lt<request_t>()(a, b);
+      return request_first_lt<request_t>()(a, b);
     }
   };
 
   template<class request_t>
-  struct request_data_snd_lt
+  struct request_data_second_lt
   {
     inline bool operator()(const request_t &a, const request_t &b)
     {
       if (request_t::data_t::sort_on_tiebreak && a.target == b.target) {
         return a.data < b.data;
       }
-      return request_snd_lt<request_t>()(a, b);
+      return request_second_lt<request_t>()(a, b);
     }
   };
 
   template<class request_t>
-  struct request_data_trd_lt
+  struct request_data_third_lt
   {
     inline bool operator()(const request_t &a, const request_t &b)
     {
       if (request_t::data_t::sort_on_tiebreak && a.target == b.target) {
         return a.data < b.data;
       }
-      return request_trd_lt<request_t>()(a, b);
+      return request_third_lt<request_t>()(a, b);
     }
   };
 

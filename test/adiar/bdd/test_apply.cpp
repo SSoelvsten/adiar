@@ -736,7 +736,7 @@ go_bandit([]() {
       //
       //                                        (1,1)                       ---- x0
       //                                        \_ _/
-      //                                         _X_                        // Match in fst, but not coordinatewise
+      //                                         _X_                        // Match in first, but not coordinatewise
       //                                        /   \
       //                                    (3,1)   (2,1)                   ---- x1
       //                                   /    \_ _/    \
@@ -880,8 +880,8 @@ go_bandit([]() {
         });
 
         it("should group all recursion requests together", [&]() {
-          // This is a counter-example to the prior "break ties on fst() with
-          // snd()" approach. Here we will have three requests to the level of
+          // This is a counter-example to the prior "break ties on first() with
+          // second()" approach. Here we will have three requests to the level of
           // x2, but in the following order:
           //
           // [((2,0),(2,1)), ((2,1),(2,0)), ((2,0),(2,1))]

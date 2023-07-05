@@ -51,10 +51,10 @@ namespace adiar
       adiar_debug(!target[0].is_nil() && !target[1].is_nil(),
                   "Resolve request is only used for tuple cases");
 
-      const bdd::ptr_t tgt_snd = target.snd();
+      const bdd::ptr_t tgt_second = target.second();
 
-      if (tgt_snd.is_terminal() && can_right_shortcut(op, tgt_snd)) {
-        return { bdd::ptr_t(false), tgt_snd };
+      if (tgt_second.is_terminal() && can_right_shortcut(op, tgt_second)) {
+        return { bdd::ptr_t(false), tgt_second };
       }
       return target;
     }

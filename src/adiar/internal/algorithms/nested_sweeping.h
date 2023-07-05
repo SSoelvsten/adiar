@@ -258,7 +258,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         void push(const elem_t& e)
         {
-          adiar_invariant(e.target.fst().is_node(),
+          adiar_invariant(e.target.first().is_node(),
                           "Requests should have at least one internal node");
 
           _max_source = _max_source.is_nil()
@@ -502,8 +502,8 @@ namespace adiar::internal
         {
           adiar_precondition(e.data.source.is_nil()
                              || e.data.source.label() < _next_inner);
-          if (e.target.fst().is_terminal()) {
-            _outer_pq.push({ e.data.source, e.target.fst() });
+          if (e.target.first().is_terminal()) {
+            _outer_pq.push({ e.data.source, e.target.first() });
           } else {
             _outer_roots.push(e);
           }
@@ -1585,8 +1585,8 @@ namespace adiar::internal
               adiar_debug(r.targets() > 0, "Requests are always to something");
               non_gc_request |= r.targets() > 1;
 
-              if (r.target.fst().is_terminal()) {
-                return reduced_t(r.target.fst().value());
+              if (r.target.first().is_terminal()) {
+                return reduced_t(r.target.first().value());
               }
               outer_pq_decorator.push(r);
             } else {
@@ -1688,7 +1688,7 @@ namespace adiar::internal
           const request_t r = outer_roots.pull();
           adiar_debug(r.targets() == 1, "Has exactly one child");
 
-          outer_pq_decorator.push(arc(unflag(r.data.source), r.target.fst()));
+          outer_pq_decorator.push(arc(unflag(r.data.source), r.target.first()));
         }
 
         outer_roots.move(tmp_outer_roots);
