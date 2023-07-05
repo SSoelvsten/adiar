@@ -37,7 +37,7 @@ namespace adiar::internal
   template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
   using quantify_priority_queue_1_t =
     levelized_node_priority_queue<quantify_request<0>,
-                                  request_data_fst_lt<quantify_request<0>>,
+                                  request_data_first_lt<quantify_request<0>>,
                                   LOOK_AHEAD,
                                   mem_mode,
                                   1,
@@ -45,7 +45,7 @@ namespace adiar::internal
 
   template<memory_mode_t mem_mode>
   using quantify_priority_queue_2_t =
-    priority_queue<mem_mode, quantify_request<1>, request_data_snd_lt<quantify_request<1>>>;
+    priority_queue<mem_mode, quantify_request<1>, request_data_second_lt<quantify_request<1>>>;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
@@ -60,10 +60,10 @@ namespace adiar::internal
                 "ptr_t::NIL() should only ever end up being placed in target[1]");
 
     // Collapse requests to the same node back into one
-    if (target.snd().is_node() && target.fst() == target.snd()) {
+    if (target.second().is_node() && target.first() == target.second()) {
       return __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op,
                                                          source,
-                                                         { target.fst(), node::ptr_t::NIL() });
+                                                         { target.first(), node::ptr_t::NIL() });
     }
 
     if (target[1].is_nil()) {
@@ -73,7 +73,7 @@ namespace adiar::internal
         quantify_pq_1.push({ {target[0], target[1]}, {}, {source} });
       }
     } else {
-      quantify_request<0>::target_t rec = quantify_policy::resolve_request(op, {target.fst(), target.snd()});
+      quantify_request<0>::target_t rec = quantify_policy::resolve_request(op, {target.first(), target.second()});
 
       if (rec[0].is_terminal() /* sorted ==> rec[1].is_terminal() */) {
         aw.push_terminal({ source, op(rec[0], rec[1]) });
@@ -146,7 +146,7 @@ namespace adiar::internal
         quantify_request<1> req;
 
         if (quantify_pq_1.can_pull()
-            && (quantify_pq_2.empty() || quantify_pq_1.top().target.fst() < quantify_pq_2.top().target.snd())) {
+            && (quantify_pq_2.empty() || quantify_pq_1.top().target.first() < quantify_pq_2.top().target.second())) {
           req = { quantify_pq_1.top().target,
                   {{ { node::ptr_t::NIL(), node::ptr_t::NIL() } }},
                   quantify_pq_1.top().data };
@@ -157,7 +157,7 @@ namespace adiar::internal
         }
 
         // Seek element from request in stream
-        const ptr_uint64 t_seek = req.empty_carry() ? req.target.fst() : req.target.snd();
+        const ptr_uint64 t_seek = req.empty_carry() ? req.target.first() : req.target.second();
 
         while (v.uid() < t_seek) {
           v = in_nodes.pull();
@@ -165,10 +165,10 @@ namespace adiar::internal
 
         // Forward information of node t1 across the level if needed
         if (req.empty_carry()
-            && req.target.snd().is_node()
-            && req.target.fst().label() == req.target.snd().label()) {
-          adiar_debug(!req.target.snd().is_nil(),
-                      "req.target.snd().is_node ==> !req.target.snd().is_nil()");
+            && req.target.second().is_node()
+            && req.target.first().label() == req.target.second().label()) {
+          adiar_debug(!req.target.second().is_nil(),
+                      "req.target.second().is_node ==> !req.target.second().is_nil()");
 
           quantify_pq_2.push({ req.target, {v.children()}, req.data });
 
@@ -179,13 +179,13 @@ namespace adiar::internal
           continue;
         }
 
-        adiar_invariant(req.target.fst().label() == out_label,
+        adiar_invariant(req.target.first().label() == out_label,
                         "Level of requests always ought to match the one currently processed");
 
         // Recreate children of the two targeted nodes (or possibly the
-        // suppressed node for target.snd()).
+        // suppressed node for target.second()).
         if (should_quantify &&
-            (!quantify_policy::partial_quantification || req.target.snd().is_nil())) {
+            (!quantify_policy::partial_quantification || req.target.second().is_nil())) {
           // -------------------------------------------------------------------
           // CASE A: to-be quantified level for singleton f into (f[0], f[1]).
           do {
@@ -211,9 +211,9 @@ namespace adiar::internal
             req.empty_carry() ? v.children() : req.node_carry[0];
 
           const node::children_t children1 =
-            req.target.snd().on_level(out_label)
+            req.target.second().on_level(out_label)
             ? v.children()
-            : quantify_policy::reduction_rule_inv(req.target.snd());
+            : quantify_policy::reduction_rule_inv(req.target.second());
 
           adiar_debug(out_id < quantify_policy::MAX_ID, "Has run out of ids");
           const node::uid_t out_uid(out_label, out_id++);
@@ -444,7 +444,7 @@ namespace adiar::internal
 
   public:
     using request_t = quantify_request<0>;
-    using request_pred_t = request_data_fst_lt<request_t>;
+    using request_pred_t = request_data_first_lt<request_t>;
 
     template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
     using pq_t = quantify_priority_queue_1_t<LOOK_AHEAD, mem_mode>;
@@ -556,7 +556,7 @@ namespace adiar::internal
         // If able to shortcut, preserve result.
         ? request_t::target_t{ result, quantify_policy::ptr_t::NIL() }
         // Otherwise, create product of children
-        : request_t::target_t{ fst(n.low(), n.high()), snd(n.low(), n.high()) };
+        : request_t::target_t{ first(n.low(), n.high()), second(n.low(), n.high()) };
 
       return request_t(tgt, {}, {parent});
     }

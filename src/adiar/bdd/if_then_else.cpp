@@ -39,20 +39,20 @@ namespace adiar
   template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
   using ite_priority_queue_1_t =
   internal::levelized_node_priority_queue<ite_request<0>,
-                                          internal::request_data_fst_lt<ite_request<0>>,
+                                          internal::request_data_first_lt<ite_request<0>>,
                                           LOOK_AHEAD, mem_mode, 3>;
 
   template<memory_mode_t mem_mode>
   using ite_priority_queue_2_t =
     internal::priority_queue<mem_mode,
                              ite_request<1>,
-                             internal::request_data_snd_lt<ite_request<1>>>;
+                             internal::request_data_second_lt<ite_request<1>>>;
 
   template<memory_mode_t mem_mode>
   using ite_priority_queue_3_t =
     internal::priority_queue<mem_mode,
                              ite_request<2>,
-                             internal::request_data_trd_lt<ite_request<2>>>;
+                             internal::request_data_third_lt<ite_request<2>>>;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
@@ -226,7 +226,7 @@ namespace adiar
     pq_3_t ite_pq_3(pq_3_memory, max_pq_3_size);
 
     // Process root and create initial recursion requests
-    internal::node::label_t out_label = fst(v_if.uid(), v_then.uid(), v_else.uid()).label();
+    internal::node::label_t out_label = first(v_if.uid(), v_then.uid(), v_else.uid()).label();
     internal::node::id_t out_id = 0;
 
     internal::node::ptr_t low_if, low_then, low_else, high_if, high_then, high_else;
@@ -259,8 +259,8 @@ namespace adiar
 
       // Merge requests from priority queues
       if (ite_pq_1.can_pull()
-          && (ite_pq_2.empty() || ite_pq_1.top().target.fst() < ite_pq_2.top().target.snd())
-          && (ite_pq_3.empty() || ite_pq_1.top().target.fst() < ite_pq_3.top().target.trd())) {
+          && (ite_pq_2.empty() || ite_pq_1.top().target.first() < ite_pq_2.top().target.second())
+          && (ite_pq_3.empty() || ite_pq_1.top().target.first() < ite_pq_3.top().target.third())) {
         req = { ite_pq_1.top().target,
                 {{ { internal::node::ptr_t::NIL(), internal::node::ptr_t::NIL() },
                    { internal::node::ptr_t::NIL(), internal::node::ptr_t::NIL() } }},
@@ -268,7 +268,7 @@ namespace adiar
 
         ite_pq_1.pop();
       } else if (!ite_pq_2.empty()
-                 && (ite_pq_3.empty() || ite_pq_2.top().target.snd() < ite_pq_3.top().target.trd())) {
+                 && (ite_pq_3.empty() || ite_pq_2.top().target.second() < ite_pq_3.top().target.third())) {
         with_data_1 = true;
 
         req = { ite_pq_2.top().target ,
@@ -286,13 +286,13 @@ namespace adiar
       }
 
       // Seek request partially in stream
-      internal::node::ptr_t t_fst = req.target.fst();
-      internal::node::ptr_t t_snd = req.target.snd();
-      internal::node::ptr_t t_trd = req.target.trd();
+      internal::node::ptr_t t_first = req.target.first();
+      internal::node::ptr_t t_second = req.target.second();
+      internal::node::ptr_t t_third = req.target.third();
 
-      internal::node::ptr_t t_seek = with_data_2 ? t_trd
-                                   : with_data_1 ? t_snd
-                                                 : t_fst;
+      internal::node::ptr_t t_seek = with_data_2 ? t_third
+                                   : with_data_1 ? t_second
+                                                 : t_first;
 
       while (v_if.uid() < t_seek && in_nodes_if.can_pull()) {
         v_if = in_nodes_if.pull();
@@ -309,18 +309,18 @@ namespace adiar
           ite_must_forward(v_then, req.target[1], out_label, t_seek) ||
           ite_must_forward(v_else, req.target[2], out_label, t_seek)) {
         // An element should be forwarded, if it was not already forwarded
-        // (t_seek <= t_x), if it isn't the last one to seek (t_x < t_trd), and
+        // (t_seek <= t_x), if it isn't the last one to seek (t_x < t_third), and
         // if we actually are holding it.
         bool forward_if   = (t_seek <= req.target[0])
-          && (req.target[0] < t_trd)
+          && (req.target[0] < t_third)
           && (v_if.uid() == req.target[0]);
 
         bool forward_then = (t_seek == req.target[1])
-          && (req.target[1] < t_trd)
+          && (req.target[1] < t_third)
           && (v_then.uid() == req.target[1]);
 
         bool forward_else = (t_seek == req.target[2])
-          && (req.target[2] < t_trd)
+          && (req.target[2] < t_third)
           && (v_else.uid() == req.target[2]);
 
         int number_of_elements_to_forward = ((int) forward_if)
@@ -328,7 +328,7 @@ namespace adiar
                                           + ((int) forward_else);
 
         if (with_data_1 || number_of_elements_to_forward == 2) {
-          adiar_debug(!with_data_1 || t_seek != t_fst,
+          adiar_debug(!with_data_1 || t_seek != t_first,
                       "cannot have data and still seek the first element");
           adiar_debug(!(with_data_1 && (number_of_elements_to_forward == 2)),
                       "cannot have forwarded an element, hold two unforwarded items, and still need to forward for something");

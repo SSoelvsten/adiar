@@ -45,13 +45,13 @@ namespace adiar
       adiar_debug(!target[0].is_nil() && !target[1].is_nil(),
                   "Resolve request is only used for tuple cases");
 
-      const zdd::ptr_t tgt_fst = target.fst();
-      const zdd::ptr_t tgt_snd = target.snd();
+      const zdd::ptr_t tgt_first = target.first();
+      const zdd::ptr_t tgt_second = target.second();
 
       // Has the second option fallen out, while the first is still within? Then
       // we can collapse back into the original ZDD.
-      if (tgt_fst.is_node() && tgt_snd.is_false()) {
-        return { tgt_fst, zdd::ptr_t::NIL() };
+      if (tgt_first.is_node() && tgt_second.is_false()) {
+        return { tgt_first, zdd::ptr_t::NIL() };
       }
       return target;
     }

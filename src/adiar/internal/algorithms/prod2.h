@@ -44,7 +44,7 @@ namespace adiar::internal
   // TODO: move this definition down to __prod2_pq, as it is only used here?
   template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
   using prod_priority_queue_1_t =
-    levelized_node_priority_queue<prod2_request<0>, request_data_fst_lt<prod2_request<0>>,
+    levelized_node_priority_queue<prod2_request<0>, request_data_first_lt<prod2_request<0>>,
                                   LOOK_AHEAD,
                                   mem_mode,
                                   2,
@@ -52,7 +52,7 @@ namespace adiar::internal
 
   template<memory_mode_t mem_mode>
   using prod_priority_queue_2_t =
-    priority_queue<mem_mode, prod2_request<1>, request_data_snd_lt<prod2_request<1>>>;
+    priority_queue<mem_mode, prod2_request<1>, request_data_second_lt<prod2_request<1>>>;
 
   // TODO: turn into 'tuple<tuple<node::ptr_t>>'
   struct prod2_rec_output {
@@ -372,7 +372,7 @@ namespace adiar::internal
     pq_2_t prod_pq_2(pq_2_memory, max_pq_2_size);
 
     // Process requests in topological order of both BDDs
-    typename prod_policy::label_t out_label = fst(v0.uid(), v1.uid()).label();
+    typename prod_policy::label_t out_label = first(v0.uid(), v1.uid()).label();
     typename prod_policy::id_t out_id = 0;
 
     size_t max_1level_cut = 0;
@@ -395,7 +395,7 @@ namespace adiar::internal
 
       // Merge requests from prod_pq_1 or prod_pq_2
       if (prod_pq_1.can_pull() && (prod_pq_2.empty() ||
-                                   prod_pq_1.top().target.fst() < prod_pq_2.top().target.snd())) {
+                                   prod_pq_1.top().target.first() < prod_pq_2.top().target.second())) {
         req = { prod_pq_1.top().target,
                 {{ { node::ptr_t::NIL(), node::ptr_t::NIL() } }},
                 { prod_pq_1.top().data } };
@@ -410,7 +410,7 @@ namespace adiar::internal
 
       // Seek request partially in stream
       const typename prod_policy::ptr_t t_seek =
-        req.empty_carry() ? req.target.fst() : req.target.snd();
+        req.empty_carry() ? req.target.first() : req.target.second();
 
       while (v0.uid() < t_seek && in_nodes_0.can_pull()) {
         v0 = in_nodes_0.pull();
