@@ -417,7 +417,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether a pointer is for a node on a given level.
     ////////////////////////////////////////////////////////////////////////////
-    inline bool on_level(const label_t level)
+    inline bool on_level(const label_t level) const
     {
       return is_terminal() ? false : label() == level;
     }
