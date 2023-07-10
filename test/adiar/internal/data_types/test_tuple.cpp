@@ -316,6 +316,14 @@ go_bandit([]() {
         AssertThat(t[1], Is().EqualTo(42));
       });
 
+      it("can be constructed from a std::array", []() {
+        const std::array<int,2> arr = {8, 2};
+        const tuple<int,2> t(arr);
+
+        AssertThat(t[0], Is().EqualTo(8));
+        AssertThat(t[1], Is().EqualTo(2));
+      });
+
       describe("Coordinate-wise Equality '=='", []() {
         it("claims   {0, 0} == {0, 0}", []() {
           const tuple<int,2> t1 = { 0, 0 };
@@ -774,6 +782,15 @@ go_bandit([]() {
         AssertThat(t[0], Is().EqualTo(42));
         AssertThat(t[1], Is().EqualTo(42));
         AssertThat(t[2], Is().EqualTo(42));
+      });
+
+      it("can be constructed from a std::array", []() {
+        const std::array<int,3> arr = {8, 2, 5};
+        const tuple<int,3> t(arr);
+
+        AssertThat(t[0], Is().EqualTo(8));
+        AssertThat(t[1], Is().EqualTo(2));
+        AssertThat(t[2], Is().EqualTo(5));
       });
 
       describe("Coordinate-wise Equality '=='", []() {
@@ -1402,6 +1419,16 @@ go_bandit([]() {
         AssertThat(t[1], Is().EqualTo(42));
         AssertThat(t[2], Is().EqualTo(42));
         AssertThat(t[3], Is().EqualTo(42));
+      });
+
+      it("can be constructed from a std::array", []() {
+        const std::array<int,4> arr = {8, 2, 5, 3};
+        const tuple<int,4> t(arr);
+
+        AssertThat(t[0], Is().EqualTo(8));
+        AssertThat(t[1], Is().EqualTo(2));
+        AssertThat(t[2], Is().EqualTo(5));
+        AssertThat(t[3], Is().EqualTo(3));
       });
 
       describe("Coordinate-wise Equality '=='", []() {

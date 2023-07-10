@@ -267,6 +267,19 @@ namespace adiar::internal
       }
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Create a tuple from a `std::array` of the same cardinality.
+    ////////////////////////////////////////////////////////////////////////////
+    tuple(const std::array<elem_t, cardinality> &elems)
+      : _elems(elems)
+    {
+      if constexpr (is_sorted) {
+        for (size_t i = 0; i < (cardinality-1); ++i) {
+          adiar_precondition(this->at(i) <= this->at(i+1));
+        }
+      }
+    }
+
     /* ============================== COMPARATORS =========================== */
   public:
     ////////////////////////////////////////////////////////////////////////////
