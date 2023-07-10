@@ -48,13 +48,22 @@ namespace adiar
     resolve_request(const bool_op &op,
                     const internal::quantify_request<0>::target_t &target)
     {
-      adiar_debug(!target[0].is_nil() && !target[1].is_nil(),
-                  "Resolve request is only used for tuple cases");
-
       const bdd::ptr_t tgt_second = target.second();
 
+      if (tgt_second.is_nil()) {
+        return target;
+      }
+
+      // Prune based on operator
+      // - NOTE: this also covers 'tgt_second' already being `NIL`.
+      //
+      // - NOTE: this also covers shortcutting with `false`. Either (a) both are
+      //         terminals, in which case we may just apply the operator or (b)
+      //         the second half is nil and the arc will just be output.
       if (tgt_second.is_terminal() && can_right_shortcut(op, tgt_second)) {
-        return { bdd::ptr_t(false), tgt_second };
+        adiar_debug(op(bdd::ptr_t(false), tgt_second) == tgt_second,
+                    "Optimisation below only works if it shortcuts to same value");
+        return { tgt_second, bdd::ptr_t::NIL() };
       }
       return target;
     }
