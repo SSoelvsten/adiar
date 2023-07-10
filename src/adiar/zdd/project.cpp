@@ -38,21 +38,16 @@ namespace adiar
     }
 
   public:
-    static inline internal::quantify_request<0>::target_t
-    resolve_request(const bool_op &/* op */,
-                    const internal::quantify_request<0>::target_t &target)
+    static inline bool
+    keep_terminal(const bool_op &/*op*/, const bdd::ptr_t &p)
     {
-      const zdd::ptr_t tgt_first = target.first();
-      const zdd::ptr_t tgt_second = target.second();
+      return p.value();
+    }
 
-      // Has the second option fallen out, while the first is still within? Then
-      // we can collapse back into the original ZDD.
-      //
-      // - NOTE: this also covers 'tgt_second' already being NIL.
-      if (tgt_first.is_node() && tgt_second.is_false()) {
-        return { tgt_first, zdd::ptr_t::NIL() };
-      }
-      return target;
+    static constexpr bool
+    collapse_to_terminal(const bool_op &/*op*/, const bdd::ptr_t &/*p*/)
+    {
+      return false;
     }
 
   public:
