@@ -90,12 +90,10 @@ namespace adiar::internal
                                                 const quantify_request<0>::target_t &target)
   {
     if (quantify_pq_1.can_pull()
-        && quantify_pq_1.top().target[0] == target[0]
-        && quantify_pq_1.top().target[1] == target[1]) {
+        && quantify_pq_1.top().target == target) {
       source = quantify_pq_1.pull().data.source;
     } else if (!quantify_pq_2.empty()
-               && quantify_pq_2.top().target[0] == target[0]
-               && quantify_pq_2.top().target[1] == target[1]) {
+               && quantify_pq_2.top().target == target) {
       source = quantify_pq_2.top().data.source;
       quantify_pq_2.pop();
     } else {
