@@ -125,6 +125,14 @@ namespace adiar::internal
       return this->at(idx);
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief direct (read-only) access to the underlying array.
+    ////////////////////////////////////////////////////////////////////////////
+    inline const std::array<elem_t, cardinality>& data() const
+    {
+      return this->_elems;
+    }
+
     /* =========================== ORDERED ACCESS =========================== */
   public:
     ////////////////////////////////////////////////////////////////////////////

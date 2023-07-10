@@ -1,8 +1,9 @@
 #ifndef ADIAR_INTERNAL_ALGORITHMS_QUANTIFY_H
 #define ADIAR_INTERNAL_ALGORITHMS_QUANTIFY_H
 
-#include <variant>
+#include <algorithm>
 #include <functional>
+#include <variant>
 
 #include <adiar/bool_op.h>
 #include <adiar/quantify_mode.h>
@@ -67,30 +68,6 @@ namespace adiar::internal
     }
   }
 
-  template<typename quantify_policy>
-  inline quantify_request<0>::target_t
-  __quantify_resolve_request(const bool_op &op,
-                             const tuple<typename quantify_policy::ptr_t, 2> &target)
-  {
-    adiar_debug(!target[0].is_nil(),
-                "ptr_t::NIL() should only ever end up being placed in target[1]");
-
-    // Collapse requests to the same node back into one
-    if (target.second().is_node() && target.first() == target.second()) {
-      return __quantify_resolve_request<quantify_policy>(op, {target.first(), quantify_policy::ptr_t::NIL()});
-    }
-
-    // Consult policy for whereto recurse
-    quantify_request<0>::target_t rec =
-      quantify_policy::resolve_request(op, {target.first(), target.second()});
-
-    if (rec[0].is_terminal() && rec[1].is_terminal()) {
-      return { op(rec[0], rec[1]), quantify_policy::ptr_t::NIL() };
-    } else {
-      return rec;
-    }
-  }
-
   template<typename pq_1_t, typename pq_2_t>
   inline bool
   __quantify_update_source_or_break(pq_1_t &quantify_pq_1,
@@ -109,6 +86,57 @@ namespace adiar::internal
       return true;
     }
     return false;
+  }
+
+  template<typename quantify_policy, size_t targets>
+  inline tuple<typename quantify_policy::ptr_t, targets, true>
+  __quantify_resolve_request(const bool_op &op,
+                             std::array<typename quantify_policy::ptr_t, targets> ts)
+  {
+    { // Sort array with pointers
+      // TODO (optimisation): Abuse array is tiny with single-swap (2) / insertion-sort (3+)
+      std::sort(ts.begin(), ts.end(), std::less<>());
+    }
+
+    // Remove duplicate pointers from array (abusing sorting). The policy may
+    // also prune some terminals.
+    size_t ts_max_idx = 0;
+    for (size_t i = ts_max_idx+1; i < ts.size(); ++i) {
+      adiar_invariant(ts_max_idx < i, "i is always ahead of 'ts_max_idx'");
+
+      // Stop early at maximum value of 'NIL'
+      if (ts[i] == quantify_policy::ptr_t::NIL()) { break; }
+
+      // Move new unique element at next spot for 'ts_max_idx'
+      if (ts[ts_max_idx] != ts[i] &&
+          (!ts[i].is_terminal() || quantify_policy::keep_terminal(op, ts[i]))) {
+        ts[++ts_max_idx] = ts[i];
+      }
+    }
+    for (size_t i = ts_max_idx+1; i < ts.size(); ++i) {
+      ts[i] = quantify_policy::ptr_t::NIL();
+    }
+
+    // Is the final element a collapsing terminal?
+    const bool max_shortcuts =
+      ts[ts_max_idx].is_terminal() && quantify_policy::collapse_to_terminal(op, ts[ts_max_idx]);
+
+    // Are there only terminals left (should be combined)
+    const bool only_terminals =
+      ts[0].is_terminal() /* sorted => ts[1].is_terminal() */;
+
+    // If there are more than two targets but one of the two apply, then prune
+    // it all the way down to a single target.
+    if (1 <= ts_max_idx && (max_shortcuts || only_terminals)) {
+      adiar_debug(!ts[1].is_nil(), "Cannot be nil at i <= ts_max_elem");
+      ts[0] = max_shortcuts ? ts[ts_max_idx] : op(ts[0], ts[1]);
+      for (size_t i = 1u; i <= ts_max_idx; ++i) {
+        ts[i] = quantify_policy::ptr_t::NIL();
+      }
+    }
+
+    // Return final (sorted and pruned) set of targets.
+    return ts;
   }
 
   template<typename pq_1_t, typename pq_2_t, typename quantify_policy>
@@ -196,7 +224,7 @@ namespace adiar::internal
           // -------------------------------------------------------------------
           // Quantification of Singleton f into (f[0], f[1]).
           quantify_request<0>::target_t rec =
-            __quantify_resolve_request<quantify_policy>(op, v.children());
+            __quantify_resolve_request<quantify_policy, 2>(op, v.children().data());
 
           do {
             __quantify_forward_request<quantify_policy>(quantify_pq_1, aw, req.data.source, rec);
@@ -224,12 +252,12 @@ namespace adiar::internal
         const node::uid_t out_uid(out_label, out_id++);
 
         quantify_request<0>::target_t rec0 =
-          __quantify_resolve_request<quantify_policy>(op, {children0[false], children1[false]});
+          __quantify_resolve_request<quantify_policy, 2>(op, {children0[false], children1[false]});
 
         __quantify_forward_request<quantify_policy>(quantify_pq_1, aw, out_uid.with(false), rec0);
 
         quantify_request<0>::target_t rec1 =
-          __quantify_resolve_request<quantify_policy>(op, {children0[true], children1[true]});
+          __quantify_resolve_request<quantify_policy, 2>(op, {children0[true], children1[true]});
         __quantify_forward_request<quantify_policy>(quantify_pq_1, aw, out_uid.with(true), rec1);
 
         if (!req.data.source.is_nil()) {

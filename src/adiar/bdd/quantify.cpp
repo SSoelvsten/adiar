@@ -44,28 +44,18 @@ namespace adiar
     }
 
   public:
-    static inline internal::quantify_request<0>::target_t
-    resolve_request(const bool_op &op,
-                    const internal::quantify_request<0>::target_t &target)
+    static inline bool
+    keep_terminal(const bool_op &op, const bdd::ptr_t &p)
     {
-      const bdd::ptr_t tgt_second = target.second();
+      // `op` is commutative, so we can check irrelevancy from either side.
+      return !is_right_irrelevant(op, p);
+    }
 
-      if (tgt_second.is_nil()) {
-        return target;
-      }
-
-      // Prune based on operator
-      // - NOTE: this also covers 'tgt_second' already being `NIL`.
-      //
-      // - NOTE: this also covers shortcutting with `false`. Either (a) both are
-      //         terminals, in which case we may just apply the operator or (b)
-      //         the second half is nil and the arc will just be output.
-      if (tgt_second.is_terminal() && can_right_shortcut(op, tgt_second)) {
-        adiar_debug(op(bdd::ptr_t(false), tgt_second) == tgt_second,
-                    "Optimisation below only works if it shortcuts to same value");
-        return { tgt_second, bdd::ptr_t::NIL() };
-      }
-      return target;
+    static inline bool
+    collapse_to_terminal(const bool_op &op, const bdd::ptr_t &p)
+    {
+      // `op` is commutative, so we can check shortcutting from either side.
+      return can_right_shortcut(op, p);
     }
 
   public:
