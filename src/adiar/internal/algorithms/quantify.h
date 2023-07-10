@@ -50,44 +50,53 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
   template<typename quantify_policy, typename pq_1_t>
-  inline void __quantify_resolve_request(pq_1_t &quantify_pq_1,
+  inline void __quantify_forward_request(pq_1_t &quantify_pq_1,
                                          arc_writer &aw,
-                                         const bool_op &op,
                                          const typename quantify_policy::ptr_t source,
-                                         const tuple<typename quantify_policy::ptr_t, 2> &target)
+                                         const quantify_request<0>::target_t &target)
+  {
+    adiar_debug(!target.first().is_nil(),
+                "ptr_t::NIL() should only ever end up being placed in target[1]");
+
+    if (target.first().is_terminal()) {
+      adiar_debug(target.second().is_nil(),
+                  "Operator should already be resolved at this point");
+      aw.push({source, target.first()});
+    } else {
+      quantify_pq_1.push({target, {}, {source}});
+    }
+  }
+
+  template<typename quantify_policy>
+  inline quantify_request<0>::target_t
+  __quantify_resolve_request(const bool_op &op,
+                             const tuple<typename quantify_policy::ptr_t, 2> &target)
   {
     adiar_debug(!target[0].is_nil(),
                 "ptr_t::NIL() should only ever end up being placed in target[1]");
 
     // Collapse requests to the same node back into one
     if (target.second().is_node() && target.first() == target.second()) {
-      return __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op,
-                                                         source,
-                                                         { target.first(), node::ptr_t::NIL() });
+      return __quantify_resolve_request<quantify_policy>(op, {target.first(), quantify_policy::ptr_t::NIL()});
     }
 
-    if (target[1].is_nil()) {
-      if (target[0].is_terminal()) {
-        aw.push_terminal({ source, target[0] });
-      } else { // target[0].is_node()
-        quantify_pq_1.push({ {target[0], target[1]}, {}, {source} });
-      }
-    } else {
-      quantify_request<0>::target_t rec = quantify_policy::resolve_request(op, {target.first(), target.second()});
+    // Consult policy for whereto recurse
+    quantify_request<0>::target_t rec =
+      quantify_policy::resolve_request(op, {target.first(), target.second()});
 
-      if (rec[0].is_terminal() /* sorted ==> rec[1].is_terminal() */) {
-        aw.push_terminal({ source, op(rec[0], rec[1]) });
-      } else {
-        quantify_pq_1.push({ rec, {}, {source} });
-      }
+    if (rec[0].is_terminal() && rec[1].is_terminal()) {
+      return { op(rec[0], rec[1]), quantify_policy::ptr_t::NIL() };
+    } else {
+      return rec;
     }
   }
 
   template<typename pq_1_t, typename pq_2_t>
-  inline bool __quantify_update_source_or_break(pq_1_t &quantify_pq_1,
-                                                pq_2_t &quantify_pq_2,
-                                                ptr_uint64 &source,
-                                                const quantify_request<0>::target_t &target)
+  inline bool
+  __quantify_update_source_or_break(pq_1_t &quantify_pq_1,
+                                    pq_2_t &quantify_pq_2,
+                                    ptr_uint64 &source,
+                                    const quantify_request<0>::target_t &target)
   {
     if (quantify_pq_1.can_pull()
         && quantify_pq_1.top().target == target) {
@@ -185,52 +194,50 @@ namespace adiar::internal
         if (should_quantify &&
             (!quantify_policy::partial_quantification || req.target.second().is_nil())) {
           // -------------------------------------------------------------------
-          // CASE A: to-be quantified level for singleton f into (f[0], f[1]).
+          // Quantification of Singleton f into (f[0], f[1]).
+          quantify_request<0>::target_t rec =
+            __quantify_resolve_request<quantify_policy>(op, v.children());
+
           do {
-            __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op,
-                                                        req.data.source,
-                                                        v.children());
+            __quantify_forward_request<quantify_policy>(quantify_pq_1, aw, req.data.source, rec);
           } while (!__quantify_update_source_or_break(quantify_pq_1, quantify_pq_2,
                                                       req.data.source,
                                                       req.target));
 
-          // TODO: to-be quantified level for tuple (f,g) where the strategy
-          //       gets access to all four children simultaneously.
-        } else {
-          // -------------------------------------------------------------------
-          // CASE B.1: regular level
-          //   The variable should stay: proceed as in the Product Construction
-          //   by simulating both possibilities in parallel.
-          //
-          // CASE B.2: to-be quantified level for tuple (f,g)
-          //   Proceed with the product construction of (f,g), ignoring that it
-          //   needs to be quantified. This is left to be done in a later sweep.
-          const node::children_t children0 =
-            req.empty_carry() ? v.children() : req.node_carry[0];
+          continue;
+        }
 
-          const node::children_t children1 =
-            req.target.second().on_level(out_label)
-            ? v.children()
-            : quantify_policy::reduction_rule_inv(req.target.second());
+        const node::children_t children0 =
+          req.empty_carry() ? v.children() : req.node_carry[0];
 
-          adiar_debug(out_id < quantify_policy::MAX_ID, "Has run out of ids");
-          const node::uid_t out_uid(out_label, out_id++);
+        const node::children_t children1 =
+          req.target.second().on_level(out_label)
+          ? v.children()
+          : quantify_policy::reduction_rule_inv(req.target.second());
 
-          __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op,
-                                                      out_uid.with(false),
-                                                      { children0[false], children1[false] });
+        adiar_debug(out_id < quantify_policy::MAX_ID, "Has run out of ids");
 
-          __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op,
-                                                      out_uid.with(true),
-                                                      { children0[true], children1[true] });
+        // ---------------------------------------------------------------------
+        // Regular Level
+        //   The variable should stay: proceed as in the Product Construction
+        //   by simulating both possibilities in parallel.
+        const node::uid_t out_uid(out_label, out_id++);
 
-          if (!req.data.source.is_nil()) {
-            do {
-              aw.push_internal(arc(req.data.source, out_uid));
-            } while (!__quantify_update_source_or_break(quantify_pq_1, quantify_pq_2,
-                                                        req.data.source,
-                                                        req.target));
-          }
+        quantify_request<0>::target_t rec0 =
+          __quantify_resolve_request<quantify_policy>(op, {children0[false], children1[false]});
+
+        __quantify_forward_request<quantify_policy>(quantify_pq_1, aw, out_uid.with(false), rec0);
+
+        quantify_request<0>::target_t rec1 =
+          __quantify_resolve_request<quantify_policy>(op, {children0[true], children1[true]});
+        __quantify_forward_request<quantify_policy>(quantify_pq_1, aw, out_uid.with(true), rec1);
+
+        if (!req.data.source.is_nil()) {
+          do {
+            aw.push_internal(arc(req.data.source, out_uid));
+          } while (!__quantify_update_source_or_break(quantify_pq_1, quantify_pq_2,
+                                                      req.data.source,
+                                                      req.target));
         }
       }
 
