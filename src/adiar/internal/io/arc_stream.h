@@ -15,12 +15,13 @@ namespace adiar::internal
   template<bool reverse = false>
   class arc_stream : public levelized_file_stream<arc, !reverse>
   {
+  private:
     using parent_t = levelized_file_stream<arc, !reverse>;
 
   public:
     static size_t memory_usage()
     {
-      return levelized_file_stream<arc, !reverse>::memory_usage();
+      return parent_t::memory_usage();
     }
 
   private:
@@ -160,9 +161,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     bool can_pull_terminal() const
     {
-      // TODO: replace with 'unread_terminals() > 0'
-      return parent_t::template can_pull<IDX__TERMINALS__IN_ORDER>()
-          || parent_t::template can_pull<IDX__TERMINALS__OUT_OF_ORDER>();
+      return unread_terminals() > 0;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -173,7 +172,11 @@ namespace adiar::internal
       const arc a = take_in_order_terminal()
         ? parent_t::template pull<IDX__TERMINALS__IN_ORDER>()
         : parent_t::template pull<IDX__TERMINALS__OUT_OF_ORDER>();
+
+      adiar_debug(_unread_terminals[a.target().value()] > 0,
+                  "Terminal counter should not be zero");
       _unread_terminals[a.target().value()]--;
+
       return a;
     }
 
