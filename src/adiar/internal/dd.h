@@ -116,7 +116,7 @@ namespace adiar::internal
       if (has<shared_arcs_t>()) {
         return get<shared_arcs_t>()->size() / 2u;
       }
-      if (has<shared_nodes_t>) {
+      if (has<shared_nodes_t>()) {
         return get<shared_nodes_t>()->size();
       }
       return 0u;
