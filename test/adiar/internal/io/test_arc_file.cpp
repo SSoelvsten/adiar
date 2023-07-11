@@ -5,7 +5,7 @@
 go_bandit([]() {
   describe("adiar/internal/io/arc_file.h , arc_stream.h , arc_writer.h", []() {
     describe("arc_writer", []() {
-      it(".push(level_info) / <<", []() {
+      it("can push level information", []() {
         levelized_file<arc> af;
 
         arc_writer aw(af);
@@ -24,7 +24,7 @@ go_bandit([]() {
         AssertThat(af.number_of_terminals[true],  Is().EqualTo(0u));
       });
 
-      it(".push_internal(arc) / <<", []() {
+      it("can push internal arcs", []() {
         levelized_file<arc> af;
 
         arc_writer aw(af);
@@ -48,7 +48,7 @@ go_bandit([]() {
         AssertThat(af.number_of_terminals[true],  Is().EqualTo(0u));
       });
 
-      it(".push_terminal(arc) [in-order]", []() {
+      it("can push terminal arcs [in-order]", []() {
         levelized_file<arc> af;
 
         arc_writer aw(af);
@@ -80,7 +80,7 @@ go_bandit([]() {
         AssertThat(lfs.can_pull<2>(), Is().False());
       });
 
-      it(".push_terminal(arc) [out-of-order]", []() {
+      it("can push terminal arcs [out-of-order]", []() {
         levelized_file<arc> af;
 
         arc_writer aw(af);
@@ -110,7 +110,7 @@ go_bandit([]() {
         AssertThat(lfs.can_pull<2>(), Is().False());
       });
 
-      it(".push(arc) / <<", []() {
+      it("can push mixed arcs", []() {
         levelized_file<arc> af;
 
         arc_writer aw(af);
@@ -184,7 +184,7 @@ go_bandit([]() {
         aw << arc(arc::ptr_t(1,1), true,  arc::ptr_t(true));  // <-- out-of-order
       }
 
-      it("Merges terminal arcs on 'pull' [default: backwards]", [&af]() {
+      it("merges terminal arcs on 'pull' [default: backwards]", [&af]() {
         arc_stream<> as(af);
 
         AssertThat(as.can_pull_terminal(), Is().True());
@@ -200,7 +200,7 @@ go_bandit([]() {
         AssertThat(as.can_pull_terminal(), Is().False());
       });
 
-      it("Merges terminal arcs on 'pull' [non-default: forwards]", [&af]() {
+      it("merges terminal arcs on 'pull' [non-default: forwards]", [&af]() {
         arc_stream<true> as(af);
 
         AssertThat(as.can_pull_terminal(), Is().True());
@@ -216,7 +216,23 @@ go_bandit([]() {
         AssertThat(as.can_pull_terminal(), Is().False());
       });
 
-      it("Reads internal arcs as given [non-default: forwards]", [&af]() {
+      it("merges terminal arcs on 'pull' [negated]", [&af]() {
+        arc_stream<> as(af, true);
+
+        AssertThat(as.can_pull_terminal(), Is().True());
+        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::ptr_t(2,0), true,  arc::ptr_t(false))));
+        AssertThat(as.can_pull_terminal(), Is().True());
+        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::ptr_t(2,0), false, arc::ptr_t(true))));
+        AssertThat(as.can_pull_terminal(), Is().True());
+        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::ptr_t(1,1), true,  arc::ptr_t(false))));
+        AssertThat(as.can_pull_terminal(), Is().True());
+        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::ptr_t(1,1), false, arc::ptr_t(false))));
+        AssertThat(as.can_pull_terminal(), Is().True());
+        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::ptr_t(1,0), true,  arc::ptr_t(false))));
+        AssertThat(as.can_pull_terminal(), Is().False());
+      });
+
+      it("reads internal arcs as given [non-default: forwards]", [&af]() {
         arc_stream<> as(af);
 
         AssertThat(as.can_pull_internal(), Is().True());
@@ -228,7 +244,7 @@ go_bandit([]() {
         AssertThat(as.can_pull_internal(), Is().False());
       });
 
-      it("Provides number of unread terminals", [&af]() {
+      it("provides number of unread terminals [negate=false]", [&af]() {
         arc_stream<> as(af);
 
         AssertThat(as.unread_terminals(),      Is().EqualTo(5u));
@@ -265,6 +281,49 @@ go_bandit([]() {
 
         AssertThat(as.can_pull_terminal(), Is().True());
         as.pull_terminal(); // 1 - -> T
+
+        AssertThat(as.unread_terminals(),      Is().EqualTo(0u));
+        AssertThat(as.unread_terminals(false), Is().EqualTo(0u));
+        AssertThat(as.unread_terminals(true),  Is().EqualTo(0u));
+      });
+
+      it("provides number of unread terminals [negate=true]", [&af]() {
+        arc_stream<> as(af, true);
+
+        AssertThat(as.unread_terminals(),      Is().EqualTo(5u));
+        AssertThat(as.unread_terminals(false), Is().EqualTo(4u));
+        AssertThat(as.unread_terminals(true),  Is().EqualTo(1u));
+
+        AssertThat(as.can_pull_terminal(), Is().True());
+        as.pull_terminal(); // 3 ---> F
+
+        AssertThat(as.unread_terminals(),      Is().EqualTo(4u));
+        AssertThat(as.unread_terminals(false), Is().EqualTo(3u));
+        AssertThat(as.unread_terminals(true),  Is().EqualTo(1u));
+
+        AssertThat(as.can_pull_terminal(), Is().True());
+        as.pull_terminal(); // 3 - -> T
+
+        AssertThat(as.unread_terminals(),      Is().EqualTo(3u));
+        AssertThat(as.unread_terminals(false), Is().EqualTo(3u));
+        AssertThat(as.unread_terminals(true),  Is().EqualTo(0u));
+
+        AssertThat(as.can_pull_terminal(), Is().True());
+        as.pull_terminal(); // 2 ---> F
+
+        AssertThat(as.unread_terminals(),      Is().EqualTo(2u));
+        AssertThat(as.unread_terminals(false), Is().EqualTo(2u));
+        AssertThat(as.unread_terminals(true),  Is().EqualTo(0u));
+
+        AssertThat(as.can_pull_terminal(), Is().True());
+        as.pull_terminal(); // 2 - -> F
+
+        AssertThat(as.unread_terminals(),      Is().EqualTo(1u));
+        AssertThat(as.unread_terminals(false), Is().EqualTo(1u));
+        AssertThat(as.unread_terminals(true),  Is().EqualTo(0u));
+
+        AssertThat(as.can_pull_terminal(), Is().True());
+        as.pull_terminal(); // 1 - -> F
 
         AssertThat(as.unread_terminals(),      Is().EqualTo(0u));
         AssertThat(as.unread_terminals(false), Is().EqualTo(0u));

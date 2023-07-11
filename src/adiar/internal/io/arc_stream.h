@@ -76,8 +76,8 @@ namespace adiar::internal
                 const bool negate = false)
     {
       parent_t::attach(f, negate);
-      _unread_terminals[false] = f.number_of_terminals[false];
-      _unread_terminals[true] = f.number_of_terminals[true];
+      _unread_terminals[negate ^ false] = f.number_of_terminals[false];
+      _unread_terminals[negate ^ true]  = f.number_of_terminals[true];
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -89,8 +89,8 @@ namespace adiar::internal
                 const bool negate = false)
     {
       parent_t::attach(f, negate);
-      _unread_terminals[false] = f->number_of_terminals[false];
-      _unread_terminals[true] = f->number_of_terminals[true];
+      _unread_terminals[negate ^ false] = f->number_of_terminals[false];
+      _unread_terminals[negate ^ true]  = f->number_of_terminals[true];
     }
 
 
