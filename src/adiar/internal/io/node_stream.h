@@ -8,8 +8,6 @@
 
 namespace adiar::internal
 {
-  // TODO: node_stream for untransposed node files?
-
   //////////////////////////////////////////////////////////////////////////////
   /// \brief         Stream of nodes from a node file.
   ///

@@ -1,6 +1,7 @@
 #include "../../../test.h"
 
 #include <filesystem>
+#include <adiar/internal/io/node_arc_stream.h>
 
 go_bandit([]() {
   describe("adiar/internal/io/arc_file.h , arc_stream.h , arc_writer.h", []() {
@@ -331,8 +332,255 @@ go_bandit([]() {
       });
     });
 
-    describe("untranspose()", []() {
-      // TODO
+    describe("arc_writer + node_arc_stream", []() {
+      it("can read single-node BDD [in-order]", []() {
+        levelized_file<arc> af;
+
+        {
+          arc_writer aw(af);
+          aw.push_terminal(arc(arc::ptr_t(0,0), false, arc::ptr_t(false)));
+          aw.push_terminal(arc(arc::ptr_t(0,0), true,  arc::ptr_t(true)));
+
+          aw.push(level_info(0,1));
+          aw.detach();
+        }
+
+        node_arc_stream ns(af);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::ptr_t(false), node::ptr_t(true))));
+
+        AssertThat(ns.can_pull(), Is().False());
+      });
+
+      it("can read single-node BDD [out-of-order]", []() {
+        levelized_file<arc> af;
+
+        {
+          arc_writer aw(af);
+          aw.push_terminal(arc(arc::ptr_t(0,0), true,  arc::ptr_t(true)));
+          aw.push_terminal(arc(arc::ptr_t(0,0), false, arc::ptr_t(false)));
+
+          aw.push(level_info(0,1));
+          aw.detach();
+        }
+
+        node_arc_stream ns(af);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::ptr_t(false), node::ptr_t(true))));
+
+        AssertThat(ns.can_pull(), Is().False());
+      });
+
+      it("can read larger BDD [internals already sorted]", []() {
+        /*
+        //             1        ---- x0
+        //            / \
+        //            2 |       ---- x1
+        //           / \|
+        //           F _3_      ---- x2
+        //            /   \
+        //            4   5     ---- x3
+        //           / \ / \
+        //           F T T F
+        */
+        levelized_file<arc> af;
+
+        {
+          arc_writer aw(af);
+
+          aw.push(level_info(0,1));
+
+          aw.push_internal(arc(arc::ptr_t(0,0), false,  arc::ptr_t(1,0)));
+          aw.push_terminal(arc(arc::ptr_t(1,0), false,  arc::ptr_t(false)));
+
+          aw.push(level_info(1,1));
+
+          aw.push_internal(arc(arc::ptr_t(0,0), true,   arc::ptr_t(2,0)));
+          aw.push_internal(arc(arc::ptr_t(1,0), true,   arc::ptr_t(2,0)));
+
+          aw.push(level_info(2,1));
+
+          aw.push_internal(arc(arc::ptr_t(2,0), false,  arc::ptr_t(3,0)));
+          aw.push_terminal(arc(arc::ptr_t(3,0), false,  arc::ptr_t(false)));
+          aw.push_terminal(arc(arc::ptr_t(3,0), true,   arc::ptr_t(true)));
+
+          aw.push_internal(arc(arc::ptr_t(2,0), true,   arc::ptr_t(3,1)));
+          aw.push_terminal(arc(arc::ptr_t(3,1), false,  arc::ptr_t(true)));
+          aw.push_terminal(arc(arc::ptr_t(3,1), true,   arc::ptr_t(false)));
+
+          aw.push(level_info(3,2));
+
+          aw.detach();
+        }
+
+        node_arc_stream ns(af);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::ptr_t(1,0), node::ptr_t(2,0))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),     Is().EqualTo(node(1,0, node::ptr_t(false), node::ptr_t(2,0))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),     Is().EqualTo(node(2,0, node::ptr_t(3,0), node::ptr_t(3,1))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),     Is().EqualTo(node(3,0, node::ptr_t(false), node::ptr_t(true))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),     Is().EqualTo(node(3,1, node::ptr_t(true), node::ptr_t(false))));
+
+        AssertThat(ns.can_pull(), Is().False());
+      });
+
+      it("can read larger BDD [internals need sorting]", []() {
+        /*
+        //       1     ---- x0
+        //      / \
+        //      | 2    ---- x1
+        //      |/ \
+        //      3  T   ---- x2
+        //     / \
+        //     F T
+        */
+        levelized_file<arc> af;
+
+        {
+          arc_writer aw(af);
+
+          aw.push(level_info(0,1));
+
+          aw.push_internal(arc(arc::ptr_t(0,0), true,   arc::ptr_t(1,0)));
+          aw.push_terminal(arc(arc::ptr_t(1,0), true,   arc::ptr_t(true)));
+
+          aw.push(level_info(1,1));
+
+          aw.push_internal(arc(arc::ptr_t(0,0), false,  arc::ptr_t(2,0)));
+          aw.push_internal(arc(arc::ptr_t(1,0), false,  arc::ptr_t(2,0)));
+          aw.push_terminal(arc(arc::ptr_t(2,0), false,  arc::ptr_t(false)));
+          aw.push_terminal(arc(arc::ptr_t(2,0), true,   arc::ptr_t(true)));
+
+          aw.push(level_info(2,1));
+
+          aw.detach();
+        }
+
+        node_arc_stream ns(af);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::ptr_t(2,0), node::ptr_t(1,0))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),     Is().EqualTo(node(1,0, node::ptr_t(2,0), node::ptr_t(true))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),     Is().EqualTo(node(2,0, node::ptr_t(false), node::ptr_t(true))));
+
+        AssertThat(ns.can_pull(), Is().False());
+      });
+
+      it("can read single-node BDD [negated]", []() {
+        levelized_file<arc> af;
+
+        {
+          arc_writer aw(af);
+          aw.push_terminal(arc(arc::ptr_t(0,0), false, arc::ptr_t(false)));
+          aw.push_terminal(arc(arc::ptr_t(0,0), true,  arc::ptr_t(true)));
+
+          aw.push(level_info(0,1));
+          aw.detach();
+        }
+
+        node_arc_stream ns(af, true);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::ptr_t(true), node::ptr_t(false))));
+
+        AssertThat(ns.can_pull(), Is().False());
+      });
+
+      it("can read single-node BDD [reverse]", []() {
+        levelized_file<arc> af;
+
+        {
+          arc_writer aw(af);
+          aw.push_terminal(arc(arc::ptr_t(0,0), false, arc::ptr_t(false)));
+          aw.push_terminal(arc(arc::ptr_t(0,0), true,  arc::ptr_t(true)));
+
+          aw.push(level_info(0,1));
+          aw.detach();
+        }
+
+        node_arc_stream<true> ns(af);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::ptr_t(false), node::ptr_t(true))));
+
+        AssertThat(ns.can_pull(), Is().False());
+      });
+
+      it("can read larger BDD [reverse]", []() {
+        /*
+        //         1       ---- x0
+        //        / \
+        //       /  2      ---- x1
+        //       | / \
+        //       3 F 4     ---- x2
+        //      / \ / \
+        //      F  5  T    ---- x3
+        //        / \
+        //        F T
+        */
+        levelized_file<arc> af;
+
+        {
+          arc_writer aw(af);
+
+          aw.push(level_info(0,1));
+
+          aw.push_internal(arc(arc::ptr_t(0,0), true,   arc::ptr_t(1,0)));
+          aw.push_terminal(arc(arc::ptr_t(1,0), false,  arc::ptr_t(false)));
+
+          aw.push(level_info(1,1));
+
+          aw.push_internal(arc(arc::ptr_t(0,0), false,  arc::ptr_t(2,0)));
+          aw.push_terminal(arc(arc::ptr_t(2,0), false,  arc::ptr_t(false)));
+
+          aw.push_internal(arc(arc::ptr_t(1,0), true,   arc::ptr_t(2,1)));
+          aw.push_terminal(arc(arc::ptr_t(2,1), true,   arc::ptr_t(true)));
+
+          aw.push(level_info(2,2));
+
+          aw.push_internal(arc(arc::ptr_t(2,0), true,   arc::ptr_t(3,0)));
+          aw.push_internal(arc(arc::ptr_t(2,1), false,  arc::ptr_t(3,0)));
+
+          aw.push_terminal(arc(arc::ptr_t(3,0), false,  arc::ptr_t(false)));
+          aw.push_terminal(arc(arc::ptr_t(3,0), true,   arc::ptr_t(true)));
+
+          aw.detach();
+        }
+
+        node_arc_stream<true> ns(af, true);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),     Is().EqualTo(node(3,0, node::ptr_t(true), node::ptr_t(false))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),     Is().EqualTo(node(2,1, node::ptr_t(3,0),  node::ptr_t(false))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),     Is().EqualTo(node(2,0, node::ptr_t(true), node::ptr_t(3,0))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),     Is().EqualTo(node(1,0, node::ptr_t(true), node::ptr_t(2,1))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::ptr_t(2,0),  node::ptr_t(1,0))));
+
+        AssertThat(ns.can_pull(), Is().False());
+      });
     });
   });
  });
