@@ -107,6 +107,20 @@ namespace adiar::internal
     {
       return has<no_file>();
     }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Number of nodes.
+    ////////////////////////////////////////////////////////////////////////////
+    size_t size() const
+    {
+      if (has<shared_arcs_t>()) {
+        return get<shared_arcs_t>()->size() / 2u;
+      }
+      if (has<shared_nodes_t>) {
+        return get<shared_nodes_t>()->size();
+      }
+      return 0u;
+    }
   };
 
   //////////////////////////////////////////////////////////////////////////////
