@@ -88,6 +88,7 @@ set(HEADERS
 
   internal/io/node_file.h
   internal/io/node_random_access.h
+  internal/io/node_arc_stream.h
   internal/io/node_stream.h
   internal/io/node_writer.h
 )
