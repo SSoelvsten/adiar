@@ -68,6 +68,19 @@ namespace adiar::internal
       attach(file, negate);
     }
 
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Create attached to an Decision Diagram.
+    ///
+    /// \pre The given diagram should contain an unreduced diagram.
+    ////////////////////////////////////////////////////////////////////////////
+    node_arc_stream(const __dd &diagram)
+      : parent_t(/*need to sort before attach*/)
+    {
+      adiar_precondition(diagram.template has<__dd::shared_arcs_t>());
+      attach(diagram.template get<__dd::shared_arcs_t>(), diagram.negate);
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Attach to an arc file.
     ///
