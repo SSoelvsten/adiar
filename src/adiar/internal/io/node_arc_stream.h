@@ -75,7 +75,10 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     void attach(levelized_file<arc> &file, const bool negate = false)
     {
-      file.sort<arc_source_lt>(IDX__INTERNAL);
+      if (file.semi_transposed) {
+        file.sort<arc_source_lt>(IDX__INTERNAL);
+        file.semi_transposed = false;
+      }
       parent_t::attach(file, negate);
     }
 
@@ -87,7 +90,10 @@ namespace adiar::internal
     void attach(const shared_ptr<levelized_file<arc>> &file,
                 const bool negate = false)
     {
-      file->sort<arc_source_lt>(IDX__INTERNAL);
+      if (file->semi_transposed) {
+        file->sort<arc_source_lt>(IDX__INTERNAL);
+        file->semi_transposed = false;
+      }
       parent_t::attach(file, negate);
     }
 
