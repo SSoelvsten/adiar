@@ -1327,50 +1327,54 @@ namespace adiar::internal
     }
   };
 
-  template <typename            elem_t,
-            typename            elem_comp_t = std::less<elem_t>,
-            ptr_uint64::label_t LOOK_AHEAD  = ADIAR_LPQ_LOOKAHEAD,
-            memory_mode_t       mem_mode    = memory_mode_t::EXTERNAL,
-            size_t              FILES       = 1u,
-            ptr_uint64::label_t INIT_LEVEL  = 1u>
-  using levelized_node_priority_queue = levelized_priority_queue<elem_t, elem_comp_t,
-                                                                 LOOK_AHEAD,
-                                                                 mem_mode,
-                                                                 shared_levelized_file<node>,
-                                                                 FILES,
-                                                                 std::less<node::label_t>,
-                                                                 false,
-                                                                 INIT_LEVEL>;
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Levelized Priority Queue to be used with `levelized_file<node>`.
+  //////////////////////////////////////////////////////////////////////////////
+  template <typename      elem_t,
+            typename      elem_comp_t = std::less<elem_t>,
+            node::label_t LOOK_AHEAD  = ADIAR_LPQ_LOOKAHEAD,
+            memory_mode_t mem_mode    = memory_mode_t::EXTERNAL,
+            size_t        FILES       = 1u,
+            node::label_t INIT_LEVEL  = 1u>
+  using levelized_node_priority_queue =
+    levelized_priority_queue<elem_t, elem_comp_t,
+                             LOOK_AHEAD,
+                             mem_mode,
+                             shared_levelized_file<node>, FILES, std::less<node::label_t>, false,
+                             INIT_LEVEL>;
 
-  template <typename            elem_t,
-            typename            elem_comp_t = std::less<elem_t>,
-            ptr_uint64::label_t LOOK_AHEAD  = ADIAR_LPQ_LOOKAHEAD,
-            memory_mode_t       mem_mode    = memory_mode_t::EXTERNAL,
-            size_t              FILES       = 1u,
-            ptr_uint64::label_t INIT_LEVEL  = 1u>
-  using levelized_arc_priority_queue = levelized_priority_queue<elem_t, elem_comp_t,
-                                                                LOOK_AHEAD,
-                                                                mem_mode,
-                                                                shared_levelized_file<arc>,
-                                                                FILES,
-                                                                std::greater<arc::label_t>,
-                                                                false,
-                                                                INIT_LEVEL>;
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Levelized Priority Queue to be used with `levelized_file<arc>` and
+  ///        an `arc_stream`.
+  //////////////////////////////////////////////////////////////////////////////
+  template <typename      elem_t,
+            typename      elem_comp_t = std::less<elem_t>,
+            arc::label_t  LOOK_AHEAD  = ADIAR_LPQ_LOOKAHEAD,
+            memory_mode_t mem_mode    = memory_mode_t::EXTERNAL,
+            size_t        FILES       = 1u,
+            arc::label_t  INIT_LEVEL  = 1u>
+  using levelized_arc_priority_queue =
+    levelized_priority_queue<elem_t, elem_comp_t,
+                             LOOK_AHEAD,
+                             mem_mode,
+                             shared_levelized_file<arc>, FILES, std::greater<arc::label_t>, false,
+                             INIT_LEVEL>;
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Levelized Priority Queue to be used with `shared_file<label_t>`.
+  //////////////////////////////////////////////////////////////////////////////
   template <typename            elem_t,
             typename            elem_comp_t = std::less<elem_t>,
             ptr_uint64::label_t LOOK_AHEAD  = ADIAR_LPQ_LOOKAHEAD,
             memory_mode_t       mem_mode    = memory_mode_t::EXTERNAL,
             size_t              FILES       = 1u,
             ptr_uint64::label_t INIT_LEVEL  = 1u>
-  using levelized_label_priority_queue = levelized_priority_queue<elem_t, elem_comp_t,
-                                                                  LOOK_AHEAD,
-                                                                  mem_mode,
-                                                                  shared_file<ptr_uint64::label_t>,
-                                                                  FILES,
-                                                                  std::less<ptr_uint64::label_t>,
-                                                                  false,
-                                                                  INIT_LEVEL>;
+  using levelized_label_priority_queue =
+    levelized_priority_queue<elem_t, elem_comp_t,
+                             LOOK_AHEAD,
+                             mem_mode,
+                             shared_file<ptr_uint64::label_t>, FILES, std::less<ptr_uint64::label_t>, false,
+                             INIT_LEVEL>;
 }
 
 #endif // ADIAR_INTERNAL_DATA_STRUCTURES_LEVELIZED_PRIORITY_QUEUE_H
