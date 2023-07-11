@@ -10,6 +10,21 @@ struct lpq_test_data {
   { return label; }
 };
 
+namespace snowhouse
+{
+
+  template<>
+  struct Stringizer<lpq_test_data>
+  {
+    static std::string ToString(const lpq_test_data& d)
+    {
+      std::stringstream stream;
+      stream << "{ " << d.label << ", " << d.nonce << " }";
+      return stream.str();
+    }
+  };
+}
+
 stats_t::levelized_priority_queue_t stats_lpq_tests;
 
 namespace adiar::internal
@@ -50,22 +65,22 @@ template <typename file_t, size_t LOOK_AHEAD>
 using test_priority_queue = levelized_priority_queue<lpq_test_data, lpq_test_lt,
                                                      LOOK_AHEAD,
                                                      memory_mode_t::INTERNAL,
-                                                     file_t, 1u, std::less<ptr_uint64::label_t>,
+                                                     file_t, 1u, std::less<>, false,
                                                      1u>;
 
 go_bandit([]() {
   describe("adiar/internal/levelized_priority_queue.h", []() {
     ////////////////////////////////////////////////////////////////////////////
-    // TODO: Most level files should be replaced with a simpler adiar::shared_file<ptr_uint64::label_t> (and
-    //       use the << operator). Yet, we of course need one test or two with a
-    //       meta file.
+    // TODO: Most level files should be replaced with a simpler
+    //       adiar::shared_file<ptr_uint64::label_t> (and use the << operator).
+    //       Yet, we of course need one test or two with a meta file.
     //
     // TODO: Are we not missing some unit tests for the very simple accessors?
 
-    describe("levelized_priority_queue<..., LOOK_AHEAD=1, ..., INIT_LEVEL=1>", [&]() {
+    describe("levelized_priority_queue<..., LOOK_AHEAD=1, ..., INIT_LEVEL=1>", []() {
       //////////////////////////////////////////////////////////////////////////
       //                          initialisation                              //
-      it("initialises #levels = 0", [&]() {
+      it("initialises #levels = 0", []() {
         lpq_test_file f;
 
         test_priority_queue<lpq_test_file, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -75,7 +90,7 @@ go_bandit([]() {
         AssertThat(pq.has_next_level(), Is().False());
       });
 
-      it("initialises with #levels = 1 (which is skipped)", [&]() {
+      it("initialises with #levels = 1 (which is skipped)", []() {
         adiar::shared_file<ptr_uint64::label_t> f;
 
         { // Garbage collect the writer early
@@ -90,7 +105,7 @@ go_bandit([]() {
         AssertThat(pq.has_next_level(), Is().False());
       });
 
-      it("initialises with #levels = 2 (#buckets = 1)", [&]() {
+      it("initialises with #levels = 2 (#buckets = 1)", []() {
         adiar::shared_file<ptr_uint64::label_t> f;
 
         { // Garbage collect the writer early
@@ -107,13 +122,13 @@ go_bandit([]() {
         AssertThat(pq.next_level(), Is().EqualTo(2u));
       });
 
-      it("initialises with #buckets == #levels", [&]() {
+      it("initialises with #buckets == #levels", []() {
         adiar::shared_file<ptr_uint64::label_t> f;
 
         { // Garbage collect the writer early
           label_writer fw(f);
           fw << 1       // skipped
-              << 3 << 4; // buckets
+             << 3 << 4; // buckets
         }
 
         test_priority_queue<adiar::shared_file<ptr_uint64::label_t>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -125,14 +140,14 @@ go_bandit([]() {
         AssertThat(pq.next_level(), Is().EqualTo(3u));
       });
 
-      it("initialises with #buckets < #levels", [&]() {
+      it("initialises with #buckets < #levels", []() {
         adiar::shared_file<ptr_uint64::label_t> f;
 
         { // Garbage collect the writer early
           label_writer fw(f);
           fw << 1      // skipped
-              << 2 << 4 // buckets
-              << 5;     // overflow
+             << 2 << 4 // buckets
+             << 5;     // overflow
         }
 
         test_priority_queue<adiar::shared_file<ptr_uint64::label_t>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -151,8 +166,8 @@ go_bandit([]() {
       // want to consider simplifying some of these unit tests and adding new
       // ones.
 
-      describe(".setup_next_level()", [&]() {
-        it("can forward until the first non-empty bucket [1]", [&]() {
+      describe(".setup_next_level()", []() {
+        it("can forward until the first non-empty bucket [1]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -184,7 +199,7 @@ go_bandit([]() {
           AssertThat(pq.next_level(), Is().EqualTo(3u));
         });
 
-        it("can forward until the first non-empty bucket [2]", [&]() {
+        it("can forward until the first non-empty bucket [2]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -216,7 +231,7 @@ go_bandit([]() {
           AssertThat(pq.next_level(), Is().EqualTo(4u));
         });
 
-        it("can forward up until the overflow queue [1]", [&]() {
+        it("can forward up until the overflow queue [1]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -247,7 +262,7 @@ go_bandit([]() {
           AssertThat(pq.has_next_level(), Is().False());
         });
 
-        it("can forward up until the overflow queue [2]", [&]() {
+        it("can forward up until the overflow queue [2]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -287,7 +302,7 @@ go_bandit([]() {
           AssertThat(pq.empty_level(), Is().False());
         });
 
-        it("can forward until next bucket", [&]() {
+        it("can forward until next bucket", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -334,7 +349,7 @@ go_bandit([]() {
           AssertThat(pq.next_level(), Is().EqualTo(4u));
         });
 
-        it("can forward past buckets until top of overflow queue", [&]() {
+        it("can forward past buckets until top of overflow queue", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -381,7 +396,7 @@ go_bandit([]() {
           AssertThat(pq.next_level(), Is().EqualTo(5u));
         });
 
-        it("can relabel buckets until top of overflow queue", [&]() {
+        it("can relabel buckets until top of overflow queue", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -416,7 +431,7 @@ go_bandit([]() {
           AssertThat(pq.next_level(), Is().EqualTo(7u));
         });
 
-        it("can relabel buckets until top of overflow queue (on second last level)", [&]() {
+        it("can relabel buckets until top of overflow queue (on second last level)", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -464,8 +479,8 @@ go_bandit([]() {
         });
       });
 
-      describe(".setup_next_level(stop_label)", [&]() {
-        it("does nothing when given level prior to next bucket [1]", [&]() {
+      describe(".setup_next_level(stop_label)", []() {
+        it("does nothing when given level prior to next bucket [1]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -493,7 +508,7 @@ go_bandit([]() {
           AssertThat(pq.next_level(), Is().EqualTo(3u));
         });
 
-        it("does nothing when given level prior to next bucket [2]", [&]() {
+        it("does nothing when given level prior to next bucket [2]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -522,7 +537,7 @@ go_bandit([]() {
           AssertThat(pq.current_level(), Is().EqualTo(2u));;
         });
 
-        it("forwards to first bucket", [&]() {
+        it("forwards to first bucket", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -554,7 +569,7 @@ go_bandit([]() {
           AssertThat(pq.next_level(), Is().EqualTo(3u));
         });
 
-        it("forwards to second bucket", [&]() {
+        it("forwards to second bucket", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -586,7 +601,7 @@ go_bandit([]() {
           AssertThat(pq.next_level(), Is().EqualTo(4u));
         });
 
-        it("forwards to next bucket with content", [&]() {
+        it("forwards to next bucket with content", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -616,7 +631,7 @@ go_bandit([]() {
           AssertThat(pq.next_level(), Is().EqualTo(4u));
         });
 
-        it("forwards to next bucket without content", [&]() {
+        it("forwards to next bucket without content", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -643,7 +658,7 @@ go_bandit([]() {
           AssertThat(pq.current_level(), Is().EqualTo(2u));
         });
 
-        it("stops early at bucket with content", [&]() {
+        it("stops early at bucket with content", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -670,37 +685,37 @@ go_bandit([]() {
           AssertThat(pq.current_level(), Is().EqualTo(2u));
         });
 
-        it("forwards to first bucket for unknown level prior to second bucket", [&]() {
-            adiar::shared_file<ptr_uint64::label_t> f;
+        it("forwards to first bucket for unknown level prior to second bucket", []() {
+          adiar::shared_file<ptr_uint64::label_t> f;
 
-            { // Garbage collect the writer early
-              label_writer fw(f);
+          { // Garbage collect the writer early
+            label_writer fw(f);
 
-              fw << 1      // skipped
-                 << 2 << 4 // buckets
-                 << 5;     // overflow
-            }
+            fw << 1      // skipped
+               << 2 << 4 // buckets
+               << 5;     // overflow
+          }
 
-            test_priority_queue<adiar::shared_file<ptr_uint64::label_t>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<adiar::shared_file<ptr_uint64::label_t>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
-            AssertThat(pq.has_current_level(), Is().False());
+          AssertThat(pq.has_current_level(), Is().False());
 
-            pq.push(lpq_test_data {4, 1});
+          pq.push(lpq_test_data {4, 1});
 
-            AssertThat(pq.has_current_level(), Is().False());
-            AssertThat(pq.has_next_level(), Is().True());
-            AssertThat(pq.next_level(), Is().EqualTo(2u));
+          AssertThat(pq.has_current_level(), Is().False());
+          AssertThat(pq.has_next_level(), Is().True());
+          AssertThat(pq.next_level(), Is().EqualTo(2u));
 
-            pq.setup_next_level(3u);
+          pq.setup_next_level(3u);
 
-            AssertThat(pq.has_current_level(), Is().True());
-            AssertThat(pq.current_level(), Is().EqualTo(2u));
+          AssertThat(pq.has_current_level(), Is().True());
+          AssertThat(pq.current_level(), Is().EqualTo(2u));
 
-            AssertThat(pq.has_next_level(), Is().True());
-            AssertThat(pq.next_level(), Is().EqualTo(4u));
+          AssertThat(pq.has_next_level(), Is().True());
+          AssertThat(pq.next_level(), Is().EqualTo(4u));
         });
 
-        it("relabels with current buckets included", [&]() {
+        it("relabels with current buckets included", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -732,7 +747,7 @@ go_bandit([]() {
           AssertThat(pq.next_level(), Is().EqualTo(4u));
         });
 
-        it("relabels early at top of overflow queue", [&]() {
+        it("relabels early at top of overflow queue", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -765,17 +780,17 @@ go_bandit([]() {
           AssertThat(pq.next_level(), Is().EqualTo(5u));
         });
 
-        it("can relabel for unknown level", [&]() {
+        it("can relabel for unknown level", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
 
             fw << 1              // skipped
-                << 2 << 3 << 4    // buckets (after element in 2)
-                << 5 << 6 << 7    // overflow that is skipped
-                << 9 << 10        // overflow that will become a bucket
-                << 11 ;           // overflow
+               << 2 << 3 << 4    // buckets (after element in 2)
+               << 5 << 6 << 7    // overflow that is skipped
+               << 9 << 10        // overflow that will become a bucket
+               << 11 ;           // overflow
           }
 
           test_priority_queue<adiar::shared_file<ptr_uint64::label_t>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -801,8 +816,8 @@ go_bandit([]() {
 
       //////////////////////////////////////////////////////////////////////////
       //                          .push / pull                                //
-      describe(".push(elem_t &) + pull()", [&]{
-        it("can push when there are fewer levels than buckets", [&]() {
+      describe(".push(elem_t &) + pull()", []{
+        it("can push when there are fewer levels than buckets", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -828,7 +843,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can push to buckets", [&]() {
+        it("can push to buckets", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -879,31 +894,31 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can push to overflow queue [1]", [&]() {
-            lpq_test_file f;
+        it("can push to overflow queue [1]", []() {
+          lpq_test_file f;
 
-            { // Garbage collect the writer early
-              lpq_test_writer fw(f);
+          { // Garbage collect the writer early
+            lpq_test_writer fw(f);
 
-              fw.push(level_info(4,1u)); // overflow
-              fw.push(level_info(3,3u)); // bucket
-              fw.push(level_info(2,2u)); // bucket
-              fw.push(level_info(1,1u)); // skipped
-            }
+            fw.push(level_info(4,1u)); // overflow
+            fw.push(level_info(3,3u)); // bucket
+            fw.push(level_info(2,2u)); // bucket
+            fw.push(level_info(1,1u)); // skipped
+          }
 
-            test_priority_queue<lpq_test_file, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<lpq_test_file, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
-            pq.push(lpq_test_data {4, 1});
+          pq.push(lpq_test_data {4, 1});
 
-            pq.setup_next_level(); // 4
+          pq.setup_next_level(); // 4
 
-            AssertThat(pq.can_pull(), Is().True());
-            AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {4, 1}));
+          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {4, 1}));
 
-            AssertThat(pq.can_pull(), Is().False());
+          AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can push to overflow queue [2]", [&]() {
+        it("can push to overflow queue [2]", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -935,7 +950,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can push to overflow queue [3]", [&]() {
+        it("can push to overflow queue [3]", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -972,7 +987,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can merge content of bucket with overflow queue", [&]() {
+        it("can merge content of bucket with overflow queue", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -1011,7 +1026,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can set up next level with a stop_label [1]", [&]() {
+        it("can set up next level with a stop_label [1]", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -1041,7 +1056,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can set up next level with a stop_label [2]", [&]() {
+        it("can set up next level with a stop_label [2]", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -1072,7 +1087,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can use relabelled buckets [1]", [&]() {
+        it("can use relabelled buckets [1]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -1120,7 +1135,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can use relabelled buckets [2]", [&]() {
+        it("can use relabelled buckets [2]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -1159,7 +1174,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can push after relabelling that skips levels [1]", [&]() {
+        it("can push after relabelling that skips levels [1]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -1210,7 +1225,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can push after relabelling that skips levels [2]", [&]() {
+        it("can push after relabelling that skips levels [2]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -1257,7 +1272,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can use buckets after relabelling close to the end", [&]() {
+        it("can use buckets after relabelling close to the end", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -1301,7 +1316,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can use buckets after relabelling close to the end (the current read bucket dies)", [&]() {
+        it("can use buckets after relabelling close to the end (the current read bucket dies)", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -1345,7 +1360,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can use buckets after bucket-hitting stop-level", [&]() {
+        it("can use buckets after bucket-hitting stop-level", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -1388,7 +1403,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can use relabelled buckets (with stop-level)", [&]() {
+        it("can use relabelled buckets (with stop-level)", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -1426,7 +1441,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can use relabelled bucket of a level that was also a prior bucket due to the stop-level", [&]() {
+        it("can use relabelled bucket of a level that was also a prior bucket due to the stop-level", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -1463,7 +1478,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can push after relabelling (with stop-level) that skips levels [1]", [&]() {
+        it("can push after relabelling (with stop-level) that skips levels [1]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -1508,7 +1523,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can push after relabelling (with stop-level) that skips levels [2]", [&]() {
+        it("can push after relabelling (with stop-level) that skips levels [2]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -1551,7 +1566,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can use buckets after relabelling (with stop-level) close to the end", [&]() {
+        it("can use buckets after relabelling (with stop-level) close to the end", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -1591,7 +1606,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can use buckets after relabelling (with stop-level) close to the end (the current read bucket dies)", [&]() {
+        it("can use buckets after relabelling (with stop-level) close to the end (the current read bucket dies)", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -1632,8 +1647,8 @@ go_bandit([]() {
         });
       });
 
-      describe(".pop()", [&]{
-        it("can pop from bucket [1]", [&]() {
+      describe(".pop()", []{
+        it("can pop from bucket [1]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -1656,7 +1671,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can pop from bucket [2]", [&]() {
+        it("can pop from bucket [2]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -1683,7 +1698,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can pop from overflow [1]", [&]() {
+        it("can pop from overflow [1]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -1706,7 +1721,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can pop from overflow [2]", [&]() {
+        it("can pop from overflow [2]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -1747,7 +1762,7 @@ go_bandit([]() {
 
       //////////////////////////////////////////////////////////////////////////
       //                           .can_pull()                                //
-      describe(".empty_level() / .can_pull()", [&]{
+      describe(".empty_level() / .can_pull()", []{
         adiar::shared_file<ptr_uint64::label_t> f;
 
         { // Garbage collect the writer early
@@ -1758,14 +1773,14 @@ go_bandit([]() {
              << 4 << 5 << 6; // overflow
         }
 
-        it("cannot pull after initialisation", [&]() {
+        it("cannot pull after initialisation", [&f]() {
           test_priority_queue<adiar::shared_file<ptr_uint64::label_t>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("shows element after forwarding to level", [&]() {
+        it("shows element after forwarding to level", [&f]() {
           test_priority_queue<adiar::shared_file<ptr_uint64::label_t>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data { 2,1 });
@@ -1774,7 +1789,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().True());
         });
 
-        it("shows a level becomes empty", [&]() {
+        it("shows a level becomes empty", [&f]() {
           test_priority_queue<adiar::shared_file<ptr_uint64::label_t>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data { 2,1 });
@@ -1791,7 +1806,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("shows forwarding to an empty level", [&]() {
+        it("shows forwarding to an empty level", [&f]() {
           test_priority_queue<adiar::shared_file<ptr_uint64::label_t>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data { 3,1 });
@@ -1803,8 +1818,8 @@ go_bandit([]() {
         });
       });
 
-      describe(".top() / .peek()", [&]{
-        it("can look into bucket without side-effects", [&]() {
+      describe(".top() / .peek()", []{
+        it("can look into bucket without side-effects", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -1838,7 +1853,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can look into overflow priority queue without side-effects", [&]() {
+        it("can look into overflow priority queue without side-effects", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -1870,7 +1885,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("is the same after pushing an element", [&]() {
+        it("is the same after pushing an element", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -1903,7 +1918,7 @@ go_bandit([]() {
           AssertThat(pq.size(), Is().EqualTo(2u));
         });
 
-        it("can look into bucket, pop, and then look again", [&]() {
+        it("can look into bucket, pop, and then look again", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -1943,8 +1958,8 @@ go_bandit([]() {
         });
       });
 
-      describe(".size()", [&]{
-        it("increments on push to bucket [1]", [&]() {
+      describe(".size()", []{
+        it("increments on push to bucket [1]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -1964,7 +1979,7 @@ go_bandit([]() {
           AssertThat(pq.size(), Is().EqualTo(2u));
         });
 
-        it("increments on push to bucket [2]", [&]() {
+        it("increments on push to bucket [2]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -1986,7 +2001,7 @@ go_bandit([]() {
           AssertThat(pq.size(), Is().EqualTo(2u));
         });
 
-        it("increments on push to overflow queue", [&]() {
+        it("increments on push to overflow queue", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -2008,7 +2023,7 @@ go_bandit([]() {
           AssertThat(pq.size(), Is().EqualTo(2u));
         });
 
-        it("decrements on pull from bucket", [&]() {
+        it("decrements on pull from bucket", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -2030,7 +2045,7 @@ go_bandit([]() {
           AssertThat(pq.size(), Is().EqualTo(0u));
         });
 
-        it("decrements on pull from overflow queue", [&]() {
+        it("decrements on pull from overflow queue", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -2053,7 +2068,7 @@ go_bandit([]() {
           AssertThat(pq.size(), Is().EqualTo(0u));
         });
 
-        it("decrements on pull from bucket", [&]() {
+        it("decrements on pull from bucket", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -2075,7 +2090,7 @@ go_bandit([]() {
           AssertThat(pq.size(), Is().EqualTo(0u));
         });
 
-        it("decrements on pull from overflow queue", [&]() {
+        it("decrements on pull from overflow queue", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -2098,7 +2113,7 @@ go_bandit([]() {
           AssertThat(pq.size(), Is().EqualTo(0u));
         });
 
-        it("is unchanged on top from bucket", [&]() {
+        it("is unchanged on top from bucket", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -2118,7 +2133,7 @@ go_bandit([]() {
           AssertThat(pq.size(), Is().EqualTo(2u));
         });
 
-        it("is unchanged on top from overflow queue", [&]() {
+        it("is unchanged on top from overflow queue", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -2141,10 +2156,10 @@ go_bandit([]() {
       });
     });
 
-    describe("levelized_priority_queue<..., LOOK_AHEAD=0, ..., INIT_LEVEL=1>", [&]() {
+    describe("levelized_priority_queue<..., LOOK_AHEAD=0, ..., INIT_LEVEL=1>", []() {
       //////////////////////////////////////////////////////////////////////////
       //                          initialisation                              //
-      it("initialises correctly", [&]() {
+      it("initialises correctly", []() {
         lpq_test_file f;
 
         test_priority_queue<lpq_test_file, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -2161,8 +2176,8 @@ go_bandit([]() {
       // want to consider simplifying some of these unit tests and adding new
       // ones.
 
-      describe(".setup_next_level()", [&]() {
-        it("can forward until the first non-empty level [1]", [&]() {
+      describe(".setup_next_level()", []() {
+        it("can forward until the first non-empty level [1]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -2190,7 +2205,7 @@ go_bandit([]() {
           AssertThat(pq.empty_level(), Is().False());
         });
 
-        it("can forward until the first non-empty level [2]", [&]() {
+        it("can forward until the first non-empty level [2]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -2218,7 +2233,7 @@ go_bandit([]() {
           AssertThat(pq.empty_level(), Is().False());
         });
 
-        it("can forward until the first non-empty level [3]", [&]() {
+        it("can forward until the first non-empty level [3]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -2248,7 +2263,7 @@ go_bandit([]() {
           AssertThat(pq.has_next_level(), Is().False());
         });
 
-        it("can forward until the first non-empty level [4]", [&]() {
+        it("can forward until the first non-empty level [4]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -2287,7 +2302,7 @@ go_bandit([]() {
           AssertThat(pq.empty_level(), Is().False());
         });
 
-        it("can forward until next level [1]", [&]() {
+        it("can forward until next level [1]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -2330,7 +2345,7 @@ go_bandit([]() {
           AssertThat(pq.empty_level(), Is().False());
         });
 
-        it("can forward until next level [2]", [&]() {
+        it("can forward until next level [2]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -2373,7 +2388,7 @@ go_bandit([]() {
           AssertThat(pq.empty_level(), Is().False());
         });
 
-        it("can forward until next level [3]", [&]() {
+        it("can forward until next level [3]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -2401,7 +2416,7 @@ go_bandit([]() {
           AssertThat(pq.empty_level(), Is().False());
         });
 
-        it("can forward until next level [4]", [&]() {
+        it("can forward until next level [4]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -2443,8 +2458,8 @@ go_bandit([]() {
         });
       });
 
-      describe(".setup_next_level(stop_label)", [&]() {
-        it("forwards to first level", [&]() {
+      describe(".setup_next_level(stop_label)", []() {
+        it("forwards to first level", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -2475,7 +2490,7 @@ go_bandit([]() {
           AssertThat(pq.next_level(), Is().EqualTo(3u));
         });
 
-        it("forwards to next level with content [1]", [&]() {
+        it("forwards to next level with content [1]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -2503,7 +2518,7 @@ go_bandit([]() {
           AssertThat(pq.empty_level(), Is().False());
         });
 
-        it("stops early at level with content", [&]() {
+        it("stops early at level with content", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -2529,7 +2544,7 @@ go_bandit([]() {
           AssertThat(pq.current_level(), Is().EqualTo(2u));
         });
 
-        it("forwards to unknown level without content [1]", [&]() {
+        it("forwards to unknown level without content [1]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -2558,7 +2573,7 @@ go_bandit([]() {
           AssertThat(pq.next_level(), Is().EqualTo(4u));
         });
 
-        it("forwards to stop level [2]", [&]() {
+        it("forwards to stop level [2]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -2589,7 +2604,7 @@ go_bandit([]() {
           AssertThat(pq.next_level(), Is().EqualTo(4u));
         });
 
-        it("forwards to next level with content [2]", [&]() {
+        it("forwards to next level with content [2]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -2618,7 +2633,7 @@ go_bandit([]() {
           AssertThat(pq.empty_level(), Is().False());
         });
 
-        it("forwards to unknown level without content [2]", [&]() {
+        it("forwards to unknown level without content [2]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -2651,8 +2666,8 @@ go_bandit([]() {
 
       //////////////////////////////////////////////////////////////////////////
       //                          .push / pull                                //
-      describe(".push(elem_t &) + pull()", [&]{
-        it("can push [1]", [&]() {
+      describe(".push(elem_t &) + pull()", []{
+        it("can push [1]", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -2678,7 +2693,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can push [2]", [&]() {
+        it("can push [2]", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -2729,31 +2744,31 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can push [3]", [&]() {
-            lpq_test_file f;
+        it("can push [3]", []() {
+          lpq_test_file f;
 
-            { // Garbage collect the writer early
-              lpq_test_writer fw(f);
+          { // Garbage collect the writer early
+            lpq_test_writer fw(f);
 
-              fw.push(level_info(4,1u));
-              fw.push(level_info(3,3u));
-              fw.push(level_info(2,2u));
-              fw.push(level_info(1,1u)); // skipped
-            }
+            fw.push(level_info(4,1u));
+            fw.push(level_info(3,3u));
+            fw.push(level_info(2,2u));
+            fw.push(level_info(1,1u)); // skipped
+          }
 
-            test_priority_queue<lpq_test_file, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<lpq_test_file, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
-            pq.push(lpq_test_data {4, 1});
+          pq.push(lpq_test_data {4, 1});
 
-            pq.setup_next_level(); // 4
+          pq.setup_next_level(); // 4
 
-            AssertThat(pq.can_pull(), Is().True());
-            AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {4, 1}));
+          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {4, 1}));
 
-            AssertThat(pq.can_pull(), Is().False());
+          AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can push [4]", [&]() {
+        it("can push [4]", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -2785,7 +2800,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can push out of order [1]", [&]() {
+        it("can push out of order [1]", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -2822,7 +2837,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can push out of order [2]", [&]() {
+        it("can push out of order [2]", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -2861,7 +2876,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can set up next level with a stop_label [1]", [&]() {
+        it("can set up next level with a stop_label [1]", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -2891,7 +2906,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can set up next level with a stop_label [2]", [&]() {
+        it("can set up next level with a stop_label [2]", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -2922,7 +2937,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can push [5]", [&]() {
+        it("can push [5]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -2969,7 +2984,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can push [6]", [&]() {
+        it("can push [6]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -3007,7 +3022,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can push [7]", [&]() {
+        it("can push [7]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -3057,7 +3072,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can push [8]", [&]() {
+        it("can push [8]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -3103,7 +3118,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can push [9]", [&]() {
+        it("can push [9]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -3146,7 +3161,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can push [10]", [&]() {
+        it("can push [10]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -3189,7 +3204,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can set up next level with a stop_label [3]", [&]() {
+        it("can set up next level with a stop_label [3]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -3231,7 +3246,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can set up next level with a stop_label [4]", [&]() {
+        it("can set up next level with a stop_label [4]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -3268,7 +3283,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can set up next level with a stop_label [5]", [&]() {
+        it("can set up next level with a stop_label [5]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -3302,7 +3317,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can set up next level with a stop_label [6]", [&]() {
+        it("can set up next level with a stop_label [6]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -3346,7 +3361,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can set up next level with a stop_label [7]", [&]() {
+        it("can set up next level with a stop_label [7]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -3388,7 +3403,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can set up next level with a stop_label [8]", [&]() {
+        it("can set up next level with a stop_label [8]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -3427,7 +3442,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can set up next level with a stop_label [9]", [&]() {
+        it("can set up next level with a stop_label [9]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -3467,8 +3482,8 @@ go_bandit([]() {
         });
       });
 
-      describe(".pop()", [&]{
-        it("can pop [1]", [&]() {
+      describe(".pop()", []{
+        it("can pop [1]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -3490,7 +3505,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can pop [2]", [&]() {
+        it("can pop [2]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -3516,7 +3531,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can pop [3]", [&]() {
+        it("can pop [3]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -3538,7 +3553,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can pop [4]", [&]() {
+        it("can pop [4]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           {
@@ -3578,7 +3593,7 @@ go_bandit([]() {
 
       //////////////////////////////////////////////////////////////////////////
       //                           .can_pull()                                //
-      describe(".empty_level() / .can_pull()", [&]{
+      describe(".empty_level() / .can_pull()", []{
         adiar::shared_file<ptr_uint64::label_t> f;
 
         { // Garbage collect the writer early
@@ -3589,14 +3604,14 @@ go_bandit([]() {
              << 4 << 5 << 6; // overflow
         }
 
-        it("cannot pull after initialisation", [&]() {
+        it("cannot pull after initialisation", [&f]() {
           test_priority_queue<adiar::shared_file<ptr_uint64::label_t>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("shows element after forwarding to level", [&]() {
+        it("shows element after forwarding to level", [&f]() {
           test_priority_queue<adiar::shared_file<ptr_uint64::label_t>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data { 2,1 });
@@ -3605,7 +3620,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().True());
         });
 
-        it("shows a level becomes empty", [&]() {
+        it("shows a level becomes empty", [&f]() {
           test_priority_queue<adiar::shared_file<ptr_uint64::label_t>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data { 2,1 });
@@ -3622,7 +3637,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("shows forwarding to an empty level", [&]() {
+        it("shows forwarding to an empty level", [&f]() {
           test_priority_queue<adiar::shared_file<ptr_uint64::label_t>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data { 3,1 });
@@ -3633,8 +3648,8 @@ go_bandit([]() {
         });
       });
 
-      describe(".top() / .peek()", [&]{
-        it("can look into priority queue without side-effects [1]", [&]() {
+      describe(".top() / .peek()", []{
+        it("can look into priority queue without side-effects [1]", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -3668,7 +3683,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can look into priority queue without side-effects [2]", [&]() {
+        it("can look into priority queue without side-effects [2]", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -3700,7 +3715,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("is the same after pushing an element", [&]() {
+        it("is the same after pushing an element", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -3733,7 +3748,7 @@ go_bandit([]() {
           AssertThat(pq.size(), Is().EqualTo(2u));
         });
 
-        it("can look into priority queue, pop, and then look again", [&]() {
+        it("can look into priority queue, pop, and then look again", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -3773,8 +3788,8 @@ go_bandit([]() {
         });
       });
 
-      describe(".size()", [&]{
-        it("increments on push to priority queue [1]", [&]() {
+      describe(".size()", []{
+        it("increments on push to priority queue [1]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -3794,7 +3809,7 @@ go_bandit([]() {
           AssertThat(pq.size(), Is().EqualTo(2u));
         });
 
-        it("increments on push to priority queue [2]", [&]() {
+        it("increments on push to priority queue [2]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -3816,7 +3831,7 @@ go_bandit([]() {
           AssertThat(pq.size(), Is().EqualTo(2u));
         });
 
-        it("increments on push to priority queue [3]", [&]() {
+        it("increments on push to priority queue [3]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -3836,7 +3851,7 @@ go_bandit([]() {
           AssertThat(pq.size(), Is().EqualTo(2u));
         });
 
-        it("decrements on pull from priority queue [1]", [&]() {
+        it("decrements on pull from priority queue [1]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -3858,7 +3873,7 @@ go_bandit([]() {
           AssertThat(pq.size(), Is().EqualTo(0u));
         });
 
-        it("decrements on pull from priority queue [2]", [&]() {
+        it("decrements on pull from priority queue [2]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -3880,7 +3895,7 @@ go_bandit([]() {
           AssertThat(pq.size(), Is().EqualTo(0u));
         });
 
-        it("decrements on pull from priority queue [3]", [&]() {
+        it("decrements on pull from priority queue [3]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -3902,7 +3917,7 @@ go_bandit([]() {
           AssertThat(pq.size(), Is().EqualTo(0u));
         });
 
-        it("decrements on pull from priority queue [4]", [&]() {
+        it("decrements on pull from priority queue [4]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -3924,7 +3939,7 @@ go_bandit([]() {
           AssertThat(pq.size(), Is().EqualTo(0u));
         });
 
-        it("is unchanged on top from priority queue [1]", [&]() {
+        it("is unchanged on top from priority queue [1]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -3944,7 +3959,7 @@ go_bandit([]() {
           AssertThat(pq.size(), Is().EqualTo(2u));
         });
 
-        it("is unchanged on top from priority queue [2]", [&]() {
+        it("is unchanged on top from priority queue [2]", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -3966,7 +3981,7 @@ go_bandit([]() {
       });
     });
 
-    describe("levelized_priority_queue<..., lpq_test_gt, ..., std::greater<label_g>, ...>", [&]() {
+    describe("levelized_priority_queue<..., lpq_test_gt, ..., std::greater<>, ...>", []() {
       adiar::shared_file<ptr_uint64::label_t> f;
 
       { // Garbage collect the writer early
@@ -3977,69 +3992,69 @@ go_bandit([]() {
           ;
       }
 
-      it("can sort elements from buckets", [&]() {
-          levelized_priority_queue<lpq_test_data, lpq_test_gt, 1u,
-                                   memory_mode_t::INTERNAL,
-                                   adiar::shared_file<ptr_uint64::label_t>, 1u, std::greater<ptr_uint64::label_t>,
-                                   1u>
-            pq({f}, memory_available(), 32, stats_lpq_tests);
-
-          pq.push(lpq_test_data {2, 1});
-          pq.push(lpq_test_data {1, 1});
-          pq.push(lpq_test_data {2, 2});
-
-          AssertThat(pq.can_pull(), Is().False());
-
-          pq.setup_next_level(); // 2
-
-          AssertThat(pq.can_pull(), Is().True());
-          AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {2,2}));
-
-          AssertThat(pq.can_pull(), Is().True());
-          AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {2,1}));
-
-          AssertThat(pq.can_pull(), Is().False());
-
-          pq.push(lpq_test_data {1, 2});
-
-          pq.setup_next_level(); // 1
-
-          AssertThat(pq.can_pull(), Is().True());
-          AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {1,2}));
-
-          AssertThat(pq.can_pull(), Is().True());
-          AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {1,1}));
-
-          AssertThat(pq.can_pull(), Is().False());
-      });
-
-      it("can sort elements in overflow priority queue", [&]() {
-          levelized_priority_queue<lpq_test_data, lpq_test_gt, 1u,
-                                   memory_mode_t::INTERNAL,
-                                   adiar::shared_file<ptr_uint64::label_t>, 1u, std::greater<ptr_uint64::label_t>,
-                                   1u>
-            pq({f}, memory_available(), 32, stats_lpq_tests);
-
-          pq.push(lpq_test_data {0, 1});
-          pq.push(lpq_test_data {0, 2});
-
-          AssertThat(pq.can_pull(), Is().False());
-
-          pq.setup_next_level(); // 0
-
-          AssertThat(pq.can_pull(), Is().True());
-          AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {0,2}));
-
-          AssertThat(pq.can_pull(), Is().True());
-          AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {0,1}));
-
-          AssertThat(pq.can_pull(), Is().False());
-      });
-
-      it("can merge elements from buckets and overflow", [&]() {
+      it("can sort elements from buckets", [&f]() {
         levelized_priority_queue<lpq_test_data, lpq_test_gt, 1u,
                                  memory_mode_t::INTERNAL,
-                                 adiar::shared_file<ptr_uint64::label_t>, 1u, std::greater<ptr_uint64::label_t>,
+                                 adiar::shared_file<ptr_uint64::label_t>, 1u, std::greater<>, false,
+                                 1u>
+          pq({f}, memory_available(), 32, stats_lpq_tests);
+
+        pq.push(lpq_test_data {2, 1});
+        pq.push(lpq_test_data {1, 1});
+        pq.push(lpq_test_data {2, 2});
+
+        AssertThat(pq.can_pull(), Is().False());
+
+        pq.setup_next_level(); // 2
+
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {2,2}));
+
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {2,1}));
+
+        AssertThat(pq.can_pull(), Is().False());
+
+        pq.push(lpq_test_data {1, 2});
+
+        pq.setup_next_level(); // 1
+
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {1,2}));
+
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {1,1}));
+
+        AssertThat(pq.can_pull(), Is().False());
+      });
+
+      it("can sort elements in overflow priority queue", [&f]() {
+        levelized_priority_queue<lpq_test_data, lpq_test_gt, 1u,
+                                 memory_mode_t::INTERNAL,
+                                 adiar::shared_file<ptr_uint64::label_t>, 1u, std::greater<>, false,
+                                 1u>
+          pq({f}, memory_available(), 32, stats_lpq_tests);
+
+        pq.push(lpq_test_data {0, 1});
+        pq.push(lpq_test_data {0, 2});
+
+        AssertThat(pq.can_pull(), Is().False());
+
+        pq.setup_next_level(); // 0
+
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {0,2}));
+
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {0,1}));
+
+        AssertThat(pq.can_pull(), Is().False());
+      });
+
+      it("can merge elements from buckets and overflow", [&f]() {
+        levelized_priority_queue<lpq_test_data, lpq_test_gt, 1u,
+                                 memory_mode_t::INTERNAL,
+                                 adiar::shared_file<ptr_uint64::label_t>, 1u, std::greater<>, false,
                                  1u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
 
@@ -4081,7 +4096,7 @@ go_bandit([]() {
     });
 
     //Fixed (ub)
-    describe("levelized_priority_queue<..., LOOK_AHEAD=0, lpq_test_gt, ..., std::greater<label_g>, ...>", [&]() {
+    describe("levelized_priority_queue<..., LOOK_AHEAD=0, lpq_test_gt, ..., std::greater<>, ...>", []() {
       adiar::shared_file<ptr_uint64::label_t> f;
 
       { // Garbage collect the writer early
@@ -4092,69 +4107,69 @@ go_bandit([]() {
           ;
       }
 
-      it("can sort elements from the priority queue [1]", [&]() {
-          levelized_priority_queue<lpq_test_data, lpq_test_gt, 0u,
-                                   memory_mode_t::INTERNAL,
-                                   adiar::shared_file<ptr_uint64::label_t>, 1u, std::greater<ptr_uint64::label_t>,
-                                   1u>
-            pq({f}, memory_available(), 32, stats_lpq_tests);
-
-          pq.push(lpq_test_data {2, 1});
-          pq.push(lpq_test_data {1, 1});
-          pq.push(lpq_test_data {2, 2});
-
-          AssertThat(pq.can_pull(), Is().False());
-
-          pq.setup_next_level(); // 2
-
-          AssertThat(pq.can_pull(), Is().True());
-          AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {2,2}));
-
-          AssertThat(pq.can_pull(), Is().True());
-          AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {2,1}));
-
-          AssertThat(pq.can_pull(), Is().False());
-
-          pq.push(lpq_test_data {1, 2});
-
-          pq.setup_next_level(); // 1
-
-          AssertThat(pq.can_pull(), Is().True());
-          AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {1,2}));
-
-          AssertThat(pq.can_pull(), Is().True());
-          AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {1,1}));
-
-          AssertThat(pq.can_pull(), Is().False());
-      });
-
-      it("can sort elements from the priority queue [2]", [&]() {
-          levelized_priority_queue<lpq_test_data, lpq_test_gt, 0u,
-                                   memory_mode_t::INTERNAL,
-                                   adiar::shared_file<ptr_uint64::label_t>, 1u, std::greater<ptr_uint64::label_t>,
-                                   1u>
-            pq({f}, memory_available(), 32, stats_lpq_tests);
-
-          pq.push(lpq_test_data {0, 1});
-          pq.push(lpq_test_data {0, 2});
-
-          AssertThat(pq.can_pull(), Is().False());
-
-          pq.setup_next_level(); // 0
-
-          AssertThat(pq.can_pull(), Is().True());
-          AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {0,2}));
-
-          AssertThat(pq.can_pull(), Is().True());
-          AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {0,1}));
-
-          AssertThat(pq.can_pull(), Is().False());
-      });
-
-      it("can sort elements from the priority queue [3]", [&]() {
+      it("can sort elements from the priority queue [1]", [&f]() {
         levelized_priority_queue<lpq_test_data, lpq_test_gt, 0u,
                                  memory_mode_t::INTERNAL,
-                                 adiar::shared_file<ptr_uint64::label_t>, 1u, std::greater<ptr_uint64::label_t>,
+                                 adiar::shared_file<ptr_uint64::label_t>, 1u, std::greater<>, false,
+                                 1u>
+          pq({f}, memory_available(), 32, stats_lpq_tests);
+
+        pq.push(lpq_test_data {2, 1});
+        pq.push(lpq_test_data {1, 1});
+        pq.push(lpq_test_data {2, 2});
+
+        AssertThat(pq.can_pull(), Is().False());
+
+        pq.setup_next_level(); // 2
+
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {2,2}));
+
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {2,1}));
+
+        AssertThat(pq.can_pull(), Is().False());
+
+        pq.push(lpq_test_data {1, 2});
+
+        pq.setup_next_level(); // 1
+
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {1,2}));
+
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {1,1}));
+
+        AssertThat(pq.can_pull(), Is().False());
+      });
+
+      it("can sort elements from the priority queue [2]", [&f]() {
+        levelized_priority_queue<lpq_test_data, lpq_test_gt, 0u,
+                                 memory_mode_t::INTERNAL,
+                                 adiar::shared_file<ptr_uint64::label_t>, 1u, std::greater<>, false,
+                                 1u>
+          pq({f}, memory_available(), 32, stats_lpq_tests);
+
+        pq.push(lpq_test_data {0, 1});
+        pq.push(lpq_test_data {0, 2});
+
+        AssertThat(pq.can_pull(), Is().False());
+
+        pq.setup_next_level(); // 0
+
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {0,2}));
+
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {0,1}));
+
+        AssertThat(pq.can_pull(), Is().False());
+      });
+
+      it("can sort elements from the priority queue [3]", [&f]() {
+        levelized_priority_queue<lpq_test_data, lpq_test_gt, 0u,
+                                 memory_mode_t::INTERNAL,
+                                 adiar::shared_file<ptr_uint64::label_t>, 1u, std::greater<>, false,
                                  1u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
 
@@ -4195,14 +4210,14 @@ go_bandit([]() {
       });
     });
 
-    describe("levelized_priority_queue<..., LOOK_AHEAD=1, ..., INIT_LEVEL=0>", [&]() {
-      it("initialises #levels = 0", [&]() {
+    describe("levelized_priority_queue<..., LOOK_AHEAD=1, ..., INIT_LEVEL=0>", []() {
+      it("initialises #levels = 0", []() {
         adiar::shared_file<ptr_uint64::label_t> f;
 
         levelized_priority_queue<lpq_test_data, lpq_test_lt, 1u,
-                                  memory_mode_t::INTERNAL,
-                                  adiar::shared_file<ptr_uint64::label_t>, 1u, std::less<ptr_uint64::label_t>,
-                                  0u>
+                                 memory_mode_t::INTERNAL,
+                                 adiar::shared_file<ptr_uint64::label_t>, 1u, std::less<>, false,
+                                 0u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
 
         AssertThat(pq.can_pull(), Is().False());
@@ -4212,7 +4227,7 @@ go_bandit([]() {
         AssertThat(pq.has_next_level(), Is().False());
       });
 
-      it("initialises with #levels = 1 < #buckets", [&]() {
+      it("initialises with #levels = 1 < #buckets", []() {
         adiar::shared_file<ptr_uint64::label_t> f;
 
         { // Garbage collect the writer early
@@ -4221,9 +4236,9 @@ go_bandit([]() {
         }
 
         levelized_priority_queue<lpq_test_data, lpq_test_lt, 1u,
-                                  memory_mode_t::INTERNAL,
-                                  adiar::shared_file<ptr_uint64::label_t>, 1u, std::less<ptr_uint64::label_t>,
-                                  0u>
+                                 memory_mode_t::INTERNAL,
+                                 adiar::shared_file<ptr_uint64::label_t>, 1u, std::less<>, false,
+                                 0u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
 
         AssertThat(pq.has_current_level(), Is().False());
@@ -4233,7 +4248,7 @@ go_bandit([]() {
         AssertThat(pq.next_level(), Is().EqualTo(2u));
       });
 
-      it("initialises #buckets <= #levels", [&]() {
+      it("initialises #buckets <= #levels", []() {
         adiar::shared_file<ptr_uint64::label_t> f;
 
         { // Garbage collect the writer early
@@ -4242,9 +4257,9 @@ go_bandit([]() {
         }
 
         levelized_priority_queue<lpq_test_data, lpq_test_lt, 1u,
-                                  memory_mode_t::INTERNAL,
-                                  adiar::shared_file<ptr_uint64::label_t>, 1u, std::less<ptr_uint64::label_t>,
-                                  0u>
+                                 memory_mode_t::INTERNAL,
+                                 adiar::shared_file<ptr_uint64::label_t>, 1u, std::less<>, false,
+                                 0u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
 
         AssertThat(pq.can_pull(), Is().False());
@@ -4255,7 +4270,7 @@ go_bandit([]() {
         AssertThat(pq.next_level(), Is().EqualTo(1u));
       });
 
-      it("can push into and pull from root level bucket [1]", [&]() {
+      it("can push into and pull from root level bucket [1]", []() {
         lpq_test_file f;
 
         { // Garbage collect the writer early
@@ -4266,7 +4281,7 @@ go_bandit([]() {
 
         levelized_priority_queue<lpq_test_data, lpq_test_lt, 1u,
                                  memory_mode_t::INTERNAL,
-                                 lpq_test_file, 1u, std::less<ptr_uint64::label_t>,
+                                 lpq_test_file, 1u, std::less<>, false,
                                  0u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
 
@@ -4291,7 +4306,7 @@ go_bandit([]() {
         AssertThat(pq.has_next_level(), Is().False());
       });
 
-      it("can push into and pull from root level bucket [2]", [&]() {
+      it("can push into and pull from root level bucket [2]", []() {
         lpq_test_file f;
 
         { // Garbage collect the writer early
@@ -4305,7 +4320,7 @@ go_bandit([]() {
 
         levelized_priority_queue<lpq_test_data, lpq_test_lt, 1u,
                                  memory_mode_t::INTERNAL,
-                                 lpq_test_file, 1u, std::less<ptr_uint64::label_t>,
+                                 lpq_test_file, 1u, std::less<>, false,
                                  0u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
 
@@ -4331,14 +4346,218 @@ go_bandit([]() {
       });
     });
 
-    describe("levelized_priority_queue<..., LOOK_AHEAD=0, ..., INIT_LEVEL=0>", [&]() {
-      it("initialises correctly", [&]() {
+    describe("levelized_priority_queue<..., level_reverse=true, ...>", []() {
+      // TODO: these tests break with a LOOK_AHEAD of 0. Is this indicating some bug?
+
+      it("can setup buckets in reverse order", []() {
+        lpq_test_file f;
+
+        { // Garbage collect the writer early
+          lpq_test_writer fw(f);
+
+          fw.push(level_info(4,2u)); // bucket
+          fw.push(level_info(3,3u)); // bucket
+          fw.push(level_info(2,2u)); // overflow
+          fw.push(level_info(1,1u)); // .
+        }
+
+        levelized_priority_queue<lpq_test_data, lpq_test_gt, 1u,
+                                 memory_mode_t::INTERNAL,
+                                 lpq_test_file, 1u, std::greater<>, true,
+                                 0u>
+          pq({f}, memory_available(), 32, stats_lpq_tests);
+
+        AssertThat(pq.has_next_level(), Is().True());
+        AssertThat(pq.next_level(), Is().EqualTo(4u));
+
+        pq.setup_next_level(4u);
+        AssertThat(pq.current_level(), Is().EqualTo(4u));
+
+        AssertThat(pq.empty_level(), Is().True());
+
+        AssertThat(pq.has_next_level(), Is().True());
+        AssertThat(pq.next_level(), Is().EqualTo(3u));
+
+        pq.setup_next_level(3u);
+
+        AssertThat(pq.empty_level(), Is().True());
+
+        AssertThat(pq.has_next_level(), Is().True());
+        AssertThat(pq.next_level(), Is().EqualTo(2u));
+
+        pq.setup_next_level(2u);
+
+        AssertThat(pq.empty_level(), Is().True());
+
+        AssertThat(pq.has_next_level(), Is().True());
+        AssertThat(pq.next_level(), Is().EqualTo(1u));
+
+        pq.setup_next_level(1u);
+
+        AssertThat(pq.empty_level(), Is().True());
+
+        AssertThat(pq.has_next_level(), Is().False());
+      });
+
+      it("can push and pull from reversed buckets [1]", []() {
+        lpq_test_file f;
+
+        { // Garbage collect the writer early
+          lpq_test_writer fw(f);
+
+          fw.push(level_info(4,2u)); // bucket
+          fw.push(level_info(3,3u)); // bucket
+          fw.push(level_info(2,2u)); // overflow
+          fw.push(level_info(1,1u)); // .
+        }
+
+        levelized_priority_queue<lpq_test_data, lpq_test_gt, 1u,
+                                 memory_mode_t::INTERNAL,
+                                 lpq_test_file, 1u, std::greater<>, true,
+                                 0u>
+          pq({f}, memory_available(), 32, stats_lpq_tests);
+
+        AssertThat(pq.size(), Is().EqualTo(0u));
+
+        pq.push(lpq_test_data {4, 1});
+        AssertThat(pq.size(), Is().EqualTo(1u));
+
+        pq.push(lpq_test_data {4, 2});
+        AssertThat(pq.size(), Is().EqualTo(2u));
+
+        AssertThat(pq.has_next_level(), Is().True());
+        AssertThat(pq.next_level(), Is().EqualTo(4u));
+
+        pq.setup_next_level(); // 4
+        AssertThat(pq.current_level(), Is().EqualTo(4u));
+
+        AssertThat(pq.empty_level(), Is().False());
+
+        pq.push(lpq_test_data {3, 3});
+        AssertThat(pq.size(), Is().EqualTo(3u));
+
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {4, 2}));
+        AssertThat(pq.size(), Is().EqualTo(2u));
+
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {4, 1}));
+        AssertThat(pq.size(), Is().EqualTo(1u));
+
+        AssertThat(pq.empty_level(), Is().True());
+
+        AssertThat(pq.has_next_level(), Is().True());
+        AssertThat(pq.next_level(), Is().EqualTo(3u));
+
+        pq.setup_next_level(); // 3
+        AssertThat(pq.current_level(), Is().EqualTo(3u));
+
+        AssertThat(pq.empty_level(), Is().False());
+
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {3, 3}));
+        AssertThat(pq.size(), Is().EqualTo(0u));
+
+        AssertThat(pq.empty_level(), Is().True());
+      });
+
+      it("can push and pull from reversed buckets [1]", []() {
+        lpq_test_file f1;
+
+        { // Garbage collect the writer early
+          lpq_test_writer fw(f1);
+
+          fw.push(level_info(4,2u)); // bucket
+          fw.push(level_info(2,2u)); // overflow
+          fw.push(level_info(1,1u)); // .
+        }
+
+        lpq_test_file f2;
+        { // Garbage collect the writer early
+          lpq_test_writer fw(f2);
+
+          fw.push(level_info(3,3u)); // bucket
+          fw.push(level_info(2,2u)); // overflow
+        }
+
+        levelized_priority_queue<lpq_test_data, lpq_test_gt, 1u,
+                                 memory_mode_t::INTERNAL,
+                                 lpq_test_file, 2u, std::greater<>, true,
+                                 0u>
+          pq({f1,f2}, memory_available(), 32, stats_lpq_tests);
+
+        AssertThat(pq.size(), Is().EqualTo(0u));
+
+        pq.push(lpq_test_data {4, 1}); // bucket
+        AssertThat(pq.size(), Is().EqualTo(1u));
+
+        pq.push(lpq_test_data {4, 2}); // bucket
+        AssertThat(pq.size(), Is().EqualTo(2u));
+
+        AssertThat(pq.has_next_level(), Is().True());
+        AssertThat(pq.next_level(), Is().EqualTo(4u));
+
+        pq.setup_next_level(); // 4
+        AssertThat(pq.current_level(), Is().EqualTo(4u));
+
+        AssertThat(pq.empty_level(), Is().False());
+
+        pq.push(lpq_test_data {3, 3}); // bucket
+        AssertThat(pq.size(), Is().EqualTo(3u));
+
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {4, 2}));
+        AssertThat(pq.size(), Is().EqualTo(2u));
+
+        pq.push(lpq_test_data {2, 4}); // overflow
+        AssertThat(pq.size(), Is().EqualTo(3u));
+
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {4, 1}));
+        AssertThat(pq.size(), Is().EqualTo(2u));
+
+        AssertThat(pq.empty_level(), Is().True());
+
+        AssertThat(pq.has_next_level(), Is().True());
+        AssertThat(pq.next_level(), Is().EqualTo(3u));
+
+        pq.setup_next_level(); // 3
+        AssertThat(pq.current_level(), Is().EqualTo(3u));
+
+        pq.push(lpq_test_data {2, 5}); // bucket
+        AssertThat(pq.size(), Is().EqualTo(3u));
+
+        AssertThat(pq.empty_level(), Is().False());
+
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {3, 3}));
+        AssertThat(pq.size(), Is().EqualTo(2u));
+
+        AssertThat(pq.empty_level(), Is().True());
+
+        pq.setup_next_level(); // 2
+        AssertThat(pq.current_level(), Is().EqualTo(2u));
+
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {2, 5}));
+        AssertThat(pq.size(), Is().EqualTo(1u));
+
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(lpq_test_data {2, 4}));
+        AssertThat(pq.size(), Is().EqualTo(0u));
+
+        AssertThat(pq.empty_level(), Is().True());
+      });
+    });
+
+    describe("levelized_priority_queue<..., LOOK_AHEAD=0, ..., INIT_LEVEL=0>", []() {
+      it("initialises correctly", []() {
         adiar::shared_file<ptr_uint64::label_t> f;
 
         levelized_priority_queue<lpq_test_data, lpq_test_lt, 0u,
-                                  memory_mode_t::INTERNAL,
-                                  adiar::shared_file<ptr_uint64::label_t>, 1u, std::less<ptr_uint64::label_t>,
-                                  0u>
+                                 memory_mode_t::INTERNAL,
+                                 adiar::shared_file<ptr_uint64::label_t>, 1u, std::less<>, false,
+                                 0u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
 
         AssertThat(pq.can_pull(), Is().False());
@@ -4347,7 +4566,7 @@ go_bandit([]() {
         AssertThat(pq.has_next_level(), Is().False());
       });
 
-      it("can push into and pull from root level [1]", [&]() {
+      it("can push into and pull from root level [1]", []() {
         lpq_test_file f;
 
         { // Garbage collect the writer early
@@ -4358,7 +4577,7 @@ go_bandit([]() {
 
         levelized_priority_queue<lpq_test_data, lpq_test_lt, 0u,
                                  memory_mode_t::INTERNAL,
-                                 lpq_test_file, 1u, std::less<ptr_uint64::label_t>,
+                                 lpq_test_file, 1u, std::less<>, false,
                                  0u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
 
@@ -4383,7 +4602,7 @@ go_bandit([]() {
         AssertThat(pq.has_next_level(), Is().False());
       });
 
-      it("can push into and pull from root level [2]", [&]() {
+      it("can push into and pull from root level [2]", []() {
         lpq_test_file f;
 
         { // Garbage collect the writer early
@@ -4397,7 +4616,7 @@ go_bandit([]() {
 
         levelized_priority_queue<lpq_test_data, lpq_test_lt, 0u,
                                  memory_mode_t::INTERNAL,
-                                 lpq_test_file, 1u, std::less<ptr_uint64::label_t>,
+                                 lpq_test_file, 1u, std::less<ptr_uint64::label_t>, false,
                                  0u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
 
@@ -4421,8 +4640,8 @@ go_bandit([]() {
       });
     });
 
-    describe("levelized_priority_queue<..., FILES=2, ...>", [&]() {
-      it("can push into and pull from merge of two meta files' levels", [&]() {
+    describe("levelized_priority_queue<..., FILES=2, ...>", []() {
+      it("can push into and pull from merge of two meta files' levels", []() {
         lpq_test_file f1;
         lpq_test_file f2;
 
@@ -4441,7 +4660,7 @@ go_bandit([]() {
 
         levelized_priority_queue<lpq_test_data, lpq_test_lt, 1u,
                                  memory_mode_t::INTERNAL,
-                                 lpq_test_file, 2u, std::less<ptr_uint64::label_t>,
+                                 lpq_test_file, 2u, std::less<>, false,
                                  0u>
           pq({f1,f2}, memory_available(), 32, stats_lpq_tests);
 
@@ -4491,8 +4710,8 @@ go_bandit([]() {
       });
     });
 
-    describe("levelized_priority_queue<..., LOOK_AHEAD=0, ..., FILES=2, ...>", [&]() {
-      it("can push into and pull from merge of two meta files' levels", [&]() {
+    describe("levelized_priority_queue<..., LOOK_AHEAD=0, ..., FILES=2, ...>", []() {
+      it("can push into and pull from merge of two meta files' levels", []() {
         lpq_test_file f1;
         lpq_test_file f2;
 
@@ -4511,7 +4730,7 @@ go_bandit([]() {
 
         levelized_priority_queue<lpq_test_data, lpq_test_lt, 0u,
                                  memory_mode_t::INTERNAL,
-                                 lpq_test_file, 2u, std::less<ptr_uint64::label_t>,
+                                 lpq_test_file, 2u, std::less<>, false,
                                  0u>
           pq({f1,f2}, memory_available(), 32, stats_lpq_tests);
 
@@ -4559,10 +4778,10 @@ go_bandit([]() {
       });
     });
 
-    describe("levelized_priority_queue<..., INIT_LEVEL=1, LOOK_AHEAD=3>", [&]() {
+    describe("levelized_priority_queue<..., INIT_LEVEL=1, LOOK_AHEAD=3>", []() {
       // TODO: size, pop, peek tests and more
 
-      it("initialises with #levels = 0", [&]() {
+      it("initialises with #levels = 0", []() {
         lpq_test_file f;
 
         test_priority_queue<lpq_test_file, 3> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -4576,7 +4795,7 @@ go_bandit([]() {
         AssertThat(pq.has_next_level(), Is().False());
       });
 
-      it("initialises with #levels = 1", [&]() {
+      it("initialises with #levels = 1", []() {
         lpq_test_file f;
 
         { // Garbage collect the writer early
@@ -4593,7 +4812,7 @@ go_bandit([]() {
         AssertThat(pq.has_next_level(), Is().False());
       });
 
-      it("initialises with 1 < #levels < #buckets", [&]() {
+      it("initialises with 1 < #levels < #buckets", []() {
         lpq_test_file f;
 
         { // Garbage collect the writer early
@@ -4613,7 +4832,7 @@ go_bandit([]() {
         AssertThat(pq.next_level(), Is().EqualTo(3u));
       });
 
-      it("initialises with #buckets < #levels", [&]() {
+      it("initialises with #buckets < #levels", []() {
         lpq_test_file f;
 
         { // Garbage collect the writer early
@@ -4638,8 +4857,8 @@ go_bandit([]() {
         AssertThat(pq.next_level(), Is().EqualTo(2u));
       });
 
-      describe(".push(elem_t &) + pull()", [&]{
-        it("can push into and pull from buckets", [&]() {
+      describe(".push(elem_t &) + pull()", []{
+        it("can push into and pull from buckets", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -4813,7 +5032,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can push into overflow queue [1]", [&]() {
+        it("can push into overflow queue [1]", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -4854,7 +5073,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can push into overflow queue [2]", [&]() {
+        it("can push into overflow queue [2]", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -4886,7 +5105,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can push into overflow queue [3]", [&]() {
+        it("can push into overflow queue [3]", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -4936,7 +5155,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can merge content of bucket with overflow queue", [&]() {
+        it("can merge content of bucket with overflow queue", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -5142,7 +5361,7 @@ go_bandit([]() {
           AssertThat(pq.size(), Is().EqualTo(0u));
         });
 
-        it("can deal with exactly as many levels as buckets", [&]() {
+        it("can deal with exactly as many levels as buckets", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -5210,7 +5429,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can deal with fewer levels than buckets", [&]() {
+        it("can deal with fewer levels than buckets", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -5253,7 +5472,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can push into relabelled buckets", [&]() {
+        it("can push into relabelled buckets", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -5298,7 +5517,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can push into relabelled buckets (with stop-level)", [&]() {
+        it("can push into relabelled buckets (with stop-level)", []() {
           adiar::shared_file<ptr_uint64::label_t> f;
 
           { // Garbage collect the writer early
@@ -5336,7 +5555,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can use buckets after relabel (with stop-level) where bucket levels are reused [1]", [&]() {
+        it("can use buckets after relabel (with stop-level) where bucket levels are reused [1]", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -5379,7 +5598,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can forward to stop-level with an empty overflow queue", [&]() {
+        it("can forward to stop-level with an empty overflow queue", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -5428,8 +5647,8 @@ go_bandit([]() {
         });
       });
 
-      describe(".top() / .peek()", [&]{
-        it("can pull after a peek in bucket", [&]() {
+      describe(".top() / .peek()", []{
+        it("can pull after a peek in bucket", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
@@ -5461,7 +5680,7 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        it("can pull after a peek in overflow", [&]() {
+        it("can pull after a peek in overflow", []() {
           lpq_test_file f;
 
           { // Garbage collect the writer early

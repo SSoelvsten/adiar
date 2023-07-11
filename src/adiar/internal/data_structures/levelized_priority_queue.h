@@ -100,6 +100,7 @@ namespace adiar::internal
             typename            file_t         = shared_file_ptr<levelized_file<element_t>>,
             size_t              FILES          = 1u,
             typename            level_comp_t   = std::less<ptr_uint64::label_t>,
+            bool                level_reverse  = false,
             ptr_uint64::label_t INIT_LEVEL     = 1u
             >
   class levelized_priority_queue
@@ -133,6 +134,11 @@ namespace adiar::internal
     /// \brief Type of the overflow priority queue.
     ////////////////////////////////////////////////////////////////////////////
     using priority_queue_t = priority_queue<memory_mode, elem_t, elem_comp_t>;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of the level merger.
+    ////////////////////////////////////////////////////////////////////////////
+    using level_merger_t = level_merger<file_t, level_comp_t, FILES, level_reverse>;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -176,7 +182,7 @@ namespace adiar::internal
   private:
     static tpie::memory_size_type const_memory_usage()
     {
-      return level_merger<file_t, level_comp_t, FILES>::memory_usage();
+      return level_merger_t::memory_usage();
     }
 
   public:
@@ -259,7 +265,7 @@ namespace adiar::internal
     /// \brief Memory used by the label merger.
     ////////////////////////////////////////////////////////////////////////////
     const tpie::memory_size_type _memory_occupied_by_merger =
-      level_merger<file_t, level_comp_t, FILES>::memory_usage();
+      level_merger_t::memory_usage();
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Memory to be used for the buckets.
@@ -274,7 +280,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Provides the levels to distribute all elements across.
     ////////////////////////////////////////////////////////////////////////////
-    level_merger<file_t, level_comp_t, FILES> _level_merger;
+    level_merger_t _level_merger;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Level of each bucket.
@@ -950,17 +956,20 @@ namespace adiar::internal
   /// \brief Specialization of the levelized priority queue with a look_ahead
   ///        of '0', i.e. **without** any buckets.
   ////////////////////////////////////////////////////////////////////////////
-  template <typename element_t,
-            typename element_comp_t,
-            memory_mode_t memory_mode,
-            typename file_t,
-            size_t   FILES,
-            typename level_comp_t,
+  template <typename            element_t,
+            typename            element_comp_t,
+            memory_mode_t       memory_mode,
+            typename            file_t,
+            size_t              FILES,
+            typename            level_comp_t,
+            bool                level_reverse,
             ptr_uint64::label_t INIT_LEVEL
             >
   class levelized_priority_queue<element_t, element_comp_t,
                                  0u, // <--
-                                 memory_mode, file_t, FILES, level_comp_t, INIT_LEVEL>
+                                 memory_mode,
+                                 file_t, FILES, level_comp_t, level_reverse,
+                                 INIT_LEVEL>
   {
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -1330,6 +1339,7 @@ namespace adiar::internal
                                                                  shared_levelized_file<node>,
                                                                  FILES,
                                                                  std::less<node::label_t>,
+                                                                 false,
                                                                  INIT_LEVEL>;
 
   template <typename            elem_t,
@@ -1344,6 +1354,7 @@ namespace adiar::internal
                                                                 shared_levelized_file<arc>,
                                                                 FILES,
                                                                 std::greater<arc::label_t>,
+                                                                false,
                                                                 INIT_LEVEL>;
 
   template <typename            elem_t,
@@ -1358,6 +1369,7 @@ namespace adiar::internal
                                                                   shared_file<ptr_uint64::label_t>,
                                                                   FILES,
                                                                   std::less<ptr_uint64::label_t>,
+                                                                  false,
                                                                   INIT_LEVEL>;
 }
 
