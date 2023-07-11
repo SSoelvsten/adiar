@@ -788,7 +788,7 @@ namespace adiar::internal
             level_info_stream<true> in_meta(dd);
             typename quantify_policy::label_t dd_level = in_meta.pull().level();
 
-            while (true) {
+            for (;;) {
               // Go forward in the diagram's levels, until we are at or above
               // the current candidate
               while (in_meta.can_pull() && transposition_level < dd_level) {
