@@ -140,7 +140,7 @@ namespace adiar::internal
   }
 
   template<typename pq_1_t, typename pq_2_t, typename quantify_policy>
-  typename quantify_policy::shared_arcs_t
+  typename quantify_policy::unreduced_t
   __quantify(const typename quantify_policy::reduced_t &in,
              const quantify_policy &policy_impl,
              const bool_op &op,
@@ -217,12 +217,10 @@ namespace adiar::internal
         adiar_invariant(req.target.first().label() == out_label,
                         "Level of requests always ought to match the one currently processed");
 
-        // Recreate children of the two targeted nodes (or possibly the
-        // suppressed node for target.second()).
+        // ---------------------------------------------------------------------
+        // CASE: Quantification of Singleton f into (f[0], f[1]).
         if (should_quantify &&
             (!quantify_policy::partial_quantification || req.target.second().is_nil())) {
-          // -------------------------------------------------------------------
-          // Quantification of Singleton f into (f[0], f[1]).
           quantify_request<0>::target_t rec =
             __quantify_resolve_request<quantify_policy, 2>(op, v.children().data());
 
@@ -235,6 +233,8 @@ namespace adiar::internal
           continue;
         }
 
+        // Recreate children of the two targeted nodes (or possibly the
+        // suppressed node for target.second()).
         const node::children_t children0 =
           req.empty_carry() ? v.children() : req.node_carry[0];
 
@@ -246,7 +246,57 @@ namespace adiar::internal
         adiar_debug(out_id < quantify_policy::MAX_ID, "Has run out of ids");
 
         // ---------------------------------------------------------------------
-        // Regular Level
+        // CASE: Partial Quantification of Tuple (f,g).
+        if (should_quantify && quantify_policy::partial_quantification) {
+          adiar_debug(quantify_policy::partial_quantification,
+                      "Should be marked for partial quantification.");
+
+          const tuple<typename quantify_policy::ptr_t, 4, true> rec_all =
+            __quantify_resolve_request<quantify_policy, 4>(op, {children0[false], children0[true],
+                                                                children1[false], children1[true]});
+
+          if (rec_all[2] == quantify_policy::ptr_t::NIL()) {
+            // Collapsed to a terminal?
+            if (req.data.source.is_nil() && rec_all[0].is_terminal()) {
+              adiar_debug(rec_all[1] == quantify_policy::ptr_t::NIL(),
+                          "Operator should already be applied");
+
+              return typename quantify_policy::reduced_t(rec_all[0].value());
+            }
+
+            // No need to output a node as everything fits within a 2-tuple.
+            quantify_request<0>::target_t rec(rec_all[0], rec_all[1]);
+
+            do {
+              __quantify_forward_request<quantify_policy>(quantify_pq_1, aw, req.data.source, rec);
+            } while (!__quantify_update_source_or_break(quantify_pq_1, quantify_pq_2,
+                                                        req.data.source,
+                                                        req.target));
+          } else {
+            // Output an intermediate node at this level to be quantified later.
+            const node::uid_t out_uid(out_label, out_id++);
+
+            quantify_request<0>::target_t rec0(rec_all[0], rec_all[1]);
+
+            __quantify_forward_request<quantify_policy>(quantify_pq_1, aw, out_uid.with(false), rec0);
+
+            quantify_request<0>::target_t rec1(rec_all[2], rec_all[3]);
+
+            __quantify_forward_request<quantify_policy>(quantify_pq_1, aw, out_uid.with(true), rec1);
+
+            if (!req.data.source.is_nil()) {
+              do {
+                aw.push_internal(arc(req.data.source, out_uid));
+              } while (!__quantify_update_source_or_break(quantify_pq_1, quantify_pq_2,
+                                                          req.data.source,
+                                                          req.target));
+            }
+          }
+          continue;
+        }
+
+        // ---------------------------------------------------------------------
+        // CASE: Regular Level
         //   The variable should stay: proceed as in the Product Construction
         //   by simulating both possibilities in parallel.
         const node::uid_t out_uid(out_label, out_id++);
