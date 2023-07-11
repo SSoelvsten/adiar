@@ -66,7 +66,7 @@ namespace adiar::internal
       ///        internal arcs are sorted by their 'target' rather than their
       ///        'source'.
       //////////////////////////////////////////////////////////////////////////
-      // bool semi_transposed = true;
+      bool semi_transposed = true;
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief An upper bound for the maximum one-level cut of the DAG (not

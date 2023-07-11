@@ -333,6 +333,23 @@ go_bandit([]() {
     });
 
     describe("arc_writer + node_arc_stream", []() {
+      it("marks file as de-transposed on attach", []() {
+        levelized_file<arc> af;
+
+        {
+          arc_writer aw(af);
+          aw.push_terminal(arc(arc::ptr_t(0,0), false, arc::ptr_t(false)));
+          aw.push_terminal(arc(arc::ptr_t(0,0), true,  arc::ptr_t(true)));
+
+          aw.push(level_info(0,1));
+          aw.detach();
+        }
+
+        AssertThat(af.semi_transposed, Is().True());
+        node_arc_stream ns(af);
+        AssertThat(af.semi_transposed, Is().False());
+      });
+
       it("can read single-node BDD [in-order]", []() {
         levelized_file<arc> af;
 
@@ -580,6 +597,37 @@ go_bandit([]() {
         AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::ptr_t(2,0),  node::ptr_t(1,0))));
 
         AssertThat(ns.can_pull(), Is().False());
+      });
+
+      it("can reattach to same file", []() {
+        levelized_file<arc> af;
+
+        {
+          arc_writer aw(af);
+          aw.push_terminal(arc(arc::ptr_t(0,0), false, arc::ptr_t(false)));
+          aw.push_terminal(arc(arc::ptr_t(0,0), true,  arc::ptr_t(true)));
+
+          aw.push(level_info(0,1));
+          aw.detach();
+        }
+
+        {
+          node_arc_stream ns(af);
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::ptr_t(false), node::ptr_t(true))));
+
+          AssertThat(ns.can_pull(), Is().False());
+        }
+
+        {
+          node_arc_stream ns(af);
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::ptr_t(false), node::ptr_t(true))));
+
+          AssertThat(ns.can_pull(), Is().False());
+        }
       });
     });
   });
