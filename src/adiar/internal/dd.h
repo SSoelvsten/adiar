@@ -279,7 +279,7 @@ namespace adiar::internal
     template <bool REVERSE>
     friend class node_stream;
 
-    template <typename file_t, typename comp_t, size_t FILES>
+    template <typename file_t, typename comp_t, size_t FILES, bool reverse>
     friend class level_merger;
 
     friend bool is_isomorphic(const dd&, const dd&);

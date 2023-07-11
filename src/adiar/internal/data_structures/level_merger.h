@@ -15,39 +15,46 @@ namespace adiar::internal
   /// \brief Defines at compile time the type of the file stream to use for
   ///        reading the levels from some file(s).
   //////////////////////////////////////////////////////////////////////////////
-  template <typename file_t>
+  template<typename file_t>
   struct level_stream_t
   {
-    typedef level_info_stream<> stream_t;
+    template<bool reverse>
+    using stream_t = level_info_stream<reverse>;
   };
 
-  template <>
+  template<>
   struct level_stream_t<file<ptr_uint64::label_t>>
   {
-    typedef file_stream<ptr_uint64::label_t> stream_t;
+    template<bool reverse>
+    using stream_t = file_stream<ptr_uint64::label_t, reverse>;
   };
 
-  template <>
+  template<>
   struct level_stream_t<shared_file<ptr_uint64::label_t>>
   {
-    typedef file_stream<ptr_uint64::label_t> stream_t;
+    template<bool reverse>
+    using stream_t = file_stream<ptr_uint64::label_t, reverse>;
   };
 
+  // TODO (code clarity):
+  //   Add to 'file_t' an enum with 'ASCENDING'/'DESCENDING' to then derive the
+  //   comparator in conjunction with 'reverse'.
+
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Merges the labels from one or more files.
+  /// \brief Merges the levels from one or more files.
   ///
-  /// \param file_t Type of the files to read from
+  /// \tparam file_t Type of the files to read from.
   ///
-  /// \param comp_t Comparator with which to merge the labels
+  /// \tparam comp_t Comparator with which to merge the levels.
   ///
-  /// \param FILES  Number of files to read from
+  /// \tparam FILES  Number of files to read from.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename file_t, typename comp_t, size_t FILES>
+  template<typename file_t, typename comp_t, size_t FILES, bool reverse = false>
   class level_merger
   {
     static_assert(0 < FILES, "At least one file should be merged");
 
-    typedef typename level_stream_t<file_t>::stream_t stream_t;
+    using stream_t = typename level_stream_t<file_t>::stream_t<reverse>;
 
   public:
     static size_t memory_usage()
@@ -60,7 +67,7 @@ namespace adiar::internal
   private:
     comp_t _comparator = comp_t();
 
-    unique_ptr<stream_t> _level_streams [FILES];
+    unique_ptr<stream_t> _level_streams[FILES];
 
   public:
     void hook(const file_t (&fs) [FILES])
@@ -80,7 +87,7 @@ namespace adiar::internal
     bool can_pull()
     {
       for (size_t idx = 0u; idx < FILES; idx++) {
-        if (_level_streams[idx] -> can_pull()) {
+        if (_level_streams[idx]->can_pull()) {
           return true;
         }
       }
@@ -95,10 +102,10 @@ namespace adiar::internal
       bool has_min_level = false;
       level_t min_level = 0u;
       for (size_t idx = 0u; idx < FILES; idx++) {
-        if (_level_streams[idx] -> can_pull()
-            && (!has_min_level || _comparator(__level_of<>(_level_streams[idx] -> peek()), min_level))) {
+        if (_level_streams[idx]->can_pull()
+            && (!has_min_level || _comparator(__level_of<>(_level_streams[idx]->peek()), min_level))) {
           has_min_level = true;
-          min_level = __level_of<>(_level_streams[idx] -> peek());
+          min_level = __level_of<>(_level_streams[idx]->peek());
         }
       }
 

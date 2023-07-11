@@ -228,6 +228,37 @@ go_bandit([]() {
         AssertThat(merger.pull(), Is().EqualTo(4u));
       });
 
+      it("can merge levels in reverse", [&]() {
+        shared_levelized_file<int> f1;
+        shared_levelized_file<int> f2;
+
+        { // Garbage collect the writers
+          levelized_file_writer<int> fw1(f1);
+
+          fw1.push(level_info(4,2u));
+          fw1.push(level_info(2,1u));
+
+          levelized_file_writer<int> fw2(f2);
+
+          fw2.push(level_info(4,3u));
+          fw2.push(level_info(3,2u));
+          fw2.push(level_info(1,1u));
+        }
+
+        level_merger<shared_levelized_file<int>, std::greater<>, 2, true> merger;
+
+        merger.hook({f1, f2});
+
+        AssertThat(merger.peek(), Is().EqualTo(4u));
+        AssertThat(merger.pull(), Is().EqualTo(4u));
+        AssertThat(merger.peek(), Is().EqualTo(3u));
+        AssertThat(merger.pull(), Is().EqualTo(3u));
+        AssertThat(merger.peek(), Is().EqualTo(2u));
+        AssertThat(merger.pull(), Is().EqualTo(2u));
+        AssertThat(merger.peek(), Is().EqualTo(1u));
+        AssertThat(merger.pull(), Is().EqualTo(1u));
+      });
+
       it("can pull, even after the original files have been deleted", [&]() {
         shared_levelized_file<int> f1 = shared_levelized_file<int>();
         shared_levelized_file<int> f2 = shared_levelized_file<int>();
