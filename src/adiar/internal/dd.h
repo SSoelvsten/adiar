@@ -68,12 +68,12 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     // Union of levelized node or arc files to reflect the possible return types
     // of a function and a 'no_file' for 'error'.
-    const std::variant<no_file, /*const*/ shared_nodes_t, /*const*/ shared_arcs_t>
+    std::variant<no_file, /*const*/ shared_nodes_t, /*const*/ shared_arcs_t>
     _union;
 
     ////////////////////////////////////////////////////////////////////////////
     // Propagating the negation flag below
-    const bool negate = false;
+    bool negate = false;
 
     ////////////////////////////////////////////////////////////////////////////
     // Constructors
