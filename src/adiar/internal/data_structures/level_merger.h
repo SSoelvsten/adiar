@@ -84,6 +84,13 @@ namespace adiar::internal
       }
     }
 
+    void hook(const __dd (&dds) [FILES])
+    {
+      for (size_t idx = 0u; idx < FILES; idx++) {
+        _level_streams[idx] = adiar::make_unique<stream_t>(dds[idx]);
+      }
+    }
+
     bool can_pull()
     {
       for (size_t idx = 0u; idx < FILES; idx++) {

@@ -422,6 +422,23 @@ namespace adiar::internal
       init_buckets();
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief              Instantiate with the given amount of memory.
+    ///
+    /// \param dds          Unreduced Decision Diagrams to follow the levels of
+    ///
+    /// \param memory_given Total amount of memory to use
+    ////////////////////////////////////////////////////////////////////////////
+    levelized_priority_queue(const __dd (& dds) [FILES],
+                             tpie::memory_size_type memory_given,
+                             size_t max_size,
+                             stats_t::levelized_priority_queue_t &stats)
+      : levelized_priority_queue(memory_given, max_size, stats)
+    {
+      _level_merger.hook(dds);
+      init_buckets();
+    }
+
   private:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief  Computes final memory usage of internal data structures to then
@@ -1098,6 +1115,20 @@ namespace adiar::internal
     /// \param memory_given Total amount of memory to use
     ////////////////////////////////////////////////////////////////////////////
     levelized_priority_queue(const dd (& /*dds*/) [FILES],
+                             tpie::memory_size_type memory_given,
+                             size_t max_size,
+                             stats_t::levelized_priority_queue_t &stats)
+      : levelized_priority_queue(memory_given, max_size, stats)
+    { }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief              Instantiate with the given amount of memory.
+    ///
+    /// \param dds          Decision Diagrams to follow the levels of
+    ///
+    /// \param memory_given Total amount of memory to use
+    ////////////////////////////////////////////////////////////////////////////
+    levelized_priority_queue(const __dd (& /*dds*/) [FILES],
                              tpie::memory_size_type memory_given,
                              size_t max_size,
                              stats_t::levelized_priority_queue_t &stats)
