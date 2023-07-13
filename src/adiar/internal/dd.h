@@ -108,6 +108,9 @@ namespace adiar::internal
       return has<no_file>();
     }
 
+    // TODO (optimisation):
+    //   Add precondition to be with 'arcs' only?
+
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Number of nodes.
     ////////////////////////////////////////////////////////////////////////////
@@ -118,6 +121,49 @@ namespace adiar::internal
       }
       if (has<shared_nodes_t>()) {
         return get<shared_nodes_t>()->size();
+      }
+      return 0u;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain the 1-level cut of the desired type, i.e. of the sub-graph
+    ///        including the desired type of arcs.
+    ///
+    /// \param ct The type of the cut to obtain
+    ////////////////////////////////////////////////////////////////////////////
+    cut_size_t max_1level_cut(const cut_type ct) const
+    {
+      if (has<shared_arcs_t>()) {
+        const shared_arcs_t &af = get<shared_arcs_t>();
+        return af->max_1level_cut
+          + (includes_terminal(ct, false) ? af->number_of_terminals[false] : 0u)
+          + (includes_terminal(ct, true)  ? af->number_of_terminals[true]  : 0u);
+      }
+      if (has<shared_nodes_t>()) {
+        return get<shared_nodes_t>()->max_1level_cut[ct];
+      }
+      return 0u;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain the 2-level cut of the desired type, i.e. of the sub-graph
+    ///        including the desired type of arcs.
+    ///
+    /// \param ct The type of the cut to obtain
+    ////////////////////////////////////////////////////////////////////////////
+    cut_size_t max_2level_cut(const cut_type ct) const
+    {
+      if (has<shared_arcs_t>()) {
+        const shared_arcs_t &af = get<shared_arcs_t>();
+        return std::min(// 3/2 times the 1-level cut
+                        (3 * af->max_1level_cut) / 2
+                        + (includes_terminal(ct, false) ? af->number_of_terminals[false] : 0u)
+                        + (includes_terminal(ct, true)  ? af->number_of_terminals[true]  : 0u),
+                        // At most the number of nodes + 1
+                        (af->size() / 2u) + 1);
+      }
+      if (has<shared_nodes_t>()) {
+        return get<shared_nodes_t>()->max_2level_cut[ct];
       }
       return 0u;
     }
@@ -181,7 +227,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The file describing the actual DAG of the decision diagram.
     ////////////////////////////////////////////////////////////////////////////
-    shared_nodes_t file; // TODO: shared_ptr<const levelized_file<node>>?
+    shared_nodes_t file;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Release the claim on the underlying file, thereby decreasing its
