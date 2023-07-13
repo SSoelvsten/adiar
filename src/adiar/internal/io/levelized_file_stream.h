@@ -224,8 +224,6 @@ namespace adiar::internal
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a (possibly unreduced) decision diagram.
-    ///
-    /// \warning Intended for unit testing only!
     ////////////////////////////////////////////////////////////////////////////
     level_info_stream(const __dd &diagram)
     { attach(diagram); }
@@ -264,16 +262,13 @@ namespace adiar::internal
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Attach to a (possibly unreduced) decision diagram.
-    ///
-    /// \warning Intended for unit testing only!
     ////////////////////////////////////////////////////////////////////////////
     void attach(const __dd &diagram)
     {
-      // TODO: switch order to favour levelized arc files
-      if (diagram.has<__dd::shared_nodes_t>()) {
-        attach<node>(diagram.get<__dd::shared_nodes_t>());
-      } else if (diagram.has<__dd::shared_arcs_t>()) {
+      if (diagram.has<__dd::shared_arcs_t>()) {
         attach<arc>(diagram.get<__dd::shared_arcs_t>());
+      } else if (diagram.has<__dd::shared_nodes_t>()) {
+        attach<node>(diagram.get<__dd::shared_nodes_t>());
       } else {
         // We should never be in the case of hooking into a 'no_file'. That type
         // should only be used internally within an algorithm and never escape
