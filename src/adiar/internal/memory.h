@@ -21,6 +21,8 @@ namespace adiar::internal
 
 namespace adiar
 {
+  // TODO: add std::move(...) alias
+
   // Based on <tpie/memory.h>
 
   //////////////////////////////////////////////////////////////////////////////

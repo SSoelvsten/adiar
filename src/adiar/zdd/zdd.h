@@ -36,6 +36,13 @@ namespace adiar
 
     ////////////////////////////////////////////////////////////////////////////
     __zdd(const zdd &zdd);
+
+    // NOTE:
+    //   '__dd' class includes 'max_1level_cut' and 'max_2level_cut' operations.
+    //   This does not take the potential extra 'false' arc into account.
+    //
+    //   For now, we do not care to add this, since we are not using `__zdd` in
+    //   a context where it is necessary such as 'zdd_union'.
   };
 
   //////////////////////////////////////////////////////////////////////////////
