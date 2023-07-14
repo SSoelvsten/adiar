@@ -1390,6 +1390,23 @@ namespace adiar::internal
                              INIT_LEVEL>;
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief Levelized Priority Queue to be used with `levelized_file<arc>` and
+  ///        a `node_arc_stream`.
+  //////////////////////////////////////////////////////////////////////////////
+  template <typename      elem_t,
+            typename      elem_comp_t = std::less<elem_t>,
+            arc::label_t  LOOK_AHEAD  = ADIAR_LPQ_LOOKAHEAD,
+            memory_mode_t mem_mode    = memory_mode_t::EXTERNAL,
+            size_t        FILES       = 1u,
+            arc::label_t  INIT_LEVEL  = 1u>
+  using levelized_node_arc_priority_queue =
+    levelized_priority_queue<elem_t, elem_comp_t,
+                             LOOK_AHEAD,
+                             mem_mode,
+                             shared_levelized_file<arc>, FILES, std::less<arc::label_t>, true,
+                             INIT_LEVEL>;
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief Levelized Priority Queue to be used with `shared_file<label_t>`.
   //////////////////////////////////////////////////////////////////////////////
   template <typename            elem_t,

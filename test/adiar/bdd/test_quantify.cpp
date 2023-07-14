@@ -31,8 +31,8 @@ go_bandit([]() {
     */
     shared_levelized_file<bdd::node_t> bdd_1;
 
-    node n1_2 = node(1, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
-    node n1_1 = node(0, node::MAX_ID, ptr_uint64(true), n1_2.uid());
+    const node n1_2 = node(1, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
+    const node n1_1 = node(0, node::MAX_ID, ptr_uint64(true), n1_2.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw_1(bdd_1);
@@ -52,11 +52,11 @@ go_bandit([]() {
     */
     shared_levelized_file<bdd::node_t> bdd_2;
 
-    node n2_5 = node(2, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
-    node n2_4 = node(2, node::MAX_ID-1, ptr_uint64(true), ptr_uint64(false));
-    node n2_3 = node(1, node::MAX_ID, n2_5.uid(), ptr_uint64(false));
-    node n2_2 = node(1, node::MAX_ID-1, n2_4.uid(), n2_5.uid());
-    node n2_1 = node(0, node::MAX_ID, n2_2.uid(), n2_3.uid());
+    const node n2_5 = node(2, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
+    const node n2_4 = node(2, node::MAX_ID-1, ptr_uint64(true), ptr_uint64(false));
+    const node n2_3 = node(1, node::MAX_ID, n2_5.uid(), ptr_uint64(false));
+    const node n2_2 = node(1, node::MAX_ID-1, n2_4.uid(), n2_5.uid());
+    const node n2_1 = node(0, node::MAX_ID, n2_2.uid(), n2_3.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw_2(bdd_2);
@@ -76,10 +76,10 @@ go_bandit([]() {
     */
     shared_levelized_file<bdd::node_t> bdd_3;
 
-    node n3_4 = node(2, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
-    node n3_3 = node(2, node::MAX_ID-1, ptr_uint64(true), ptr_uint64(false));
-    node n3_2 = node(1, node::MAX_ID, n3_3.uid(), n3_4.uid());
-    node n3_1 = node(0, node::MAX_ID, n3_3.uid(), n3_2.uid());
+    const node n3_4 = node(2, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
+    const node n3_3 = node(2, node::MAX_ID-1, ptr_uint64(true), ptr_uint64(false));
+    const node n3_2 = node(1, node::MAX_ID, n3_3.uid(), n3_4.uid());
+    const node n3_1 = node(0, node::MAX_ID, n3_3.uid(), n3_2.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw_3(bdd_3);
@@ -101,11 +101,11 @@ go_bandit([]() {
     */
     shared_levelized_file<bdd::node_t> bdd_4;
 
-    node n4_5 = node(3, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
-    node n4_4 = node(2, node::MAX_ID, n4_5.uid(), ptr_uint64(true));
-    node n4_3 = node(2, node::MAX_ID-1, ptr_uint64(false), n4_5.uid());
-    node n4_2 = node(1, node::MAX_ID, n4_3.uid(), n4_4.uid());
-    node n4_1 = node(0, node::MAX_ID, n4_3.uid(), n4_2.uid());
+    const node n4_5 = node(3, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
+    const node n4_4 = node(2, node::MAX_ID, n4_5.uid(), ptr_uint64(true));
+    const node n4_3 = node(2, node::MAX_ID-1, ptr_uint64(false), n4_5.uid());
+    const node n4_2 = node(1, node::MAX_ID, n4_3.uid(), n4_4.uid());
+    const node n4_1 = node(0, node::MAX_ID, n4_3.uid(), n4_2.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw_4(bdd_4);
@@ -125,10 +125,10 @@ go_bandit([]() {
     */
     shared_levelized_file<bdd::node_t> bdd_5;
 
-    node n5_4 = node(2, node::MAX_ID, ptr_uint64(true), ptr_uint64(false));
-    node n5_3 = node(2, node::MAX_ID-1, ptr_uint64(false), ptr_uint64(true));
-    node n5_2 = node(1, node::MAX_ID, n5_3.uid(), n5_4.uid());
-    node n5_1 = node(0, node::MAX_ID, ptr_uint64(false), n5_2.uid());
+    const node n5_4 = node(2, node::MAX_ID, ptr_uint64(true), ptr_uint64(false));
+    const node n5_3 = node(2, node::MAX_ID-1, ptr_uint64(false), ptr_uint64(true));
+    const node n5_2 = node(1, node::MAX_ID, n5_3.uid(), n5_4.uid());
+    const node n5_1 = node(0, node::MAX_ID, ptr_uint64(false), n5_2.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw_5(bdd_5);
@@ -269,14 +269,14 @@ go_bandit([]() {
     //      / \
     //      F T
     */
-    node n9T_8 = node(6, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
-    node n9T_7 = node(5, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
-    node n9T_6 = node(4, node::MAX_ID,   n9T_8.uid(),       n9T_7.uid());
-    node n9T_5 = node(3, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
-    node n9T_4 = node(3, node::MAX_ID-1, n9T_6.uid(),       ptr_uint64(false));
-    node n9T_3 = node(2, node::MAX_ID,   n9T_5.uid(),       n9T_7.uid());
-    node n9T_2 = node(2, node::MAX_ID-1, n9T_4.uid(),       n9T_5.uid());
-    node n9T_1 = node(1, node::MAX_ID,   n9T_2.uid(),       n9T_3.uid());
+    const node n9T_8 = node(6, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
+    const node n9T_7 = node(5, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
+    const node n9T_6 = node(4, node::MAX_ID,   n9T_8.uid(),       n9T_7.uid());
+    const node n9T_5 = node(3, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
+    const node n9T_4 = node(3, node::MAX_ID-1, n9T_6.uid(),       ptr_uint64(false));
+    const node n9T_3 = node(2, node::MAX_ID,   n9T_5.uid(),       n9T_7.uid());
+    const node n9T_2 = node(2, node::MAX_ID-1, n9T_4.uid(),       n9T_5.uid());
+    const node n9T_1 = node(1, node::MAX_ID,   n9T_2.uid(),       n9T_3.uid());
 
     shared_levelized_file<bdd::node_t> bdd_9T;
     { // Garbage collect writer to free write-lock
@@ -301,14 +301,14 @@ go_bandit([]() {
     //            / \
     //            F T
     */
-    node n9F_8 = node(6, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
-    node n9F_7 = node(5, node::MAX_ID,   ptr_uint64(false), n9F_8.uid());
-    node n9F_6 = node(4, node::MAX_ID,   ptr_uint64(false), n9F_7.uid());
-    node n9F_5 = node(3, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
-    node n9F_4 = node(3, node::MAX_ID-1, n9F_6.uid(),       ptr_uint64(false));
-    node n9F_3 = node(2, node::MAX_ID,   n9F_5.uid(),       n9F_7.uid());
-    node n9F_2 = node(2, node::MAX_ID-1, n9F_4.uid(),       n9F_5.uid());
-    node n9F_1 = node(1, node::MAX_ID,   n9F_2.uid(),       n9F_3.uid());
+    const node n9F_8 = node(6, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
+    const node n9F_7 = node(5, node::MAX_ID,   ptr_uint64(false), n9F_8.uid());
+    const node n9F_6 = node(4, node::MAX_ID,   ptr_uint64(false), n9F_7.uid());
+    const node n9F_5 = node(3, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
+    const node n9F_4 = node(3, node::MAX_ID-1, n9F_6.uid(),       ptr_uint64(false));
+    const node n9F_3 = node(2, node::MAX_ID,   n9F_5.uid(),       n9F_7.uid());
+    const node n9F_2 = node(2, node::MAX_ID-1, n9F_4.uid(),       n9F_5.uid());
+    const node n9F_1 = node(1, node::MAX_ID,   n9F_2.uid(),       n9F_3.uid());
 
     shared_levelized_file<bdd::node_t> bdd_9F;
 
@@ -332,14 +332,14 @@ go_bandit([]() {
     //             / \
     //             F T
     */
-    node n10_8 = node(4, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
-    node n10_7 = node(3, node::MAX_ID,   n10_8.uid(),       ptr_uint64(true));
-    node n10_6 = node(3, node::MAX_ID-1, n10_8.uid(),       n10_8.uid());
-    node n10_5 = node(3, node::MAX_ID-2, ptr_uint64(true),  n10_8.uid());
-    node n10_4 = node(2, node::MAX_ID,   n10_6.uid(),       n10_7.uid());
-    node n10_3 = node(2, node::MAX_ID-1, n10_5.uid(),       n10_6.uid());
-    node n10_2 = node(1, node::MAX_ID,   n10_3.uid(),       n10_4.uid());
-    node n10_1 = node(0, node::MAX_ID,   ptr_uint64(false), n10_2.uid());
+    const node n10_8 = node(4, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
+    const node n10_7 = node(3, node::MAX_ID,   n10_8.uid(),       ptr_uint64(true));
+    const node n10_6 = node(3, node::MAX_ID-1, n10_8.uid(),       n10_8.uid());
+    const node n10_5 = node(3, node::MAX_ID-2, ptr_uint64(true),  n10_8.uid());
+    const node n10_4 = node(2, node::MAX_ID,   n10_6.uid(),       n10_7.uid());
+    const node n10_3 = node(2, node::MAX_ID-1, n10_5.uid(),       n10_6.uid());
+    const node n10_2 = node(1, node::MAX_ID,   n10_3.uid(),       n10_4.uid());
+    const node n10_1 = node(0, node::MAX_ID,   ptr_uint64(false), n10_2.uid());
 
     shared_levelized_file<bdd::node_t> bdd_10;
 
@@ -369,6 +369,364 @@ go_bandit([]() {
     { // Garbage collect writer to free write-lock
       node_writer nw_11(bdd_11);
       nw_11 << n11_4 << n11_3 << n11_2 << n11_1;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // BDD 12a : primary partial quantification example from paper
+    /*
+    //          1          ---- x0
+    //         / \
+    //         | 2         ---- x1
+    //         |/ \
+    //         3   4       ---- x2
+    //        / \ / \
+    //        5  6   \     ---- x3
+    //       / \/ \  |
+    //       T  F T  7     ---- x4
+    //              / \
+    //              F T
+    */
+    const node n12a_7 = node(4, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
+    const node n12a_6 = node(3, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
+    const node n12a_5 = node(3, node::MAX_ID-1, ptr_uint64(true),  ptr_uint64(false));
+    const node n12a_4 = node(2, node::MAX_ID,   n12a_6.uid(),      n12a_7.uid());
+    const node n12a_3 = node(2, node::MAX_ID-1, n12a_5.uid(),      n12a_6.uid());
+    const node n12a_2 = node(1, node::MAX_ID,   n12a_3.uid(),      n12a_4.uid());
+    const node n12a_1 = node(0, node::MAX_ID,   n12a_3.uid(),      n12a_2.uid());
+
+    shared_levelized_file<bdd::node_t> bdd_12a;
+
+    { // Garbage collect writer to free write-lock
+      node_writer nw(bdd_12a);
+      nw << n12a_7 << n12a_6 << n12a_5 << n12a_4 << n12a_3 << n12a_2 << n12a_1;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // BDD 12b : extends the above such that it does not collapse to the true
+    //           terminal for 0 < x < 3.
+    /*
+    //          1          ---- x0
+    //         / \
+    //         | 2         ---- x1
+    //         |/ \
+    //         3   4       ---- x2
+    //        / \ / \
+    //        5  6  |      ---- x3
+    //       / \/ \ /
+    //       7 F   8       ---- x4
+    //      / \   / \
+    //      T F   F T
+    */
+    const node n12b_8 = node(4, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
+    const node n12b_7 = node(4, node::MAX_ID-1, ptr_uint64(true),  ptr_uint64(false));
+    const node n12b_6 = node(3, node::MAX_ID,   ptr_uint64(false), n12b_8.uid());
+    const node n12b_5 = node(3, node::MAX_ID-1, n12b_7.uid(),      ptr_uint64(false));
+    const node n12b_4 = node(2, node::MAX_ID,   n12b_6.uid(),      n12b_8.uid());
+    const node n12b_3 = node(2, node::MAX_ID-1, n12b_5.uid(),      n12b_6.uid());
+    const node n12b_2 = node(1, node::MAX_ID,   n12b_3.uid(),      n12b_4.uid());
+    const node n12b_1 = node(0, node::MAX_ID,   n12b_3.uid(),      n12b_2.uid());
+
+    shared_levelized_file<bdd::node_t> bdd_12b;
+
+    { // Garbage collect writer to free write-lock
+      node_writer nw(bdd_12b);
+      nw << n12b_8 << n12b_7 << n12b_6 << n12b_5 << n12b_4 << n12b_3 << n12b_2 << n12b_1;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // BDD 13 : quantifying variables x0 and x1 create a BDD larger than the
+    //          original input.
+    /*
+    //           _____1_____             ---- x0
+    //          /           \
+    //       __2__        __3__          ---- x1
+    //      /     \      /     \
+    //      |     |      |     |
+    //      4     5      |     |         ---- x2
+    //     / \   / \     |     |
+    //    /   \  F |     6    _7_        ---- x3
+    //    |   |    |    / \  /   \
+    //    8   9    |    F | 10   11      ---- x4
+    //    X  /|    |      |  X  /  \
+    //   / \/ |    |      | / \/   /
+    //   | /\ |    |      | | /\  /
+    //   \ | \|    |      / 12  13       ---- x5
+    //    \| ||    |     / / |  | \
+    //    14 15    \    /  T F  F T      ---- x6
+    //   / | | \    \  /
+    //   T F F T     16                  ---- x7
+    //              /  \
+    //              F  T
+    //
+    // If x1 is quantified, the pairs (4,5) or (6,7) are created. Here, the F
+    // terminal of 5 and 6 together with the node ? duplicates both the entire
+    // subtree of 4 and 5. To be sure the output is large enough, we need to
+    // make these subtrees at least as large as the number of nodes removed by
+    // quantification.
+    //
+    // This also applies to partial quantification when x0 and x1 are
+    // quantified, where the node (x1, (4,5), (6,7)) has to be created for
+    // a later sweep.
+    */
+
+    // This is definitely NOT canonical... it is not worth making.
+    const node n13_16 = node(7, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
+    const node n13_15 = node(6, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
+    const node n13_14 = node(6, node::MAX_ID-1, ptr_uint64(true),  ptr_uint64(false));
+    const node n13_13 = node(5, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
+    const node n13_12 = node(5, node::MAX_ID-1, ptr_uint64(true),  ptr_uint64(false));
+    const node n13_11 = node(4, node::MAX_ID,   n13_12.uid(),      n13_13.uid());
+    const node n13_10 = node(4, node::MAX_ID-1, n13_13.uid(),      n13_12.uid());
+    const node n13_9  = node(4, node::MAX_ID-2, n13_14.uid(),      n13_15.uid());
+    const node n13_8  = node(4, node::MAX_ID-3, n13_15.uid(),      n13_14.uid());
+    const node n13_7  = node(3, node::MAX_ID,   n13_10.uid(),      n13_11.uid());
+    const node n13_6  = node(3, node::MAX_ID-1, ptr_uint64(false), n13_16.uid());
+    const node n13_5  = node(2, node::MAX_ID,   ptr_uint64(false), n13_16.uid());
+    const node n13_4  = node(2, node::MAX_ID-1, n13_8.uid(),       n13_9.uid());
+    const node n13_3  = node(1, node::MAX_ID,   n13_6.uid(),       n13_7.uid());
+    const node n13_2  = node(1, node::MAX_ID-1, n13_4.uid(),       n13_5.uid());
+    const node n13_1  = node(0, node::MAX_ID,   n13_2.uid(),       n13_3.uid());
+
+    shared_levelized_file<bdd::node_t> bdd_13;
+
+    { // Garbage collect writer to free write-lock
+      node_writer nw(bdd_13);
+      nw << n13_16 << n13_15 << n13_14 << n13_13 << n13_12 << n13_11 << n13_10
+         << n13_9 << n13_8 << n13_7 << n13_6 << n13_5 << n13_4 << n13_3 << n13_2
+         << n13_1;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // BDD 14a : Partial Quantification does not immediately resolve
+    //           quantification of x3 and x4.
+    /*
+    //                __1__         ---- x0
+    //               /     \
+    //              _2_   _3_       ---- x1
+    //             /   \ /   \
+    //             4   _5_   6      ---- x2  <-- widest level
+    //            / \ /   \ / \
+    //            F  7_   _8  F     ---- x3
+    //              /  \ /  \
+    //             /    9    \      ---- x4
+    //            /    / \    \
+    //           10   /   \   11    ---- x5
+    //          /  \  |   |  /  \
+    //          T  F 12   13 F  T   ---- x6
+    //              /  \ /  \
+    //              T  F F  T
+    */
+    const node n14_13 = node(8, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
+    const node n14_12 = node(8, node::MAX_ID-1, ptr_uint64(true),  ptr_uint64(false));
+    const node n14_11 = node(7, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
+    const node n14_10 = node(7, node::MAX_ID-1, ptr_uint64(true),  ptr_uint64(false));
+    const node n14_9  = node(6, node::MAX_ID,   n14_12.uid(),      n14_13.uid());
+    const node n14_8  = node(5, node::MAX_ID,   n14_9.uid(),       n14_11.uid());
+    const node n14_7  = node(5, node::MAX_ID-1, n14_10.uid(),      n14_9.uid());
+    const node n14_6  = node(4, node::MAX_ID,   n14_8.uid(),       ptr_uint64(false));
+    const node n14_5  = node(4, node::MAX_ID-1, n14_7.uid(),       n14_8.uid());
+    const node n14_4  = node(4, node::MAX_ID-2, ptr_uint64(false), n14_7.uid());
+    const node n14_3  = node(3, node::MAX_ID,   n14_5.uid(),       n14_6.uid());
+    const node n14_2  = node(3, node::MAX_ID-1, n14_4.uid(),       n14_5.uid());
+    const node n14_1  = node(2, node::MAX_ID,   n14_2.uid(),       n14_3.uid());
+
+    shared_levelized_file<bdd::node_t> bdd_14a;
+
+    { // Garbage collect writer to free write-lock
+      node_writer nw(bdd_14a);
+      nw << n14_13 << n14_12 << n14_11 << n14_10 << n14_9 << n14_8 << n14_7
+         << n14_6 << n14_5 << n14_4 << n14_3 << n14_2 << n14_1;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // BDD 14b : Similar to BDD 14a but the following root has been added.
+    /*
+    //                   __1*__        ---- x0
+    //                  /      \
+    //                  |      2*      ---- x1
+    //                  |     / \
+    //               BDD 14   F T
+    */
+    const node n14b_2  = node(1, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
+    const node n14b_1  = node(0, node::MAX_ID,   n14_1.uid(),       n14b_2.uid());
+
+    shared_levelized_file<bdd::node_t> bdd_14b;
+
+    { // Garbage collect writer to free write-lock
+      node_writer nw(bdd_14b);
+      nw << n14_13 << n14_12 << n14_11 << n14_10 << n14_9 << n14_8 << n14_7
+         << n14_6 << n14_5 << n14_4 << n14_3 << n14_2 << n14_1
+         << n14b_2 << n14b_1;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // BDD 15 : The two subtrees are designed such that their products is more
+    //          than twice their original size. If each subtree itself also is
+    //          duplicated, then it gets close(ish) to 200% the input size.
+    //
+    //          The variables x0 and x1 are designed such that Partial
+    //          Quantification has to leave another node for later.
+    /*
+    //                        __r1__                    ---- x0
+    //                       /      \
+    //                       r2     r3                  ---- x1
+    //                      /  \   /  \
+    //                      1  a   5  d
+    //
+    //                                   a              ---- x2
+    //                                  / \
+    //                   _1_            | |             ---- x3
+    //                  /   \           | |
+    //                  2   3           | |             ---- x4
+    //                 / \ / \          | |
+    //                 F _4_ F        __b c__           ---- x5
+    //                  /   \        /  \ /  \
+    //                  5   6        F   d   F          ---- x6
+    //                 / \ / \          / \
+    //                 |  7  |          | |             ---- x7
+    //                 \ / \ /          | |
+    //                  8   9           f g             ---- x8
+    //                  |\ _X          /| X
+    //                  | X  \         |\ |\
+    //                  |/ \ /         \ X /
+    //                  10 11           h i             ---- x9
+    //                  |\ _X          /| X
+    //                  | X  \         |\ |\
+    //                  |/ \ /         \ X /
+    //                  12 13           j k             ---- x10
+    //                  |\ _X          /| X
+    //                  | X  \         |\ |\
+    //                  |/ \ /         \ X /
+    //                  14 15           l m             ---- x11
+    //                  |\ _X          /| X
+    //                  | X  \         |\ |\
+    //                  |/ \ /         | X |
+    //                  16 17          |/ \|            ---- x12
+    //                 / | | \         \\ //
+    //                 T F F T          n o             ---- x13
+    //                                 /| |\
+    //                                T F F T
+    //
+    // Number of nodes:
+    //   - roots: 3
+    //   - left : 7 + 2i
+    //   - right: 5 + 2i
+    //
+    // Total: 15 + 4i
+    */
+    //
+    /*
+    //                            _______(1,a)_______
+    //                           /                   \
+    //              __________(1,b)__________      (1,c)   <-- (1,c) is symmetric to (1,b) (these merge with (4,b) and (4,c))
+    //             /                         \       .         Size: 3 additional nodes (incl. (1,c))
+    //           (2,b)                     (3,c)     .
+    //           /   \                      |  \     .
+    //          (b) (4,b)                (4,c) (c)
+    //              /   \                /   \
+    //             (5) (6,d)           (5,d) (6)            <-- At this point we have copies of both inputs.
+    //                 /   \           /   \                    Left subtree:  #nodes - 4
+    //              (7,f) (9,g)    (8,d) (7,g)                  Right subtree: #nodes - 1
+    //              /   \                /   \
+    //          (8,f)   (9,f)          (8,g) (9,g)          <-- (8,g) and (9,g) also produce the same pairs
+    //         /   |     |   \          / /   / /
+    //        /    |     |    \        . .   . .
+    //       /     |     |     \      . .   . .
+    //   (10,h) (11,i) (11,h) (10,i)
+    //    /  \   /  \   /  \   /  \
+    //    .  .   .  .   .  .   .  .
+    //   (12,j) (13,k) (12,j) (12,k)
+    //    /  \   /  \   /  \   /  \
+    //    .  .   .  .   .  .   .  .
+    //   (14,l) (14,m) (15,l) (15,m)
+    //    /  \   /  \   /  \   /  \
+    //    .  .   .  .   .  .   .  .
+    //   (16,n) (16,o) (17,n) (17,o)
+    //    /  \   /  \   /  \   /  \
+    //    T (n)  T (o)  T (n)  F (o)
+    //
+    // Number of nodes (after one partial quantification):
+    //   - roots   : 1
+    //   - left    : (7-4) + 2i
+    //   - right   : (5-1) + 2i
+    //   - product : 13 + 4i + 2 = 15 + 4i
+    //   - (5,d)   : 1
+    //
+    // Total: 22 + 4i + 4(i-1)
+    //
+    // For i = 5, this should construct roughly 58 unreduced nodes in the first
+    // sweep, which is 1.65 of the original 35 nodes.
+    */
+    // NOTE: This is not going to be canonical (i.e. ordered) because that would
+    //       become too messy.
+
+    const node n15_o  = node(13, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
+    const node n15_n  = node(13, node::MAX_ID-1, ptr_uint64(true),  ptr_uint64(false));
+
+    const node n15_17 = node(12, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
+    const node n15_16 = node(12, node::MAX_ID-1, ptr_uint64(true),  ptr_uint64(false));
+
+    const node n15_m  = node(11, node::MAX_ID,   n15_o.uid(),       n15_n.uid());
+    const node n15_l  = node(11, node::MAX_ID-1, n15_n.uid(),       n15_o.uid());
+    const node n15_15 = node(11, node::MAX_ID-2, n15_17.uid(),      n15_16.uid());
+    const node n15_14 = node(11, node::MAX_ID-3, n15_16.uid(),      n15_17.uid());
+
+    const node n15_k  = node(10, node::MAX_ID,   n15_m.uid(),       n15_l.uid());
+    const node n15_j  = node(10, node::MAX_ID-1, n15_l.uid(),       n15_m.uid());
+    const node n15_13 = node(10, node::MAX_ID-2, n15_15.uid(),      n15_14.uid());
+    const node n15_12 = node(10, node::MAX_ID-3, n15_14.uid(),      n15_15.uid());
+
+    const node n15_i  = node(9,  node::MAX_ID,   n15_k.uid(),       n15_j.uid());
+    const node n15_h  = node(9,  node::MAX_ID-1, n15_j.uid(),       n15_k.uid());
+    const node n15_11 = node(9,  node::MAX_ID-2, n15_13.uid(),      n15_12.uid());
+    const node n15_10 = node(9,  node::MAX_ID-3, n15_12.uid(),      n15_13.uid());
+
+    const node n15_g  = node(8,  node::MAX_ID,   n15_i.uid(),       n15_h.uid());
+    const node n15_f  = node(8,  node::MAX_ID-1, n15_h.uid(),       n15_i.uid());
+    const node n15_9  = node(8,  node::MAX_ID-2, n15_11.uid(),      n15_10.uid());
+    const node n15_8  = node(8,  node::MAX_ID-3, n15_10.uid(),      n15_11.uid());
+
+    const node n15_7  = node(7,  node::MAX_ID,   n15_8.uid(),       n15_9.uid());
+
+    const node n15_d  = node(6,  node::MAX_ID,   n15_f.uid(),       n15_g.uid());
+    const node n15_6  = node(6,  node::MAX_ID-1, n15_7.uid(),       n15_9.uid());
+    const node n15_5  = node(6,  node::MAX_ID-2, n15_8.uid(),       n15_7.uid());
+
+    const node n15_c  = node(5,  node::MAX_ID,   n15_d.uid(),       ptr_uint64(false));
+    const node n15_b  = node(5,  node::MAX_ID-1, ptr_uint64(false), n15_d.uid());
+    const node n15_4  = node(5,  node::MAX_ID-2, n15_5.uid(),       n15_6.uid());
+
+    const node n15_3  = node(4,  node::MAX_ID,   n15_4.uid(),       ptr_uint64(false));
+    const node n15_2  = node(4,  node::MAX_ID-1, ptr_uint64(false), n15_4.uid());
+
+    const node n15_1  = node(3,  node::MAX_ID,   n15_2.uid(),       n15_3.uid());
+
+    const node n15_a  = node(2,  node::MAX_ID,   n15_b.uid(),       n15_c.uid());
+
+    const node n15_r3 = node(1,  node::MAX_ID,   n15_5.uid(),       n15_d.uid());
+    const node n15_r2 = node(1,  node::MAX_ID-1, n15_1.uid(),       n15_a.uid());
+
+    const node n15_r1 = node(0,  node::MAX_ID,   n15_r2.uid(),      n15_r3.uid());
+
+    shared_levelized_file<bdd::node_t> bdd_15;
+
+    { // Garbage collect writer to free write-lock
+      node_writer nw(bdd_15);
+      nw << n15_o  << n15_n
+         << n15_17 << n15_16
+         << n15_m  << n15_l  << n15_15 << n15_14
+         << n15_k  << n15_j  << n15_13 << n15_12
+         << n15_i  << n15_h  << n15_11 << n15_10
+         << n15_g  << n15_f  << n15_9  << n15_8
+         << n15_7
+         << n15_d  << n15_6  << n15_5
+         << n15_c  << n15_b  << n15_4
+         << n15_3  << n15_2
+         << n15_1
+         << n15_a
+         << n15_r3 << n15_r2
+         << n15_r1
+        ;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -1059,7 +1417,9 @@ go_bandit([]() {
 
     describe("bdd_exists(const bdd&, const std::function<bool(bdd::label_t)>&)", [&]() {
       it("returns input on always-false predicate BDD 1 [&&]", [&]() {
-        __bdd out = bdd_exists(bdd_1, [](const bdd::label_t) { return false; });
+        __bdd out = bdd_exists(bdd_1, [](const bdd::label_t) -> bool {
+          return false;
+        });
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd_1));
       });
 
@@ -1067,7 +1427,9 @@ go_bandit([]() {
         quantify_mode = quantify_mode_t::SINGLETON;
 
         it("quantifies odd variables in BDD 4 [&&]", [&]() {
-          bdd out = bdd_exists(bdd_4, [](const bdd::label_t x) { return x % 2; });
+          bdd out = bdd_exists(bdd_4, [](const bdd::label_t x) -> bool {
+            return x % 2;
+          });
 
           node_test_stream out_nodes(out);
 
@@ -1092,10 +1454,14 @@ go_bandit([]() {
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
         });
 
         it("quantifies 1, 2 in BDD 4 [&&]", [&]() {
-          bdd out = bdd_exists(bdd_4, [](const bdd::label_t x) { return x == 1 || x == 2; });
+          bdd out = bdd_exists(bdd_4, [](const bdd::label_t x) -> bool {
+            return x == 1 || x == 2;
+          });
 
           node_test_stream out_nodes(out);
 
@@ -1126,7 +1492,9 @@ go_bandit([]() {
 
         it("quantifies even variables in BDD 4 [const &]", [&]() {
           const bdd in = bdd_4;
-          const bdd out = bdd_exists(in, [](const bdd::label_t x) { return !(x % 2); });
+          const bdd out = bdd_exists(in, [](const bdd::label_t x) -> bool {
+            return !(x % 2);
+          });
 
           node_test_stream out_nodes(out);
 
@@ -1156,7 +1524,9 @@ go_bandit([]() {
         });
 
         it("quantifies odd variables in BDD 1 [&&]", [&]() {
-          bdd out = bdd_exists(bdd_1, [](const bdd::label_t x) { return x % 2; });
+          bdd out = bdd_exists(bdd_1, [](const bdd::label_t x) -> bool {
+            return x % 2;
+          });
 
           node_test_stream out_nodes(out);
 
@@ -1175,7 +1545,7 @@ go_bandit([]() {
           // TODO: top-down dependant?
           int calls = 0;
 
-          const bdd out = bdd_exists(bdd_1, [&calls](const bdd::label_t) {
+          const bdd out = bdd_exists(bdd_1, [&calls](const bdd::label_t) -> bool {
             calls++;
             return true;
           });
@@ -1196,7 +1566,9 @@ go_bandit([]() {
         });
 
         it("quantifies with always-true predicate in BDD 4 [&&]", [&]() {
-          bdd out = bdd_exists(bdd_4, [](const bdd::label_t) { return true; });
+          bdd out = bdd_exists(bdd_4, [](const bdd::label_t) -> bool {
+            return true;
+          });
 
           node_test_stream out_nodes(out);
 
@@ -1204,8 +1576,8 @@ go_bandit([]() {
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
-          AssertThat(ms.can_pull(), Is().False());
+          level_info_test_stream out_meta(out);
+          AssertThat(out_meta.can_pull(), Is().False());
 
           // TODO: meta variables...
         });
@@ -1216,7 +1588,683 @@ go_bandit([]() {
       describe("quantify_mode == PARTIAL", [&]() {
         quantify_mode = quantify_mode_t::PARTIAL;
 
-        // TODO
+        it("collapses during initial transposition of all variables in BDD 4 [&&]", [&]() {
+          std::vector<bdd::label_t> call_history;
+          bdd out = bdd_exists(bdd_4, [&call_history](const bdd::label_t x) -> bool {
+            call_history.push_back(x);
+            return true;
+          });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a
+          //       change. Please verify that this change makes sense and is as
+          //       intended.
+          AssertThat(call_history.size(), Is().EqualTo(5u));
+
+          // - First check for at least one variable satisfying the predicate.
+          AssertThat(call_history.at(0), Is().EqualTo(3u));
+
+
+          // - First top-down sweep (root call)
+          AssertThat(call_history.at(1), Is().EqualTo(0u));
+
+          // - First top-down sweep
+          AssertThat(call_history.at(2), Is().EqualTo(0u));
+          AssertThat(call_history.at(3), Is().EqualTo(1u));
+          AssertThat(call_history.at(4), Is().EqualTo(2u));
+        });
+
+        it("finishes during initial transposition of even variables in BDD 4 [const &]", [&]() {
+          std::vector<bdd::label_t> call_history;
+
+          const bdd in = bdd_4;
+          const bdd out = bdd_exists(in, [&call_history](const bdd::label_t x) -> bool {
+            call_history.push_back(x);
+            return !(x % 2);
+          });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                         ptr_uint64(false),
+                                                         ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2')
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                         ptr_uint64(3, ptr_uint64::MAX_ID),
+                                                         ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables ...
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a
+          //       change. Please verify that this change makes sense and is as
+          //       intended.
+          AssertThat(call_history.size(), Is().EqualTo(7u));
+
+          // - First check for at least one variable satisfying the predicate.
+          AssertThat(call_history.at(0), Is().EqualTo(3u));
+          AssertThat(call_history.at(1), Is().EqualTo(2u));
+
+          // - First top-down sweep (root call)
+          AssertThat(call_history.at(2), Is().EqualTo(0u));
+
+          // - First top-down sweep
+          AssertThat(call_history.at(3), Is().EqualTo(0u));
+          AssertThat(call_history.at(4), Is().EqualTo(1u));
+          AssertThat(call_history.at(5), Is().EqualTo(2u));
+          AssertThat(call_history.at(6), Is().EqualTo(3u));
+        });
+
+        it("collapses during repeated transposition with variables 1 2 variables in BDD 11a [&&]", [&]() {
+          std::vector<bdd::label_t> call_history;
+          bdd out = bdd_exists(bdd_12a, [&call_history](const bdd::label_t x) -> bool {
+            call_history.push_back(x);
+            return 0 < x && x < 3;
+          });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a
+          //       change. Please verify that this change makes sense and is as
+          //       intended.
+          AssertThat(call_history.size(), Is().EqualTo(13u));
+
+          // - First check for at least one variable satisfying the predicate.
+          AssertThat(call_history.at(0), Is().EqualTo(4u));
+          AssertThat(call_history.at(1), Is().EqualTo(3u));
+          AssertThat(call_history.at(2), Is().EqualTo(2u));
+
+          // - First top-down sweep (root call)
+          AssertThat(call_history.at(3), Is().EqualTo(0u));
+
+          // - First top-down sweep
+          AssertThat(call_history.at(4),  Is().EqualTo(0u));
+          AssertThat(call_history.at(5),  Is().EqualTo(1u));
+          AssertThat(call_history.at(6), Is().EqualTo(2u));
+          AssertThat(call_history.at(7), Is().EqualTo(3u));
+          AssertThat(call_history.at(8), Is().EqualTo(4u));
+
+          // - Second top-down sweep (root call)
+          AssertThat(call_history.at(9),  Is().EqualTo(0u));
+
+          // - Second top-down sweep
+          AssertThat(call_history.at(10), Is().EqualTo(0u));
+          AssertThat(call_history.at(11), Is().EqualTo(2u));
+          AssertThat(call_history.at(12), Is().EqualTo(3u));
+        });
+
+        it("finishes during repeated transposition with variables 1 and 2 in BDD 11b [&&]", [&]() {
+          std::vector<bdd::label_t> call_history;
+          bdd out = bdd_exists(bdd_12b, [&call_history](const bdd::label_t x) -> bool {
+            call_history.push_back(x);
+            return 0 < x && x < 3;
+          });
+
+          /* expected
+          //             1        ---- x0
+          //            / \
+          //           /   \      ---- x1
+          //          /     \
+          //          |     |     ---- x2
+          //          |     |
+          //          ?     ?     ---- x3
+          //         / \   / \
+          //         |  \  T |
+          //         |   \__ /
+          //         7      8     ---- x4
+          //        / \    / \
+          //        T F    F T
+          //
+          // The 'T' terminal at 'x3' is due to the pair (7,8) collapsing to the
+          // 'T' terminal. This tuple is created from (7,F,8) which in turn is
+          // created from (5,6,8) from the quantification (3,4) from (2).
+          */
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (8)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID,
+                                                         node::ptr_t(false),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (7)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-1,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(false))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5,6,8)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(4, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5,6)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID-1,
+                                                         node::ptr_t(4, node::MAX_ID-1),
+                                                         node::ptr_t(4, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                         node::ptr_t(3, node::MAX_ID-1),
+                                                         node::ptr_t(3, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u,2u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,2u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a
+          //       change. Please verify that this change makes sense and is as
+          //       intended.
+          AssertThat(call_history.size(), Is().EqualTo(14u));
+
+          // - First check for at least one variable satisfying the predicate.
+          AssertThat(call_history.at(0), Is().EqualTo(4u));
+          AssertThat(call_history.at(1), Is().EqualTo(3u));
+          AssertThat(call_history.at(2), Is().EqualTo(2u));
+
+          // - First top-down sweep (root call)
+          AssertThat(call_history.at(3), Is().EqualTo(0u));
+
+          // - First top-down sweep
+          AssertThat(call_history.at(4), Is().EqualTo(0u));
+          AssertThat(call_history.at(5), Is().EqualTo(1u));
+          AssertThat(call_history.at(6), Is().EqualTo(2u));
+          AssertThat(call_history.at(7), Is().EqualTo(3u));
+          AssertThat(call_history.at(8), Is().EqualTo(4u));
+
+          // - Second top-down sweep (root call)
+          AssertThat(call_history.at(9),  Is().EqualTo(0u));
+
+          // - Second top-down sweep
+          AssertThat(call_history.at(10), Is().EqualTo(0u));
+          AssertThat(call_history.at(11), Is().EqualTo(2u));
+          AssertThat(call_history.at(12), Is().EqualTo(3u));
+          AssertThat(call_history.at(13), Is().EqualTo(4u));
+        });
+
+        it("finishes during repeated transposition with variables 1 and 2 in BDD 12 [&&]", [&]() {
+          std::vector<bdd::label_t> call_history;
+          bdd out = bdd_exists(bdd_13, [&call_history](const bdd::label_t x) -> bool {
+            call_history.push_back(x);
+            return x < 2;
+          });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (16)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::MAX_ID,
+                                                         node::ptr_t(false),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (15)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID,
+                                                         node::ptr_t(false),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (15,16)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID-1,
+                                                         node::ptr_t(7, node::MAX_ID),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (14)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID-2,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(false))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (14,16)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID-3,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(7, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (13,15)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
+                                                         node::ptr_t(6, node::MAX_ID),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (13,15,16)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID-1,
+                                                         node::ptr_t(6, node::MAX_ID-1),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (13,14,16)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID-2,
+                                                         node::ptr_t(6, node::MAX_ID-3),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (12,15,16)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID-3,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(6, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (12,14)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID-4,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(6, node::MAX_ID-2))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (12,14,16)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID-5,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(6, node::MAX_ID-3))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (9,11,16)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID,
+                                                         node::ptr_t(5, node::MAX_ID-5),
+                                                         node::ptr_t(5, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (8,11,16)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-1,
+                                                         node::ptr_t(5, node::MAX_ID-3),
+                                                         node::ptr_t(5, node::MAX_ID-2))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (9,10,16)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-2,
+                                                         node::ptr_t(5, node::MAX_ID-2),
+                                                         node::ptr_t(5, node::MAX_ID-3))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (8,10)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-3,
+                                                         node::ptr_t(5, node::MAX_ID),
+                                                         node::ptr_t(5, node::MAX_ID-4))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (6,7,9,16)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                         node::ptr_t(4, node::MAX_ID-2),
+                                                         node::ptr_t(4, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (6,7,8)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID-1,
+                                                         node::ptr_t(4, node::MAX_ID-3),
+                                                         node::ptr_t(4, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (4,5,6,7)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
+                                                         node::ptr_t(3, node::MAX_ID-1),
+                                                         node::ptr_t(3, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(7u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(6u,4u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u,6u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u,4u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,2u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a
+          //       change. Please verify that this change makes sense and is as
+          //       intended.
+          AssertThat(call_history.size(), Is().EqualTo(24u));
+
+          // - First check for at least one variable satisfying the predicate.
+          AssertThat(call_history.at(0), Is().EqualTo(7u));
+          AssertThat(call_history.at(1), Is().EqualTo(6u));
+          AssertThat(call_history.at(2), Is().EqualTo(5u));
+          AssertThat(call_history.at(3), Is().EqualTo(4u));
+          AssertThat(call_history.at(4), Is().EqualTo(3u));
+          AssertThat(call_history.at(5), Is().EqualTo(2u));
+          AssertThat(call_history.at(6), Is().EqualTo(1u));
+
+          // - First top-down sweep (root call)
+          AssertThat(call_history.at(7), Is().EqualTo(0u));
+
+          // - First top-down sweep
+          AssertThat(call_history.at(8),  Is().EqualTo(0u));
+          AssertThat(call_history.at(9),  Is().EqualTo(1u));
+          AssertThat(call_history.at(10), Is().EqualTo(2u));
+          AssertThat(call_history.at(11), Is().EqualTo(3u));
+          AssertThat(call_history.at(12), Is().EqualTo(4u));
+          AssertThat(call_history.at(13), Is().EqualTo(5u));
+          AssertThat(call_history.at(14), Is().EqualTo(6u));
+          AssertThat(call_history.at(15), Is().EqualTo(7u));
+
+          // - Second top-down sweep (root call)
+          AssertThat(call_history.at(16), Is().EqualTo(1u));
+
+          // - Second top-down sweep
+          AssertThat(call_history.at(17), Is().EqualTo(1u));
+          AssertThat(call_history.at(18), Is().EqualTo(2u));
+          AssertThat(call_history.at(19), Is().EqualTo(3u));
+          AssertThat(call_history.at(20), Is().EqualTo(4u));
+          AssertThat(call_history.at(21), Is().EqualTo(5u));
+          AssertThat(call_history.at(22), Is().EqualTo(6u));
+          AssertThat(call_history.at(23), Is().EqualTo(7u));
+        });
+
+        it("quantifies exploding BDD 15", [&]() {
+          std::vector<bdd::label_t> call_history;
+          bdd out = bdd_exists(bdd_15, [&call_history](const bdd::label_t x) -> bool {
+            call_history.push_back(x);
+            return x < 2;
+          });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (o)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(13, node::MAX_ID,
+                                                         node::ptr_t(false),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (n)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(13, node::MAX_ID-1,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(false))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (17,o)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::MAX_ID,
+                                                         node::ptr_t(13, node::MAX_ID),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (17,n)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::MAX_ID-1,
+                                                         node::ptr_t(13, node::MAX_ID-1),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (16,o)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::MAX_ID-2,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(13, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (16,n)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::MAX_ID-3,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(13, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (14,l)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::MAX_ID,
+                                                         node::ptr_t(12, node::MAX_ID-3),
+                                                         node::ptr_t(12, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (14,m)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::MAX_ID-1,
+                                                         node::ptr_t(12, node::MAX_ID-2),
+                                                         node::ptr_t(12, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (15,l)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::MAX_ID-2,
+                                                         node::ptr_t(12, node::MAX_ID-1),
+                                                         node::ptr_t(12, node::MAX_ID-2))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (15,m)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::MAX_ID-3,
+                                                         node::ptr_t(12, node::MAX_ID),
+                                                         node::ptr_t(12, node::MAX_ID-3))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (13,k)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::MAX_ID,
+                                                         node::ptr_t(11, node::MAX_ID-3),
+                                                         node::ptr_t(11, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (13,j)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::MAX_ID-1,
+                                                         node::ptr_t(11, node::MAX_ID-2),
+                                                         node::ptr_t(11, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (12,k)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::MAX_ID-2,
+                                                         node::ptr_t(11, node::MAX_ID-1),
+                                                         node::ptr_t(11, node::MAX_ID-2))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (12,j)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::MAX_ID-3,
+                                                         node::ptr_t(11, node::MAX_ID),
+                                                         node::ptr_t(11, node::MAX_ID-3))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (10,h)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::MAX_ID,
+                                                         node::ptr_t(10, node::MAX_ID-3),
+                                                         node::ptr_t(10, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (10,i)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::MAX_ID-1,
+                                                         node::ptr_t(10, node::MAX_ID-2),
+                                                         node::ptr_t(10, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (11,h)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::MAX_ID-2,
+                                                         node::ptr_t(10, node::MAX_ID-1),
+                                                         node::ptr_t(10, node::MAX_ID-2))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (11,i)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::MAX_ID-3,
+                                                         node::ptr_t(10, node::MAX_ID),
+                                                         node::ptr_t(10, node::MAX_ID-3))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (9,g)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::MAX_ID,
+                                                         node::ptr_t(9, node::MAX_ID-3),
+                                                         node::ptr_t(9, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (8,g)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::MAX_ID-1,
+                                                         node::ptr_t(9, node::MAX_ID-1),
+                                                         node::ptr_t(9, node::MAX_ID-2))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (8,f)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::MAX_ID-2,
+                                                         node::ptr_t(9, node::MAX_ID),
+                                                         node::ptr_t(9, node::MAX_ID-3))));
+
+          // NOTE: (9,f) because the pair (7,f) is is merged with (8) which
+          //       prunes that entire subtree away.
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (7,8,f)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::MAX_ID,
+                                                         node::ptr_t(8, node::MAX_ID-2),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (7,g,9)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::MAX_ID-1,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(8, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (7,g)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::MAX_ID-2,
+                                                         node::ptr_t(8, node::MAX_ID-1),
+                                                         node::ptr_t(8, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (6,5,d)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID,
+                                                         node::ptr_t(7, node::MAX_ID),
+                                                         node::ptr_t(7, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5,d)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID-1,
+                                                         node::ptr_t(8, node::MAX_ID-2),
+                                                         node::ptr_t(7, node::MAX_ID-2))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (4,5,d)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
+                                                         node::ptr_t(6, node::MAX_ID-1),
+                                                         node::ptr_t(6, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (3,5,d)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID,
+                                                         node::ptr_t(5, node::MAX_ID),
+                                                         node::ptr_t(6, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2,5,d)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-1,
+                                                         node::ptr_t(6, node::MAX_ID-1),
+                                                         node::ptr_t(5, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1,5,d)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                         node::ptr_t(4, node::MAX_ID-1),
+                                                         node::ptr_t(4, node::MAX_ID))));
+
+          // NOTE: The root (1,a,5,d) has x2 suppressed as the choice at (a)
+          //       only is relevant for (b) and (c), not for (d).
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(13u,2u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(12u,4u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(11u,4u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(10u,4u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(9u,4u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(8u,3u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(7u,3u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(6u,2u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u,2u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a
+          //       change. Please verify that this change makes sense and is as
+          //       intended.
+          AssertThat(call_history.size(), Is().EqualTo(42u));
+
+          // - First check for at least one variable satisfying the predicate.
+          AssertThat(call_history.at(0),  Is().EqualTo(13u));
+          AssertThat(call_history.at(1),  Is().EqualTo(12u));
+          AssertThat(call_history.at(2),  Is().EqualTo(11u));
+          AssertThat(call_history.at(3),  Is().EqualTo(10u));
+          AssertThat(call_history.at(4),  Is().EqualTo(9u));
+          AssertThat(call_history.at(5),  Is().EqualTo(8u));
+          AssertThat(call_history.at(6),  Is().EqualTo(7u));
+          AssertThat(call_history.at(7),  Is().EqualTo(6u));
+          AssertThat(call_history.at(8),  Is().EqualTo(5u));
+          AssertThat(call_history.at(9),  Is().EqualTo(4u));
+          AssertThat(call_history.at(10), Is().EqualTo(3u));
+          AssertThat(call_history.at(11), Is().EqualTo(2u));
+          AssertThat(call_history.at(12), Is().EqualTo(1u));
+
+          // - First top-down sweep (root call)
+          AssertThat(call_history.at(13), Is().EqualTo(0u));
+
+          // - First top-down sweep
+          AssertThat(call_history.at(14), Is().EqualTo(0u));
+          AssertThat(call_history.at(15), Is().EqualTo(1u));
+          AssertThat(call_history.at(16), Is().EqualTo(2u));
+          AssertThat(call_history.at(17), Is().EqualTo(3u));
+          AssertThat(call_history.at(18), Is().EqualTo(4u));
+          AssertThat(call_history.at(19), Is().EqualTo(5u));
+          AssertThat(call_history.at(20), Is().EqualTo(6u));
+          AssertThat(call_history.at(21), Is().EqualTo(7u));
+          AssertThat(call_history.at(22), Is().EqualTo(8u));
+          AssertThat(call_history.at(23), Is().EqualTo(9u));
+          AssertThat(call_history.at(24), Is().EqualTo(10u));
+          AssertThat(call_history.at(25), Is().EqualTo(11u));
+          AssertThat(call_history.at(26), Is().EqualTo(12u));
+          AssertThat(call_history.at(27), Is().EqualTo(13u));
+
+          // - Second top-down sweep (root call)
+          AssertThat(call_history.at(28), Is().EqualTo(1u));
+
+          // - Second top-down sweep
+          AssertThat(call_history.at(29), Is().EqualTo(1u));
+          AssertThat(call_history.at(30), Is().EqualTo(2u));
+          AssertThat(call_history.at(31), Is().EqualTo(3u));
+          AssertThat(call_history.at(32), Is().EqualTo(4u));
+          AssertThat(call_history.at(33), Is().EqualTo(5u));
+          AssertThat(call_history.at(34), Is().EqualTo(6u));
+          AssertThat(call_history.at(35), Is().EqualTo(7u));
+          AssertThat(call_history.at(36), Is().EqualTo(8u));
+          AssertThat(call_history.at(37), Is().EqualTo(9u));
+          AssertThat(call_history.at(38), Is().EqualTo(10u));
+          AssertThat(call_history.at(39), Is().EqualTo(11u));
+          AssertThat(call_history.at(40), Is().EqualTo(12u));
+          AssertThat(call_history.at(41), Is().EqualTo(13u));
+        });
 
         quantify_mode = quantify_mode_t::AUTO;
       });
@@ -1225,7 +2273,12 @@ go_bandit([]() {
         quantify_mode = quantify_mode_t::NESTED;
 
         it("quantifies odd variables in BDD 4", [&]() {
-          bdd out = bdd_exists(bdd_4, [](const bdd::label_t x) { return x % 2; });
+          std::vector<bdd::label_t> call_history;
+
+          bdd out = bdd_exists(bdd_4, [&call_history](const bdd::label_t x) -> bool {
+            call_history.push_back(x);
+            return x % 2;
+          });
 
           node_test_stream out_nodes(out);
 
@@ -1252,10 +2305,28 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
 
           // TODO: meta variables...
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a
+          //       change. Please verify that this change makes sense and is as
+          //       intended.
+          AssertThat(call_history.size(), Is().EqualTo(4u));
+
+          // - First check for at least one variable satisfying the predicate.
+          //   This is then used for the inital transposition
+          AssertThat(call_history.at(0), Is().EqualTo(3u));
+
+          // - Nested sweep looking for the 'next_inner' bottom-up
+          AssertThat(call_history.at(1), Is().EqualTo(2u));
+          AssertThat(call_history.at(2), Is().EqualTo(1u));
+          AssertThat(call_history.at(3), Is().EqualTo(0u));
         });
 
         it("quantifies odd variables in BDD 1", [&]() {
-          bdd out = bdd_exists(bdd_1, [](const bdd::label_t x) { return x % 2; });
+          bdd out = bdd_exists(bdd_1, [](const bdd::label_t x) -> bool {
+            return x % 2;
+          });
 
           node_test_stream out_nodes(out);
 
@@ -1272,7 +2343,9 @@ go_bandit([]() {
         });
 
         it("quantifies with always-true predicate in BDD 4 [&&]", [&]() {
-          bdd out = bdd_exists(bdd_4, [](const bdd::label_t) { return true; });
+          bdd out = bdd_exists(bdd_4, [](const bdd::label_t) -> bool {
+            return true;
+          });
 
           node_test_stream out_nodes(out);
 
@@ -1280,14 +2353,16 @@ go_bandit([]() {
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
-          AssertThat(ms.can_pull(), Is().False());
+          level_info_test_stream out_meta(out);
+          AssertThat(out_meta.can_pull(), Is().False());
 
           // TODO: meta variables...
         });
 
         it("bails out on a level that only shortcuts", [&bdd_9T]() {
-          bdd out = bdd_exists(bdd_9T, [](const bdd::label_t x) { return !(x % 2); });
+          bdd out = bdd_exists(bdd_9T, [](const bdd::label_t x) -> bool {
+            return !(x % 2);
+          });
 
           node_test_stream out_nodes(out);
 
@@ -1325,7 +2400,9 @@ go_bandit([]() {
         });
 
         it("bails out on a level that only is irrelevant", [&bdd_9F]() {
-          bdd out = bdd_exists(bdd_9F, [](const bdd::label_t x) { return !(x % 2); });
+          bdd out = bdd_exists(bdd_9F, [](const bdd::label_t x) -> bool {
+            return !(x % 2);
+          });
 
           node_test_stream out_nodes(out);
 
@@ -1355,7 +2432,9 @@ go_bandit([]() {
         });
 
         it("bails out on a level that both shortcuts and is irrelevant", [&bdd_6_x4T]() {
-          bdd out = bdd_exists(bdd_6_x4T, [](const bdd::label_t x) { return x == 4 || x == 2 || x == 1; });
+          bdd out = bdd_exists(bdd_6_x4T, [](const bdd::label_t x) -> bool {
+            return x == 4 || x == 2 || x == 1;
+          });
 
           // TODO predict output!
           node_test_stream out_nodes(out);
@@ -1373,7 +2452,11 @@ go_bandit([]() {
         });
 
         it("kills intermediate dead partial solution", [&bdd_10]() {
-          bdd out = bdd_exists(bdd_10, [](const bdd::label_t x) { return x == 3 || x == 2; });
+          std::vector<bdd::label_t> call_history;
+          bdd out = bdd_exists(bdd_10, [&call_history](const bdd::label_t x) -> bool {
+            call_history.push_back(x);
+            return x == 3 || x == 2;
+          });
 
           node_test_stream out_nodes(out);
 
@@ -1392,6 +2475,24 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
 
           // TODO: meta variables
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a
+          //       change. Please verify that this change makes sense and is as
+          //       intended.
+          AssertThat(call_history.size(), Is().EqualTo(6u));
+
+          // - First check for at least one variable satisfying the predicate.
+          //   This is then used for the inital transposition
+          AssertThat(call_history.at(0), Is().EqualTo(4u));
+          AssertThat(call_history.at(1), Is().EqualTo(3u));
+
+          // - Nested sweep looking for the 'next_inner' bottom-up
+          AssertThat(call_history.at(2), Is().EqualTo(4u));
+          AssertThat(call_history.at(3), Is().EqualTo(2u));
+          AssertThat(call_history.at(4), Is().EqualTo(1u));
+          AssertThat(call_history.at(5), Is().EqualTo(0u));
         });
 
         it("kills intermediate dead partial solutions multiple times", [&]() {
@@ -1410,7 +2511,7 @@ go_bandit([]() {
           //        |
           //        T
           */
-          bdd out = bdd_exists(bdd_6, [&var]() {
+          bdd out = bdd_exists(bdd_6, [&var]() -> bdd::label_t {
             const bdd::label_t ret = var;
             var -= 2;
             return ret;
@@ -1430,15 +2531,267 @@ go_bandit([]() {
           // TODO: meta variables
         });
 
+        it("quantifies exploding BDD 15", [&]() {
+          bdd out = bdd_exists(bdd_15, [](const bdd::label_t x) -> bool { return x < 2; });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (o)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(13, node::MAX_ID,
+                                                         node::ptr_t(false),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (n)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(13, node::MAX_ID-1,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(false))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (17,o)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::MAX_ID,
+                                                         node::ptr_t(13, node::MAX_ID),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (17,n)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::MAX_ID-1,
+                                                         node::ptr_t(13, node::MAX_ID-1),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (16,o)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::MAX_ID-2,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(13, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (16,n)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::MAX_ID-3,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(13, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (14,l)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::MAX_ID,
+                                                         node::ptr_t(12, node::MAX_ID-3),
+                                                         node::ptr_t(12, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (14,m)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::MAX_ID-1,
+                                                         node::ptr_t(12, node::MAX_ID-2),
+                                                         node::ptr_t(12, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (15,l)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::MAX_ID-2,
+                                                         node::ptr_t(12, node::MAX_ID-1),
+                                                         node::ptr_t(12, node::MAX_ID-2))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (15,m)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::MAX_ID-3,
+                                                         node::ptr_t(12, node::MAX_ID),
+                                                         node::ptr_t(12, node::MAX_ID-3))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (13,k)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::MAX_ID,
+                                                         node::ptr_t(11, node::MAX_ID-3),
+                                                         node::ptr_t(11, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (13,j)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::MAX_ID-1,
+                                                         node::ptr_t(11, node::MAX_ID-2),
+                                                         node::ptr_t(11, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (12,k)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::MAX_ID-2,
+                                                         node::ptr_t(11, node::MAX_ID-1),
+                                                         node::ptr_t(11, node::MAX_ID-2))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (12,j)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::MAX_ID-3,
+                                                         node::ptr_t(11, node::MAX_ID),
+                                                         node::ptr_t(11, node::MAX_ID-3))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (10,h)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::MAX_ID,
+                                                         node::ptr_t(10, node::MAX_ID-3),
+                                                         node::ptr_t(10, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (10,i)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::MAX_ID-1,
+                                                         node::ptr_t(10, node::MAX_ID-2),
+                                                         node::ptr_t(10, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (11,h)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::MAX_ID-2,
+                                                         node::ptr_t(10, node::MAX_ID-1),
+                                                         node::ptr_t(10, node::MAX_ID-2))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (11,i)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::MAX_ID-3,
+                                                         node::ptr_t(10, node::MAX_ID),
+                                                         node::ptr_t(10, node::MAX_ID-3))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (9,g)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::MAX_ID,
+                                                         node::ptr_t(9, node::MAX_ID-3),
+                                                         node::ptr_t(9, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (8,g)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::MAX_ID-1,
+                                                         node::ptr_t(9, node::MAX_ID-1),
+                                                         node::ptr_t(9, node::MAX_ID-2))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (8,f)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::MAX_ID-2,
+                                                         node::ptr_t(9, node::MAX_ID),
+                                                         node::ptr_t(9, node::MAX_ID-3))));
+
+          // NOTE: (9,f) because the pair (7,f) is is merged with (8) which
+          //       prunes that entire subtree away.
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (7,8,f)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::MAX_ID,
+                                                         node::ptr_t(8, node::MAX_ID-2),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (7,g,9)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::MAX_ID-1,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(8, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (7,g)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::MAX_ID-2,
+                                                         node::ptr_t(8, node::MAX_ID-1),
+                                                         node::ptr_t(8, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (6,5,d)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID,
+                                                         node::ptr_t(7, node::MAX_ID),
+                                                         node::ptr_t(7, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5,d)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID-1,
+                                                         node::ptr_t(8, node::MAX_ID-2),
+                                                         node::ptr_t(7, node::MAX_ID-2))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (4,5,d)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
+                                                         node::ptr_t(6, node::MAX_ID-1),
+                                                         node::ptr_t(6, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (3,5,d)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID,
+                                                         node::ptr_t(5, node::MAX_ID),
+                                                         node::ptr_t(6, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2,5,d)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-1,
+                                                         node::ptr_t(6, node::MAX_ID-1),
+                                                         node::ptr_t(5, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1,5,d)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                         node::ptr_t(4, node::MAX_ID-1),
+                                                         node::ptr_t(4, node::MAX_ID))));
+
+          // NOTE: The root (1,a,5,d) has x2 suppressed as the choice at (a)
+          //       only is relevant for (b) and (c), not for (d).
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          // TODO
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(13u,2u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(12u,4u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(11u,4u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(10u,4u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(9u,4u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(8u,3u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(7u,3u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(6u,2u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u,2u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
+
         quantify_mode = quantify_mode_t::AUTO;
       });
 
       describe("quantify_mode == AUTO", [&]() {
         quantify_mode = quantify_mode_t::AUTO;
 
-        it("quantifies even variables in BDD 4 [const &]", [&]() {
+        it("collapses during initial transposition of all variables in BDD 4 [&&]", [&]() {
+          std::vector<bdd::label_t> call_history;
+          bdd out = bdd_exists(bdd_4, [&call_history](const bdd::label_t x) -> bool {
+            call_history.push_back(x);
+            return true;
+          });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a
+          //       change. Please verify that this change makes sense and is as
+          //       intended.
+          AssertThat(call_history.size(), Is().EqualTo(8u));
+
+          // - First check for at least one variable satisfying the predicate.
+          AssertThat(call_history.at(0), Is().EqualTo(3u));
+
+          // - Count number of variables above widest
+          AssertThat(call_history.at(1), Is().EqualTo(2u)); // <-- widest level
+          AssertThat(call_history.at(2), Is().EqualTo(1u));
+          AssertThat(call_history.at(3), Is().EqualTo(0u));
+
+          // - First top-down sweep (root call)
+          AssertThat(call_history.at(4), Is().EqualTo(0u));
+
+          // - First top-down sweep
+          AssertThat(call_history.at(5), Is().EqualTo(0u));
+          AssertThat(call_history.at(6), Is().EqualTo(1u));
+          AssertThat(call_history.at(7), Is().EqualTo(2u));
+        });
+
+        it("finishes during initial transposition of even variables in BDD 4 [const &]", [&]() {
+          std::vector<bdd::label_t> call_history;
+
           const bdd in = bdd_4;
-          const bdd out = bdd_exists(in, [](const bdd::label_t x) { return !(x % 2); });
+          const bdd out = bdd_exists(in, [&call_history](const bdd::label_t x) -> bool {
+            call_history.push_back(x);
+            return !(x % 2);
+          });
 
           node_test_stream out_nodes(out);
 
@@ -1463,30 +2816,904 @@ go_bandit([]() {
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables ...
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a
+          //       change. Please verify that this change makes sense and is as
+          //       intended.
+          AssertThat(call_history.size(), Is().EqualTo(10u));
+
+          // - First check for at least one variable satisfying the predicate.
+          AssertThat(call_history.at(0), Is().EqualTo(3u));
+          AssertThat(call_history.at(1), Is().EqualTo(2u));
+
+          // - Count number of variables above widest
+          AssertThat(call_history.at(2), Is().EqualTo(2u)); // <-- widest level
+          AssertThat(call_history.at(3), Is().EqualTo(1u));
+          AssertThat(call_history.at(4), Is().EqualTo(0u));
+
+          // - First top-down sweep (root call)
+          AssertThat(call_history.at(5), Is().EqualTo(0u));
+
+          // - First top-down sweep
+          AssertThat(call_history.at(6), Is().EqualTo(0u));
+          AssertThat(call_history.at(7), Is().EqualTo(1u));
+          AssertThat(call_history.at(8), Is().EqualTo(2u));
+          AssertThat(call_history.at(9), Is().EqualTo(3u));
+        });
+
+        it("collapses during repeated transposition with variables 1 2 variables in BDD 11a [&&]", [&]() {
+          std::vector<bdd::label_t> call_history;
+          bdd out = bdd_exists(bdd_12a, [&call_history](const bdd::label_t x) -> bool {
+            call_history.push_back(x);
+            return 0 < x && x < 3;
+          });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a
+          //       change. Please verify that this change makes sense and is as
+          //       intended.
+          AssertThat(call_history.size(), Is().EqualTo(17u));
+
+          // - First check for at least one variable satisfying the predicate.
+          AssertThat(call_history.at(0), Is().EqualTo(4u));
+          AssertThat(call_history.at(1), Is().EqualTo(3u));
+          AssertThat(call_history.at(2), Is().EqualTo(2u));
+
+          // - Count number of variables above widest
+          AssertThat(call_history.at(3), Is().EqualTo(3u)); // <-- widest level
+          AssertThat(call_history.at(4), Is().EqualTo(2u));
+          AssertThat(call_history.at(5), Is().EqualTo(1u));
+          AssertThat(call_history.at(6), Is().EqualTo(0u));
+
+          // - First top-down sweep (root call)
+          AssertThat(call_history.at(7), Is().EqualTo(0u));
+
+          // - First top-down sweep
+          AssertThat(call_history.at(8),  Is().EqualTo(0u));
+          AssertThat(call_history.at(9),  Is().EqualTo(1u));
+          AssertThat(call_history.at(10), Is().EqualTo(2u));
+          AssertThat(call_history.at(11), Is().EqualTo(3u));
+          AssertThat(call_history.at(12), Is().EqualTo(4u));
+
+          // - Second top-down sweep (root call)
+          AssertThat(call_history.at(13),  Is().EqualTo(0u));
+
+          // - Second top-down sweep
+          AssertThat(call_history.at(14), Is().EqualTo(0u));
+          AssertThat(call_history.at(15), Is().EqualTo(2u));
+          AssertThat(call_history.at(16), Is().EqualTo(3u));
+        });
+
+        it("finishes during repeated transposition with variables 1 and 2 in BDD 11b [&&]", [&]() {
+          std::vector<bdd::label_t> call_history;
+          bdd out = bdd_exists(bdd_12b, [&call_history](const bdd::label_t x) -> bool {
+            call_history.push_back(x);
+            return 0 < x && x < 3;
+          });
+
+          /* expected
+          //             1        ---- x0
+          //            / \
+          //           /   \      ---- x1
+          //          /     \
+          //          |     |     ---- x2
+          //          |     |
+          //          ?     ?     ---- x3
+          //         / \   / \
+          //         |  \  T |
+          //         |   \__ /
+          //         7      8     ---- x4
+          //        / \    / \
+          //        T F    F T
+          //
+          // The 'T' terminal at 'x3' is due to the pair (7,8) collapsing to the
+          // 'T' terminal. This tuple is created from (7,F,8) which in turn is
+          // created from (5,6,8) from the quantification (3,4) from (2).
+          */
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (8)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID,
+                                                         node::ptr_t(false),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (7)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-1,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(false))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5,6,8)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(4, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5,6)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID-1,
+                                                         node::ptr_t(4, node::MAX_ID-1),
+                                                         node::ptr_t(4, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                         node::ptr_t(3, node::MAX_ID-1),
+                                                         node::ptr_t(3, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u,2u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,2u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a
+          //       change. Please verify that this change makes sense and is as
+          //       intended.
+          AssertThat(call_history.size(), Is().EqualTo(19u));
+
+          // - First check for at least one variable satisfying the predicate.
+          AssertThat(call_history.at(0), Is().EqualTo(4u));
+          AssertThat(call_history.at(1), Is().EqualTo(3u));
+          AssertThat(call_history.at(2), Is().EqualTo(2u));
+
+          // - Count number of variables above widest
+          AssertThat(call_history.at(3), Is().EqualTo(4u)); // <-- widest level
+          AssertThat(call_history.at(4), Is().EqualTo(3u)); // <-- widest level
+          AssertThat(call_history.at(5), Is().EqualTo(2u));
+          AssertThat(call_history.at(6), Is().EqualTo(1u));
+          AssertThat(call_history.at(7), Is().EqualTo(0u));
+
+          // - First top-down sweep (root call)
+          AssertThat(call_history.at(8), Is().EqualTo(0u));
+
+          // - First top-down sweep
+          AssertThat(call_history.at(9),  Is().EqualTo(0u));
+          AssertThat(call_history.at(10), Is().EqualTo(1u));
+          AssertThat(call_history.at(11), Is().EqualTo(2u));
+          AssertThat(call_history.at(12), Is().EqualTo(3u));
+          AssertThat(call_history.at(13), Is().EqualTo(4u));
+
+          // - Second top-down sweep (root call)
+          AssertThat(call_history.at(14),  Is().EqualTo(0u));
+
+          // - Second top-down sweep
+          AssertThat(call_history.at(15), Is().EqualTo(0u));
+          AssertThat(call_history.at(16), Is().EqualTo(2u));
+          AssertThat(call_history.at(17), Is().EqualTo(3u));
+          AssertThat(call_history.at(18), Is().EqualTo(4u));
+        });
+
+        it("finishes during repeated transposition with variables 1 and 2 in BDD 12 [&&]", [&]() {
+          std::vector<bdd::label_t> call_history;
+          bdd out = bdd_exists(bdd_13, [&call_history](const bdd::label_t x) -> bool {
+            call_history.push_back(x);
+            return x < 2;
+          });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (16)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::MAX_ID,
+                                                         node::ptr_t(false),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (15)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID,
+                                                         node::ptr_t(false),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (15,16)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID-1,
+                                                         node::ptr_t(7, node::MAX_ID),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (14)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID-2,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(false))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (14,16)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID-3,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(7, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (13,15)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
+                                                         node::ptr_t(6, node::MAX_ID),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (13,15,16)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID-1,
+                                                         node::ptr_t(6, node::MAX_ID-1),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (13,14,16)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID-2,
+                                                         node::ptr_t(6, node::MAX_ID-3),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (12,15,16)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID-3,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(6, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (12,14)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID-4,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(6, node::MAX_ID-2))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (12,14,16)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID-5,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(6, node::MAX_ID-3))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (9,11,16)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID,
+                                                         node::ptr_t(5, node::MAX_ID-5),
+                                                         node::ptr_t(5, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (8,11,16)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-1,
+                                                         node::ptr_t(5, node::MAX_ID-3),
+                                                         node::ptr_t(5, node::MAX_ID-2))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (9,10,16)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-2,
+                                                         node::ptr_t(5, node::MAX_ID-2),
+                                                         node::ptr_t(5, node::MAX_ID-3))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (8,10)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-3,
+                                                         node::ptr_t(5, node::MAX_ID),
+                                                         node::ptr_t(5, node::MAX_ID-4))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (6,7,9,16)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                         node::ptr_t(4, node::MAX_ID-2),
+                                                         node::ptr_t(4, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (6,7,8)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID-1,
+                                                         node::ptr_t(4, node::MAX_ID-3),
+                                                         node::ptr_t(4, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (4,5,6,7)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
+                                                         node::ptr_t(3, node::MAX_ID-1),
+                                                         node::ptr_t(3, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(7u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(6u,4u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u,6u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u,4u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,2u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a
+          //       change. Please verify that this change makes sense and is as
+          //       intended.
+          AssertThat(call_history.size(), Is().EqualTo(29u));
+
+          // - First check for at least one variable satisfying the predicate.
+          AssertThat(call_history.at(0), Is().EqualTo(7u));
+          AssertThat(call_history.at(1), Is().EqualTo(6u));
+          AssertThat(call_history.at(2), Is().EqualTo(5u));
+          AssertThat(call_history.at(3), Is().EqualTo(4u));
+          AssertThat(call_history.at(4), Is().EqualTo(3u));
+          AssertThat(call_history.at(5), Is().EqualTo(2u));
+          AssertThat(call_history.at(6), Is().EqualTo(1u));
+
+          // - Count number of variables above widest
+          AssertThat(call_history.at(7),  Is().EqualTo(4u)); // <-- widest level
+          AssertThat(call_history.at(8),  Is().EqualTo(3u));
+          AssertThat(call_history.at(9),  Is().EqualTo(2u));
+          AssertThat(call_history.at(10), Is().EqualTo(1u));
+          AssertThat(call_history.at(11), Is().EqualTo(0u));
+
+          // - First top-down sweep (root call)
+          AssertThat(call_history.at(12), Is().EqualTo(0u));
+
+          // - First top-down sweep
+          AssertThat(call_history.at(13), Is().EqualTo(0u));
+          AssertThat(call_history.at(14), Is().EqualTo(1u));
+          AssertThat(call_history.at(15), Is().EqualTo(2u));
+          AssertThat(call_history.at(16), Is().EqualTo(3u));
+          AssertThat(call_history.at(17), Is().EqualTo(4u));
+          AssertThat(call_history.at(18), Is().EqualTo(5u));
+          AssertThat(call_history.at(19), Is().EqualTo(6u));
+          AssertThat(call_history.at(20), Is().EqualTo(7u));
+
+          // - Second top-down sweep (root call)
+          AssertThat(call_history.at(21), Is().EqualTo(1u));
+
+          // - Second top-down sweep
+          AssertThat(call_history.at(22), Is().EqualTo(1u));
+          AssertThat(call_history.at(23), Is().EqualTo(2u));
+          AssertThat(call_history.at(24), Is().EqualTo(3u));
+          AssertThat(call_history.at(25), Is().EqualTo(4u));
+          AssertThat(call_history.at(26), Is().EqualTo(5u));
+          AssertThat(call_history.at(27), Is().EqualTo(6u));
+          AssertThat(call_history.at(28), Is().EqualTo(7u));
+        });
+
+        it("finishes early during repeated transposition [&&]", [&]() {
+          std::vector<bdd::label_t> call_history;
+          bdd out = bdd_exists(bdd_10, [&call_history](const bdd::label_t x) -> bool {
+            call_history.push_back(x);
+            return 1 < x;
+          });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                         node::ptr_t(false),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a
+          //       change. Please verify that this change makes sense and is as
+          //       intended.
+          AssertThat(call_history.size(), Is().EqualTo(10u));
+
+          // - First check for at least one variable satisfying the predicate.
+          AssertThat(call_history.at(0), Is().EqualTo(4u));
+
+          // - Count number of variables above widest
+          AssertThat(call_history.at(1), Is().EqualTo(3u)); // <-- widest level
+          AssertThat(call_history.at(2), Is().EqualTo(2u));
+          AssertThat(call_history.at(3), Is().EqualTo(1u));
+          AssertThat(call_history.at(4), Is().EqualTo(0u));
+
+          // - First top-down sweep (root call)
+          AssertThat(call_history.at(5), Is().EqualTo(0u));
+
+          // - First top-down sweep
+          AssertThat(call_history.at(6),  Is().EqualTo(0u));
+          AssertThat(call_history.at(7),  Is().EqualTo(1u));
+          AssertThat(call_history.at(8),  Is().EqualTo(2u));
+          AssertThat(call_history.at(9),  Is().EqualTo(3u));
+
+          // NOTE: Even though there are three levels that should be quantified,
+          //       we only do one partial quantification.
+        });
+
+        it("switches to nested sweeping when the transposition explodes with BDD 15 [&&]", [&]() {
+          std::vector<bdd::label_t> call_history;
+          bdd out = bdd_exists(bdd_15, [&call_history](const bdd::label_t x) -> bool {
+            call_history.push_back(x);
+            return x < 2;
+          });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (o)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(13, node::MAX_ID,
+                                                         node::ptr_t(false),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (n)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(13, node::MAX_ID-1,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(false))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (17,o)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::MAX_ID,
+                                                         node::ptr_t(13, node::MAX_ID),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (17,n)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::MAX_ID-1,
+                                                         node::ptr_t(13, node::MAX_ID-1),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (16,o)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::MAX_ID-2,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(13, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (16,n)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::MAX_ID-3,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(13, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (14,l)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::MAX_ID,
+                                                         node::ptr_t(12, node::MAX_ID-3),
+                                                         node::ptr_t(12, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (14,m)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::MAX_ID-1,
+                                                         node::ptr_t(12, node::MAX_ID-2),
+                                                         node::ptr_t(12, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (15,l)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::MAX_ID-2,
+                                                         node::ptr_t(12, node::MAX_ID-1),
+                                                         node::ptr_t(12, node::MAX_ID-2))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (15,m)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::MAX_ID-3,
+                                                         node::ptr_t(12, node::MAX_ID),
+                                                         node::ptr_t(12, node::MAX_ID-3))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (13,k)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::MAX_ID,
+                                                         node::ptr_t(11, node::MAX_ID-3),
+                                                         node::ptr_t(11, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (13,j)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::MAX_ID-1,
+                                                         node::ptr_t(11, node::MAX_ID-2),
+                                                         node::ptr_t(11, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (12,k)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::MAX_ID-2,
+                                                         node::ptr_t(11, node::MAX_ID-1),
+                                                         node::ptr_t(11, node::MAX_ID-2))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (12,j)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::MAX_ID-3,
+                                                         node::ptr_t(11, node::MAX_ID),
+                                                         node::ptr_t(11, node::MAX_ID-3))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (10,h)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::MAX_ID,
+                                                         node::ptr_t(10, node::MAX_ID-3),
+                                                         node::ptr_t(10, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (10,i)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::MAX_ID-1,
+                                                         node::ptr_t(10, node::MAX_ID-2),
+                                                         node::ptr_t(10, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (11,h)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::MAX_ID-2,
+                                                         node::ptr_t(10, node::MAX_ID-1),
+                                                         node::ptr_t(10, node::MAX_ID-2))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (11,i)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::MAX_ID-3,
+                                                         node::ptr_t(10, node::MAX_ID),
+                                                         node::ptr_t(10, node::MAX_ID-3))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (9,g)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::MAX_ID,
+                                                         node::ptr_t(9, node::MAX_ID-3),
+                                                         node::ptr_t(9, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (8,g)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::MAX_ID-1,
+                                                         node::ptr_t(9, node::MAX_ID-1),
+                                                         node::ptr_t(9, node::MAX_ID-2))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (8,f)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::MAX_ID-2,
+                                                         node::ptr_t(9, node::MAX_ID),
+                                                         node::ptr_t(9, node::MAX_ID-3))));
+
+          // NOTE: (9,f) because the pair (7,f) is is merged with (8) which
+          //       prunes that entire subtree away.
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (7,8,f)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::MAX_ID,
+                                                         node::ptr_t(8, node::MAX_ID-2),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (7,g,9)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::MAX_ID-1,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(8, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (7,g)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::MAX_ID-2,
+                                                         node::ptr_t(8, node::MAX_ID-1),
+                                                         node::ptr_t(8, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (6,5,d)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID,
+                                                         node::ptr_t(7, node::MAX_ID),
+                                                         node::ptr_t(7, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5,d)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID-1,
+                                                         node::ptr_t(8, node::MAX_ID-2),
+                                                         node::ptr_t(7, node::MAX_ID-2))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (4,5,d)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
+                                                         node::ptr_t(6, node::MAX_ID-1),
+                                                         node::ptr_t(6, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (3,5,d)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID,
+                                                         node::ptr_t(5, node::MAX_ID),
+                                                         node::ptr_t(6, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2,5,d)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-1,
+                                                         node::ptr_t(6, node::MAX_ID-1),
+                                                         node::ptr_t(5, node::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1,5,d)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                         node::ptr_t(4, node::MAX_ID-1),
+                                                         node::ptr_t(4, node::MAX_ID))));
+
+          // NOTE: The root (1,a,5,d) has x2 suppressed as the choice at (a)
+          //       only is relevant for (b) and (c), not for (d).
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          // TODO
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(13u,2u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(12u,4u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(11u,4u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(10u,4u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(9u,4u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(8u,3u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(7u,3u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(6u,2u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u,2u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a
+          //       change. Please verify that this change makes sense and is as
+          //       intended.
+          AssertThat(call_history.size(), Is().EqualTo(53u));
+
+          // - First check for at least one variable satisfying the predicate.
+          AssertThat(call_history.at(0),  Is().EqualTo(13u));
+          AssertThat(call_history.at(1),  Is().EqualTo(12u));
+          AssertThat(call_history.at(2),  Is().EqualTo(11u));
+          AssertThat(call_history.at(3),  Is().EqualTo(10u));
+          AssertThat(call_history.at(4),  Is().EqualTo(9u));
+          AssertThat(call_history.at(5),  Is().EqualTo(8u));
+          AssertThat(call_history.at(6),  Is().EqualTo(7u));
+          AssertThat(call_history.at(7),  Is().EqualTo(6u));
+          AssertThat(call_history.at(8),  Is().EqualTo(5u));
+          AssertThat(call_history.at(9),  Is().EqualTo(4u));
+          AssertThat(call_history.at(10), Is().EqualTo(3u));
+          AssertThat(call_history.at(11), Is().EqualTo(2u));
+          AssertThat(call_history.at(12), Is().EqualTo(1u));
+
+          // - Count number of variables above widest
+          AssertThat(call_history.at(13), Is().EqualTo(11u)); // <-- widest level
+          AssertThat(call_history.at(14), Is().EqualTo(10u));
+          AssertThat(call_history.at(15), Is().EqualTo(9u));
+          AssertThat(call_history.at(16), Is().EqualTo(8u));
+          AssertThat(call_history.at(17), Is().EqualTo(7u));
+          AssertThat(call_history.at(18), Is().EqualTo(6u));
+          AssertThat(call_history.at(19), Is().EqualTo(5u));
+          AssertThat(call_history.at(20), Is().EqualTo(4u));
+          AssertThat(call_history.at(21), Is().EqualTo(3u));
+          AssertThat(call_history.at(22), Is().EqualTo(2u));
+          AssertThat(call_history.at(23), Is().EqualTo(1u));
+          AssertThat(call_history.at(24), Is().EqualTo(0u));
+
+          // - Top-down sweep (root call)
+          AssertThat(call_history.at(25), Is().EqualTo(0u));
+
+          // - Top-down sweep
+          AssertThat(call_history.at(26), Is().EqualTo(0u));
+          AssertThat(call_history.at(27), Is().EqualTo(1u));
+          AssertThat(call_history.at(28), Is().EqualTo(2u));
+          AssertThat(call_history.at(29), Is().EqualTo(3u));
+          AssertThat(call_history.at(30), Is().EqualTo(4u));
+          AssertThat(call_history.at(31), Is().EqualTo(5u));
+          AssertThat(call_history.at(32), Is().EqualTo(6u));
+          AssertThat(call_history.at(33), Is().EqualTo(7u));
+          AssertThat(call_history.at(34), Is().EqualTo(8u));
+          AssertThat(call_history.at(35), Is().EqualTo(9u));
+          AssertThat(call_history.at(36), Is().EqualTo(10u));
+          AssertThat(call_history.at(37), Is().EqualTo(11u));
+          AssertThat(call_history.at(38), Is().EqualTo(12u));
+          AssertThat(call_history.at(39), Is().EqualTo(13u));
+
+          // - Nested Sweeping (x0 is gone)
+          AssertThat(call_history.at(40), Is().EqualTo(13u));
+          AssertThat(call_history.at(41), Is().EqualTo(12u));
+          AssertThat(call_history.at(42), Is().EqualTo(11u));
+          AssertThat(call_history.at(43), Is().EqualTo(10u));
+          AssertThat(call_history.at(44), Is().EqualTo(9u));
+          AssertThat(call_history.at(45), Is().EqualTo(8u));
+          AssertThat(call_history.at(46), Is().EqualTo(7u));
+          AssertThat(call_history.at(47), Is().EqualTo(6u));
+          AssertThat(call_history.at(48), Is().EqualTo(5u));
+          AssertThat(call_history.at(49), Is().EqualTo(4u));
+          AssertThat(call_history.at(50), Is().EqualTo(3u));
+          AssertThat(call_history.at(51), Is().EqualTo(2u));
+          AssertThat(call_history.at(52), Is().EqualTo(1u));
+        });
+
+        it("transposes with a single partial quantification if all variables are deep [&&]", [&]() {
+          std::vector<bdd::label_t> call_history;
+          bdd out = bdd_exists(bdd_14a, [&call_history](const bdd::label_t x) -> bool {
+            call_history.push_back(x);
+            return x == 5 || x == 6;
+          });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (4)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID,
+                                                         node::ptr_t(false),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (6)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-1,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(false))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                         node::ptr_t(4, node::MAX_ID),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (3)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID-1,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(4, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
+                                                         node::ptr_t(3, node::MAX_ID),
+                                                         node::ptr_t(3, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u,2u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,2u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a
+          //       change. Please verify that this change makes sense and is as
+          //       intended.
+          AssertThat(call_history.size(), Is().EqualTo(20u));
+
+          // - First check for at least one variable satisfying the predicate.
+          AssertThat(call_history.at(0), Is().EqualTo(8u));
+          AssertThat(call_history.at(1), Is().EqualTo(7u));
+          AssertThat(call_history.at(2), Is().EqualTo(6u));
+
+          // - Count number of variables above widest
+          AssertThat(call_history.at(3), Is().EqualTo(4u)); // <-- widest level
+          AssertThat(call_history.at(4), Is().EqualTo(3u));
+          AssertThat(call_history.at(5), Is().EqualTo(2u));
+
+          // - Top-down sweep (root call)
+          AssertThat(call_history.at(6), Is().EqualTo(2u));
+
+          // - Top-down sweep
+          AssertThat(call_history.at(7),  Is().EqualTo(2u));
+          AssertThat(call_history.at(8),  Is().EqualTo(3u));
+          AssertThat(call_history.at(9),  Is().EqualTo(4u));
+          AssertThat(call_history.at(10), Is().EqualTo(5u));
+          AssertThat(call_history.at(11), Is().EqualTo(6u));
+          AssertThat(call_history.at(12), Is().EqualTo(7u));
+          AssertThat(call_history.at(13), Is().EqualTo(8u));
+
+          // - Nested Sweeping (x5 is gone)
+          AssertThat(call_history.at(14), Is().EqualTo(8u));
+          AssertThat(call_history.at(15), Is().EqualTo(7u));
+          AssertThat(call_history.at(16), Is().EqualTo(6u));
+          AssertThat(call_history.at(17), Is().EqualTo(4u));
+          AssertThat(call_history.at(18), Is().EqualTo(3u));
+          AssertThat(call_history.at(19), Is().EqualTo(2u));
+        });
+
+        it("switches to nested sweeping if the only variables left are deep [&&]", [&]() {
+          std::vector<bdd::label_t> call_history;
+          bdd out = bdd_exists(bdd_14b, [&call_history](const bdd::label_t x) -> bool {
+            call_history.push_back(x);
+            return x == 1 || x == 5 || x == 6;
+          });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (4)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID,
+                                                         node::ptr_t(false),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (6)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-1,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(false))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                         node::ptr_t(4, node::MAX_ID),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (3)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID-1,
+                                                         node::ptr_t(true),
+                                                         node::ptr_t(4, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
+                                                         node::ptr_t(3, node::MAX_ID),
+                                                         node::ptr_t(3, node::MAX_ID-1))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1*)
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                         node::ptr_t(2, node::MAX_ID),
+                                                         node::ptr_t(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u,2u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,2u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a
+          //       change. Please verify that this change makes sense and is as
+          //       intended.
+          AssertThat(call_history.size(), Is().EqualTo(25u));
+
+          // - First check for at least one variable satisfying the predicate.
+          AssertThat(call_history.at(0), Is().EqualTo(8u));
+          AssertThat(call_history.at(1), Is().EqualTo(7u));
+          AssertThat(call_history.at(2), Is().EqualTo(6u));
+
+          // - Count number of variables above widest
+          AssertThat(call_history.at(3), Is().EqualTo(4u)); // <-- widest level
+          AssertThat(call_history.at(4), Is().EqualTo(3u));
+          AssertThat(call_history.at(5), Is().EqualTo(2u));
+          AssertThat(call_history.at(6), Is().EqualTo(1u));
+          AssertThat(call_history.at(7), Is().EqualTo(0u));
+
+          // - Top-down sweep (root call)
+          AssertThat(call_history.at(8), Is().EqualTo(0u));
+
+          // - Top-down sweep
+          AssertThat(call_history.at(9),  Is().EqualTo(0u));
+          AssertThat(call_history.at(10), Is().EqualTo(1u));
+          AssertThat(call_history.at(11), Is().EqualTo(2u));
+          AssertThat(call_history.at(12), Is().EqualTo(3u));
+          AssertThat(call_history.at(13), Is().EqualTo(4u));
+          AssertThat(call_history.at(14), Is().EqualTo(5u));
+          AssertThat(call_history.at(15), Is().EqualTo(6u));
+          AssertThat(call_history.at(16), Is().EqualTo(7u));
+          AssertThat(call_history.at(17), Is().EqualTo(8u));
+
+          // - Nested Sweeping (x5 is gone)
+          AssertThat(call_history.at(18), Is().EqualTo(8u));
+          AssertThat(call_history.at(19), Is().EqualTo(7u));
+          AssertThat(call_history.at(20), Is().EqualTo(6u));
+          AssertThat(call_history.at(21), Is().EqualTo(4u));
+          AssertThat(call_history.at(22), Is().EqualTo(3u));
+          AssertThat(call_history.at(23), Is().EqualTo(2u));
+          AssertThat(call_history.at(24), Is().EqualTo(0u));
         });
 
         quantify_mode = quantify_mode_t::AUTO;
-      });
-
-      it("quantifies with always-true predicate in BDD 4 [&&]", [&]() {
-        bdd out = bdd_exists(bdd_4, [](const bdd::label_t) { return true; });
-
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream ms(out);
-        AssertThat(ms.can_pull(), Is().False());
-
-        // TODO: meta variables...
       });
     });
 
     describe("bdd_exists(const bdd&, const std::function<bdd::label_t()>&)", [&]() {
       it("returns input on -1 generator BDD 1 [&&]", [&]() {
-        __bdd out = bdd_exists(bdd_1, []() { return -1; });
+        __bdd out = bdd_exists(bdd_1, []() -> bdd::label_t { return -1; });
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd_1));
       });
 
@@ -1496,7 +3723,7 @@ go_bandit([]() {
         it("quantifies 3, 1, -1 in BDD 4 [&&]", [&]() {
           bdd::label_t var = 3;
 
-          bdd out = bdd_exists(bdd_4, [&var]() {
+          bdd out = bdd_exists(bdd_4, [&var]() -> bdd::label_t {
             const bdd::label_t ret = var;
             var -= 2;
             return ret;
@@ -1532,7 +3759,7 @@ go_bandit([]() {
 
           bdd::label_t var = 2;
 
-          bdd out = bdd_exists(in, [&var]() {
+          bdd out = bdd_exists(in, [&var]() -> bdd::label_t {
             const bdd::label_t ret = var;
             var -= 2;
             return ret;
@@ -1566,7 +3793,7 @@ go_bandit([]() {
         it("quantifies 1, -1 variables in BDD 1 [&&]", [&]() {
           bdd::label_t var = 1;
 
-          bdd out = bdd_exists(bdd_1, [&var]() {
+          bdd out = bdd_exists(bdd_1, [&var]() -> bdd::label_t {
             const bdd::label_t ret = var;
             var -= 2;
             return ret;
@@ -1587,7 +3814,9 @@ go_bandit([]() {
         it("terminates early when quantifying to a terminal in BDD 3 [&&]", [&]() {
           int calls = 0;
 
-          const bdd out = bdd_exists(bdd_3, [&calls]() { return 2 - 2*(calls++); });
+          const bdd out = bdd_exists(bdd_3, [&calls]() -> bdd::label_t {
+            return 2 - 2*(calls++);
+          });
 
           // What could be expected is 3 calls: 2, 0, -2 . But, here it terminates early.
           AssertThat(calls, Is().EqualTo(2));
@@ -1613,7 +3842,7 @@ go_bandit([]() {
         it("quantifies 3, 1, -1 in BDD 4 [&&]", [&]() {
           bdd::label_t var = 3;
 
-          bdd out = bdd_exists(bdd_4, [&var]() {
+          bdd out = bdd_exists(bdd_4, [&var]() -> bdd::label_t {
             const bdd::label_t ret = var;
             var -= 2;
             return ret;
@@ -1647,7 +3876,7 @@ go_bandit([]() {
         it("quantifies 1, -1 variables in BDD 1 [&&]", [&]() {
           bdd::label_t var = 1;
 
-          bdd out = bdd_exists(bdd_1, [&var]() {
+          bdd out = bdd_exists(bdd_1, [&var]() -> bdd::label_t {
             const bdd::label_t ret = var;
             var -= 2;
             return ret;
@@ -1667,7 +3896,7 @@ go_bandit([]() {
 
         it("bails out on a level that only shortcuts", [&bdd_9T]() {
           bdd::label_t var = 6;
-          bdd out = bdd_exists(bdd_9T, [&var]() {
+          bdd out = bdd_exists(bdd_9T, [&var]() -> bdd::label_t {
             const bdd::label_t res = var;
             var -= 2;
             return res;
@@ -1710,7 +3939,7 @@ go_bandit([]() {
 
         it("bails out on a level that only is irrelevant", [&bdd_9F]() {
           bdd::label_t var = 6;
-          bdd out = bdd_exists(bdd_9F, [&var]() {
+          bdd out = bdd_exists(bdd_9F, [&var]() -> bdd::label_t {
             const bdd::label_t res = var;
             var -= 2;
             return res;
@@ -1745,7 +3974,7 @@ go_bandit([]() {
 
         it("bails out on a level that both shortcuts and is irrelevant", [&bdd_6_x4T]() {
           bdd::label_t var = 4;
-          bdd out = bdd_exists(bdd_6_x4T, [&var]() {
+          bdd out = bdd_exists(bdd_6_x4T, [&var]() -> bdd::label_t {
             const bdd::label_t res = var;
             switch (var) {
             case 4:  { var = 2;  break; } // <-- 4: transposing
@@ -1772,7 +4001,7 @@ go_bandit([]() {
 
         it("kills intermediate dead partial solution", [&bdd_10]() {
           bdd::label_t var = 3;
-          bdd out = bdd_exists(bdd_10, [&var]() {
+          bdd out = bdd_exists(bdd_10, [&var]() -> bdd::label_t {
             const bdd::label_t res = var;
             if (2 < var) { var -= 1; }
             else         { var = -1; }
@@ -1814,7 +4043,7 @@ go_bandit([]() {
           //        |
           //        T
           */
-          bdd out = bdd_exists(bdd_6, [&var]() {
+          bdd out = bdd_exists(bdd_6, [&var]() -> bdd::label_t {
             const bdd::label_t ret = var;
             var -= 2;
             return ret;
@@ -2221,7 +4450,10 @@ go_bandit([]() {
 
     describe("bdd_forall(const bdd&, const std::function<bool(bdd::label_t)>&)", [&]() {
       it("returns input on always-false predicate BDD 1 [&&]", [&]() {
-        __bdd out = bdd_forall(bdd_1, [](const bdd::label_t) { return false; });
+        __bdd out = bdd_forall(bdd_1, [](const bdd::label_t) -> bool {
+          return false;
+        });
+
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd_1));
       });
 
@@ -2230,7 +4462,9 @@ go_bandit([]() {
 
         it("quantifies even variables in BDD 1 [const &]", [&]() {
           const bdd in = bdd_1;
-          const bdd out = bdd_forall(in, [](const bdd::label_t x) { return !(x % 2); });
+          const bdd out = bdd_forall(in, [](const bdd::label_t x) -> bool {
+            return !(x % 2);
+          });
 
           node_test_stream out_nodes(out);
 
@@ -2252,7 +4486,9 @@ go_bandit([]() {
         });
 
         it("quantifies odd variables in BDD 1 [&&]", [&]() {
-          const bdd out = bdd_forall(bdd_1, [](const bdd::label_t x) { return x % 2; });
+          const bdd out = bdd_forall(bdd_1, [](const bdd::label_t x) -> bool {
+            return x % 2;
+          });
 
           node_test_stream out_nodes(out);
 
@@ -2274,7 +4510,9 @@ go_bandit([]() {
         });
 
         it("quantifies <= 2 variables in BDD 4 [&&]", [&]() {
-          const bdd out = bdd_forall(bdd_4, [](const bdd::label_t x) { return x <= 2; });
+          const bdd out = bdd_forall(bdd_4, [](const bdd::label_t x) -> bool {
+            return x <= 2;
+          });
 
           node_test_stream out_nodes(out);
 
@@ -2293,7 +4531,7 @@ go_bandit([]() {
           // TODO: top-down dependant?
           int calls = 0;
 
-          const bdd out = bdd_forall(bdd_5, [&calls](const bdd::label_t) {
+          const bdd out = bdd_forall(bdd_5, [&calls](const bdd::label_t) -> bool {
             calls++;
             return true;
           });
@@ -2328,7 +4566,9 @@ go_bandit([]() {
         quantify_mode = quantify_mode_t::NESTED;
 
         it("quantifies even variables in BDD 1", [&]() {
-          const bdd out = bdd_forall(bdd_1, [](const bdd::label_t x) { return !(x % 2); });
+          const bdd out = bdd_forall(bdd_1, [](const bdd::label_t x) -> bool {
+            return !(x % 2);
+          });
 
           node_test_stream out_nodes(out);
 
@@ -2348,7 +4588,9 @@ go_bandit([]() {
         });
 
         it("bails out on a level that only shortcuts", [&bdd_9T]() {
-          bdd out = bdd_forall(bdd_not(bdd_9T), [](const bdd::label_t x) { return !(x % 2); });
+          bdd out = bdd_forall(bdd_not(bdd_9T), [](const bdd::label_t x) -> bool {
+            return !(x % 2);
+          });
 
           node_test_stream out_nodes(out);
 
@@ -2386,7 +4628,9 @@ go_bandit([]() {
         });
 
         it("bails out on a level that only is irrelevant", [&bdd_9F]() {
-          bdd out = bdd_forall(bdd_not(bdd_9F), [](const bdd::label_t x) { return !(x % 2); });
+          bdd out = bdd_forall(bdd_not(bdd_9F), [](const bdd::label_t x) -> bool {
+            return !(x % 2);
+          });
 
           node_test_stream out_nodes(out);
 
@@ -2422,7 +4666,9 @@ go_bandit([]() {
         quantify_mode = quantify_mode_t::AUTO;
 
         it("quantifies odd variables in BDD 1", [&]() {
-          const bdd out = bdd_forall(bdd_1, [](const bdd::label_t x) { return x % 2; });
+          const bdd out = bdd_forall(bdd_1, [](const bdd::label_t x) -> bool {
+            return x % 2;
+          });
 
           node_test_stream out_nodes(out);
 
@@ -2447,7 +4693,7 @@ go_bandit([]() {
 
     describe("bdd_forall(const bdd&, const std::function<bdd::label_t()>&)", [&]() {
       it("returns input on -1 geneator in BDD 1 [&&]", [&]() {
-        __bdd out = bdd_forall(bdd_1, []() { return -1; });
+        __bdd out = bdd_forall(bdd_1, []() -> bdd::label_t { return -1; });
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd_1));
       });
 
@@ -2459,7 +4705,7 @@ go_bandit([]() {
 
           bdd::label_t var = 0;
 
-          const bdd out = bdd_forall(in, [&var]() {
+          const bdd out = bdd_forall(in, [&var]() -> bdd::label_t {
             const bdd::label_t ret = var;
             var -= 2;
             return ret;
@@ -2485,7 +4731,7 @@ go_bandit([]() {
         it("quantifies 1, -1 in BDD 1 [&&]", [&]() {
           bdd::label_t var = 1;
 
-          const bdd out = bdd_forall(bdd_1, [&var]() {
+          const bdd out = bdd_forall(bdd_1, [&var]() -> bdd::label_t {
             const bdd::label_t ret = var;
             var -= 2;
             return ret;
@@ -2511,7 +4757,9 @@ go_bandit([]() {
         it("terminates early when quantifying to a terminal in BDD 3 [&&]", [&]() {
           int calls = 0;
 
-          const bdd out = bdd_forall(bdd_3, [&calls]() { return 2 - 2*(calls++); });
+          const bdd out = bdd_forall(bdd_3, [&calls]() -> bdd::label_t {
+            return 2 - 2*(calls++);
+          });
 
           // What could be expected is 3 calls: 2, 0, -2 . But, here it terminates early.
           AssertThat(calls, Is().EqualTo(2));
@@ -2537,7 +4785,7 @@ go_bandit([]() {
         it("quantifies 0, -2 in BDD 1", [&]() {
           bdd::label_t var = 0;
 
-          const bdd out = bdd_forall(bdd_1, [&var]() {
+          const bdd out = bdd_forall(bdd_1, [&var]() -> bdd::label_t {
             const bdd::label_t ret = var;
             var -= 2;
             return ret;
@@ -2563,7 +4811,7 @@ go_bandit([]() {
         it("quantifies 1, -1 in BDD 1", [&]() {
           bdd::label_t var = 1;
 
-          const bdd out = bdd_forall(bdd_1, [&var]() {
+          const bdd out = bdd_forall(bdd_1, [&var]() -> bdd::label_t {
             const bdd::label_t ret = var;
             var -= 2;
             return ret;
@@ -2588,7 +4836,7 @@ go_bandit([]() {
 
         it("bails out on a level that only shortcuts", [&bdd_9T]() {
           bdd::label_t var = 6;
-          bdd out = bdd_forall(bdd_not(bdd_9T), [&var]() {
+          bdd out = bdd_forall(bdd_not(bdd_9T), [&var]() -> bdd::label_t {
             const bdd::label_t res = var;
             var -= 2;
             return res;
@@ -2631,7 +4879,7 @@ go_bandit([]() {
 
         it("bails out on a level that only is irrelevant", [&bdd_9F]() {
           bdd::label_t var = 6;
-          bdd out = bdd_forall(bdd_not(bdd_9F), [&var]() {
+          bdd out = bdd_forall(bdd_not(bdd_9F), [&var]() -> bdd::label_t {
             const bdd::label_t res = var;
             var -= 2;
             return res;
