@@ -167,6 +167,36 @@ namespace adiar::internal
       }
       return 0u;
     }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Number of terminals of a certain value.
+    ////////////////////////////////////////////////////////////////////////////
+    size_t number_of_terminals(const bool value) const
+    {
+      if (has<shared_arcs_t>()) {
+        return get<shared_arcs_t>()->number_of_terminals[negate ^ value];
+      }
+      if (has<shared_nodes_t>()) {
+        return get<shared_nodes_t>()->number_of_terminals[negate ^ value];
+      }
+      return 0u;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Number of terminals.
+    ////////////////////////////////////////////////////////////////////////////
+    size_t number_of_terminals() const
+    {
+      if (has<shared_arcs_t>()) {
+        const shared_arcs_t &af = get<shared_arcs_t>();
+        return af->number_of_terminals[false] + af->number_of_terminals[true];
+      }
+      if (has<shared_nodes_t>()) {
+        const shared_nodes_t &nf = get<shared_nodes_t>();
+        return nf->number_of_terminals[false] + nf->number_of_terminals[true];
+      }
+      return 0u;
+    }
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -311,6 +341,22 @@ namespace adiar::internal
     size_t size() const
     {
       return file->size();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Number of terminals of a certain value.
+    ////////////////////////////////////////////////////////////////////////////
+    size_t number_of_terminals(const bool value) const
+    {
+      return file->number_of_terminals[negate ^ value];
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Number of terminals.
+    ////////////////////////////////////////////////////////////////////////////
+    size_t number_of_terminals() const
+    {
+      return number_of_terminals(false) + number_of_terminals(true);
     }
 
   private:
