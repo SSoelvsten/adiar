@@ -1175,6 +1175,8 @@ namespace adiar::internal
     {
 #ifdef ADIAR_STATS
       _actual_max_size = std::max(_actual_max_size, _priority_queue.size());
+      stats_levelized_priority_queue.push_overflow += 1u;
+      _stats.push_overflow += 1u;
 #endif
       _priority_queue.push(e);
     }
