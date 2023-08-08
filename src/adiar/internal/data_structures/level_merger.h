@@ -54,7 +54,7 @@ namespace adiar::internal
   {
     static_assert(0 < FILES, "At least one file should be merged");
 
-    using stream_t = typename level_stream_t<file_t>::stream_t<reverse>;
+    using stream_t = typename level_stream_t<file_t>::template stream_t<reverse>;
 
   public:
     static size_t memory_usage()
