@@ -39,13 +39,13 @@ namespace adiar
 
   public:
     static inline bool
-    keep_terminal(const bool_op &/*op*/, const bdd::ptr_t &p)
+    keep_terminal(const bool_op &/*op*/, const zdd::ptr_t &p)
     {
       return p.value();
     }
 
     static constexpr bool
-    collapse_to_terminal(const bool_op &/*op*/, const bdd::ptr_t &/*p*/)
+    collapse_to_terminal(const bool_op &/*op*/, const zdd::ptr_t &/*p*/)
     {
       return false;
     }
