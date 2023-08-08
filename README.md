@@ -77,9 +77,9 @@ _ticked_ dependencies are mandatory to have installed.
 
 - [x] **CMake** (3.21+) and a **C++ compiler** (C++17)
 
-  Adiar compiles with the *GNU*, *Clang*, and *MSVC* C++ compilers. We do not
-  monitor compatibility with other compilers, so we cannot guarantee they will
-  work out-of-the-box.
+  Adiar compiles with the *GNU* (10+), *Clang* (12+), and *MSVC* C++ compilers.
+  We do not monitor compatibility with other compilers, so we cannot guarantee
+  they will work out-of-the-box.
 
 - [x] **Boost** (1.74.0+)
 
@@ -144,7 +144,7 @@ follow the `make <target>` with `N=<value>`.
 | _N_      | Board size (default: 8)       |
 | _M_      | Memory in MiB (default: 1024) |
 
-**example/knights-tour/[T]** 
+**example/knights-tour/[T]**
 
 The value **T** can either be *all* or *closed*.
 

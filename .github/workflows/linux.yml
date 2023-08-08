@@ -41,7 +41,8 @@ jobs:
           - { cc: gcc,   v: 12, cxx: g++ } # newest
 
           # Clang Compiler
-          - { cc: clang, v: 11, cxx: clang++ } # oldest possible
+          # - { cc: clang, v: 11, cxx: clang++ } # oldest possible
+          - { cc: clang, v: 12, cxx: clang++ } # oldest supported
           - { cc: clang, v: 14, cxx: clang++ } # default
           - { cc: clang, v: 15, cxx: clang++ } # newst possible
 
