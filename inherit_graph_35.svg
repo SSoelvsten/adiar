@@ -11,10 +11,10 @@
 <!-- Node0 -->
 <g id="node1" class="node">
 <title>Node0</title>
-<g id="a_node1"><a xlink:href="structadiar_1_1stats__t_1_1equality__t_1_1slow__t.html" target="_top" xlink:title="Statistics from O(N log N) time&#45;forward processing equality checking algorithm.">
+<g id="a_node1"><a xlink:href="structadiar_1_1stats__t_1_1equality__t_1_1fast__t.html" target="_top" xlink:title="Statistics from O(N) linear&#45;scan equality checking algorithm.">
 <polygon fill="none" stroke="black" points="0,-0.5 0,-30.5 126,-30.5 126,-0.5 0,-0.5"/>
 <text text-anchor="start" x="8" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">adiar::stats_t::equality</text>
-<text text-anchor="middle" x="63" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">_t::slow_t</text>
+<text text-anchor="middle" x="63" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">_t::fast_t</text>
 </a>
 </g>
 </g>

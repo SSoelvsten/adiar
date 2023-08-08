@@ -19,7 +19,7 @@ var classadiar_1_1internal_1_1ptr__uint64 =
     [ "is_terminal", "classadiar_1_1internal_1_1ptr__uint64.html#a668df16a25581bfee4c5b450f58d91f6", null ],
     [ "is_true", "classadiar_1_1internal_1_1ptr__uint64.html#ab7e7341885a5085f64a0a40724765be7", null ],
     [ "label", "classadiar_1_1internal_1_1ptr__uint64.html#a40a6c123b0e0ebd7fd9c05f4b9ab1d4c", null ],
-    [ "on_level", "classadiar_1_1internal_1_1ptr__uint64.html#a287e399473b0f26af1bf670a22ed6e6e", null ],
+    [ "on_level", "classadiar_1_1internal_1_1ptr__uint64.html#a58f2cf59da3aec712d28e0dc6aa63d24", null ],
     [ "operator!=", "classadiar_1_1internal_1_1ptr__uint64.html#afa3ff9cda625937d3f61cf5e56d6589c", null ],
     [ "operator&", "classadiar_1_1internal_1_1ptr__uint64.html#a9c461300a9872258451e34aec3ce00b5", null ],
     [ "operator<", "classadiar_1_1internal_1_1ptr__uint64.html#a3fde96fef5d7bf8a261c63ea75de5179", null ],

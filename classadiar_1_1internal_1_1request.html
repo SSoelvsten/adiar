@@ -142,7 +142,7 @@ class adiar::internal::request&lt; CARDINALITY, NODE_CARRY_SIZE, INPUTS &gt;</h3
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">cardinality</td><td>The cardinality of the algorithm, e.g. it is 1 for <code>bdd_restrict</code>, 2 for <code>bdd_apply</code> and 3 for <code>bdd_ite</code>.</td></tr>
-    <tr><td class="paramname">nodes_carried</td><td>Number of children being forwarded with the request. This is used when <code>cardinality</code> is greater than 1 and a per-level priority queue forwards the children of <code>target.fst()</code> to <code>target.snd()</code> and so on.</td></tr>
+    <tr><td class="paramname">nodes_carried</td><td>Number of children being forwarded with the request. This is used when <code>cardinality</code> is greater than 1 and a per-level priority queue forwards the children of <code>target.first()</code> to <code>target.second()</code> and so on.</td></tr>
   </table>
   </dd>
 </dl>

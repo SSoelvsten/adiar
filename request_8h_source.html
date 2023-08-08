@@ -143,7 +143,7 @@ $(document).ready(function(){initNavTree('request_8h_source.html',''); initResiz
 <div class="line"><a name="l00078"></a><span class="lineno"><a class="line" href="classadiar_1_1internal_1_1request_3_01CARDINALITY_00_010_00_01INPUTS_01_4.html#a43c77bb9ca0ab9244f8eca2a191b7d6b">   78</a></span>&#160;    <a class="code" href="classadiar_1_1internal_1_1tuple.html">target_t</a> <a class="code" href="classadiar_1_1internal_1_1request_3_01CARDINALITY_00_010_00_01INPUTS_01_4.html#a43c77bb9ca0ab9244f8eca2a191b7d6b">target</a>;</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
 <div class="line"><a name="l00083"></a><span class="lineno"><a class="line" href="classadiar_1_1internal_1_1request_3_01CARDINALITY_00_010_00_01INPUTS_01_4.html#a405a1a36f3887387f0ebb2948f33da23">   83</a></span>&#160;    <a class="code" href="classadiar_1_1internal_1_1ptr__uint64.html#abc07ccbe6d9937def83e52b981532801">ptr_t::label_t</a> <a class="code" href="classadiar_1_1internal_1_1request_3_01CARDINALITY_00_010_00_01INPUTS_01_4.html#a405a1a36f3887387f0ebb2948f33da23">level</a>()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="keyword">    </span>{ <span class="keywordflow">return</span> target.<a class="code" href="classadiar_1_1internal_1_1tuple.html#afcc1f9dd4f5e0050d2ee7d324a2ce95d">fst</a>().label(); }</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="keyword">    </span>{ <span class="keywordflow">return</span> target.<a class="code" href="classadiar_1_1internal_1_1tuple.html#ad4f651f13b4440c88b8d3b468d3e06f6">first</a>().label(); }</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160; </div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="comment">/* ============================= NODE CARRY ============================= */</span></div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
@@ -253,8 +253,8 @@ $(document).ready(function(){initNavTree('request_8h_source.html',''); initResiz
 <div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;  {</div>
 <div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">bool</span> operator()(<span class="keyword">const</span> request_t &amp;a, <span class="keyword">const</span> request_t &amp;b)</div>
 <div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;    {</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;      <span class="keyword">const</span> <span class="keyword">typename</span> request_t::label_t label_a = a.target.fst().label();</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;      <span class="keyword">const</span> <span class="keyword">typename</span> request_t::label_t label_b = b.target.fst().label();</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;      <span class="keyword">const</span> <span class="keyword">typename</span> request_t::label_t label_a = a.target.first().label();</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;      <span class="keyword">const</span> <span class="keyword">typename</span> request_t::label_t label_b = b.target.first().label();</div>
 <div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;      </div>
 <div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;      <span class="keywordflow">if</span> constexpr (request_t::cardinality == 2) {</div>
 <div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;        constexpr <span class="keywordtype">size_t</span> o_idx = 1u - idx;</div>
@@ -271,29 +271,29 @@ $(document).ready(function(){initNavTree('request_8h_source.html',''); initResiz
 <div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;  };</div>
 <div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160; </div>
 <div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">class</span> request_t&gt;</div>
-<div class="line"><a name="l00265"></a><span class="lineno"><a class="line" href="structadiar_1_1internal_1_1request__fst__lt.html">  265</a></span>&#160;  <span class="keyword">struct </span><a class="code" href="structadiar_1_1internal_1_1request__fst__lt.html">request_fst_lt</a></div>
+<div class="line"><a name="l00265"></a><span class="lineno"><a class="line" href="structadiar_1_1internal_1_1request__first__lt.html">  265</a></span>&#160;  <span class="keyword">struct </span><a class="code" href="structadiar_1_1internal_1_1request__first__lt.html">request_first_lt</a></div>
 <div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;  {</div>
 <div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">bool</span> operator()(<span class="keyword">const</span> request_t &amp;a, <span class="keyword">const</span> request_t &amp;b)</div>
 <div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;    {</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;      <span class="keywordflow">return</span> <a class="code" href="structadiar_1_1internal_1_1tuple__fst__lt.html">tuple_fst_lt&lt;typename request_t::target_t&gt;</a>()(a.target, b.target);</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;      <span class="keywordflow">return</span> <a class="code" href="structadiar_1_1internal_1_1tuple__first__lt.html">tuple_first_lt&lt;typename request_t::target_t&gt;</a>()(a.target, b.target);</div>
 <div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;    }</div>
 <div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;  };</div>
 <div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160; </div>
 <div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">class</span> request_t&gt;</div>
-<div class="line"><a name="l00274"></a><span class="lineno"><a class="line" href="structadiar_1_1internal_1_1request__snd__lt.html">  274</a></span>&#160;  <span class="keyword">struct </span><a class="code" href="structadiar_1_1internal_1_1request__snd__lt.html">request_snd_lt</a></div>
+<div class="line"><a name="l00274"></a><span class="lineno"><a class="line" href="structadiar_1_1internal_1_1request__second__lt.html">  274</a></span>&#160;  <span class="keyword">struct </span><a class="code" href="structadiar_1_1internal_1_1request__second__lt.html">request_second_lt</a></div>
 <div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;  {</div>
 <div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">bool</span> operator()(<span class="keyword">const</span> request_t &amp;a, <span class="keyword">const</span> request_t &amp;b)</div>
 <div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;    {</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;      <span class="keywordflow">return</span> <a class="code" href="structadiar_1_1internal_1_1tuple__snd__lt.html">tuple_snd_lt&lt;typename request_t::target_t&gt;</a>()(a.target, b.target);</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;      <span class="keywordflow">return</span> <a class="code" href="structadiar_1_1internal_1_1tuple__second__lt.html">tuple_second_lt&lt;typename request_t::target_t&gt;</a>()(a.target, b.target);</div>
 <div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;    }</div>
 <div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;  };</div>
 <div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160; </div>
 <div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">class</span> request_t&gt;</div>
-<div class="line"><a name="l00283"></a><span class="lineno"><a class="line" href="structadiar_1_1internal_1_1request__trd__lt.html">  283</a></span>&#160;  <span class="keyword">struct </span><a class="code" href="structadiar_1_1internal_1_1request__trd__lt.html">request_trd_lt</a></div>
+<div class="line"><a name="l00283"></a><span class="lineno"><a class="line" href="structadiar_1_1internal_1_1request__third__lt.html">  283</a></span>&#160;  <span class="keyword">struct </span><a class="code" href="structadiar_1_1internal_1_1request__third__lt.html">request_third_lt</a></div>
 <div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;  {</div>
 <div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">bool</span> operator()(<span class="keyword">const</span> request_t &amp;a, <span class="keyword">const</span> request_t &amp;b)</div>
 <div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;    {</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;      <span class="keywordflow">return</span> <a class="code" href="structadiar_1_1internal_1_1tuple__trd__lt.html">tuple_trd_lt&lt;typename request_t::target_t&gt;</a>()(a.target, b.target);</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;      <span class="keywordflow">return</span> <a class="code" href="structadiar_1_1internal_1_1tuple__third__lt.html">tuple_third_lt&lt;typename request_t::target_t&gt;</a>()(a.target, b.target);</div>
 <div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;    }</div>
 <div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;  };</div>
 <div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160; </div>
@@ -342,38 +342,38 @@ $(document).ready(function(){initNavTree('request_8h_source.html',''); initResiz
 <div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;  };</div>
 <div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160; </div>
 <div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">class</span> request_t&gt;</div>
-<div class="line"><a name="l00349"></a><span class="lineno"><a class="line" href="structadiar_1_1internal_1_1request__data__fst__lt.html">  349</a></span>&#160;  <span class="keyword">struct </span><a class="code" href="structadiar_1_1internal_1_1request__data__fst__lt.html">request_data_fst_lt</a></div>
+<div class="line"><a name="l00349"></a><span class="lineno"><a class="line" href="structadiar_1_1internal_1_1request__data__first__lt.html">  349</a></span>&#160;  <span class="keyword">struct </span><a class="code" href="structadiar_1_1internal_1_1request__data__first__lt.html">request_data_first_lt</a></div>
 <div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;  {</div>
 <div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">bool</span> operator()(<span class="keyword">const</span> request_t &amp;a, <span class="keyword">const</span> request_t &amp;b)</div>
 <div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;    {</div>
 <div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;      <span class="keywordflow">if</span> (request_t::data_t::sort_on_tiebreak &amp;&amp; a.target == b.target) {</div>
 <div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;        <span class="keywordflow">return</span> a.data &lt; b.data;</div>
 <div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;      }</div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;      <span class="keywordflow">return</span> <a class="code" href="structadiar_1_1internal_1_1request__fst__lt.html">request_fst_lt&lt;request_t&gt;</a>()(a, b);</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;      <span class="keywordflow">return</span> <a class="code" href="structadiar_1_1internal_1_1request__first__lt.html">request_first_lt&lt;request_t&gt;</a>()(a, b);</div>
 <div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;    }</div>
 <div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;  };</div>
 <div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160; </div>
 <div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">class</span> request_t&gt;</div>
-<div class="line"><a name="l00361"></a><span class="lineno"><a class="line" href="structadiar_1_1internal_1_1request__data__snd__lt.html">  361</a></span>&#160;  <span class="keyword">struct </span><a class="code" href="structadiar_1_1internal_1_1request__data__snd__lt.html">request_data_snd_lt</a></div>
+<div class="line"><a name="l00361"></a><span class="lineno"><a class="line" href="structadiar_1_1internal_1_1request__data__second__lt.html">  361</a></span>&#160;  <span class="keyword">struct </span><a class="code" href="structadiar_1_1internal_1_1request__data__second__lt.html">request_data_second_lt</a></div>
 <div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;  {</div>
 <div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">bool</span> operator()(<span class="keyword">const</span> request_t &amp;a, <span class="keyword">const</span> request_t &amp;b)</div>
 <div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;    {</div>
 <div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;      <span class="keywordflow">if</span> (request_t::data_t::sort_on_tiebreak &amp;&amp; a.target == b.target) {</div>
 <div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;        <span class="keywordflow">return</span> a.data &lt; b.data;</div>
 <div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;      }</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;      <span class="keywordflow">return</span> <a class="code" href="structadiar_1_1internal_1_1request__snd__lt.html">request_snd_lt&lt;request_t&gt;</a>()(a, b);</div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;      <span class="keywordflow">return</span> <a class="code" href="structadiar_1_1internal_1_1request__second__lt.html">request_second_lt&lt;request_t&gt;</a>()(a, b);</div>
 <div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;    }</div>
 <div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;  };</div>
 <div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160; </div>
 <div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">class</span> request_t&gt;</div>
-<div class="line"><a name="l00373"></a><span class="lineno"><a class="line" href="structadiar_1_1internal_1_1request__data__trd__lt.html">  373</a></span>&#160;  <span class="keyword">struct </span><a class="code" href="structadiar_1_1internal_1_1request__data__trd__lt.html">request_data_trd_lt</a></div>
+<div class="line"><a name="l00373"></a><span class="lineno"><a class="line" href="structadiar_1_1internal_1_1request__data__third__lt.html">  373</a></span>&#160;  <span class="keyword">struct </span><a class="code" href="structadiar_1_1internal_1_1request__data__third__lt.html">request_data_third_lt</a></div>
 <div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;  {</div>
 <div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">bool</span> operator()(<span class="keyword">const</span> request_t &amp;a, <span class="keyword">const</span> request_t &amp;b)</div>
 <div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;    {</div>
 <div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;      <span class="keywordflow">if</span> (request_t::data_t::sort_on_tiebreak &amp;&amp; a.target == b.target) {</div>
 <div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;        <span class="keywordflow">return</span> a.data &lt; b.data;</div>
 <div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;      }</div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;      <span class="keywordflow">return</span> <a class="code" href="structadiar_1_1internal_1_1request__trd__lt.html">request_trd_lt&lt;request_t&gt;</a>()(a, b);</div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;      <span class="keywordflow">return</span> <a class="code" href="structadiar_1_1internal_1_1request__third__lt.html">request_third_lt&lt;request_t&gt;</a>()(a, b);</div>
 <div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;    }</div>
 <div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;  };</div>
 <div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160; </div>
@@ -419,19 +419,19 @@ $(document).ready(function(){initNavTree('request_8h_source.html',''); initResiz
 <div class="ttc" id="aclassadiar_1_1internal_1_1request_html_aa0a40123245810ac53c809e15ad6dc21"><div class="ttname"><a href="classadiar_1_1internal_1_1request.html#aa0a40123245810ac53c809e15ad6dc21">adiar::internal::request::empty_carry</a></div><div class="ttdeci">bool empty_carry() const</div><div class="ttdoc">Whether the node carry is empty. That is, this is a faster way to compute whether nodes_carried() == ...</div><div class="ttdef"><b>Definition:</b> request.h:217</div></div>
 <div class="ttc" id="aclassadiar_1_1internal_1_1request_html_abd20eed797d6668dd2885dc35c23006d"><div class="ttname"><a href="classadiar_1_1internal_1_1request.html#abd20eed797d6668dd2885dc35c23006d">adiar::internal::request::nodes_carried</a></div><div class="ttdeci">uint8_t nodes_carried() const</div><div class="ttdoc">The number of nodes actually carried within node_carry.</div><div class="ttdef"><b>Definition:</b> request.h:197</div></div>
 <div class="ttc" id="aclassadiar_1_1internal_1_1tuple_html"><div class="ttname"><a href="classadiar_1_1internal_1_1tuple.html">adiar::internal::tuple&lt; ptr_t, cardinality, sorted_target &gt;</a></div></div>
-<div class="ttc" id="aclassadiar_1_1internal_1_1tuple_html_afcc1f9dd4f5e0050d2ee7d324a2ce95d"><div class="ttname"><a href="classadiar_1_1internal_1_1tuple.html#afcc1f9dd4f5e0050d2ee7d324a2ce95d">adiar::internal::tuple::fst</a></div><div class="ttdeci">elem_t fst() const</div><div class="ttdoc">Access to the first element wrt. the elements ordering.</div><div class="ttdef"><b>Definition:</b> tuple.h:93</div></div>
+<div class="ttc" id="aclassadiar_1_1internal_1_1tuple_html_ad4f651f13b4440c88b8d3b468d3e06f6"><div class="ttname"><a href="classadiar_1_1internal_1_1tuple.html#ad4f651f13b4440c88b8d3b468d3e06f6">adiar::internal::tuple::first</a></div><div class="ttdeci">const elem_t &amp; first() const</div><div class="ttdoc">Access to the first element wrt. the elements ordering.</div><div class="ttdef"><b>Definition:</b> tuple.h:141</div></div>
 <div class="ttc" id="aclassadiar_1_1internal_1_1with__parent_html"><div class="ttname"><a href="classadiar_1_1internal_1_1with__parent.html">adiar::internal::with_parent</a></div><div class="ttdoc">Class to carry the parent of a recursion within request_data.</div><div class="ttdef"><b>Definition:</b> request.h:388</div></div>
-<div class="ttc" id="astructadiar_1_1internal_1_1request__data__fst__lt_html"><div class="ttname"><a href="structadiar_1_1internal_1_1request__data__fst__lt.html">adiar::internal::request_data_fst_lt</a></div><div class="ttdef"><b>Definition:</b> request.h:350</div></div>
+<div class="ttc" id="astructadiar_1_1internal_1_1request__data__first__lt_html"><div class="ttname"><a href="structadiar_1_1internal_1_1request__data__first__lt.html">adiar::internal::request_data_first_lt</a></div><div class="ttdef"><b>Definition:</b> request.h:350</div></div>
 <div class="ttc" id="astructadiar_1_1internal_1_1request__data__lt_html"><div class="ttname"><a href="structadiar_1_1internal_1_1request__data__lt.html">adiar::internal::request_data_lt</a></div><div class="ttdef"><b>Definition:</b> request.h:338</div></div>
-<div class="ttc" id="astructadiar_1_1internal_1_1request__data__snd__lt_html"><div class="ttname"><a href="structadiar_1_1internal_1_1request__data__snd__lt.html">adiar::internal::request_data_snd_lt</a></div><div class="ttdef"><b>Definition:</b> request.h:362</div></div>
-<div class="ttc" id="astructadiar_1_1internal_1_1request__data__trd__lt_html"><div class="ttname"><a href="structadiar_1_1internal_1_1request__data__trd__lt.html">adiar::internal::request_data_trd_lt</a></div><div class="ttdef"><b>Definition:</b> request.h:374</div></div>
-<div class="ttc" id="astructadiar_1_1internal_1_1request__fst__lt_html"><div class="ttname"><a href="structadiar_1_1internal_1_1request__fst__lt.html">adiar::internal::request_fst_lt</a></div><div class="ttdef"><b>Definition:</b> request.h:266</div></div>
+<div class="ttc" id="astructadiar_1_1internal_1_1request__data__second__lt_html"><div class="ttname"><a href="structadiar_1_1internal_1_1request__data__second__lt.html">adiar::internal::request_data_second_lt</a></div><div class="ttdef"><b>Definition:</b> request.h:362</div></div>
+<div class="ttc" id="astructadiar_1_1internal_1_1request__data__third__lt_html"><div class="ttname"><a href="structadiar_1_1internal_1_1request__data__third__lt.html">adiar::internal::request_data_third_lt</a></div><div class="ttdef"><b>Definition:</b> request.h:374</div></div>
+<div class="ttc" id="astructadiar_1_1internal_1_1request__first__lt_html"><div class="ttname"><a href="structadiar_1_1internal_1_1request__first__lt.html">adiar::internal::request_first_lt</a></div><div class="ttdef"><b>Definition:</b> request.h:266</div></div>
 <div class="ttc" id="astructadiar_1_1internal_1_1request__lt_html"><div class="ttname"><a href="structadiar_1_1internal_1_1request__lt.html">adiar::internal::request_lt</a></div><div class="ttdef"><b>Definition:</b> request.h:244</div></div>
-<div class="ttc" id="astructadiar_1_1internal_1_1request__snd__lt_html"><div class="ttname"><a href="structadiar_1_1internal_1_1request__snd__lt.html">adiar::internal::request_snd_lt</a></div><div class="ttdef"><b>Definition:</b> request.h:275</div></div>
-<div class="ttc" id="astructadiar_1_1internal_1_1request__trd__lt_html"><div class="ttname"><a href="structadiar_1_1internal_1_1request__trd__lt.html">adiar::internal::request_trd_lt</a></div><div class="ttdef"><b>Definition:</b> request.h:284</div></div>
-<div class="ttc" id="astructadiar_1_1internal_1_1tuple__fst__lt_html"><div class="ttname"><a href="structadiar_1_1internal_1_1tuple__fst__lt.html">adiar::internal::tuple_fst_lt</a></div><div class="ttdef"><b>Definition:</b> tuple.h:250</div></div>
-<div class="ttc" id="astructadiar_1_1internal_1_1tuple__snd__lt_html"><div class="ttname"><a href="structadiar_1_1internal_1_1tuple__snd__lt.html">adiar::internal::tuple_snd_lt</a></div><div class="ttdef"><b>Definition:</b> tuple.h:265</div></div>
-<div class="ttc" id="astructadiar_1_1internal_1_1tuple__trd__lt_html"><div class="ttname"><a href="structadiar_1_1internal_1_1tuple__trd__lt.html">adiar::internal::tuple_trd_lt</a></div><div class="ttdef"><b>Definition:</b> tuple.h:277</div></div>
+<div class="ttc" id="astructadiar_1_1internal_1_1request__second__lt_html"><div class="ttname"><a href="structadiar_1_1internal_1_1request__second__lt.html">adiar::internal::request_second_lt</a></div><div class="ttdef"><b>Definition:</b> request.h:275</div></div>
+<div class="ttc" id="astructadiar_1_1internal_1_1request__third__lt_html"><div class="ttname"><a href="structadiar_1_1internal_1_1request__third__lt.html">adiar::internal::request_third_lt</a></div><div class="ttdef"><b>Definition:</b> request.h:284</div></div>
+<div class="ttc" id="astructadiar_1_1internal_1_1tuple__first__lt_html"><div class="ttname"><a href="structadiar_1_1internal_1_1tuple__first__lt.html">adiar::internal::tuple_first_lt</a></div><div class="ttdef"><b>Definition:</b> tuple.h:347</div></div>
+<div class="ttc" id="astructadiar_1_1internal_1_1tuple__second__lt_html"><div class="ttname"><a href="structadiar_1_1internal_1_1tuple__second__lt.html">adiar::internal::tuple_second_lt</a></div><div class="ttdef"><b>Definition:</b> tuple.h:362</div></div>
+<div class="ttc" id="astructadiar_1_1internal_1_1tuple__third__lt_html"><div class="ttname"><a href="structadiar_1_1internal_1_1tuple__third__lt.html">adiar::internal::tuple_third_lt</a></div><div class="ttdef"><b>Definition:</b> tuple.h:374</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
