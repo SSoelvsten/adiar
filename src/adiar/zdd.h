@@ -76,6 +76,8 @@ namespace adiar
   /// \pre       The variable `var` should occur in `dom`.
   ///
   /// \throws invalid_argument If `dom` is not in ascending order.
+  ///
+  /// \throws invalid_argument If `vars` includes a label that is too large.
   //////////////////////////////////////////////////////////////////////////////
   zdd zdd_ithvar(zdd::label_t var, const shared_file<zdd::label_t> &dom);
 
@@ -119,8 +121,6 @@ namespace adiar
   ///
   /// \pre       `adiar_has_domain() == true` and the variable `var` should
   ///            occur in the global domain.
-  ///
-  /// \throws invalid_argument If `vars` includes a label that is too large.
   //////////////////////////////////////////////////////////////////////////////
   zdd zdd_nithvar(zdd::label_t var);
 
