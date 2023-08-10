@@ -2,7 +2,6 @@
 #define ADIAR_INTERNAL_ALGORITHMS_BUILD_H
 
 #include <adiar/exception.h>
-#include <adiar/internal/assert.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/data_types/node.h>
@@ -136,6 +135,9 @@ namespace adiar::internal
       while(ls.can_pull()) {
         const node::ptr_t::label_t next_label = ls.pull();
 
+        if (node::MAX_LABEL < next_label) {
+          throw invalid_argument("Cannot represent that large a label");
+        }
         if (!root.is_terminal() && root.label() <= next_label) {
           throw invalid_argument("Labels not given in increasing order");
         }

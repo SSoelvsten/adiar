@@ -287,6 +287,53 @@ go_bandit([]() {
 
           AssertThat(bdd_eval(bdd_T, ass), Is().True());
         });
+
+        it("throws exception when given non-ascending list of assignments", [&]() {
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
+
+          { // Garbage collect writer to free write-lock
+            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
+
+            aw << map_pair<bdd::label_t, boolean>(0, true)
+               << map_pair<bdd::label_t, boolean>(2, true)
+               << map_pair<bdd::label_t, boolean>(1, true)
+               << map_pair<bdd::label_t, boolean>(3, true)
+               << map_pair<bdd::label_t, boolean>(4, true)
+              ;
+          }
+
+          AssertThrows(invalid_argument, bdd_eval(skip_bdd, ass));
+        });
+
+        it("throws exception when running out of assignments", [&]() {
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
+
+          { // Garbage collect writer to free write-lock
+            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
+
+            aw << map_pair<bdd::label_t, boolean>(0, true)
+               << map_pair<bdd::label_t, boolean>(1, true)
+              ;
+          }
+
+          AssertThrows(out_of_range, bdd_eval(skip_bdd, ass));
+        });
+
+        it("throws exception when list is missing a needed assignment", [&]() {
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
+
+          { // Garbage collect writer to free write-lock
+            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
+
+            aw << map_pair<bdd::label_t, boolean>(0, true)
+               << map_pair<bdd::label_t, boolean>(1, true)
+               << map_pair<bdd::label_t, boolean>(3, true)
+               << map_pair<bdd::label_t, boolean>(4, true)
+              ;
+          }
+
+          AssertThrows(invalid_argument, bdd_eval(skip_bdd, ass));
+        });
       });
 
       describe("bdd_eval(bdd, std::function<...>)", [&]() {

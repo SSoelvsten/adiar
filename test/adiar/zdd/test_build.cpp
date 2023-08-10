@@ -5,7 +5,7 @@ go_bandit([]() {
     ptr_uint64 terminal_T = ptr_uint64(true);
     ptr_uint64 terminal_F = ptr_uint64(false);
 
-    describe("zdd_terminal", [&]() {
+    describe("zdd_terminal(v)", [&]() {
       it("can create { Ø } [zdd_terminal]", [&]() {
         zdd res = zdd_terminal(true);
         node_test_stream ns(res);
@@ -395,6 +395,28 @@ go_bandit([]() {
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
       });
+
+      it("throws exception when domain is not in ascending order", [&]() {
+        adiar::shared_file<zdd::label_t> dom;
+
+        { // Garbage collect writer to free write-lock
+          adiar::file_writer<zdd::label_t> dw(dom);
+          dw << 3 << 2 << 1 << 0;
+        }
+
+        AssertThrows(invalid_argument, zdd_ithvar(2, dom));
+      });
+
+      it("throws exception if domain includes too large label", [&]() {
+        adiar::shared_file<zdd::label_t> dom;
+
+        { // Garbage collect writer to free write-lock
+          adiar::file_writer<zdd::label_t> dw(dom);
+          dw << 0 << 1 << 42 << zdd::MAX_LABEL+1;
+        }
+
+        AssertThrows(invalid_argument, zdd_ithvar(42, dom));
+      });
     });
 
     describe("zdd_ithvar(i)", [&]() {
@@ -666,6 +688,28 @@ go_bandit([]() {
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
       });
+
+      it("throws exception when domain is not in ascending order", [&]() {
+        adiar::shared_file<zdd::label_t> dom;
+
+        { // Garbage collect writer to free write-lock
+          adiar::file_writer<zdd::label_t> dw(dom);
+          dw << 3 << 2 << 1 << 0;
+        }
+
+        AssertThrows(invalid_argument, zdd_nithvar(2, dom));
+      });
+
+      it("throws exception if domain includes too large label", [&]() {
+        adiar::shared_file<zdd::label_t> dom;
+
+        { // Garbage collect writer to free write-lock
+          adiar::file_writer<zdd::label_t> dw(dom);
+          dw << 0 << 1 << 42 << zdd::MAX_LABEL+1;
+        }
+
+        AssertThrows(invalid_argument, zdd_nithvar(42, dom));
+      });
     });
 
     describe("zdd_nithvar(i)", [&]() {
@@ -829,7 +873,7 @@ go_bandit([]() {
       });
     });
 
-    describe("zdd_vars", [&]() {
+    describe("zdd_vars(vars)", [&]() {
       it("can create { Ø } on empty list", [&]() {
         adiar::shared_file<zdd::label_t> labels;
 
@@ -949,10 +993,31 @@ go_bandit([]() {
         AssertThat(res->number_of_terminals[false], Is().EqualTo(3u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
+
+      it("throws exception when domain is not in ascending order", [&]() {
+        adiar::shared_file<zdd::label_t> vars;
+
+        { // Garbage collect writer to free write-lock
+          adiar::file_writer<zdd::label_t> vw(vars);
+          vw << 3 << 2 << 1 << 0;
+        }
+
+        AssertThrows(invalid_argument, zdd_vars(vars));
+      });
+
+      it("throws exception if domain includes too large label", [&]() {
+        adiar::shared_file<zdd::label_t> vars;
+
+        { // Garbage collect writer to free write-lock
+          adiar::file_writer<zdd::label_t> vw(vars);
+          vw << 0 << 1 << 42 << zdd::MAX_LABEL+1;
+        }
+
+        AssertThrows(invalid_argument, zdd_vars(vars));
+      });
     });
 
-
-    describe("zdd_singleton", [&]() {
+    describe("zdd_singleton(i)", [&]() {
       it("can create { {0} }", [&]() {
         zdd res = zdd_singleton(0);
         node_test_stream ns(res);
@@ -1016,9 +1081,13 @@ go_bandit([]() {
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
+
+      it("throws exception if the label is too large", [&]() {
+        AssertThrows(invalid_argument, zdd_singleton(zdd::MAX_LABEL+1));
+      });
     });
 
-    describe("zdd_singletons", [&]() {
+    describe("zdd_singletons(vars)", [&]() {
       it("can create Ø on empty list", [&]() {
         adiar::shared_file<zdd::label_t> labels;
 
@@ -1136,9 +1205,31 @@ go_bandit([]() {
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(3u));
       });
+
+      it("throws exception when domain is not in ascending order", [&]() {
+        adiar::shared_file<zdd::label_t> vars;
+
+        { // Garbage collect writer to free write-lock
+          adiar::file_writer<zdd::label_t> vw(vars);
+          vw << 3 << 2 << 1 << 0;
+        }
+
+        AssertThrows(invalid_argument, zdd_singletons(vars));
+      });
+
+      it("throws exception if domain includes too large label", [&]() {
+        adiar::shared_file<zdd::label_t> vars;
+
+        { // Garbage collect writer to free write-lock
+          adiar::file_writer<zdd::label_t> vw(vars);
+          vw << 0 << 1 << 42 << zdd::MAX_LABEL+1;
+        }
+
+        AssertThrows(invalid_argument, zdd_singletons(vars));
+      });
     });
 
-    describe("zdd_powerset", [&]() {
+    describe("zdd_powerset(vars)", [&]() {
       it("can create { Ø } on empty list", [&]() {
         adiar::shared_file<zdd::label_t> labels;
 
@@ -1253,9 +1344,31 @@ go_bandit([]() {
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
       });
+
+      it("throws exception when domain is not in ascending order", [&]() {
+        adiar::shared_file<zdd::label_t> vars;
+
+        { // Garbage collect writer to free write-lock
+          adiar::file_writer<zdd::label_t> vw(vars);
+          vw << 3 << 2 << 1 << 0;
+        }
+
+        AssertThrows(invalid_argument, zdd_powerset(vars));
+      });
+
+      it("throws exception if domain includes too large label", [&]() {
+        adiar::shared_file<zdd::label_t> vars;
+
+        { // Garbage collect writer to free write-lock
+          adiar::file_writer<zdd::label_t> vw(vars);
+          vw << 0 << 1 << 42 << zdd::MAX_LABEL+1;
+        }
+
+        AssertThrows(invalid_argument, zdd_powerset(vars));
+      });
     });
 
-    describe("zdd_sized_sets", [&]() {
+    describe("zdd_sized_sets(vars, threshold, op)", [&]() {
       // Edge cases
       it("can compute { s <= Ø | |s| <= 0 } to be { Ø }", [&]() {
         adiar::shared_file<zdd::label_t> labels;

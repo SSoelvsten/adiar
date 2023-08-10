@@ -63,7 +63,10 @@ namespace adiar
       const bdd::label_t level = n.label();
       while (mp.level() < level) {
         if (!mps.can_pull()) {
-          throw out_of_range("'msf' is insufficient to traverse BDD");
+          throw out_of_range("Labels are insufficient to traverse BDD");
+        }
+        if (mps.peek().level() <= mp.level()) {
+          throw invalid_argument("Labels are not in ascending order");
         }
 
         mp = mps.pull();
