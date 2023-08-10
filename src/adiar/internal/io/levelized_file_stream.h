@@ -108,9 +108,10 @@ namespace adiar::internal
     {
       const bool res = _streams[0].attached();
 #ifndef NDEBUG
+      // TODO: trust the compiler to notice this is an empty for-loop?
       for (size_t s_idx = 1; s_idx < streams; s_idx++) {
-        adiar_debug(_streams[s_idx].attached() == res,
-                    "Attachment ought to be synchronised.");
+        adiar_assert(_streams[s_idx].attached() == res,
+                     "Attachment ought to be synchronised.");
       }
 #endif
       return res;

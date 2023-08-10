@@ -96,7 +96,7 @@ namespace adiar::internal
                        const bool negate = false)
       : _ns(f, negate), _max_width(f.width), _level_buffer(f.width)
     {
-      adiar_debug(f.canonical);
+      adiar_assert(f.canonical);
       init();
     }
 
@@ -109,7 +109,7 @@ namespace adiar::internal
                        const bool negate = false)
       : _ns(f, negate), _max_width(f->width), _level_buffer(f->width)
     {
-      adiar_debug(f->canonical);
+      adiar_assert(f->canonical);
       init();
     }
 
@@ -121,14 +121,14 @@ namespace adiar::internal
     node_random_access(const dd &diagram)
       : _ns(diagram), _max_width(diagram->width), _level_buffer(diagram->width)
     {
-      adiar_debug(diagram->canonical);
+      adiar_assert(diagram->canonical);
       init();
     }
 
   private:
     void init()
     {
-      adiar_debug(_ns.can_pull(), "given file should be non-empty");
+      adiar_assert(_ns.can_pull(), "given file should be non-empty");
 
       // Skip the terminal node for terminal only BDDs.
       _root = _ns.peek().uid();
@@ -168,7 +168,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     void setup_next_level(const label_t level)
     {
-      adiar_debug(!has_current_level() || current_level() < level);
+      adiar_assert(!has_current_level() || current_level() < level);
 
       // Set to new level and mark the entire buffer's content garbage.
       _curr_level = level;
@@ -229,7 +229,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     const node_t& at(id_t idx) const
     {
-      adiar_debug(idx < current_width());
+      adiar_assert(idx < current_width());
       return _level_buffer[idx];
     }
 
@@ -238,9 +238,9 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     const node_t& at(uid_t u) const
     {
-      adiar_debug(u.label() == current_level());
+      adiar_assert(u.label() == current_level());
 
-      // adiar_debug(... < current_width()); is in 'return at(...)'
+      // adiar_assert(... < current_width()); is in 'return at(...)'
       return at(current_width() - ((uid_t::MAX_ID + 1u) - u.id()));
     }
   };

@@ -103,8 +103,7 @@ namespace adiar::internal
 
     level_t peek()
     {
-      adiar_debug(can_pull(),
-                  "Cannot peek past end of all streams");
+      adiar_assert(can_pull(), "Cannot peek past end of all streams");
 
       bool has_min_level = false;
       level_t min_level = 0u;
@@ -121,8 +120,7 @@ namespace adiar::internal
 
     level_t pull()
     {
-      adiar_debug(can_pull(),
-                  "Cannot pull past end of all streams");
+      adiar_assert(can_pull(), "Cannot pull past end of all streams");
 
       level_t min_level = peek();
 

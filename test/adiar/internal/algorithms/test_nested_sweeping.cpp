@@ -83,8 +83,8 @@ public:
         const node::uid_t u(level_label, level_size++);
 
         // Get target of next request
-        adiar_debug(!inner_pq.top().target.first().is_flagged(),
-                    "Double checking decorator indeed hides taint");
+        adiar_assert(!inner_pq.top().target.first().is_flagged(),
+                     "Double checking decorator indeed hides taint");
 
         const node::ptr_t next = inner_pq.top().target.first();
 

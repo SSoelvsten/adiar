@@ -115,8 +115,8 @@ namespace adiar::internal
       const bool res = _level_writer.attached();
 #ifndef NDEBUG
       for (size_t s_idx = 0; s_idx < ELEM_WRITERS; s_idx++) {
-        adiar_debug(_elem_writers[s_idx].attached() == res,
-                    "Attachment ought to be synchronised.");
+        adiar_assert(_elem_writers[s_idx].attached() == res,
+                     "Attachment ought to be synchronised.");
       }
 #endif
       return res;
@@ -179,8 +179,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     size_t size(const size_t s_idx) const
     {
-      adiar_debug(s_idx < ELEM_WRITERS,
-                  "Sub-stream index must be within [0; ELEM_WRITERS).");
+      adiar_assert(s_idx < ELEM_WRITERS,
+                   "Sub-stream index must be within [0; ELEM_WRITERS).");
       return _elem_writers[s_idx].size();
     }
 

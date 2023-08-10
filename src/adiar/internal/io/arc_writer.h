@@ -79,7 +79,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     void attach(levelized_file<arc> &af) {
       if (attached()) detach();
-      adiar_debug(af.empty());
+      adiar_assert(af.empty());
 
       // TODO: remove precondition and set up __latest_terminal.
 
@@ -93,7 +93,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     void attach(shared_ptr<levelized_file<arc>> &af) {
       if (attached()) detach();
-      adiar_debug(af->empty());
+      adiar_assert(af->empty());
 
       // TODO: remove precondition and set up __latest_terminal.
 
@@ -154,7 +154,7 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////
     void push(const arc &a)
     {
-      adiar_debug(!a.target().is_nil(), "Should not push an arc to NIL.");
+      adiar_assert(!a.target().is_nil(), "Should not push an arc to NIL.");
       if (a.target().is_node()) {
         push_internal(a);
       } else { // a.target().is_terminal()
@@ -180,9 +180,9 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////
     void push_internal(const arc &a)
     {
-      adiar_debug(attached());
-      adiar_debug(a.target().is_node());
-      adiar_debug(!a.source().is_nil());
+      adiar_assert(attached());
+      adiar_assert(a.target().is_node());
+      adiar_assert(!a.source().is_nil());
 #ifdef ADIAR_STATS
       stats_arc_file.push_internal += 1;
 #endif
@@ -196,9 +196,9 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////
     void push_terminal(const arc &a)
     {
-      adiar_debug(attached());
-      adiar_debug(a.target().is_terminal());
-      adiar_debug(!a.source().is_nil());
+      adiar_assert(attached());
+      adiar_assert(a.target().is_terminal());
+      adiar_assert(!a.source().is_nil());
 
       if (!__has_latest_terminal || a.source() > __latest_terminal.source()) {
         // Given arc is 'in-order' compared to latest 'in-order' pushed

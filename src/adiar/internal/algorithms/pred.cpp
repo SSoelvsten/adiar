@@ -87,7 +87,7 @@ namespace adiar::internal
     static inline void compute_cofactor([[maybe_unused]] const bool on_curr_level,
                                         dd::ptr_t &/*low*/,
                                         dd::ptr_t &/*high*/)
-    { adiar_debug(on_curr_level, "No request have mixed levels"); }
+    { adiar_assert(on_curr_level, "No request have mixed levels"); }
 
     // Since we guarantee to be on the same level, then we merely provide a noop
     // (similar to the bdd_policy) for the cofactor.
@@ -95,7 +95,7 @@ namespace adiar::internal
     compute_cofactor([[maybe_unused]] const bool on_curr_level,
                      const dd::node_t::children_t &children)
     {
-      adiar_debug(on_curr_level, "No request have mixed levels");
+      adiar_assert(on_curr_level, "No request have mixed levels");
       return children;
     }
   };
@@ -139,7 +139,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
       stats_equality.slow_check.exit_on_root += 1u;
 #endif
-      adiar_debug(v1.label() == v2.label(), "Levels match per the precondition");
+      adiar_assert(v1.label() == v2.label(), "Levels match per the precondition");
       return v1.low() == v2.low() && v1.high() == v2.high();
     }
 
@@ -204,7 +204,7 @@ namespace adiar::internal
     node_stream<> in_nodes_2(f1);
 
     while (in_nodes_1.can_pull()) {
-      adiar_debug(in_nodes_2.can_pull(), "The number of nodes should coincide");
+      adiar_assert(in_nodes_2.can_pull(), "The number of nodes should coincide");
       if (in_nodes_1.pull() != in_nodes_2.pull()) {
 #ifdef ADIAR_STATS
         stats_equality.fast_check.exit_on_mismatch += 1u;
@@ -264,7 +264,7 @@ namespace adiar::internal
       level_info_stream<> in_meta_1(f1);
 
       while (in_meta_0.can_pull()) {
-        adiar_debug(in_meta_1.can_pull(), "level_info files are same size");
+        adiar_assert(in_meta_1.can_pull(), "level_info files are same size");
         if (in_meta_0.pull() != in_meta_1.pull()) {
 #ifdef ADIAR_STATS
           stats_equality.exit_on_levels_mismatch += 1u;

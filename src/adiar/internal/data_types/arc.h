@@ -76,7 +76,7 @@ namespace adiar::internal
     arc(const ptr_t &source, const ptr_t &target)
       : _source(source), _target(target)
     {
-      adiar_debug(!target.is_node() || target.out_idx() == 0u);
+      adiar_assert(!target.is_node() || target.out_idx() == 0u);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -90,7 +90,7 @@ namespace adiar::internal
       : _source(source.with(out_idx))
       , _target(target)
     {
-      adiar_debug(!target.is_node() || target.out_idx() == 0u);
+      adiar_assert(!target.is_node() || target.out_idx() == 0u);
     }
 
     /* ================================ NODES =============================== */

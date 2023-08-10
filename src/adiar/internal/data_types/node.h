@@ -120,7 +120,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     inline value_t value() const
     {
-      adiar_debug(is_terminal());
+      adiar_assert(is_terminal());
       return _uid.value();
     }
 
@@ -161,13 +161,13 @@ namespace adiar::internal
     node(const label_t label, const id_t id, const ptr_t &l, const ptr_t &h)
       : _uid(label, id), _children{l, h}
     {
-      adiar_debug(!l.is_nil(), "Cannot create a node with NIL child");
-      adiar_debug(l.is_terminal() || label < l.label(),
-                  "Node is not prior to given low child");
+      adiar_assert(!l.is_nil(), "Cannot create a node with NIL child");
+      adiar_assert(l.is_terminal() || label < l.label(),
+                   "Node is not prior to given low child");
 
-      adiar_debug(!h.is_nil(), "Cannot create a node with NIL child");
-      adiar_debug(h.is_terminal() || label < h.label(),
-                  "Node is not prior to given high child");
+      adiar_assert(!h.is_nil(), "Cannot create a node with NIL child");
+      adiar_assert(h.is_terminal() || label < h.label(),
+                   "Node is not prior to given high child");
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -176,7 +176,7 @@ namespace adiar::internal
     node(const label_t label, const id_t id, const node &l, const ptr_t &h)
       : node(label, id, l.uid(), h)
     {
-      adiar_debug(OUTDEGREE == 2, "Constructor is for binary node only.");
+      adiar_assert(OUTDEGREE == 2, "Constructor is for binary node only.");
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -185,7 +185,7 @@ namespace adiar::internal
     node(const label_t label, const id_t id, const ptr_t &l, const node &h)
       : node(label, id, l, h.uid())
     {
-      adiar_debug(OUTDEGREE == 2, "Constructor is for binary node only.");
+      adiar_assert(OUTDEGREE == 2, "Constructor is for binary node only.");
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -194,7 +194,7 @@ namespace adiar::internal
     node(const label_t label, const id_t id, const node &l, const node &h)
       : node(label, id, l.uid(), h.uid())
     {
-      adiar_debug(OUTDEGREE == 2, "Constructor is for binary node only.");
+      adiar_assert(OUTDEGREE == 2, "Constructor is for binary node only.");
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -205,7 +205,7 @@ namespace adiar::internal
     // TODO: Rename to `level()` when introducing variable ordering
     inline label_t label() const
     {
-      adiar_debug(!is_terminal());
+      adiar_assert(!is_terminal());
       return uid().label();
     }
 
@@ -216,7 +216,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     inline id_t id() const
     {
-      adiar_debug(!is_terminal());
+      adiar_assert(!is_terminal());
       return uid().id();
     }
 
@@ -239,7 +239,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     inline ptr_t child(const size_t i) const
     {
-      adiar_debug(i < OUTDEGREE, "'i' must be a valid children index.");
+      adiar_assert(i < OUTDEGREE, "'i' must be a valid children index.");
       return _children[i];
     }
 
@@ -253,8 +253,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     inline ptr_t low() const
     {
-      adiar_debug(OUTDEGREE == 2,
-                  "Semantics of 'low' is only defined for binary nodes.");
+      adiar_assert(OUTDEGREE == 2,
+                   "Semantics of 'low' is only defined for binary nodes.");
 
       return child(false);
     }
@@ -269,8 +269,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     inline ptr_t high() const
     {
-      adiar_debug(OUTDEGREE == 2,
-                  "Semantics of 'high' is only defined for binary node.");
+      adiar_assert(OUTDEGREE == 2,
+                   "Semantics of 'high' is only defined for binary node.");
 
       return child(true);
     }

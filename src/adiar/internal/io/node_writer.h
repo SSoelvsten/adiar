@@ -195,9 +195,9 @@ namespace adiar::internal
           _file_ptr->number_of_terminals[n.uid().value()]++;
         }
       } else { // Check validity of input based on prior written node
-        adiar_debug(!_latest_node.is_terminal(),
+        adiar_assert(!_latest_node.is_terminal(),
                      "Cannot push a node after having pushed a terminal");
-        adiar_debug(!n.is_terminal(),
+        adiar_assert(!n.is_terminal(),
                      "Cannot push a terminal into non-empty file");
 
         // Check it is canonically sorted

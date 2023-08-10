@@ -286,7 +286,7 @@ namespace adiar::internal
       const arc e_low  = __reduce_get_next(reduce_pq, arcs);
 
       const node n = node_of(e_low, e_high);
-      adiar_debug(n.label() == label, "Label is for desired level");
+      adiar_assert(n.label() == label, "Label is for desired level");
 
       // Apply Reduction rule 1
       const node::ptr_t reduction_rule_ret = dd_policy::reduction_rule(n);
@@ -322,7 +322,7 @@ namespace adiar::internal
       const node next_node = child_grouping.pull();
 
       if (out_node.low() != unflag(next_node.low()) || out_node.high() != unflag(next_node.high())) {
-        adiar_debug(0 <= out_id, "Should still have more ids left");
+        adiar_assert(0 <= out_id, "Should still have more ids left");
         out_node = node(label, out_id--, unflag(next_node.low()), unflag(next_node.high()));
         out_writer.unsafe_push(out_node);
 
@@ -370,9 +370,9 @@ namespace adiar::internal
 
       const mapping current_map = is_red1_current ? next_red1 : next_red2;
 
-      adiar_debug(!arcs.can_pull_internal()
-                  || current_map.old_uid == arcs.peek_internal().target(),
-                  "Mapping forwarded in sync with internal arcs");
+      adiar_assert(!arcs.can_pull_internal()
+                   || current_map.old_uid == arcs.peek_internal().target(),
+                   "Mapping forwarded in sync with internal arcs");
 
       // Find all arcs that have the target that match the current mapping's old_uid
       while (arcs.can_pull_internal() && current_map.old_uid == arcs.peek_internal().target()) {
@@ -384,7 +384,7 @@ namespace adiar::internal
           ? flag(current_map.new_uid)
           : static_cast<ptr_uint64>(current_map.new_uid);
 
-        adiar_debug(t.is_terminal() || t.out_idx() == false, "Created target is without an index");
+        adiar_assert(t.is_terminal() || t.out_idx() == false, "Created target is without an index");
         reduce_pq.push(arc(s,t));
       }
 
@@ -414,8 +414,8 @@ namespace adiar::internal
     const bool terminal_value = next_red1.new_uid.is_terminal() && next_red1.new_uid.value();
     __reduce_level__epilogue<>(arcs, label, reduce_pq, out_writer, terminal_value);
 
-    adiar_debug(reduced_width <= unreduced_width,
-                "Reduction should only ever remove nodes");
+    adiar_assert(reduced_width <= unreduced_width,
+                 "Reduction should only ever remove nodes");
 
     return reduced_width;
   }
@@ -432,15 +432,15 @@ namespace adiar::internal
                            const bool terminal_val)
   {
 
-    adiar_debug(reduce_pq.empty_level(),
-                "All forwarded arcs for 'label' should be processed");
+    adiar_assert(reduce_pq.empty_level(),
+                 "All forwarded arcs for 'label' should be processed");
 
     if (!reduce_pq.empty()) {
-      adiar_debug(!arcs.can_pull_terminal() || arcs.peek_terminal().source().label() < label,
-                  "All terminal arcs for 'label' should be processed");
+      adiar_assert(!arcs.can_pull_terminal() || arcs.peek_terminal().source().label() < label,
+                   "All terminal arcs for 'label' should be processed");
 
-      adiar_debug(!arcs.can_pull_internal() || arcs.peek_internal().target().label() < label,
-                  "All internal arcs for 'label' should be processed");
+      adiar_assert(!arcs.can_pull_internal() || arcs.peek_internal().target().label() < label,
+                   "All internal arcs for 'label' should be processed");
 
       if (arcs.can_pull_terminal()) {
         reduce_pq.setup_next_level(arcs.peek_terminal().source().label());
@@ -453,19 +453,19 @@ namespace adiar::internal
       //       empty() but the size still includes arcs stored in another
       //       priority queue.
 
-      adiar_debug(!arcs.can_pull_terminal() || arcs.peek_terminal().source().label() < label,
-                  "All terminal arcs for 'label' should be processed");
+      adiar_assert(!arcs.can_pull_terminal() || arcs.peek_terminal().source().label() < label,
+                   "All terminal arcs for 'label' should be processed");
 
-      adiar_debug(!arcs.can_pull_internal() || arcs.peek_internal().target().label() < label,
-                  "All internal arcs for 'label' should be processed");
+      adiar_assert(!arcs.can_pull_internal() || arcs.peek_internal().target().label() < label,
+                   "All internal arcs for 'label' should be processed");
     } else if (!out_writer.has_pushed()) {
-      adiar_debug(!arcs.can_pull_internal() && !arcs.can_pull_terminal(),
-                  "All nodes should be processed at this point");
+      adiar_assert(!arcs.can_pull_internal() && !arcs.can_pull_terminal(),
+                   "All nodes should be processed at this point");
 
-      adiar_debug(reduce_pq.size() == 0 && reduce_pq.empty(),
-                  "'reduce_pq.size() == 0' -> 'reduce_pq.empty()', i.e. no parents have been forwarded to'");
+      adiar_assert(reduce_pq.size() == 0 && reduce_pq.empty(),
+                   "'reduce_pq.size() == 0' -> 'reduce_pq.empty()', i.e. no parents have been forwarded to'");
 
-      //adiar_debug(next_red1.new_uid.is_terminal(),
+      //adiar_assert(next_red1.new_uid.is_terminal(),
       //            "A node must have been suppressed in favour of a terminal");
 
       out_writer.unsafe_push(node(terminal_val));
@@ -550,13 +550,13 @@ namespace adiar::internal
 
     // Process bottom-up each level
     while (levels.can_pull()) {
-      adiar_debug(arcs.can_pull_terminal() || !reduce_pq.empty(),
-                  "If there is a level, then there should also be something for it.");
+      adiar_assert(arcs.can_pull_terminal() || !reduce_pq.empty(),
+                   "If there is a level, then there should also be something for it.");
       const level_info current_level_info = levels.pull();
       const typename dd_policy::label_t level = current_level_info.level();
 
-      adiar_debug(!reduce_pq.has_current_level() || level == reduce_pq.current_level(),
-                  "level and priority queue should be in sync");
+      adiar_assert(!reduce_pq.has_current_level() || level == reduce_pq.current_level(),
+                   "level and priority queue should be in sync");
 
       const size_t unreduced_width = current_level_info.width();
       if(unreduced_width <= internal_sorter_can_fit) {
@@ -583,7 +583,7 @@ namespace adiar::internal
   typename dd_policy::reduced_t
   reduce(const typename dd_policy::unreduced_t &input)
   {
-    adiar_debug(!input.empty(), "Input for Reduce should always be non-empty");
+    adiar_assert(!input.empty(), "Input for Reduce should always be non-empty");
 
     // Is it already reduced?
     if (input.template has<typename dd_policy::shared_nodes_t>()) {

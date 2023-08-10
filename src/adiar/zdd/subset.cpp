@@ -30,8 +30,8 @@ namespace adiar
 
   private:
     inline void forward_to_level(const zdd::label_t new_level) {
-      adiar_debug(alg_level <= new_level,
-                  "The algorithm should ask for the levels in increasing order.");
+      adiar_assert(alg_level <= new_level,
+                   "The algorithm should ask for the levels in increasing order.");
 
       alg_level = new_level;
 

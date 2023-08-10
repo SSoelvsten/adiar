@@ -417,8 +417,8 @@ namespace adiar
     inline void attach_if_needed() noexcept
     {
       if (!nf) {
-        adiar_debug(!nw.attached(),
-                    "`nw`'s attachment should be consistent with existence of `nf`");
+        adiar_assert(!nw.attached(),
+                     "`nw`'s attachment should be consistent with existence of `nf`");
 
         // Initialise file
         nf = internal::make_shared_levelized_file<node_t>();

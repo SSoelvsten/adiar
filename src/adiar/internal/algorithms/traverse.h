@@ -20,13 +20,13 @@ namespace adiar::internal
     while (!tgt.is_terminal() && !tgt.is_nil()) {
       while (n.uid() < tgt) { n = in_nodes.pull(); }
 
-      adiar_debug(n.uid() == tgt,
-                  "Invalid uid chasing; fell out of Decision Diagram");
+      adiar_assert(n.uid() == tgt,
+                   "Invalid uid chasing; fell out of Decision Diagram");
 
       tgt = visitor.visit(n);
 
-      adiar_debug((tgt == n.low()) || (tgt == n.high()) || (tgt.is_nil()),
-                  "Visitor pointer should be within the diagram or NIL");
+      adiar_assert((tgt == n.low()) || (tgt == n.high()) || (tgt.is_nil()),
+                   "Visitor pointer should be within the diagram or NIL");
     }
     if (!tgt.is_nil()) {
       visitor.visit(tgt.value());

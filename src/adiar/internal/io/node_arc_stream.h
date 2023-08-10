@@ -77,7 +77,7 @@ namespace adiar::internal
     node_arc_stream(const __dd &diagram)
       : parent_t(/*need to sort before attach*/)
     {
-      adiar_debug(diagram.template has<__dd::shared_arcs_t>());
+      adiar_assert(diagram.template has<__dd::shared_arcs_t>());
       attach(diagram.template get<__dd::shared_arcs_t>(), diagram.negate);
     }
 
@@ -175,8 +175,8 @@ namespace adiar::internal
         if (!parent_t::can_pull_terminal()) { return true;  }
         if (!parent_t::can_pull_internal()) { return false; }
       } else {
-        adiar_debug(parent_t::can_pull_terminal(),
-                    "When reading top-down there must be terminal arcs left");
+        adiar_assert(parent_t::can_pull_terminal(),
+                     "When reading top-down there must be terminal arcs left");
 
         if (!parent_t::can_pull_internal()) { return false; }
       }

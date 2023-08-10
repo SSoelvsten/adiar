@@ -41,10 +41,10 @@ namespace adiar
                                            const bdd::ptr_t child_to_resolve,
                                            const queue_t &request)
     {
-      adiar_debug(request.sum > 0, "No 'empty' request should be created");
+      adiar_assert(request.sum > 0, "No 'empty' request should be created");
 
-      adiar_debug(request.levels_visited < varcount,
-                  "Cannot have already visited more levels than are expected");
+      adiar_assert(request.levels_visited < varcount,
+                   "Cannot have already visited more levels than are expected");
 
       bdd::label_t levels_visited = request.levels_visited + 1u;
 
@@ -60,11 +60,11 @@ namespace adiar
 
     inline static queue_t combine_requests(const queue_t &acc, const queue_t &next)
     {
-      adiar_debug(acc.target == next.target,
-                  "Requests should be for the same node");
+      adiar_assert(acc.target == next.target,
+                   "Requests should be for the same node");
 
-      adiar_debug(acc.levels_visited <= next.levels_visited,
-                  "Requests should be ordered on the number of levels visited");
+      adiar_assert(acc.levels_visited <= next.levels_visited,
+                   "Requests should be ordered on the number of levels visited");
 
       return {
         acc.target,

@@ -96,7 +96,7 @@ namespace adiar::internal
         const arc e_low  = __reduce_get_next(pq, arcs);
 
         const node n = node_of(e_low, e_high);
-        adiar_debug(n.label() == label, "Label is for desired level");
+        adiar_assert(n.label() == label, "Label is for desired level");
 
         // TODO (dd_replace):
         //   Disable the following if-statement for faster performance
@@ -110,7 +110,7 @@ namespace adiar::internal
           // Forward child
           // Tell the parents this arc is tainted by Reduction Rule 1.
           const node::ptr_t t = flag(reduction_rule_ret);
-          adiar_debug(t.is_terminal() || t.out_idx() == false, "Created target is without an index");
+          adiar_assert(t.is_terminal() || t.out_idx() == false, "Created target is without an index");
           if (t.is_terminal()) { terminal_val = t.value(); }
 
           while (arcs.can_pull_internal() && arcs.peek_internal().target() == n.uid()) {
@@ -124,13 +124,13 @@ namespace adiar::internal
           __reduce_decrement_cut(one_level_cut, n.high());
         } else {
           // Output node
-          adiar_debug(out_id > 0, "Should still have more ids left");
+          adiar_assert(out_id > 0, "Should still have more ids left");
           const node next_node(label, out_id--, unflag(n.low()), unflag(n.high()));
           out_writer.unsafe_push(next_node);
 
           // Forward new node to parents
           const node::ptr_t t = next_node.uid();
-          adiar_debug(t.is_terminal() || t.out_idx() == false, "Created target is without an index");
+          adiar_assert(t.is_terminal() || t.out_idx() == false, "Created target is without an index");
 
           while (arcs.can_pull_internal() && arcs.peek_internal().target() == n.uid()) {
             // The out_idx is included in arc.source() pulled from the internal arcs.
@@ -258,7 +258,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         void push(const elem_t& e)
         {
-          adiar_debug(e.target.first().is_node(),
+          adiar_assert(e.target.first().is_node(),
                       "Requests should have at least one internal node");
 
           _max_source = _max_source.is_nil()
@@ -274,7 +274,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         void push(const reduce_arc& a)
         {
-          adiar_debug(!a.target().is_terminal(),
+          adiar_assert(!a.target().is_terminal(),
                       "Arcs to terminals always reside in the outer PQ");
 
           // TODO: support requests with more than just the source
@@ -500,7 +500,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         void push(const typename outer_roots_t::elem_t &e)
         {
-          adiar_debug(e.data.source.is_nil() || e.data.source.label() < _next_inner);
+          adiar_assert(e.data.source.is_nil() || e.data.source.label() < _next_inner);
           if (e.target.first().is_terminal()) {
             _outer_pq.push({ e.data.source, e.target.first() });
           } else {
@@ -515,7 +515,7 @@ namespace adiar::internal
         void setup_next_level(level_t stop_level = NO_LABEL)
         {
           _outer_pq.setup_next_level(stop_level);
-          adiar_debug(_next_inner <= _outer_pq.current_level(),
+          adiar_assert(_next_inner <= _outer_pq.current_level(),
                       "Outer PQ stays below next Inner Level");
         }
 
@@ -816,7 +816,7 @@ namespace adiar::internal
            outer_roots_t &outer_roots,
            const size_t inner_memory)
       {
-        adiar_debug(outer_roots.size() > 0,
+        adiar_assert(outer_roots.size() > 0,
                     "Nested Sweep needs one or more roots");
 
         outer_roots.sort();
@@ -856,7 +856,7 @@ namespace adiar::internal
         // structures and check whether we can run them with a faster internal
         // memory variant.
         const size_t inner_stream_memory = nesting_policy::stream_memory();
-        adiar_debug(inner_stream_memory <= inner_memory,
+        adiar_assert(inner_stream_memory <= inner_memory,
                     "There should be enough memory to include all streams");
 
         // ---------------------------------------------------------------------
@@ -867,7 +867,7 @@ namespace adiar::internal
         // Case: Run Inner Sweep (with priority queues)
 
         const size_t inner_pq_memory = policy_impl.pq_memory(inner_memory - inner_stream_memory);
-        adiar_debug(inner_pq_memory <= inner_memory - inner_stream_memory,
+        adiar_assert(inner_pq_memory <= inner_memory - inner_stream_memory,
                     "There should be enough memory to include all streams and priority queue");
 
         const size_t inner_remaining_memory = inner_memory - inner_stream_memory - inner_pq_memory;
@@ -888,7 +888,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
           stats.inner.down.lpq.unbucketed += 1u;
 #endif
-          adiar_debug(inner_pq_max_size <= inner_pq_fits,
+          adiar_assert(inner_pq_max_size <= inner_pq_fits,
                       "'no_lookahead' implies it should (in practice) satisfy the '<='");
 
           using inner_pq_t = typename nesting_policy::template pq_t<0, memory_mode_t::INTERNAL>;
@@ -1235,14 +1235,14 @@ namespace adiar::internal
 
         // Process bottom-up each level
         while (inner_levels.can_pull()) {
-          adiar_debug(decorated_arcs.can_pull_terminal() || !decorated_pq.empty(),
-                      "If there is a level, then there should also be something for it.");
+          adiar_assert(decorated_arcs.can_pull_terminal() || !decorated_pq.empty(),
+                       "If there is a level, then there should also be something for it.");
           const level_info inner_level_info = inner_levels.pull();
 
           const typename nesting_policy::label_t level = inner_level_info.level();
 
-          adiar_debug(!decorated_pq.has_current_level() || level == decorated_pq.current_level(),
-                      "level and priority queue should be in sync");
+          adiar_assert(!decorated_pq.has_current_level() || level == decorated_pq.current_level(),
+                       "level and priority queue should be in sync");
 
           if (nesting_policy::reduce_strategy == nested_sweeping::NEVER_CANONICAL ||
               (nesting_policy::reduce_strategy == nested_sweeping::FINAL_CANONICAL && !is_last_inner)) {
@@ -1269,8 +1269,8 @@ namespace adiar::internal
         // Forward arcs from outer sweep that collapsed to a sink.
         while (inner_arcs.can_pull_terminal()) {
           const arc a = inner_arcs.pull_terminal();
-          adiar_debug(a.source().is_flagged(),
-                      "Left-over terminal arcs are meant for outer sweep");
+          adiar_assert(a.source().is_flagged(),
+                       "Left-over terminal arcs are meant for outer sweep");
           outer_pq.push(arc(unflag(a.source()), a.target()));
         }
       }
@@ -1397,8 +1397,8 @@ namespace adiar::internal
 
     // Outer Up Sweep: Instantiate the (levelized) priority queue and other
     // Reduce state variables, e.g. i-level cuts.
-    adiar_debug(outer_pq_memory + outer_roots_memory + inner_memory < memory_available(),
-                "Enough memory should be left priority queue and inner sweep");
+    adiar_assert(outer_pq_memory + outer_roots_memory + inner_memory < memory_available(),
+                 "Enough memory should be left priority queue and inner sweep");
 
     using outer_pq_t = nested_sweeping::outer::up__pq_t<outer_look_ahead, outer_mem_mode>;
     outer_pq_t outer_pq({dag}, outer_pq_memory, outer_pq_roots_max);
@@ -1440,18 +1440,18 @@ namespace adiar::internal
     bool auto_fast_reduce = false;
 
     while (outer_levels.can_pull()) {
-      adiar_debug(outer_arcs.can_pull_terminal() || !outer_pq.empty(),
-                  "If there is a level, then there should also be something for it.");
+      adiar_assert(outer_arcs.can_pull_terminal() || !outer_pq.empty(),
+                   "If there is a level, then there should also be something for it.");
 
       // Set up next level for outer reduce
 
       const level_info outer_level = outer_levels.pull();
 
-      adiar_debug(!outer_pq.has_current_level()
-                  || outer_level.level() == outer_pq.current_level(),
-                  "level and priority queue should be in sync");
-      adiar_debug(next_inner == inner_iter_t::NONE || next_inner <= outer_level.level(),
-                  "next_inner level should (if it exists) be above current level (inclusive).");
+      adiar_assert(!outer_pq.has_current_level()
+                   || outer_level.level() == outer_pq.current_level(),
+                   "level and priority queue should be in sync");
+      adiar_assert(next_inner == inner_iter_t::NONE || next_inner <= outer_level.level(),
+                   "next_inner level should (if it exists) be above current level (inclusive).");
 
       // -----------------------------------------------------------------------
       // CASE Unnested Level with no nested sweep above:
@@ -1531,8 +1531,8 @@ namespace adiar::internal
       // -----------------------------------------------------------------------
       // CASE Nested Level:
       //   Sweep down re-reduce it back up to this level.
-      adiar_debug(outer_level.level() == next_inner,
-                  "'next_inner' level is not skipped");
+      adiar_assert(outer_level.level() == next_inner,
+                   "'next_inner' level is not skipped");
 
       // Reset fast reduce for AUTO strategy.
       auto_fast_reduce = false;
@@ -1562,7 +1562,7 @@ namespace adiar::internal
           if (reduction_rule_ret != n.uid()) {
             // If so, preserve child in inner sweep
             if (!outer_levels.can_pull()) {
-              adiar_debug(!outer_arcs.can_pull_internal(), "Should not have any parents at top-most level");
+              adiar_assert(!outer_arcs.can_pull_internal(), "Should not have any parents at top-most level");
 
               if (reduction_rule_ret.is_terminal()) {
                 return reduced_t(reduction_rule_ret.value());
@@ -1576,12 +1576,12 @@ namespace adiar::internal
           } else {
             // Otherwise, create request
             if (!outer_levels.can_pull()) {
-              adiar_debug(!outer_arcs.can_pull_internal(), "Should not have any parents at top-most level");
+              adiar_assert(!outer_arcs.can_pull_internal(), "Should not have any parents at top-most level");
 
               const request_t r =
                 policy_impl.request_from_node(n, node::ptr_t::NIL());
 
-              adiar_debug(r.targets() > 0, "Requests are always to something");
+              adiar_assert(r.targets() > 0, "Requests are always to something");
               non_gc_request |= r.targets() > 1;
 
               if (r.target.first().is_terminal()) {
@@ -1593,7 +1593,7 @@ namespace adiar::internal
                 const request_t r =
                   policy_impl.request_from_node(n, outer_arcs.pull_internal().source());
 
-                adiar_debug(r.targets() > 0, "Requests are always to something");
+                adiar_assert(r.targets() > 0, "Requests are always to something");
                 non_gc_request |= r.targets() > 1;
 
                 outer_pq_decorator.push(r);
@@ -1623,8 +1623,8 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
         // TODO
 #endif
-        adiar_debug(outer_roots.size() > 0,
-                    "Nested Sweep needs some number of requests");
+        adiar_assert(outer_roots.size() > 0,
+                     "Nested Sweep needs some number of requests");
 
         outer_writer.detach();
 
@@ -1635,18 +1635,18 @@ namespace adiar::internal
           nested_sweeping::inner::down(policy_impl, outer_file, outer_roots, inner_memory);
 
         if (inner_unreduced.template has<shared_nodes_t>()) {
-          adiar_debug(!outer_levels.can_pull(),
-                      "Should only collapse to a node file case when at the very top-level.");
-          adiar_debug(inner_unreduced.template get<shared_nodes_t>()->is_terminal(),
-                      "Should have collapsed to a terminal.");
+          adiar_assert(!outer_levels.can_pull(),
+                       "Should only collapse to a node file case when at the very top-level.");
+          adiar_assert(inner_unreduced.template get<shared_nodes_t>()->is_terminal(),
+                       "Should have collapsed to a terminal.");
 
           return inner_unreduced.template get<shared_nodes_t>();
         }
 
         // ---------------------------------------------------------------------
         // Inner Up Sweep
-        adiar_debug(!inner_unreduced.template has<no_file>(),
-                    "Inner Sweep returned something");
+        adiar_assert(!inner_unreduced.template has<no_file>(),
+                     "Inner Sweep returned something");
 
         const shared_arcs_t inner_arcs =
           inner_unreduced.template get<shared_arcs_t>();
@@ -1658,8 +1658,8 @@ namespace adiar::internal
           nested_sweeping::inner::up<nesting_policy>(outer_arcs, outer_pq, outer_writer,
                                                      inner_arcs, inner_memory, is_last_inner);
         } else {
-          adiar_debug(next_inner < outer_level.level(),
-                      "If 'next_inner' is not illegal, then it is above current level");
+          adiar_assert(next_inner < outer_level.level(),
+                       "If 'next_inner' is not illegal, then it is above current level");
 
           outer_pq_decorator_t outer_pq_decorator(outer_pq, outer_roots, next_inner);
 
@@ -1673,11 +1673,11 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
         // TODO
 #endif
-        adiar_debug(next_inner <= nesting_policy::ptr_t::MAX_LABEL,
-                    "Has another later sweep to do possible garbage collection");
+        adiar_assert(next_inner <= nesting_policy::ptr_t::MAX_LABEL,
+                     "Has another later sweep to do possible garbage collection");
 
-        adiar_debug(outer_roots_memory <= inner_memory,
-                    "Enough memory is left for a temporary root sorter");
+        adiar_assert(outer_roots_memory <= inner_memory,
+                     "Enough memory is left for a temporary root sorter");
 
         outer_roots_t tmp_outer_roots(outer_roots_memory, outer_pq_roots_max);
         outer_pq_decorator_t outer_pq_decorator(outer_pq, tmp_outer_roots, next_inner);
@@ -1685,7 +1685,7 @@ namespace adiar::internal
         outer_roots.sort();
         while (outer_roots.can_pull()) {
           const request_t r = outer_roots.pull();
-          adiar_debug(r.targets() == 1, "Has exactly one child");
+          adiar_assert(r.targets() == 1, "Has exactly one child");
 
           outer_pq_decorator.push(arc(unflag(r.data.source), r.target.first()));
         }
@@ -1707,14 +1707,14 @@ namespace adiar::internal
       // -----------------------------------------------------------------------
       // Set up next level in Outer PQ
       if (!outer_pq.empty() || !outer_roots.empty()) {
-        adiar_debug(!outer_arcs.can_pull_terminal() || outer_arcs.peek_terminal().source().label() < outer_level.level(),
-                    "All terminal arcs for 'label' should be processed");
+        adiar_assert(!outer_arcs.can_pull_terminal() || outer_arcs.peek_terminal().source().label() < outer_level.level(),
+                     "All terminal arcs for 'label' should be processed");
 
-        adiar_debug(!outer_arcs.can_pull_internal() || outer_arcs.peek_internal().target().label() < outer_level.level(),
-                    "All internal arcs for 'label' should be processed");
+        adiar_assert(!outer_arcs.can_pull_internal() || outer_arcs.peek_internal().target().label() < outer_level.level(),
+                     "All internal arcs for 'label' should be processed");
 
-        adiar_debug(outer_pq.empty() || !outer_pq.can_pull(),
-                    "All forwarded arcs for 'label' should be processed");
+        adiar_assert(outer_pq.empty() || !outer_pq.can_pull(),
+                     "All forwarded arcs for 'label' should be processed");
 
         const size_t terminal_stop_level =
           outer_arcs.can_pull_terminal() ? outer_arcs.peek_terminal().source().label() : outer_pq_t::NO_LABEL;
@@ -1722,18 +1722,18 @@ namespace adiar::internal
         const size_t outer_roots_stop_level =
           !outer_roots.empty() ? outer_roots.deepest_source() : outer_pq_t::NO_LABEL;
 
-        adiar_debug(terminal_stop_level != outer_pq_t::NO_LABEL
-                    || outer_roots_stop_level != outer_pq_t::NO_LABEL
-                    || !outer_pq.empty(),
-                    "There must be some (known) level ready to be forwarded to.");
+        adiar_assert(terminal_stop_level != outer_pq_t::NO_LABEL
+                     || outer_roots_stop_level != outer_pq_t::NO_LABEL
+                     || !outer_pq.empty(),
+                     "There must be some (known) level ready to be forwarded to.");
 
         const size_t stop_level = terminal_stop_level == outer_pq_t::NO_LABEL    ? outer_roots_stop_level
                                 : outer_roots_stop_level == outer_pq_t::NO_LABEL ? terminal_stop_level
                                 : std::max(terminal_stop_level, outer_roots_stop_level)
           ;
 
-        adiar_debug(stop_level != outer_pq_t::NO_LABEL || !outer_pq.empty(),
-                    "There must be some (known) level ready to be forwarded to.");
+        adiar_assert(stop_level != outer_pq_t::NO_LABEL || !outer_pq.empty(),
+                     "There must be some (known) level ready to be forwarded to.");
 
         outer_pq.setup_next_level(stop_level);
       } else if (outer_file->is_terminal()) {
@@ -1779,7 +1779,7 @@ namespace adiar::internal
     using shared_arcs_t  = typename nesting_policy::shared_arcs_t;
     using shared_nodes_t = typename nesting_policy::shared_nodes_t;
 
-    adiar_debug(!input.empty(), "Input for Nested Sweeping should always be non-empty");
+    adiar_assert(!input.empty(), "Input for Nested Sweeping should always be non-empty");
 
     // Is it a terminal?
     if (input.template has<shared_nodes_t>() && input.template get<shared_nodes_t>()->is_terminal()) {

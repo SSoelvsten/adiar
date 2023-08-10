@@ -39,7 +39,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     __uid(const ptr_t &p) : ptr_t(essential(p))
     {
-      adiar_debug(!p.is_nil(), "UID must be created from non-nil value");
+      adiar_assert(!p.is_nil(), "UID must be created from non-nil value");
     }
 
     /* ============================= ATTRIBUTES ============================= */
@@ -64,7 +64,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     inline ptr_t with(const typename ptr_t::out_idx_t out_idx) const
     {
-      adiar_debug(ptr_t::is_node());
+      adiar_assert(ptr_t::is_node());
       return ptr_t(ptr_t::label(), ptr_t::id(), out_idx);
     }
 

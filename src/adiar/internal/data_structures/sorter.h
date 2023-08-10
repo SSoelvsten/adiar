@@ -52,8 +52,8 @@ namespace adiar::internal
     memory_fits(tpie::memory_size_type memory_bytes)
     {
       const tpie::memory_size_type ret = tpie::array<elem_t>::memory_fits(memory_bytes);
-      adiar_debug(unsafe_memory_usage(ret) <= memory_bytes,
-                  "memory_fits and memory_usage should agree.");
+      adiar_assert(unsafe_memory_usage(ret) <= memory_bytes,
+                   "memory_fits and memory_usage should agree.");
       return ret;
     }
 
@@ -86,8 +86,8 @@ namespace adiar::internal
            pred_t pred = pred_t())
       : _array(no_elements), _pred(pred), _size(0), _front_idx(0)
     {
-      adiar_debug(no_elements <= memory_fits(memory_bytes / no_sorters),
-                  "Must be instantiated with enough memory.");
+      adiar_assert(no_elements <= memory_fits(memory_bytes / no_sorters),
+                   "Must be instantiated with enough memory.");
     }
 
   public:
@@ -98,7 +98,7 @@ namespace adiar::internal
 
     void push(const elem_t& t)
     {
-      adiar_debug(can_push());
+      adiar_assert(can_push());
       _array[_size++] = t;
     }
 
@@ -116,13 +116,13 @@ namespace adiar::internal
 
     elem_t top() const
     {
-      adiar_debug(can_pull());
+      adiar_assert(can_pull());
       return _array[_front_idx];
     }
 
     elem_t pull()
     {
-      adiar_debug(can_pull());
+      adiar_assert(can_pull());
       return _array[_front_idx++];
     }
 
@@ -202,7 +202,7 @@ namespace adiar::internal
     {
       // =======================================================================
       // Case 0: No sorters - why are we then instantiating one?
-      adiar_debug(number_of_sorters > 0, "Number of sorters should be positive");
+      adiar_assert(number_of_sorters > 0, "Number of sorters should be positive");
 
       // Consult the internal sorter to get a bound of how much memory is
       // necessary to sort these elements in internal memory. We don't need to
@@ -215,8 +215,8 @@ namespace adiar::internal
       if (number_of_sorters == 1u) {
         const size_t sorter_memory = std::min(no_elements_memory, memory_bytes);
 
-        adiar_debug(sorter_memory <= memory_bytes,
-                    "Memory of a single sorter does not exceed given amount.");
+        adiar_assert(sorter_memory <= memory_bytes,
+                     "Memory of a single sorter does not exceed given amount.");
 
         // ---------------------------------------------------------------------
         // Use TPIE's default settings for the three phases.
@@ -227,7 +227,7 @@ namespace adiar::internal
 
       // ======================================================================
       // Case: 2+: Distribute a common area of memory between all sorters.
-      adiar_debug(number_of_sorters > 1, "Edge case for a single sorter taken care of above");
+      adiar_assert(number_of_sorters > 1, "Edge case for a single sorter taken care of above");
 
       // -----------------------------------------------------------------------
       // We intend to have the memory divided between all the sorters, such that
@@ -285,17 +285,17 @@ namespace adiar::internal
 
       // -----------------------------------------------------------------------
       // Sanity tests...
-      adiar_debug(number_of_sorters * phase1 <= memory_bytes,
-                  "Memory is enough to have 'N' pushable sorters.");
+      adiar_assert(number_of_sorters * phase1 <= memory_bytes,
+                   "Memory is enough to have 'N' pushable sorters.");
 
-      adiar_debug((number_of_sorters-1) * phase1 + phase2 <= memory_bytes,
-                  "Memory is enough to have 'N-1' pushable sorters and '1' sorting one.");
+      adiar_assert((number_of_sorters-1) * phase1 + phase2 <= memory_bytes,
+                   "Memory is enough to have 'N-1' pushable sorters and '1' sorting one.");
 
-      adiar_debug((number_of_sorters-1) * phase1 + phase3 <= memory_bytes,
-                  "Memory is enough to have 'N-1' pushable sorters and '1' pullable one.");
+      adiar_assert((number_of_sorters-1) * phase1 + phase3 <= memory_bytes,
+                   "Memory is enough to have 'N-1' pushable sorters and '1' pullable one.");
 
-      adiar_debug((number_of_sorters-1) * phase1 + phase3 + phase1 <= memory_bytes,
-                  "Memory is enough to replace the pullable sorter with an 'Nth' pushable one.");
+      adiar_assert((number_of_sorters-1) * phase1 + phase3 + phase1 <= memory_bytes,
+                   "Memory is enough to replace the pullable sorter with an 'Nth' pushable one.");
 
       // -----------------------------------------------------------------------
       // Set the available memory and start the sorter
@@ -326,7 +326,7 @@ namespace adiar::internal
 
     elem_t top()
     {
-      adiar_debug(can_pull());
+      adiar_assert(can_pull());
       if (!_has_peeked) {
         _has_peeked = true;
         _peeked = _sorter.pull();
@@ -336,7 +336,7 @@ namespace adiar::internal
 
     elem_t pull()
     {
-      adiar_debug(can_pull());
+      adiar_assert(can_pull());
       _pulls++;
       if (_has_peeked) {
         _has_peeked = false;

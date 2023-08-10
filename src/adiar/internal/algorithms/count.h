@@ -60,7 +60,7 @@ namespace adiar::internal
                                            const ptr_uint64 child_to_resolve,
                                            const queue_t &request)
     {
-      adiar_debug(request.sum > 0, "No 'empty' request should be created");
+      adiar_assert(request.sum > 0, "No 'empty' request should be created");
 
       if (child_to_resolve.is_terminal()) {
         return child_to_resolve.value() ? request.sum : 0u;
@@ -72,8 +72,8 @@ namespace adiar::internal
 
     inline static queue_t combine_requests(const queue_t &acc, const queue_t &next)
     {
-      adiar_debug(acc.target == next.target,
-                  "Requests should be for the same node");
+      adiar_assert(acc.target == next.target,
+                   "Requests should be for the same node");
 
       return { acc.target, acc.sum + next.sum };
     }
@@ -107,10 +107,10 @@ namespace adiar::internal
       if (!count_pq.has_current_level() || count_pq.current_level() != n.label()) {
         count_pq.setup_next_level();
       }
-      adiar_debug(count_pq.current_level() == n.label(),
-                  "Priority queue is out-of-sync with node stream");
-      adiar_debug(count_pq.can_pull() && count_pq.top().target == n.uid(),
-                  "Priority queue is out-of-sync with node stream");
+      adiar_assert(count_pq.current_level() == n.label(),
+                   "Priority queue is out-of-sync with node stream");
+      adiar_assert(count_pq.can_pull() && count_pq.top().target == n.uid(),
+                   "Priority queue is out-of-sync with node stream");
 
       // Resolve requests
       typename count_policy::queue_t request = count_pq.pull();
@@ -130,8 +130,8 @@ namespace adiar::internal
   uint64_t count(const typename count_policy::reduced_t &dd,
                  const typename count_policy::label_t varcount)
   {
-    adiar_debug(!is_terminal(dd),
-                "Count algorithm does not work on terminal-only edge case");
+    adiar_assert(!is_terminal(dd),
+                 "Count algorithm does not work on terminal-only edge case");
 
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.

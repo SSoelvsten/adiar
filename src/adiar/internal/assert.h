@@ -13,16 +13,16 @@ namespace adiar
   // Based on:
   // - Assert with messages: https://stackoverflow.com/a/37264642
   // - Variadic macro arguments: https://stackoverflow.com/a/11763277
-#define adiar_debug_macro(_1,_2,NAME,...) NAME
-#define adiar_debug(...) adiar_debug_macro(__VA_ARGS__, adiar_debug2, adiar_debug1)(__VA_ARGS__)
+#define adiar_assert_macro(_1,_2,NAME,...) NAME
+#define adiar_assert(...) adiar_assert_macro(__VA_ARGS__, adiar_assert2, adiar_assert1)(__VA_ARGS__)
 
 #ifndef NDEBUG
-#   define adiar_debug1(Expr)      __adiar_debug(#Expr, Expr, __FILE__, __LINE__)
-#   define adiar_debug2(Expr, Msg) __adiar_debug(#Expr, Expr, __FILE__, __LINE__, Msg)
+#   define adiar_assert1(Expr)      __adiar_assert(#Expr, Expr, __FILE__, __LINE__)
+#   define adiar_assert2(Expr, Msg) __adiar_assert(#Expr, Expr, __FILE__, __LINE__, Msg)
 
   inline
   void
-  __adiar_debug(const char* expr_str, bool expr, const char* file, int line)
+  __adiar_assert(const char* expr_str, bool expr, const char* file, int line)
   {
     if (!expr) {
       std::cerr << "Assert failed!\n"
@@ -34,7 +34,7 @@ namespace adiar
 
   inline
   void
-  __adiar_debug(const char* expr_str, bool expr, const char* file, int line, const char* msg)
+  __adiar_assert(const char* expr_str, bool expr, const char* file, int line, const char* msg)
   {
     if (!expr) {
       std::cerr << "Assert failed:\t" << msg << "\n"
@@ -44,8 +44,8 @@ namespace adiar
     }
   }
 #else
-#   define adiar_debug1(Expr) ;
-#   define adiar_debug2(Expr, Msg) ;
+#   define adiar_assert1(Expr) ;
+#   define adiar_assert2(Expr, Msg) ;
 #endif
 
   // From: https://stackoverflow.com/a/65258501/13300643

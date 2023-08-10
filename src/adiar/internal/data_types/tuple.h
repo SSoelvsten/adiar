@@ -113,7 +113,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     inline const elem_t& at(const size_t idx) const
     {
-      adiar_debug(idx < cardinality, "Tuple index must be within its cardinality.");
+      adiar_assert(idx < cardinality, "Tuple index must be within its cardinality.");
       return _elems[idx];
     }
 
@@ -237,7 +237,7 @@ namespace adiar::internal
                     "Constructor is only designed for 2-ary tuples.");
 
       if constexpr (is_sorted) {
-        adiar_debug(elem1 <= elem2);
+        adiar_assert(elem1 <= elem2);
       }
     }
 
@@ -251,8 +251,8 @@ namespace adiar::internal
                     "Constructor is only designed for 3-ary tuples.");
 
       if constexpr (is_sorted) {
-        adiar_debug(elem1 <= elem2);
-        adiar_debug(elem2 <= elem3);
+        adiar_assert(elem1 <= elem2);
+        adiar_assert(elem2 <= elem3);
         }
     }
 
@@ -269,9 +269,9 @@ namespace adiar::internal
                     "Constructor is only designed for 4-ary tuples.");
 
       if constexpr (is_sorted) {
-        adiar_debug(elem1 <= elem2);
-        adiar_debug(elem2 <= elem3);
-        adiar_debug(elem3 <= elem4);
+        adiar_assert(elem1 <= elem2);
+        adiar_assert(elem2 <= elem3);
+        adiar_assert(elem3 <= elem4);
       }
     }
 
@@ -283,7 +283,7 @@ namespace adiar::internal
     {
       if constexpr (is_sorted) {
         for (size_t i = 0; i < (cardinality-1); ++i) {
-          adiar_debug(this->at(i) <= this->at(i+1));
+          adiar_assert(this->at(i) <= this->at(i+1));
         }
       }
     }
