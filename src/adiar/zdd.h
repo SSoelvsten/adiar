@@ -689,10 +689,6 @@ namespace adiar
   ///
   /// \returns   ZDD that is true for the exact same assignments to variables in
   ///            the given domain.
-  ///
-  /// \throws invalid_argument If a label in `dom` is too large.
-  ///
-  /// \throws invalid_argument If labels in `dom` are not in ascending order.
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_from(const bdd &f, const shared_file<zdd::label_t> &dom);
 

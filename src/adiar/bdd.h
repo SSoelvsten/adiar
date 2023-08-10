@@ -831,10 +831,6 @@ namespace adiar
   ///            the given domain.
   ///
   /// \pre       Labels in `dom` are provided in ascending order.
-  ///
-  /// \throws invalid_argument If a label in `dom` is too large.
-  ///
-  /// \throws invalid_argument If labels in `dom` are not in ascending order.
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_from(const zdd &A, const shared_file<bdd::label_t> &dom);
 
