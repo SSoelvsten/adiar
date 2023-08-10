@@ -1,6 +1,7 @@
 #ifndef ADIAR_INTERNAL_DATA_TYPES_PTR_H
 #define ADIAR_INTERNAL_DATA_TYPES_PTR_H
 
+#include <limits>
 #include <stdint.h>
 
 #include <adiar/internal/assert.h>

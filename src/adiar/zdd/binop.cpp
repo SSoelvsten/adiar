@@ -1,6 +1,7 @@
+#include <limits>
+
 #include <adiar/zdd.h>
 #include <adiar/zdd/zdd_policy.h>
-
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/algorithms/prod2.h>
