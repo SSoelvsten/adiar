@@ -3,6 +3,7 @@
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/cut.h>
+#include <adiar/internal/unreachable.h>
 #include <adiar/internal/algorithms/prod2.h>
 #include <adiar/internal/data_types/tuple.h>
 

@@ -3,6 +3,7 @@
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/dd.h>
+#include <adiar/internal/unreachable.h>
 #include <adiar/internal/data_types/level_info.h>
 #include <adiar/internal/io/file_stream.h>
 #include <adiar/internal/io/levelized_file.h>
