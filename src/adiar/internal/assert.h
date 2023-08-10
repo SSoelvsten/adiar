@@ -54,7 +54,7 @@ namespace adiar
 #elif defined(_MSC_VER) // MSVC
   [[noreturn]] __forceinline void adiar_unreachable() {__assume(false);}
 #else // ???
-  inline void unreachable() {}
+  inline void adiar_unreachable() {}
 #endif
 
   // LCOV_EXCL_STOP
