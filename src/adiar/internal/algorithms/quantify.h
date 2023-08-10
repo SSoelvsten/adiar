@@ -7,9 +7,11 @@
 
 #include <adiar/bool_op.h>
 #include <adiar/quantify_mode.h>
+#include <adiar/internal/assert.h>
 #include <adiar/internal/block_size.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/cnl.h>
+#include <adiar/internal/unreachable.h>
 #include <adiar/internal/algorithms/nested_sweeping.h>
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
 #include <adiar/internal/data_types/tuple.h>

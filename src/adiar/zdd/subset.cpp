@@ -2,6 +2,7 @@
 #include <adiar/zdd/zdd_policy.h>
 
 #include <adiar/internal/assert.h>
+#include <adiar/internal/unreachable.h>
 #include <adiar/internal/util.h>
 #include <adiar/internal/algorithms/substitution.h>
 #include <adiar/internal/io/file_stream.h>

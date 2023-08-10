@@ -41,6 +41,7 @@ set(HEADERS
   internal/dd_func.h
   internal/dot.h
   internal/memory.h
+  internal/unreachable.h
   internal/util.h
 
   # internal/algorithms

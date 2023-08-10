@@ -3,7 +3,9 @@
 
 #include <adiar/exception.h>
 
+#include <adiar/internal/assert.h>
 #include <adiar/internal/dd.h>
+#include <adiar/internal/unreachable.h>
 #include <adiar/internal/algorithms/intercut.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/tuple.h>
