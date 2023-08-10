@@ -435,6 +435,34 @@ go_bandit([]() {
     });
 
     describe("bdd_counter", [&]() {
+      it("collapses to trivially true for empty interval [4,2]", [&]() {
+        bdd res = bdd_counter(4, 2, 10);
+
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(true)));
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(0u));
+
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
       it("collapses impossible counting to 10 in [0,8] to F", [&]() {
         bdd res = bdd_counter(0, 8, 10);
 

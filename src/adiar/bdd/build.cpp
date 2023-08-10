@@ -64,8 +64,9 @@ namespace adiar
 
   bdd bdd_counter(bdd::label_t min_var, bdd::label_t max_var, bdd::label_t threshold)
   {
+    // Empty set of variables is trivially true.
     if (max_var < min_var) {
-      throw invalid_argument("'min_var' ought to be smaller than 'max_var'");
+      return bdd_terminal(true);
     }
 
     const bdd::ptr_t gt_terminal = bdd::ptr_t(false);
