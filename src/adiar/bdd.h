@@ -134,8 +134,6 @@ namespace adiar
   /// \param min_var   The minimum label (inclusive) to start counting from
   /// \param max_var   The maximum label (inclusive) to end counting at
   /// \param threshold The threshold number of variables set to true
-  ///
-  /// \throws invalid_arugment If `min_var <= max_var` is not satisfied.
   //////////////////////////////////////////////////////////////////////////////
   bdd bdd_counter(bdd::label_t min_var,
                   bdd::label_t max_var,
