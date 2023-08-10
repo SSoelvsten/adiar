@@ -2,10 +2,43 @@
 #define ADIAR_INTERNAL_ASSERT_H
 
 #include <iostream>
+#include <sstream>
+#include <stdexcept>
+#include <string>
 
 namespace adiar
 {
   // LCOV_EXCL_START
+
+  struct assert_error
+  {
+  private:
+    std::string _what;
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    assert_error(const std::string &file, const int line)
+    {
+      std::stringstream s;
+      s << file << "::" << line;
+      _what = s.str();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    assert_error(const std::string &file, const int line, const std::string &what)
+    {
+      std::stringstream s;
+      s << file << "::" << line << ": " << what;
+      _what = s.str();
+    }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Explanatory string
+    ////////////////////////////////////////////////////////////////////////////
+    char* what()
+    { return _what.data(); }
+  };
 
   // Based on:
   // - Assert with messages: https://stackoverflow.com/a/37264642
@@ -25,7 +58,8 @@ namespace adiar
       std::cerr << "Assert failed!\n"
                 << "Expected:\t" << expr_str << "\n"
                 << "Source:\t\t" << file << ", line " << line << std::endl;
-      abort();
+
+      throw assert_error(file, line);
     }
   }
 
@@ -37,7 +71,8 @@ namespace adiar
       std::cerr << "Assert failed:\t" << msg << "\n"
                 << "Expected:\t" << expr_str << "\n"
                 << "Source:\t\t" << file << ", line " << line << std::endl;
-      abort();
+
+      throw assert_error(file, line, msg);
     }
   }
 #else
