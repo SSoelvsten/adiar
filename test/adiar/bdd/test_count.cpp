@@ -241,6 +241,22 @@ go_bandit([]() {
         AssertThat(bdd_satcount(bdd_not(bdd_F), 3), Is().EqualTo(8u));
         AssertThat(bdd_satcount(bdd_not(bdd_F), 2), Is().EqualTo(4u));
       });
+
+      it("throws exception on varcount being smaller than the number of levels [1]", [&]() {
+        AssertThrows(invalid_argument, bdd_satcount(bdd_1, 3));
+      });
+
+      it("throws exception on varcount being smaller than the number of levels [2]", [&]() {
+        AssertThrows(invalid_argument, bdd_satcount(bdd_2, 1));
+      });
+
+      it("throws exception on varcount being smaller than the number of levels [3]", [&]() {
+        AssertThrows(invalid_argument, bdd_satcount(bdd_3, 1));
+      });
+
+      it("throws exception on varcount being smaller than the number of levels [4]", [&]() {
+        AssertThrows(invalid_argument, bdd_satcount(bdd_4, 3));
+      });
     });
 
     describe("bdd_satcount(f) [empty dom]", [&]() {

@@ -5,7 +5,7 @@ go_bandit([]() {
     ptr_uint64 terminal_T = ptr_uint64(true);
     ptr_uint64 terminal_F = ptr_uint64(false);
 
-    describe("bdd_terminal", [&]() {
+    describe("bdd_terminal(v)", [&]() {
       it("can create true terminal [bdd_terminal]", [&]() {
         bdd res = bdd_terminal(true);
         node_test_stream ns(res);
@@ -123,7 +123,7 @@ go_bandit([]() {
       });
     });
 
-    describe("bdd_ithvar", [&]() {
+    describe("bdd_ithvar(i)", [&]() {
       it("can create x0", [&]() {
         bdd res = bdd_ithvar(0);
         node_test_stream ns(res);
@@ -187,9 +187,13 @@ go_bandit([]() {
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
+
+      it("throws exception for a too large label", []() {
+        AssertThrows(invalid_argument, bdd_nithvar(bdd::MAX_LABEL+1));
+      });
     });
 
-    describe("bdd_nithvar", [&]() {
+    describe("bdd_nithvar(i)", [&]() {
       it("can create !x1", [&]() {
         bdd res = bdd_nithvar(1);
         node_test_stream ns(res);
@@ -253,9 +257,13 @@ go_bandit([]() {
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
+
+      it("throws exception for a too large label", []() {
+        AssertThrows(invalid_argument, bdd_nithvar(bdd::MAX_LABEL+1));
+      });
     });
 
-    describe("bdd_and", [&]() {
+    describe("bdd_and(vars)", [&]() {
       it("can create {x1, x2, x5}", [&]() {
         adiar::shared_file<bdd::label_t> labels;
 
@@ -345,9 +353,20 @@ go_bandit([]() {
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
+
+      it("throws exception for non-ascending list", []() {
+        adiar::shared_file<bdd::label_t> labels;
+
+        { // Garbage collect writer to free write-lock
+          label_writer lw(labels);
+          lw << 2 << 2;
+        }
+
+        AssertThrows(invalid_argument, bdd_and(labels));
+      });
     });
 
-    describe("bdd_or", [&]() {
+    describe("bdd_or(vars)", [&]() {
       it("can create {x1, x2, x5}", [&]() {
         adiar::shared_file<bdd::label_t> labels;
 
@@ -432,9 +451,20 @@ go_bandit([]() {
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
       });
+
+      it("throws exception for non-ascending list", []() {
+        adiar::shared_file<bdd::label_t> labels;
+
+        { // Garbage collect writer to free write-lock
+          label_writer lw(labels);
+          lw << 2 << 2;
+        }
+
+        AssertThrows(invalid_argument, bdd_or(labels));
+      });
     });
 
-    describe("bdd_counter", [&]() {
+    describe("bdd_counter(min_var, max_var, threshold)", [&]() {
       it("collapses to trivially true for empty interval [4,2]", [&]() {
         bdd res = bdd_counter(4, 2, 10);
 
