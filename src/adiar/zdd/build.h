@@ -63,16 +63,16 @@ namespace adiar
       return zdd_empty();
     }
 
-    adiar_debug(lt_terminal_val || eq_terminal_val || gt_terminal_val,
-                "Some set size must be allowed to exist");
+    adiar_assert(lt_terminal_val || eq_terminal_val || gt_terminal_val,
+                 "Some set size must be allowed to exist");
 
     // Take care of the edge cases, where the construction below would collapse.
     if (set_size == 0) {
       if (!gt_terminal_val) { return zdd_terminal(eq_terminal_val); }
     }
 
-    adiar_debug(set_size > 0 || gt_terminal_val,
-                "Set size is only 0 if we accept a non-negative number of elements");
+    adiar_assert(set_size > 0 || gt_terminal_val,
+                 "Set size is only 0 if we accept a non-negative number of elements");
 
     if (set_size == 1) {
       if (!eq_terminal_val && !gt_terminal_val) { return zdd_null(); }
@@ -161,14 +161,14 @@ namespace adiar
           high = zdd::ptr_t(prior_label, curr_id + 1u);
         }
 
-        adiar_debug(high != zdd::ptr_t(false), "Should not create a reducible node");
+        adiar_assert(high != zdd::ptr_t(false), "Should not create a reducible node");
 
         nw.unsafe_push(zdd::node_t(curr_label, curr_id, low, high));
 
         level_size++;
       } while (curr_id-- > min_id);
 
-      adiar_debug(level_size > 0, "Should have output a node");
+      adiar_assert(level_size > 0, "Should have output a node");
       nw.unsafe_push(internal::level_info(curr_label, level_size));
 
       prior_label = curr_label;

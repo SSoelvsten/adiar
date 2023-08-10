@@ -36,7 +36,7 @@ namespace adiar
                                        const bdd& bdd_2,
                                        const bool_op &op)
     {
-      adiar_debug(is_terminal(bdd_1) || is_terminal(bdd_2));
+      adiar_assert(is_terminal(bdd_1) || is_terminal(bdd_2));
 
       if (is_terminal(bdd_1) && is_terminal(bdd_2)) {
         const bdd::ptr_t p1 = bdd::ptr_t(value_of(bdd_1));

@@ -55,7 +55,7 @@ namespace adiar::internal
                       const typename from_policy::reduced_t& /*dd*/,
                       const shared_file<typename from_policy::label_t> &dom)
     {
-      adiar_debug(dom->size() > 0, "Emptiness check is before terminal check");
+      adiar_assert(dom->size() > 0, "Emptiness check is before terminal check");
 
       node::uid_t prior_node = node::uid_t(terminal_value);
 
@@ -120,8 +120,8 @@ namespace adiar::internal
       const tuple children = from_policy::reduction_rule_inv(target);
 
       // Debug mode: double-check we don't create irrelevant nodes
-      adiar_debug(to_policy::reduction_rule(node(0,0, children[0], children[1])) != target,
-                  "Should not cut an arc where the one created will be killed anyways.");
+      adiar_assert(to_policy::reduction_rule(node(0,0, children[0], children[1])) != target,
+                   "Should not cut an arc where the one created will be killed anyways.");
 
       return intercut_rec_output { children[0], children[1] };
     }

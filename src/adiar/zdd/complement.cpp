@@ -33,7 +33,7 @@ namespace adiar
       make_node(const zdd::label_t &l, const zdd::ptr_t &r) const
       {
         if (r.is_terminal()) {
-          adiar_debug(r.value() == false, "Root should be Ø");
+          adiar_assert(r.value() == false, "Root should be Ø");
           return zdd::node_t(l, zdd::MAX_ID, r, zdd_policy::ptr_t(true));
         } else {
           return zdd::node_t(l, zdd::MAX_ID, r, r);

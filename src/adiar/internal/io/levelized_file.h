@@ -176,8 +176,8 @@ namespace adiar::internal
       const bool res = _level_info_file.is_persistent();
 #ifndef NDEBUG
       for (size_t idx = 0; idx < FILES; idx++) {
-        adiar_debug(_files[idx].is_persistent() == res,
-                    "Persistence ought to be synchronised.");
+        adiar_assert(_files[idx].is_persistent() == res,
+                     "Persistence ought to be synchronised.");
       }
 #endif
       return res;
@@ -242,8 +242,8 @@ namespace adiar::internal
       const bool res = std::filesystem::exists(_level_info_file.path());
 #ifndef NDEBUG
       for (size_t idx = 0; idx < FILES; idx++) {
-        adiar_debug(std::filesystem::exists(_files[idx].path()) == res,
-                    "Persistence ought to be synchronised.");
+        adiar_assert(std::filesystem::exists(_files[idx].path()) == res,
+                     "Persistence ought to be synchronised.");
       }
 #endif
       return res;
@@ -286,7 +286,7 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////
     size_t first_level() const
     {
-      adiar_debug(this->levels() > 0u);
+      adiar_assert(this->levels() > 0u);
       file_stream<level_info, true> fs(this->_level_info_file);
       return fs.pull().level();
     }
@@ -298,7 +298,7 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////
     size_t last_level() const
     {
-      adiar_debug(this->levels() > 0u);
+      adiar_assert(this->levels() > 0u);
       file_stream<level_info, false> fs(this->_level_info_file);
       return fs.pull().level();
     }
@@ -359,8 +359,8 @@ namespace adiar::internal
       const bool res = _level_info_file.can_move();
 #ifndef NDEBUG
       for (size_t idx = 0; idx < FILES; idx++) {
-        adiar_debug(_files[idx].can_move() == res,
-                    "'can_move()' ought to be synchronised.");
+        adiar_assert(_files[idx].can_move() == res,
+                     "'can_move()' ought to be synchronised.");
       }
 #endif
       return res;

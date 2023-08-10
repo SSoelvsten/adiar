@@ -199,8 +199,8 @@ namespace adiar::internal
       uint8_t sum = 0u;
       for (uint8_t n_idx = 0u; n_idx < node_carry_size; n_idx++) {
         if (node_carry[n_idx][0] == base::ptr_t::NIL()) {
-          adiar_debug(node_carry[n_idx] == base::NO_CHILDREN(),
-                      "Either no entry is NIL or all of them are");
+          adiar_assert(node_carry[n_idx] == base::NO_CHILDREN(),
+                       "Either no entry is NIL or all of them are");
           break;
         }
         sum++;

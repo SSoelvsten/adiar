@@ -78,8 +78,8 @@ namespace adiar
     }
 
     if (vars == 1) {
-      adiar_debug(min_var == max_var,
-                  "If 'vars == 1' then we ought to have 'max_var - min_var == 0'");
+      adiar_assert(min_var == max_var,
+                   "If 'vars == 1' then we ought to have 'max_var - min_var == 0'");
       return threshold == 1 ? bdd_ithvar(min_var) : bdd_nithvar(max_var);
     }
 

@@ -86,8 +86,8 @@ namespace adiar::internal
       arc out_arc = { source, op(target[0], target[1]) };
       aw.push_terminal(out_arc);
     } else {
-      adiar_debug(source.label() < std::min(target[0], target[1]).label(),
-                  "should always push recursion for 'later' level");
+      adiar_assert(source.label() < std::min(target[0], target[1]).label(),
+                   "should always push recursion for 'later' level");
 
       prod_pq_1.push({ target, {}, {source} });
     }
@@ -206,8 +206,8 @@ namespace adiar::internal
           r.target[1].is_terminal() ||
           r.target[0].label() != r.target[1].label()) {
 
-        adiar_debug(r.target[0] != r.target[1],
-                    "Cannot have mismatching levels and be equal");
+        adiar_assert(r.target[0] != r.target[1],
+                     "Cannot have mismatching levels and be equal");
 
         // t.target[0].label() < r.target[1].label() || r.target[1].is_terminal() ?
         const typename dd_policy::children_t pair_0 =
@@ -255,7 +255,7 @@ namespace adiar::internal
     size_t max_1level_cut = 0;
 
     while (!prod_pq.empty()){
-      adiar_debug(prod_pq.empty_level(), "pq has finished processing last layers");
+      adiar_assert(prod_pq.empty_level(), "pq has finished processing last layers");
 
       // Setup layer
       prod_pq.setup_next_level();
@@ -273,8 +273,8 @@ namespace adiar::internal
             v1 = in_nodes_1.pull();
           }
 
-          adiar_debug(v1.uid() == req.target[1],
-                      "Must have found correct node in `in_1`");
+          adiar_assert(v1.uid() == req.target[1],
+                       "Must have found correct node in `in_1`");
         }
 
         const typename prod_policy::children_t children_0 =
@@ -302,7 +302,7 @@ namespace adiar::internal
         if (prod_policy::no_skip || std::holds_alternative<prod2_rec_output>(rec_res)) {
           const prod2_rec_output r = std::get<prod2_rec_output>(rec_res);
 
-          adiar_debug(out_id < prod_policy::MAX_ID, "Has run out of ids");
+          adiar_assert(out_id < prod_policy::MAX_ID, "Has run out of ids");
           const node::uid_t out_uid(out_label, out_id++);
 
           __prod2_recurse_out(prod_pq, aw, op, out_uid.with(false), r.low);
@@ -404,10 +404,10 @@ namespace adiar::internal
         req = prod_pq_2.top();
       }
 
-      adiar_debug(req.target[0].is_terminal() || out_label <= req.target[0].label(),
-                  "Request should never level-wise be behind current position");
-      adiar_debug(req.target[1].is_terminal() || out_label <= req.target[1].label(),
-                  "Request should never level-wise be behind current position");
+      adiar_assert(req.target[0].is_terminal() || out_label <= req.target[0].label(),
+                   "Request should never level-wise be behind current position");
+      adiar_assert(req.target[1].is_terminal() || out_label <= req.target[1].label(),
+                   "Request should never level-wise be behind current position");
 
       // Seek request partially in stream
       const typename prod_policy::ptr_t t_seek =
@@ -456,7 +456,7 @@ namespace adiar::internal
       if (prod_policy::no_skip || std::holds_alternative<prod2_rec_output>(rec_res)) {
         const prod2_rec_output r = std::get<prod2_rec_output>(rec_res);
 
-        adiar_debug(out_id < prod_policy::MAX_ID, "Has run out of ids");
+        adiar_assert(out_id < prod_policy::MAX_ID, "Has run out of ids");
         const node::uid_t out_uid(out_label, out_id++);
 
         __prod2_recurse_out(prod_pq_1, aw, op, out_uid.with(false), r.low);
@@ -688,7 +688,7 @@ namespace adiar::internal
       stats_prod2.ra.runs += 1u;
 #endif
 
-      adiar_debug(in_0->canonical || in_1->canonical, "At least one input must be canonical");
+      adiar_assert(in_0->canonical || in_1->canonical, "At least one input must be canonical");
 
       // Determine if to flip the inputs
       // TODO: is the smallest or widest the best to random access on?

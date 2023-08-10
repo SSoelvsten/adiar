@@ -40,7 +40,7 @@ namespace adiar::internal
     static tpie::memory_size_type memory_fits(tpie::memory_size_type memory_bytes)
     {
       const tpie::memory_size_type ret = tpie::internal_priority_queue<elem_t, comp_t>::memory_fits(memory_bytes);
-      adiar_debug(unsafe_memory_usage(ret) <= memory_bytes,
+      adiar_assert(unsafe_memory_usage(ret) <= memory_bytes,
                    "memory_fits and memory_usage should agree.");
       return ret;
     }
@@ -54,8 +54,8 @@ namespace adiar::internal
     priority_queue([[maybe_unused]] size_t memory_bytes, size_t max_size)
       : pq(max_size)
     {
-      adiar_debug(max_size <= memory_fits(memory_bytes),
-                  "Must be instantiated with enough memory.");
+      adiar_assert(max_size <= memory_fits(memory_bytes),
+                   "Must be instantiated with enough memory.");
     }
 
     elem_t top() const

@@ -21,8 +21,8 @@ namespace adiar
 
       // Return the True terminal if any (including its tainting flags).
       if (r.low().is_terminal() && r.high().is_terminal()) {
-        adiar_debug(r.low().value() || r.high().value(),
-                    "At least one of the terminals should be True in a ZDD");
+        adiar_assert(r.low().value() || r.high().value(),
+                     "At least one of the terminals should be True in a ZDD");
 
         return r.low().value() ? r.low() : r.high();
       }

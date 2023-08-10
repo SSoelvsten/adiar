@@ -91,8 +91,8 @@ namespace adiar
     }
 
     // push all nodes from 'if' conditional and remap its terminals
-    adiar_debug(!root_then.is_nil(), "Did not obtain root from then stream");
-    adiar_debug(!root_else.is_nil(), "Did not obtain root from else stream");
+    adiar_assert(!root_then.is_nil(), "Did not obtain root from then stream");
+    adiar_assert(!root_else.is_nil(), "Did not obtain root from else stream");
 
     internal::node_stream<true> in_nodes_if(bdd_if);
 
@@ -328,10 +328,10 @@ namespace adiar
                                           + ((int) forward_else);
 
         if (with_data_1 || number_of_elements_to_forward == 2) {
-          adiar_debug(!with_data_1 || t_seek != t_first,
-                      "cannot have data and still seek the first element");
-          adiar_debug(!(with_data_1 && (number_of_elements_to_forward == 2)),
-                      "cannot have forwarded an element, hold two unforwarded items, and still need to forward for something");
+          adiar_assert(!with_data_1 || t_seek != t_first,
+                       "cannot have data and still seek the first element");
+          adiar_assert(!(with_data_1 && (number_of_elements_to_forward == 2)),
+                       "cannot have forwarded an element, hold two unforwarded items, and still need to forward for something");
 
           internal::node::children_t children_1;
           internal::node::children_t children_2;
@@ -415,7 +415,7 @@ namespace adiar
       }
 
       // Resolve request
-      adiar_debug(out_id < bdd::MAX_ID, "Has run out of ids");
+      adiar_assert(out_id < bdd::MAX_ID, "Has run out of ids");
       const internal::node::uid_t out_uid(out_label, out_id++);
 
       __ite_resolve_request(ite_pq_1, aw, out_uid.with(false), low_if, low_then, low_else);

@@ -60,7 +60,7 @@ namespace adiar
 
     zdd::ptr_t visit(const zdd::node_t n)
     {
-      adiar_debug(!n.high().is_terminal() || n.high().value(), "high terminals are never false");
+      adiar_assert(!n.high().is_terminal() || n.high().value(), "high terminals are never false");
       const zdd::ptr_t next_ptr = _visitor.visit(n);
 
       if (next_ptr == n.high() && (next_ptr != n.low() || visitor_t::default_direction)) {

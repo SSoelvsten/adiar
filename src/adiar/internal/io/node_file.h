@@ -102,7 +102,7 @@ namespace adiar::internal
       //////////////////////////////////////////////////////////////////////////
       inline bool value() const
       {
-        adiar_debug(this->is_terminal());
+        adiar_assert(this->is_terminal());
 
         // Since the sum of the number of terminals is exactly one, then we can
         // use the value of the number of true terminals to indirectly derive

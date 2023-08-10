@@ -144,8 +144,8 @@ namespace adiar::internal
                               const typename intercut_policy::ptr_t out_target,
                               const typename intercut_policy::label_t l)
   {
-    adiar_debug(out_label <= out_target.label(),
-                "should forward/output a node on this level or ahead.");
+    adiar_assert(out_label <= out_target.label(),
+                 "should forward/output a node on this level or ahead.");
 
     while (pq.can_pull()
            && pq.top().level() == out_label
@@ -214,7 +214,7 @@ namespace adiar::internal
           n = in_nodes.pull();
         }
 
-        adiar_debug(n.uid() == intercut_pq.top().target(), "should always find desired node");
+        adiar_assert(n.uid() == intercut_pq.top().target(), "should always find desired node");
 
         const intercut_rec r = hit_level
           ? intercut_policy::hit_existing(n)
@@ -251,8 +251,8 @@ namespace adiar::internal
 
       // Resolve requests that end after the cut for this level
       while(intercut_pq.can_pull()) {
-        adiar_debug(out_label <= l,
-                    "the last iteration in this case is for the very last label to cut on");
+        adiar_assert(out_label <= l,
+                     "the last iteration in this case is for the very last label to cut on");
 
         const intercut_req request = intercut_pq.top();
         const intercut_rec_output ro = intercut_policy::hit_cut(request.target());

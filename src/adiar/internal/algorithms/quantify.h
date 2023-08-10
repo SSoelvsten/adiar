@@ -67,12 +67,12 @@ namespace adiar::internal
                                          const typename quantify_policy::ptr_t source,
                                          const quantify_request<0>::target_t &target)
   {
-    adiar_debug(!target.first().is_nil(),
-                "ptr_t::NIL() should only ever end up being placed in target[1]");
+    adiar_assert(!target.first().is_nil(),
+                 "ptr_t::NIL() should only ever end up being placed in target[1]");
 
     if (target.first().is_terminal()) {
-      adiar_debug(target.second().is_nil(),
-                  "Operator should already be resolved at this point");
+      adiar_assert(target.second().is_nil(),
+                   "Operator should already be resolved at this point");
       aw.push({source, target.first()});
     } else {
       quantify_pq_1.push({target, {}, {source}});
@@ -113,7 +113,7 @@ namespace adiar::internal
     // also prune some terminals.
     size_t ts_max_idx = 0;
     for (size_t i = ts_max_idx+1; i < ts.size(); ++i) {
-      adiar_debug(ts_max_idx < i, "i is always ahead of 'ts_max_idx'");
+      adiar_assert(ts_max_idx < i, "i is always ahead of 'ts_max_idx'");
 
       // Stop early at maximum value of 'NIL'
       if (ts[i] == quantify_policy::ptr_t::NIL()) { break; }
@@ -139,7 +139,7 @@ namespace adiar::internal
     // If there are more than two targets but one of the two apply, then prune
     // it all the way down to a single target.
     if (1 <= ts_max_idx && (max_shortcuts || only_terminals)) {
-      adiar_debug(!ts[1].is_nil(), "Cannot be nil at i <= ts_max_elem");
+      adiar_assert(!ts[1].is_nil(), "Cannot be nil at i <= ts_max_elem");
       ts[0] = max_shortcuts ? ts[ts_max_idx] : op(ts[0], ts[1]);
       for (size_t i = 1u; i <= ts_max_idx; ++i) {
         ts[i] = quantify_policy::ptr_t::NIL();
@@ -175,8 +175,8 @@ namespace adiar::internal
 
     // Process requests in topological order of both BDDs
     while(!quantify_pq_1.empty()) {
-      adiar_debug(quantify_pq_2.empty(),
-                      "Secondary priority queue is only non-empty while processing each level");
+      adiar_assert(quantify_pq_2.empty(),
+                   "Secondary priority queue is only non-empty while processing each level");
 
       // Set up level
       quantify_pq_1.setup_next_level();
@@ -213,8 +213,8 @@ namespace adiar::internal
         if (req.empty_carry()
             && req.target.second().is_node()
             && req.target.first().label() == req.target.second().label()) {
-          adiar_debug(!req.target.second().is_nil(),
-                      "req.target.second().is_node ==> !req.target.second().is_nil()");
+          adiar_assert(!req.target.second().is_nil(),
+                       "req.target.second().is_node ==> !req.target.second().is_nil()");
 
           quantify_pq_2.push({ req.target, {v.children()}, req.data });
 
@@ -225,8 +225,8 @@ namespace adiar::internal
           continue;
         }
 
-        adiar_debug(req.target.first().label() == out_label,
-                    "Level of requests always ought to match the one currently processed");
+        adiar_assert(req.target.first().label() == out_label,
+                     "Level of requests always ought to match the one currently processed");
 
         // ---------------------------------------------------------------------
         // CASE: Quantification of Singleton f into (f[0], f[1]).
@@ -254,7 +254,7 @@ namespace adiar::internal
           ? v.children()
           : quantify_policy::reduction_rule_inv(req.target.second());
 
-        adiar_debug(out_id < quantify_policy::MAX_ID, "Has run out of ids");
+        adiar_assert(out_id < quantify_policy::MAX_ID, "Has run out of ids");
 
         // ---------------------------------------------------------------------
         // CASE: Partial Quantification of Tuple (f,g).
@@ -267,8 +267,8 @@ namespace adiar::internal
             if (rec_all[2] == quantify_policy::ptr_t::NIL()) {
               // Collapsed to a terminal?
               if (req.data.source.is_nil() && rec_all[0].is_terminal()) {
-                adiar_debug(rec_all[1] == quantify_policy::ptr_t::NIL(),
-                            "Operator should already be applied");
+                adiar_assert(rec_all[1] == quantify_policy::ptr_t::NIL(),
+                             "Operator should already be applied");
 
                 return typename quantify_policy::reduced_t(rec_all[0].value());
               }
@@ -428,7 +428,7 @@ namespace adiar::internal
              quantify_policy &policy_impl,
              const bool_op &op)
   {
-    adiar_debug(is_commutative(op), "A commutative operator must be used");
+    adiar_assert(is_commutative(op), "A commutative operator must be used");
 
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.
@@ -1048,7 +1048,7 @@ namespace adiar::internal
            const typename multi_quantify_policy__gen<quantify_policy>::gen_t &gen,
            const bool_op &op)
   {
-    adiar_debug(is_commutative(op), "Operator must be commutative");
+    adiar_assert(is_commutative(op), "Operator must be commutative");
 
     // NOTE: read-once access with 'gen' makes partial quantification not
     //       possible.
@@ -1140,8 +1140,8 @@ namespace adiar::internal
                 return dd;
               }
 
-              adiar_debug(dd_level <= transposition_level,
-                          "Must be at or above candidate level");
+              adiar_assert(dd_level <= transposition_level,
+                           "Must be at or above candidate level");
 
               // Did we find the current candidate or skipped past it?
               if (dd_level == transposition_level) {
