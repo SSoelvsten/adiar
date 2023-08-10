@@ -1,5 +1,7 @@
 #include "build.h"
 
+#include <limits>
+
 #include <adiar/zdd/zdd_policy.h>
 #include <adiar/domain.h>
 

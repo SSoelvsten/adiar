@@ -1,9 +1,6 @@
 #ifndef ADIAR_INTERNAL_ASSERT_H
 #define ADIAR_INTERNAL_ASSERT_H
 
-#include <tpie/tpie.h>
-#include <tpie/file_stream.h>
-
 #include <iostream>
 
 namespace adiar
