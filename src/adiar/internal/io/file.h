@@ -2,7 +2,6 @@
 #define ADIAR_INTERNAL_IO_FILE_H
 
 #include <string>
-#include <exception>
 #include <filesystem>
 #include <limits> // TODO <-- remove?
 
@@ -11,6 +10,7 @@
 #include <tpie/file_stream.h>
 #include <tpie/sort.h>
 
+#include <adiar/exception.h>
 #include <adiar/internal/assert.h>
 #include <adiar/internal/memory.h>
 
@@ -98,12 +98,12 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a prior named \em persisted file.
     ///
-    /// \throws std::runtime_error If the path does not point to an \em existing
-    ///                            file on disk.
+    /// \throws runtime_error If the path does not point to an \em existing file
+    ///                       on disk.
     ////////////////////////////////////////////////////////////////////////////
     file(const std::string &path) : _tpie_file(path, true)
     {
-      if (!exists()) { throw std::runtime_error("'"+path+"' not found."); }
+      if (!exists()) { throw runtime_error("'"+path+"' not found."); }
     }
 
   public:
@@ -238,18 +238,20 @@ namespace adiar::internal
     ///      should any `file_stream`s or `file_writer`s be hooked into this
     ///      file.
     ///
-    /// \throws std::runtime_error Preconditions are violated
+    /// \throws runtime_error Preconditions are violated
+    ///
+    /// \throws runtime_error Moving the file is unsuccessful.
     ////////////////////////////////////////////////////////////////////////////
     void move(const std::string &new_path)
     {
       // Disallow moving the file, if it is persisted
       if (is_persistent()) {
-        throw std::runtime_error("'"+path()+"' is persisted.");
+        throw runtime_error("'"+path()+"' is persisted.");
       }
 
       // Disallow moving the file on-top of another.
       if (std::filesystem::exists(new_path)) {
-        throw std::runtime_error("'"+new_path+"' already exists.");
+        throw runtime_error("'"+new_path+"' already exists.");
       }
 
       // Move the file on disk, if it exists.
@@ -262,7 +264,9 @@ namespace adiar::internal
                     << "       what(): " << e1.what() <<  std::endl;
 #endif
           // Did the file disappear and everything just is in shambles?
-          if (!std::filesystem::exists(path())) throw e1;
+          if (!std::filesystem::exists(path())) {
+            throw static_cast<system_error>(e1);
+          }
 
           try {
             // Most likely, this catch-case is an "Invalid cross-device link":
@@ -274,7 +278,7 @@ namespace adiar::internal
             std::cerr << "Adiar: unable to copy-delete file<elem_t> in O(N) time" << std::endl
                       << "       what(): " << e2.what() <<  std::endl;
 #endif
-            throw e2;
+            throw static_cast<system_error>(e2);
           }
         }
       }
@@ -296,7 +300,7 @@ namespace adiar::internal
     {
       // Disallow sorting a persistent file
       if (is_persistent())
-        throw std::runtime_error("'"+path()+"' is persisted.");
+        throw runtime_error("'"+path()+"' is persisted.");
 
       // If empty, just skip all the work
       if (size() == 0u) return;

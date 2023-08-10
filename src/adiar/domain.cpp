@@ -46,7 +46,7 @@ namespace adiar
 
   shared_file<domain_var_t> adiar_get_domain() {
     if(!adiar_has_domain()) {
-      throw std::domain_error("Domain must be set before it can be used");
+      throw domain_error("Domain must be set before it can be used");
     }
 
     return domain_ptr;

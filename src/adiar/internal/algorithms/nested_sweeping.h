@@ -258,8 +258,8 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         void push(const elem_t& e)
         {
-          adiar_invariant(e.target.first().is_node(),
-                          "Requests should have at least one internal node");
+          adiar_debug(e.target.first().is_node(),
+                      "Requests should have at least one internal node");
 
           _max_source = _max_source.is_nil()
             ? e.data.source
@@ -274,8 +274,8 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         void push(const reduce_arc& a)
         {
-          adiar_invariant(!a.target().is_terminal(),
-                          "Arcs to terminals always reside in the outer PQ");
+          adiar_debug(!a.target().is_terminal(),
+                      "Arcs to terminals always reside in the outer PQ");
 
           // TODO: support requests with more than just the source
 
@@ -500,8 +500,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         void push(const typename outer_roots_t::elem_t &e)
         {
-          adiar_precondition(e.data.source.is_nil()
-                             || e.data.source.label() < _next_inner);
+          adiar_debug(e.data.source.is_nil() || e.data.source.label() < _next_inner);
           if (e.target.first().is_terminal()) {
             _outer_pq.push({ e.data.source, e.target.first() });
           } else {
@@ -1242,8 +1241,8 @@ namespace adiar::internal
 
           const typename nesting_policy::label_t level = inner_level_info.level();
 
-          adiar_invariant(!decorated_pq.has_current_level() || level == decorated_pq.current_level(),
-                          "level and priority queue should be in sync");
+          adiar_debug(!decorated_pq.has_current_level() || level == decorated_pq.current_level(),
+                      "level and priority queue should be in sync");
 
           if (nesting_policy::reduce_strategy == nested_sweeping::NEVER_CANONICAL ||
               (nesting_policy::reduce_strategy == nested_sweeping::FINAL_CANONICAL && !is_last_inner)) {
@@ -1448,11 +1447,11 @@ namespace adiar::internal
 
       const level_info outer_level = outer_levels.pull();
 
-      adiar_invariant(!outer_pq.has_current_level()
-                      || outer_level.level() == outer_pq.current_level(),
-                      "level and priority queue should be in sync");
-      adiar_invariant(next_inner == inner_iter_t::NONE || next_inner <= outer_level.level(),
-                      "next_inner level should (if it exists) be above current level (inclusive).");
+      adiar_debug(!outer_pq.has_current_level()
+                  || outer_level.level() == outer_pq.current_level(),
+                  "level and priority queue should be in sync");
+      adiar_debug(next_inner == inner_iter_t::NONE || next_inner <= outer_level.level(),
+                  "next_inner level should (if it exists) be above current level (inclusive).");
 
       // -----------------------------------------------------------------------
       // CASE Unnested Level with no nested sweep above:

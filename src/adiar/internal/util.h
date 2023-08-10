@@ -92,7 +92,7 @@ namespace adiar::internal
   inline shared_levelized_file<arc>
   transpose(const dd_t &dd)
   {
-    adiar_precondition(!dd->is_terminal());
+    adiar_debug(!dd->is_terminal());
 
     shared_levelized_file<arc> af;
 

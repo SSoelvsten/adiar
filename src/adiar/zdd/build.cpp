@@ -11,17 +11,17 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   zdd zdd_terminal(bool value)
   {
-    return internal::build_terminal(value);
+    return internal::build_terminal<zdd_policy>(value);
   }
 
   zdd zdd_empty()
   {
-    return internal::build_terminal(false);
+    return internal::build_terminal<zdd_policy>(false);
   }
 
   zdd zdd_null()
   {
-    return internal::build_terminal(true);
+    return internal::build_terminal<zdd_policy>(true);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -109,7 +109,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   zdd zdd_singleton(const zdd::label_t label)
   {
-    return internal::build_ithvar(label);
+    return internal::build_ithvar<zdd_policy>(label);
   }
 
   //////////////////////////////////////////////////////////////////////////////

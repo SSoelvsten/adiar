@@ -71,6 +71,8 @@ namespace adiar
   /// \param var The label of the desired variable
   ///
   /// \returns   \f$ x_{var} \f$
+  ///
+  /// \throws invalid_argument If `var` is a too large value.
   //////////////////////////////////////////////////////////////////////////////
   bdd bdd_ithvar(bdd::label_t var);
 
@@ -84,6 +86,8 @@ namespace adiar
   /// \param var Label of the desired variable
   ///
   /// \returns   \f$ \neg x_{var} \f$
+  ///
+  /// \throws invalid_argument If `var` is a too large value.
   //////////////////////////////////////////////////////////////////////////////
   bdd bdd_nithvar(bdd::label_t var);
 
@@ -100,6 +104,8 @@ namespace adiar
   /// \returns    \f$ \bigwedge_{x \in \mathit{vars}} x \f$
   ///
   /// \pre        Labels in `vars` are provided in ascending order.
+  ///
+  /// \throws invalid_argument If `vars` are not in ascending order.
   //////////////////////////////////////////////////////////////////////////////
   bdd bdd_and(const shared_file<bdd::label_t> &vars);
 
@@ -116,6 +122,8 @@ namespace adiar
   /// \returns    \f$ \bigvee_{x \in \mathit{vars}} x \f$
   ///
   /// \pre        Labels in `vars` are provided in ascending order.
+  ///
+  /// \throws invalid_argument If `vars` are not in ascending order.
   //////////////////////////////////////////////////////////////////////////////
   bdd bdd_or(const shared_file<bdd::label_t> &vars);
 
@@ -126,6 +134,8 @@ namespace adiar
   /// \param min_var   The minimum label (inclusive) to start counting from
   /// \param max_var   The maximum label (inclusive) to end counting at
   /// \param threshold The threshold number of variables set to true
+  ///
+  /// \throws invalid_arugment If `min_var <= max_var` is not satisfied.
   //////////////////////////////////////////////////////////////////////////////
   bdd bdd_counter(bdd::label_t min_var,
                   bdd::label_t max_var,
@@ -644,6 +654,9 @@ namespace adiar
   ///                 of levels in the BDD (\see bdd_varcount())
   ///
   /// \returns        The number of unique assignments.
+  ///
+  /// \throws invalid_argument If varcount is not larger than the number of
+  ///                          levels in the BDD.
   //////////////////////////////////////////////////////////////////////////////
   uint64_t bdd_satcount(const bdd &f, bdd::label_t varcount);
 
@@ -775,6 +788,11 @@ namespace adiar
   /// \param xs A list of tuples `(i,v)` in ascending order of `i`.
   ///
   /// \pre      Assignment tuples in `xs` is in ascending order
+  ///
+  /// \throws out_of_range If traversal of the BDD leads to going beyond the end
+  ///                      of the content of `xs`.
+  ///
+  /// \throws invalid_argument If a level in the BDD does not exist in `xs`.
   //////////////////////////////////////////////////////////////////////////////
   bool bdd_eval(const bdd &f,
                 const shared_file<map_pair<bdd::label_t, boolean>> &xs);
@@ -815,6 +833,10 @@ namespace adiar
   ///            the given domain.
   ///
   /// \pre       Labels in `dom` are provided in ascending order.
+  ///
+  /// \throws invalid_argument If a label in `dom` is too large.
+  ///
+  /// \throws invalid_argument If labels in `dom` are not in ascending order.
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_from(const zdd &A, const shared_file<bdd::label_t> &dom);
 

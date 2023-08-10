@@ -40,7 +40,7 @@ namespace adiar::internal
     static tpie::memory_size_type memory_fits(tpie::memory_size_type memory_bytes)
     {
       const tpie::memory_size_type ret = tpie::internal_priority_queue<elem_t, comp_t>::memory_fits(memory_bytes);
-      adiar_assert(unsafe_memory_usage(ret) <= memory_bytes,
+      adiar_debug(unsafe_memory_usage(ret) <= memory_bytes,
                    "memory_fits and memory_usage should agree.");
       return ret;
     }

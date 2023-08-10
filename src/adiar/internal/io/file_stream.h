@@ -214,7 +214,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     const elem_t pull()
     {
-      adiar_precondition(can_pull());
+      adiar_debug(can_pull());
       if (_has_peeked) {
         _has_peeked = false;
         return _peeked;
@@ -230,7 +230,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     const elem_t peek()
     {
-      adiar_precondition(can_pull());
+      adiar_debug(can_pull());
       if (!_has_peeked) {
         _peeked = __read();
         _has_peeked = true;

@@ -251,8 +251,8 @@ namespace adiar::internal
 
       // Resolve requests that end after the cut for this level
       while(intercut_pq.can_pull()) {
-        adiar_invariant(out_label <= l,
-                        "the last iteration in this case is for the very last label to cut on");
+        adiar_debug(out_label <= l,
+                    "the last iteration in this case is for the very last label to cut on");
 
         const intercut_req request = intercut_pq.top();
         const intercut_rec_output ro = intercut_policy::hit_cut(request.target());

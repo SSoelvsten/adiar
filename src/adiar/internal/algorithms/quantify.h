@@ -113,7 +113,7 @@ namespace adiar::internal
     // also prune some terminals.
     size_t ts_max_idx = 0;
     for (size_t i = ts_max_idx+1; i < ts.size(); ++i) {
-      adiar_invariant(ts_max_idx < i, "i is always ahead of 'ts_max_idx'");
+      adiar_debug(ts_max_idx < i, "i is always ahead of 'ts_max_idx'");
 
       // Stop early at maximum value of 'NIL'
       if (ts[i] == quantify_policy::ptr_t::NIL()) { break; }
@@ -175,7 +175,7 @@ namespace adiar::internal
 
     // Process requests in topological order of both BDDs
     while(!quantify_pq_1.empty()) {
-      adiar_invariant(quantify_pq_2.empty(),
+      adiar_debug(quantify_pq_2.empty(),
                       "Secondary priority queue is only non-empty while processing each level");
 
       // Set up level
@@ -225,8 +225,8 @@ namespace adiar::internal
           continue;
         }
 
-        adiar_invariant(req.target.first().label() == out_label,
-                        "Level of requests always ought to match the one currently processed");
+        adiar_debug(req.target.first().label() == out_label,
+                    "Level of requests always ought to match the one currently processed");
 
         // ---------------------------------------------------------------------
         // CASE: Quantification of Singleton f into (f[0], f[1]).

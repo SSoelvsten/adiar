@@ -120,7 +120,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     inline value_t value() const
     {
-      adiar_precondition(is_terminal());
+      adiar_debug(is_terminal());
       return _uid.value();
     }
 
@@ -205,7 +205,7 @@ namespace adiar::internal
     // TODO: Rename to `level()` when introducing variable ordering
     inline label_t label() const
     {
-      adiar_precondition(!is_terminal());
+      adiar_debug(!is_terminal());
       return uid().label();
     }
 
@@ -216,7 +216,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     inline id_t id() const
     {
-      adiar_precondition(!is_terminal());
+      adiar_debug(!is_terminal());
       return uid().id();
     }
 

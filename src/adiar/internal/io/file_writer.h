@@ -81,7 +81,7 @@ namespace adiar::internal
     void attach(file<elem_t> &f, adiar::shared_ptr<void> p)
     {
       if (f.is_persistent())
-        throw std::runtime_error("Cannot attach writer to a persisted file");
+        throw runtime_error("Cannot attach writer to a persisted file");
 
       if (attached()) { detach(); }
       _file_ptr = p;

@@ -1,6 +1,7 @@
 #ifndef ADIAR_INTERNAL_IO_NODE_WRITER_H
 #define ADIAR_INTERNAL_IO_NODE_WRITER_H
 
+#include <adiar/exception.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/level_info.h>
@@ -179,10 +180,14 @@ namespace adiar::internal
     ///          valid children (not checked), no duplicate nodes created (not
     ///          properly checked), and must be topologically prior to any nodes
     ///          already written to the file (checked).
+    ///
+    /// \throws domain_error If the writer is yet not attached.
     ////////////////////////////////////////////////////////////////////////////
     void push(const node &n)
     {
-      adiar_assert(attached(), "file_writer is not yet attached to any file");
+      if (!attached()) {
+        throw domain_error("node_writer is not yet attached to any levelized_file<node>");
+      }
 
       if (_latest_node == dummy()) { // First node pushed
         _canonical = n.is_terminal() || n.id() == node::MAX_ID;

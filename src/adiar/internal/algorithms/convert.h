@@ -1,6 +1,8 @@
 #ifndef ADIAR_INTERNAL_ALGORITHMS_CONVERT_H
 #define ADIAR_INTERNAL_ALGORITHMS_CONVERT_H
 
+#include <adiar/exception.h>
+
 #include <adiar/internal/dd.h>
 #include <adiar/internal/algorithms/intercut.h>
 #include <adiar/internal/data_types/node.h>
@@ -42,7 +44,9 @@ namespace adiar::internal
     static typename to_policy::reduced_t
     on_empty_labels(const typename from_policy::reduced_t& dd)
     {
-      adiar_assert(is_terminal(dd), "Only a pure terminal can be part of an empty domain");
+      if (!is_terminal(dd)) {
+        throw invalid_argument("Only a pure terminal can be part of an empty domain");
+      }
       return typename to_policy::reduced_t(dd.file, dd.negate);
     }
 
@@ -65,9 +69,12 @@ namespace adiar::internal
       while(ls.can_pull()) {
         const typename to_policy::label_t next_label = ls.pull();
 
-        adiar_assert(next_label <= to_policy::MAX_LABEL, "Cannot represent that large a label");
-        adiar_assert(prior_node.is_terminal() || next_label < prior_node.label(),
-                     "Labels not given in increasing order");
+        if (to_policy::MAX_LABEL < next_label) {
+          throw invalid_argument("Domain contains unrepresentable labels");
+        }
+        if (!prior_node.is_terminal() && prior_node.label() <= next_label) {
+          throw invalid_argument("Labels are not provided in increasing order");
+        }
 
         const tuple children = from_policy::reduction_rule_inv(prior_node);
         const node next_node = node(next_label, to_policy::MAX_ID, children[0], children[1]);

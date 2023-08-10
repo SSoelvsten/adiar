@@ -13,6 +13,7 @@ set(HEADERS
   data.h
   deprecated.h
   domain.h
+  exception.h
   file.h
   map.h
   memory_mode.h

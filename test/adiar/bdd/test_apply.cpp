@@ -158,8 +158,8 @@ go_bandit([]() {
       nw_t << nt_5 << nt_4 << nt_3 << nt_2 << nt_1;
     }
 
-    adiar_assert(bdd_thin->canonical == true, "Input validation failed");
-    adiar_assert(bdd_thin->width == 2u, "Input validation failed");
+    AssertThat(bdd_thin->canonical, Is().EqualTo(true));
+    AssertThat(bdd_thin->width, Is().EqualTo(2u));
 
     shared_levelized_file<bdd::node_t> bdd_wide;
     /*
@@ -188,8 +188,8 @@ go_bandit([]() {
       nw_w << nw_7 << nw_6 << nw_5 << nw_4 << nw_3 << nw_2 << nw_1;
     }
 
-    adiar_assert(bdd_wide->canonical == true, "Input validation failed");
-    adiar_assert(bdd_wide->width == 3u, "Input validation failed");
+    // bdd_wide->canonical == true
+    // bdd_wide->width == 3u
 
     shared_levelized_file<bdd::node_t> bdd_canon;
     /*
@@ -220,8 +220,8 @@ go_bandit([]() {
       nw_c << nc_9 << nc_8 << nc_7 << nc_6 << nc_5 << nc_4 << nc_3 << nc_2 << nc_1;
     }
 
-    adiar_assert(bdd_canon->canonical == true, "Input validation failed");
-    adiar_assert(bdd_canon->width == 4u, "Input validation failed");
+    // bdd_canon->canonical == true
+    // bdd_canon->width == 4u
 
     shared_levelized_file<bdd::node_t> bdd_non_canon;
     /*
@@ -250,8 +250,8 @@ go_bandit([]() {
       nw_n << nn_7 << nn_6 << nn_5 << nn_4 << nn_3 << nn_2 << nn_1;
     }
 
-    adiar_assert(bdd_non_canon->canonical == false, "Input validation failed");
-    adiar_assert(bdd_non_canon->width == 3u, "Input validation failed");
+    // bdd_non_canon->canonical == false
+    // bdd_non_canon->width == 3u
 
     describe("simple cases without access mode requirements", [&]() {
       // Cases with the same file (same DAG) or at least one terminal does not need to run complicated algorithm

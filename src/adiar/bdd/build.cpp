@@ -15,29 +15,29 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   bdd bdd_terminal(bool value)
   {
-    return internal::build_terminal(value);
+    return internal::build_terminal<bdd_policy>(value);
   }
 
   bdd bdd_true()
   {
-    return internal::build_terminal(true);
+    return internal::build_terminal<bdd_policy>(true);
   }
 
   bdd bdd_false()
   {
-    return internal::build_terminal(false);
+    return internal::build_terminal<bdd_policy>(false);
   }
 
   //////////////////////////////////////////////////////////////////////////////
   bdd bdd_ithvar(bdd::label_t label)
   {
-    return internal::build_ithvar(label);
+    return internal::build_ithvar<bdd_policy>(label);
   }
 
   //////////////////////////////////////////////////////////////////////////////
   bdd bdd_nithvar(bdd::label_t label)
   {
-    return bdd_not(internal::build_ithvar(label));
+    return bdd_not(internal::build_ithvar<bdd_policy>(label));
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -64,8 +64,9 @@ namespace adiar
 
   bdd bdd_counter(bdd::label_t min_var, bdd::label_t max_var, bdd::label_t threshold)
   {
-    adiar_assert(min_var <= max_var,
-                 "The given min_var should be smaller than the given max_var");
+    if (max_var < min_var) {
+      throw invalid_argument("'min_var' ought to be smaller than 'max_var'");
+    }
 
     const bdd::ptr_t gt_terminal = bdd::ptr_t(false);
     const bdd::ptr_t eq_terminal = bdd::ptr_t(true);

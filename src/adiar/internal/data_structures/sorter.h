@@ -52,8 +52,8 @@ namespace adiar::internal
     memory_fits(tpie::memory_size_type memory_bytes)
     {
       const tpie::memory_size_type ret = tpie::array<elem_t>::memory_fits(memory_bytes);
-      adiar_assert(unsafe_memory_usage(ret) <= memory_bytes,
-                   "memory_fits and memory_usage should agree.");
+      adiar_debug(unsafe_memory_usage(ret) <= memory_bytes,
+                  "memory_fits and memory_usage should agree.");
       return ret;
     }
 
@@ -98,7 +98,7 @@ namespace adiar::internal
 
     void push(const elem_t& t)
     {
-      adiar_precondition(can_push());
+      adiar_debug(can_push());
       _array[_size++] = t;
     }
 
@@ -116,13 +116,13 @@ namespace adiar::internal
 
     elem_t top() const
     {
-      adiar_precondition(can_pull());
+      adiar_debug(can_pull());
       return _array[_front_idx];
     }
 
     elem_t pull()
     {
-      adiar_precondition(can_pull());
+      adiar_debug(can_pull());
       return _array[_front_idx++];
     }
 
@@ -326,7 +326,7 @@ namespace adiar::internal
 
     elem_t top()
     {
-      adiar_precondition(can_pull());
+      adiar_debug(can_pull());
       if (!_has_peeked) {
         _has_peeked = true;
         _peeked = _sorter.pull();
@@ -336,7 +336,7 @@ namespace adiar::internal
 
     elem_t pull()
     {
-      adiar_precondition(can_pull());
+      adiar_debug(can_pull());
       _pulls++;
       if (_has_peeked) {
         _has_peeked = false;

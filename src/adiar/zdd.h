@@ -74,6 +74,8 @@ namespace adiar
   /// \param dom Labels of the desired variables (in ascending order)
   ///
   /// \pre       The variable `var` should occur in `dom`.
+  ///
+  /// \throws invalid_argument If `dom` is not in ascending order.
   //////////////////////////////////////////////////////////////////////////////
   zdd zdd_ithvar(zdd::label_t var, const shared_file<zdd::label_t> &dom);
 
@@ -102,6 +104,10 @@ namespace adiar
   /// \param dom Labels of the desired variables (in ascending order)
   ///
   /// \pre       The variable `var` should occur in `dom`.
+  ///
+  /// \throws invalid_argument If `dom` is not in ascending order.
+  ///
+  /// \throws invalid_argument If `vars` includes a label that is too large.
   //////////////////////////////////////////////////////////////////////////////
   zdd zdd_nithvar(zdd::label_t var, const shared_file<zdd::label_t> &dom);
 
@@ -113,6 +119,8 @@ namespace adiar
   ///
   /// \pre       `adiar_has_domain() == true` and the variable `var` should
   ///            occur in the global domain.
+  ///
+  /// \throws invalid_argument If `vars` includes a label that is too large.
   //////////////////////////////////////////////////////////////////////////////
   zdd zdd_nithvar(zdd::label_t var);
 
@@ -124,6 +132,10 @@ namespace adiar
   ///            smaller than or equal to `zdd::MAX_LABEL`.
   ///
   /// \param vars Labels of the desired variables (in ascending order)
+  ///
+  /// \throws invalid_argument If `vars` are not in ascending order.
+  ///
+  /// \throws invalid_argument If `vars` includes a label that is too large.
   //////////////////////////////////////////////////////////////////////////////
   zdd zdd_vars(const shared_file<zdd::label_t> &vars);
 
@@ -135,6 +147,8 @@ namespace adiar
   ///            `zdd::MAX_LABEL`.
   ///
   /// \param var The label of the desired variable to include
+  ///
+  /// \throws invalid_argument If `var` is a too large value.
   //////////////////////////////////////////////////////////////////////////////
   zdd zdd_singleton(zdd::label_t var);
 
@@ -146,6 +160,10 @@ namespace adiar
   ///            smaller than or equal to `zdd::MAX_LABEL`.
   ///
   /// \param vars Labels of the desired variables (in ascending order)
+  ///
+  /// \throws invalid_argument If `vars` are not in ascending order.
+  ///
+  /// \throws invalid_argument If `vars` includes a label that is too large.
   //////////////////////////////////////////////////////////////////////////////
   zdd zdd_singletons(const shared_file<zdd::label_t> &vars);
 
@@ -157,6 +175,10 @@ namespace adiar
   ///            `zdd::MAX_LABEL`.
   ///
   /// \param vars Labels of the desired variables (in ascending order)
+  ///
+  /// \throws invalid_argument If `vars` are not in ascending order.
+  ///
+  /// \throws invalid_argument If `vars` includes a label that is too large.
   //////////////////////////////////////////////////////////////////////////////
   zdd zdd_powerset(const shared_file<zdd::label_t> &vars);
 
@@ -667,6 +689,10 @@ namespace adiar
   ///
   /// \returns   ZDD that is true for the exact same assignments to variables in
   ///            the given domain.
+  ///
+  /// \throws invalid_argument If a label in `dom` is too large.
+  ///
+  /// \throws invalid_argument If labels in `dom` are not in ascending order.
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_from(const bdd &f, const shared_file<zdd::label_t> &dom);
 

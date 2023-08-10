@@ -15,6 +15,7 @@
 #include <adiar/assignment.h>
 #include <adiar/builder.h>
 #include <adiar/domain.h>
+#include <adiar/exception.h>
 #include <adiar/file.h>
 #include <adiar/memory_mode.h>
 #include <adiar/quantify_mode.h>
@@ -65,11 +66,11 @@ namespace adiar
   ///   The directory in which to place all temporary files. Default on Linux is
   ///   the */tmp* library.
   ///
-  /// \throws std::invalid_argument If `memory_limit_bytes` is set to a value
-  ///                               less than the `MINIMUM_MEMORY` required.
+  /// \throws invalid_argument If `memory_limit_bytes` is set to a value less
+  ///                          than the `MINIMUM_MEMORY` required.
   ///
-  /// \throws std::runtime_error    If `adiar_init()` and then `adiar_deinit()`
-  ///                               have been called previously.
+  /// \throws runtime_error    If `adiar_init()` and then `adiar_deinit()` have
+  ///                          been called previously.
   //////////////////////////////////////////////////////////////////////////////
   void adiar_init(size_t memory_limit_bytes, std::string temp_dir = "");
 
@@ -86,8 +87,8 @@ namespace adiar
   ///          zdd \ref zdd_builder or any \ref shared_file objects you may be
   ///          using.
   ///
-  /// \throws std::runtime_error If compiled with *debug flag* and one of
-  ///                            Adiar's objects have *not* been destructed.
+  /// \throws runtime_error If compiled with *debug* and one of Adiar's objects
+  ///                       have *not* been destructed.
   //////////////////////////////////////////////////////////////////////////////
   void adiar_deinit();
 

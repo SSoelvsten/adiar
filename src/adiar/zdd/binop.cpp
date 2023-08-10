@@ -65,7 +65,7 @@ namespace adiar
                                        const zdd& zdd_2,
                                        const bool_op &op)
     {
-      adiar_precondition(is_terminal(zdd_1) || is_terminal(zdd_2));
+      adiar_debug(is_terminal(zdd_1) || is_terminal(zdd_2));
 
       const zdd::ptr_t terminal_F = zdd::ptr_t(false);
 
