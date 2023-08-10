@@ -161,11 +161,12 @@ namespace adiar::internal
     }
   };
 
+  template<typename dd_policy>
   inline shared_levelized_file<node>
   __prod2_terminal(const tuple<dd::ptr_t> &rp, const bool_op &op)
   {
     // TODO: Abuse that op(tgt[0], tgt[1]) already is a pointer.
-    return build_terminal(op(rp[0], rp[1]).value());
+    return build_terminal<dd_policy>(op(rp[0], rp[1]).value());
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -254,7 +255,7 @@ namespace adiar::internal
     size_t max_1level_cut = 0;
 
     while (!prod_pq.empty()){
-      adiar_invariant(prod_pq.empty_level(), "pq has finished processing last layers");
+      adiar_debug(prod_pq.empty_level(), "pq has finished processing last layers");
 
       // Setup layer
       prod_pq.setup_next_level();
@@ -272,8 +273,8 @@ namespace adiar::internal
             v1 = in_nodes_1.pull();
           }
 
-          adiar_invariant(v1.uid() == req.target[1],
-                          "Must have found correct node in `in_1`");
+          adiar_debug(v1.uid() == req.target[1],
+                      "Must have found correct node in `in_1`");
         }
 
         const typename prod_policy::children_t children_0 =
@@ -315,7 +316,7 @@ namespace adiar::internal
           if (r[0].is_terminal() && r[1].is_terminal()) {
             if (req.data.source.is_nil()) {
               // Skipped in both DAGs all the way from the root until a pair of terminals.
-              return __prod2_terminal(r, op);
+              return __prod2_terminal<prod_policy>(r, op);
             }
             __prod2_recurse_in__1<__prod2_recurse_in__output_terminal>
               (prod_pq, aw, op(r[0], r[1]), req.target);
@@ -403,10 +404,10 @@ namespace adiar::internal
         req = prod_pq_2.top();
       }
 
-      adiar_invariant(req.target[0].is_terminal() || out_label <= req.target[0].label(),
-                      "Request should never level-wise be behind current position");
-      adiar_invariant(req.target[1].is_terminal() || out_label <= req.target[1].label(),
-                      "Request should never level-wise be behind current position");
+      adiar_debug(req.target[0].is_terminal() || out_label <= req.target[0].label(),
+                  "Request should never level-wise be behind current position");
+      adiar_debug(req.target[1].is_terminal() || out_label <= req.target[1].label(),
+                  "Request should never level-wise be behind current position");
 
       // Seek request partially in stream
       const typename prod_policy::ptr_t t_seek =
@@ -469,7 +470,7 @@ namespace adiar::internal
         if (r[0].is_terminal() && r[1].is_terminal()) {
           if (req.data.source.is_nil()) {
             // Skipped in both DAGs all the way from the root until a pair of terminals.
-            return __prod2_terminal(r, op);
+            return __prod2_terminal<prod_policy>(r, op);
           }
           __prod2_recurse_in<__prod2_recurse_in__output_terminal>
             (prod_pq_1, prod_pq_2, aw, op(r[0], r[1]), req.target);

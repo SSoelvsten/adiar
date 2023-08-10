@@ -370,9 +370,9 @@ namespace adiar::internal
 
       const mapping current_map = is_red1_current ? next_red1 : next_red2;
 
-      adiar_invariant(!arcs.can_pull_internal()
-                      || current_map.old_uid == arcs.peek_internal().target(),
-                      "Mapping forwarded in sync with internal arcs");
+      adiar_debug(!arcs.can_pull_internal()
+                  || current_map.old_uid == arcs.peek_internal().target(),
+                  "Mapping forwarded in sync with internal arcs");
 
       // Find all arcs that have the target that match the current mapping's old_uid
       while (arcs.can_pull_internal() && current_map.old_uid == arcs.peek_internal().target()) {
@@ -555,8 +555,8 @@ namespace adiar::internal
       const level_info current_level_info = levels.pull();
       const typename dd_policy::label_t level = current_level_info.level();
 
-      adiar_invariant(!reduce_pq.has_current_level() || level == reduce_pq.current_level(),
-                      "level and priority queue should be in sync");
+      adiar_debug(!reduce_pq.has_current_level() || level == reduce_pq.current_level(),
+                  "level and priority queue should be in sync");
 
       const size_t unreduced_width = current_level_info.width();
       if(unreduced_width <= internal_sorter_can_fit) {

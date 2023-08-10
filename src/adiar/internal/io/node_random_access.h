@@ -96,7 +96,7 @@ namespace adiar::internal
                        const bool negate = false)
       : _ns(f, negate), _max_width(f.width), _level_buffer(f.width)
     {
-      adiar_precondition(f.canonical);
+      adiar_debug(f.canonical);
       init();
     }
 
@@ -109,7 +109,7 @@ namespace adiar::internal
                        const bool negate = false)
       : _ns(f, negate), _max_width(f->width), _level_buffer(f->width)
     {
-      adiar_precondition(f->canonical);
+      adiar_debug(f->canonical);
       init();
     }
 
@@ -121,7 +121,7 @@ namespace adiar::internal
     node_random_access(const dd &diagram)
       : _ns(diagram), _max_width(diagram->width), _level_buffer(diagram->width)
     {
-      adiar_precondition(diagram->canonical);
+      adiar_debug(diagram->canonical);
       init();
     }
 
@@ -168,7 +168,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     void setup_next_level(const label_t level)
     {
-      adiar_precondition(!has_current_level() || current_level() < level);
+      adiar_debug(!has_current_level() || current_level() < level);
 
       // Set to new level and mark the entire buffer's content garbage.
       _curr_level = level;
@@ -229,7 +229,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     const node_t& at(id_t idx) const
     {
-      adiar_precondition(idx < current_width());
+      adiar_debug(idx < current_width());
       return _level_buffer[idx];
     }
 
@@ -238,9 +238,9 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     const node_t& at(uid_t u) const
     {
-      adiar_precondition(u.label() == current_level());
+      adiar_debug(u.label() == current_level());
 
-      // adiar_precondition(... < current_width()); is in 'return at(...)'
+      // adiar_debug(... < current_width()); is in 'return at(...)'
       return at(current_width() - ((uid_t::MAX_ID + 1u) - u.id()));
     }
   };

@@ -389,7 +389,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     inline value_t value() const
     {
-      adiar_precondition(is_terminal());
+      adiar_debug(is_terminal());
 
       // TODO (Attributed Edges):
       //   Negate resulting value based on 'is_flagged()'? It might actually be
@@ -453,7 +453,7 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////
     ptr_uint64 operator~ () const
     {
-      adiar_precondition(this->is_terminal());
+      adiar_debug(this->is_terminal());
       return ptr_uint64(VALUE_MASK ^ _raw);
     }
 
@@ -465,8 +465,8 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////
     ptr_uint64 operator^ (const ptr_uint64 &o) const
     {
-      adiar_precondition(this->is_terminal());
-      adiar_precondition(o.is_terminal());
+      adiar_debug(this->is_terminal());
+      adiar_debug(o.is_terminal());
 
       return ptr_uint64(TERMINAL_BIT | (this->_raw ^ o._raw));
     }
@@ -479,8 +479,8 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////
     ptr_uint64 operator& (const ptr_uint64 &o) const
     {
-      adiar_precondition(this->is_terminal());
-      adiar_precondition(o.is_terminal());
+      adiar_debug(this->is_terminal());
+      adiar_debug(o.is_terminal());
 
       return ptr_uint64(this->_raw & o._raw);
     }
@@ -493,8 +493,8 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////
     ptr_uint64 operator| (const ptr_uint64 &o) const
     {
-      adiar_precondition(this->is_terminal());
-      adiar_precondition(o.is_terminal());
+      adiar_debug(this->is_terminal());
+      adiar_debug(o.is_terminal());
 
       return ptr_uint64(this->_raw | o._raw);
     }
@@ -547,7 +547,7 @@ namespace adiar::internal
   inline ptr_uint64 with_out_idx(const ptr_uint64 &p,
                                  const ptr_uint64::out_idx_t out_idx)
   {
-    adiar_precondition(p.is_node());
+    adiar_debug(p.is_node());
 
     constexpr uint64_t out_idx_mask =
       ~(((1ull << ptr_uint64::OUT_IDX_BITS) - 1u) << ptr_uint64::FLAG_BITS);

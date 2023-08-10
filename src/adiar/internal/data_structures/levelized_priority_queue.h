@@ -459,7 +459,7 @@ namespace adiar::internal
       while (_back_bucket_idx + 1 < BUCKETS && _level_merger.can_pull()) {
         const ptr_uint64::label_t level = _level_merger.pull();
 
-        adiar_invariant(_front_bucket_idx == OUT_OF_BUCKETS_IDX,
+        adiar_debug(_front_bucket_idx == OUT_OF_BUCKETS_IDX,
                         "Front bucket not moved");
 
         _back_bucket_idx++;
@@ -678,7 +678,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     elem_t top()
     {
-      adiar_debug (can_pull(), "Can only obtain top element on non-empty level");
+      adiar_debug(can_pull(), "Can only obtain top element on non-empty level");
 
       if (!_has_top_elem) {
         _top_elem = pull();
@@ -707,14 +707,14 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     elem_t pull()
     {
-      adiar_debug (!empty_level(), "Can only pull on non-empty level");
+      adiar_debug(!empty_level(), "Can only pull on non-empty level");
 
       if (_has_top_elem) {
         _has_top_elem = false;
         return _top_elem;
       }
 
-      adiar_debug (_size > 0, "pull on non-top element requires content");
+      adiar_debug(_size > 0, "pull on non-top element requires content");
       _size--;
 
       // Merge bucket with overflow queue
@@ -849,17 +849,17 @@ namespace adiar::internal
     inline void forward_to_nonempty_bucket(const ptr_uint64::label_t stop_level, const bool has_stop_level)
     {
       do {
-        adiar_invariant(has_next_bucket(),
-                        "At least one more bucket can be forwarded to");
+        adiar_debug(has_next_bucket(),
+                    "At least one more bucket can be forwarded to");
 
         // Is the next bucket past the 'stop_level'?
         if (has_stop_level && level_cmp_lt<level_comp_t>(stop_level, next_bucket_level(), _level_comparator)) {
           break;
         }
 
-        adiar_invariant(!has_front_bucket()
-                        || level_cmp_lt<level_comp_t>(front_bucket_level(), back_bucket_level(), _level_comparator),
-                        "Inconsistency in has_next_bucket predicate");
+        adiar_debug(!has_front_bucket()
+                    || level_cmp_lt<level_comp_t>(front_bucket_level(), back_bucket_level(), _level_comparator),
+                    "Inconsistency in has_next_bucket predicate");
 
         // Replace the current read-only bucket, if there is one
         if (_level_merger.can_pull() && has_front_bucket()) {
@@ -1293,7 +1293,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     elem_t top()
     {
-      adiar_debug (can_pull(), "Can only obtain top element on non-empty level");
+      adiar_debug(can_pull(), "Can only obtain top element on non-empty level");
       return _priority_queue.top();
     }
 
@@ -1316,7 +1316,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     elem_t pull()
     {
-      adiar_debug (!empty_level(), "Can only pull on non-empty level");
+      adiar_debug(!empty_level(), "Can only pull on non-empty level");
 
       const elem_t ret = _priority_queue.top();
       _priority_queue.pop();

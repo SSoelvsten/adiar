@@ -95,7 +95,7 @@ go_bandit([]() {
         f2.touch();
 
         AssertThat(f1.can_move(), Is().True());
-        AssertThrows(std::runtime_error, f1.move(f2.path()));
+        AssertThrows(runtime_error, f1.move(f2.path()));
       });
 
       it("can be 'moved' when existing [/tmp/]", [&tmp_path]() {
@@ -706,7 +706,7 @@ go_bandit([]() {
 
     describe("file(path)", []() {
       it("throws exception on path to non-existing file", []() {
-        AssertThrows(std::runtime_error,
+        AssertThrows(runtime_error,
                      file<int>("./non-existing-file.adiar"));
       });
 
@@ -755,7 +755,7 @@ go_bandit([]() {
         std::string old_path = f.path();
 
         AssertThat(f.can_move(), Is().False());
-        AssertThrows(std::runtime_error, f.move(new_path));
+        AssertThrows(runtime_error, f.move(new_path));
       });
 
       // Clean up for above tests
@@ -842,7 +842,7 @@ go_bandit([]() {
       it("cannot reattach a writer to a persisted file", [&path]() {
         file<int> f(path);
         adiar::file_writer<int> fw;
-        AssertThrows(std::runtime_error, fw.attach(f));
+        AssertThrows(runtime_error, fw.attach(f));
       });
 
       // Clean up for above tests
@@ -935,7 +935,7 @@ go_bandit([]() {
           f.make_persistent();
           AssertThat(std::filesystem::exists(path), Is().True());
 
-          AssertThrows(std::runtime_error, f.sort<std::less<int>>());
+          AssertThrows(runtime_error, f.sort<std::less<int>>());
         }
         AssertThat(std::filesystem::exists(path), Is().True());
 
@@ -957,7 +957,7 @@ go_bandit([]() {
           f.make_persistent();
           AssertThat(std::filesystem::exists(path), Is().True());
 
-          AssertThrows(std::runtime_error, f.sort<std::less<int>>());
+          AssertThrows(runtime_error, f.sort<std::less<int>>());
         }
         AssertThat(std::filesystem::exists(path), Is().True());
 

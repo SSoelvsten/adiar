@@ -4,6 +4,7 @@
 #include <adiar/bdd/bdd_policy.h>
 
 #include <adiar/domain.h>
+#include <adiar/exception.h>
 #include <adiar/internal/assert.h>
 #include <adiar/internal/algorithms/count.h>
 
@@ -93,12 +94,13 @@ namespace adiar
 
   uint64_t bdd_satcount(const bdd& bdd, bdd::label_t varcount)
   {
+    if (varcount < bdd_varcount(bdd)) {
+      throw invalid_argument("'varcount' ought to be at least the number of levels in the BDD");
+    }
+
     if (is_terminal(bdd)) {
       return value_of(bdd) ? std::min(1u, varcount) << varcount : 0u;
     }
-
-    adiar_assert(bdd_varcount(bdd) <= varcount,
-                 "number of variables in domain should be greater than the ones present in the BDD.");
 
     return internal::count<sat_count_policy>(bdd, varcount);
   }

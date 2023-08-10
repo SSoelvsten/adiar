@@ -1530,7 +1530,7 @@ go_bandit([]() {
       // Reset access mode
       access_mode = access_mode_t::AUTO;
     });
-  
+
     describe("access mode: random access", [&]() {
       // Set access mode to random access for this batch of tests
       access_mode = access_mode_t::RA;
@@ -1553,7 +1553,7 @@ go_bandit([]() {
 
             /*
             // Result of { {0} } U { Ø, {0} }
-            // 
+            //
             //                      (1,1)                   ---- x0
             //                      /   \
             //                  (F,T)   (T,T)
@@ -1630,7 +1630,7 @@ go_bandit([]() {
           AssertThat(out.get<__zdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(1u));
           AssertThat(out.get<__zdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(2u));
         });
-        
+
         it("computes { {1} } U { {0} } (different levels, random access for second level)", [&]() {
           /*
           //             1     ---- x0
@@ -1702,8 +1702,8 @@ go_bandit([]() {
           nw_t << nt_5 << nt_4 << nt_3 << nt_2 << nt_1;
         }
 
-        adiar_assert(zdd_thin->canonical == true, "Input validation failed");
-        adiar_assert(zdd_thin->width == 2u, "Input validation failed");
+        // zdd_thin->canonical == true
+        // zdd_thin->width == 2u
 
         shared_levelized_file<zdd::node_t> zdd_wide;
         /*
@@ -1720,7 +1720,7 @@ go_bandit([]() {
         //            / \
         //            F T
         */
-        
+
         node nw_7 = node(3, node::MAX_ID, terminal_F, terminal_T);
         node nw_6 = node(2, node::MAX_ID, terminal_T, terminal_T);
         node nw_5 = node(2, node::MAX_ID - 1, terminal_F, terminal_T);
@@ -1734,12 +1734,12 @@ go_bandit([]() {
           nw_w << nw_7 << nw_6 << nw_5 << nw_4 << nw_3 << nw_2 << nw_1;
         }
 
-        adiar_assert(zdd_wide->canonical == true, "Input validation failed");
-        adiar_assert(zdd_wide->width == 3u, "Input validation failed");
-        
+        // zdd_wide->canonical == true
+        // zdd_wide->width == 3u
+
         /*
         // Result of [thin] U [wide]
-        // 
+        //
         //                      (1,1)                   ---- x0
         //                      /   \
         //                  (2,2)   (3,3)               ---- x1
@@ -1913,7 +1913,7 @@ go_bandit([]() {
         //         / \  / \
         //         F T  T T
         */
-        
+
         node nc_9 = node(3, node::MAX_ID, terminal_T, terminal_T);
         node nc_8 = node(3, node::MAX_ID - 1, terminal_F, terminal_T);
         node nc_7 = node(2, node::MAX_ID, terminal_T, terminal_T);
@@ -1929,9 +1929,9 @@ go_bandit([]() {
           nw_c << nc_9 << nc_8 << nc_7 << nc_6 << nc_5 << nc_4 << nc_3 << nc_2 << nc_1;
         }
 
-        adiar_assert(zdd_canon->canonical == true, "Input validation failed");
-        adiar_assert(zdd_canon->width == 4u, "Input validation failed");
-        
+        // zdd_canon->canonical == true
+        // zdd_canon->width == 4u
+
         shared_levelized_file<zdd::node_t> zdd_non_canon;
         /*
         //  { {0}, {2}, {0, 2}, {1, 3}, {1, 2}, {0, 1, 2} }
@@ -1961,9 +1961,9 @@ go_bandit([]() {
           nw_n << nn_7 << nn_6 << nn_5 << nn_4 << nn_3 << nn_2 << nn_1;
         }
 
-        adiar_assert(zdd_non_canon->canonical == false, "Input validation failed");
-        adiar_assert(zdd_non_canon->width == 3u, "Input validation failed");
-        
+        // zdd_non_canon->canonical == false
+        // zdd_non_canon->width == 3u
+
         /*
         // Result of [canon] U [non_canon]
         //
@@ -1973,7 +1973,7 @@ go_bandit([]() {
         //              (2,2)                 (3,3)                   ---- x1
         //              /   \________ __________X
         //            _/          ___X___        \___
-        //           /           /       \           \ 
+        //           /           /       \           \
         //       (4,4)       (7,4)       (6,5)       (5,6)            ---- x2
         //       /   \       /   \       /   \       /   \
         //    (F,F) (8,T) (T,F) (T,T) (F,7) (T,T) (F,T) (9,T)         ---- x3
@@ -2170,8 +2170,8 @@ go_bandit([]() {
             //               2 T      | |                    (2,2)   \       ---- x1
             //              / \       | |                    /   \    |
             //              3  \      | |     ==>         (3,2)   \   |      ---- x2
-            //              || |      | |                 /   \____\ /  
-            //              \\ /      \ /                /          X   
+            //              || |      | |                 /   \____\ /
+            //              \\ /      \ /                /          X
             //                4        2              (4,2)    (T,2) (4,F)   ---- x3
             //               / \      / \              / \      / \   / \
             //               F T      F T              F T      T T   T T
@@ -2199,11 +2199,11 @@ go_bandit([]() {
                 ;
             }
 
-            adiar_assert(zdd_a->width == 1u, "Input validation failed");
-            adiar_assert(zdd_a->canonical == true, "Input validation failed");
+            // zdd_a->width == 1u
+            // zdd_a->canonical == true
 
-            adiar_assert(zdd_b->width == 1u, "Input validation failed");
-            adiar_assert(zdd_b->canonical == true, "Input validation failed");
+            // zdd_b->width == 1u
+            // zdd_b->canonical == true
 
             __zdd out = zdd_union(zdd_a, zdd_b);
 
@@ -2220,7 +2220,7 @@ go_bandit([]() {
 
             AssertThat(arcs.can_pull_internal(), Is().True());
             AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(3,1) }));
-            
+
             AssertThat(arcs.can_pull_internal(), Is().True());
             AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(3,2) }));
 
@@ -2288,8 +2288,8 @@ go_bandit([]() {
               nw_a << na_2 << na_1;
             }
 
-            adiar_assert(zdd_a->width == 1u, "Input validation failed");
-            adiar_assert(zdd_a->canonical == true, "Input validation failed");
+            // zdd_a->width == 1u
+            // zdd_a->canonical == true
 
             shared_levelized_file<zdd::node_t> zdd_b;
             /*
@@ -2311,8 +2311,8 @@ go_bandit([]() {
               nw_b << nb_3 << nb_2 << nb_1;
             }
 
-            adiar_assert(zdd_b->width == 2u, "Input validation failed");
-            adiar_assert(zdd_b->canonical == true, "Input validation failed");
+            // zdd_b->width == 2u
+            // zdd_b->canonical == true
 
             /*
             //    { {0}, {1} } U { {0}, {1}, {0, 1} }
@@ -2321,7 +2321,7 @@ go_bandit([]() {
             //                 /   \
             //             (2,2)    (T,3)         ---- x1
             //             /   \    /   \
-            //         (F,F)    (T,T)   (F,T)   
+            //         (F,F)    (T,T)   (F,T)
             */
 
             __zdd out = zdd_union(zdd_a, zdd_b);
@@ -2389,8 +2389,8 @@ go_bandit([]() {
               nw_a << na_3 << na_2 << na_1;
             }
 
-            adiar_assert(zdd_a->width == 1u, "Input validation failed");
-            adiar_assert(zdd_a->canonical == true, "Input validation failed");
+            // zdd_a->width == 1u
+            // zdd_a->canonical == true
 
             shared_levelized_file<zdd::node_t> zdd_b;
             /*
@@ -2412,8 +2412,8 @@ go_bandit([]() {
               nw_b << nb_3 << nb_2 << nb_1;
             }
 
-            adiar_assert(zdd_b->width == 2u, "Input validation failed");
-            adiar_assert(zdd_b->canonical == true, "Input validation failed");
+            // zdd_b->width == 2u
+            // zdd_b->canonical == true
 
             /*
             //    { {0}, {1}, {0, 3} } U { {0}, {1}, {0, 1} }
@@ -2424,8 +2424,8 @@ go_bandit([]() {
             //          (2,2)         (3,3)        ---- x1
             //          /   \         /   \
             //       (F,F) (T,T)   (3,T) (F,T)     ---- x2
-            //                      | |   
-            //                     (T,T)   
+            //                      | |
+            //                     (T,T)
             */
 
             __zdd out = zdd_union(zdd_a, zdd_b);
@@ -2479,7 +2479,7 @@ go_bandit([]() {
             AssertThat(out.get<__zdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(4u));
         });
       });
-      
+
       describe("zdd_intsec", [&]() {
         it("should shortcircuit intermediate nodes", [&]() {
             shared_levelized_file<zdd::node_t> zdd_a;
@@ -2505,8 +2505,8 @@ go_bandit([]() {
               nw_a << na_4 << na_3 << na_2 << na_1;
             }
 
-            adiar_assert(zdd_a->canonical == true, "Input validation failed");
-            adiar_assert(zdd_a->width == 2u, "Input validation failed");
+            // zdd_a->canonical == true
+            // zdd_a->width == 2u
 
             shared_levelized_file<zdd::node_t> zdd_b;
             /*
@@ -2530,12 +2530,12 @@ go_bandit([]() {
               nw_b << nb_3 << nb_2 << nb_1;
             }
 
-            adiar_assert(zdd_b->canonical == true, "Input validation failed");
-            adiar_assert(zdd_b->width == 1u, "Input validation failed");
-            
+            // zdd_b->canonical == true
+            // zdd_b->width == 1u
+
             /*
             // Result of { {0, 1}, {0, 2}, {0, 1, 2} } ∩ { {1, 2}, {0, 1, 2} }
-            // 
+            //
             //                  (1,1)               ---- x0
             //                  /   \
             //             (F,2)     (2,2)          ---- x1
@@ -2612,8 +2612,8 @@ go_bandit([]() {
               nw_a << na_2 << na_1;
             }
 
-            adiar_assert(zdd_a->canonical == true, "Input validation failed");
-            adiar_assert(zdd_a->width == 1u, "Input validation failed");
+            // zdd_a->canonical == true
+            // zdd_a->width == 1u
 
             shared_levelized_file<zdd::node_t> zdd_b;
             /*
@@ -2631,12 +2631,12 @@ go_bandit([]() {
               nw_b << nb_1;
             }
 
-            adiar_assert(zdd_b->canonical == true, "Input validation failed");
-            adiar_assert(zdd_b->width == 1u, "Input validation failed");
-            
+            // zdd_b->canonical == true
+            // zdd_b->width == 1u
+
             /*
             // Result of { {0}, {1} } ∩ { Ø, {0} }
-            // 
+            //
             //                  (1,1)               ---- x0
             //                  /   \
             //             (2,T)     (T,T)          ---- x1
@@ -2704,8 +2704,8 @@ go_bandit([]() {
               nw_a << na_3 << na_2 << na_1;
             }
 
-            adiar_assert(zdd_a->canonical == false, "Input validation failed");
-            adiar_assert(zdd_a->width == 2u, "Input validation failed");
+            // zdd_a->canonical == false
+            // zdd_a->width == 2u
 
             shared_levelized_file<zdd::node_t> zdd_b;
             /*
@@ -2727,12 +2727,12 @@ go_bandit([]() {
               nw_b << nb_3 << nb_2 << nb_1;
             }
 
-            adiar_assert(zdd_b->canonical == true, "Input validation failed");
-            adiar_assert(zdd_b->width == 2u, "Input validation failed");
-            
+            // zdd_b->canonical == true
+            // zdd_b->width == 2u
+
             /*
             // Result of { Ø, {1}, {0, 1} } \ { {0}, {1}, {0, 1} }
-            // 
+            //
             //                      (1,1)               ---- x0
             //                    __/   \__
             //                   /         \

@@ -7,7 +7,7 @@ go_bandit([]() {
     describe("adiar_has_domain(), adiar_get_domain()", []() {
       it("throws exception when getting missing domain", []() {
         AssertThat(adiar_has_domain(), Is().False());
-        AssertThrows(std::domain_error, adiar_get_domain());
+        AssertThrows(domain_error, adiar_get_domain());
       });
     });
 

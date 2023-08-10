@@ -1,6 +1,7 @@
 #ifndef ADIAR_INTERNAL_ALGORITHMS_BUILD_H
 #define ADIAR_INTERNAL_ALGORITHMS_BUILD_H
 
+#include <adiar/exception.h>
 #include <adiar/internal/assert.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/data_types/uid.h>
@@ -11,12 +12,16 @@
 
 namespace adiar::internal
 {
-  inline shared_levelized_file<node> build_terminal(bool value)
+  template<typename dd_policy>
+  inline
+  shared_levelized_file<typename dd_policy::node_t>
+  build_terminal(bool value)
   {
-    shared_levelized_file<node> nf;
+    using node_t = typename dd_policy::node_t;
+    shared_levelized_file<node_t> nf;
     {
       node_writer nw(nf);
-      nw.unsafe_push(node(value));
+      nw.unsafe_push(node_t(value));
       nw.unsafe_set_number_of_terminals(!value, value);
       nw.unsafe_set_canonical(true);
     }
@@ -24,17 +29,22 @@ namespace adiar::internal
     return nf;
   }
 
-  inline shared_levelized_file<node> build_ithvar(ptr_uint64::label_t label)
+  template<typename dd_policy>
+  inline
+  shared_levelized_file<typename dd_policy::node_t>
+  build_ithvar(typename dd_policy::label_t label)
   {
-    adiar_assert(label <= node::ptr_t::MAX_LABEL, "Cannot represent that large a label");
+    using node_t = typename dd_policy::node_t;
+    using ptr_t = typename node_t::ptr_t;
 
-    shared_levelized_file<node> nf;
+    if (node_t::MAX_LABEL < label) {
+      throw invalid_argument("Cannot represent that large a label");
+    }
+
+    shared_levelized_file<node_t> nf;
     {
       node_writer nw(nf);
-      nw.unsafe_push(node(label, node::ptr_t::MAX_ID,
-                          ptr_uint64(false),
-                          ptr_uint64(true)));
-
+      nw.unsafe_push(node(label, ptr_t::MAX_ID, ptr_t(false), ptr_t(true)));
       nw.unsafe_push(level_info(label,1u));
       nw.unsafe_set_canonical(true);
     }
@@ -107,7 +117,7 @@ namespace adiar::internal
     {
       const size_t number_of_levels = labels->size();
       if (number_of_levels == 0) {
-        return build_terminal(chain_policy::init_terminal);
+        return build_terminal<chain_policy>(chain_policy::init_terminal);
       }
 
       shared_levelized_file<typename chain_policy::node_t> nf;
@@ -126,8 +136,9 @@ namespace adiar::internal
       while(ls.can_pull()) {
         const node::ptr_t::label_t next_label = ls.pull();
 
-        adiar_assert(root.is_terminal() || next_label < root.label(),
-                     "Labels not given in increasing order");
+        if (!root.is_terminal() && root.label() <= next_label) {
+          throw invalid_argument("Labels not given in increasing order");
+        }
 
         if (policy.skip(next_label)) { continue; }
 
@@ -162,7 +173,7 @@ namespace adiar::internal
       }
 
       if (nw.size() == 0u) {
-        return build_terminal(chain_policy::init_terminal);
+        return build_terminal<chain_policy>(chain_policy::init_terminal);
       }
 
       nw.unsafe_set_canonical(true);

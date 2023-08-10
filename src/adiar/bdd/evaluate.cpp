@@ -3,6 +3,7 @@
 #include <functional>
 
 #include <adiar/domain.h>
+#include <adiar/exception.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/assert.h>
 #include <adiar/internal/algorithms/traverse.h>
@@ -61,12 +62,16 @@ namespace adiar
     {
       const bdd::label_t level = n.label();
       while (mp.level() < level) {
-        adiar_assert(mps.can_pull(),
-                     "Assignment file is insufficient to traverse BDD");
+        if (!mps.can_pull()) {
+          throw out_of_range("'msf' is insufficient to traverse BDD");
+        }
+
         mp = mps.pull();
       }
-      adiar_assert(mp.level() == level,
-                   "Missing assignment for node visited in BDD");
+
+      if (mp.level() != level) {
+        throw invalid_argument("Missing assignment for node visited in BDD");
+      }
 
       return mp.value() ? n.high() : n.low();
     }

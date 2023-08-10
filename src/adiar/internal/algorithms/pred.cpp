@@ -87,7 +87,7 @@ namespace adiar::internal
     static inline void compute_cofactor([[maybe_unused]] const bool on_curr_level,
                                         dd::ptr_t &/*low*/,
                                         dd::ptr_t &/*high*/)
-    { adiar_invariant(on_curr_level, "No request have mixed levels"); }
+    { adiar_debug(on_curr_level, "No request have mixed levels"); }
 
     // Since we guarantee to be on the same level, then we merely provide a noop
     // (similar to the bdd_policy) for the cofactor.
@@ -95,7 +95,7 @@ namespace adiar::internal
     compute_cofactor([[maybe_unused]] const bool on_curr_level,
                      const dd::node_t::children_t &children)
     {
-      adiar_invariant(on_curr_level, "No request have mixed levels");
+      adiar_debug(on_curr_level, "No request have mixed levels");
       return children;
     }
   };

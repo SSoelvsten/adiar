@@ -4,11 +4,10 @@
 #include <array>
 #include <sstream>
 #include <string>
-#include <stdexcept>
 
+#include <adiar/exception.h>
 #include <adiar/internal/io/file.h>
 #include <adiar/internal/io/file_stream.h>
-
 #include <adiar/internal/cut.h>
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/level_info.h>
@@ -59,14 +58,14 @@ namespace adiar::internal
     inline void throw_if_bad_idx(const size_t idx) const
     {
       if (FILES <= idx)
-        throw std::out_of_range("Index must be within interval [0;FILES-1]");
+        throw out_of_range("Index must be within interval [0;FILES-1]");
     }
 
     ///////////////////////////////////////////////////////////////////////////
     inline void throw_if_persistent() const
     {
       if (is_persistent())
-        throw std::runtime_error("'"+_level_info_file.path()+"' is persisted.");
+        throw runtime_error("'"+_level_info_file.path()+"' is persisted.");
     }
 
   private:
@@ -130,7 +129,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a prior named \em persisted file.
     ///
-    /// \throws std::runtime_error If one or more files are missing in relation
+    /// \throws runtime_error If one or more files are missing in relation
     ///                            to the given path-prefix.
     ////////////////////////////////////////////////////////////////////////////
     levelized_file(const std::string path_prefix)
@@ -142,7 +141,7 @@ namespace adiar::internal
           _files[idx].set_path(path);
           _files[idx].make_persistent();
         } else { // '_files[idx]' is missing
-          throw std::runtime_error("'"+path+"' does not exist");
+          throw runtime_error("'"+path+"' does not exist");
         }
       }
 
@@ -152,7 +151,7 @@ namespace adiar::internal
           _level_info_file.set_path(path);
           _level_info_file.make_persistent();
         } else { // '_level_info_file' is missing
-          throw std::runtime_error("'"+path+"' does not exist");
+          throw runtime_error("'"+path+"' does not exist");
         }
       }
 
@@ -191,14 +190,14 @@ namespace adiar::internal
     ///
     /// \pre   `canonical_paths() == true` (use `move()` to make them so).
     ///
-    /// \throws std::runtime_error If `canonical_paths() == false`.
+    /// \throws runtime_error If `canonical_paths() == false`.
     ///
     /// \sa is_persistent, canonical_paths, move
     ////////////////////////////////////////////////////////////////////////////
     void make_persistent()
     {
       if (!canonical_paths()) {
-        throw std::runtime_error("Cannot persist a file with non-canonical paths");
+        throw runtime_error("Cannot persist a file with non-canonical paths");
       }
       for (size_t idx = 0u; idx < FILES; idx++) {
         _files[idx].make_persistent();
@@ -214,7 +213,7 @@ namespace adiar::internal
     ///
     /// \pre   `can_move() == true`
     ///
-    /// \throws std::runtime_error If `can_move() == false` or
+    /// \throws runtime_error If `can_move() == false` or
     ///                            `move(path_prefix)` operation fails.
     ///
     /// \sa is_persistent, move
@@ -287,7 +286,7 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////
     size_t first_level() const
     {
-      adiar_precondition(this->levels() > 0u);
+      adiar_debug(this->levels() > 0u);
       file_stream<level_info, true> fs(this->_level_info_file);
       return fs.pull().level();
     }
@@ -299,7 +298,7 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////
     size_t last_level() const
     {
-      adiar_precondition(this->levels() > 0u);
+      adiar_debug(this->levels() > 0u);
       file_stream<level_info, false> fs(this->_level_info_file);
       return fs.pull().level();
     }
@@ -377,7 +376,7 @@ namespace adiar::internal
     ///      `path_prefix` names a yet non-existing file. Neither should a
     ///      `file_stream` nor a `file_writer` be hooked into this file.
     ///
-    /// \throws std::runtime_error Preconditions are violated.
+    /// \throws runtime_error Preconditions are violated.
     ////////////////////////////////////////////////////////////////////////////
     void move(const std::string &path_prefix)
     {
@@ -388,18 +387,18 @@ namespace adiar::internal
       // TODO: allow this? the path-prefix might be an independently created,
       //       but intendedly related, file made by the user.
       if (std::filesystem::exists(path_prefix))
-        throw std::runtime_error("path-prefix '"+path_prefix+"' exists.");
+        throw runtime_error("path-prefix '"+path_prefix+"' exists.");
 
       // Disallow moving a file on-top of another.
       {
         std::string path = canonical_levels_path(path_prefix);
         if (std::filesystem::exists(path))
-          throw std::runtime_error("'"+path+"' already exists.");
+          throw runtime_error("'"+path+"' already exists.");
       }
       for (size_t idx = 0; idx < FILES; idx++) {
         std::string path = canonical_file_path(path_prefix, idx);
         if (std::filesystem::exists(path))
-          throw std::runtime_error("'"+path+"' already exists.");
+          throw runtime_error("'"+path+"' already exists.");
       }
 
       // Move files

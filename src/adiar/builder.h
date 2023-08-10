@@ -1,6 +1,7 @@
 #ifndef ADIAR_BUILDER_H
 #define ADIAR_BUILDER_H
 
+#include <adiar/exception.h>
 #include <adiar/bdd/bdd_policy.h>
 #include <adiar/zdd/zdd_policy.h>
 #include <adiar/internal/memory.h>
@@ -192,9 +193,10 @@ namespace adiar
     ///         builder cannot apply the second reduction rule, i.e. merging of
     ///         duplicate nodes, so that is still left up to you to do.
     ///
-    /// \throws std::invalid_argument If a node is malformed or not added in
-    ///                               bottom-up order and if pointers from
-    ///                               another builder is used.
+    /// \throws invalid_argument If a node is malformed or not added in
+    ///                          bottom-up order.
+    ///
+    /// \throws invalid_argument If pointers stem from another builder.
     /////////////////////////////////////////////////////////////////////////////
     builder_ptr<dd_policy> add_node(typename dd_policy::label_t label,
                                     const builder_ptr<dd_policy> &low,
@@ -204,19 +206,19 @@ namespace adiar
 
       // Check validity of input
       if(low.builder_ref != builder_ref || high.builder_ref != builder_ref) {
-        throw std::invalid_argument("Cannot use pointers from a different builder");
+        throw invalid_argument("Cannot use pointers from a different builder");
       }
       if(label > dd_policy::MAX_LABEL) {
-        throw std::invalid_argument("Nodes must have a valid label");
+        throw invalid_argument("Nodes must have a valid label");
       }
       if(label > current_label) {
-        throw std::invalid_argument("Nodes must be added bottom-up");
+        throw invalid_argument("Nodes must be added bottom-up");
       }
       if(low.uid.is_node() && low.uid.label() <= label) {
-        throw std::invalid_argument("Low child must point to a node with higher label");
+        throw invalid_argument("Low child must point to a node with higher label");
       }
       if(high.uid.is_node() && high.uid.label() <= label) {
-        throw std::invalid_argument("High child must point to a node with higher label");
+        throw invalid_argument("High child must point to a node with higher label");
       }
 
       // Update label and ID if necessary
@@ -274,8 +276,8 @@ namespace adiar
     /// \returns     Pointer to the (possibly new) node for the desired
     ///              function.
     ///
-    /// \throws std::invalid_argument If `label` and `high` are illegal (see
-    ///                               \ref add_node).
+    /// \throws invalid_argument If `label` and `high` are illegal (see \ref
+    ///                          add_node).
     /////////////////////////////////////////////////////////////////////////////
     builder_ptr<dd_policy> add_node(const typename dd_policy::label_t label,
                                     const bool low,
@@ -301,8 +303,8 @@ namespace adiar
     /// \returns     Pointer to the (possibly new) node for the desired
     ///              function.
     ///
-    /// \throws std::invalid_argument If `label` and `low` are illegal (see
-    ///                               \ref add_node).
+    /// \throws invalid_argument If `label` and `low` are illegal (see \ref
+    ///                          add_node).
     /////////////////////////////////////////////////////////////////////////////
     builder_ptr<dd_policy> add_node(const typename dd_policy::label_t label,
                                     const builder_ptr<dd_policy> &low,
@@ -327,8 +329,8 @@ namespace adiar
     ///
     /// \returns     Pointer to the node for the desired function.
     ///
-    /// \throws std::invalid_argument If `label` violates the bottom-up ordering
-    ///                               (see \ref add_node).
+    /// \throws invalid_argument If `label` violates the bottom-up ordering (see
+    ///                          \ref add_node).
     /////////////////////////////////////////////////////////////////////////////
     builder_ptr<dd_policy> add_node(const typename dd_policy::label_t label,
                                     const bool low,
@@ -366,8 +368,8 @@ namespace adiar
     ///
     /// \see clear
     ///
-    /// \throws std::domain_error If (a) add_node has not been called or (b) if
-    ///                           there are more than one root in the diagram.
+    /// \throws domain_error If add_node has not been called
+    /// \throws domain_error If there are more than one root in the diagram.
     ///
     /// \pre     One has used `add_node` to create a non-empty and singly-rooted
     ///          decision diagram.
@@ -384,13 +386,13 @@ namespace adiar
         if(created_terminal) {
           nw.push(node_t(terminal_val));
         } else {
-          throw std::domain_error("There must be at least one node or terminal in the decision diagram");
+          throw domain_error("There must be at least one node or terminal in the decision diagram");
         }
       }
       nw.detach();
 
       if(unref_nodes > 1) {
-        throw std::domain_error("Decision diagram has more than one root");
+        throw domain_error("Decision diagram has more than one root");
       }
 
       const typename dd_policy::reduced_t res(nf);

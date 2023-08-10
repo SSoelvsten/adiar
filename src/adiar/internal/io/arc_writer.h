@@ -79,7 +79,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     void attach(levelized_file<arc> &af) {
       if (attached()) detach();
-      adiar_precondition(af.empty());
+      adiar_debug(af.empty());
 
       // TODO: remove precondition and set up __latest_terminal.
 
@@ -93,7 +93,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     void attach(shared_ptr<levelized_file<arc>> &af) {
       if (attached()) detach();
-      adiar_precondition(af->empty());
+      adiar_debug(af->empty());
 
       // TODO: remove precondition and set up __latest_terminal.
 
@@ -180,9 +180,9 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////
     void push_internal(const arc &a)
     {
-      adiar_precondition(attached());
-      adiar_precondition(a.target().is_node());
-      adiar_precondition(!a.source().is_nil());
+      adiar_debug(attached());
+      adiar_debug(a.target().is_node());
+      adiar_debug(!a.source().is_nil());
 #ifdef ADIAR_STATS
       stats_arc_file.push_internal += 1;
 #endif
@@ -196,9 +196,9 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////
     void push_terminal(const arc &a)
     {
-      adiar_precondition(attached());
-      adiar_precondition(a.target().is_terminal());
-      adiar_precondition(!a.source().is_nil());
+      adiar_debug(attached());
+      adiar_debug(a.target().is_terminal());
+      adiar_debug(!a.source().is_nil());
 
       if (!__has_latest_terminal || a.source() > __latest_terminal.source()) {
         // Given arc is 'in-order' compared to latest 'in-order' pushed

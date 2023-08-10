@@ -25,12 +25,12 @@ namespace adiar
       return;
     }
     if (!_adiar_initialized && _tpie_initialized) {
-      throw std::runtime_error("Adiar cannot be initialized after call to 'adiar_deinit()'");
+      throw runtime_error("Adiar cannot be initialized after call to 'adiar_deinit()'");
     }
     if (memory_limit_bytes < MINIMUM_MEMORY) {
-      throw std::invalid_argument("Adiar requires at least "
-                                  + std::to_string(MINIMUM_MEMORY / 1024 / 1024)
-                                  + " MiB of memory");
+      throw invalid_argument("Adiar requires at least "
+                             + std::to_string(MINIMUM_MEMORY / 1024 / 1024)
+                             + " MiB of memory");
     }
 
     try {

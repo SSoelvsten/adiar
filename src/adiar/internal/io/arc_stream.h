@@ -75,7 +75,7 @@ namespace adiar::internal
     void attach(const levelized_file<arc> &f,
                 const bool negate = false)
     {
-      //adiar_precondition(f.semi_transposed);
+      //adiar_debug(f.semi_transposed);
       parent_t::attach(f, negate);
       _unread_terminals[negate ^ false] = f.number_of_terminals[false];
       _unread_terminals[negate ^ true]  = f.number_of_terminals[true];
@@ -89,7 +89,7 @@ namespace adiar::internal
     void attach(const shared_ptr<levelized_file<arc>> &f,
                 const bool negate = false)
     {
-      //adiar_precondition(f->semi_transposed);
+      //adiar_debug(f->semi_transposed);
       parent_t::attach(f, negate);
       _unread_terminals[negate ^ false] = f->number_of_terminals[false];
       _unread_terminals[negate ^ true]  = f->number_of_terminals[true];

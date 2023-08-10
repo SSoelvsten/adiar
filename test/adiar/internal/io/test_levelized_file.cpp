@@ -371,7 +371,7 @@ go_bandit([]() {
 
           levelized_file<int> lf;
 
-          AssertThrows(std::runtime_error, lf.move(path_prefix));
+          AssertThrows(runtime_error, lf.move(path_prefix));
         }
 
         // Clean up of this test
@@ -400,7 +400,7 @@ go_bandit([]() {
 
         levelized_file<int> lf2;
 
-        AssertThrows(std::runtime_error, lf2.move(path_prefix));
+        AssertThrows(runtime_error, lf2.move(path_prefix));
       });
 
       it("can be made persistent (not removed from disk)", [&curr_path]() {
@@ -496,7 +496,7 @@ go_bandit([]() {
         {
           levelized_file<int> lf;
           lf.make_persistent(path_prefix);
-          AssertThrows(std::runtime_error, lf.move(path_prefix));
+          AssertThrows(runtime_error, lf.move(path_prefix));
         }
 
         // Clean up for this test
@@ -987,7 +987,7 @@ go_bandit([]() {
     describe("levelized_file(path_prefix)", [&tmp_path, &curr_path]() {
       it("throws exception on path-prefix to completely non-existing files", [&curr_path]() {
         const std::string path_prefix = curr_path + "non-existing-prefix.adiar";
-        AssertThrows(std::runtime_error, levelized_file<int>(path_prefix));
+        AssertThrows(runtime_error, levelized_file<int>(path_prefix));
       });
 
 
@@ -1015,7 +1015,7 @@ go_bandit([]() {
           f_levels.make_persistent();
         }
 
-        AssertThrows(std::runtime_error, levelized_file<int>(path_prefix));
+        AssertThrows(runtime_error, levelized_file<int>(path_prefix));
 
         // Cleanup after this test
         if (std::filesystem::exists(path_prefix+".file_1"))
@@ -1048,7 +1048,7 @@ go_bandit([]() {
           f_levels.make_persistent();
         }
 
-        AssertThrows(std::runtime_error, levelized_file<int>(path_prefix));
+        AssertThrows(runtime_error, levelized_file<int>(path_prefix));
 
         // Cleanup after this test
         if (std::filesystem::exists(path_prefix+".file_0"))
@@ -1081,7 +1081,7 @@ go_bandit([]() {
             std::filesystem::remove(path_prefix+".levels");
         }
 
-        AssertThrows(std::runtime_error, levelized_file<int>(path_prefix));
+        AssertThrows(runtime_error, levelized_file<int>(path_prefix));
 
         // Cleanup after this test
         if (std::filesystem::exists(path_prefix+".file_0"))
@@ -1239,7 +1239,7 @@ go_bandit([]() {
       it("cannot reattach a writer to a persisted file", [&path_prefix]() {
         levelized_file<int> lf(path_prefix);
         levelized_file_writer<int> lfw;
-        AssertThrows(std::runtime_error, lfw.attach(lf));
+        AssertThrows(runtime_error, lfw.attach(lf));
       });
 
       it("is unchanged after marking it persistent once more", [&path_prefix]() {
@@ -1261,7 +1261,7 @@ go_bandit([]() {
         lf.make_persistent();
 
         AssertThat(lf.can_move(), Is().False());
-        AssertThrows(std::runtime_error, lf.move(tmp_path+"alternative-prefix.adiar"));
+        AssertThrows(runtime_error, lf.move(tmp_path+"alternative-prefix.adiar"));
       });
 
       // TODO: test data is persisted.
@@ -1302,7 +1302,7 @@ go_bandit([]() {
         levelized_file<int> lf;
         lf.touch();
 
-        AssertThrows(std::out_of_range, lf.sort<std::less<int>>(2));
+        AssertThrows(out_of_range, lf.sort<std::less<int>>(2));
       });
 
       it("can sort a temporary non-empty file", []() {
@@ -1412,8 +1412,8 @@ go_bandit([]() {
           levelized_file<int> lf;
           lf.make_persistent(path_prefix);
 
-          AssertThrows(std::runtime_error, lf.sort<std::less<int>>(0));
-          AssertThrows(std::runtime_error, lf.sort<std::less<int>>(1));
+          AssertThrows(runtime_error, lf.sort<std::less<int>>(0));
+          AssertThrows(runtime_error, lf.sort<std::less<int>>(1));
         }
         AssertThat(std::filesystem::exists(path_prefix+".file_0"), Is().True());
         std::filesystem::remove(path_prefix+".file_0");
@@ -1455,8 +1455,8 @@ go_bandit([]() {
 
         { // Try to sort it
           levelized_file<int> lf(path_prefix);
-          AssertThrows(std::runtime_error, lf.sort<std::less<int>>(0));
-          AssertThrows(std::runtime_error, lf.sort<std::less<int>>(1));
+          AssertThrows(runtime_error, lf.sort<std::less<int>>(0));
+          AssertThrows(runtime_error, lf.sort<std::less<int>>(1));
         }
 
         { // Check content is not sorted

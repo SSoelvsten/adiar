@@ -11,9 +11,12 @@
 /// using it when needed.
 ////////////////////////////////////////////////////////////////////////////////
 
+#include <adiar/exception.h>
 #include <adiar/file.h>
-#include <adiar/internal/data_types/node.h> // <-- remove after TODO below.
 #include <adiar/internal/util.h>
+
+// TODO: Make 'domain_var_t' independent of node type. Then remove this include.
+#include <adiar/internal/data_types/node.h>
 
 namespace adiar
 {
@@ -83,7 +86,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief  Returns the global domain if `adiar_has_domain() == true`.
   ///
-  /// \throws std::domain_error If no domain is yet set, i.e.
+  /// \throws domain_error If no domain is yet set, i.e.
   ///         `adiar_has_domain() == false`.
   //////////////////////////////////////////////////////////////////////////////
   shared_file<domain_var_t> adiar_get_domain();

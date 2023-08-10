@@ -60,18 +60,6 @@ go_bandit([]() {
       });
     });
 
-    describe("NIL", [&](){
-#ifndef NDEBUG
-      it("throws 'std::illegal_argument' when given NIL [unflagged]", [&]() {
-        AssertThrows(std::invalid_argument, uid_uint64(ptr_uint64::NIL()));
-      });
-
-      it("throws 'std::illegal_argument' when given NIL [flagged]", [&]() {
-        AssertThrows(std::invalid_argument, uid_uint64(flag(ptr_uint64::NIL())));
-      });
-#endif
-    });
-
     describe("terminals", [&](){
       it("should take up 8 bytes of memory", [&]() {
         AssertThat(sizeof(uid_uint64(false)), Is().EqualTo(8u));

@@ -77,7 +77,7 @@ namespace adiar::internal
     node_arc_stream(const __dd &diagram)
       : parent_t(/*need to sort before attach*/)
     {
-      adiar_precondition(diagram.template has<__dd::shared_arcs_t>());
+      adiar_debug(diagram.template has<__dd::shared_arcs_t>());
       attach(diagram.template get<__dd::shared_arcs_t>(), diagram.negate);
     }
 

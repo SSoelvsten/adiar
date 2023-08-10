@@ -164,7 +164,7 @@ go_bandit([]() {
     it("throws an exception when create is called on an empty file", [&]() {
       bdd_builder b;
 
-      AssertThrows(std::domain_error, b.build());
+      AssertThrows(domain_error, b.build());
     });
 
     it("throws an exception when calling create a second time with no new nodes in between", [&]() {
@@ -173,7 +173,7 @@ go_bandit([]() {
       b.add_node(0,false,true);
       b.build();
 
-      AssertThrows(std::domain_error, b.build());
+      AssertThrows(domain_error, b.build());
     });
 
     it("can create a single-node BDD", [&]() {
@@ -232,7 +232,7 @@ go_bandit([]() {
 
       builder_ptr p = b1.add_node(true);
 
-      AssertThrows(std::invalid_argument, b2.add_node(0,false,p));
+      AssertThrows(invalid_argument, b2.add_node(0,false,p));
     });
 
     it("throws an exception if pointers are used from a different builder [2]", [&]() {
@@ -241,7 +241,7 @@ go_bandit([]() {
 
       builder_ptr p = b1.add_node(1,true,false);
 
-      AssertThrows(std::invalid_argument, b2.add_node(0,p,false));
+      AssertThrows(invalid_argument, b2.add_node(0,p,false));
     });
 
     it("throws an exception if pointers are used after reset", [&]() {
@@ -250,7 +250,7 @@ go_bandit([]() {
       builder_ptr p = b.add_node(1,true,false);
       b.clear();
 
-      AssertThrows(std::invalid_argument, b.add_node(0,p,false));
+      AssertThrows(invalid_argument, b.add_node(0,p,false));
     });
 
     it("throws an exception if pointers are used after create", [&]() {
@@ -259,13 +259,13 @@ go_bandit([]() {
       builder_ptr p = b.add_node(1,true,false);
       b.build();
 
-      AssertThrows(std::invalid_argument, b.add_node(0,p,false));
+      AssertThrows(invalid_argument, b.add_node(0,p,false));
     });
 
     it("throws an exception when label > MAX_LABEL", [&]() {
       bdd_builder b;
 
-      AssertThrows(std::invalid_argument, b.add_node(node::MAX_LABEL + 1,false,true));
+      AssertThrows(invalid_argument, b.add_node(node::MAX_LABEL + 1,false,true));
     });
 
     it("throws an exception when label > last label", [&]() {
@@ -273,7 +273,7 @@ go_bandit([]() {
 
       b.add_node(0,false,true);
 
-      AssertThrows(std::invalid_argument, b.add_node(1,false,true));
+      AssertThrows(invalid_argument, b.add_node(1,false,true));
     });
 
     it("throws an exception when low.label() >= label [1]", [&]() {
@@ -281,7 +281,7 @@ go_bandit([]() {
 
       const bdd_ptr p = b.add_node(0,false,true);
 
-      AssertThrows(std::invalid_argument, b.add_node(0,p,true));
+      AssertThrows(invalid_argument, b.add_node(0,p,true));
     });
 
     it("throws an exception when low.label() >= label [2]", [&]() {
@@ -289,7 +289,7 @@ go_bandit([]() {
 
       const bdd_ptr p = b.add_node(3,false,true);
 
-      AssertThrows(std::invalid_argument, b.add_node(3,p,true));
+      AssertThrows(invalid_argument, b.add_node(3,p,true));
     });
 
     it("throws an exception when high.label() >= label [1]", [&]() {
@@ -297,7 +297,7 @@ go_bandit([]() {
 
       const bdd_ptr p = b.add_node(0,false,true);
 
-      AssertThrows(std::invalid_argument, b.add_node(0,false,p));
+      AssertThrows(invalid_argument, b.add_node(0,false,p));
     });
 
     it("throws an exception when high.label() >= label [2]", [&]() {
@@ -305,7 +305,7 @@ go_bandit([]() {
 
       const bdd_ptr p = b.add_node(6,false,true);
 
-      AssertThrows(std::invalid_argument, b.add_node(6,false,p));
+      AssertThrows(invalid_argument, b.add_node(6,false,p));
     });
 
     it("can create nodes on different levels", [&]() {
@@ -524,7 +524,7 @@ go_bandit([]() {
 
       b.clear();
 
-      AssertThrows(std::domain_error, b.build());
+      AssertThrows(domain_error, b.build());
     });
 
     it("can create two different BDDs", [&]() {
@@ -620,7 +620,7 @@ go_bandit([]() {
       b.add_node(0,false,true);
       b.add_node(0,true,false);
 
-      AssertThrows(std::domain_error, b.build());
+      AssertThrows(domain_error, b.build());
     });
 
     it("throws an exception when there is more than one root [2]", [&]() {
@@ -629,7 +629,7 @@ go_bandit([]() {
       b.add_node(4,false,true);
       b.add_node(2,true,false);
 
-      AssertThrows(std::domain_error, b.build());
+      AssertThrows(domain_error, b.build());
     });
 
     it("throws an exception when there is more than one root [3]", [&]() {
@@ -641,7 +641,7 @@ go_bandit([]() {
       const bdd_ptr p2 = b.add_node(2,p3,p4);
       const bdd_ptr p1 = b.add_node(1,p3,p5);
 
-      AssertThrows(std::domain_error, b.build());
+      AssertThrows(domain_error, b.build());
     });
 
     it("recognizes copies of nodes", [&]() {
@@ -1009,7 +1009,7 @@ go_bandit([]() {
         const bdd_ptr p1 = b.add_node(1,p3,p4); // root
         const bdd_ptr p0 = b.add_node(0,p2,p2); // root
 
-        AssertThrows(std::domain_error, b.build());
+        AssertThrows(domain_error, b.build());
       });
     });
 
@@ -1216,7 +1216,7 @@ go_bandit([]() {
         const zdd_ptr p1 = b.add_node(1,p3,p4);    // root
         const zdd_ptr p0 = b.add_node(0,p2,false); // root
 
-        AssertThrows(std::domain_error, b.build());
+        AssertThrows(domain_error, b.build());
       });
     });
   });
