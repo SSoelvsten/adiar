@@ -55,9 +55,9 @@ endif (ADIAR_SHARED)
 # Dependencies
 # ============================================================================ #
 option(COMPILE_TEST OFF)
-add_subdirectory (external/tpie tpie)
+add_subdirectory (external/tpie tpie EXCLUDE_FROM_ALL)
 
-add_subdirectory (external/cnl cnl)
+add_subdirectory (external/cnl cnl EXCLUDE_FROM_ALL)
 
 # ============================================================================ #
 # Core project
