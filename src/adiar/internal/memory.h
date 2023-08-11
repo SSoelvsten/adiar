@@ -45,6 +45,9 @@ namespace adiar
 {
   // TODO: add std::move(...) alias
 
+  // TODO: use TPIE allocation for `make_unique` and `make_shared`. This way we
+  //       also account for the memory usage of each BDD.
+
   // Based on <tpie/memory.h>
 
   //////////////////////////////////////////////////////////////////////////////
@@ -59,7 +62,8 @@ namespace adiar
   /// \brief Creates a new object on the heap with shared ownership.
   //////////////////////////////////////////////////////////////////////////////
   template <typename T, typename ... TT>
-  inline shared_ptr<T> make_shared(TT && ... tt) {
+  inline shared_ptr<T> make_shared(TT && ... tt)
+  {
     return std::make_shared<T>(std::forward<TT>(tt)...);
   }
 
@@ -75,7 +79,8 @@ namespace adiar
   /// \brief Creates a new object on the heap with unique ownership.
   //////////////////////////////////////////////////////////////////////////////
   template <typename T, typename ... TT>
-  inline unique_ptr<T> make_unique(TT && ... tt) {
+  inline unique_ptr<T> make_unique(TT && ... tt)
+  {
     return std::make_unique<T>(std::forward<TT>(tt)...);
   }
 }
