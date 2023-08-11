@@ -17,28 +17,6 @@ namespace adiar::internal
   {
     return tpie::get_memory_manager().available();
   }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief The largest value that TPIE can use without some computation for
-  /// internal memory breaking.
-  ///
-  /// TPIE's data structures provide the `memory_usage` and `memory_fits`
-  /// functions. These cast the `tpie::memory_size_type` (an alias for
-  /// `std::size_t`) into a `double`, do some computations and then cast them
-  /// back into a `tpie::memory_size_type`.
-  ///
-  /// Yet, on Clang with specific optimisations enabled some parts of this
-  /// computation is cast to an `unsigned long` (32 bits) which leads to
-  /// undefined behaviour. Due to this, `memory_usage(memory_fits(x))` is
-  /// unexpectedly larger than `x`.
-  ///
-  /// This value is an empirically derived value for a `tpie::array<int>` and is
-  /// equivalent to 4 PiB for which these computations by TPIE are safe.
-  ///
-  /// \see priority_queue sorter
-  //////////////////////////////////////////////////////////////////////////////
-  constexpr tpie::memory_size_type tpie_max_bytes =
-    std::numeric_limits<tpie::memory_size_type>::max() >> 12;
 }
 
 namespace adiar
