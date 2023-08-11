@@ -28,16 +28,14 @@ namespace adiar::internal
   public:
     static tpie::memory_size_type memory_usage(tpie::memory_size_type no_elements)
     {
-      adiar_assert(no_elements < pq_t::memory_fits(tpie_max_bytes));
       return pq_t::memory_usage(no_elements);
     }
 
     static tpie::memory_size_type memory_fits(tpie::memory_size_type memory_bytes)
     {
-      adiar_assert(memory_bytes < tpie_max_bytes);
       const tpie::memory_size_type ret = pq_t::memory_fits(memory_bytes);
 
-      adiar_assert(pq_t::memory_usage(ret) <= memory_bytes,
+      adiar_assert(memory_usage(ret) <= memory_bytes,
                    "memory_fits and memory_usage should agree.");
       return ret;
     }
