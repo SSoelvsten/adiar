@@ -240,7 +240,7 @@ template&lt;typename dd_policy &gt; </div>
 <dl class="section return"><dt>Returns</dt><dd>Pointer to the node for the desired function.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::invalid_argument</td><td>If <code>label</code> violates the bottom-up ordering (see <a class="el" href="classadiar_1_1builder.html#ab6a82eebf191476fa81afd686c2888cd">add_node</a>). </td></tr>
+    <tr><td class="paramname">invalid_argument</td><td>If <code>label</code> violates the bottom-up ordering (see <a class="el" href="classadiar_1_1builder.html#ab6a82eebf191476fa81afd686c2888cd">add_node</a>). </td></tr>
   </table>
   </dd>
 </dl>
@@ -301,7 +301,7 @@ template&lt;typename dd_policy &gt; </div>
 <dl class="section return"><dt>Returns</dt><dd>Pointer to the (possibly new) node for the desired function.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::invalid_argument</td><td>If <code>label</code> and <code>high</code> are illegal (see <a class="el" href="classadiar_1_1builder.html#ab6a82eebf191476fa81afd686c2888cd">add_node</a>). </td></tr>
+    <tr><td class="paramname">invalid_argument</td><td>If <code>label</code> and <code>high</code> are illegal (see <a class="el" href="classadiar_1_1builder.html#ab6a82eebf191476fa81afd686c2888cd">add_node</a>). </td></tr>
   </table>
   </dd>
 </dl>
@@ -362,7 +362,7 @@ template&lt;typename dd_policy &gt; </div>
 <dl class="section return"><dt>Returns</dt><dd>Pointer to the (possibly new) node for the desired function.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::invalid_argument</td><td>If <code>label</code> and <code>low</code> are illegal (see <a class="el" href="classadiar_1_1builder.html#ab6a82eebf191476fa81afd686c2888cd">add_node</a>). </td></tr>
+    <tr><td class="paramname">invalid_argument</td><td>If <code>label</code> and <code>low</code> are illegal (see <a class="el" href="classadiar_1_1builder.html#ab6a82eebf191476fa81afd686c2888cd">add_node</a>). </td></tr>
   </table>
   </dd>
 </dl>
@@ -425,7 +425,8 @@ template&lt;typename dd_policy &gt; </div>
         care" node for <a class="el" href="classadiar_1_1bdd.html">bdd</a> but instead just return its child. The builder cannot apply the second reduction rule, i.e. merging of duplicate nodes, so that is still left up to you to do.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::invalid_argument</td><td>If a node is malformed or not added in bottom-up order and if pointers from another builder is used. </td></tr>
+    <tr><td class="paramname">invalid_argument</td><td>If a node is malformed or not added in bottom-up order.</td></tr>
+    <tr><td class="paramname">invalid_argument</td><td>If pointers stem from another builder. </td></tr>
   </table>
   </dd>
 </dl>
@@ -461,7 +462,8 @@ template&lt;typename dd_policy &gt; </div>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classadiar_1_1builder.html#a0f9f6d71a0d5b40d6bf4200d8fb4fa4a" title="Clear builder of all its current content, discarding all nodes and invalidating any pointers to them.">clear</a></dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::domain_error</td><td>If (a) add_node has not been called or (b) if there are more than one root in the diagram.</td></tr>
+    <tr><td class="paramname">domain_error</td><td>If add_node has not been called </td></tr>
+    <tr><td class="paramname">domain_error</td><td>If there are more than one root in the diagram.</td></tr>
   </table>
   </dd>
 </dl>

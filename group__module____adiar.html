@@ -285,7 +285,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
 <dl class="section warning"><dt>Warning</dt><dd>All of Adiar's file objects must be destructed <b>before</b> this functions i called. That is, any <a class="el" href="classadiar_1_1bdd.html">bdd</a> <a class="el" href="group__module____builder.html#gacad7fc21ff3b724b2c485f4d9da5dc2f">bdd_builder</a>, <a class="el" href="classadiar_1_1zdd.html">zdd</a> <a class="el" href="group__module____builder.html#ga592e87250f7f8446244b8de707a0c5ec">zdd_builder</a> or any <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a> objects you may be using.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::runtime_error</td><td>If compiled with <em>debug flag</em> and one of Adiar's objects have <em>not</em> been destructed. </td></tr>
+    <tr><td class="paramname">runtime_error</td><td>If compiled with <em>debug</em> and one of Adiar's objects have <em>not</em> been destructed. </td></tr>
   </table>
   </dd>
 </dl>
@@ -328,8 +328,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
 </dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::invalid_argument</td><td>If <code>memory_limit_bytes</code> is set to a value less than the <code>MINIMUM_MEMORY</code> required.</td></tr>
-    <tr><td class="paramname">std::runtime_error</td><td>If <code><a class="el" href="group__module____adiar.html#ga4f0460393f1bb6651306587b11d64660" title="Initiates Adiar with the given amount of memory (given in bytes)">adiar_init()</a></code> and then <code><a class="el" href="group__module____adiar.html#ga9501bb9e871253964682b7ac1942f911" title="Closes and cleans up everything by Adiar.">adiar_deinit()</a></code> have been called previously. </td></tr>
+    <tr><td class="paramname">invalid_argument</td><td>If <code>memory_limit_bytes</code> is set to a value less than the <code>MINIMUM_MEMORY</code> required.</td></tr>
+    <tr><td class="paramname">runtime_error</td><td>If <code><a class="el" href="group__module____adiar.html#ga4f0460393f1bb6651306587b11d64660" title="Initiates Adiar with the given amount of memory (given in bytes)">adiar_init()</a></code> and then <code><a class="el" href="group__module____adiar.html#ga9501bb9e871253964682b7ac1942f911" title="Closes and cleans up everything by Adiar.">adiar_deinit()</a></code> have been called previously. </td></tr>
   </table>
   </dd>
 </dl>

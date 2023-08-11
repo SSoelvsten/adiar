@@ -105,38 +105,39 @@ $(document).ready(function(){initNavTree('adiar_8h_source.html',''); initResizab
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;adiar/assignment.h&gt;</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;adiar/builder.h&gt;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &lt;adiar/domain.h&gt;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &lt;adiar/file.h&gt;</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &lt;adiar/memory_mode.h&gt;</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &lt;adiar/quantify_mode.h&gt;</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &lt;adiar/bdd.h&gt;</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &lt;adiar/zdd.h&gt;</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &lt;adiar/statistics.h&gt;</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &lt;adiar/deprecated.h&gt;</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; </div>
-<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="namespaceadiar.html">   35</a></span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceadiar.html">adiar</a></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;{</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
-<div class="line"><a name="l00055"></a><span class="lineno"><a class="line" href="group__module____adiar.html#gac42aa5de8f685a5231903c443eb7c480">   55</a></span>&#160;  constexpr <span class="keywordtype">size_t</span> <a class="code" href="group__module____adiar.html#gac42aa5de8f685a5231903c443eb7c480">MINIMUM_MEMORY</a> = 128 * 1024 * 1024;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
-<div class="line"><a name="l00074"></a><span class="lineno"><a class="line" href="group__module____adiar.html#ga4f0460393f1bb6651306587b11d64660">   74</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="group__module____adiar.html#ga4f0460393f1bb6651306587b11d64660">adiar_init</a>(<span class="keywordtype">size_t</span> memory_limit_bytes, std::string temp_dir = <span class="stringliteral">&quot;&quot;</span>);</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
-<div class="line"><a name="l00079"></a><span class="lineno"><a class="line" href="group__module____adiar.html#ga41ee63e52a125ccc5ad3442b15cad182">   79</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="group__module____adiar.html#ga41ee63e52a125ccc5ad3442b15cad182">adiar_initialized</a>() noexcept;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160; </div>
-<div class="line"><a name="l00092"></a><span class="lineno"><a class="line" href="group__module____adiar.html#ga9501bb9e871253964682b7ac1942f911">   92</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="group__module____adiar.html#ga9501bb9e871253964682b7ac1942f911">adiar_deinit</a>();</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; </div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160; </div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;}</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160; </div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// ADIAR_H</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &lt;adiar/exception.h&gt;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &lt;adiar/file.h&gt;</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &lt;adiar/memory_mode.h&gt;</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &lt;adiar/quantify_mode.h&gt;</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &lt;adiar/bdd.h&gt;</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &lt;adiar/zdd.h&gt;</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &lt;adiar/statistics.h&gt;</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#include &lt;adiar/deprecated.h&gt;</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="namespaceadiar.html">   36</a></span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceadiar.html">adiar</a></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;{</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
+<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="group__module____adiar.html#gac42aa5de8f685a5231903c443eb7c480">   56</a></span>&#160;  constexpr <span class="keywordtype">size_t</span> <a class="code" href="group__module____adiar.html#gac42aa5de8f685a5231903c443eb7c480">MINIMUM_MEMORY</a> = 128 * 1024 * 1024;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
+<div class="line"><a name="l00075"></a><span class="lineno"><a class="line" href="group__module____adiar.html#ga4f0460393f1bb6651306587b11d64660">   75</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="group__module____adiar.html#ga4f0460393f1bb6651306587b11d64660">adiar_init</a>(<span class="keywordtype">size_t</span> memory_limit_bytes, std::string temp_dir = <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160; </div>
+<div class="line"><a name="l00080"></a><span class="lineno"><a class="line" href="group__module____adiar.html#ga41ee63e52a125ccc5ad3442b15cad182">   80</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="group__module____adiar.html#ga41ee63e52a125ccc5ad3442b15cad182">adiar_initialized</a>() noexcept;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; </div>
+<div class="line"><a name="l00093"></a><span class="lineno"><a class="line" href="group__module____adiar.html#ga9501bb9e871253964682b7ac1942f911">   93</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="group__module____adiar.html#ga9501bb9e871253964682b7ac1942f911">adiar_deinit</a>();</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160; </div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160; </div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;}</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160; </div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// ADIAR_H</span></div>
 <div class="ttc" id="agroup__module____adiar_html_ga41ee63e52a125ccc5ad3442b15cad182"><div class="ttname"><a href="group__module____adiar.html#ga41ee63e52a125ccc5ad3442b15cad182">adiar::adiar_initialized</a></div><div class="ttdeci">bool adiar_initialized() noexcept</div><div class="ttdoc">Whether Adiar is initialized.</div></div>
 <div class="ttc" id="agroup__module____adiar_html_ga4f0460393f1bb6651306587b11d64660"><div class="ttname"><a href="group__module____adiar.html#ga4f0460393f1bb6651306587b11d64660">adiar::adiar_init</a></div><div class="ttdeci">void adiar_init(size_t memory_limit_bytes, std::string temp_dir=&quot;&quot;)</div><div class="ttdoc">Initiates Adiar with the given amount of memory (given in bytes)</div></div>
 <div class="ttc" id="agroup__module____adiar_html_ga9501bb9e871253964682b7ac1942f911"><div class="ttname"><a href="group__module____adiar.html#ga9501bb9e871253964682b7ac1942f911">adiar::adiar_deinit</a></div><div class="ttdeci">void adiar_deinit()</div><div class="ttdoc">Closes and cleans up everything by Adiar.</div></div>
-<div class="ttc" id="agroup__module____adiar_html_gac42aa5de8f685a5231903c443eb7c480"><div class="ttname"><a href="group__module____adiar.html#gac42aa5de8f685a5231903c443eb7c480">adiar::MINIMUM_MEMORY</a></div><div class="ttdeci">constexpr size_t MINIMUM_MEMORY</div><div class="ttdoc">Minimum value of 128 MiB for the memory limit.</div><div class="ttdef"><b>Definition:</b> adiar.h:55</div></div>
-<div class="ttc" id="anamespaceadiar_html"><div class="ttname"><a href="namespaceadiar.html">adiar</a></div><div class="ttdoc">Core.</div><div class="ttdef"><b>Definition:</b> adiar.h:36</div></div>
+<div class="ttc" id="agroup__module____adiar_html_gac42aa5de8f685a5231903c443eb7c480"><div class="ttname"><a href="group__module____adiar.html#gac42aa5de8f685a5231903c443eb7c480">adiar::MINIMUM_MEMORY</a></div><div class="ttdeci">constexpr size_t MINIMUM_MEMORY</div><div class="ttdoc">Minimum value of 128 MiB for the memory limit.</div><div class="ttdef"><b>Definition:</b> adiar.h:56</div></div>
+<div class="ttc" id="anamespaceadiar_html"><div class="ttname"><a href="namespaceadiar.html">adiar</a></div><div class="ttdoc">Core.</div><div class="ttdef"><b>Definition:</b> adiar.h:37</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

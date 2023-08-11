@@ -115,23 +115,22 @@ $(document).ready(function(){initNavTree('convert_8h_source.html',''); initResiz
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keyword">inline</span> node node_of(<span class="keyword">const</span> arc &amp;low, <span class="keyword">const</span> arc &amp;high)</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  {</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    adiar_debug(essential(low.source()) == essential(high.source()),</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;                <span class="stringliteral">&quot;Source are the same origin&quot;</span>);</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    adiar_debug(low.out_idx()  == 0u, <span class="stringliteral">&quot;Out-index is correct on low arc&quot;</span>);</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    adiar_debug(high.out_idx() == 1u,  <span class="stringliteral">&quot;Out-index is correct on high arc&quot;</span>);</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    adiar_debug(!low.target().is_node()  || low.target().out_idx()  == 0u, <span class="stringliteral">&quot;Out-index is empty in low target&quot;</span>);</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    adiar_debug(!high.target().is_node() || high.target().out_idx() == 0u, <span class="stringliteral">&quot;Out-index is empty in high target&quot;</span>);</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    adiar_debug(low.source().is_flagged()  == <span class="keyword">false</span>, <span class="stringliteral">&quot;Source is not flagged on low arc&quot;</span>);</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    adiar_debug(high.source().is_flagged() == <span class="keyword">false</span>, <span class="stringliteral">&quot;Source is not flagged on high arc&quot;</span>);</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordflow">return</span> node(essential(low.source()), low.target(), high.target());</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  }</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;}</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160; </div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// ADIAR_INTERNAL_DATA_TYPES_CONVERT_H</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    adiar_assert(essential(low.source()) == essential(high.source()), <span class="stringliteral">&quot;Source are the same origin&quot;</span>);</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; </div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    adiar_assert(low.out_idx()  == 0u, <span class="stringliteral">&quot;Out-index is correct on low arc&quot;</span>);</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    adiar_assert(high.out_idx() == 1u,  <span class="stringliteral">&quot;Out-index is correct on high arc&quot;</span>);</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    adiar_assert(!low.target().is_node()  || low.target().out_idx()  == 0u, <span class="stringliteral">&quot;Out-index is empty in low target&quot;</span>);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    adiar_assert(!high.target().is_node() || high.target().out_idx() == 0u, <span class="stringliteral">&quot;Out-index is empty in high target&quot;</span>);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    adiar_assert(low.source().is_flagged()  == <span class="keyword">false</span>, <span class="stringliteral">&quot;Source is not flagged on low arc&quot;</span>);</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    adiar_assert(high.source().is_flagged() == <span class="keyword">false</span>, <span class="stringliteral">&quot;Source is not flagged on high arc&quot;</span>);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordflow">return</span> node(essential(low.source()), low.target(), high.target());</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  }</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;}</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; </div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// ADIAR_INTERNAL_DATA_TYPES_CONVERT_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

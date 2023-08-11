@@ -81,8 +81,8 @@ var NAVTREEINDEX =
 [
 "access__mode_8h_source.html",
 "classadiar_1_1internal_1_1ptr__uint64.html#a9c5ea297992ec61b44d828a53a498ae2",
-"group__module____bdd.html#ga760162c0c2e938a17e8cf88abab785e3",
-"memory_8h_source.html"
+"group__module____bdd.html#ga75e624a47b5278715d29c589267b159f",
+"memory_8h.html#a9441f27a0e7251988e8385d9e4058603"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

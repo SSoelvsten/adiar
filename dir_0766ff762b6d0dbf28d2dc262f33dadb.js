@@ -11,6 +11,7 @@ var dir_0766ff762b6d0dbf28d2dc262f33dadb =
     [ "builder.h", "builder_8h_source.html", null ],
     [ "data.h", "data_8h_source.html", null ],
     [ "domain.h", "domain_8h_source.html", null ],
+    [ "exception.h", "exception_8h_source.html", null ],
     [ "file.h", "file_8h_source.html", null ],
     [ "map.h", "map_8h_source.html", null ],
     [ "memory_mode.h", "memory__mode_8h_source.html", null ],

@@ -126,82 +126,80 @@ $(document).ready(function(){initNavTree('uid_8h_source.html',''); initResizable
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="classadiar_1_1internal_1_1____uid.html#a7ad22ddb3b05572526d5fd4247f9ba57">   40</a></span>&#160;    <a class="code" href="classadiar_1_1internal_1_1____uid.html#a7ad22ddb3b05572526d5fd4247f9ba57">__uid</a>(<span class="keyword">const</span> ptr_t &amp;p) : ptr_t(essential(p))</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    {</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="preprocessor">#ifndef NDEBUG</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;      <span class="keywordflow">if</span> (p.is_nil()) <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;Pointer must be non-NIL&quot;</span>);</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    }</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="comment">/* ============================= ATTRIBUTES ============================= */</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="comment">// Remove anything related to the flag.</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;      adiar_assert(!p.is_nil(), <span class="stringliteral">&quot;UID must be created from non-nil value&quot;</span>);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    }</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="comment">/* ============================= ATTRIBUTES ============================= */</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="comment">// Remove anything related to the flag.</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; </div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordtype">bool</span> is_flagged() = <span class="keyword">delete</span>;</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordtype">bool</span> is_flagged() = <span class="keyword">delete</span>;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="comment">/* ================================= NIL ================================ */</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="comment">// Remove anything related to NIL</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="comment">/* ================================= NIL ================================ */</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="comment">// Remove anything related to NIL</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keyword">static</span> <span class="keyword">inline</span> constexpr ptr_t NIL() = <span class="keyword">delete</span>;</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; </div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keyword">static</span> <span class="keyword">inline</span> constexpr ptr_t NIL() = <span class="keyword">delete</span>;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordtype">bool</span> is_nil() = <span class="keyword">delete</span>;</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordtype">bool</span> is_nil() = <span class="keyword">delete</span>;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; </div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="comment">/* ================================ NODES =============================== */</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="comment">// Remove anything related to out-index</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="comment">/* ================================ NODES =============================== */</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="comment">// Remove anything related to out-index</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="keyword">typename</span> ptr_t::out_idx_t out_idx() = <span class="keyword">delete</span>;</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keyword">typename</span> ptr_t::out_idx_t out_idx() = <span class="keyword">delete</span>;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
-<div class="line"><a name="l00067"></a><span class="lineno"><a class="line" href="classadiar_1_1internal_1_1____uid.html#ae735cb3bb6f09b8028317e15095dff1c">   67</a></span>&#160;    <span class="keyword">inline</span> ptr_t <a class="code" href="classadiar_1_1internal_1_1____uid.html#ae735cb3bb6f09b8028317e15095dff1c">with</a>(<span class="keyword">const</span> <span class="keyword">typename</span> ptr_t::out_idx_t out_idx)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;      adiar_precondition(ptr_t::is_node());</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      <span class="keywordflow">return</span> ptr_t(ptr_t::label(), ptr_t::id(), out_idx);</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    }</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00077"></a><span class="lineno"><a class="line" href="classadiar_1_1internal_1_1____uid.html#ad006f2c3d2fc9a786d16e3dbf03e2ace">   77</a></span>&#160;    <a class="code" href="classadiar_1_1internal_1_1____uid.html#ad006f2c3d2fc9a786d16e3dbf03e2ace">__uid</a>(<span class="keyword">const</span> <span class="keyword">typename</span> ptr_t::label_t label, <span class="keyword">const</span> <span class="keyword">typename</span> ptr_t::id_t <span class="keywordtype">id</span>)</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;      : ptr_t(label, id)</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    { }</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160; </div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="comment">/* ============================== TERMINALS ============================= */</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00086"></a><span class="lineno"><a class="line" href="classadiar_1_1internal_1_1____uid.html#a62a5bf33e07dc07ae948718b976eb2bf">   86</a></span>&#160;    <a class="code" href="classadiar_1_1internal_1_1____uid.html#a62a5bf33e07dc07ae948718b976eb2bf">__uid</a>(<span class="keyword">typename</span> ptr_t::value_t v)</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;      : ptr_t(v)</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    { }</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160; </div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00094"></a><span class="lineno"><a class="line" href="classadiar_1_1internal_1_1____uid.html#a7f69cf866bc5026161f0a924f764b5af">   94</a></span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code" href="classadiar_1_1internal_1_1____uid.html#a7f69cf866bc5026161f0a924f764b5af">is_terminal</a>()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="keyword">    </span>{ <span class="keywordflow">return</span> <a class="code" href="group__module____bdd.html#ga0e5de81efc49b8e0aaa137013e2422c1">ptr_t::is_terminal</a>(); }</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  };</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160; </div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <span class="comment">// Specialization for the single-integer pointer `ptr_uint64`.</span></div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160; </div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="keyword">template</span>&lt;&gt;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="keyword">inline</span> ptr_uint64</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <a class="code" href="classadiar_1_1internal_1_1____uid.html#ae735cb3bb6f09b8028317e15095dff1c">__uid&lt;ptr_uint64&gt;::with</a>(<span class="keyword">const</span> <a class="code" href="classadiar_1_1internal_1_1ptr__uint64.html#ab12f58460a4fa3ebab4db869d6b7d1f9">ptr_uint64::out_idx_t</a> out_idx)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="keyword">  </span>{</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="comment">// Based on the bit-layout, we can do this much faster than the one above.</span></div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    constexpr uint64_t out_idx_mask = ~(MAX_OUT_IDX &lt;&lt; ptr_t::FLAG_BITS);</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="keywordflow">return</span> ptr_uint64((_raw &amp; out_idx_mask) | ptr_t::encode_out_idx(out_idx));</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  }</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160; </div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  <span class="keyword">template</span>&lt;&gt;</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="keyword">inline</span> <span class="keywordtype">bool</span></div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  <a class="code" href="classadiar_1_1internal_1_1____uid.html#a7f69cf866bc5026161f0a924f764b5af">__uid&lt;ptr_uint64&gt;::is_terminal</a>()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="keyword">  </span>{</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    <span class="comment">// Since uid never is nil, then this is a slightly a faster logic than the</span></div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    <span class="comment">// one in &#39;ptr&#39; itself.</span></div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    <span class="keywordflow">return</span> _raw &gt;= ptr_t::TERMINAL_BIT;</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  }</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160; </div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <span class="keyword">using</span> uid_uint64 = __uid&lt;ptr_uint64&gt;;</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;}</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160; </div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// ADIAR_INTERNAL_DATA_TYPES_UID_H</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="classadiar_1_1internal_1_1____uid.html#ae735cb3bb6f09b8028317e15095dff1c">   65</a></span>&#160;    <span class="keyword">inline</span> ptr_t <a class="code" href="classadiar_1_1internal_1_1____uid.html#ae735cb3bb6f09b8028317e15095dff1c">with</a>(<span class="keyword">const</span> <span class="keyword">typename</span> ptr_t::out_idx_t out_idx)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;      adiar_assert(ptr_t::is_node());</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;      <span class="keywordflow">return</span> ptr_t(ptr_t::label(), ptr_t::id(), out_idx);</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    }</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00075"></a><span class="lineno"><a class="line" href="classadiar_1_1internal_1_1____uid.html#ad006f2c3d2fc9a786d16e3dbf03e2ace">   75</a></span>&#160;    <a class="code" href="classadiar_1_1internal_1_1____uid.html#ad006f2c3d2fc9a786d16e3dbf03e2ace">__uid</a>(<span class="keyword">const</span> <span class="keyword">typename</span> ptr_t::label_t label, <span class="keyword">const</span> <span class="keyword">typename</span> ptr_t::id_t <span class="keywordtype">id</span>)</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;      : ptr_t(label, id)</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    { }</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="comment">/* ============================== TERMINALS ============================= */</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00084"></a><span class="lineno"><a class="line" href="classadiar_1_1internal_1_1____uid.html#a62a5bf33e07dc07ae948718b976eb2bf">   84</a></span>&#160;    <a class="code" href="classadiar_1_1internal_1_1____uid.html#a62a5bf33e07dc07ae948718b976eb2bf">__uid</a>(<span class="keyword">typename</span> ptr_t::value_t v)</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;      : ptr_t(v)</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    { }</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00092"></a><span class="lineno"><a class="line" href="classadiar_1_1internal_1_1____uid.html#a7f69cf866bc5026161f0a924f764b5af">   92</a></span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code" href="classadiar_1_1internal_1_1____uid.html#a7f69cf866bc5026161f0a924f764b5af">is_terminal</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="keyword">    </span>{ <span class="keywordflow">return</span> <a class="code" href="group__module____bdd.html#ga0e5de81efc49b8e0aaa137013e2422c1">ptr_t::is_terminal</a>(); }</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  };</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <span class="comment">// Specialization for the single-integer pointer `ptr_uint64`.</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160; </div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <span class="keyword">template</span>&lt;&gt;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="keyword">inline</span> ptr_uint64</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <a class="code" href="classadiar_1_1internal_1_1____uid.html#ae735cb3bb6f09b8028317e15095dff1c">__uid&lt;ptr_uint64&gt;::with</a>(<span class="keyword">const</span> <a class="code" href="classadiar_1_1internal_1_1ptr__uint64.html#ab12f58460a4fa3ebab4db869d6b7d1f9">ptr_uint64::out_idx_t</a> out_idx)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="keyword">  </span>{</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <span class="comment">// Based on the bit-layout, we can do this much faster than the one above.</span></div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    constexpr uint64_t out_idx_mask = ~(MAX_OUT_IDX &lt;&lt; ptr_t::FLAG_BITS);</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keywordflow">return</span> ptr_uint64((_raw &amp; out_idx_mask) | ptr_t::encode_out_idx(out_idx));</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  }</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160; </div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <span class="keyword">template</span>&lt;&gt;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="keyword">inline</span> <span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  <a class="code" href="classadiar_1_1internal_1_1____uid.html#a7f69cf866bc5026161f0a924f764b5af">__uid&lt;ptr_uint64&gt;::is_terminal</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;<span class="keyword">  </span>{</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <span class="comment">// Since uid never is nil, then this is a slightly a faster logic than the</span></div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    <span class="comment">// one in &#39;ptr&#39; itself.</span></div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    <span class="keywordflow">return</span> _raw &gt;= ptr_t::TERMINAL_BIT;</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  }</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160; </div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  <span class="keyword">using</span> uid_uint64 = __uid&lt;ptr_uint64&gt;;</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;}</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160; </div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// ADIAR_INTERNAL_DATA_TYPES_UID_H</span></div>
 <div class="ttc" id="aclassadiar_1_1internal_1_1____uid_html"><div class="ttname"><a href="classadiar_1_1internal_1_1____uid.html">adiar::internal::__uid</a></div><div class="ttdoc">A unique identifier a decision diagram node.</div><div class="ttdef"><b>Definition:</b> uid.h:20</div></div>
-<div class="ttc" id="aclassadiar_1_1internal_1_1____uid_html_a62a5bf33e07dc07ae948718b976eb2bf"><div class="ttname"><a href="classadiar_1_1internal_1_1____uid.html#a62a5bf33e07dc07ae948718b976eb2bf">adiar::internal::__uid::__uid</a></div><div class="ttdeci">__uid(typename ptr_t::value_t v)</div><div class="ttdoc">Constructor for a uid of a terminal node (v).</div><div class="ttdef"><b>Definition:</b> uid.h:86</div></div>
+<div class="ttc" id="aclassadiar_1_1internal_1_1____uid_html_a62a5bf33e07dc07ae948718b976eb2bf"><div class="ttname"><a href="classadiar_1_1internal_1_1____uid.html#a62a5bf33e07dc07ae948718b976eb2bf">adiar::internal::__uid::__uid</a></div><div class="ttdeci">__uid(typename ptr_t::value_t v)</div><div class="ttdoc">Constructor for a uid of a terminal node (v).</div><div class="ttdef"><b>Definition:</b> uid.h:84</div></div>
 <div class="ttc" id="aclassadiar_1_1internal_1_1____uid_html_a7ad22ddb3b05572526d5fd4247f9ba57"><div class="ttname"><a href="classadiar_1_1internal_1_1____uid.html#a7ad22ddb3b05572526d5fd4247f9ba57">adiar::internal::__uid::__uid</a></div><div class="ttdeci">__uid(const ptr_t &amp;p)</div><div class="ttdoc">Constructor for a uid of an internal node (label, id).</div><div class="ttdef"><b>Definition:</b> uid.h:40</div></div>
-<div class="ttc" id="aclassadiar_1_1internal_1_1____uid_html_a7f69cf866bc5026161f0a924f764b5af"><div class="ttname"><a href="classadiar_1_1internal_1_1____uid.html#a7f69cf866bc5026161f0a924f764b5af">adiar::internal::__uid::is_terminal</a></div><div class="ttdeci">bool is_terminal() const</div><div class="ttdoc">Whether this uid identifies a terminal node.</div><div class="ttdef"><b>Definition:</b> uid.h:94</div></div>
-<div class="ttc" id="aclassadiar_1_1internal_1_1____uid_html_ad006f2c3d2fc9a786d16e3dbf03e2ace"><div class="ttname"><a href="classadiar_1_1internal_1_1____uid.html#ad006f2c3d2fc9a786d16e3dbf03e2ace">adiar::internal::__uid::__uid</a></div><div class="ttdeci">__uid(const typename ptr_t::label_t label, const typename ptr_t::id_t id)</div><div class="ttdoc">Constructor for a pointer to an internal node (label, id).</div><div class="ttdef"><b>Definition:</b> uid.h:77</div></div>
-<div class="ttc" id="aclassadiar_1_1internal_1_1____uid_html_ae735cb3bb6f09b8028317e15095dff1c"><div class="ttname"><a href="classadiar_1_1internal_1_1____uid.html#ae735cb3bb6f09b8028317e15095dff1c">adiar::internal::__uid::with</a></div><div class="ttdeci">ptr_t with(const typename ptr_t::out_idx_t out_idx) const</div><div class="ttdoc">Obtain the ptr for this node uid with the given out_idx.</div><div class="ttdef"><b>Definition:</b> uid.h:67</div></div>
-<div class="ttc" id="aclassadiar_1_1internal_1_1ptr__uint64_html_ab12f58460a4fa3ebab4db869d6b7d1f9"><div class="ttname"><a href="classadiar_1_1internal_1_1ptr__uint64.html#ab12f58460a4fa3ebab4db869d6b7d1f9">adiar::internal::ptr_uint64::out_idx_t</a></div><div class="ttdeci">uint64_t out_idx_t</div><div class="ttdoc">Type of the out-degree.</div><div class="ttdef"><b>Definition:</b> ptr.h:170</div></div>
-<div class="ttc" id="agroup__module____bdd_html_ga0e5de81efc49b8e0aaa137013e2422c1"><div class="ttname"><a href="group__module____bdd.html#ga0e5de81efc49b8e0aaa137013e2422c1">adiar::is_terminal</a></div><div class="ttdeci">bool is_terminal(const bdd &amp;f)</div><div class="ttdoc">Whether this BDD represents a terminal.</div><div class="ttdef"><b>Definition:</b> bdd.h:562</div></div>
+<div class="ttc" id="aclassadiar_1_1internal_1_1____uid_html_a7f69cf866bc5026161f0a924f764b5af"><div class="ttname"><a href="classadiar_1_1internal_1_1____uid.html#a7f69cf866bc5026161f0a924f764b5af">adiar::internal::__uid::is_terminal</a></div><div class="ttdeci">bool is_terminal() const</div><div class="ttdoc">Whether this uid identifies a terminal node.</div><div class="ttdef"><b>Definition:</b> uid.h:92</div></div>
+<div class="ttc" id="aclassadiar_1_1internal_1_1____uid_html_ad006f2c3d2fc9a786d16e3dbf03e2ace"><div class="ttname"><a href="classadiar_1_1internal_1_1____uid.html#ad006f2c3d2fc9a786d16e3dbf03e2ace">adiar::internal::__uid::__uid</a></div><div class="ttdeci">__uid(const typename ptr_t::label_t label, const typename ptr_t::id_t id)</div><div class="ttdoc">Constructor for a pointer to an internal node (label, id).</div><div class="ttdef"><b>Definition:</b> uid.h:75</div></div>
+<div class="ttc" id="aclassadiar_1_1internal_1_1____uid_html_ae735cb3bb6f09b8028317e15095dff1c"><div class="ttname"><a href="classadiar_1_1internal_1_1____uid.html#ae735cb3bb6f09b8028317e15095dff1c">adiar::internal::__uid::with</a></div><div class="ttdeci">ptr_t with(const typename ptr_t::out_idx_t out_idx) const</div><div class="ttdoc">Obtain the ptr for this node uid with the given out_idx.</div><div class="ttdef"><b>Definition:</b> uid.h:65</div></div>
+<div class="ttc" id="aclassadiar_1_1internal_1_1ptr__uint64_html_ab12f58460a4fa3ebab4db869d6b7d1f9"><div class="ttname"><a href="classadiar_1_1internal_1_1ptr__uint64.html#ab12f58460a4fa3ebab4db869d6b7d1f9">adiar::internal::ptr_uint64::out_idx_t</a></div><div class="ttdeci">uint64_t out_idx_t</div><div class="ttdoc">Type of the out-degree.</div><div class="ttdef"><b>Definition:</b> ptr.h:171</div></div>
+<div class="ttc" id="agroup__module____bdd_html_ga0e5de81efc49b8e0aaa137013e2422c1"><div class="ttname"><a href="group__module____bdd.html#ga0e5de81efc49b8e0aaa137013e2422c1">adiar::is_terminal</a></div><div class="ttdeci">bool is_terminal(const bdd &amp;f)</div><div class="ttdoc">Whether this BDD represents a terminal.</div><div class="ttdef"><b>Definition:</b> bdd.h:570</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

@@ -387,7 +387,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>\( \bigwedge_{x \in \mathit{vars}} x \)</dd></dl>
-<dl class="section pre"><dt>Precondition</dt><dd>Labels in <code>vars</code> are provided in ascending order. </dd></dl>
+<dl class="section pre"><dt>Precondition</dt><dd>Labels in <code>vars</code> are provided in ascending order.</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">invalid_argument</td><td>If <code>vars</code> are not in ascending order. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -595,7 +601,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
   </table>
   </dd>
 </dl>
-<dl class="section pre"><dt>Precondition</dt><dd>Assignment tuples in <code>xs</code> is in ascending order </dd></dl>
+<dl class="section pre"><dt>Precondition</dt><dd>Assignment tuples in <code>xs</code> is in ascending order</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">out_of_range</td><td>If traversal of the BDD leads to going beyond the end of the content of <code>xs</code>.</td></tr>
+    <tr><td class="paramname">invalid_argument</td><td>If a level in the BDD does not exist in <code>xs</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1187,7 +1200,13 @@ template&lt;typename IT &gt; </div>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>\( x_{var} \) </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>\( x_{var} \)</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">invalid_argument</td><td>If <code>var</code> is a too large value. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1295,7 +1314,13 @@ template&lt;typename IT &gt; </div>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>\( \neg x_{var} \) </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>\( \neg x_{var} \)</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">invalid_argument</td><td>If <code>var</code> is a too large value. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1426,7 +1451,13 @@ template&lt;typename IT &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>\( \bigvee_{x \in \mathit{vars}} x \)</dd></dl>
-<dl class="section pre"><dt>Precondition</dt><dd>Labels in <code>vars</code> are provided in ascending order. </dd></dl>
+<dl class="section pre"><dt>Precondition</dt><dd>Labels in <code>vars</code> are provided in ascending order.</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">invalid_argument</td><td>If <code>vars</code> are not in ascending order. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1547,7 +1578,13 @@ template&lt;typename IT &gt; </div>
   </dd>
 </dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#gac317019e5963a4349b55dde7d994fd16" title="The number of variables that influence the outcome of f, i.e. the number of levels in the BDD.">bdd_varcount()</a>)</dd></dl>
-<dl class="section return"><dt>Returns</dt><dd>The number of unique assignments. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The number of unique assignments.</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">invalid_argument</td><td>If varcount is not larger than the number of levels in the BDD. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

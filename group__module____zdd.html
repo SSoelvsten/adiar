@@ -1054,7 +1054,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
   </table>
   </dd>
 </dl>
-<dl class="section pre"><dt>Precondition</dt><dd>The variable <code>var</code> should occur in <code>dom</code>. </dd></dl>
+<dl class="section pre"><dt>Precondition</dt><dd>The variable <code>var</code> should occur in <code>dom</code>.</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">invalid_argument</td><td>If <code>dom</code> is not in ascending order.</td></tr>
+    <tr><td class="paramname">invalid_argument</td><td>If <code>vars</code> includes a label that is too large. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1236,7 +1243,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
   </table>
   </dd>
 </dl>
-<dl class="section pre"><dt>Precondition</dt><dd>The variable <code>var</code> should occur in <code>dom</code>. </dd></dl>
+<dl class="section pre"><dt>Precondition</dt><dd>The variable <code>var</code> should occur in <code>dom</code>.</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">invalid_argument</td><td>If <code>dom</code> is not in ascending order.</td></tr>
+    <tr><td class="paramname">invalid_argument</td><td>If <code>vars</code> includes a label that is too large. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1336,7 +1350,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
 <p>Creates a ZDD with a don't care chain of nodes to the true child. The given labels must be smaller than or equal to <code><a class="el" href="classadiar_1_1internal_1_1dd.html#acb4e83a4cde71daa06100451f77e74ae" title="The maximal possible value for a unique identifier&#39;s label.">zdd::MAX_LABEL</a></code>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">vars</td><td>Labels of the desired variables (in ascending order) </td></tr>
+    <tr><td class="paramname">vars</td><td>Labels of the desired variables (in ascending order)</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">invalid_argument</td><td>If <code>vars</code> are not in ascending order.</td></tr>
+    <tr><td class="paramname">invalid_argument</td><td>If <code>vars</code> includes a label that is too large. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1485,7 +1506,13 @@ template&lt;typename IT &gt; </div>
 <p>Creates a ZDD of a single node with label <code>var</code> and the children false and true. The given label must be smaller than <code><a class="el" href="classadiar_1_1internal_1_1dd.html#acb4e83a4cde71daa06100451f77e74ae" title="The maximal possible value for a unique identifier&#39;s label.">zdd::MAX_LABEL</a></code>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">var</td><td>The label of the desired variable to include </td></tr>
+    <tr><td class="paramname">var</td><td>The label of the desired variable to include</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">invalid_argument</td><td>If <code>var</code> is a too large value. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1512,7 +1539,14 @@ template&lt;typename IT &gt; </div>
 <p>Creates a ZDD with a chain of nodes on the 'low' arc to the true child, and false otherwise. The given labels must be smaller than or equal to <code><a class="el" href="classadiar_1_1internal_1_1dd.html#acb4e83a4cde71daa06100451f77e74ae" title="The maximal possible value for a unique identifier&#39;s label.">zdd::MAX_LABEL</a></code>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">vars</td><td>Labels of the desired variables (in ascending order) </td></tr>
+    <tr><td class="paramname">vars</td><td>Labels of the desired variables (in ascending order)</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">invalid_argument</td><td>If <code>vars</code> are not in ascending order.</td></tr>
+    <tr><td class="paramname">invalid_argument</td><td>If <code>vars</code> includes a label that is too large. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1605,7 +1639,14 @@ template&lt;typename IT &gt; </div>
 <p>Creates a ZDD with a chain of nodes on the 'high' arc to the true child, and false otherwise. The given labels must be smaller than or equal to <code><a class="el" href="classadiar_1_1internal_1_1dd.html#acb4e83a4cde71daa06100451f77e74ae" title="The maximal possible value for a unique identifier&#39;s label.">zdd::MAX_LABEL</a></code>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">vars</td><td>Labels of the desired variables (in ascending order) </td></tr>
+    <tr><td class="paramname">vars</td><td>Labels of the desired variables (in ascending order)</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">invalid_argument</td><td>If <code>vars</code> are not in ascending order.</td></tr>
+    <tr><td class="paramname">invalid_argument</td><td>If <code>vars</code> includes a label that is too large. </td></tr>
   </table>
   </dd>
 </dl>
