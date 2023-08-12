@@ -174,7 +174,7 @@ namespace adiar
 
   public:
     /////////////////////////////////////////////////////////////////////////////
-    /// \brief Add an internal node with a given label, id, and its two children.
+    /// \brief Add an internal node with a given label and its two children.
     ///
     /// \param label The variable label for the node to create.
     ///
@@ -263,7 +263,7 @@ namespace adiar
     }
 
     /////////////////////////////////////////////////////////////////////////////
-    /// \brief Add an internal node with a given label, id, and its two children.
+    /// \brief Add an internal node with a given label and its two children.
     ///
     /// \param label The variable label for the node to create.
     ///
@@ -290,7 +290,7 @@ namespace adiar
     }
 
     /////////////////////////////////////////////////////////////////////////////
-    /// \brief Add an internal node with a given label, id, and its two children.
+    /// \brief Add an internal node with a given label and its two children.
     ///
     /// \param label The variable label for the node to create.
     ///
@@ -317,7 +317,7 @@ namespace adiar
     }
 
     /////////////////////////////////////////////////////////////////////////////
-    /// \brief Add an internal node with a given label, id, and its two children.
+    /// \brief Add an internal node with a given label and its two children.
     ///
     /// \param label The variable label for the node to create.
     ///
