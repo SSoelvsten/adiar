@@ -101,10 +101,11 @@ _ticked_ dependencies are mandatory to have installed.
 
 To install all of the above then run the respective below.
 
-| Operating System | Shell command                                                 |
-|------------------|---------------------------------------------------------------|
-| Ubuntu 22+       | `apt install cmake g++     libboost-all-dev doxygen graphviz` |
-| Fedora 36+       | `dnf install cmake gcc-c++ boost-devel      doxygen graphviz` |
+| Operating System | Shell command                                                        |
+|------------------|----------------------------------------------------------------------|
+| Ubuntu 22+       | `apt install        cmake g++     libboost-all-dev doxygen graphviz` |
+| Fedora 36+       | `dnf install        cmake gcc-c++ boost-devel      doxygen graphviz` |
+| Arch Linux       | `pacman -S --needed cmake gcc     boost-libs       doxygen graphviz` |
 
 ## Usage
 
