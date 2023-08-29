@@ -104,7 +104,7 @@ jobs:
         include:
           - name: 'arithmetic'
             circuits: 'adder'
-            order: 'LEVEL_DFS'
+            order: 'LEVEL_DF'
 
           - name: 'random_control'
             circuits: 'cavlc ctrl dec int2float i2c priority router'
