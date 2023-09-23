@@ -28,7 +28,6 @@ set(HEADERS
 
   # adiar/zdd
   zdd.h
-  zdd/build.h
   zdd/zdd.h
   zdd/zdd_policy.h
 
