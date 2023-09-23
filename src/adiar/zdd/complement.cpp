@@ -54,12 +54,15 @@ namespace adiar
     static zdd on_terminal_input(const bool terminal_value, const zdd& /*dd*/,
                                  const shared_file<zdd::label_t> &universe)
     {
+      // TODO: remove
+      internal::file_stream<zdd::label_t, true> ls(universe);
+
       if (terminal_value) { // Include everything but Ø
         on_true_terminal_chain_policy p;
-        return internal::build_chain<>(p, universe);
+        return internal::build_chain<>(p, internal::stream_gen<label_t>(ls));
       } else { // The complement of nothing is everything
         internal::chain_both<zdd_policy> p;
-        return internal::build_chain<>(p, universe);
+        return internal::build_chain<>(p, internal::stream_gen<label_t>(ls));
       }
     }
 

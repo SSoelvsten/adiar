@@ -28,7 +28,13 @@ namespace adiar
                                  const zdd& dd,
                                  const shared_file<zdd::label_t> &labels)
     {
-      return terminal_value ? zdd_powerset(labels) : dd;
+      // TODO: simplify when labels are a generator
+      if (terminal_value) {
+        internal::file_stream<zdd::label_t, true> ls(labels);
+        return zdd_powerset(internal::stream_gen<zdd::label_t>(ls));
+      } else {
+        return dd;
+      }
     }
 
     // LCOV_EXCL_START

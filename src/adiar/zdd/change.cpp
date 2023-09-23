@@ -24,7 +24,13 @@ namespace adiar
 
     static zdd on_terminal_input(const bool terminal_value, const zdd& dd, const shared_file<zdd::label_t> &labels)
     {
-      return terminal_value ? zdd_vars(labels) : dd;
+      // TODO: simplify with generator function as input
+      if (terminal_value) {
+        internal::file_stream<zdd::label_t, true> ls(labels);
+        return zdd_vars(internal::stream_gen<zdd::label_t>(ls));
+      } else {
+        return dd;
+      }
     }
 
     static zdd terminal(const bool terminal_value)

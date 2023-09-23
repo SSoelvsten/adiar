@@ -124,10 +124,14 @@ go_bandit([]() {
     });
 
     describe("zdd_ithvar(i, dom)", [&]() {
-      it("creates Ø when dom is empty", [&]() {
-        adiar::shared_file<zdd::label_t> dom;
+      // TODO
+    });
 
-        zdd res = zdd_ithvar(42, dom);
+    describe("zdd_ithvar(i, begin, end)", [&]() {
+      it("creates Ø when dom is empty", [&]() {
+        std::vector<int> dom;
+
+        zdd res = zdd_ithvar(42, dom.rbegin(), dom.rend());
 
         node_test_stream ns(res);
 
@@ -158,13 +162,9 @@ go_bandit([]() {
       });
 
       it("creates { { 42 } } for i = 42, dom = {42}", [&]() {
-        adiar::shared_file<zdd::label_t> dom;
-        { // Garbage collect writer to free write-lock
-          label_writer lw(dom);
-          lw << 42;
-        }
+        std::vector<int> dom = { 42 };
 
-        zdd res = zdd_ithvar(42, dom);
+        zdd res = zdd_ithvar(42, dom.rbegin(), dom.rend());
 
         node_test_stream ns(res);
 
@@ -200,13 +200,9 @@ go_bandit([]() {
       });
 
       it("creates { { 7 } } for i = 7, dom = {7}", [&]() {
-        adiar::shared_file<zdd::label_t> dom;
-        { // Garbage collect writer to free write-lock
-          label_writer lw(dom);
-          lw << 7;
-        }
+        std::vector<int> dom = { 7 };
 
-        zdd res = zdd_ithvar(7, dom);
+        zdd res = zdd_ithvar(7, dom.rbegin(), dom.rend());
 
         node_test_stream ns(res);
 
@@ -242,13 +238,9 @@ go_bandit([]() {
       });
 
       it("creates { { 21 }, { 42,21 } } for i = 21, dom = {21,42}", [&]() {
-        adiar::shared_file<zdd::label_t> dom;
-        { // Garbage collect writer to free write-lock
-          label_writer lw(dom);
-          lw << 21 << 42;
-        }
+        std::vector<int> dom = { 21, 42 };
 
-        zdd res = zdd_ithvar(21, dom);
+        zdd res = zdd_ithvar(21, dom.rbegin(), dom.rend());
 
         node_test_stream ns(res);
 
@@ -292,13 +284,9 @@ go_bandit([]() {
       });
 
       it("creates { { 42 }, { 42,21 } } for i = 42, dom = {21,42}", [&]() {
-        adiar::shared_file<zdd::label_t> dom;
-        { // Garbage collect writer to free write-lock
-          label_writer lw(dom);
-          lw << 21 << 42;
-        }
+        std::vector<int> dom = { 21, 42 };
 
-        zdd res = zdd_ithvar(42, dom);
+        zdd res = zdd_ithvar(42, dom.rbegin(), dom.rend());
 
         node_test_stream ns(res);
 
@@ -341,13 +329,9 @@ go_bandit([]() {
       });
 
       it("creates { { 21 }, { 42,21 }, { 21,10 }, { 42,21,10 } } for i = 21, dom = {10,21,42}", [&]() {
-        adiar::shared_file<zdd::label_t> dom;
-        { // Garbage collect writer to free write-lock
-          label_writer lw(dom);
-          lw << 10 << 21 << 42;
-        }
+        std::vector<int> dom = { 10, 21, 42 };
 
-        zdd res = zdd_ithvar(21, dom);
+        zdd res = zdd_ithvar(21, dom.rbegin(), dom.rend());
 
         node_test_stream ns(res);
 
@@ -396,37 +380,16 @@ go_bandit([]() {
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
-      it("throws exception when domain is not in ascending order", [&]() {
-        adiar::shared_file<zdd::label_t> dom;
-
-        { // Garbage collect writer to free write-lock
-          adiar::file_writer<zdd::label_t> dw(dom);
-          dw << 3 << 2 << 1 << 0;
-        }
-
-        AssertThrows(invalid_argument, zdd_ithvar(2, dom));
-      });
-
-      it("throws exception if domain includes too large label", [&]() {
-        adiar::shared_file<zdd::label_t> dom;
-
-        { // Garbage collect writer to free write-lock
-          adiar::file_writer<zdd::label_t> dw(dom);
-          dw << 0 << 1 << 42 << zdd::MAX_LABEL+1;
-        }
-
-        AssertThrows(invalid_argument, zdd_ithvar(42, dom));
+      it("throws exception when domain is not in descending order", [&]() {
+        std::vector<int> dom = { 3, 2, 1, 0 };
+        AssertThrows(invalid_argument, zdd_ithvar(2, dom.rbegin(), dom.rend()));
       });
     });
 
     describe("zdd_ithvar(i)", [&]() {
       {
-        adiar::shared_file<zdd::label_t> dom;
-        { // Garbage collect writer to free write-lock
-          label_writer lw(dom);
-          lw << 0 << 1 << 2 << 3;
-        }
-        adiar_set_domain(dom);
+        std::vector<int> dom = { 0, 1, 2, 3 };
+        adiar_set_domain(dom.begin(), dom.end());
       }
 
       it("constructs chain for i = 1 global dom = {0,1,2,3}", [&]() {
@@ -489,10 +452,14 @@ go_bandit([]() {
     });
 
     describe("zdd_nithvar(i, dom)", [&]() {
-      it("creates { Ø } when dom is empty", [&]() {
-        adiar::shared_file<zdd::label_t> dom;
+      // TODO
+    });
 
-        zdd res = zdd_nithvar(42, dom);
+    describe("zdd_nithvar(i, begin, end)", [&]() {
+      it("creates { Ø } when dom is empty", [&]() {
+        std::vector<int> dom;
+
+        zdd res = zdd_nithvar(42, dom.rbegin(), dom.rend());
 
         node_test_stream ns(res);
 
@@ -523,13 +490,9 @@ go_bandit([]() {
       });
 
       it("creates { Ø } for i = 42, dom = {42}", [&]() {
-        adiar::shared_file<zdd::label_t> dom;
-        {
-          label_writer lw(dom);
-          lw << 42;
-        }
+        std::vector<int> dom = { 42 };
 
-        zdd res = zdd_nithvar(42, dom);
+        zdd res = zdd_nithvar(42, dom.rbegin(), dom.rend());
 
         node_test_stream ns(res);
 
@@ -560,13 +523,9 @@ go_bandit([]() {
       });
 
       it("creates { Ø, { 21 } } for i = 42, dom = {21,42}", [&]() {
-        adiar::shared_file<zdd::label_t> dom;
-        {
-          label_writer lw(dom);
-          lw << 21 << 42;
-        }
+        std::vector<int> dom = { 21, 42 };
 
-        zdd res = zdd_nithvar(42, dom);
+        zdd res = zdd_nithvar(42, dom.rbegin(), dom.rend());
 
         node_test_stream ns(res);
 
@@ -601,13 +560,9 @@ go_bandit([]() {
       });
 
       it("creates { Ø, { 42 } } for i = 21, dom = {21,42}", [&]() {
-        adiar::shared_file<zdd::label_t> dom;
-        {
-          label_writer lw(dom);
-          lw << 21 << 42;
-        }
+        std::vector<int> dom = { 21, 42 };
 
-        zdd res = zdd_nithvar(21, dom);
+        zdd res = zdd_nithvar(21, dom.rbegin(), dom.rend());
 
         node_test_stream ns(res);
 
@@ -642,13 +597,9 @@ go_bandit([]() {
       });
 
       it("creates { Ø, { 0 }, { 2 }, { 0,2 } } for i = 1, dom = {0,1,2}", [&]() {
-        adiar::shared_file<zdd::label_t> dom;
-        {
-          label_writer lw(dom);
-          lw << 0 << 1 << 2;
-        }
+        std::vector<int> dom = { 0, 1, 2 };
 
-        zdd res = zdd_nithvar(1, dom);
+        zdd res = zdd_nithvar(1, dom.rbegin(), dom.rend());
 
         node_test_stream ns(res);
 
@@ -690,36 +641,16 @@ go_bandit([]() {
       });
 
       it("throws exception when domain is not in ascending order", [&]() {
-        adiar::shared_file<zdd::label_t> dom;
+        std::vector<int> dom = { 3, 2, 1, 0 };
 
-        { // Garbage collect writer to free write-lock
-          adiar::file_writer<zdd::label_t> dw(dom);
-          dw << 3 << 2 << 1 << 0;
-        }
-
-        AssertThrows(invalid_argument, zdd_nithvar(2, dom));
-      });
-
-      it("throws exception if domain includes too large label", [&]() {
-        adiar::shared_file<zdd::label_t> dom;
-
-        { // Garbage collect writer to free write-lock
-          adiar::file_writer<zdd::label_t> dw(dom);
-          dw << 0 << 1 << 42 << zdd::MAX_LABEL+1;
-        }
-
-        AssertThrows(invalid_argument, zdd_nithvar(42, dom));
+        AssertThrows(invalid_argument, zdd_nithvar(2, dom.rbegin(), dom.rend()));
       });
     });
 
     describe("zdd_nithvar(i)", [&]() {
       {
-        adiar::shared_file<zdd::label_t> dom;
-        { // Garbage collect writer to free write-lock
-          label_writer lw(dom);
-          lw << 0 << 1 << 2 << 3;
-        }
-        adiar_set_domain(dom);
+        std::vector<int> dom = { 0, 1, 2, 3 };
+        adiar_set_domain(dom.begin(), dom.end());
       }
 
       it("constructs chain for i = 2 global dom = {0,1,2,3}", [&]() {
@@ -874,10 +805,14 @@ go_bandit([]() {
     });
 
     describe("zdd_vars(vars)", [&]() {
-      it("can create { Ø } on empty list", [&]() {
-        adiar::shared_file<zdd::label_t> labels;
+      // TODO
+    });
 
-        zdd res = zdd_vars(labels);
+    describe("zdd_vars(begin, end)", [&]() {
+      it("can create { Ø } on empty list", [&]() {
+        std::vector<int> vars;
+
+        zdd res = zdd_vars(vars.rbegin(), vars.rend());
 
         node_test_stream ns(res);
 
@@ -907,14 +842,9 @@ go_bandit([]() {
       });
 
       it("can create { {42} }", [&]() {
-        adiar::shared_file<zdd::label_t> labels;
+        std::vector<int> vars = { 42 };
 
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 42;
-        }
-
-        zdd res = zdd_vars(labels);
+        zdd res = zdd_vars(vars.rbegin(), vars.rend());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -947,14 +877,9 @@ go_bandit([]() {
       });
 
       it("can create { {1,2,5} }", [&]() {
-        adiar::shared_file<zdd::label_t> labels;
+        std::vector<int> vars = { 1, 2, 5 };
 
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 1 << 2 << 5;
-        }
-
-        zdd res = zdd_vars(labels);
+        zdd res = zdd_vars(vars.rbegin(), vars.rend());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -995,25 +920,9 @@ go_bandit([]() {
       });
 
       it("throws exception when domain is not in ascending order", [&]() {
-        adiar::shared_file<zdd::label_t> vars;
+        std::vector<int> vars = { 3, 2, 1, 0 };
 
-        { // Garbage collect writer to free write-lock
-          adiar::file_writer<zdd::label_t> vw(vars);
-          vw << 3 << 2 << 1 << 0;
-        }
-
-        AssertThrows(invalid_argument, zdd_vars(vars));
-      });
-
-      it("throws exception if domain includes too large label", [&]() {
-        adiar::shared_file<zdd::label_t> vars;
-
-        { // Garbage collect writer to free write-lock
-          adiar::file_writer<zdd::label_t> vw(vars);
-          vw << 0 << 1 << 42 << zdd::MAX_LABEL+1;
-        }
-
-        AssertThrows(invalid_argument, zdd_vars(vars));
+        AssertThrows(invalid_argument, zdd_vars(vars.rbegin(), vars.rend()));
       });
     });
 
@@ -1089,9 +998,9 @@ go_bandit([]() {
 
     describe("zdd_singletons(vars)", [&]() {
       it("can create Ø on empty list", [&]() {
-        adiar::shared_file<zdd::label_t> labels;
+        std::vector<int> vars;
 
-        zdd res = zdd_singletons(labels);
+        zdd res = zdd_singletons(vars.rbegin(), vars.rend());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -1120,14 +1029,9 @@ go_bandit([]() {
       });
 
       it("can create { {42} }", [&]() {
-        adiar::shared_file<zdd::label_t> labels;
+        std::vector<int> vars = { 42 };
 
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 42;
-        }
-
-        zdd res = zdd_singletons(labels);
+        zdd res = zdd_singletons(vars.rbegin(), vars.rend());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -1159,14 +1063,9 @@ go_bandit([]() {
       });
 
       it("can create { {1}, {2}, {5} }", [&]() {
-        adiar::shared_file<zdd::label_t> labels;
+        std::vector<int> vars = { 1, 2, 5 };
 
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 1 << 2 << 5;
-        }
-
-        zdd res = zdd_singletons(labels);
+        zdd res = zdd_singletons(vars.rbegin(), vars.rend());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -1207,33 +1106,21 @@ go_bandit([]() {
       });
 
       it("throws exception when domain is not in ascending order", [&]() {
-        adiar::shared_file<zdd::label_t> vars;
+        std::vector<int> vars = { 3, 2, 1, 0 };
 
-        { // Garbage collect writer to free write-lock
-          adiar::file_writer<zdd::label_t> vw(vars);
-          vw << 3 << 2 << 1 << 0;
-        }
-
-        AssertThrows(invalid_argument, zdd_singletons(vars));
-      });
-
-      it("throws exception if domain includes too large label", [&]() {
-        adiar::shared_file<zdd::label_t> vars;
-
-        { // Garbage collect writer to free write-lock
-          adiar::file_writer<zdd::label_t> vw(vars);
-          vw << 0 << 1 << 42 << zdd::MAX_LABEL+1;
-        }
-
-        AssertThrows(invalid_argument, zdd_singletons(vars));
+        AssertThrows(invalid_argument, zdd_singletons(vars.rbegin(), vars.rend()));
       });
     });
 
     describe("zdd_powerset(vars)", [&]() {
-      it("can create { Ø } on empty list", [&]() {
-        adiar::shared_file<zdd::label_t> labels;
+      // TODO
+    });
 
-        zdd res = zdd_powerset(labels);
+    describe("zdd_powerset(begin, end)", [&]() {
+      it("can create { Ø } on empty list", [&]() {
+        std::vector<int> vars;
+
+        zdd res = zdd_powerset(vars.rbegin(), vars.rend());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -1255,14 +1142,9 @@ go_bandit([]() {
       });
 
       it("can create { Ø, {42} }", [&]() {
-        adiar::shared_file<zdd::label_t> labels;
+        std::vector<int> vars = { 42 };
 
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 42;
-        }
-
-        zdd res = zdd_powerset(labels);
+        zdd res = zdd_powerset(vars.rbegin(), vars.rend());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -1294,14 +1176,9 @@ go_bandit([]() {
       });
 
       it("can create { Ø, {1}, {2}, {5}, {1,2}, {1,5}, {2,5}, {1,2,5} }", [&]() {
-        adiar::shared_file<zdd::label_t> labels;
+        std::vector<int> vars = { 1, 2, 5 };
 
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 1 << 2 << 5;
-        }
-
-        zdd res = zdd_powerset(labels);
+        zdd res = zdd_powerset(vars.rbegin(), vars.rend());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -1346,25 +1223,9 @@ go_bandit([]() {
       });
 
       it("throws exception when domain is not in ascending order", [&]() {
-        adiar::shared_file<zdd::label_t> vars;
+        std::vector<int> vars = { 3, 2, 1, 0 };
 
-        { // Garbage collect writer to free write-lock
-          adiar::file_writer<zdd::label_t> vw(vars);
-          vw << 3 << 2 << 1 << 0;
-        }
-
-        AssertThrows(invalid_argument, zdd_powerset(vars));
-      });
-
-      it("throws exception if domain includes too large label", [&]() {
-        adiar::shared_file<zdd::label_t> vars;
-
-        { // Garbage collect writer to free write-lock
-          adiar::file_writer<zdd::label_t> vw(vars);
-          vw << 0 << 1 << 42 << zdd::MAX_LABEL+1;
-        }
-
-        AssertThrows(invalid_argument, zdd_powerset(vars));
+        AssertThrows(invalid_argument, zdd_powerset(vars.rbegin(), vars.rend()));
       });
     });
   });

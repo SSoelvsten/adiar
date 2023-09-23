@@ -64,11 +64,8 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The BDD representing the i'th variable.
   ///
-  /// \details   Creates a BDD of a single node with label `var` and the
-  ///            children false and true. The given label must be smaller than
-  ///            `bdd::MAX_LABEL`.
-  ///
-  /// \param var The label of the desired variable
+  /// \param var The label of the desired variable. This value must be smaller
+  ///            or equals to `bdd::MAX_LABEL`.
   ///
   /// \returns   \f$ x_{var} \f$
   ///
@@ -79,11 +76,8 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The BDD representing the negation of the i'th variable.
   ///
-  /// \details   Creates a BDD of a single node with label `var` and the
-  ///            children true and false. The given label must be smaller than
-  ///            or equal to `bdd::MAX_LABEL`.
-  ///
-  /// \param var Label of the desired variable
+  /// \param var The label of the desired variable. This value must be smaller
+  ///            or equals to `bdd::MAX_LABEL`.
   ///
   /// \returns   \f$ \neg x_{var} \f$
   ///
@@ -92,52 +86,69 @@ namespace adiar
   bdd bdd_nithvar(bdd::label_t var);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief      The BDD representing the logical 'and' of all the given
-  ///             variables.
+  /// \brief       The BDD representing the logical 'and' of all the given
+  ///              variables, i.e. a *term* of variables.
   ///
-  /// \details    Creates a BDD with a chain of nodes on the 'high' arc to the
-  ///             true child, and false otherwise. The given labels must be
-  ///             smaller than or equal to `bdd::MAX_LABEL`.
-  ///
-  /// \param vars Labels of the desired variables (in ascending order)
+  /// \param vars Generator of labels of variables in descending order
   ///
   /// \returns    \f$ \bigwedge_{x \in \mathit{vars}} x \f$
   ///
-  /// \pre        Labels in `vars` are provided in ascending order.
-  ///
-  /// \throws invalid_argument If `vars` are not in ascending order.
+  /// \throws invalid_argument If `vars` are not in descending order.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_and(const shared_file<bdd::label_t> &vars);
+  bdd bdd_and(const std::function<bdd::label_t()> &vars);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief       The BDD representing the logical 'and' of all the given
+  ///              variables, i.e. a *term* of variables.
+  ///
+  /// \param begin Iterator that provides the variables in *descending* order.
+  ///
+  /// \param end   Iterator that marks the end for `begin`.
+  ///
+  /// \returns    \f$ \bigwedge_{x \in \mathit{begin} \dots \mathit{end}} x \f$
+  ///
+  /// \throws invalid_argument If the iterator does not provide values in
+  ///                          descending order.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename IT>
+  bdd bdd_and(IT begin, IT end)
+  {
+    return bdd_and(internal::iterator_gen<bdd::label_t>(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      The BDD representing the logical 'or' of all the given
-  ///             variables.
+  ///             variables, i.e. a *clause* of variables.
   ///
   /// \details    Creates a BDD with a chain of nodes on the 'low' arc to the
-  ///             true child, and false otherwise. The given labels must be
-  ///             smaller than or equal to `bdd::MAX_LABEL`.
+  ///             true child, and false otherwise.
   ///
-  /// \param vars Labels of the desired variables (in ascending order)
+  /// \param vars Generator of labels of variables in descending order
   ///
   /// \returns    \f$ \bigvee_{x \in \mathit{vars}} x \f$
   ///
-  /// \pre        Labels in `vars` are provided in ascending order.
-  ///
-  /// \throws invalid_argument If `vars` are not in ascending order.
+  /// \throws invalid_argument If `vars` are not in descending order.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_or(const shared_file<bdd::label_t> &vars);
+  bdd bdd_or(const std::function<bdd::label_t()> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief           The BDD representing the function that is true exactly if
-  ///                  a certain number of variables in an interval are true.
+  /// \brief      The BDD representing the logical 'or' of all the given
+  ///             variables, i.e. a *clause* of variables.
   ///
-  /// \param min_var   The minimum label (inclusive) to start counting from
-  /// \param max_var   The maximum label (inclusive) to end counting at
-  /// \param threshold The threshold number of variables set to true
+  /// \param begin Iterator that provides the variables in *descending* order.
+  ///
+  /// \param end   Iterator that marks the end for `begin`.
+  ///
+  /// \returns    \f$ \bigwedge_{x \in \mathit{begin} \dots \mathit{end}} x \f$
+  ///
+  /// \throws invalid_argument If the iterator does not provide values in
+  ///                          descending order.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_counter(bdd::label_t min_var,
-                  bdd::label_t max_var,
-                  bdd::label_t threshold);
+  template<typename IT>
+  bdd bdd_or(IT begin, IT end)
+  {
+    return bdd_or(internal::iterator_gen<bdd::label_t>(begin, end));
+  }
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////
@@ -195,6 +206,17 @@ namespace adiar
   inline __bdd bdd_and(const bdd &f, const bdd &g)
   { return bdd_apply(f, g, and_op); }
 
+  /// \cond
+  ///
+  /// \see bdd_and
+  ///
+  /// \remark Since `bdd_and<IT>(begin, end)` has precedence over the implicit
+  ///         conversion from `bdd::shared_nodes_t` to `bdd`, we have to do it
+  ///         explicitly ourselves.
+  inline __bdd bdd_and(const bdd::shared_nodes_t &f, const bdd::shared_nodes_t &g)
+  { return bdd_apply(bdd(f), bdd(g), and_op); }
+  /// \endcond
+
   //////////////////////////////////////////////////////////////////////////////
   /// \see bdd_and
   //////////////////////////////////////////////////////////////////////////////
@@ -225,6 +247,17 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   inline __bdd bdd_or(const bdd &f, const bdd &g)
   { return bdd_apply(f, g, or_op); };
+
+  /// \cond
+  ///
+  /// \see bdd_or
+  ///
+  /// \remark Since `bdd_or<IT>(begin, end)` has precedence over the implicit
+  ///         conversion from `bdd::shared_nodes_t` to `bdd`, we have to do it
+  ///         explicitly ourselves.
+  inline __bdd bdd_or(const bdd::shared_nodes_t &f, const bdd::shared_nodes_t &g)
+  { return bdd_apply(bdd(f), bdd(g), or_op); }
+  /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \see bdd_or

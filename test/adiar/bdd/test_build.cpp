@@ -264,15 +264,14 @@ go_bandit([]() {
     });
 
     describe("bdd_and(vars)", [&]() {
+      // TODO
+    });
+
+    describe("bdd_and(begin, end)", [&]() {
       it("can create {x1, x2, x5}", [&]() {
-        adiar::shared_file<bdd::label_t> labels;
+        std::vector<int> vars = { 1, 2, 5 };
 
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 1 << 2 << 5;
-        }
-
-        bdd res = bdd_and(labels);
+        bdd res = bdd_and(vars.rbegin(), vars.rend());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -324,9 +323,9 @@ go_bandit([]() {
       });
 
       it("can create {} as trivially true", [&]() {
-        adiar::shared_file<bdd::label_t> labels;
+        std::vector<int> vars;
 
-        bdd res = bdd_and(labels);
+        bdd res = bdd_and(vars.rbegin(), vars.rend());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -354,28 +353,76 @@ go_bandit([]() {
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
+      it("skips duplicates", [&]() {
+        std::vector<int> vars = { 1, 2, 2, 5 };
+
+        bdd res = bdd_and(vars.rbegin(), vars.rend());
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(5, node::MAX_ID,
+                                                terminal_F,
+                                                terminal_T)));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(2, node::MAX_ID,
+                                                terminal_F,
+                                                ptr_uint64(5, ptr_uint64::MAX_ID))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                terminal_F,
+                                                ptr_uint64(2, ptr_uint64::MAX_ID))));
+
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(5,1u)));
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(3u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(4u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(3u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
+
+        AssertThat(adiar::is_canonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(3u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
       it("throws exception for non-ascending list", []() {
-        adiar::shared_file<bdd::label_t> labels;
+        std::vector<int> vars = { 3, 2 };
 
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 2 << 2;
-        }
-
-        AssertThrows(invalid_argument, bdd_and(labels));
+        AssertThrows(invalid_argument, bdd_and(vars.rbegin(), vars.rend()));
       });
     });
 
     describe("bdd_or(vars)", [&]() {
+      // TODO
+    });
+
+    describe("bdd_or(begin, end)", [&]() {
       it("can create {x1, x2, x5}", [&]() {
-        adiar::shared_file<bdd::label_t> labels;
+        std::vector<int> vars = { 1, 2, 5 };
 
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 1 << 2 << 5;
-        }
-
-        bdd res = bdd_or(labels);
+        bdd res = bdd_or(vars.rbegin(), vars.rend());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -427,9 +474,9 @@ go_bandit([]() {
       });
 
       it("can create {} as trivially false", [&]() {
-        adiar::shared_file<bdd::label_t> labels;
+        std::vector<int> vars;
 
-        bdd res = bdd_or(labels);
+        bdd res = bdd_or(vars.rbegin(), vars.rend());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -452,15 +499,64 @@ go_bandit([]() {
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
+      it("skips duplicates", [&]() {
+        std::vector<int> vars = { 1, 2, 2, 5 };
+
+        bdd res = bdd_or(vars.rbegin(), vars.rend());
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(5, node::MAX_ID,
+                                                terminal_F,
+                                                terminal_T)));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(2, node::MAX_ID,
+                                                ptr_uint64(5, ptr_uint64::MAX_ID),
+                                                terminal_T)));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                ptr_uint64(2, ptr_uint64::MAX_ID),
+                                                terminal_T)));
+
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(5,1u)));
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(3u));
+        AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(4u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(3u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
+
+        AssertThat(adiar::is_canonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(3u));
+      });
+
       it("throws exception for non-ascending list", []() {
-        adiar::shared_file<bdd::label_t> labels;
+        std::vector<int> vars = { 3, 2 };
 
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 2 << 2;
-        }
-
-        AssertThrows(invalid_argument, bdd_or(labels));
+        AssertThrows(invalid_argument, bdd_or(vars.rbegin(), vars.rend()));
       });
     });
   });
