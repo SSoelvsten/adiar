@@ -35,37 +35,31 @@ go_bandit([]() {
       nw << n2 << n1;
     }
 
-    adiar::shared_file<zdd::label_t> dom_0123;
-    {
-      label_writer w(dom_0123);
-      w << 0 << 1 << 2 << 3;
-    }
+    const std::vector<int> dom_0123  = { 0, 1, 2, 3 };
+    const std::vector<int> dom_1234  = { 1, 2, 3, 4 };
+    const std::vector<int> dom_empty = { };
 
-    adiar::shared_file<zdd::label_t> dom_1234;
-    {
-      label_writer w(dom_1234);
-      w << 1 << 2 << 3 << 4;
-    }
+    describe("zdd_complement(A, vars)", [&]() {
+      // TODO
+    });
 
-    describe("zdd_complement(const zdd&, const label_file&)", [&]() {
+    describe("zdd_complement(A, begin, end)", [&]() {
       it("produces Ø on Ø and U = Ø", [&]() {
-        adiar::shared_file<zdd::label_t> dom_empty;
-        __zdd out = zdd_complement(zdd_F, dom_empty);
+        __zdd out = zdd_complement(zdd_F, dom_empty.begin(), dom_empty.end());
 
         AssertThat(out.get<shared_levelized_file<zdd::node_t>>(), Is().EqualTo(zdd_F));
         AssertThat(out.negate, Is().False());
       });
 
       it("produces { Ø } on { Ø } and U = Ø", [&]() {
-        adiar::shared_file<zdd::label_t> dom_empty;
-        __zdd out = zdd_complement(zdd_F, dom_empty);
+        __zdd out = zdd_complement(zdd_F, dom_empty.begin(), dom_empty.end());
 
         AssertThat(out.get<shared_levelized_file<zdd::node_t>>(), Is().EqualTo(zdd_F));
         AssertThat(out.negate, Is().False());
       });
 
       it("produces pow(U) on F terminal and U = { 0, 1, 2, 3 }", [&]() {
-        __zdd out = zdd_complement(zdd_F, dom_0123);
+        __zdd out = zdd_complement(zdd_F, dom_0123.begin(), dom_0123.end());
 
         node_test_stream ns(out);
 
@@ -117,7 +111,7 @@ go_bandit([]() {
       });
 
       it("produces pow(U) on F terminal and U = { 1, 2, 3, 4 }", [&]() {
-        __zdd out = zdd_complement(zdd_F, dom_1234);
+        __zdd out = zdd_complement(zdd_F, dom_1234.begin(), dom_1234.end());
 
         node_test_stream ns(out);
 
@@ -169,14 +163,9 @@ go_bandit([]() {
       });
 
       it("produces pow(U) \\ Ø on T terminal and U = { 0, 2 }", [&]() {
-        adiar::shared_file<zdd::label_t> U02;
-        {
-          label_writer w(U02);
-          w << 0 << 2;
-        }
+        const std::vector<int> dom = { 0, 2 };
 
-
-        __zdd out = zdd_complement(zdd_T, U02);
+        __zdd out = zdd_complement(zdd_T, dom.begin(), dom.end());
 
         node_test_stream ns(out);
 
@@ -212,7 +201,7 @@ go_bandit([]() {
       });
 
       it("produces pow(U) \\ Ø on T terminal and U = { 1, 2, 3, 4 }", [&]() {
-        __zdd out = zdd_complement(zdd_T, dom_1234);
+        __zdd out = zdd_complement(zdd_T, dom_1234.begin(), dom_1234.end());
 
         node_test_stream ns(out);
 
@@ -275,7 +264,7 @@ go_bandit([]() {
           nw << node(3, node::MAX_ID, terminal_F, terminal_T);
         }
 
-        __zdd out = zdd_complement(zdd_x3, dom_0123);
+        __zdd out = zdd_complement(zdd_x3, dom_0123.begin(), dom_0123.end());
         /*
         //             *    ---- x0
         //            / \
@@ -365,7 +354,7 @@ go_bandit([]() {
           nw << node(2, node::MAX_ID, terminal_F, terminal_T);
         }
 
-        __zdd out = zdd_complement(zdd_x2, dom_0123);
+        __zdd out = zdd_complement(zdd_x2, dom_0123.begin(), dom_0123.end());
 
         arc_test_stream arcs(out);
 
@@ -449,7 +438,7 @@ go_bandit([]() {
           nw << node(1, node::MAX_ID, terminal_T, terminal_T);
         }
 
-        __zdd out = zdd_complement(zdd_x1_null, dom_0123);
+        __zdd out = zdd_complement(zdd_x1_null, dom_0123.begin(), dom_0123.end());
         /*
         //         1        ---- x0
         //        / \
@@ -555,7 +544,7 @@ go_bandit([]() {
           nw << n4 << n3 << n2 << n1;
         }
 
-        __zdd out = zdd_complement(in, dom_1234);
+        __zdd out = zdd_complement(in, dom_1234.begin(), dom_1234.end());
         /*
         //          _1_      ---- x1
         //         /   \
@@ -674,7 +663,7 @@ go_bandit([]() {
           nw << n7 << n6 << n5 << n4 << n3 << n2 << n1;
         }
 
-        __zdd out = zdd_complement(in, dom_1234);
+        __zdd out = zdd_complement(in, dom_1234.begin(), dom_1234.end());
         /*
         //           _1_                ---- x1
         //          /   \
@@ -786,14 +775,9 @@ go_bandit([]() {
       });
 
       it("computes pow(U) \\ pow(U) with U = { 2, 4 }", [&]() {
+        const std::vector<int> dom = { 2, 4 };
 
-        adiar::shared_file<zdd::label_t> U;
-        {
-          label_writer w(U);
-          w << 2 << 4 ;
-        }
-
-        __zdd out = zdd_complement(zdd_pow_24, U);
+        __zdd out = zdd_complement(zdd_pow_24, dom.begin(), dom.end());
         /*
         //     1      ---- x2
         //    / \
@@ -839,7 +823,7 @@ go_bandit([]() {
       });
 
       it("computes pow(U) \\ pow({ 2, 4 }) with U = { 1, 2, 3, 4 }", [&]() {
-        __zdd out = zdd_complement(zdd_pow_24, dom_1234);
+        __zdd out = zdd_complement(zdd_pow_24, dom_1234.begin(), dom_1234.end());
         /*
         //      _1_       ---- x1
         //     /   \
@@ -923,9 +907,9 @@ go_bandit([]() {
       });
     });
 
-    describe("zdd_complement(const zdd&)", [&]() {
+    describe("zdd_complement(A)", [&]() {
       it("produces pow(U) on F terminal with set domain U = { 0, 1, 2, 3 }", [&]() {
-        adiar_set_domain(dom_0123);
+        adiar_set_domain(dom_0123.begin(), dom_0123.end());
 
         __zdd out = zdd_complement(zdd_F);
 
@@ -979,7 +963,7 @@ go_bandit([]() {
       });
 
       it("produces pow(U) \\ Ø on T terminal with set domain U = { 1, 2, 3, 4 }", [&]() {
-        adiar_set_domain(dom_1234);
+        adiar_set_domain(dom_1234.begin(), dom_1234.end());
 
         __zdd out = zdd_complement(zdd_T);
 

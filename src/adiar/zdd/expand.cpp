@@ -61,8 +61,8 @@ namespace adiar
     }
   };
 
-  __zdd zdd_expand(const zdd &dd, const shared_file<zdd::label_t> &labels)
+  __zdd zdd_expand(const zdd &dd, const std::function<zdd::label_t()> &vars)
   {
-    return internal::intercut<zdd_expand_policy>(dd, labels);
+    return internal::intercut<zdd_expand_policy>(dd, vars);
   }
 }

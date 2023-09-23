@@ -339,28 +339,64 @@ namespace adiar
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief     The symmetric difference between each set in the family and the
-  ///            given set of variables.
+  /// \brief      The symmetric difference between each set in the family and
+  ///             the given set of variables.
   ///
   /// \param A    ZDD to apply with the other.
   ///
-  /// \param vars Labels that should be flipped
+  /// \param vars Generator function of labels to flip in *ascending* order.
   ///
   /// \returns
   /// \f$ \{ \mathit{vars} \Delta a \mid a \in A \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_change(const zdd &A, const shared_file<zdd::label_t> &vars);
+  __zdd zdd_change(const zdd &A, const std::function<zdd::label_t()> &vars);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief      The symmetric difference between each set in the family and
+  ///             the given set of variables.
+  ///
+  /// \param A    ZDD to apply with the other.
+  ///
+  /// \param begin Iterator with variables to flip in *ascending* order.
+  ///
+  /// \param end   Iterator that marks the end for `begin`.
+  ///
+  /// \returns
+  /// \f$ \{ \mathit{vars} \Delta a \mid a \in A \} \f$
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename IT>
+  __zdd zdd_change(const zdd &A, IT begin, IT end)
+  {
+    return zdd_change(A, internal::iterator_gen<zdd::label_t>(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Complement of A within the given domain.
   ///
   /// \param A   family of sets to complement
   ///
-  /// \param dom Labels of the domain (in ascending order)
+  /// \param dom Labels of the domain in *ascending* order
   ///
   /// \returns    \f$ 2^{\mathit{dom}} \setminus A \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_complement(const zdd &A, const shared_file<zdd::label_t> &dom);
+  __zdd zdd_complement(const zdd &A, const std::function<zdd::label_t()> &dom);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief     Complement of A within the given domain.
+  ///
+  /// \param A   family of sets to complement
+  ///
+  /// \param begin Iterator that provides the domain in *ascending* order.
+  ///
+  /// \param end   Iterator that marks the end for `begin`.
+  ///
+  /// \returns    \f$ 2^{\mathit{dom}} \setminus A \f$
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename IT>
+  __zdd zdd_complement(const zdd &A, IT begin, IT end)
+  {
+    return zdd_complement(A, internal::iterator_gen<zdd::label_t>(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Complement of A within the global \ref module__domain
@@ -394,13 +430,35 @@ namespace adiar
   ///
   /// \param A    Family of set to expand
   ///
-  /// \param vars Labels of variables to expand with (in ascending order). This
-  ///             set of labels may \em not occur in A
+  /// \param vars Generator function of labels to expand with (in ascending
+  ///             order). This set of labels may \em not occur in A
   ///
   /// \returns
   /// \f$ \bigcup_{a \in A, i \in 2^{vars}} (a \cup i) \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_expand(const zdd &A, const shared_file<zdd::label_t> &vars);
+  __zdd zdd_expand(const zdd &A, const std::function<zdd::label_t()> &vars);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief      Expands the domain of the given ZDD to also include the given
+  ///             set of labels.
+  ///
+  /// \details    Adds don't care nodes on each levels in `vars`. The variables
+  ///             in `vars` may \em not be present in `A`.
+  ///
+  /// \param A    Family of set to expand
+  ///
+  /// \param begin Iterator that provides the variables in *ascending* order.
+  ///
+  /// \param end   Iterator that marks the end for `begin`.
+  ///
+  /// \returns
+  /// \f$ \bigcup_{a \in A, i \in 2^{vars}} (a \cup i) \f$
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename IT>
+  __zdd zdd_expand(const zdd &A, IT begin, IT end)
+  {
+    return zdd_expand(A, internal::iterator_gen<zdd::label_t>(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Subset that do \em not include the given set of variables.
@@ -508,6 +566,8 @@ namespace adiar
   /// \param A   Family of sets to project
   ///
   /// \param begin Iterator that provides the domain in *descending* order.
+  ///
+  /// \param end   Iterator that marks the end for `begin`.
   ///
   /// \returns
   /// \f$ \prod_{\mathit{dom}}(A) = \{ a \setminus \mathit{dom}^c \mid a \in A \} \f$
@@ -728,7 +788,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Retrieves the lexicographically smallest set a in A.
   ///
-  /// \param cb Callback function that is called in ascending order of the zdd's
+  /// \param cb Callback function that is called in *ascending* order of the zdd's
   ///           levels with the variable in the smallest set.
   ///
   /// \pre `A != zdd_empty()`
@@ -753,7 +813,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Retrieves the lexicographically largest set a in A.
   ///
-  /// \param cb Callback function that is called in ascending order of the zdd's
+  /// \param cb Callback function that is called in *ascending* order of the zdd's
   ///           levels with the variable in the largest set.
   ///
   /// \pre `A != zdd_empty()`
@@ -771,7 +831,7 @@ namespace adiar
   ///
   /// \param A  ZDD of interest.
   ///
-  /// \param cb Callback function that consumes the levels (in ascending order).
+  /// \param cb Callback function that consumes the levels in *ascending* order.
   //////////////////////////////////////////////////////////////////////////////
   void zdd_varprofile(const zdd &A, const std::function<void(zdd::label_t)> &cb);
 
@@ -813,12 +873,27 @@ namespace adiar
   ///
   /// \param f   Boolean function with the given domain
   ///
-  /// \param dom Domain of all variables (in ascending order)
+  /// \param dom Domain of all variables in *ascending* order.
   ///
   /// \returns   ZDD that is true for the exact same assignments to variables in
   ///            the given domain.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_from(const bdd &f, const shared_file<zdd::label_t> &dom);
+  __zdd zdd_from(const bdd &f, const std::function<zdd::label_t()> &dom);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief     Obtains the ZDD that represents the same function/set as the
+  ///            given BDD within the given domain.
+  ///
+  /// \param f   Boolean function with the given domain
+  ///
+  /// \param dom Iterator over the domain in *ascending* order
+  ///
+  /// \returns   BDD that is true for the exact same assignments to variables in
+  ///            the given domain.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename IT>
+  __zdd zdd_from(const bdd &f, IT begin, IT end)
+  { return zdd_from(f, internal::iterator_gen<bdd::label_t>(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Obtains the ZDD that represents the same function/set as the

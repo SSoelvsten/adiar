@@ -102,14 +102,17 @@ namespace adiar
     // LCOV_EXCL_STOP
   };
 
-  __zdd zdd_complement(const zdd &dd, const shared_file<zdd::label_t> &universe)
+  __zdd zdd_complement(const zdd &dd, const std::function<zdd::label_t()> &dom)
   {
-    return internal::intercut<zdd_complement_policy>(dd, universe);
+    return internal::intercut<zdd_complement_policy>(dd, dom);
   }
 
   __zdd zdd_complement(const zdd &dd)
   {
-    const shared_file<zdd::label_t> universe = adiar_get_domain();
-    return internal::intercut<zdd_complement_policy>(dd, universe);
+    const shared_file<zdd::label_t> dom = adiar_get_domain();
+    internal::file_stream<domain_var_t> ds(dom);
+
+    return internal::intercut<zdd_complement_policy>
+      (dd, internal::stream_gen<bdd::label_t>(ds));
   }
 }

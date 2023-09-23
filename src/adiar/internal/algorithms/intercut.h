@@ -159,18 +159,37 @@ namespace adiar::internal
 
   template<typename intercut_policy, typename pq_t>
   typename intercut_policy::unreduced_t __intercut (const typename intercut_policy::reduced_t &dd,
-                                                    const shared_file<typename intercut_policy::label_t> &labels,
+                                                    const std::function<typename intercut_policy::label_t()> &xs,
                                                     const size_t pq_memory,
                                                     const size_t max_pq_size)
   {
     node_stream<> in_nodes(dd);
     node n = in_nodes.pull();
 
-    if (n.is_terminal()) {
-      return intercut_policy::on_terminal_input(n.value(), dd, labels);
+    // TODO: Only copy `xs` into a `shared_file<label_t>`, in the degenerate
+    //       case, that we have to reverse it.
+    //
+    // In the general case, we have to use it both in the priority queue
+    // `intercut_pq` below, and for a lookahead of the algorithm. The main issue
+    // is how to design the priority queue such that it can retrieve, merge with
+    // `dd_levels`, and expose `xs`.
+    shared_file<typename intercut_policy::label_t> hit_levels;
+    {
+      file_writer<typename intercut_policy::label_t> lw(hit_levels);
+      for (auto x = xs(); x <= intercut_policy::MAX_LABEL; x = xs()) {
+        lw << x;
+      }
+
+      if (lw.size() == 0) {
+        return intercut_policy::on_empty_labels(dd);
+      }
     }
 
-    file_stream<typename intercut_policy::label_t> ls(labels);
+    if (n.is_terminal()) {
+      return intercut_policy::on_terminal_input(n.value(), dd, hit_levels);
+    }
+
+    file_stream<typename intercut_policy::label_t> ls(hit_levels);
     typename intercut_policy::label_t l = ls.pull();
 
     shared_levelized_file<arc> out_arcs;
@@ -184,7 +203,7 @@ namespace adiar::internal
       });
     }
 
-    pq_t intercut_pq({dd_levels, labels}, pq_memory, max_pq_size, stats_intercut.lpq);
+    pq_t intercut_pq({dd_levels, hit_levels}, pq_memory, max_pq_size, stats_intercut.lpq);
 
     // Add request for root in the queue
     typename intercut_policy::label_t out_label = std::min(l, n.label());
@@ -297,12 +316,8 @@ namespace adiar::internal
 
   template<typename intercut_policy>
   typename intercut_policy::unreduced_t intercut(const typename intercut_policy::reduced_t &dd,
-                                                 const shared_file<typename intercut_policy::label_t> &labels)
+                                                 const std::function<typename intercut_policy::label_t()> &xs)
   {
-    if (labels->size() == 0) {
-      return intercut_policy::on_empty_labels(dd);
-    }
-
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.
     //
@@ -333,21 +348,21 @@ namespace adiar::internal
 #endif
       return __intercut<intercut_policy,
                         intercut_priority_queue_t<0, memory_mode_t::INTERNAL>>
-        (dd, labels, pq_memory, max_pq_size);
+        (dd, xs, pq_memory, max_pq_size);
     } else if(!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
       stats_intercut.lpq.internal += 1u;
 #endif
       return __intercut<intercut_policy,
                         intercut_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>>
-        (dd, labels, pq_memory, max_pq_size);
+        (dd, xs, pq_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
       stats_intercut.lpq.external += 1u;
 #endif
       return __intercut<intercut_policy,
                         intercut_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>>
-        (dd, labels, pq_memory, max_pq_size);
+        (dd, xs, pq_memory, max_pq_size);
     }
   }
 }

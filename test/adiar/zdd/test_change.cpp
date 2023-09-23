@@ -17,12 +17,24 @@ go_bandit([]() {
     const ptr_uint64 terminal_T = ptr_uint64(true);
 
     shared_levelized_file<zdd::node_t> zdd_x0;
-    shared_levelized_file<zdd::node_t> zdd_x1;
-
+    /*
+    //         1              ---- x0
+    //        / \
+    //        F T
+    */
     { // Garbage collect writers to free write-lock
       node_writer nw_0(zdd_x0);
       nw_0 << node(0, node::MAX_ID, terminal_F, terminal_T);
+    }
 
+    shared_levelized_file<zdd::node_t> zdd_x1;
+    /*
+    //         1              ---- x1
+    //        / \
+    //        F T
+    */
+
+    { // Garbage collect writers to free write-lock
       node_writer nw_1(zdd_x1);
       nw_1 << node(1, node::MAX_ID, terminal_F, terminal_T);
     }
@@ -52,47 +64,37 @@ go_bandit([]() {
     }
 
     it("returns same file for Ø on empty labels", [&]() {
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { };
 
-      __zdd out = zdd_change(zdd_F, labels);
+      __zdd out = zdd_change(zdd_F, vars.begin(), vars.end());
       AssertThat(out.get<shared_levelized_file<zdd::node_t>>(), Is().EqualTo(zdd_F));
     });
 
     it("returns same file for { Ø } on empty labels", [&]() {
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { };
 
-      __zdd out = zdd_change(zdd_T, labels);
+      __zdd out = zdd_change(zdd_T, vars.begin(), vars.end());
       AssertThat(out.get<shared_levelized_file<zdd::node_t>>(), Is().EqualTo(zdd_T));
     });
 
     it("returns same file for { {1} } on empty labels", [&]() {
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { };
 
-      __zdd out = zdd_change(zdd_x1, labels);
+      __zdd out = zdd_change(zdd_x1, vars.begin(), vars.end());
       AssertThat(out.get<shared_levelized_file<zdd::node_t>>(), Is().EqualTo(zdd_x1));
     });
 
     it("returns same file for Ø on (1,2)", [&]() {
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { 1, 2 };
 
-      {  // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 1 << 2;
-      }
-
-      __zdd out = zdd_change(zdd_F, labels);
+      __zdd out = zdd_change(zdd_F, vars.begin(), vars.end());
       AssertThat(out.get<shared_levelized_file<zdd::node_t>>(), Is().EqualTo(zdd_F));
     });
 
     it("returns { {1,2} } for { Ø } on (1,2)", [&]() {
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { 1, 2 };
 
-      { // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 1 << 2;
-      }
-
-      __zdd out = zdd_change(zdd_T, labels);
+      __zdd out = zdd_change(zdd_T, vars.begin(), vars.end());
 
       node_test_stream ns(out);
 
@@ -124,14 +126,9 @@ go_bandit([]() {
     });
 
     it("adds new root for { {1} } on (0)", [&]() {
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { 0 };
 
-      {  // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 0;
-      }
-
-      __zdd out = zdd_change(zdd_x1, labels);
+      __zdd out = zdd_change(zdd_x1, vars.begin(), vars.end());
 
       arc_test_stream arcs(out);
 
@@ -175,14 +172,9 @@ go_bandit([]() {
         w << node(2, node::MAX_ID, terminal_T, terminal_T);
       }
 
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { 0, 1 };
 
-      { // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 0 << 1;
-      }
-
-      __zdd out = zdd_change(in, labels);
+      __zdd out = zdd_change(in, vars.begin(), vars.end());
 
       arc_test_stream arcs(out);
 
@@ -228,14 +220,9 @@ go_bandit([]() {
     });
 
     it("adds new nodes after root for { {1} } on (2,3)", [&]() {
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { 2, 3 };
 
-      { // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 2 << 3;
-      }
-
-      __zdd out = zdd_change(zdd_x1, labels);
+      __zdd out = zdd_change(zdd_x1, vars.begin(), vars.end());
 
       arc_test_stream arcs(out);
 
@@ -281,14 +268,9 @@ go_bandit([]() {
     });
 
     it("adds a new node before and after root for { {1} } on (0,2)", [&]() {
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { 0, 2 };
 
-      { // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 0 << 2;
-      }
-
-      __zdd out = zdd_change(zdd_x1, labels);
+      __zdd out = zdd_change(zdd_x1, vars.begin(), vars.end());
 
       arc_test_stream arcs(out);
 
@@ -334,14 +316,9 @@ go_bandit([]() {
     });
 
     it("adds new nodes before and after root for { {1} } on (0,2,4)", [&]() {
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { 0, 2, 4 };
 
-      { // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 0 << 2 << 4;
-      }
-
-      __zdd out = zdd_change(zdd_x1, labels);
+      __zdd out = zdd_change(zdd_x1, vars.begin(), vars.end());
 
       arc_test_stream arcs(out);
 
@@ -405,14 +382,9 @@ go_bandit([]() {
           ;
       }
 
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { 2 };
 
-      { // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 2;
-      }
-
-      __zdd out = zdd_change(in, labels);
+      __zdd out = zdd_change(in, vars.begin(), vars.end());
 
       arc_test_stream arcs(out);
 
@@ -464,14 +436,9 @@ go_bandit([]() {
     });
 
     it("returns { Ø } for { {0} } on (0)", [&]() {
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { 0 };
 
-      { // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 0;
-      }
-
-      __zdd out = zdd_change(zdd_x0, labels);
+      __zdd out = zdd_change(zdd_x0, vars.begin(), vars.end());
 
       node_test_stream ns(out);
 
@@ -494,14 +461,9 @@ go_bandit([]() {
     });
 
     it("returns { Ø } for { {1} } on (1)", [&]() {
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { 1 };
 
-      { // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 1;
-      }
-
-      __zdd out = zdd_change(zdd_x1, labels);
+      __zdd out = zdd_change(zdd_x1, vars.begin(), vars.end());
 
       node_test_stream ns(out);
 
@@ -532,14 +494,9 @@ go_bandit([]() {
           << node(0, node::MAX_ID, terminal_F, ptr_uint64(1, ptr_uint64::MAX_ID));
       }
 
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { 0 };
 
-      { // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 0;
-      }
-
-      __zdd out = zdd_change(in, labels);
+      __zdd out = zdd_change(in, vars.begin(), vars.end());
 
       arc_test_stream arcs(out);
 
@@ -575,14 +532,9 @@ go_bandit([]() {
           << node(0, node::MAX_ID, terminal_F, ptr_uint64(2, ptr_uint64::MAX_ID));
       }
 
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { 0, 1 };
 
-      { // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 0 << 1;
-      }
-
-      __zdd out = zdd_change(in, labels);
+      __zdd out = zdd_change(in, vars.begin(), vars.end());
 
       arc_test_stream arcs(out);
 
@@ -628,14 +580,9 @@ go_bandit([]() {
           << node(0, node::MAX_ID, terminal_F, ptr_uint64(2, ptr_uint64::MAX_ID));
       }
 
-      adiar::shared_file<zdd::label_t> labels;
+      std::vector<int> vars = { 0, 2 };
 
-      { // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 0 << 2;
-      }
-
-      __zdd out = zdd_change(in, labels);
+      __zdd out = zdd_change(in, vars.begin(), vars.end());
 
       arc_test_stream arcs(out);
 
@@ -670,14 +617,9 @@ go_bandit([]() {
         w << node(0, node::MAX_ID, terminal_T, terminal_T);
       }
 
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { 0 };
 
-      { // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 0;
-      }
-
-      __zdd out = zdd_change(in, labels);
+      __zdd out = zdd_change(in, vars.begin(), vars.end());
 
       arc_test_stream arcs(out);
 
@@ -713,14 +655,9 @@ go_bandit([]() {
           << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), terminal_T);
       }
 
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { 0 };
 
-      { // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 0;
-      }
-
-      __zdd out = zdd_change(in, labels);
+      __zdd out = zdd_change(in, vars.begin(), vars.end());
 
       arc_test_stream arcs(out);
 
@@ -757,14 +694,9 @@ go_bandit([]() {
     });
 
     it("flips root for [1] on (0)", [&]() {
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { 0 };
 
-      { // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 0;
-      }
-
-      __zdd out = zdd_change(zdd_1, labels);
+      __zdd out = zdd_change(zdd_1, vars.begin(), vars.end());
 
       arc_test_stream arcs(out);
 
@@ -834,14 +766,9 @@ go_bandit([]() {
           << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), terminal_T);
       }
 
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { 1 };
 
-      { // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 1;
-      }
-
-      __zdd out = zdd_change(in, labels);
+      __zdd out = zdd_change(in, vars.begin(), vars.end());
 
       arc_test_stream arcs(out);
 
@@ -893,14 +820,9 @@ go_bandit([]() {
     });
 
     it("flips and adds a node for [1] on (1)", [&]() {
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { 1 };
 
-      { // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 1;
-      }
-
-      __zdd out = zdd_change(zdd_1, labels);
+      __zdd out = zdd_change(zdd_1, vars.begin(), vars.end());
 
       arc_test_stream arcs(out);
 
@@ -975,14 +897,9 @@ go_bandit([]() {
           << node(0, node::MAX_ID, terminal_F, ptr_uint64(1, ptr_uint64::MAX_ID));
       }
 
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { 0, 1 };
 
-      { // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 0 << 1;
-      }
-
-      __zdd out = zdd_change(in, labels);
+      __zdd out = zdd_change(in, vars.begin(), vars.end());
 
       node_test_stream ns(out);
 
@@ -1015,14 +932,9 @@ go_bandit([]() {
           ;
       }
 
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { 1 };
 
-      { // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 1;
-      }
-
-      __zdd out = zdd_change(in, labels);
+      __zdd out = zdd_change(in, vars.begin(), vars.end());
 
       arc_test_stream arcs(out);
 
@@ -1069,14 +981,9 @@ go_bandit([]() {
           ;
       }
 
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { 1 };
 
-      { // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 1;
-      }
-
-      __zdd out = zdd_change(in, labels);
+      __zdd out = zdd_change(in, vars.begin(), vars.end());
 
       arc_test_stream arcs(out);
 
@@ -1122,14 +1029,9 @@ go_bandit([]() {
           ;
       }
 
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { 1 };
 
-      { // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 1;
-      }
-
-      __zdd out = zdd_change(in, labels);
+      __zdd out = zdd_change(in, vars.begin(), vars.end());
 
       arc_test_stream arcs(out);
 
@@ -1196,14 +1098,9 @@ go_bandit([]() {
           ;
       }
 
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { 0, 1 };
 
-      { // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 0 << 1;
-      }
-
-      __zdd out = zdd_change(in, labels);
+      __zdd out = zdd_change(in, vars.begin(), vars.end());
 
       arc_test_stream arcs(out);
 
@@ -1254,14 +1151,9 @@ go_bandit([]() {
       //       F T
       */
 
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { 2, 3 };
 
-      { // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 2 << 3;
-      }
-
-      __zdd out = zdd_change(zdd_1, labels);
+      __zdd out = zdd_change(zdd_1, vars.begin(), vars.end());
 
       arc_test_stream arcs(out);
 
@@ -1339,14 +1231,9 @@ go_bandit([]() {
         nw << n2 << n1;
       }
 
-      adiar::shared_file<zdd::label_t> labels;
+      const std::vector<int> vars = { 0, 1 };
 
-      { // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 0 << 1;
-      }
-
-      __zdd out = zdd_change(in, labels);
+      __zdd out = zdd_change(in, vars.begin(), vars.end());
 
       arc_test_stream arcs(out);
 
@@ -1394,13 +1281,9 @@ go_bandit([]() {
         nw << node(0, node::MAX_ID, terminal_F, terminal_T);
       }
 
-      adiar::shared_file<zdd::label_t> labels;
-      { // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 0 << 1;
-      }
+      const std::vector<int> vars = { 0, 1 };
 
-      __zdd out = zdd_change(in, labels);
+      __zdd out = zdd_change(in, vars.begin(), vars.end());
 
       arc_test_stream arcs(out);
 
@@ -1442,13 +1325,9 @@ go_bandit([]() {
            << node(0, node::MAX_ID, terminal_F, ptr_uint64(1, ptr_uint64::MAX_ID));
       }
 
-      adiar::shared_file<zdd::label_t> labels;
-      { // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 0 << 1 << 2;
-      }
+      const std::vector<int> vars = { 0, 1, 2 };
 
-      __zdd out = zdd_change(in, labels);
+      __zdd out = zdd_change(in, vars.begin(), vars.end());
 
       arc_test_stream arcs(out);
 
@@ -1487,13 +1366,9 @@ go_bandit([]() {
         nw << node(1, node::MAX_ID, terminal_F, terminal_T);
       }
 
-      adiar::shared_file<zdd::label_t> labels;
-      { // Garbage collect writer to free write-lock
-        label_writer w(labels);
-        w << 0 << 1;
-      }
+      const std::vector<int> vars = { 0, 1 };
 
-      __zdd out = zdd_change(in, labels);
+      __zdd out = zdd_change(in, vars.begin(), vars.end());
 
       arc_test_stream arcs(out);
 
