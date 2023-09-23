@@ -141,6 +141,22 @@ namespace adiar::internal
   }
 
   ////////////////////////////////////////////////////////////////////////////
+  /// \brief Converts a `begin` and `end` iterator pair into a consumer
+  ///        function.
+  ////////////////////////////////////////////////////////////////////////////
+  template<typename label_t, typename IT>
+  inline std::function<void(label_t)>
+  iterator_consumer(IT &begin, IT &end)
+  {
+    return [&begin, &end](const label_t x) {
+      adiar_assert(begin != end,
+                   "Missing initial check for std::distance(begin, end)?");
+
+      *(begin++) = x;
+    };
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
   /// \brief Converts a `file_stream` into a generator function.
   ////////////////////////////////////////////////////////////////////////////
   template<typename label_t, typename stream_t>

@@ -729,20 +729,37 @@ namespace adiar
   // zdd_maxelem(const zdd &A, IT begin, IT end)
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Get the labels of the levels of the ZDD
+  /// \brief Get the labels of the levels of the ZDD.
+  ///
+  /// \param A  ZDD of interest.
+  ///
+  /// \param cb Callback function that consumes the levels (in ascending order).
   //////////////////////////////////////////////////////////////////////////////
-  shared_file<zdd::label_t> zdd_varprofile(const zdd &A);
+  void zdd_varprofile(const zdd &A, const std::function<void(zdd::label_t)> &cb);
 
   //////////////////////////////////////////////////////////////////////////////
-  // TODO: add callback
-  //
-  // zdd_varprofile(const zdd &A, const std::function<void(zdd::label_t)> &cb);
-
+  /// \brief Write the labels of the ZDD's levels into the given container.
+  ///
+  /// \param A     ZDD of interest.
+  ///
+  /// \param begin Iterator for the beginning to place the output.
+  ///
+  /// \param end   Iterator that marks the end for `begin`.
+  ///
+  /// \returns     An iterator to the first entry that still is left empty.
+  ///
+  /// \throws out_of_range If the distance between `begin` and `end` is not big
+  ///                      enough to contain all variables in `f`.
   //////////////////////////////////////////////////////////////////////////////
-  // TODO: wrap into consumer lambda
-  //
-  // template<typename IT>
-  // zdd_varprofile(const zdd &A, IT begin, IT end)
+  template<typename IT>
+  IT zdd_varprofile(const zdd &A, IT begin, IT end)
+  {
+    if (std::distance(begin, end) < zdd_varcount(A)) {
+      throw std::out_of_range("Distance between 'begin' and 'end' too small");
+    }
+    zdd_varprofile(A, internal::iterator_consumer<bdd::label_t>(begin, end));
+    return begin;
+  }
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////
