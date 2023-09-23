@@ -829,20 +829,37 @@ namespace adiar
                 const shared_file<map_pair<bdd::label_t, boolean>> &xs);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Get the labels of the levels of the BDD
+  /// \brief Get the labels of the levels of the BDD.
+  ///
+  /// \param f  BDD of interest.
+  ///
+  /// \param cb Callback function that consumes the levels (in ascending order).
   //////////////////////////////////////////////////////////////////////////////
-  shared_file<bdd::label_t> bdd_varprofile(const bdd &f);
+  void bdd_varprofile(const bdd &f, const std::function<void(bdd::label_t)> &cb);
 
   //////////////////////////////////////////////////////////////////////////////
-  // TODO: add callback
-  //
-  // bdd_varprofile(const bdd &f, const std::function<void(bdd::label_t)> &cb);
-
+  /// \brief Write the labels of the BDD's levels into the given container.
+  ///
+  /// \param f     BDD of interest.
+  ///
+  /// \param begin Iterator for the beginning to place the output.
+  ///
+  /// \param end   Iterator that marks the end for `begin`.
+  ///
+  /// \returns     An iterator to the first entry that still is left empty.
+  ///
+  /// \throws out_of_range If the distance between `begin` and `end` is not big
+  ///                      enough to contain all variables in `f`.
   //////////////////////////////////////////////////////////////////////////////
-  // TODO: wrap into consumer lambda
-  //
-  // template<typename IT>
-  // bdd_varprofile(const bdd &f, IT begin, IT end)
+  template<typename IT>
+  IT bdd_varprofile(const bdd &f, IT begin, IT end)
+  {
+    if (std::distance(begin, end) < bdd_varcount(f)) {
+      throw std::out_of_range("Distance between 'begin' and 'end' too small");
+    }
+    bdd_varprofile(f, internal::iterator_consumer<bdd::label_t>(begin, end));
+    return begin;
+  }
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////

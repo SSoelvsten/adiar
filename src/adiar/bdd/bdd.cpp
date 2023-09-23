@@ -156,9 +156,9 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Input variables
-  shared_file<bdd::label_t> bdd_varprofile(const bdd &f)
+  void bdd_varprofile(const bdd &f, const std::function<void(bdd::label_t)> &cb)
   {
-    return internal::dd_varprofile(f);
+    return internal::dd_varprofile(f, cb);
   }
 
   //////////////////////////////////////////////////////////////////////////////

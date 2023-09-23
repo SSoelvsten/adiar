@@ -2,7 +2,11 @@
 
 go_bandit([]() {
   describe("adiar/internal/util.h", []() {
-    describe("dd_varprofile", []() {
+    describe("dd_varprofile(f, cb)", []() {
+      // TODO
+    });
+
+    describe("dd_varprofile(f, begin, end)", []() {
       shared_levelized_file<node> terminal_F;
       {
         node_writer writer(terminal_F);
@@ -43,64 +47,83 @@ go_bandit([]() {
         writer << n4 << n3 << n2 << n1;
       }
 
-      it("returns empty file for a BDD false terminal", [&]() {
-        adiar::shared_file<bdd::label_t> label_file_out = bdd_varprofile(terminal_F);
+      it("does not write anything for BDD false terminal", [&]() {
+        std::vector<int> out(42, -1);
 
-        adiar::file_stream<bdd::label_t> out_labels(label_file_out);
+        auto it_b   = out.begin();
+        auto it_e   = out.end();
 
-        AssertThat(out_labels.can_pull(), Is().False());
+        const auto out_it = bdd_varprofile(terminal_F, it_b, it_e);
+
+        AssertThat(out_it, Is().EqualTo(it_b));
+        AssertThat(*it_b, Is().EqualTo(-1));
       });
 
       it("returns empty file for a ZDD true terminal", [&]() {
-        adiar::shared_file<zdd::label_t> label_file_out = zdd_varprofile(terminal_T);
+        std::vector<int> out(42, -1);
 
-        adiar::file_stream<zdd::label_t> out_labels(label_file_out);
+        auto it_b   = out.begin();
+        auto it_e   = out.end();
 
-        AssertThat(out_labels.can_pull(), Is().False());
+        const auto out_it = zdd_varprofile(terminal_T, it_b, it_e);
+
+        AssertThat(out_it, Is().EqualTo(it_b));
+        AssertThat(*it_b, Is().EqualTo(-1));
       });
 
       it("returns [42] for a ZDD with one node (label 42)", [&]() {
-        adiar::shared_file<zdd::label_t> label_file_out = zdd_varprofile(x42);
+        std::vector<int> out(42, -1);
 
-        adiar::file_stream<zdd::label_t> out_labels(label_file_out);
+        auto it_b   = out.begin();
+        auto it_e   = out.end();
 
-        AssertThat(out_labels.can_pull(), Is().True());
-        AssertThat(out_labels.pull(), Is().EqualTo(42u));
-        AssertThat(out_labels.can_pull(), Is().False());
+        const auto out_it = zdd_varprofile(x42, it_b, it_e);
+
+        AssertThat(out_it, Is().EqualTo(it_b+1));
+        AssertThat(*it_b, Is().EqualTo(42));
+        AssertThat(*out_it, Is().EqualTo(-1));
       });
 
       it("returns [1,3,4] for a BDD with multiple nodes", [&]() {
-        adiar::shared_file<bdd::label_t> label_file_out = bdd_varprofile(bdd_file);
+        std::vector<int> out(42, -1);
 
-        adiar::file_stream<bdd::label_t> out_labels(label_file_out);
+        auto it_b   = out.begin();
+        auto it_e   = out.end();
 
-        AssertThat(out_labels.can_pull(), Is().True());
-        AssertThat(out_labels.pull(), Is().EqualTo(1u));
+        const auto out_it = bdd_varprofile(bdd_file, it_b, it_e);
 
-        AssertThat(out_labels.can_pull(), Is().True());
-        AssertThat(out_labels.pull(), Is().EqualTo(3u));
+        AssertThat(*(it_b+0), Is().EqualTo(1));
+        AssertThat(*(it_b+1), Is().EqualTo(3));
+        AssertThat(*(it_b+2), Is().EqualTo(4));
 
-        AssertThat(out_labels.can_pull(), Is().True());
-        AssertThat(out_labels.pull(), Is().EqualTo(4u));
-
-        AssertThat(out_labels.can_pull(), Is().False());
+        AssertThat(out_it, Is().EqualTo(it_b+3));
+        AssertThat(*out_it, Is().EqualTo(-1));
       });
 
       it("returns [0,1,2] for a ZDD with multiple nodes", [&]() {
-        adiar::shared_file<zdd::label_t> label_file_out = zdd_varprofile(zdd_file);
+        std::vector<int> out(42, -1);
 
-        adiar::file_stream<zdd::label_t> out_labels(label_file_out);
+        auto it_b   = out.begin();
+        auto it_e   = out.end();
 
-        AssertThat(out_labels.can_pull(), Is().True());
-        AssertThat(out_labels.pull(), Is().EqualTo(0u));
+        const auto out_it = zdd_varprofile(zdd_file, it_b, it_e);
 
-        AssertThat(out_labels.can_pull(), Is().True());
-        AssertThat(out_labels.pull(), Is().EqualTo(1u));
+        AssertThat(*(it_b+0), Is().EqualTo(0));
+        AssertThat(*(it_b+1), Is().EqualTo(1));
+        AssertThat(*(it_b+2), Is().EqualTo(2));
 
-        AssertThat(out_labels.can_pull(), Is().True());
-        AssertThat(out_labels.pull(), Is().EqualTo(2u));
+        AssertThat(out_it, Is().EqualTo(it_b+3));
+        AssertThat(*out_it, Is().EqualTo(-1));
+      });
 
-        AssertThat(out_labels.can_pull(), Is().False());
+      it("throws if range is too small for BDD", [&]() {
+        std::vector<int> out(1,-1);
+        AssertThrows(out_of_range, bdd_varprofile(bdd_file, out.begin(), out.end()));
+      });
+
+      it("throws if range is too small for ZDD", [&]() {
+        std::vector<int> out(1,-1);
+        AssertThrows(out_of_range, zdd_varprofile(zdd_file, out.begin(), out.end()));
       });
     });
 

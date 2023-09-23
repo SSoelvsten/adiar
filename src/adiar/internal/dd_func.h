@@ -12,18 +12,11 @@ namespace adiar::internal
   /// \brief Obtain the level_info stream projected onto the labels.
   ////////////////////////////////////////////////////////////////////////////
   template <typename dd_t>
-  inline shared_file<typename dd_t::label_t>
-  dd_varprofile(const dd_t &dd)
+  void dd_varprofile(const dd_t &dd,
+                     const std::function<void(typename dd_t::label_t)> &cb)
   {
     level_info_stream<> info_stream(dd);
-
-    shared_file<typename dd_t::label_t> vars;
-    file_writer<typename dd_t::label_t> writer(vars);
-
-    while(info_stream.can_pull()) {
-      writer << info_stream.pull().label();
-    }
-    return vars;
+    while(info_stream.can_pull()) { cb(info_stream.pull().label()); }
   }
 
   // TODO: move into 'dd' class?

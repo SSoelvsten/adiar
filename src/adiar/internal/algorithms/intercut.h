@@ -176,7 +176,14 @@ namespace adiar::internal
     shared_levelized_file<arc> out_arcs;
     arc_writer aw(out_arcs);
 
-    shared_file<typename intercut_policy::label_t> dd_levels = dd_varprofile(dd);
+    shared_file<typename intercut_policy::label_t> dd_levels;
+    {
+      file_writer<typename intercut_policy::label_t> lw(dd_levels);
+      dd_varprofile(dd, [&lw](const typename intercut_policy::label_t x) {
+        lw << x;
+      });
+    }
+
     pq_t intercut_pq({dd_levels, labels}, pq_memory, max_pq_size, stats_intercut.lpq);
 
     // Add request for root in the queue

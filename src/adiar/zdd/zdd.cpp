@@ -191,9 +191,9 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Input variables
-  shared_file<zdd::label_t> zdd_varprofile(const zdd &A)
+  void zdd_varprofile(const zdd &A, const std::function<void(zdd::label_t)> &cb)
   {
-    return internal::dd_varprofile(A);
+    return internal::dd_varprofile(A, cb);
   }
 
   //////////////////////////////////////////////////////////////////////////////
