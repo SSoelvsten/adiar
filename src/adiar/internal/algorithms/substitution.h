@@ -104,6 +104,8 @@ namespace adiar::internal
     typename substitute_policy::label_t level = n.label();
     size_t level_size = 0;
 
+    bool output_changes = false;
+
     assignment a = amgr.assignment_for_level(level);
 
     // process the root and create initial recursion requests
@@ -115,9 +117,13 @@ namespace adiar::internal
 
         level_size = 1;
 
+        output_changes |= n_res != n;
+
         __substitute_resolve_request(low_arc_of(n_res), substitute_pq, aw);
         __substitute_resolve_request(high_arc_of(n_res), substitute_pq, aw);
       } else { // std::holds_alternative<substitute_rec_skipto>(n_res)
+        output_changes = true;
+
         const ptr_uint64 rec_child = std::get<substitute_rec_skipto>(rec_res).child;;
 
         if(rec_child.is_terminal()) {
@@ -156,6 +162,7 @@ namespace adiar::internal
 
       if(std::holds_alternative<substitute_rec_output>(rec_res)) {
         const node n_res = std::get<substitute_rec_output>(rec_res).out;
+        output_changes |= n_res != n;
 
         // outgoing arcs
         __substitute_resolve_request(low_arc_of(n_res), substitute_pq, aw);
@@ -172,6 +179,8 @@ namespace adiar::internal
 
         level_size++;
       } else { // std::holds_alternative<substitute_rec_skipto>(rec_res)
+        output_changes = true;
+
         const ptr_uint64 rec_child = std::get<substitute_rec_skipto>(rec_res).child;
 
         while(substitute_pq.can_pull() && substitute_pq.top().target() == n.uid()) {
@@ -194,6 +203,10 @@ namespace adiar::internal
     }
 
     out_arcs->max_1level_cut = max_1level_cut;
+
+    if (!output_changes) {
+      return dd;
+    }
     return out_arcs;
   }
 

@@ -407,24 +407,62 @@ namespace adiar
   ///
   /// \param A    Family of set
   ///
-  /// \param vars Label of the variables to filter on (in ascending order)
+  /// \param vars Generator function of the variable labels to filter on in
+  ///             *ascending* order.
   ///
   /// \returns
   /// \f$ \{ a \in A \mid \forall i \in \mathit{vars} : i \not\in a \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_offset(const zdd &A, const shared_file<zdd::label_t> &vars);
+  __zdd zdd_offset(const zdd &A, const std::function<zdd::label_t()> &vars);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief      Subset that do \em not include the given set of variables.
+  ///
+  /// \param A    Family of set
+  ///
+  /// \param begin Iterator with variables to filter on in *ascending* order.
+  ///
+  /// \param end   Iterator that marks the end for `begin`.
+  ///
+  /// \returns
+  /// \f$ \{ a \in A \mid \forall i \in \mathit{vars} : i \not\in a \} \f$
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename IT>
+  __zdd zdd_offset(const zdd &A, IT begin, IT end)
+  {
+    return zdd_offset(A, internal::iterator_gen<zdd::label_t>(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Subset that \em do include the given set of variables.
   ///
   /// \param A    Family of set
   ///
-  /// \param vars Label of the variables to filter on (in ascending order)
+  /// \param vars Generator function of the variable labels to filter on in
+  ///             *ascending* order.
   ///
   /// \returns
   /// \f$ \{ a \in A \mid \forall i \in \mathit{vars} : i \in a \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_onset(const zdd &A, const shared_file<zdd::label_t> &vars);
+  __zdd zdd_onset(const zdd &A, const std::function<zdd::label_t()> &vars);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief      Subset that \em do include the given set of variables.
+  ///
+  /// \param A    Family of set
+  ///
+  /// \param begin Iterator with variables to filter on in *ascending* order.
+  ///
+  /// \param end   Iterator that marks the end for `begin`.
+  ///
+  /// \returns
+  /// \f$ \{ a \in A \mid \forall i \in \mathit{vars} : i \in a \} \f$
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename IT>
+  __zdd zdd_onset(const zdd &A, IT begin, IT end)
+  {
+    return zdd_onset(A, internal::iterator_gen<zdd::label_t>(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Project family of sets onto a domain, i.e. remove from every

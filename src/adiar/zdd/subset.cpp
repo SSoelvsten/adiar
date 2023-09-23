@@ -10,71 +10,81 @@
 namespace adiar
 {
   template<assignment FIX_VALUE>
-  class zdd_subset_label_assignment
+  class zdd_subset_labels
   {
-    internal::file_stream<zdd::label_t> ls;
+    const std::function<zdd::label_t()> &gen;
 
-    zdd::label_t l_incl;
-    zdd::label_t l_excl;
+    /// \brief The current level (including the current algorithm level)
+    zdd::label_t l_incl = zdd::MAX_LABEL+1;
 
-    bool has_excl = false;
+    /// \brief The next level (definitely excluding the current level)
+    zdd::label_t l_excl = zdd::MAX_LABEL+1;
 
-    // We will rememeber how far the algorithm in substitution.h has got
+    /// We will rememeber how far the algorithm in substitution.h has got
     zdd::label_t alg_level = 0;
 
   public:
-    zdd_subset_label_assignment(const shared_file<zdd::label_t> &lf)
-      : ls(lf)
+    /// We will remember whether any level of the input actually matched.
+    bool l_match = false;
+
+  public:
+    zdd_subset_labels(const std::function<zdd::label_t()> &g)
+      : gen(g)
     {
-      l_incl = ls.pull();
+      l_incl = gen();
+      if (l_incl <= zdd::MAX_LABEL) { l_excl = gen(); }
     }
 
   private:
-    inline void forward_to_level(const zdd::label_t new_level) {
+    /// \brief Forwards through the input to the given level
+    inline void forward_to_level(const zdd::label_t new_level)
+    {
       adiar_assert(alg_level <= new_level,
                    "The algorithm should ask for the levels in increasing order.");
 
       alg_level = new_level;
 
-      if (l_incl < new_level && has_excl) {
-        l_incl = l_excl;
-        has_excl = false;
-      }
-
-      while (l_incl < new_level && ls.can_pull()) {
-        l_incl = ls.pull();
+      while (l_incl <= zdd::MAX_LABEL && l_incl < new_level) {
+        l_incl = std::move(l_excl);
+        if (l_incl <= zdd::MAX_LABEL) { l_excl = gen(); };
       }
     }
 
   public:
-    assignment assignment_for_level(const zdd::label_t new_level) {
+    /// \brief Obtain the assignment for the current level
+    assignment assignment_for_level(const zdd::label_t new_level)
+    {
       forward_to_level(new_level);
-      return l_incl == new_level ? FIX_VALUE : assignment::None;
+
+      const bool level_matches = l_incl == new_level;
+      l_match |= level_matches;
+
+      return level_matches ? FIX_VALUE : assignment::None;
     }
 
   public:
-    bool has_level_incl() {
-      return alg_level <= l_incl || ls.can_pull();
+    /// \brief Whether the manager has a next level (including the current)
+    bool has_level_incl()
+    {
+      return l_incl <= zdd::MAX_LABEL && alg_level <= l_incl;
     }
 
+    /// \brief Get the current level (including the current algorithm level)
     zdd::label_t level_incl()
     {
       return l_incl;
     }
 
-    bool has_level_excl() {
-      return alg_level < l_incl || has_excl || ls.can_pull();
+    /// \brief Whether the manager has a level ahead of the current
+    bool has_level_excl()
+    {
+      return (l_incl <= zdd::MAX_LABEL && alg_level < l_incl) || l_excl <= zdd::MAX_LABEL;
     }
 
+    /// \brief Get the next level (excluding the current one)
     zdd::label_t level_excl()
     {
       if (alg_level < l_incl) { return l_incl; }
-
-      if (!has_excl) {
-        l_excl = ls.pull();
-        has_excl = true;
-      }
-
       return l_excl;
     }
   };
@@ -100,17 +110,24 @@ namespace adiar
     { return zdd_terminal(terminal_val); }
   };
 
-  __zdd zdd_offset(const zdd &dd, const shared_file<zdd::label_t> &l)
+  __zdd zdd_offset(const zdd &A, const std::function<zdd::label_t()> &xs)
   {
-    if (l->size() == 0
-        || is_terminal(dd)
-        || internal::disjoint_levels<shared_file<zdd::label_t>,
-                                     internal::file_stream<zdd::label_t>>(l, dd)) {
-      return dd;
-    }
+    // Both { Ø }, and Ø cannot have more variables removed
+    if (is_terminal(A)) { return A; }
 
-    zdd_subset_label_assignment<assignment::False> amgr(l);
-    return internal::substitute<zdd_offset_policy<zdd_subset_label_assignment<assignment::False>>>(dd, amgr);
+    zdd_subset_labels<assignment::False> amgr(xs);
+
+    // Empty set of variables in `xs`?
+    if (!amgr.has_level_incl()) { return A; }
+
+    // Run Substitute sweep
+    __zdd res = internal::substitute<zdd_offset_policy<zdd_subset_labels<assignment::False>>>(A, amgr);
+
+    // Skip Reduce if no level of `xs` matched with any in `A`.
+    if (!amgr.l_match) {
+      return A;
+    }
+    return res;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -148,6 +165,7 @@ namespace adiar
           return internal::substitute_rec_skipto { zdd::ptr_t(false) };
         }
       }
+
       return internal::substitute_rec_output { zdd::node_t(n.uid(), zdd::ptr_t(false), n.high()) };
     }
 
@@ -158,15 +176,29 @@ namespace adiar
     }
   };
 
-  __zdd zdd_onset(const zdd &dd, const shared_file<zdd::label_t> &l)
+  __zdd zdd_onset(const zdd &A, const std::function<zdd::label_t()> &xs)
   {
-    if (l->size() == 0 || (is_false(dd))) { return dd; }
-    if ((is_true(dd)) || internal::disjoint_levels<shared_file<zdd::label_t>,
-                                                   internal::file_stream<zdd::label_t>>(l, dd)) {
+    if (is_false(A)) { return A; }
+
+    zdd_subset_labels<assignment::True> amgr(xs);
+
+    // Empty set of variables in `xs`?
+    if (!amgr.has_level_incl()) {
+      return A;
+    }
+
+    // If `A` is { Ø } and `xs` is non-empty, then it trivially collapses to Ø.
+    if (is_true(A)) {
       return zdd_empty();
     }
 
-    zdd_subset_label_assignment<assignment::True> amgr(l);
-    return internal::substitute<zdd_onset_policy<zdd_subset_label_assignment<assignment::True>>>(dd, amgr);
+    // Run Substitute sweep
+    __zdd res = internal::substitute<zdd_onset_policy<zdd_subset_labels<assignment::True>>>(A, amgr);
+
+    // Skip Reduce no levels of `xs` matched with one from `A`.
+    if (!amgr.l_match) {
+      return zdd_empty();
+    }
+    return res;
   }
 }
