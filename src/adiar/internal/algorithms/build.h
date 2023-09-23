@@ -110,103 +110,117 @@ namespace adiar::internal
   };
 
   template<typename chain_policy>
-  inline shared_levelized_file<typename chain_policy::node_t>
+  inline typename chain_policy::reduced_t
   build_chain(const chain_policy &policy,
-              const shared_file<node::label_t> &labels)
-    {
-      const size_t number_of_levels = labels->size();
-      if (number_of_levels == 0) {
-        return build_terminal<chain_policy>(chain_policy::init_terminal);
-      }
+              const std::function<typename chain_policy::reduced_t::label_t()> &vars)
+  {
+    typename chain_policy::label_t next_label = vars();
 
-      shared_levelized_file<typename chain_policy::node_t> nf;
-      node_writer nw(nf);
-
-      file_stream<node::label_t, true> ls(labels);
-
-      size_t max_internal_cut      = 1;
-
-      size_t terminals_internal[2] = {0u, 0u};
-      bool   terminal_at_bottom[2] = {false, false};
-      size_t terminals[2]          = {0u, 0u};
-
-      node::ptr_t root = node::ptr_t(chain_policy::init_terminal);
-
-      while(ls.can_pull()) {
-        const node::ptr_t::label_t next_label = ls.pull();
-
-        if (node::MAX_LABEL < next_label) {
-          throw invalid_argument("Cannot represent that large a label");
-        }
-        if (!root.is_terminal() && root.label() <= next_label) {
-          throw invalid_argument("Labels not given in increasing order");
-        }
-
-        if (policy.skip(next_label)) { continue; }
-
-        const node n = policy.make_node(next_label, root);
-
-        max_internal_cut = std::max<size_t>(max_internal_cut,
-                                            n.low().is_node() + n.high().is_node());
-
-        if (n.low().is_terminal()) {
-          terminals_internal[n.low().value()] =
-            std::max<size_t>(terminals_internal[n.low().value()], n.high().is_node());
-
-          terminals[n.low().value()] += 1u;
-        }
-
-        if (n.high().is_terminal()) {
-          terminals_internal[n.high().value()] =
-            std::max<size_t>(terminals_internal[n.high().value()], n.low().is_node());
-
-          terminals[n.high().value()] += 1u;
-        }
-
-        if (root.is_terminal()) {
-          terminal_at_bottom[n.low().value()] = true;
-          terminal_at_bottom[n.high().value()] = true;
-        }
-
-        nw.unsafe_push(n);
-        nw.unsafe_push(level_info(next_label,1u));
-
-        root = n.uid();
-      }
-
-      if (nw.size() == 0u) {
-        return build_terminal<chain_policy>(chain_policy::init_terminal);
-      }
-
-      nw.unsafe_set_canonical(true);
-
-      // 1-level cuts
-      nf->max_1level_cut[cut_type::INTERNAL] = max_internal_cut;
-
-      nf->max_1level_cut[cut_type::INTERNAL_FALSE] =
-        std::max<size_t>({
-            nf->max_1level_cut[cut_type::INTERNAL],
-            terminals_internal[false] + terminals[false] - terminal_at_bottom[false],
-            terminals[false]
-          });
-
-      nf->max_1level_cut[cut_type::INTERNAL_TRUE] =
-        std::max<size_t>({
-            nf->max_1level_cut[cut_type::INTERNAL],
-            terminals_internal[true] + terminals[true] - terminal_at_bottom[true],
-            terminals[true]
-          });
-
-      nf->max_1level_cut[cut_type::ALL] =
-        std::max<size_t>({
-            nf->max_1level_cut[cut_type::INTERNAL],
-            nf->max_1level_cut[cut_type::INTERNAL_FALSE],
-            nf->max_1level_cut[cut_type::INTERNAL_TRUE],
-            terminals[false] + terminals[true]
-          });
-
-      return nf;
+    if (chain_policy::MAX_LABEL < next_label) {
+      return build_terminal<chain_policy>(chain_policy::init_terminal);
     }
+
+    shared_levelized_file<typename chain_policy::node_t> nf;
+    node_writer nw(nf);
+
+    size_t max_internal_cut      = 1;
+
+    size_t terminals_internal[2] = {0u, 0u};
+    bool   terminal_at_bottom[2] = {false, false};
+    size_t terminals[2]          = {0u, 0u};
+
+    node::ptr_t root = node::ptr_t(chain_policy::init_terminal);
+
+    while(next_label <= chain_policy::MAX_LABEL) {
+      // Fail if generator is increasing.
+      if (!root.is_terminal() && root.label() < next_label) {
+        throw invalid_argument("Labels not given in decreasing order");
+      }
+
+      // Skip value if generator provides the same (legal) value twice.
+      if (!root.is_terminal() && root.label() == next_label) {
+        next_label = vars();
+        continue;
+      }
+
+      // Skip value, if policy calls for it.
+      if (policy.skip(next_label)) {
+        next_label = vars();
+        continue;
+      }
+
+      // Create node on chain.
+      const node n = policy.make_node(next_label, root);
+
+      adiar_assert(n.label() == next_label, "Policy ought to make a node for this level node");
+      adiar_assert(n.id() == node::MAX_ID,  "Policy ought to make a canonical node");
+
+      max_internal_cut = std::max<size_t>(max_internal_cut,
+                                          n.low().is_node() + n.high().is_node());
+
+      if (n.low().is_terminal()) {
+        terminals_internal[n.low().value()] =
+          std::max<size_t>(terminals_internal[n.low().value()], n.high().is_node());
+
+        terminals[n.low().value()] += 1u;
+      }
+
+      if (n.high().is_terminal()) {
+        terminals_internal[n.high().value()] =
+          std::max<size_t>(terminals_internal[n.high().value()], n.low().is_node());
+
+        terminals[n.high().value()] += 1u;
+      }
+
+      if (root.is_terminal()) {
+        terminal_at_bottom[n.low().value()] = true;
+        terminal_at_bottom[n.high().value()] = true;
+      }
+
+      nw.unsafe_push(n);
+      nw.unsafe_push(level_info(next_label, 1u));
+
+      root = n.uid();
+
+      // Get next label
+      next_label = vars();
+    }
+
+    // If all values have been skipped by the policy, then collapse to a terminal
+    if (nw.size() == 0u) {
+      return build_terminal<chain_policy>(chain_policy::init_terminal);
+    }
+
+    // Canonicity (assuming the policies are correct)
+    nw.unsafe_set_canonical(true);
+
+    // 1-level cuts
+    nf->max_1level_cut[cut_type::INTERNAL] = max_internal_cut;
+
+    nf->max_1level_cut[cut_type::INTERNAL_FALSE] =
+      std::max<size_t>({
+          nf->max_1level_cut[cut_type::INTERNAL],
+          terminals_internal[false] + terminals[false] - terminal_at_bottom[false],
+          terminals[false]
+        });
+
+    nf->max_1level_cut[cut_type::INTERNAL_TRUE] =
+      std::max<size_t>({
+          nf->max_1level_cut[cut_type::INTERNAL],
+          terminals_internal[true] + terminals[true] - terminal_at_bottom[true],
+          terminals[true]
+        });
+
+    nf->max_1level_cut[cut_type::ALL] =
+      std::max<size_t>({
+          nf->max_1level_cut[cut_type::INTERNAL],
+          nf->max_1level_cut[cut_type::INTERNAL_FALSE],
+          nf->max_1level_cut[cut_type::INTERNAL_TRUE],
+          terminals[false] + terminals[true]
+        });
+
+    return nf;
+  }
 }
 
 #endif // ADIAR_INTERNAL_ALGORITHMS_BUILD_H

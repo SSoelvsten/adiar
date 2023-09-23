@@ -25,7 +25,9 @@ namespace adiar
     zdd get_zdd()
     {
       lw.detach();
-      return zdd_vars(lf);
+
+      internal::file_stream<zdd::label_t, true> ls(lf);
+      return zdd_vars(internal::stream_gen<zdd::label_t>(ls));
     }
   };
 

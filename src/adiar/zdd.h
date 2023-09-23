@@ -64,22 +64,40 @@ namespace adiar
   /// \brief     The set of bitvectors over a given domain where *var* is set to
   ///            true.
   ///
-  /// \details   Creates a ZDD with a don't care chain of nodes to the true
-  ///            child except for the node for `var`; this one instead is forced
-  ///            to be true. The given labels must be smaller than or equal to
-  ///            `zdd::MAX_LABEL`.
+  /// \details This function is (given the same domain of variables)
+  ///          semantically equivalent to `bdd_ithvar` even though the ZDD DAG
+  ///          does not at all look like the BDD DAG.
   ///
   /// \param var The variable to be forced to true.
   ///
-  /// \param dom Labels of the desired variables (in ascending order)
+  /// \param dom Generator function of the domain in *descending* order.
   ///
   /// \pre       The variable `var` should occur in `dom`.
   ///
-  /// \throws invalid_argument If `dom` is not in ascending order.
-  ///
-  /// \throws invalid_argument If `vars` includes a label that is too large.
+  /// \throws invalid_argument If `dom` is not in *descending* order.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_ithvar(zdd::label_t var, const shared_file<zdd::label_t> &dom);
+  zdd zdd_ithvar(zdd::label_t var, const std::function<zdd::label_t()> &dom);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief     The set of bitvectors over a given domain where *var* is set to
+  ///            true.
+  ///
+  /// \param var The variable to be forced to true.
+  ///
+  /// \param begin Iterator that provides the domain in *descending* order.
+  ///
+  /// \param end   Iterator that marks the end for `begin`.
+  ///
+  /// \pre       The variable `var` should occur in `dom`.
+  ///
+  /// \throws invalid_argument If the iterator does not provide values in
+  ///                          *descending* order.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename IT>
+  zdd zdd_ithvar(zdd::label_t var, IT begin, IT end)
+  {
+    return zdd_ithvar(var, internal::iterator_gen<zdd::label_t>(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The set of bitvectors over the globally set domain where *var*
@@ -98,20 +116,38 @@ namespace adiar
   ///
   /// \details   Creates a ZDD with a don't care chain of nodes to the true
   ///            child except for the node for `var`; this one instead is forced
-  ///            to be true. The given labels must be smaller than or equal to
-  ///            `zdd::MAX_LABEL`.
+  ///            to be true.
   ///
   /// \param var The variable to be forced to false.
   ///
-  /// \param dom Labels of the desired variables (in ascending order)
+  /// \param dom Generator function of the domain in *descending* order.
   ///
   /// \pre       The variable `var` should occur in `dom`.
   ///
-  /// \throws invalid_argument If `dom` is not in ascending order.
-  ///
-  /// \throws invalid_argument If `vars` includes a label that is too large.
+  /// \throws invalid_argument If `dom` is not in *descending* order.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_nithvar(zdd::label_t var, const shared_file<zdd::label_t> &dom);
+  zdd zdd_nithvar(zdd::label_t var, const std::function<zdd::label_t()> &dom);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief       The set of bitvectors over a given domain where *var* is set
+  ///              to false.
+  ///
+  /// \param var   The variable to be forced to false.
+  ///
+  /// \param begin Iterator that provides the domain in *descending* order.
+  ///
+  /// \param end   Iterator that marks the end for `begin`.
+  ///
+  /// \pre         The variable `var` should occur in `dom`.
+  ///
+  /// \throws invalid_argument If the iterator does not provide values in
+  ///                          *descending* order.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename IT>
+  zdd zdd_nithvar(zdd::label_t var, IT begin, IT end)
+  {
+    return zdd_nithvar(var, internal::iterator_gen<zdd::label_t>(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The set of bitvectors over the globally set domain where *var*
@@ -128,16 +164,29 @@ namespace adiar
   /// \brief     The family { { 1, 2, ..., k } }.
   ///
   /// \details   Creates a ZDD with a chain of nodes on the 'high' arc to the
-  ///            true child, and false otherwise. The given labels must be
-  ///            smaller than or equal to `zdd::MAX_LABEL`.
+  ///            true child, and false otherwise.
   ///
-  /// \param vars Labels of the desired variables (in ascending order)
+  /// \param vars Generator function of the variables in *descending* order.
   ///
-  /// \throws invalid_argument If `vars` are not in ascending order.
-  ///
-  /// \throws invalid_argument If `vars` includes a label that is too large.
+  /// \throws invalid_argument If `vars` are not in *descending* order.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_vars(const shared_file<zdd::label_t> &vars);
+  zdd zdd_vars(const std::function<zdd::label_t()> &vars);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief       The family { { 1, 2, ..., k } }.
+  ///
+  /// \param begin Iterator that provides the variables in *descending* order.
+  ///
+  /// \param end   Iterator that marks the end for `begin`.
+  ///
+  /// \throws invalid_argument If the iterator does not provide values in
+  ///                          *descending* order.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename IT>
+  zdd zdd_vars(IT begin, IT end)
+  {
+    return zdd_vars(internal::iterator_gen<zdd::label_t>(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The family { {i} } .
@@ -156,33 +205,57 @@ namespace adiar
   /// \brief     The family { {1}, {2}, ..., {k} }.
   ///
   /// \details   Creates a ZDD with a chain of nodes on the 'low' arc to the
-  ///            true child, and false otherwise. The given labels must be
-  ///            smaller than or equal to `zdd::MAX_LABEL`.
+  ///            true child, and false otherwise.
   ///
-  /// \param vars Labels of the desired variables (in ascending order)
+  /// \param vars Generator function of the variables in *descending* order.
   ///
-  /// \throws invalid_argument If `vars` are not in ascending order.
-  ///
-  /// \throws invalid_argument If `vars` includes a label that is too large.
+  /// \throws invalid_argument If `vars` are not in *descending* order.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_singletons(const shared_file<zdd::label_t> &vars);
+  zdd zdd_singletons(const std::function<zdd::label_t()> &vars);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief       The family { {1}, {2}, ..., {k} }.
+  ///
+  /// \param begin Iterator that provides the variables in *descending* order.
+  ///
+  /// \param end   Iterator that marks the end for `begin`.
+  ///
+  /// \throws invalid_argument If the iterator does not provide values in
+  ///                          *descending* order.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename IT>
+  zdd zdd_singletons(IT begin, IT end)
+  {
+    return zdd_singletons(internal::iterator_gen<zdd::label_t>(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The powerset of all given variables.
   ///
   /// \details   Creates a ZDD with a don't care chain of nodes to the true
-  ///            child. The given labels must be smaller than or equal to
-  ///            `zdd::MAX_LABEL`.
+  ///            child.
   ///
-  /// \param vars Labels of the desired variables (in ascending order)
+  /// \param vars Generator function of the variables in *descending* order.
   ///
-  /// \throws invalid_argument If `vars` are not in ascending order.
-  ///
-  /// \throws invalid_argument If `vars` includes a label that is too large.
+  /// \throws invalid_argument If `vars` are not in *ascending* order.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_powerset(const shared_file<zdd::label_t> &vars);
+  zdd zdd_powerset(const std::function<zdd::label_t()> &vars);
 
-  // For templated constructors see 'adiar/zdd/build.h'
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief       The powerset of all given variables.
+  ///
+  /// \param begin Iterator that provides the variables in *descending* order.
+  ///
+  /// \param end   Iterator that marks the end for `begin`.
+  ///
+  /// \throws invalid_argument If the iterator does not provide values in
+  ///                          *descending* order.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename IT>
+  zdd zdd_powerset(IT begin, IT end)
+  {
+    return zdd_powerset(internal::iterator_gen<zdd::label_t>(begin, end));
+  }
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////

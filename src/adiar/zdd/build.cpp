@@ -54,17 +54,22 @@ namespace adiar
   };
 
   zdd zdd_ithvar(const zdd::label_t var,
-                 const shared_file<zdd::label_t> &dom)
+                 const std::function<zdd::label_t()> &dom)
   {
-    if (dom->size() == 0u) { return zdd_empty(); }
+    // TODO: Move empty dom edge-case inside of `internal::build_chain<>`?
 
     zdd_ithvar_policy p(var);
-    return internal::build_chain<>(p, dom);
+    const zdd res = internal::build_chain<>(p, dom);
+
+    return is_true(res) ? zdd_empty() : res;
   }
 
   zdd zdd_ithvar(const zdd::label_t var)
   {
-    return zdd_ithvar(var, adiar_get_domain());
+    const shared_file<domain_var_t> dom = adiar_get_domain();
+    internal::file_stream<domain_var_t, true> s(dom);
+
+    return zdd_ithvar(var, internal::stream_gen<zdd::label_t>(s));
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -90,7 +95,7 @@ namespace adiar
   };
 
   zdd zdd_nithvar(const zdd::label_t var,
-                  const shared_file<zdd::label_t> &dom)
+                  const std::function<zdd::label_t()> &dom)
   {
     zdd_nithvar_policy p(var);
     return internal::build_chain<>(p, dom);
@@ -98,14 +103,17 @@ namespace adiar
 
   zdd zdd_nithvar(const zdd::label_t var)
   {
-    return zdd_nithvar(var, adiar_get_domain());
+    const shared_file<domain_var_t> dom = adiar_get_domain();
+    internal::file_stream<domain_var_t, true> s(dom);
+
+    return zdd_nithvar(var, internal::stream_gen<zdd::label_t>(s));
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_vars(const shared_file<zdd::label_t> &labels)
+  zdd zdd_vars(const std::function<zdd::label_t()> &vars)
   {
     internal::chain_high<zdd_policy> p;
-    return internal::build_chain<>(p, labels);
+    return internal::build_chain<>(p, vars);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -115,16 +123,16 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_singletons(const shared_file<zdd::label_t> &labels)
+  zdd zdd_singletons(const std::function<zdd::label_t()> &vars)
   {
     internal::chain_low<zdd_policy> p;
-    return internal::build_chain<>(p, labels);
+    return internal::build_chain<>(p, vars);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_powerset(const shared_file<zdd::label_t> &dom)
+  zdd zdd_powerset(const std::function<zdd::label_t()> &vars)
   {
     internal::chain_both<zdd_policy> p;
-    return internal::build_chain<>(p, dom);
+    return internal::build_chain<>(p, vars);
   }
 }

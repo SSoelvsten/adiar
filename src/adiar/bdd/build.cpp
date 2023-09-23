@@ -41,16 +41,16 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_and(const shared_file<bdd::label_t> &labels)
+  bdd bdd_and(const std::function<bdd::label_t()> &vars)
   {
     internal::chain_high<bdd_policy> p;
-    return internal::build_chain<>(p, labels);
+    return internal::build_chain<>(p, vars);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_or(const shared_file<bdd::label_t> &labels)
+  bdd bdd_or(const std::function<bdd::label_t()> &vars)
   {
     internal::chain_low<bdd_policy> p;
-    return internal::build_chain<>(p, labels);
+    return internal::build_chain<>(p, vars);
   }
 }

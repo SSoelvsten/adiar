@@ -131,9 +131,28 @@ namespace adiar::internal
   inline std::function<label_t()>
   iterator_gen(IT &begin, IT &end)
   {
+    static_assert(std::is_integral<typename std::iterator_traits<IT>::value_type>::value,
+                  "Cannot create a label generator for non-integer iterators");
+
     return [&begin, &end]() {
       if (begin == end) { return static_cast<label_t>(-1); }
       return static_cast<label_t>(*(begin++));
+    };
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Converts a `file_stream` into a generator function.
+  ////////////////////////////////////////////////////////////////////////////
+  template<typename label_t, typename stream_t>
+  inline std::function<label_t()>
+  stream_gen(stream_t &s)
+  {
+    static_assert(std::is_integral<typename stream_t::elem_t>::value,
+                  "Cannot create a label generator for non-integer streams");
+
+    return [&s]() {
+      if (!s.can_pull()) { return static_cast<label_t>(-1); }
+      return static_cast<label_t>(s.pull());
     };
   }
 }
