@@ -4,23 +4,11 @@ go_bandit([]() {
   // TODO: tests are missing cut sizes
 
   describe("adiar/internal/algorithms/convert.h", []() {
-    adiar::shared_file<node::label_t> dom_012;
-    {
-      label_writer w(dom_012);
-      w << 0 << 1 << 2;
-    }
-
-    adiar::shared_file<node::label_t> dom_0123;
-    {
-      label_writer w(dom_0123);
-      w << 0 << 1 << 2 << 3;
-    }
-
-    adiar::shared_file<node::label_t> dom_024;
-    {
-      label_writer w(dom_024);
-      w << 0 << 2 << 4;
-    }
+    const std::vector<int> dom_empty = { };
+    const std::vector<int> dom_0     = { 0 };
+    const std::vector<int> dom_012   = { 0, 1, 2 };
+    const std::vector<int> dom_0123  = { 0, 1, 2, 3};
+    const std::vector<int> dom_024   = { 0, 2, 4 };
 
     shared_levelized_file<dd::node_t> nf_F;
     {
@@ -101,10 +89,13 @@ go_bandit([]() {
     bdd bdd_x0(nf_x0);
     bdd bdd_x2(nf_x2);
 
-    describe("bdd_from(const zdd&, const label_file&)", [&]() {
+    describe("bdd_from(const zdd&, const generator_func&)", [&]() {
+      // TODO
+    });
+
+    describe("bdd_from(const zdd&, IT, IT)", [&]() {
       it("returns F terminal on Ø with dom = Ø", [&]() {
-        adiar::shared_file<node::label_t> dom_empty;
-        __bdd out = bdd_from(zdd_F, dom_empty);
+        __bdd out = bdd_from(zdd_F, dom_empty.begin(), dom_empty.end());
 
         node_test_stream out_nodes(out);
 
@@ -118,8 +109,7 @@ go_bandit([]() {
       });
 
       it("returns T terminal on { Ø } with dom = Ø", [&]() {
-        adiar::shared_file<node::label_t> dom_empty;
-        __bdd out = bdd_from(zdd_T, dom_empty);
+        __bdd out = bdd_from(zdd_T, dom_empty.begin(), dom_empty.end());
 
         node_test_stream out_nodes(out);
 
@@ -133,7 +123,7 @@ go_bandit([]() {
       });
 
       it("returns F terminal on Ø with dom = { 0,1,2 }", [&]() {
-        __bdd out = bdd_from(zdd_F, dom_012);
+        __bdd out = bdd_from(zdd_F, dom_012.begin(), dom_012.end());
 
         node_test_stream out_nodes(out);
 
@@ -147,7 +137,7 @@ go_bandit([]() {
       });
 
       it("returns check-false chain to T terminal on { Ø } with dom = { 0,1,2 }", [&]() {
-        __bdd out = bdd_from(zdd_T, dom_012);
+        __bdd out = bdd_from(zdd_T, dom_012.begin(), dom_012.end());
 
         node_test_stream out_nodes(out);
 
@@ -183,7 +173,7 @@ go_bandit([]() {
       });
 
       it("adds pre-root false-chain on { { 2 } } with dom = { 0,1,2 }", [&]() {
-        __bdd out = bdd_from(zdd_x2, dom_012);
+        __bdd out = bdd_from(zdd_x2, dom_012.begin(), dom_012.end());
 
         arc_test_stream arcs(out);
 
@@ -224,7 +214,7 @@ go_bandit([]() {
       });
 
       it("adds post-nodes false-chain on { { 0 } } with dom = { 0,1,2 }", [&]() {
-        __bdd out = bdd_from(zdd_x0, dom_012);
+        __bdd out = bdd_from(zdd_x0, dom_012.begin(), dom_012.end());
 
         arc_test_stream arcs(out);
 
@@ -265,13 +255,7 @@ go_bandit([]() {
       });
 
       it("kills root and returns T terminal on { Ø, { 0 } } with dom = { 0 }", [&]() {
-        adiar::shared_file<node::label_t> dom_0;
-        {
-          label_writer lw(dom_0);
-          lw << 0;
-        }
-
-        __bdd out = bdd_from(zdd_x0_null, dom_0);
+        __bdd out = bdd_from(zdd_x0_null, dom_0.begin(), dom_0.end());
 
         node_test_stream out_nodes(out);
 
@@ -285,7 +269,7 @@ go_bandit([]() {
       });
 
       it("kills root on { Ø, { 0 } } with dom = { 0,1,2 }", [&]() {
-        __bdd out = bdd_from(zdd_x0_null, dom_012);
+        __bdd out = bdd_from(zdd_x0_null, dom_012.begin(), dom_012.end());
 
         arc_test_stream arcs(out);
 
@@ -317,7 +301,7 @@ go_bandit([]() {
       });
 
       it("kills root and bridges over it on { Ø, { 1 } } with dom = { 0,1,2 }", [&]() {
-        __bdd out = bdd_from(zdd_x1_null, dom_012);
+        __bdd out = bdd_from(zdd_x1_null, dom_012.begin(), dom_012.end());
 
         arc_test_stream arcs(out);
 
@@ -349,7 +333,7 @@ go_bandit([]() {
       });
 
       it("kills root and bridges over it on { Ø, { 2 } } with dom = { 0,2,4 }", [&]() {
-        __bdd out = bdd_from(zdd_x2_null, dom_024);
+        __bdd out = bdd_from(zdd_x2_null, dom_024.begin(), dom_024.end());
 
         arc_test_stream arcs(out);
 
@@ -392,7 +376,7 @@ go_bandit([]() {
         }
         zdd zdd_pow(nf_pow_dom);
 
-        __bdd out = bdd_from(zdd_pow, dom_012);
+        __bdd out = bdd_from(zdd_pow, dom_012.begin(), dom_012.end());
 
         node_test_stream out_nodes(out);
 
@@ -417,7 +401,7 @@ go_bandit([]() {
         }
         zdd zdd_pow(nf_pow_dom);
 
-        __bdd out = bdd_from(zdd_pow, dom_024);
+        __bdd out = bdd_from(zdd_pow, dom_024.begin(), dom_024.end());
 
         node_test_stream out_nodes(out);
 
@@ -453,7 +437,7 @@ go_bandit([]() {
         }
         zdd in(nf);
 
-        __bdd out = bdd_from(in, dom_012);
+        __bdd out = bdd_from(in, dom_012.begin(), dom_012.end());
         /*
         //        _1_     ---- x0
         //       /   \
@@ -504,7 +488,7 @@ go_bandit([]() {
 
       // Minato examples
       it("converts [Minato] Fig. 5 into Fig. 3 with dom = { 0,1,2 } ", [&]() {
-        __bdd out = bdd_from(zdd_minato_fig5, dom_012);
+        __bdd out = bdd_from(zdd_minato_fig5, dom_012.begin(), dom_012.end());
 
         arc_test_stream arcs(out);
 
@@ -551,7 +535,7 @@ go_bandit([]() {
       });
 
       it("converts [Minato] Fig. 5 into Fig. 3 with dom = { 0,1,2,3 }", [&]() {
-        __bdd out = bdd_from(zdd_minato_fig5, dom_0123);
+        __bdd out = bdd_from(zdd_minato_fig5, dom_0123.begin(), dom_0123.end());
 
         arc_test_stream arcs(out);
 
@@ -617,7 +601,7 @@ go_bandit([]() {
           nw << n3 << n2 << n1;
         }
 
-        __bdd out = bdd_from(nf, dom_0123);
+        __bdd out = bdd_from(nf, dom_0123.begin(), dom_0123.end());
 
         arc_test_stream arcs(out);
 
@@ -677,7 +661,7 @@ go_bandit([]() {
           nw << n3 << n2 << n1;
         }
 
-        __bdd out = bdd_from(nf, dom_012);
+        __bdd out = bdd_from(nf, dom_012.begin(), dom_012.end());
 
         arc_test_stream arcs(out);
 
@@ -754,7 +738,7 @@ go_bandit([]() {
 
         zdd in(nf_in);
 
-        __bdd out = bdd_from(in, dom_012);
+        __bdd out = bdd_from(in, dom_012.begin(), dom_012.end());
 
         arc_test_stream arcs(out);
 
@@ -807,11 +791,7 @@ go_bandit([]() {
       });
 
       it("bridges over root and others, and creates pre and post chains", [&]() {
-        adiar::shared_file<node::label_t> dom;
-        {
-          label_writer w(dom);
-          w << 0 << 1 << 2 << 3 << 4 << 5 << 6;
-        }
+        std::vector<int> dom = { 0, 1, 2, 3, 4, 5, 6 };
 
         shared_levelized_file<zdd::node_t> in;
         /*
@@ -844,7 +824,7 @@ go_bandit([]() {
           w << n7 << n6 << n5 << n4 << n3 << n2 << n1;
         }
 
-        __bdd out = bdd_from(in, dom);
+        __bdd out = bdd_from(in, dom.begin(), dom.end());
         /*
         //              1       ---- x0
         //             / \
@@ -943,7 +923,7 @@ go_bandit([]() {
 
     describe("bdd_from(const zdd&)", [&]() {
       it("returns check-false chain to T terminal on { Ø } with set dom = { 0,1,2 }", [&]() {
-        adiar_set_domain(dom_012);
+        adiar_set_domain(dom_012.begin(), dom_012.end());
 
         __bdd out = bdd_from(zdd_T);
 
@@ -981,7 +961,7 @@ go_bandit([]() {
       });
 
       it("kills root and bridges over it on { Ø, { 2 } } with set dom = { 0,2,4 }", [&]() {
-        adiar_set_domain(dom_024);
+        adiar_set_domain(dom_024.begin(), dom_024.end());
 
         __bdd out = bdd_from(zdd_x2_null);
 
@@ -1015,10 +995,13 @@ go_bandit([]() {
       });
     });
 
-    describe("zdd_from(const bdd&, const label_file&)", [&]() {
+    describe("zdd_from(const bdd&, const generator_func&)", [&]() {
+      // TODO
+    });
+
+    describe("zdd_from(const bdd&, IT, IT)", [&]() {
       it("returns Ø on F terminal with dom = Ø", [&]() {
-        adiar::shared_file<node::label_t> dom_empty;
-        __zdd out = zdd_from(bdd_F, dom_empty);
+        __zdd out = zdd_from(bdd_F, dom_empty.begin(), dom_empty.end());
 
         node_test_stream out_nodes(out);
 
@@ -1032,8 +1015,7 @@ go_bandit([]() {
       });
 
       it("returns { Ø } on T terminal with dom = Ø", [&]() {
-        adiar::shared_file<node::label_t> dom_empty;
-        __zdd out = zdd_from(bdd_T, dom_empty);
+        __zdd out = zdd_from(bdd_T, dom_empty.begin(), dom_empty.end());
 
         node_test_stream out_nodes(out);
 
@@ -1047,7 +1029,7 @@ go_bandit([]() {
       });
 
       it("returns Ø on F terminal with dom = { 0,1,2 }", [&]() {
-        __zdd out = zdd_from(bdd_F, dom_012);
+        __zdd out = zdd_from(bdd_F, dom_012.begin(), dom_012.end());
 
         node_test_stream out_nodes(out);
 
@@ -1061,7 +1043,7 @@ go_bandit([]() {
       });
 
       it("returns pow(dom) on T terminal with dom = { 0,1,2 }", [&]() {
-        __zdd out = zdd_from(bdd_T, dom_012);
+        __zdd out = zdd_from(bdd_T, dom_012.begin(), dom_012.end());
 
         node_test_stream out_nodes(out);
 
@@ -1097,7 +1079,7 @@ go_bandit([]() {
       });
 
       it("adds don't care chain before root on x2 terminal with dom = { 0,1,2 }", [&]() {
-        __zdd out = zdd_from(bdd_x2, dom_012);
+        __zdd out = zdd_from(bdd_x2, dom_012.begin(), dom_012.end());
 
         arc_test_stream arcs(out);
 
@@ -1138,7 +1120,7 @@ go_bandit([]() {
       });
 
       it("adds don't care chain after root on x0 terminal with dom = { 0,1,2 }", [&]() {
-        __zdd out = zdd_from(bdd_x0, dom_012);
+        __zdd out = zdd_from(bdd_x0, dom_012.begin(), dom_012.end());
 
         arc_test_stream arcs(out);
 
@@ -1186,7 +1168,7 @@ go_bandit([]() {
         }
         bdd in(nf);
 
-        __zdd out = zdd_from(in, dom_012);
+        __zdd out = zdd_from(in, dom_012.begin(), dom_012.end());
 
         arc_test_stream arcs(out);
 
@@ -1218,12 +1200,6 @@ go_bandit([]() {
       });
 
       it("kills root into { Ø } on ~x0 into with dom = { 0 }", [&]() {
-        adiar::shared_file<node::label_t> dom;
-        {
-          label_writer w(dom);
-          w << 0;
-        }
-
         shared_levelized_file<bdd::node_t> nf;
         {
           node_writer nw(nf);
@@ -1231,7 +1207,7 @@ go_bandit([]() {
         }
         bdd in(nf);
 
-        __zdd out = zdd_from(in, dom);
+        __zdd out = zdd_from(in, dom_0.begin(), dom_0.end());
 
         node_test_stream out_nodes(out);
 
@@ -1256,7 +1232,7 @@ go_bandit([]() {
         }
         bdd in(nf);
 
-        __zdd out = zdd_from(in, dom_024);
+        __zdd out = zdd_from(in, dom_024.begin(), dom_024.end());
 
         node_test_stream out_nodes(out);
 
@@ -1283,7 +1259,7 @@ go_bandit([]() {
         }
         bdd in(nf);
 
-        __zdd out = zdd_from(in, dom_012);
+        __zdd out = zdd_from(in, dom_012.begin(), dom_012.end());
 
         arc_test_stream arcs(out);
 
@@ -1328,7 +1304,7 @@ go_bandit([]() {
         }
         bdd in(nf);
 
-        __zdd out = zdd_from(in, dom_0123);
+        __zdd out = zdd_from(in, dom_0123.begin(), dom_0123.end());
 
         arc_test_stream arcs(out);
 
@@ -1372,7 +1348,7 @@ go_bandit([]() {
         }
         bdd in(nf);
 
-        __zdd out = zdd_from(in, dom_0123);
+        __zdd out = zdd_from(in, dom_0123.begin(), dom_0123.end());
 
         arc_test_stream arcs(out);
 
@@ -1426,7 +1402,7 @@ go_bandit([]() {
         }
         bdd in(nf);
 
-        __zdd out = zdd_from(in, dom_012);
+        __zdd out = zdd_from(in, dom_012.begin(), dom_012.end());
 
         arc_test_stream arcs(out);
 
@@ -1469,7 +1445,7 @@ go_bandit([]() {
 
     describe("zdd_from(const bdd&)", [&]() {
       it("returns pow(dom) on T terminal with set dom = { 0,1,2 }", [&]() {
-        adiar_set_domain(dom_012);
+        adiar_set_domain(dom_012.begin(), dom_012.end());
 
         __zdd out = zdd_from(bdd_T);
 
@@ -1518,7 +1494,7 @@ go_bandit([]() {
         }
         bdd in(nf);
 
-        adiar_set_domain(dom_024);
+        adiar_set_domain(dom_024.begin(), dom_024.end());
 
         __zdd out = zdd_from(in);
 

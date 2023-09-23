@@ -875,14 +875,27 @@ namespace adiar
   ///
   /// \param A   Family of a set (within the given domain)
   ///
-  /// \param dom Domain of all variables (in ascending order)
+  /// \param dom Generator function of domain variables in ascending order
   ///
   /// \returns   BDD that is true for the exact same assignments to variables in
   ///            the given domain.
-  ///
-  /// \pre       Labels in `dom` are provided in ascending order.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_from(const zdd &A, const shared_file<bdd::label_t> &dom);
+  __bdd bdd_from(const zdd &A, const std::function<bdd::label_t()> &dom);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief     Obtains the BDD that represents the same function/set as the
+  ///            given ZDD within the given domain.
+  ///
+  /// \param A   Family of a set (within the given domain)
+  ///
+  /// \param dom Iterator over the domain in ascending order
+  ///
+  /// \returns   BDD that is true for the exact same assignments to variables in
+  ///            the given domain.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename IT>
+  __bdd bdd_from(const zdd &A, IT begin, IT end)
+  { return bdd_from(A, internal::iterator_gen<bdd::label_t>(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \copybrief bdd_from

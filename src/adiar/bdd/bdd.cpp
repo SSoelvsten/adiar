@@ -163,15 +163,19 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Conversion
-  __bdd bdd_from(const zdd &A, const shared_file<bdd::label_t> &dom)
+  __bdd bdd_from(const zdd &A, const std::function<bdd::label_t()> &dom)
   {
-    return internal::intercut<internal::convert_dd_policy<bdd_policy, zdd_policy>>(A, dom);
+    return internal::intercut<internal::convert_dd_policy<bdd_policy, zdd_policy>>
+      (A, dom);
   }
 
   __bdd bdd_from(const zdd &A)
   {
     const shared_file<bdd::label_t> dom = adiar_get_domain();
-    return internal::intercut<internal::convert_dd_policy<bdd_policy, zdd_policy>>(A, dom);
+    internal::file_stream<domain_var_t> ds(dom);
+
+    return internal::intercut<internal::convert_dd_policy<bdd_policy, zdd_policy>>
+      (A, internal::stream_gen<bdd::label_t>(ds));
   }
 
   //////////////////////////////////////////////////////////////////////////////
