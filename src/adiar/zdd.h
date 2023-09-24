@@ -558,7 +558,6 @@ namespace adiar
   __zdd zdd_project(zdd &&A, const std::function<zdd::label_t()> &dom);
   /// \endcond
 
-
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Project family of sets onto a domain, i.e. remove from every
   ///            set all variables not within the domain.
@@ -575,7 +574,7 @@ namespace adiar
   template<typename IT>
   __zdd zdd_project(const zdd &A, IT begin, IT end)
   {
-    return zdd_project(A, internal::iterator_gen<bdd::label_t>(begin, end));
+    return zdd_project(A, internal::iterator_gen<zdd::label_t>(begin, end));
   }
 
   /// \cond
@@ -583,7 +582,7 @@ namespace adiar
   __zdd zdd_project(zdd &&A, IT begin, IT end)
   {
     return zdd_project(std::forward<zdd>(A),
-                       internal::iterator_gen<bdd::label_t>(begin, end));
+                       internal::iterator_gen<zdd::label_t>(begin, end));
   }
   /// \endcond
 
@@ -772,9 +771,30 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Whether the family includes the given set of labels
   ///
+  /// \param A Set of interest
+  ///
+  /// \param a Generator of a bit-vector in *ascending* order.
+  ///
   /// \returns Whether \f$ a \in A \f$
   //////////////////////////////////////////////////////////////////////////////
-  bool zdd_contains(const zdd &A, const shared_file<zdd::label_t> &a);
+  bool zdd_contains(const zdd &A, const std::function<zdd::label_t()> &a);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief       Whether the family includes the given set of labels
+  ///
+  /// \param A     Set of interest
+  ///
+  /// \param begin Iterator that provides the variables in *ascending* order.
+  ///
+  /// \param end   Iterator that marks the end for `begin`.
+  ///
+  /// \returns Whether \f$ \{\mathit{begin}, \dots, \mathit{end}\} \in A \f$
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename IT>
+  bool zdd_contains(const zdd &A, IT begin, IT end)
+  {
+    return zdd_contains(A, internal::iterator_gen<zdd::label_t>(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Retrieves the lexicographically smallest set a in A.
