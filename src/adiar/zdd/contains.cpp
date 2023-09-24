@@ -8,7 +8,7 @@ namespace adiar
 {
   class zdd_contains_visitor
   {
-    internal::file_stream<zdd::label_t> ls;
+    const std::function<zdd::label_t()> &gen;
 
     bool has_l = false;
     zdd::label_t l;
@@ -22,10 +22,11 @@ namespace adiar
     bool terminal_val = false;
 
   public:
-    zdd_contains_visitor(const shared_file<zdd::label_t> &labels) : ls(labels)
+    zdd_contains_visitor(const std::function<zdd::label_t()> &a)
+      : gen(a)
     {
-      has_l = ls.can_pull();
-      l = has_l ? ls.pull() : 0;
+      l = gen();
+      has_l = l <= zdd::MAX_LABEL;
     }
 
     inline zdd::ptr_t visit(const zdd::node_t &n)
@@ -39,7 +40,7 @@ namespace adiar
         if (is_first_visit && l < visited_label) { return zdd::ptr_t::NIL(); }
 
         // Will we miss a label?
-        if (l == visited_label && ls.can_pull()) { l = ls.pull(); }
+        if (l == visited_label && l <= zdd::MAX_LABEL) { l = gen(); }
         if (next_ptr.is_node() && visited_label < l && l < next_ptr.label()) {
           return zdd::ptr_t::NIL();
         }
@@ -53,12 +54,12 @@ namespace adiar
     { terminal_val = s; }
 
     inline bool get_result()
-    { return terminal_val && (!has_l || l <= visited_label) && !ls.can_pull(); }
+    { return terminal_val && zdd::MAX_LABEL < l; }
   };
 
-  bool zdd_contains(const zdd &zdd, const shared_file<zdd::label_t> &labels)
+  bool zdd_contains(const zdd &zdd, const std::function<zdd::label_t()> &a)
   {
-    zdd_contains_visitor v(labels);
+    zdd_contains_visitor v(a);
     internal::traverse(zdd, v);
     return v.get_result();
   }
