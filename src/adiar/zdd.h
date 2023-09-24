@@ -257,6 +257,70 @@ namespace adiar
     return zdd_powerset(internal::iterator_gen<zdd::label_t>(begin, end));
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief      Bottom of the powerset lattice.
+  ///
+  /// \param vars Generator function of the variables in *descending* order.
+  ///
+  /// \see zdd_empty
+  //////////////////////////////////////////////////////////////////////////////
+  inline zdd zdd_bot(const std::function<zdd::label_t()> &/*dom*/)
+  { return zdd_empty(); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief       Bottom of the powerset lattice.
+  ///
+  /// \param begin Iterator that provides the variables in *descending* order.
+  ///
+  /// \param end   Iterator that marks the end for `begin`.
+  ///
+  /// \see zdd_empty
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename IT>
+  inline zdd zdd_bot(IT /*begin*/, IT /*end*/)
+  { return zdd_empty(); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Bottom of the powerset lattice.
+  ///
+  /// \see zdd_empty
+  //////////////////////////////////////////////////////////////////////////////
+  inline zdd zdd_bot()
+  { return zdd_empty(); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief      Top of the powerset lattice.
+  ///
+  /// \param vars Generator function of the variables in *descending* order.
+  ///
+  /// \see zdd_powerset, zdd_null
+  //////////////////////////////////////////////////////////////////////////////
+  inline zdd zdd_top(const std::function<zdd::label_t()> &dom)
+  { return zdd_powerset(dom); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief       Top of the powerset lattice.
+  ///
+  /// \param begin Iterator that provides the variables in *descending* order.
+  ///
+  /// \param end   Iterator that marks the end for `begin`.
+  ///
+  /// \see zdd_empty
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename IT>
+  inline zdd zdd_top(IT begin, IT end)
+  { return zdd_powerset(begin, end); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief   Top of the powerset lattice.
+  ///
+  /// \details Since no set of variables is given, the global \ref
+  ///          module__domain is used (if available).
+  ///
+  /// \see zdd_powerset, zdd_null
+  //////////////////////////////////////////////////////////////////////////////
+  zdd zdd_top();
+
   /// \}
   //////////////////////////////////////////////////////////////////////////////
 
