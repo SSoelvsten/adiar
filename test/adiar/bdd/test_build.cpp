@@ -64,6 +64,35 @@ go_bandit([]() {
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
+      it("can create true terminal [bdd_top]", [&]() {
+        bdd res = bdd_top();
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(true)));
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(0u));
+
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        AssertThat(adiar::is_canonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
       it("can create false terminal [bdd_terminal]", [&]() {
         bdd res = bdd_terminal(false);
         node_test_stream ns(res);
@@ -95,6 +124,35 @@ go_bandit([]() {
 
       it("can create false terminal [bdd_false]", [&]() {
         bdd res = bdd_false();
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(false)));
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(0u));
+
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        AssertThat(adiar::is_canonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
+      });
+
+      it("can create false terminal [bdd_bot]", [&]() {
+        bdd res = bdd_bot();
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
