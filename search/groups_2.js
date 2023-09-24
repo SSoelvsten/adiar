@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['statistics_738',['Statistics',['../group__module____statistics.html',1,'']]]
+  ['statistics_744',['Statistics',['../group__module____statistics.html',1,'']]]
 ];
