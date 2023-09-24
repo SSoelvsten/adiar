@@ -135,4 +135,17 @@ namespace adiar
     internal::chain_both<zdd_policy> p;
     return internal::build_chain<>(p, vars);
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+  zdd zdd_top()
+  {
+    if (!adiar_has_domain()) {
+      return zdd_null();
+    }
+
+    const shared_file<domain_var_t> dom = adiar_get_domain();
+    internal::file_stream<domain_var_t, true> ds(dom);
+
+    return zdd_powerset(internal::stream_gen<zdd::label_t>(ds));
+  }
 }
