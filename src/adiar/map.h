@@ -1,8 +1,11 @@
+// TODO: Remove entire file!
+
 #ifndef ADIAR_MAP_H
 #define ADIAR_MAP_H
 
-#include <functional>
 #include <type_traits>
+
+#include <adiar/functional.h>
 
 namespace adiar
 {

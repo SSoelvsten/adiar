@@ -1415,7 +1415,7 @@ go_bandit([]() {
       });
     });
 
-    describe("bdd_exists(const bdd&, const std::function<bool(bdd::label_t)>&)", [&]() {
+    describe("bdd_exists(const bdd&, const predicate<bdd::label_t>&)", [&]() {
       it("returns input on always-false predicate BDD 1 [&&]", [&]() {
         __bdd out = bdd_exists(bdd_1, [](const bdd::label_t) -> bool {
           return false;
@@ -3711,7 +3711,7 @@ go_bandit([]() {
       });
     });
 
-    describe("bdd_exists(const bdd&, const std::function<bdd::label_t()>&)", [&]() {
+    describe("bdd_exists(const bdd&, const generator<bdd::label_t>&)", [&]() {
       it("returns input on -1 generator BDD 1 [&&]", [&]() {
         __bdd out = bdd_exists(bdd_1, []() -> bdd::label_t { return -1; });
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd_1));
@@ -4448,7 +4448,7 @@ go_bandit([]() {
       });
     });
 
-    describe("bdd_forall(const bdd&, const std::function<bool(bdd::label_t)>&)", [&]() {
+    describe("bdd_forall(const bdd&, const predicate<bdd::label_t>&)", [&]() {
       it("returns input on always-false predicate BDD 1 [&&]", [&]() {
         __bdd out = bdd_forall(bdd_1, [](const bdd::label_t) -> bool {
           return false;
@@ -4691,7 +4691,7 @@ go_bandit([]() {
       });
     });
 
-    describe("bdd_forall(const bdd&, const std::function<bdd::label_t()>&)", [&]() {
+    describe("bdd_forall(const bdd&, const generator<bdd::label_t>&)", [&]() {
       it("returns input on -1 geneator in BDD 1 [&&]", [&]() {
         __bdd out = bdd_forall(bdd_1, []() -> bdd::label_t { return -1; });
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd_1));

@@ -53,8 +53,7 @@ namespace adiar
     }
   };
 
-  zdd zdd_ithvar(const zdd::label_t var,
-                 const std::function<zdd::label_t()> &dom)
+  zdd zdd_ithvar(const zdd::label_t var, const generator<zdd::label_t> &dom)
   {
     // TODO: Move empty dom edge-case inside of `internal::build_chain<>`?
 
@@ -69,7 +68,7 @@ namespace adiar
     const shared_file<domain_var_t> dom = adiar_get_domain();
     internal::file_stream<domain_var_t, true> ds(dom);
 
-    return zdd_ithvar(var, internal::stream_gen<zdd::label_t>(ds));
+    return zdd_ithvar(var, make_generator(ds));
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -94,8 +93,7 @@ namespace adiar
     { return zdd_policy::node_t(l, zdd_policy::MAX_ID, r, r); }
   };
 
-  zdd zdd_nithvar(const zdd::label_t var,
-                  const std::function<zdd::label_t()> &dom)
+  zdd zdd_nithvar(const zdd::label_t var, const generator<zdd::label_t> &dom)
   {
     zdd_nithvar_policy p(var);
     return internal::build_chain<>(p, dom);
@@ -106,11 +104,11 @@ namespace adiar
     const shared_file<domain_var_t> dom = adiar_get_domain();
     internal::file_stream<domain_var_t, true> ds(dom);
 
-    return zdd_nithvar(var, internal::stream_gen<zdd::label_t>(ds));
+    return zdd_nithvar(var, make_generator(ds));
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_vars(const std::function<zdd::label_t()> &vars)
+  zdd zdd_vars(const generator<zdd::label_t> &vars)
   {
     internal::chain_high<zdd_policy> p;
     return internal::build_chain<>(p, vars);
@@ -123,14 +121,14 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_singletons(const std::function<zdd::label_t()> &vars)
+  zdd zdd_singletons(const generator<zdd::label_t> &vars)
   {
     internal::chain_low<zdd_policy> p;
     return internal::build_chain<>(p, vars);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_powerset(const std::function<zdd::label_t()> &vars)
+  zdd zdd_powerset(const generator<zdd::label_t> &vars)
   {
     internal::chain_both<zdd_policy> p;
     return internal::build_chain<>(p, vars);
@@ -146,6 +144,6 @@ namespace adiar
     const shared_file<domain_var_t> dom = adiar_get_domain();
     internal::file_stream<domain_var_t, true> ds(dom);
 
-    return zdd_powerset(internal::stream_gen<zdd::label_t>(ds));
+    return zdd_powerset(make_generator(ds));
   }
 }

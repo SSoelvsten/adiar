@@ -13,7 +13,6 @@
 #include <adiar/internal/io/file.h>
 #include <adiar/internal/io/file_stream.h>
 #include <adiar/internal/io/node_stream.h>
-#include <adiar/internal/util.h>
 
 
 namespace adiar::internal
@@ -159,7 +158,7 @@ namespace adiar::internal
 
   template<typename intercut_policy, typename pq_t>
   typename intercut_policy::unreduced_t __intercut (const typename intercut_policy::reduced_t &dd,
-                                                    const std::function<typename intercut_policy::label_t()> &xs,
+                                                    const generator<typename intercut_policy::label_t> &xs,
                                                     const size_t pq_memory,
                                                     const size_t max_pq_size)
   {
@@ -316,7 +315,7 @@ namespace adiar::internal
 
   template<typename intercut_policy>
   typename intercut_policy::unreduced_t intercut(const typename intercut_policy::reduced_t &dd,
-                                                 const std::function<typename intercut_policy::label_t()> &xs)
+                                                 const generator<typename intercut_policy::label_t> &xs)
   {
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.

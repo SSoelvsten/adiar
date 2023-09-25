@@ -1,11 +1,10 @@
 #include <adiar/bdd.h>
 
-#include <functional>
-
 #include <adiar/domain.h>
 #include <adiar/exception.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/assert.h>
+#include <adiar/internal/util.h>
 #include <adiar/internal/algorithms/traverse.h>
 #include <adiar/internal/data_types/level_info.h>
 #include <adiar/internal/io/file_stream.h>
@@ -17,11 +16,11 @@ namespace adiar
 {
   class bdd_eval_func_visitor
   {
-    const std::function<bool(bdd::label_t)> &af;
+    const predicate<bdd::label_t> &af;
     bool result = false;
 
   public:
-    bdd_eval_func_visitor(const std::function<bool(bdd::label_t)>& f)
+    bdd_eval_func_visitor(const predicate<bdd::label_t>& f)
       : af(f)
     { }
 
@@ -38,7 +37,7 @@ namespace adiar
     { return result; }
   };
 
-  bool bdd_eval(const bdd &bdd, const std::function<bool(bdd::label_t)> &af)
+  bool bdd_eval(const bdd &bdd, const predicate<bdd::label_t> &af)
   {
     bdd_eval_func_visitor v(af);
     traverse(bdd, v);
@@ -145,15 +144,15 @@ namespace adiar
 
   class bdd_sat_lambda_callback
   {
-    const std::function<void(bdd::label_t, bool)> &__lambda;
+    const consumer<bdd::label_t, bool> &_c;
 
   public:
-    bdd_sat_lambda_callback(const std::function<void(bdd::label_t, bool)> &lambda)
-      : __lambda(lambda)
+    bdd_sat_lambda_callback(const consumer<bdd::label_t, bool> &lambda)
+      : _c(lambda)
     { }
 
     void operator() (bdd::label_t x, bool v) const
-    { __lambda(x,v); }
+    { _c(x,v); }
   };
 
   template<typename visitor_t, typename callback_t, typename lvl_stream_t, typename lvl_t>
@@ -227,8 +226,7 @@ namespace adiar
     return _cb.get_bdd();
   }
 
-  void bdd_satmin(const bdd &f,
-                  const std::function<void(bdd::label_t, bool)> &cb)
+  void bdd_satmin(const bdd &f, const consumer<bdd::label_t, bool> &cb)
   {
     bdd_sat_lambda_callback _cb(cb);
     __bdd_satX<internal::traverse_satmin_visitor>(f, _cb);
@@ -243,8 +241,7 @@ namespace adiar
     return _cb.get_bdd();
   }
 
-  void bdd_satmax(const bdd &f,
-                  const std::function<void(bdd::label_t, bool)> &cb)
+  void bdd_satmax(const bdd &f, const consumer<bdd::label_t, bool> &cb)
   {
     bdd_sat_lambda_callback _cb(cb);
     __bdd_satX<internal::traverse_satmax_visitor>(f, _cb);

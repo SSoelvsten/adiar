@@ -243,7 +243,7 @@ go_bandit([]() {
     // TODO: Turn 'GreaterThanOrEqualTo' in max 1-level cuts below into an
     // 'EqualTo'.
 
-    describe("zdd_project(const zdd&, const std::function<bool(zdd::label_t)>)", [&]() {
+    describe("zdd_project(const zdd&, const predicate<zdd::label_t>)", [&]() {
       it("returns same file for Ø with dom = {1,3,5,...} [const &]", [&](){
         zdd out = zdd_project(zdd_empty, [](zdd::label_t x) { return x % 2; });
         AssertThat(out.file_ptr(), Is().EqualTo(zdd_empty));
@@ -1504,7 +1504,7 @@ go_bandit([]() {
       });
     });
 
-    describe("zdd_project(const zdd&, const std::function<zdd::label_t()>&)", [&]() {
+    describe("zdd_project(const zdd&, const generator<zdd::label_t>&)", [&]() {
       it("returns same file for Ø with dom = {6,4,2,0} [const &]", [&](){
         zdd::label_t var = 6;
 

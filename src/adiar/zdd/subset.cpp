@@ -3,7 +3,6 @@
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/unreachable.h>
-#include <adiar/internal/util.h>
 #include <adiar/internal/algorithms/substitution.h>
 #include <adiar/internal/io/file_stream.h>
 
@@ -12,7 +11,7 @@ namespace adiar
   template<assignment FIX_VALUE>
   class zdd_subset_labels
   {
-    const std::function<zdd::label_t()> &gen;
+    const generator<zdd::label_t> &gen;
 
     /// \brief The current level (including the current algorithm level)
     zdd::label_t l_incl = zdd::MAX_LABEL+1;
@@ -28,7 +27,7 @@ namespace adiar
     bool l_match = false;
 
   public:
-    zdd_subset_labels(const std::function<zdd::label_t()> &g)
+    zdd_subset_labels(const generator<zdd::label_t> &g)
       : gen(g)
     {
       l_incl = gen();
@@ -110,12 +109,12 @@ namespace adiar
     { return zdd_terminal(terminal_val); }
   };
 
-  __zdd zdd_offset(const zdd &A, const std::function<zdd::label_t()> &xs)
+  __zdd zdd_offset(const zdd &A, const generator<zdd::label_t> &vars)
   {
     // Both { Ø }, and Ø cannot have more variables removed
     if (is_terminal(A)) { return A; }
 
-    zdd_subset_labels<assignment::False> amgr(xs);
+    zdd_subset_labels<assignment::False> amgr(vars);
 
     // Empty set of variables in `xs`?
     if (!amgr.has_level_incl()) { return A; }
@@ -176,7 +175,7 @@ namespace adiar
     }
   };
 
-  __zdd zdd_onset(const zdd &A, const std::function<zdd::label_t()> &xs)
+  __zdd zdd_onset(const zdd &A, const generator<zdd::label_t> &xs)
   {
     if (is_false(A)) { return A; }
 

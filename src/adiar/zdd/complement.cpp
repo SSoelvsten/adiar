@@ -59,10 +59,10 @@ namespace adiar
 
       if (terminal_value) { // Include everything but Ø
         on_true_terminal_chain_policy p;
-        return internal::build_chain<>(p, internal::stream_gen<label_t>(ls));
+        return internal::build_chain<>(p, make_generator(ls));
       } else { // The complement of nothing is everything
         internal::chain_both<zdd_policy> p;
-        return internal::build_chain<>(p, internal::stream_gen<label_t>(ls));
+        return internal::build_chain<>(p, make_generator(ls));
       }
     }
 
@@ -102,7 +102,7 @@ namespace adiar
     // LCOV_EXCL_STOP
   };
 
-  __zdd zdd_complement(const zdd &dd, const std::function<zdd::label_t()> &dom)
+  __zdd zdd_complement(const zdd &dd, const generator<zdd::label_t> &dom)
   {
     return internal::intercut<zdd_complement_policy>(dd, dom);
   }
@@ -113,6 +113,6 @@ namespace adiar
     internal::file_stream<domain_var_t> ds(dom);
 
     return internal::intercut<zdd_complement_policy>
-      (dd, internal::stream_gen<bdd::label_t>(ds));
+      (dd, make_generator(ds));
   }
 }

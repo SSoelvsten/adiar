@@ -336,7 +336,7 @@ go_bandit([]() {
         });
       });
 
-      describe("bdd_eval(bdd, std::function<...>)", [&]() {
+      describe("bdd_eval(bdd, predicate<...>)", [&]() {
         it("returns F on test BDD with assignment 'l -> l = 3'", [&]() {
           auto af = [](const bdd::label_t l) {
             return l == 3;

@@ -7,7 +7,6 @@
 #include <adiar/domain.h>
 #include <adiar/internal/io/file_stream.h>
 #include <adiar/internal/dot.h>
-#include <adiar/internal/util.h>
 #include <adiar/internal/algorithms/convert.h>
 #include <adiar/internal/algorithms/intercut.h>
 #include <adiar/internal/algorithms/reduce.h>
@@ -191,14 +190,14 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Input variables
-  void zdd_varprofile(const zdd &A, const std::function<void(zdd::label_t)> &cb)
+  void zdd_varprofile(const zdd &A, const consumer<zdd::label_t> &cb)
   {
     return internal::dd_varprofile(A, cb);
   }
 
   //////////////////////////////////////////////////////////////////////////////
   // Conversion
-  __zdd zdd_from(const bdd &f, const std::function<zdd::label_t()> &dom)
+  __zdd zdd_from(const bdd &f, const generator<zdd::label_t> &dom)
   {
     return internal::intercut<internal::convert_dd_policy<zdd_policy, bdd_policy>>
       (f, dom);
@@ -210,7 +209,7 @@ namespace adiar
     internal::file_stream<domain_var_t> ds(dom);
 
     return internal::intercut<internal::convert_dd_policy<zdd_policy, bdd_policy>>
-      (f, internal::stream_gen<bdd::label_t>(ds));
+      (f, make_generator(ds));
   }
 
   //////////////////////////////////////////////////////////////////////////////

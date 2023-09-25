@@ -156,14 +156,14 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Input variables
-  void bdd_varprofile(const bdd &f, const std::function<void(bdd::label_t)> &cb)
+  void bdd_varprofile(const bdd &f, const consumer<bdd::label_t> &cb)
   {
     return internal::dd_varprofile(f, cb);
   }
 
   //////////////////////////////////////////////////////////////////////////////
   // Conversion
-  __bdd bdd_from(const zdd &A, const std::function<bdd::label_t()> &dom)
+  __bdd bdd_from(const zdd &A, const generator<bdd::label_t> &dom)
   {
     return internal::intercut<internal::convert_dd_policy<bdd_policy, zdd_policy>>
       (A, dom);
@@ -175,7 +175,7 @@ namespace adiar
     internal::file_stream<domain_var_t> ds(dom);
 
     return internal::intercut<internal::convert_dd_policy<bdd_policy, zdd_policy>>
-      (A, internal::stream_gen<bdd::label_t>(ds));
+      (A, make_generator(ds));
   }
 
   //////////////////////////////////////////////////////////////////////////////

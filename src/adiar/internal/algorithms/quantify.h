@@ -2,10 +2,10 @@
 #define ADIAR_INTERNAL_ALGORITHMS_QUANTIFY_H
 
 #include <algorithm>
-#include <functional>
 #include <variant>
 
 #include <adiar/bool_op.h>
+#include <adiar/functional.h>
 #include <adiar/quantify_mode.h>
 #include <adiar/internal/assert.h>
 #include <adiar/internal/block_size.h>
@@ -708,7 +708,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Predicate for whether a level should be swept on (or not).
     ////////////////////////////////////////////////////////////////////////////
-    using pred_t = std::function<bool(typename quantify_policy::label_t)>;
+    using pred_t = predicate<typename quantify_policy::label_t>;
 
   private:
     ////////////////////////////////////////////////////////////////////////////
@@ -751,7 +751,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Predicate for whether a level should be swept on (or not).
     ////////////////////////////////////////////////////////////////////////////
-    using pred_t = std::function<bool(typename quantify_policy::label_t)>;
+    using pred_t = predicate<typename quantify_policy::label_t>;
 
   private:
     ////////////////////////////////////////////////////////////////////////////
@@ -782,7 +782,7 @@ namespace adiar::internal
   template<typename quantify_policy>
   inline typename quantify_policy::label_t
   quantify__get_deepest(const typename quantify_policy::reduced_t &dd,
-                        const std::function<bool(typename quantify_policy::label_t)> &pred)
+                        const predicate<typename quantify_policy::label_t> &pred)
   {
     level_info_stream<true /* bottom-up */> lis(dd);
 
@@ -796,7 +796,7 @@ namespace adiar::internal
   template<typename quantify_policy>
   inline typename quantify_policy::label_t
   quantify__count_above_widest(const typename quantify_policy::reduced_t &dd,
-                               const std::function<bool(typename quantify_policy::label_t)> &pred)
+                               const predicate<typename quantify_policy::label_t> &pred)
   {
     level_info_stream<true /* bottom-up */> lis(dd);
 
@@ -813,7 +813,7 @@ namespace adiar::internal
   template<typename quantify_policy>
   typename quantify_policy::unreduced_t
   quantify(typename quantify_policy::reduced_t dd,
-           const std::function<bool(typename quantify_policy::label_t)> &pred,
+           const predicate<typename quantify_policy::label_t> &pred,
            const bool_op &op)
   {
     using unreduced_t = typename quantify_policy::unreduced_t;
@@ -967,22 +967,22 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   // Multi-variable (descending generator)
   template<typename quantify_policy>
-  class multi_quantify_policy__gen
+  class multi_quantify_policy__generator
     : public multi_quantify_policy<quantify_policy>
   {
   public:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Generator of levels to sweep on (or not to sweep on) in
+    /// \brief Generator of the levels to sweep on (or not to sweep on) in
     ///        descending order.
     ////////////////////////////////////////////////////////////////////////////
-    using gen_t = std::function<typename quantify_policy::label_t()>;
+    using generator_t = generator<typename quantify_policy::label_t>;
 
   private:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Generator of levels to sweep on (or not to sweep on) in
     ///        descending order.
     ////////////////////////////////////////////////////////////////////////////
-    const gen_t &_gen;
+    const generator_t &_lvls;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Buffer for to hold onto the generated next level.
@@ -991,10 +991,10 @@ namespace adiar::internal
 
   public:
     ////////////////////////////////////////////////////////////////////////////
-    multi_quantify_policy__gen(const bool_op &op, const gen_t &gen)
-      : multi_quantify_policy<quantify_policy>(op), _gen(gen)
+    multi_quantify_policy__generator(const bool_op &op, const generator_t &g)
+      : multi_quantify_policy<quantify_policy>(op), _lvls(g)
     {
-      _next_level = _gen();
+      _next_level = _lvls();
     }
 
   public:
@@ -1017,7 +1017,7 @@ namespace adiar::internal
     next_level(const node::ptr_t::label_t l)
     {
       while (has_next_level() && l < _next_level) {
-        _next_level = _gen();
+        _next_level = _lvls();
       }
       return _next_level;
     }
@@ -1047,7 +1047,7 @@ namespace adiar::internal
   template<typename quantify_policy>
   typename quantify_policy::unreduced_t
   quantify(typename quantify_policy::reduced_t dd,
-           const typename multi_quantify_policy__gen<quantify_policy>::gen_t &gen,
+           const typename multi_quantify_policy__generator<quantify_policy>::generator_t &lvls,
            const bool_op &op)
   {
     adiar_assert(is_commutative(op), "Operator must be commutative");
@@ -1060,18 +1060,18 @@ namespace adiar::internal
       { // -------------------------------------------------------------------
         // Case: Repeated single variable quantification
         // TODO: correctly handle quantify_policy::quantify_onset
-        typename quantify_policy::label_t on_level = gen();
+        typename quantify_policy::label_t on_level = lvls();
 
         if (quantify_policy::quantify_onset) {
           if (quantify_policy::MAX_LABEL < on_level) { return dd; }
 
-          typename quantify_policy::label_t next_on_level = gen();
+          typename quantify_policy::label_t next_on_level = lvls();
           while (next_on_level <= quantify_policy::MAX_LABEL) {
             dd = quantify<quantify_policy>(dd, on_level, op);
             if (is_terminal(dd)) { return dd; }
 
             on_level = next_on_level;
-            next_on_level = gen();
+            next_on_level = lvls();
           }
           return quantify<quantify_policy>(dd, on_level, op);
         } else { // !quantify_policy::quantify_onset
@@ -1093,7 +1093,7 @@ namespace adiar::internal
 
           // Quantify everything strictly in between 'bot_level' and 'top_level'
           typename quantify_policy::label_t bot_level = on_level;
-          typename quantify_policy::label_t top_level = gen();
+          typename quantify_policy::label_t top_level = lvls();
 
           while (bot_level <= quantify_policy::MAX_LABEL) {
             for (;;) {
@@ -1107,7 +1107,7 @@ namespace adiar::internal
             }
 
             bot_level = top_level;
-            top_level = gen();
+            top_level = lvls();
           }
           return dd;
         }
@@ -1123,7 +1123,7 @@ namespace adiar::internal
         //       bottom-most level to transpose the DAG.
         if constexpr (quantify_policy::quantify_onset) {
           // Obtain the bottom-most onset level that exists in the diagram.
-          typename quantify_policy::label_t transposition_level = gen();
+          typename quantify_policy::label_t transposition_level = lvls();
           if (quantify_policy::MAX_LABEL < transposition_level) { return dd; }
 
           {
@@ -1149,7 +1149,7 @@ namespace adiar::internal
               if (dd_level == transposition_level) {
                 break;
               } else { // dd_level < transposition_level
-                transposition_level = gen();
+                transposition_level = lvls();
 
                 // Did we run out of 'onset' levels?
                 if (quantify_policy::MAX_LABEL < transposition_level) {
@@ -1160,10 +1160,10 @@ namespace adiar::internal
           }
 
           // Quantify the 'transposition_level' as part of the initial transposition step
-          multi_quantify_policy__gen<quantify_policy> inner_impl(op, gen);
+          multi_quantify_policy__generator<quantify_policy> inner_impl(op, lvls);
           return nested_sweep<>(quantify<quantify_policy>(dd, transposition_level, op), inner_impl);
         } else { // !quantify_policy::quantify_onset
-          multi_quantify_policy__gen<quantify_policy> inner_impl(op, gen);
+          multi_quantify_policy__generator<quantify_policy> inner_impl(op, lvls);
           return nested_sweep<>(dd, inner_impl);
         }
       }

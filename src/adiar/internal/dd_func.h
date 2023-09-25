@@ -12,8 +12,7 @@ namespace adiar::internal
   /// \brief Obtain the level_info stream projected onto the labels.
   ////////////////////////////////////////////////////////////////////////////
   template <typename dd_t>
-  void dd_varprofile(const dd_t &dd,
-                     const std::function<void(typename dd_t::label_t)> &cb)
+  void dd_varprofile(const dd_t &dd, const consumer<typename dd_t::label_t> &cb)
   {
     level_info_stream<> info_stream(dd);
     while(info_stream.can_pull()) { cb(info_stream.pull().label()); }
