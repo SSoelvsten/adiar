@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['node_5ft_705',['node_t',['../classadiar_1_1internal_1_1____dd.html#aa014cbf4b5c1cf6ad3fc9e194c726683',1,'adiar::internal::__dd::node_t()'],['../classadiar_1_1internal_1_1dd.html#a78cf7a08f908d870c7a50a0e53914efe',1,'adiar::internal::dd::node_t()']]],
-  ['nodes_5ft_706',['nodes_t',['../classadiar_1_1internal_1_1dd.html#ac8a95b2205e0dc9e444a31af96f3db6f',1,'adiar::internal::dd']]]
+  ['label_5ft_715',['label_t',['../classadiar_1_1internal_1_1dd.html#a2442a4edc93ba57f00ecb249dc766a34',1,'adiar::internal::dd::label_t()'],['../classadiar_1_1internal_1_1arc.html#a3c7620d2cfa018ec63e3e85ed3dbdc96',1,'adiar::internal::arc::label_t()'],['../classadiar_1_1internal_1_1node.html#a37197ed662719976542ac0975871c619',1,'adiar::internal::node::label_t()'],['../classadiar_1_1internal_1_1ptr__uint64.html#abc07ccbe6d9937def83e52b981532801',1,'adiar::internal::ptr_uint64::label_t()']]]
 ];

@@ -8,6 +8,7 @@ var searchData=
   ['children_5ft_84',['children_t',['../classadiar_1_1internal_1_1node.html#ac4221aa0936684cdb6790a1b43c5f300',1,'adiar::internal::node::children_t()'],['../classadiar_1_1internal_1_1request_3_01CARDINALITY_00_010_00_01INPUTS_01_4.html#a45ec52929d634ac0329942afdb0fdc8e',1,'adiar::internal::request&lt; CARDINALITY, 0, INPUTS &gt;::children_t()']]],
   ['citing_20this_20project_85',['Citing this Project',['../page__cite.html',1,'']]],
   ['clear_86',['clear',['../classadiar_1_1builder.html#a0f9f6d71a0d5b40d6bf4200d8fb4fa4a',1,'adiar::builder']]],
-  ['count_87',['count',['../structadiar_1_1stats__t.html#a9b328d7bcba90a84cdc1831417b90ac6',1,'adiar::stats_t']]],
-  ['count_5ft_88',['count_t',['../structadiar_1_1stats__t_1_1count__t.html',1,'adiar::stats_t']]]
+  ['consumer_87',['consumer',['../group__module____adiar.html#gaafe5cd654f645ab158a795ccb7fa4373',1,'adiar']]],
+  ['count_88',['count',['../structadiar_1_1stats__t.html#a9b328d7bcba90a84cdc1831417b90ac6',1,'adiar::stats_t']]],
+  ['count_5ft_89',['count_t',['../structadiar_1_1stats__t_1_1count__t.html',1,'adiar::stats_t']]]
 ];
