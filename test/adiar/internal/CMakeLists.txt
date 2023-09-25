@@ -1,5 +1,6 @@
 add_test(adiar-internal-dot  test_dot.cpp)
 add_test(adiar-internal-util test_util.cpp)
+add_test(adiar-internal-dd_func test_dd_func.cpp)
 
 add_subdirectory (algorithms)
 add_subdirectory (data_structures)

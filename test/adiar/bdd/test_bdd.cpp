@@ -235,6 +235,7 @@ go_bandit([]() {
       });
     });
 
+    // TODO: Move to 'test_dd_func.cpp'
     describe("terminal predicates", [&]() {
       describe("is_terminal", [&]() {
         it("rejects x0 as a terminal file", [&]() {

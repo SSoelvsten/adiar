@@ -99,6 +99,9 @@ test/adiar/bdd/quantify:
 test/adiar/bdd/restrict:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=restrict
 
+test/adiar/internal/dd_func:
+	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal TEST_NAME=dd_func
+
 test/adiar/internal/dot:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal TEST_NAME=dot
 

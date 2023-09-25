@@ -68,6 +68,7 @@ go_bandit([]() {
 #include "adiar/internal/data_structures/test_level_merger.cpp"
 #include "adiar/internal/data_structures/test_levelized_priority_queue.cpp"
 
+#include "adiar/internal/test_dd_func.cpp"
 #include "adiar/internal/test_dot.cpp"
 #include "adiar/internal/test_util.cpp"
 
