@@ -8,7 +8,7 @@ namespace adiar
 {
   class zdd_contains_visitor
   {
-    const std::function<zdd::label_t()> &gen;
+    const generator<zdd::label_t> &gen;
 
     bool has_l = false;
     zdd::label_t l;
@@ -22,7 +22,7 @@ namespace adiar
     bool terminal_val = false;
 
   public:
-    zdd_contains_visitor(const std::function<zdd::label_t()> &a)
+    zdd_contains_visitor(const generator<zdd::label_t> &a)
       : gen(a)
     {
       l = gen();
@@ -57,7 +57,7 @@ namespace adiar
     { return terminal_val && zdd::MAX_LABEL < l; }
   };
 
-  bool zdd_contains(const zdd &zdd, const std::function<zdd::label_t()> &a)
+  bool zdd_contains(const zdd &zdd, const generator<zdd::label_t> &a)
   {
     zdd_contains_visitor v(a);
     internal::traverse(zdd, v);

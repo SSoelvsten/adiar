@@ -14,18 +14,18 @@
 /// possible and/or minimise the number of lvalues of said type.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <functional>
 #include <string>
 #include <iostream>
 
 #include <adiar/assignment.h>
 #include <adiar/bool_op.h>
-#include <adiar/file.h>
-
-#include <adiar/internal/dd_func.h>
+#include <adiar/file.h> // <-- TODO: Remove
+#include <adiar/functional.h>
 
 #include <adiar/bdd/bdd.h>
 #include <adiar/zdd/zdd.h>
+
+#include <adiar/internal/dd_func.h>
 
 namespace adiar
 {
@@ -107,7 +107,7 @@ namespace adiar
   ///
   /// \throws invalid_argument If `vars` are not in descending order.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_and(const std::function<bdd::label_t()> &vars);
+  bdd bdd_and(const generator<bdd::label_t> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The BDD representing the logical 'and' of all the given
@@ -124,9 +124,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   template<typename IT>
   bdd bdd_and(IT begin, IT end)
-  {
-    return bdd_and(internal::iterator_gen<bdd::label_t>(begin, end));
-  }
+  { return bdd_and(make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      The BDD representing the logical 'or' of all the given
@@ -141,7 +139,7 @@ namespace adiar
   ///
   /// \throws invalid_argument If `vars` are not in descending order.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_or(const std::function<bdd::label_t()> &vars);
+  bdd bdd_or(const generator<bdd::label_t> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      The BDD representing the logical 'or' of all the given
@@ -158,9 +156,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   template<typename IT>
   bdd bdd_or(IT begin, IT end)
-  {
-    return bdd_or(internal::iterator_gen<bdd::label_t>(begin, end));
-  }
+  { return bdd_or(make_generator(begin, end)); }
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////
@@ -410,6 +406,7 @@ namespace adiar
   ///
   /// \returns  \f$ f|_{(i,v) \in xs : x_i = v} \f$
   //////////////////////////////////////////////////////////////////////////////
+  // TODO v2.0 : Replace with `generator<pair<...>>`.
   __bdd bdd_restrict(const bdd &f,
                      const shared_file<map_pair<bdd::label_t, assignment>> &xs);
 
@@ -447,10 +444,10 @@ namespace adiar
   ///
   /// \returns    \f$ \exists x_i \in \texttt{vars} : f \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_exists(const bdd &f, const std::function<bool(bdd::label_t)> &vars);
+  __bdd bdd_exists(const bdd &f, const predicate<bdd::label_t> &vars);
 
   /// \cond
-  __bdd bdd_exists(bdd &&f, const std::function<bool(bdd::label_t)> &vars);
+  __bdd bdd_exists(bdd &&f, const predicate<bdd::label_t> &vars);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -467,10 +464,10 @@ namespace adiar
   ///
   /// \returns   \f$ \exists x_i \in \texttt{gen()} : f \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_exists(const bdd &f, const std::function<bdd::label_t()> &gen);
+  __bdd bdd_exists(const bdd &f, const generator<bdd::label_t> &vars);
 
   /// \cond
-  __bdd bdd_exists(bdd &&f, const std::function<bdd::label_t()> &gen);
+  __bdd bdd_exists(bdd &&f, const generator<bdd::label_t> &vars);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -490,18 +487,12 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   template<typename IT>
   __bdd bdd_exists(const bdd &f, IT begin, IT end)
-  {
-    return bdd_exists(f,
-                      internal::iterator_gen<bdd::label_t>(begin, end));
-  }
+  { return bdd_exists(f, make_generator(begin, end)); }
 
   /// \cond
   template<typename IT>
   __bdd bdd_exists(bdd &&f, IT begin, IT end)
-  {
-    return bdd_exists(std::forward<bdd>(f),
-                      internal::iterator_gen<bdd::label_t>(begin, end));
-  }
+  { return bdd_exists(std::forward<bdd>(f), make_generator(begin, end)); }
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -539,10 +530,10 @@ namespace adiar
   ///
   /// \returns    \f$ \exists x_i \in \texttt{vars} : f \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_forall(const bdd &f, const std::function<bool(bdd::label_t)> &vars);
+  __bdd bdd_forall(const bdd &f, const predicate<bdd::label_t> &vars);
 
   /// \cond
-  __bdd bdd_forall(bdd &&f, const std::function<bool(bdd::label_t)> &vars);
+  __bdd bdd_forall(bdd &&f, const predicate<bdd::label_t> &vars);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -559,10 +550,10 @@ namespace adiar
   ///
   /// \returns   \f$ \forall x_i \in \texttt{gen()} : f \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_forall(const bdd &f, const std::function<bdd::label_t()> &gen);
+  __bdd bdd_forall(const bdd &f, const generator<bdd::label_t> &vars);
 
   /// \cond
-  __bdd bdd_forall(bdd &&f, const std::function<bdd::label_t()> &gen);
+  __bdd bdd_forall(bdd &&f, const generator<bdd::label_t> &vars);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -582,17 +573,12 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   template<typename IT>
   __bdd bdd_forall(const bdd &f, IT begin, IT end)
-  {
-    return bdd_forall(f, internal::iterator_gen<bdd::label_t>(begin, end));
-  }
+  { return bdd_forall(f, make_generator(begin, end)); }
 
   /// \cond
   template<typename IT>
   __bdd bdd_forall(bdd &&f, IT begin, IT end)
-  {
-    return bdd_forall(std::forward<bdd>(f),
-                      internal::iterator_gen<bdd::label_t>(begin, end));
-  }
+  { return bdd_forall(std::forward<bdd>(f), make_generator(begin, end)); }
   /// \endcond
 
   /// \}
@@ -763,11 +749,10 @@ namespace adiar
   /// \param cb Callback function that is called in ascending order of the bdd's
   ///           levels with the (var, value) pairs of the assignment.
   //////////////////////////////////////////////////////////////////////////////
-  void bdd_satmin(const bdd &f,
-                  const std::function<void(bdd::label_t, bool)> &cb);
+  void bdd_satmin(const bdd &f, const consumer<bdd::label_t, bool> &cb);
 
   //////////////////////////////////////////////////////////////////////////////
-  // TODO: wrap into consumer lambda
+  // TODO: Iterator-based output
   //
   // template<typename IT>
   // bdd_satmin(const bdd &f, IT begin, IT end)
@@ -800,11 +785,10 @@ namespace adiar
   /// \param cb Callback function that is called in ascending order of the bdd's
   ///           levels with the (var, value) pairs of the assignment.
   //////////////////////////////////////////////////////////////////////////////
-  void bdd_satmax(const bdd &f,
-                  const std::function<void(bdd::label_t, bool)> &cb);
+  void bdd_satmax(const bdd &f, const consumer<bdd::label_t, bool> &cb);
 
   //////////////////////////////////////////////////////////////////////////////
-  // TODO: wrap into consumer lambda
+  // TODO: Iterator-based output
   //
   // template<typename IT>
   // bdd_satmax(const bdd &f, IT begin, IT end)
@@ -820,8 +804,7 @@ namespace adiar
   /// \param xs An assignment function of the type \f$ \texttt{label\_t}
   ///           \rightarrow \texttt{bool} \f$.
   //////////////////////////////////////////////////////////////////////////////
-  bool bdd_eval(const bdd &f,
-                const std::function<bool(bdd::label_t)> &xs);
+  bool bdd_eval(const bdd &f, const predicate<bdd::label_t> &xs);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Evaluate a BDD according to an assignment to its variables.
@@ -837,6 +820,7 @@ namespace adiar
   ///
   /// \throws invalid_argument If a level in the BDD does not exist in `xs`.
   //////////////////////////////////////////////////////////////////////////////
+  // TODO v2.0 : Replace with `generator<pair<...>>`
   bool bdd_eval(const bdd &f,
                 const shared_file<map_pair<bdd::label_t, boolean>> &xs);
 
@@ -847,7 +831,7 @@ namespace adiar
   ///
   /// \param cb Callback function that consumes the levels (in ascending order).
   //////////////////////////////////////////////////////////////////////////////
-  void bdd_varprofile(const bdd &f, const std::function<void(bdd::label_t)> &cb);
+  void bdd_varprofile(const bdd &f, const consumer<bdd::label_t> &cb);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Write the labels of the BDD's levels into the given container.
@@ -866,10 +850,7 @@ namespace adiar
   template<typename IT>
   IT bdd_varprofile(const bdd &f, IT begin, IT end)
   {
-    if (std::distance(begin, end) < bdd_varcount(f)) {
-      throw std::out_of_range("Distance between 'begin' and 'end' too small");
-    }
-    bdd_varprofile(f, internal::iterator_consumer<bdd::label_t>(begin, end));
+    bdd_varprofile(f, make_consumer(begin, end));
     return begin;
   }
 
@@ -892,7 +873,7 @@ namespace adiar
   /// \returns   BDD that is true for the exact same assignments to variables in
   ///            the given domain.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_from(const zdd &A, const std::function<bdd::label_t()> &dom);
+  __bdd bdd_from(const zdd &A, const generator<bdd::label_t> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Obtains the BDD that represents the same function/set as the
@@ -907,7 +888,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   template<typename IT>
   __bdd bdd_from(const zdd &A, IT begin, IT end)
-  { return bdd_from(A, internal::iterator_gen<bdd::label_t>(begin, end)); }
+  { return bdd_from(A, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \copybrief bdd_from

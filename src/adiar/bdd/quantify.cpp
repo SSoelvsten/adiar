@@ -78,24 +78,24 @@ namespace adiar
     return internal::quantify<bdd_quantify_policy>(f, var, or_op);
   }
 
-  __bdd bdd_exists(const bdd &f, const std::function<bool(bdd::label_t)> &vars)
+  __bdd bdd_exists(const bdd &f, const predicate<bdd::label_t> &vars)
   {
     return internal::quantify<bdd_quantify_policy>(f, vars, or_op);
   }
 
-  __bdd bdd_exists(bdd &&f, const std::function<bool(bdd::label_t)> &vars)
+  __bdd bdd_exists(bdd &&f, const predicate<bdd::label_t> &vars)
   {
     return internal::quantify<bdd_quantify_policy>(std::forward<bdd>(f), vars, or_op);
   }
 
-  __bdd bdd_exists(const bdd &f, const std::function<bdd::label_t()> &gen)
+  __bdd bdd_exists(const bdd &f, const generator<bdd::label_t> &vars)
   {
-    return internal::quantify<bdd_quantify_policy>(f, gen, or_op);
+    return internal::quantify<bdd_quantify_policy>(f, vars, or_op);
   }
 
-  __bdd bdd_exists(bdd &&f, const std::function<bdd::label_t()> &gen)
+  __bdd bdd_exists(bdd &&f, const generator<bdd::label_t> &vars)
   {
-    return internal::quantify<bdd_quantify_policy>(std::forward<bdd>(f), gen, or_op);
+    return internal::quantify<bdd_quantify_policy>(std::forward<bdd>(f), vars, or_op);
   }
   //////////////////////////////////////////////////////////////////////////////
 
@@ -104,23 +104,23 @@ namespace adiar
     return internal::quantify<bdd_quantify_policy>(f, var, and_op);
   }
 
-  __bdd bdd_forall(const bdd &f, const std::function<bool(bdd::label_t)> &vars)
+  __bdd bdd_forall(const bdd &f, const predicate<bdd::label_t> &vars)
   {
     return internal::quantify<bdd_quantify_policy>(f, vars, and_op);
   }
 
-  __bdd bdd_forall(bdd &&f, const std::function<bool(bdd::label_t)> &vars)
+  __bdd bdd_forall(bdd &&f, const predicate<bdd::label_t> &vars)
   {
     return internal::quantify<bdd_quantify_policy>(std::forward<bdd>(f), vars, and_op);
   }
 
-  __bdd bdd_forall(const bdd &f, const std::function<bdd::label_t()> &gen)
+  __bdd bdd_forall(const bdd &f, const generator<bdd::label_t> &vars)
   {
-    return internal::quantify<bdd_quantify_policy>(f, gen, and_op);
+    return internal::quantify<bdd_quantify_policy>(f, vars, and_op);
   }
 
-  __bdd bdd_forall(bdd &&f, const std::function<bdd::label_t()> &gen)
+  __bdd bdd_forall(bdd &&f, const generator<bdd::label_t> &vars)
   {
-    return internal::quantify<bdd_quantify_policy>(std::forward<bdd>(f), gen, and_op);
+    return internal::quantify<bdd_quantify_policy>(std::forward<bdd>(f), vars, and_op);
   }
 }

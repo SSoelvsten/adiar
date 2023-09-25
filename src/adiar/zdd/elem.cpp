@@ -1,5 +1,7 @@
 #include <adiar/zdd.h>
 
+#include <adiar/functional.h>
+
 #include <adiar/internal/algorithms/traverse.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/uid.h>
@@ -11,37 +13,37 @@ namespace adiar
 {
   class zdd_sat_zdd_callback
   {
-    shared_file<zdd::label_t> lf;
-    internal::label_writer lw;
+    internal::shared_file<zdd::label_t> _lf;
+    internal::label_writer _lw;
 
   public:
     zdd_sat_zdd_callback()
-      : lw(lf)
+      : _lw(_lf)
     { }
 
     void operator() (zdd::label_t x)
-    { lw << x; }
+    { _lw << x; }
 
     zdd get_zdd()
     {
-      lw.detach();
+      _lw.detach();
 
-      internal::file_stream<zdd::label_t, true> ls(lf);
-      return zdd_vars(internal::stream_gen<zdd::label_t>(ls));
+      internal::file_stream<zdd::label_t, true> _ls(_lf);
+      return zdd_vars(make_generator(_ls));
     }
   };
 
   class zdd_sat_lambda_callback
   {
-    const std::function<void(bdd::label_t)> &__lambda;
+    const consumer<bdd::label_t> &_c;
 
   public:
-    zdd_sat_lambda_callback(const std::function<void(zdd::label_t)> &lambda)
-      : __lambda(lambda)
+    zdd_sat_lambda_callback(const consumer<zdd::label_t> &lambda)
+      : _c(lambda)
     { }
 
     void operator() (zdd::label_t x) const
-    { __lambda(x); }
+    { _c(x); }
   };
 
   template<typename visitor_t, typename callback_t>
@@ -84,8 +86,7 @@ namespace adiar
     return _cb.get_zdd();
   }
 
-  void zdd_minelem(const zdd &A,
-                  const std::function<void(zdd::label_t)> &cb)
+  void zdd_minelem(const zdd &A, const consumer<zdd::label_t> &cb)
   {
     zdd_sat_lambda_callback _cb(cb);
     zdd_sat_visitor<internal::traverse_satmin_visitor, zdd_sat_lambda_callback> v(_cb);
@@ -100,8 +101,7 @@ namespace adiar
     return _cb.get_zdd();
   }
 
-  void zdd_maxelem(const zdd &A,
-                   const std::function<void(zdd::label_t)> &cb)
+  void zdd_maxelem(const zdd &A, const consumer<zdd::label_t> &cb)
   {
     zdd_sat_lambda_callback _cb(cb);
     zdd_sat_visitor<internal::traverse_satmax_visitor, zdd_sat_lambda_callback> v(_cb);

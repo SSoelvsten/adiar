@@ -1,6 +1,8 @@
 #ifndef ADIAR_INTERNAL_UTIL_H
 #define ADIAR_INTERNAL_UTIL_H
 
+#include <adiar/functional.h>
+
 #include <adiar/internal/assert.h>
 #include <adiar/internal/dd.h>
 #include <adiar/internal/data_types/arc.h>
@@ -121,55 +123,6 @@ namespace adiar::internal
     // Sort internal arcs by their target
     af->sort<arc_target_lt>(file_traits<arc>::IDX__INTERNAL);
     return af;
-  }
-
-  ////////////////////////////////////////////////////////////////////////////
-  /// \brief Converts a `begin` and `end` iterator pair into a generator
-  ///        function.
-  ////////////////////////////////////////////////////////////////////////////
-  template<typename label_t, typename IT>
-  inline std::function<label_t()>
-  iterator_gen(IT &begin, IT &end)
-  {
-    static_assert(std::is_integral<typename std::iterator_traits<IT>::value_type>::value,
-                  "Cannot create a label generator for non-integer iterators");
-
-    return [&begin, &end]() {
-      if (begin == end) { return static_cast<label_t>(-1); }
-      return static_cast<label_t>(*(begin++));
-    };
-  }
-
-  ////////////////////////////////////////////////////////////////////////////
-  /// \brief Converts a `begin` and `end` iterator pair into a consumer
-  ///        function.
-  ////////////////////////////////////////////////////////////////////////////
-  template<typename label_t, typename IT>
-  inline std::function<void(label_t)>
-  iterator_consumer(IT &begin, IT &end)
-  {
-    return [&begin, &end](const label_t x) {
-      adiar_assert(begin != end,
-                   "Missing initial check for std::distance(begin, end)?");
-
-      *(begin++) = x;
-    };
-  }
-
-  ////////////////////////////////////////////////////////////////////////////
-  /// \brief Converts a `file_stream` into a generator function.
-  ////////////////////////////////////////////////////////////////////////////
-  template<typename label_t, typename stream_t>
-  inline std::function<label_t()>
-  stream_gen(stream_t &s)
-  {
-    static_assert(std::is_integral<typename stream_t::elem_t>::value,
-                  "Cannot create a label generator for non-integer streams");
-
-    return [&s]() {
-      if (!s.can_pull()) { return static_cast<label_t>(-1); }
-      return static_cast<label_t>(s.pull());
-    };
   }
 }
 

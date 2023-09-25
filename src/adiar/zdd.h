@@ -13,18 +13,16 @@
 /// possible and/or minimise the number of lvalues of said type.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <functional>
 #include <iostream>
-#include <optional>
 #include <string>
 
 #include <adiar/bool_op.h>
-#include <adiar/file.h>
-
-#include <adiar/internal/dd_func.h>
+#include <adiar/functional.h>
 
 #include <adiar/zdd/zdd.h>
 #include <adiar/bdd/bdd.h>
+
+#include <adiar/internal/dd_func.h>
 
 namespace adiar
 {
@@ -76,7 +74,7 @@ namespace adiar
   ///
   /// \throws invalid_argument If `dom` is not in *descending* order.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_ithvar(zdd::label_t var, const std::function<zdd::label_t()> &dom);
+  zdd zdd_ithvar(zdd::label_t var, const generator<zdd::label_t> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The set of bitvectors over a given domain where *var* is set to
@@ -96,7 +94,7 @@ namespace adiar
   template<typename IT>
   zdd zdd_ithvar(zdd::label_t var, IT begin, IT end)
   {
-    return zdd_ithvar(var, internal::iterator_gen<zdd::label_t>(begin, end));
+    return zdd_ithvar(var, make_generator(begin, end));
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -126,7 +124,7 @@ namespace adiar
   ///
   /// \throws invalid_argument If `dom` is not in *descending* order.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_nithvar(zdd::label_t var, const std::function<zdd::label_t()> &dom);
+  zdd zdd_nithvar(zdd::label_t var, const generator<zdd::label_t> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The set of bitvectors over a given domain where *var* is set
@@ -146,7 +144,7 @@ namespace adiar
   template<typename IT>
   zdd zdd_nithvar(zdd::label_t var, IT begin, IT end)
   {
-    return zdd_nithvar(var, internal::iterator_gen<zdd::label_t>(begin, end));
+    return zdd_nithvar(var, make_generator(begin, end));
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -170,7 +168,7 @@ namespace adiar
   ///
   /// \throws invalid_argument If `vars` are not in *descending* order.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_vars(const std::function<zdd::label_t()> &vars);
+  zdd zdd_vars(const generator<zdd::label_t> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The family { { 1, 2, ..., k } }.
@@ -185,7 +183,7 @@ namespace adiar
   template<typename IT>
   zdd zdd_vars(IT begin, IT end)
   {
-    return zdd_vars(internal::iterator_gen<zdd::label_t>(begin, end));
+    return zdd_vars(make_generator(begin, end));
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -211,7 +209,7 @@ namespace adiar
   ///
   /// \throws invalid_argument If `vars` are not in *descending* order.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_singletons(const std::function<zdd::label_t()> &vars);
+  zdd zdd_singletons(const generator<zdd::label_t> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The family { {1}, {2}, ..., {k} }.
@@ -226,7 +224,7 @@ namespace adiar
   template<typename IT>
   zdd zdd_singletons(IT begin, IT end)
   {
-    return zdd_singletons(internal::iterator_gen<zdd::label_t>(begin, end));
+    return zdd_singletons(make_generator(begin, end));
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -239,7 +237,7 @@ namespace adiar
   ///
   /// \throws invalid_argument If `vars` are not in *ascending* order.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_powerset(const std::function<zdd::label_t()> &vars);
+  zdd zdd_powerset(const generator<zdd::label_t> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The powerset of all given variables.
@@ -254,7 +252,7 @@ namespace adiar
   template<typename IT>
   zdd zdd_powerset(IT begin, IT end)
   {
-    return zdd_powerset(internal::iterator_gen<zdd::label_t>(begin, end));
+    return zdd_powerset(make_generator(begin, end));
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -264,7 +262,7 @@ namespace adiar
   ///
   /// \see zdd_empty
   //////////////////////////////////////////////////////////////////////////////
-  inline zdd zdd_bot(const std::function<zdd::label_t()> &/*dom*/)
+  inline zdd zdd_bot(const generator<zdd::label_t> &/*dom*/)
   { return zdd_empty(); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -295,7 +293,7 @@ namespace adiar
   ///
   /// \see zdd_powerset, zdd_null
   //////////////////////////////////////////////////////////////////////////////
-  inline zdd zdd_top(const std::function<zdd::label_t()> &dom)
+  inline zdd zdd_top(const generator<zdd::label_t> &dom)
   { return zdd_powerset(dom); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -413,7 +411,7 @@ namespace adiar
   /// \returns
   /// \f$ \{ \mathit{vars} \Delta a \mid a \in A \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_change(const zdd &A, const std::function<zdd::label_t()> &vars);
+  __zdd zdd_change(const zdd &A, const generator<zdd::label_t> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      The symmetric difference between each set in the family and
@@ -431,7 +429,7 @@ namespace adiar
   template<typename IT>
   __zdd zdd_change(const zdd &A, IT begin, IT end)
   {
-    return zdd_change(A, internal::iterator_gen<zdd::label_t>(begin, end));
+    return zdd_change(A, make_generator(begin, end));
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -443,7 +441,7 @@ namespace adiar
   ///
   /// \returns    \f$ 2^{\mathit{dom}} \setminus A \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_complement(const zdd &A, const std::function<zdd::label_t()> &dom);
+  __zdd zdd_complement(const zdd &A, const generator<zdd::label_t> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Complement of A within the given domain.
@@ -458,9 +456,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   template<typename IT>
   __zdd zdd_complement(const zdd &A, IT begin, IT end)
-  {
-    return zdd_complement(A, internal::iterator_gen<zdd::label_t>(begin, end));
-  }
+  { return zdd_complement(A, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Complement of A within the global \ref module__domain
@@ -500,7 +496,7 @@ namespace adiar
   /// \returns
   /// \f$ \bigcup_{a \in A, i \in 2^{vars}} (a \cup i) \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_expand(const zdd &A, const std::function<zdd::label_t()> &vars);
+  __zdd zdd_expand(const zdd &A, const generator<zdd::label_t> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Expands the domain of the given ZDD to also include the given
@@ -520,9 +516,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   template<typename IT>
   __zdd zdd_expand(const zdd &A, IT begin, IT end)
-  {
-    return zdd_expand(A, internal::iterator_gen<zdd::label_t>(begin, end));
-  }
+  { return zdd_expand(A, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Subset that do \em not include the given set of variables.
@@ -535,7 +529,7 @@ namespace adiar
   /// \returns
   /// \f$ \{ a \in A \mid \forall i \in \mathit{vars} : i \not\in a \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_offset(const zdd &A, const std::function<zdd::label_t()> &vars);
+  __zdd zdd_offset(const zdd &A, const generator<zdd::label_t> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Subset that do \em not include the given set of variables.
@@ -551,9 +545,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   template<typename IT>
   __zdd zdd_offset(const zdd &A, IT begin, IT end)
-  {
-    return zdd_offset(A, internal::iterator_gen<zdd::label_t>(begin, end));
-  }
+  { return zdd_offset(A, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Subset that \em do include the given set of variables.
@@ -566,7 +558,7 @@ namespace adiar
   /// \returns
   /// \f$ \{ a \in A \mid \forall i \in \mathit{vars} : i \in a \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_onset(const zdd &A, const std::function<zdd::label_t()> &vars);
+  __zdd zdd_onset(const zdd &A, const generator<zdd::label_t> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Subset that \em do include the given set of variables.
@@ -582,9 +574,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   template<typename IT>
   __zdd zdd_onset(const zdd &A, IT begin, IT end)
-  {
-    return zdd_onset(A, internal::iterator_gen<zdd::label_t>(begin, end));
-  }
+  { return zdd_onset(A, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Project family of sets onto a domain, i.e. remove from every
@@ -597,10 +587,10 @@ namespace adiar
   /// \returns
   /// \f$ \prod_{\mathit{dom}}(A) = \{ a \setminus \mathit{dom}^c \mid a \in A \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_project(const zdd &A, const std::function<bool(zdd::label_t)> &dom);
+  __zdd zdd_project(const zdd &A, const predicate<zdd::label_t> &dom);
 
   /// \cond
-  __zdd zdd_project(zdd &&A, const std::function<bool(zdd::label_t)> &dom);
+  __zdd zdd_project(zdd &&A, const predicate<zdd::label_t> &dom);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -616,10 +606,10 @@ namespace adiar
   /// \returns
   /// \f$ \prod_{\mathit{dom}}(A) = \{ a \setminus \mathit{dom}^c \mid a \in A \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_project(const zdd &A, const std::function<zdd::label_t()> &dom);
+  __zdd zdd_project(const zdd &A, const generator<zdd::label_t> &dom);
 
   /// \cond
-  __zdd zdd_project(zdd &&A, const std::function<zdd::label_t()> &dom);
+  __zdd zdd_project(zdd &&A, const generator<zdd::label_t> &dom);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -637,17 +627,12 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   template<typename IT>
   __zdd zdd_project(const zdd &A, IT begin, IT end)
-  {
-    return zdd_project(A, internal::iterator_gen<zdd::label_t>(begin, end));
-  }
+  { return zdd_project(A, make_generator(begin, end)); }
 
   /// \cond
   template<typename IT>
   __zdd zdd_project(zdd &&A, IT begin, IT end)
-  {
-    return zdd_project(std::forward<zdd>(A),
-                       internal::iterator_gen<zdd::label_t>(begin, end));
-  }
+  { return zdd_project(std::forward<zdd>(A), make_generator(begin, end)); }
   /// \endcond
 
   /// \}
@@ -841,7 +826,7 @@ namespace adiar
   ///
   /// \returns Whether \f$ a \in A \f$
   //////////////////////////////////////////////////////////////////////////////
-  bool zdd_contains(const zdd &A, const std::function<zdd::label_t()> &a);
+  bool zdd_contains(const zdd &A, const generator<zdd::label_t> &a);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       Whether the family includes the given set of labels
@@ -856,9 +841,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   template<typename IT>
   bool zdd_contains(const zdd &A, IT begin, IT end)
-  {
-    return zdd_contains(A, internal::iterator_gen<zdd::label_t>(begin, end));
-  }
+  { return zdd_contains(A, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Retrieves the lexicographically smallest set a in A.
@@ -877,10 +860,10 @@ namespace adiar
   ///
   /// \pre `A != zdd_empty()`
   //////////////////////////////////////////////////////////////////////////////
-  void zdd_minelem(const zdd &A, const std::function<void(zdd::label_t)> &cb);
+  void zdd_minelem(const zdd &A, const consumer<zdd::label_t> &cb);
 
   //////////////////////////////////////////////////////////////////////////////
-  // TODO: wrap into consumer lambda
+  // TODO: Iterator-based output
   //
   // template<typename IT>
   // zdd_minelem(const zdd &A, IT begin, IT end)
@@ -902,10 +885,10 @@ namespace adiar
   ///
   /// \pre `A != zdd_empty()`
   //////////////////////////////////////////////////////////////////////////////
-  void zdd_maxelem(const zdd &A, const std::function<void(zdd::label_t)> &cb);
+  void zdd_maxelem(const zdd &A, const consumer<zdd::label_t> &cb);
 
   //////////////////////////////////////////////////////////////////////////////
-  // TODO: wrap into consumer lambda
+  // TODO: Iterator-based output
   //
   // template<typename IT>
   // zdd_maxelem(const zdd &A, IT begin, IT end)
@@ -917,7 +900,7 @@ namespace adiar
   ///
   /// \param cb Callback function that consumes the levels in *ascending* order.
   //////////////////////////////////////////////////////////////////////////////
-  void zdd_varprofile(const zdd &A, const std::function<void(zdd::label_t)> &cb);
+  void zdd_varprofile(const zdd &A, const consumer<zdd::label_t> &cb);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Write the labels of the ZDD's levels into the given container.
@@ -936,10 +919,7 @@ namespace adiar
   template<typename IT>
   IT zdd_varprofile(const zdd &A, IT begin, IT end)
   {
-    if (std::distance(begin, end) < zdd_varcount(A)) {
-      throw std::out_of_range("Distance between 'begin' and 'end' too small");
-    }
-    zdd_varprofile(A, internal::iterator_consumer<bdd::label_t>(begin, end));
+    zdd_varprofile(A, make_consumer(begin, end));
     return begin;
   }
 
@@ -962,7 +942,7 @@ namespace adiar
   /// \returns   ZDD that is true for the exact same assignments to variables in
   ///            the given domain.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_from(const bdd &f, const std::function<zdd::label_t()> &dom);
+  __zdd zdd_from(const bdd &f, const generator<zdd::label_t> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Obtains the ZDD that represents the same function/set as the
@@ -977,7 +957,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   template<typename IT>
   __zdd zdd_from(const bdd &f, IT begin, IT end)
-  { return zdd_from(f, internal::iterator_gen<bdd::label_t>(begin, end)); }
+  { return zdd_from(f, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Obtains the ZDD that represents the same function/set as the

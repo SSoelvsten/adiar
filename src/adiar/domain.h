@@ -13,7 +13,7 @@
 
 #include <adiar/exception.h>
 #include <adiar/file.h>
-#include <adiar/internal/util.h>
+#include <adiar/functional.h>
 
 // TODO: Make 'domain_var_t' independent of node type. Then remove this include.
 #include <adiar/internal/data_types/node.h>
@@ -44,11 +44,11 @@ namespace adiar
   /// \brief Set the domain globally for all of Adiar to be the variables
   ///        produced by the given generator function.
   ///
-  /// \param gen Generator function, that produces variables to be quantified in
+  /// \param dom Generator that produces variables to be quantified in
   ///            *ascending* order. When none are left to-be quantified, it must
   ///            return a value greater than `MAX_DOMAIN_VAR`.
   //////////////////////////////////////////////////////////////////////////////
-  void adiar_set_domain(const std::function<domain_var_t()> &gen);
+  void adiar_set_domain(const generator<domain_var_t> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Set the domain globally for all of Adiar to be the variables
@@ -61,7 +61,9 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   template<typename IT>
   void adiar_set_domain(IT begin, IT end)
-  { return adiar_set_domain(internal::iterator_gen<domain_var_t>(begin, end)); }
+  {
+    return adiar_set_domain(make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Set the domain globally for all of Adiar.
@@ -72,7 +74,7 @@ namespace adiar
   void adiar_set_domain(const shared_file<domain_var_t> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief     Removes any globally shared domain variable (if any).
+  /// \brief     Removes any globally shared domain variables (if any).
   ///
   /// \sa adiar_set_domain
   //////////////////////////////////////////////////////////////////////////////

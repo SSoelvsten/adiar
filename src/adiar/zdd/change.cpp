@@ -1,8 +1,12 @@
 #include <adiar/zdd.h>
 #include <adiar/zdd/zdd_policy.h>
 
+#include <adiar/functional.h>
+
 #include <adiar/internal/algorithms/intercut.h>
 #include <adiar/internal/data_types/node.h>
+#include <adiar/internal/io/file.h>
+#include <adiar/internal/io/file_stream.h>
 
 namespace adiar
 {
@@ -22,12 +26,14 @@ namespace adiar
       return dd;
     }
 
-    static zdd on_terminal_input(const bool terminal_value, const zdd& dd, const shared_file<zdd::label_t> &labels)
+    static zdd on_terminal_input(const bool terminal_value,
+                                 const zdd& dd,
+                                 const internal::shared_file<zdd::label_t> &vars)
     {
       // TODO: simplify with generator function as input
       if (terminal_value) {
-        internal::file_stream<zdd::label_t, true> ls(labels);
-        return zdd_vars(internal::stream_gen<zdd::label_t>(ls));
+        internal::file_stream<zdd::label_t, true> ls(vars);
+        return zdd_vars(make_generator(ls));
       } else {
         return dd;
       }
@@ -58,7 +64,7 @@ namespace adiar
     }
   };
 
-  __zdd zdd_change(const zdd &dd, const std::function<zdd::label_t()> &vars)
+  __zdd zdd_change(const zdd &dd, const generator<zdd::label_t> &vars)
   {
     return internal::intercut<zdd_change_policy>(dd, vars);
   }

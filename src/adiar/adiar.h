@@ -17,6 +17,7 @@
 #include <adiar/domain.h>
 #include <adiar/exception.h>
 #include <adiar/file.h>
+#include <adiar/functional.h>
 #include <adiar/memory_mode.h>
 #include <adiar/quantify_mode.h>
 

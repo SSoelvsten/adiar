@@ -15,6 +15,7 @@ set(HEADERS
   domain.h
   exception.h
   file.h
+  functional.h
   map.h
   memory_mode.h
   quantify_mode.h

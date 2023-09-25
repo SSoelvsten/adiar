@@ -3,7 +3,6 @@
 #include <adiar/internal/io/levelized_file_stream.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/dd.h>
-#include <adiar/internal/util.h>
 
 namespace adiar::internal
 {

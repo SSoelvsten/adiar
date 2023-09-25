@@ -4,7 +4,6 @@
 #include <stdint.h>
 
 #include <adiar/internal/assert.h>
-#include <adiar/internal/util.h>
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/io/node_stream.h>

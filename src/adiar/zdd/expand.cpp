@@ -1,9 +1,13 @@
 #include <adiar/zdd.h>
 #include <adiar/zdd/zdd_policy.h>
 
+#include <adiar/functional.h>
+
 #include <adiar/internal/unreachable.h>
 #include <adiar/internal/algorithms/intercut.h>
 #include <adiar/internal/data_types/node.h>
+#include <adiar/internal/io/file.h>
+#include <adiar/internal/io/file_stream.h>
 
 namespace adiar
 {
@@ -26,12 +30,12 @@ namespace adiar
 
     static zdd on_terminal_input(const bool terminal_value,
                                  const zdd& dd,
-                                 const shared_file<zdd::label_t> &labels)
+                                 const internal::shared_file<zdd::label_t> &labels)
     {
       // TODO: simplify when labels are a generator
       if (terminal_value) {
         internal::file_stream<zdd::label_t, true> ls(labels);
-        return zdd_powerset(internal::stream_gen<zdd::label_t>(ls));
+        return zdd_powerset(make_generator(ls));
       } else {
         return dd;
       }
@@ -61,7 +65,7 @@ namespace adiar
     }
   };
 
-  __zdd zdd_expand(const zdd &dd, const std::function<zdd::label_t()> &vars)
+  __zdd zdd_expand(const zdd &dd, const generator<zdd::label_t> &vars)
   {
     return internal::intercut<zdd_expand_policy>(dd, vars);
   }

@@ -62,22 +62,22 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_project(const zdd &A, const std::function<bool(zdd::label_t)> &dom)
+  __zdd zdd_project(const zdd &A, const predicate<zdd::label_t> &dom)
   {
     return internal::quantify<zdd_project_policy>(A, dom, or_op);
   }
 
-  __zdd zdd_project(zdd &&A, const std::function<bool(zdd::label_t)> &dom)
+  __zdd zdd_project(zdd &&A, const predicate<zdd::label_t> &dom)
   {
     return internal::quantify<zdd_project_policy>(std::forward<zdd>(A), dom, or_op);
   }
 
-  __zdd zdd_project(const zdd &A, const std::function<zdd::label_t()> &dom)
+  __zdd zdd_project(const zdd &A, const generator<zdd::label_t> &dom)
   {
     return internal::quantify<zdd_project_policy>(A, dom, or_op);
   }
 
-  __zdd zdd_project(zdd &&A, const std::function<zdd::label_t()> &dom)
+  __zdd zdd_project(zdd &&A, const generator<zdd::label_t> &dom)
   {
     return internal::quantify<zdd_project_policy>(A, dom, or_op);
   }

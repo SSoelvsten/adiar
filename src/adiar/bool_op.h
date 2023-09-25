@@ -1,7 +1,7 @@
 #ifndef ADIAR_BOOL_OP_H
 #define ADIAR_BOOL_OP_H
 
-#include <functional>
+#include <adiar/functional.h>
 
 #include <adiar/internal/data_types/ptr.h>
 #include <adiar/internal/data_types/uid.h>
@@ -18,7 +18,7 @@ namespace adiar
   /// \remark  For each operator, we provide the truth table
   ///          [(1,1), (1,0), (0,1), (0,0)].
   //////////////////////////////////////////////////////////////////////////////
-  typedef std::function<internal::uid_uint64(const internal::ptr_uint64&, const internal::ptr_uint64&)> bool_op;
+  using bool_op = function<internal::uid_uint64(const internal::ptr_uint64&, const internal::ptr_uint64&)>;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logical 'and' operator, i.e. the truth table: [1,0,0,0].

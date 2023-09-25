@@ -20,7 +20,7 @@ namespace adiar
     adiar_set_domain(dom);
   }
 
-  void adiar_set_domain(const std::function<domain_var_t()> &gen) {
+  void adiar_set_domain(const generator<domain_var_t> &gen) {
     shared_file<domain_var_t> dom;
     { // Garbage collect writer to free write-lock
       internal::file_writer<domain_var_t> lw(dom);

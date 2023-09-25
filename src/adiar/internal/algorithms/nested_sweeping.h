@@ -1,8 +1,7 @@
 #ifndef ADIAR_INTERNAL_ALGORITHMS_NESTED_SWEEPING_H
 #define ADIAR_INTERNAL_ALGORITHMS_NESTED_SWEEPING_H
 
-#include <functional>
-
+#include <adiar/functional.h>
 #include <adiar/statistics.h>
 
 #include <adiar/internal/cut.h>
