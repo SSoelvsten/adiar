@@ -203,6 +203,7 @@ go_bandit([]() {
       AssertThat(t2.is_negated(), Is().False());
     });
 
+    // TODO: Move to 'test_dd_func.cpp'
     describe("terminal predicates", [&]() {
       describe("is_terminal", [&]() {
         it("rejects x0 as a terminal file", [&]() {
