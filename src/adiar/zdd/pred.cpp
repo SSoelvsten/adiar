@@ -166,6 +166,12 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
+  bool zdd_subset(const zdd &A, const zdd &B)
+  {
+    return zdd_subseteq(A,B) && zdd_unequal(A,B);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
   class zdd_disjoint_policy
     : public zdd_policy
     , public internal::prod2_mixed_level_merger<zdd_policy>
