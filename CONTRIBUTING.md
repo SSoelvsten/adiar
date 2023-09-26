@@ -161,12 +161,29 @@ CPP source file.
 
 ### §3 Naming Scheme
 
-All functions and classes and their member functions should follow the rules
-below.
+The codebase uses [snake case](https://en.wikipedia.org/wiki/Snake_case) as much
+as possible. This nicely aligns Adiar's codebase with the *std* (and the
+*tpie*) namespace that the developers are used to anyway. Furthermore, this way
+of writing might be easier to read.
 
-- Use [snake case](https://en.wikipedia.org/wiki/Snake_case).
-- All Decision Diagram functions in the public API are prefixed with the type of
-  the decision diagram, e.g. the Apply function for a `bdd` is called `bdd_apply`.
+- Use `snake_case` for namespaces, classes, variables, and functions.
+- Type names are suffixed with `_t` or `_type` (preferably the latter).
+- Private class member variables are prefixed with a single `_`; public ones may
+  also be prefixed as such.
+
+Yet, in the public *BDD* API we run into some problems. What we really want is
+to have the `bdd` and `zdd` "class" prefix all functions as a namespace, e.g. we
+would write `adiar::bdd h = adiar::bdd::and(f,g)`. Yet we cannot do so since
+`and`, `or`, and `xor` are keywords in C++.
+
+So we need some alternative. Yet, each is a compromise in some way. Currently,
+we have chosen to stick with a naming scheme that aligns with the C API of
+*BuDDy* and *Sylvan* and does not clash too much with the use of *snake_case*:
+
+- All functions of the public API are of the form `{prefix}_{functionname}`,
+  e.g. `bdd_and(f,g)` by prepending `bdd_` onto the `and(f,g)` function name.
+  Functions names that consist of multiple words, e.g. *is true*, is written in
+  *nocase*, e.g. `bdd_istrue(f)`.
 
 ### §4 No Almost Always Auto!
 
@@ -179,17 +196,17 @@ reader and (3) to provide all the information necessary to debug the code.
 
 As Adiar grows larger and more complex, one submodule is the foundation on which
 others are built. Hence, **all** functions, data structures, classes, and
-variables - even the ones in *src/adiar/internal/* that are not part of the
-public API - should be well documented for both the *end users* and also the
+variables - even the ones in *adiar::internal* that are not part of the public
+API - should be well documented for both the *end users* and especially also the
 *developers*.
 
 ### §6 Test Everything Thoroughly
 
 Adiar's Decision Diagrams are to be used in the context of verification of
-critical software. At the same time, the Adiar's algorithms are much more
-complex than other BDD implementations and have multiple layers from which an
-error could originate.
+critical software. At the same time, Adiar's algorithms are much more complex
+than other BDD implementations and have multiple layers from which an error
+could originate.
 
 Hence, it is vital we can ensure correctness of Adiar by having as thorough unit
-testing as possible. This also applies to everything within
-*src/adiar/internal/* that is not part of the public API.
+testing as possible. This also applies to everything within *adiar::internal*
+that is not part of the public API.
