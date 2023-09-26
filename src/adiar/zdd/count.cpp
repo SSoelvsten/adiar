@@ -2,24 +2,25 @@
 #include <adiar/zdd/zdd_policy.h>
 
 #include <adiar/internal/assert.h>
+#include <adiar/internal/dd_func.h>
 #include <adiar/internal/algorithms/count.h>
 
 namespace adiar
 {
   size_t zdd_nodecount(const zdd &A)
   {
-    return is_terminal(A) ? 0u : A->size();
+    return internal::dd_nodecount(A);
   }
 
   zdd::label_t zdd_varcount(const zdd &A)
   {
-    return A->levels();
+    return internal::dd_varcount(A);
   }
 
   uint64_t zdd_size(const zdd &A)
   {
-    return is_terminal(A)
-      ? value_of(A)
+    return zdd_isterminal(A)
+      ? internal::dd_valueof(A)
       : internal::count<internal::path_count_policy<zdd_policy>>(A, zdd_varcount(A));
   }
 }

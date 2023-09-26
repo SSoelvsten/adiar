@@ -193,7 +193,7 @@ namespace adiar
   bool zdd_disjoint(const zdd &s1, const zdd &s2)
   {
     if (s1.file == s2.file) {
-      return is_false(s1);
+      return zdd_isfalse(s1);
     }
 
     return internal::comparison_check<zdd_disjoint_policy>(s1, s2);

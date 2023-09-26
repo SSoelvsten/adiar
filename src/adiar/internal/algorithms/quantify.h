@@ -555,7 +555,7 @@ namespace adiar::internal
   {
 
     // Trivial cases, where there is no need to do any computation
-    if (is_terminal(in) || !has_level(in, label)) {
+    if (dd_isterminal(in) || !has_level(in, label)) {
       return in;
     }
 
@@ -856,7 +856,7 @@ namespace adiar::internal
 #endif
         while (label <= quantify_policy::MAX_LABEL) {
           dd = quantify<quantify_policy>(dd, label, op);
-          if (is_terminal(dd)) { return std::move(dd); }
+          if (dd_isterminal(dd)) { return std::move(dd); }
 
           label = quantify__get_deepest<quantify_policy>(dd, pred);
         }
@@ -1068,7 +1068,7 @@ namespace adiar::internal
           typename quantify_policy::label_t next_on_level = lvls();
           while (next_on_level <= quantify_policy::MAX_LABEL) {
             dd = quantify<quantify_policy>(dd, on_level, op);
-            if (is_terminal(dd)) { return dd; }
+            if (dd_isterminal(dd)) { return dd; }
 
             on_level = next_on_level;
             next_on_level = lvls();
@@ -1088,7 +1088,7 @@ namespace adiar::internal
             if (quantify_policy::MAX_LABEL < off_level) { break; }
 
             dd = quantify<quantify_policy>(dd, off_level, op);
-            if (is_terminal(dd)) { return dd; }
+            if (dd_isterminal(dd)) { return dd; }
           }
 
           // Quantify everything strictly in between 'bot_level' and 'top_level'
@@ -1103,7 +1103,7 @@ namespace adiar::internal
               if (quantify_policy::MAX_LABEL < off_level) { break; }
 
               dd = quantify<quantify_policy>(dd, off_level, op);
-              if (is_terminal(dd)) { return dd; }
+              if (dd_isterminal(dd)) { return dd; }
             }
 
             bot_level = top_level;

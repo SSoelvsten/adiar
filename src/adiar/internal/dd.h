@@ -376,7 +376,7 @@ namespace adiar::internal
 
     ////////////////////////////////////////////////////////////////////////////
     // Friends
-    // |- classes
+    // |- streaming classes
     friend class __dd;
 
     template <bool REVERSE>
@@ -388,18 +388,27 @@ namespace adiar::internal
     template <typename file_t, typename comp_t, size_t FILES, bool reverse>
     friend class level_merger;
 
+    // |- algorithm functions and classes
     friend bool is_isomorphic(const dd&, const dd&);
 
     template<typename comp_policy>
     friend bool comparison_check(const dd &in_1, const dd &in_2);
 
-    friend bool is_terminal(const dd &dd);
-    friend bool value_of(const dd &dd);
-    friend label_t min_var(const dd &dd);
-    friend label_t max_var(const dd &dd);
-
     template<typename to_policy, typename from_policy>
     friend class convert_dd_policy;
+
+    // |- public API
+    template <typename dd_t>
+    friend bool dd_isterminal(const dd_t &dd);
+
+    template <typename dd_t>
+    friend bool dd_valueof(const dd_t &dd);
+
+    template <typename dd_t>
+    friend label_t dd_minvar(const dd_t &dd);
+
+    template <typename dd_t>
+    friend label_t dd_maxvar(const dd_t &dd);
   };
 
   inline __dd::__dd(const dd &dd)

@@ -10,6 +10,7 @@
 #include <adiar/internal/cnl.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/dd.h>
+#include <adiar/internal/dd_func.h>
 #include <adiar/internal/algorithms/build.h>
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
 #include <adiar/internal/data_types/uid.h>
@@ -642,7 +643,7 @@ namespace adiar::internal
 
     // -------------------------------------------------------------------------
     // Case: At least one terminal.
-    if (is_terminal(in_0) || is_terminal(in_1)) {
+    if (dd_isterminal(in_0) || dd_isterminal(in_1)) {
       typename prod_policy::unreduced_t maybe_resolved =
         prod_policy::resolve_terminal_root(in_0, in_1, op);
 

@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #include <adiar/internal/assert.h>
+#include <adiar/internal/dd_func.h>
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/io/node_stream.h>
@@ -129,7 +130,7 @@ namespace adiar::internal
   uint64_t count(const typename count_policy::reduced_t &dd,
                  const typename count_policy::label_t varcount)
   {
-    adiar_assert(!is_terminal(dd),
+    adiar_assert(!dd_isterminal(dd),
                  "Count algorithm does not work on terminal-only edge case");
 
     // Compute amount of memory available for auxiliary data structures after

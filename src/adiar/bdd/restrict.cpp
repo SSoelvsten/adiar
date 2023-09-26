@@ -55,7 +55,7 @@ namespace adiar
                      const shared_file<map_pair<bdd::label_t, assignment>> &a)
   {
     if (a->size() == 0
-        || is_terminal(dd)
+        || bdd_isterminal(dd)
         || internal::disjoint_levels<shared_file<map_pair<bdd::label_t, assignment>>,
                                      internal::file_stream<map_pair<bdd::label_t, assignment>>>(a, dd)) {
       return dd;

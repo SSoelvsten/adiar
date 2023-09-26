@@ -112,7 +112,7 @@ namespace adiar
   __zdd zdd_offset(const zdd &A, const generator<zdd::label_t> &vars)
   {
     // Both { Ø }, and Ø cannot have more variables removed
-    if (is_terminal(A)) { return A; }
+    if (zdd_isterminal(A)) { return A; }
 
     zdd_subset_labels<assignment::False> amgr(vars);
 
@@ -177,7 +177,7 @@ namespace adiar
 
   __zdd zdd_onset(const zdd &A, const generator<zdd::label_t> &xs)
   {
-    if (is_false(A)) { return A; }
+    if (zdd_isfalse(A)) { return A; }
 
     zdd_subset_labels<assignment::True> amgr(xs);
 
@@ -187,7 +187,7 @@ namespace adiar
     }
 
     // If `A` is { Ø } and `xs` is non-empty, then it trivially collapses to Ø.
-    if (is_true(A)) {
+    if (zdd_istrue(A)) {
       return zdd_empty();
     }
 
