@@ -16,15 +16,15 @@ namespace adiar
 {
   class bdd_eval_func_visitor
   {
-    const predicate<bdd::label_t> &af;
+    const predicate<bdd::label_type> &af;
     bool result = false;
 
   public:
-    bdd_eval_func_visitor(const predicate<bdd::label_t>& f)
+    bdd_eval_func_visitor(const predicate<bdd::label_type>& f)
       : af(f)
     { }
 
-    inline bdd::ptr_t visit(const bdd::node_t &n)
+    inline bdd::pointer_type visit(const bdd::node_type &n)
     {
       const bool a = af(n.label());
       return a ? n.high() : n.low();
@@ -37,7 +37,7 @@ namespace adiar
     { return result; }
   };
 
-  bool bdd_eval(const bdd &bdd, const predicate<bdd::label_t> &af)
+  bool bdd_eval(const bdd &bdd, const predicate<bdd::label_type> &af)
   {
     bdd_eval_func_visitor v(af);
     traverse(bdd, v);
@@ -47,19 +47,19 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   class bdd_eval_file_visitor
   {
-    internal::file_stream<map_pair<bdd::label_t, boolean>> mps;
-    map_pair<bdd::label_t, boolean> mp;
+    internal::file_stream<map_pair<bdd::label_type, boolean>> mps;
+    map_pair<bdd::label_type, boolean> mp;
 
     bool result = false;
 
   public:
-    bdd_eval_file_visitor(const shared_file<map_pair<bdd::label_t, boolean>>& msf)
+    bdd_eval_file_visitor(const shared_file<map_pair<bdd::label_type, boolean>>& msf)
       : mps(msf)
     { if (mps.can_pull()) { mp = mps.pull(); } }
 
-    inline bdd::ptr_t visit(const bdd::node_t &n)
+    inline bdd::pointer_type visit(const bdd::node_type &n)
     {
-      const bdd::label_t level = n.label();
+      const bdd::label_type level = n.label();
       while (mp.level() < level) {
         if (!mps.can_pull()) {
           throw out_of_range("Labels are insufficient to traverse BDD");
@@ -86,7 +86,7 @@ namespace adiar
   };
 
   bool bdd_eval(const bdd &bdd,
-                const shared_file<map_pair<bdd::label_t, boolean>> &mpf)
+                const shared_file<map_pair<bdd::label_type, boolean>> &mpf)
   {
     bdd_eval_file_visitor v(mpf);
     internal::traverse(bdd, v);
@@ -97,7 +97,7 @@ namespace adiar
   class bdd_sat_bdd_callback
   {
     // TODO: replace with TPIE's external stack
-    using e = map_pair<bdd::label_t, boolean>;
+    using e = map_pair<bdd::label_type, boolean>;
 
     shared_file<e> ef;
     internal::file_writer<e> ew;
@@ -106,8 +106,8 @@ namespace adiar
     bdd_sat_bdd_callback() : ew(ef)
     { }
 
-    void operator() (bdd::label_t x, bool v)
-    { ew << map_pair<bdd::label_t, boolean>(x, v); }
+    void operator() (bdd::label_type x, bool v)
+    { ew << map_pair<bdd::label_type, boolean>(x, v); }
 
     bdd get_bdd()
     {
@@ -115,17 +115,17 @@ namespace adiar
       ew.detach();
       internal::file_stream<e, true> es(ef);
 
-      internal::shared_levelized_file<bdd::node_t> nf;
+      internal::shared_levelized_file<bdd::node_type> nf;
       internal::node_writer nw(nf);
 
-      bdd::ptr_t latest = bdd::ptr_t(true);
+      bdd::pointer_type latest = bdd::pointer_type(true);
 
       while (es.can_pull()) {
         const e kv = es.pull();
 
-        const bdd::node_t n(kv.key(), bdd::max_id,
-                            kv.value() ? bdd::ptr_t(false) : latest,
-                            kv.value() ? latest : bdd::ptr_t(false));
+        const bdd::node_type n(kv.key(), bdd::max_id,
+                            kv.value() ? bdd::pointer_type(false) : latest,
+                            kv.value() ? latest : bdd::pointer_type(false));
 
         nw.unsafe_push(n);
         nw.unsafe_push(internal::level_info(kv.key(), 1u));
@@ -144,14 +144,14 @@ namespace adiar
 
   class bdd_sat_lambda_callback
   {
-    const consumer<bdd::label_t, bool> &_c;
+    const consumer<bdd::label_type, bool> &_c;
 
   public:
-    bdd_sat_lambda_callback(const consumer<bdd::label_t, bool> &lambda)
+    bdd_sat_lambda_callback(const consumer<bdd::label_type, bool> &lambda)
       : _c(lambda)
     { }
 
-    void operator() (bdd::label_t x, bool v) const
+    void operator() (bdd::label_type x, bool v) const
     { _c(x,v); }
   };
 
@@ -162,7 +162,7 @@ namespace adiar
     visitor_t   _visitor;
     callback_t& _callback;
 
-    bdd::label_t _lvl = bdd::max_label+1u;
+    bdd::label_type _lvl = bdd::max_label+1u;
     lvl_stream_t _lvls;
 
   public:
@@ -174,9 +174,9 @@ namespace adiar
       : _callback(cb), _lvls(lvl)
     { }
 
-    bdd::ptr_t visit(const bdd::node_t &n)
+    bdd::pointer_type visit(const bdd::node_type &n)
     {
-      const bdd::ptr_t next_ptr = _visitor.visit(n);
+      const bdd::pointer_type next_ptr = _visitor.visit(n);
       _lvl = n.label();
 
       // set default to all skipped levels
@@ -226,7 +226,7 @@ namespace adiar
     return _cb.get_bdd();
   }
 
-  void bdd_satmin(const bdd &f, const consumer<bdd::label_t, bool> &cb)
+  void bdd_satmin(const bdd &f, const consumer<bdd::label_type, bool> &cb)
   {
     bdd_sat_lambda_callback _cb(cb);
     __bdd_satX<internal::traverse_satmin_visitor>(f, _cb);
@@ -241,7 +241,7 @@ namespace adiar
     return _cb.get_bdd();
   }
 
-  void bdd_satmax(const bdd &f, const consumer<bdd::label_t, bool> &cb)
+  void bdd_satmax(const bdd &f, const consumer<bdd::label_type, bool> &cb)
   {
     bdd_sat_lambda_callback _cb(cb);
     __bdd_satX<internal::traverse_satmax_visitor>(f, _cb);

@@ -16,22 +16,22 @@ namespace adiar::internal
   /// \brief   Write-only access to a simple file including a consistency check
   ///          on the given input.
   ///
-  /// \param elem_t Type of the file's content.
+  /// \tparam  value_t Type of the file's content.
   ///
   /// \details The consistency check verifies, whether something is allowed to
   ///          come after something else. In all our current use-cases, the
   ///          check induces a total ordering.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename elem_type>
+  template <typename value_t>
   class file_writer
   {
   public:
-    typedef elem_type elem_t;
+    using value_type = value_t;
 
   public:
     static size_t memory_usage()
     {
-      return tpie::file_stream<elem_t>::memory_usage();
+      return tpie::file_stream<value_type>::memory_usage();
     }
 
   private:
@@ -45,7 +45,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief TPIE's file stream object to write elements with.
     ////////////////////////////////////////////////////////////////////////////
-    tpie::file_stream<elem_t> _stream;
+    tpie::file_stream<value_type> _stream;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -55,19 +55,19 @@ namespace adiar::internal
     { }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Construct attached to a given `file<elem_t>`.
+    /// \brief Construct attached to a given `file<value_type>`.
     ///
     /// \pre No `file_stream` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
-    file_writer(file<elem_t> &f)
+    file_writer(file<value_type> &f)
     { attach(f); }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Construct attached to a given shared `file<elem_t>`.
+    /// \brief Construct attached to a given shared `file<value_type>`.
     ///
     /// \pre No `file_stream` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
-    file_writer(adiar::shared_ptr<file<elem_t>> &f)
+    file_writer(adiar::shared_ptr<file<value_type>> &f)
     { attach(f); }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -78,7 +78,7 @@ namespace adiar::internal
 
   protected:
     ////////////////////////////////////////////////////////////////////////////
-    void attach(file<elem_t> &f, adiar::shared_ptr<void> p)
+    void attach(file<value_type> &f, adiar::shared_ptr<void> p)
     {
       if (f.is_persistent())
         throw runtime_error("Cannot attach writer to a persisted file");
@@ -86,7 +86,7 @@ namespace adiar::internal
       if (attached()) { detach(); }
       _file_ptr = p;
 
-      _stream.open(f._tpie_file, file<elem_t>::write_access);
+      _stream.open(f._tpie_file, file<value_type>::write_access);
       _stream.seek(0, tpie::file_stream_base::end);
     }
 
@@ -105,7 +105,7 @@ namespace adiar::internal
     ///          ensure, that the file in question is not destructed before
     ///          `.detach()` is called.
     ////////////////////////////////////////////////////////////////////////////
-    void attach(file<elem_t> &f)
+    void attach(file<value_type> &f)
     { attach(f, nullptr); }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -113,7 +113,7 @@ namespace adiar::internal
     ///
     /// \pre No `file_stream` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
-    void attach(adiar::shared_ptr<file<elem_t>> f)
+    void attach(adiar::shared_ptr<file<value_type>> f)
     { attach(*f, f); }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -136,7 +136,7 @@ namespace adiar::internal
     ///
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    void push(const elem_t &e)
+    void push(const value_type &e)
     { _stream.write(e); }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -144,7 +144,7 @@ namespace adiar::internal
     ///
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    file_writer<elem_t>& operator<< (const elem_t& e)
+    file_writer<value_type>& operator<< (const value_type& e)
     {
       this->push(e);
       return *this;
@@ -179,7 +179,7 @@ namespace adiar::internal
     ///
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    template <typename pred_t = std::less<elem_t>>
+    template <typename pred_t = std::less<value_type>>
     void sort(const pred_t pred = pred_t())
     {
       if (empty()) return;
@@ -190,7 +190,7 @@ namespace adiar::internal
   };
 
   // TODO: remove...
-  typedef file_writer<ptr_uint64::label_t> label_writer;
+  using label_writer = file_writer<ptr_uint64::label_type> ;
 }
 
 #endif // ADIAR_INTERNAL_IO_FILE_WRITER_H

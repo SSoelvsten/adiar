@@ -40,7 +40,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The level at which this nodes target belongs to.
     ////////////////////////////////////////////////////////////////////////////
-    arc::label_t level() const
+    arc::label_type level() const
     { return target().label(); }
   };
 
@@ -53,7 +53,7 @@ namespace adiar::internal
   struct substitute_rec_output { node out; };
   struct substitute_rec_skipto { ptr_uint64 child; };
 
-  typedef std::variant<substitute_rec_output, substitute_rec_skipto> substitute_rec;
+  using substitute_rec = std::variant<substitute_rec_output, substitute_rec_skipto>;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
@@ -101,7 +101,7 @@ namespace adiar::internal
 
     pq_t substitute_pq({dd}, pq_memory, pq_max_size, stats_substitute.lpq);
 
-    typename substitute_policy::label_t level = n.label();
+    typename substitute_policy::label_type level = n.label();
     size_t level_size = 0;
 
     bool output_changes = false;

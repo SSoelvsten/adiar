@@ -20,7 +20,7 @@ size_t largest_nodes = 0;
  *
  *                                 N*i + j.
  */
-inline typename adiar::bdd::label_t label_of_position(uint64_t N, uint64_t i, uint64_t j)
+inline typename adiar::bdd::label_type label_of_position(uint64_t N, uint64_t i, uint64_t j)
 {
   return (N * i) + j;
 }
@@ -83,7 +83,7 @@ adiar::bdd n_queens_S(int i, int j)
       // On row of the queen in question
       int column = N - 1;
       do {
-        typename adiar::bdd::label_t label = label_of_position(N, row, column);
+        typename adiar::bdd::label_type label = label_of_position(N, row, column);
 
         // If (row, column) == (i,j), then the chain goes through high because
         // then we need to check the queen actually is placed here.
@@ -220,12 +220,12 @@ void n_queens_print_solution(std::vector<uint64_t>& assignment)
 
 /* At this point, we now also need to convert an assignment back into a position
  * on the board. So, we'll also need the following two small functions. */
-inline uint64_t i_of_label(uint64_t N, typename adiar::bdd::label_t label)
+inline uint64_t i_of_label(uint64_t N, typename adiar::bdd::label_type label)
 {
   return label / N;
 }
 
-inline uint64_t j_of_label(uint64_t N, typename adiar::bdd::label_t label)
+inline uint64_t j_of_label(uint64_t N, typename adiar::bdd::label_type label)
 {
   return label % N;
 }
@@ -248,15 +248,15 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
     partial_assignment.push_back(row_q);
 
     // Construct the assignment for this entire column
-    adiar::shared_file<adiar::map_pair<adiar::bdd::label_t, adiar::assignment>> column_assignment;
+    adiar::shared_file<adiar::map_pair<adiar::bdd::label_type, adiar::assignment>> column_assignment;
 
     { // The assignment_writer has to be detached, before we call any bdd
       // functions. It is automatically detached upon destruction, hence we have
       // it in this little scope.
-      adiar::file_writer<adiar::map_pair<adiar::bdd::label_t, adiar::assignment>> aw(column_assignment);
+      adiar::file_writer<adiar::map_pair<adiar::bdd::label_type, adiar::assignment>> aw(column_assignment);
 
       for (uint64_t row = 0; row < N; row++) {
-        aw << adiar::map_pair<adiar::bdd::label_t, adiar::assignment>(label_of_position(N, row, column), row == row_q);
+        aw << adiar::map_pair<adiar::bdd::label_type, adiar::assignment>(label_of_position(N, row, column), row == row_q);
       }
     }
 
@@ -272,7 +272,7 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
 
       // Obtain the lexicographically minimal true assignment. Well, only one
       // exists, so we get the only one left.
-      adiar::bdd_satmin(restricted_constraints, [&N, &partial_assignment](adiar::bdd::label_t x, bool v) {
+      adiar::bdd_satmin(restricted_constraints, [&N, &partial_assignment](adiar::bdd::label_type x, bool v) {
         // Skip all empty (false) locations
         if (!v) { return; }
 

@@ -42,15 +42,15 @@ namespace adiar::internal
       Auto
     };
 
-    template<typename ptr_t>
+    template<typename pointer_type>
     inline void
-    __reduce_decrement_cut(cuts_t &c, const ptr_t& p)
+    __reduce_decrement_cut(cuts_t &c, const pointer_type& p)
     {
       if (p.is_terminal()) {
         c[cut_type::All]--;
         c[cut_type_with(!p.value(), p.value())]--;
       } else {
-        for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
+        for(size_t ct = 0u; ct < cut_types; ct++) {
           c[ct]--;
         }
       }
@@ -70,7 +70,7 @@ namespace adiar::internal
               typename arc_stream_t>
     void
     __reduce_level__fast(arc_stream_t &arcs,
-                         const typename dd_policy::label_t label,
+                         const typename dd_policy::label_type label,
                          pq_t &pq,
                          node_writer &out_writer)
     {
@@ -86,11 +86,11 @@ namespace adiar::internal
       bool terminal_val = false /* <-- dummy value */;
 
       // Pull out all nodes from pq and terminal_arcs for this level
-      typename dd_policy::id_t out_id = dd_policy::max_id;
+      typename dd_policy::id_type out_id = dd_policy::max_id;
 
       while (pq.can_pull() || (arcs.can_pull_terminal() && arcs.peek_terminal().source().label() == label)) {
         // TODO (MDD / QMDD):
-        //   Use __reduce_get_next node_t::outdegree times to create a node_t::children_t.
+        //   Use __reduce_get_next node_type::outdegree times to create a node_type::children_type.
         const arc e_high = __reduce_get_next(pq, arcs);
         const arc e_low  = __reduce_get_next(pq, arcs);
 
@@ -101,20 +101,20 @@ namespace adiar::internal
         //   Disable the following if-statement for faster performance
 
         // Apply Reduction rule 1
-        const node::ptr_t reduction_rule_ret = dd_policy::reduction_rule(n);
+        const node::pointer_type reduction_rule_ret = dd_policy::reduction_rule(n);
         if (reduction_rule_ret != n.uid()) {
 #ifdef ADIAR_STATS
           stats_reduce.removed_by_rule_1 += 1u;
 #endif
           // Forward child
           // Tell the parents this arc is tainted by Reduction Rule 1.
-          const node::ptr_t t = flag(reduction_rule_ret);
+          const node::pointer_type t = flag(reduction_rule_ret);
           adiar_assert(t.is_terminal() || t.out_idx() == false, "Created target is without an index");
           if (t.is_terminal()) { terminal_val = t.value(); }
 
           while (arcs.can_pull_internal() && arcs.peek_internal().target() == n.uid()) {
             // The out_idx is included in arc.source() pulled from the internal arcs.
-            const node::ptr_t s = arcs.pull_internal().source();
+            const node::pointer_type s = arcs.pull_internal().source();
             pq.push(arc(s,t));
           }
 
@@ -128,12 +128,12 @@ namespace adiar::internal
           out_writer.unsafe_push(next_node);
 
           // Forward new node to parents
-          const node::ptr_t t = next_node.uid();
+          const node::pointer_type t = next_node.uid();
           adiar_assert(t.is_terminal() || t.out_idx() == false, "Created target is without an index");
 
           while (arcs.can_pull_internal() && arcs.peek_internal().target() == n.uid()) {
             // The out_idx is included in arc.source() pulled from the internal arcs.
-            const node::ptr_t s = arcs.pull_internal().source();
+            const node::pointer_type s = arcs.pull_internal().source();
             pq.push(arc(s,t));
           }
         }
@@ -179,15 +179,15 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         /// \brief Type of the elements.
         ////////////////////////////////////////////////////////////////////////
-        using elem_t = element_t;
+        using value_type = element_t;
 
-        static_assert(elem_t::inputs == 1 && elem_t::sorted_target,
+        static_assert(value_type::inputs == 1 && value_type::sorted_target,
                       "Request should be on a single input, and hence sorted");
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief Type of the element comparator.
         ////////////////////////////////////////////////////////////////////////
-        using elem_comp_t = element_comp_t;
+        using value_comp_type = element_comp_t;
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief Memory mode of sorter.
@@ -197,11 +197,11 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         /// \brief Type of the sorter.
         ////////////////////////////////////////////////////////////////////////
-        using sorter_t = sorter<mem_mode, elem_t, elem_comp_t>;
+        using sorter_t = sorter<mem_mode, value_type, value_comp_type>;
 
         ////////////////////////////////////////////////////////////////////////
-        static constexpr typename elem_t::label_t no_level =
-          static_cast<typename elem_t::label_t>(-1);
+        static constexpr typename value_type::label_type no_level =
+          static_cast<typename value_type::label_type>(-1);
 
         static constexpr size_t data_structures = sorter_t::data_structures;
 
@@ -214,7 +214,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         /// \brief Maximum source seen
         ////////////////////////////////////////////////////////////////////////
-        typename elem_t::ptr_t _max_source = elem_t::ptr_t::nil();
+        typename value_type::pointer_type _max_source = value_type::pointer_type::nil();
 
         ////////////////////////////////////////////////////////////////////////
         // NOTE: There is not '_terminals[2]' like in the priority queue, since
@@ -255,17 +255,17 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         /// \brief Push request (marked as from outer sweep).
         ////////////////////////////////////////////////////////////////////////
-        void push(const elem_t& e)
+        void push(const value_type& v)
         {
-          adiar_assert(e.target.first().is_node(),
+          adiar_assert(v.target.first().is_node(),
                       "Requests should have at least one internal node");
 
           _max_source = _max_source.is_nil()
-            ? e.data.source
-            : std::max(_max_source, e.data.source);
+            ? v.data.source
+            : std::max(_max_source, v.data.source);
 
           // TODO: support requests with more than just the source
-          _sorter_ptr->push({ e.target, {}, {flag(e.data.source)} });
+          _sorter_ptr->push({ v.target, {}, {flag(v.data.source)} });
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -281,12 +281,12 @@ namespace adiar::internal
           // TODO: Is there a better way to explicitly set the remainders of
           //       target to nil?
 
-          if constexpr (elem_t::cardinality == 1u) {
-            push(elem_t({a.target()}, {}, {flag(a.source())}));
-          } else if constexpr (elem_t::cardinality == 2u) {
-            push(elem_t({a.target(), elem_t::ptr_t::nil()}, {}, {a.source()}));
+          if constexpr (value_type::cardinality == 1u) {
+            push(value_type({a.target()}, {}, {flag(a.source())}));
+          } else if constexpr (value_type::cardinality == 2u) {
+            push(value_type({a.target(), value_type::pointer_type::nil()}, {}, {a.source()}));
           } else {
-            static_assert(elem_t::cardinality <= 2u,
+            static_assert(value_type::cardinality <= 2u,
                           "Missing implementation for larger than binary combinators");
           }
         }
@@ -300,11 +300,11 @@ namespace adiar::internal
         { return _sorter_ptr->can_pull(); }
 
         ////////////////////////////////////////////////////////////////////////
-        elem_t top() /*const*/
+        value_type top() /*const*/
         { return _sorter_ptr->top(); }
 
         ////////////////////////////////////////////////////////////////////////
-        elem_t pull()
+        value_type pull()
         {
           // TODO: decrement terminal count (is this number ever relevant before
           //       it already is 'reset()'?)
@@ -315,7 +315,7 @@ namespace adiar::internal
         void reset()
         {
           sorter_t::reset_unique(_sorter_ptr, _memory_bytes, _no_arcs);
-          _max_source = elem_t::ptr_t::nil();
+          _max_source = value_type::pointer_type::nil();
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -340,7 +340,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         /// \brief Level of the deepest source
         ////////////////////////////////////////////////////////////////////////
-        typename elem_t::label_t deepest_source()
+        typename value_type::label_type deepest_source()
         { return _max_source.is_nil() ? no_level : _max_source.label(); }
       };
 
@@ -366,12 +366,12 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////////
         /// \brief Type of the elements.
         ////////////////////////////////////////////////////////////////////////////
-        using elem_t = typename outer_pq_t::elem_t;
+        using value_type = typename outer_pq_t::value_type;
 
         ////////////////////////////////////////////////////////////////////////////
         /// \brief Type of the element comparator.
         ////////////////////////////////////////////////////////////////////////////
-        using elem_comp_t = typename outer_pq_t::elem_comp_t;
+        using value_comp_type = typename outer_pq_t::value_comp_type;
 
         ////////////////////////////////////////////////////////////////////////////
         /// \brief Memory mode (same as decorated priority queue).
@@ -394,20 +394,20 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         /// \brief Type of a level.
         ////////////////////////////////////////////////////////////////////////
-        using level_t = typename elem_t::ptr_t::label_t;
+        using level_type = typename value_type::pointer_type::label_type;
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief The level of the next inner sweep;
         ////////////////////////////////////////////////////////////////////////
         // TODO: turn into signed value to allow using decorator above last
         //       legal value of '_next_inner' (abusing negative numbers).
-        const level_t _next_inner;
+        const level_type _next_inner;
 
       public:
         ////////////////////////////////////////////////////////////////////////////
         /// \brief Value to reflect 'out of levels'.
         ////////////////////////////////////////////////////////////////////////////
-        static constexpr level_t no_label = outer_pq_t::no_label;
+        static constexpr level_type no_label = outer_pq_t::no_label;
 
       public:
         ////////////////////////////////////////////////////////////////////////
@@ -415,7 +415,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         up__pq_decorator(outer_pq_t &outer_pq,
                          outer_roots_t &outer_roots,
-                         const level_t next_inner)
+                         const level_type next_inner)
           : _outer_pq(outer_pq)
           , _outer_roots(outer_roots)
           , _next_inner(next_inner)
@@ -497,7 +497,7 @@ namespace adiar::internal
         ///
         /// \see request, request_with_data
         ////////////////////////////////////////////////////////////////////////
-        void push(const typename outer_roots_t::elem_t &e)
+        void push(const typename outer_roots_t::value_type &e)
         {
           adiar_assert(e.data.source.is_nil() || e.data.source.label() < _next_inner);
           if (e.target.first().is_terminal()) {
@@ -511,7 +511,7 @@ namespace adiar::internal
         /// \brief Set up the next nonempty level in the priority queue and the
         ///        sorter (down to the given `stop_level`).
         ////////////////////////////////////////////////////////////////////////
-        void setup_next_level(level_t stop_level = no_label)
+        void setup_next_level(level_type stop_level = no_label)
         {
           _outer_pq.setup_next_level(stop_level);
           adiar_assert(_next_inner <= _outer_pq.current_level(),
@@ -533,7 +533,7 @@ namespace adiar::internal
       class inner_iterator
       {
       public:
-        using level_t = typename nesting_policy::ptr_t::label_t;
+        using level_type = typename nesting_policy::pointer_type::label_type;
 
       public:
         ////////////////////////////////////////////////////////////////////////
@@ -546,14 +546,14 @@ namespace adiar::internal
         nesting_policy    &_policy_impl;
 
       public:
-        inner_iterator(const typename nesting_policy::shared_arcs_t &dag,
+        inner_iterator(const typename nesting_policy::shared_arc_file_type &dag,
                        nesting_policy &policy_impl)
           : _lis(dag)
           , _policy_impl(policy_impl)
         { }
 
       public:
-        static constexpr level_t end = static_cast<level_t>(-1);
+        static constexpr level_type end = static_cast<level_type>(-1);
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief Obtain the next level to do an inner sweep to pull.
@@ -561,10 +561,10 @@ namespace adiar::internal
         /// \returns The next inner level that should be recursed on (or `end`
         ///          if none are left)
         ////////////////////////////////////////////////////////////////////////
-        level_t next_inner()
+        level_type next_inner()
         {
           while (_lis.can_pull()) {
-            const level_t l = _lis.pull().level();
+            const level_type l = _lis.pull().level();
             if (_policy_impl.has_sweep(l)) { return l; }
           }
           return end;
@@ -594,14 +594,14 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////////
         /// \brief Type of the elements.
         ////////////////////////////////////////////////////////////////////////////
-        using elem_t = typename inner_pq_t::elem_t;
+        using value_type = typename inner_pq_t::value_type;
 
-        // TODO: static_assert(inner_pq_t::elem_t == outer_roots_t::elem_t);
+        // TODO: static_assert(inner_pq_t::value_type == outer_roots_t::value_type);
 
         ////////////////////////////////////////////////////////////////////////////
         /// \brief Type of the element comparator.
         ////////////////////////////////////////////////////////////////////////////
-        using elem_comp_t = typename inner_pq_t::elem_comp_t;
+        using value_comp_type = typename inner_pq_t::value_comp_type;
 
         ////////////////////////////////////////////////////////////////////////////
         /// \brief Memory mode (same as decorated priority queue).
@@ -611,7 +611,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         /// \brief Type of the elements in the priority queue / sorter.
         ////////////////////////////////////////////////////////////////////////
-        using level_t = typename elem_t::ptr_t::label_t;
+        using level_type = typename value_type::pointer_type::label_type;
 
       private:
         ////////////////////////////////////////////////////////////////////////
@@ -623,7 +623,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////////
         /// \brief Instantiation of the comparator between elements.
         ////////////////////////////////////////////////////////////////////////////
-        elem_comp_t _e_comparator = elem_comp_t();
+        value_comp_type _v_comparator = value_comp_type();
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief Reference to the sorter in the outer sweep that contains the
@@ -635,7 +635,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////////
         /// \brief Value to reflect 'out of levels'.
         ////////////////////////////////////////////////////////////////////////////
-        static constexpr level_t no_label = inner_pq_t::no_label;
+        static constexpr level_type no_label = inner_pq_t::no_label;
 
       public:
         ////////////////////////////////////////////////////////////////////////
@@ -656,7 +656,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         /// \brief The label of the current level.
         ////////////////////////////////////////////////////////////////////////
-        level_t current_level() const
+        level_type current_level() const
         { return _inner_pq.current_level(); }
 
         ////////////////////////////////////////////////////////////////////////
@@ -668,7 +668,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         /// \brief The label of the next (possibly empty) level.
         ////////////////////////////////////////////////////////////////////////
-        level_t next_level() /*const*/
+        level_type next_level() /*const*/
         { return _inner_pq.next_level(); }
 
         ////////////////////////////////////////////////////////////////////////
@@ -680,14 +680,14 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         /// \brief Push request to inner priority queue.
         ////////////////////////////////////////////////////////////////////////
-        void push(const elem_t& e)
+        void push(const value_type& e)
         { _inner_pq.push(e); }
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief Set up the next nonempty level in the priority queue and the
         ///        sorter (down to the given `stop_level`).
         ////////////////////////////////////////////////////////////////////////
-        void setup_next_level(level_t stop_level = no_label)
+        void setup_next_level(level_type stop_level = no_label)
         {
           if (_outer_roots.can_pull()) {
             stop_level = std::min(stop_level, _outer_roots.top().level());
@@ -719,7 +719,7 @@ namespace adiar::internal
         ///
         /// \pre `can_pull() == true`
         ////////////////////////////////////////////////////////////////////////
-        elem_t top()
+        value_type top()
         {
           return __pq_first()
             ? _inner_pq.top()
@@ -731,7 +731,7 @@ namespace adiar::internal
         ///
         /// \pre `can_pull() == true`
         ////////////////////////////////////////////////////////////////////////
-        elem_t peek()
+        value_type peek()
         { return top(); }
 
         ////////////////////////////////////////////////////////////////////////
@@ -739,7 +739,7 @@ namespace adiar::internal
         ///
         /// \pre `can_pull() == true`
         ////////////////////////////////////////////////////////////////////////
-        elem_t pull()
+        value_type pull()
         {
           return __pq_first()
             ? _inner_pq.pull()
@@ -776,28 +776,28 @@ namespace adiar::internal
           if (_inner_pq.empty_level())  { return false; }
           if (!_outer_roots.can_pull()) { return true; }
 
-          const level_t _outer_roots_level = _outer_roots.top().level();
+          const level_type _outer_roots_level = _outer_roots.top().level();
           if (_outer_roots_level != current_level()) { return true; }
 
-          return _e_comparator(_inner_pq.top(), _outer_roots.top());
+          return _v_comparator(_inner_pq.top(), _outer_roots.top());
         }
 
-        elem_t __essential(const elem_t &r)
+        value_type __essential(const value_type &r)
         {
           // TODO: generalize into a `map(r.target, essential)` in
           //       <adiar/internal/data_types/tuple.h>. Ensure everything can be
           //       inlined at compile-time.
-          static_assert(elem_t::cardinality <= 2,
+          static_assert(value_type::cardinality <= 2,
                         "No need to support higher cardinality (yet)");
 
-          typename elem_t::target_t r_tgt;
-          if constexpr (elem_t::cardinality == 1) {
-            r_tgt = typename elem_t::target_t(essential(r.target[0]));
-          } else {// if constexpr (elem_t::cardinality == 2) {
-            r_tgt = typename elem_t::target_t(essential(r.target[0]),
+          typename value_type::target_t r_tgt;
+          if constexpr (value_type::cardinality == 1) {
+            r_tgt = typename value_type::target_t(essential(r.target[0]));
+          } else {// if constexpr (value_type::cardinality == 2) {
+            r_tgt = typename value_type::target_t(essential(r.target[0]),
                                               essential(r.target[1]));
           }
-          return elem_t(r_tgt, {}, r.data);
+          return value_type(r_tgt, {}, r.data);
         }
       };
 
@@ -811,7 +811,7 @@ namespace adiar::internal
       template<typename nesting_policy, typename outer_roots_t>
       typename nesting_policy::unreduced_t
       down(nesting_policy &policy_impl,
-           const typename nesting_policy::shared_nodes_t &outer_file,
+           const typename nesting_policy::shared_node_file_type &outer_file,
            outer_roots_t &outer_roots,
            const size_t inner_memory)
       {
@@ -842,7 +842,7 @@ namespace adiar::internal
       template<typename nesting_policy, typename outer_roots_t>
       inline typename nesting_policy::unreduced_t
       down__sweep_switch(nesting_policy &policy_impl,
-                         const typename nesting_policy::shared_nodes_t &outer_file,
+                         const typename nesting_policy::shared_node_file_type &outer_file,
                          outer_roots_t &outer_roots,
                          const size_t inner_memory)
       {
@@ -883,7 +883,7 @@ namespace adiar::internal
           : inner_pq_bound;
 
         // TODO (bdd_compose): ask 'nesting_policy' implementation for the initalizer list
-        if(!external_only && inner_pq_max_size <= no_lookahead_bound(outer_roots_t::elem_t::cardinality)) {
+        if(!external_only && inner_pq_max_size <= no_lookahead_bound(outer_roots_t::value_type::cardinality)) {
 #ifdef ADIAR_STATS
           stats.inner.down.lpq.unbucketed += 1u;
 #endif
@@ -951,12 +951,12 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////////
         /// \brief Type of the elements.
         ////////////////////////////////////////////////////////////////////////////
-        using elem_t = typename inner_pq_t::elem_t;
+        using value_type = typename inner_pq_t::value_type;
 
         ////////////////////////////////////////////////////////////////////////////
         /// \brief Type of the element comparator.
         ////////////////////////////////////////////////////////////////////////////
-        using elem_comp_t = typename inner_pq_t::elem_comp_t;
+        using value_comp_type = typename inner_pq_t::value_comp_type;
 
         ////////////////////////////////////////////////////////////////////////////
         /// \brief Memory mode (same as decorated priority queue).
@@ -966,7 +966,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         /// \brief Type of the elements in the priority queue / sorter.
         ////////////////////////////////////////////////////////////////////////
-        using level_t = typename elem_t::ptr_t::label_t;
+        using level_type = typename value_type::pointer_type::label_type;
 
       private:
         ////////////////////////////////////////////////////////////////////////
@@ -978,7 +978,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////////
         /// \brief Instantiation of the comparator between elements.
         ////////////////////////////////////////////////////////////////////////////
-        elem_comp_t _e_comparator = elem_comp_t();
+        value_comp_type _v_comparator = value_comp_type();
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief Reference to the outer sweep's (levelized) priority queue.
@@ -989,7 +989,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////////
         /// \brief Value to reflect 'out of levels'.
         ////////////////////////////////////////////////////////////////////////////
-        static constexpr level_t no_label = inner_pq_t::no_label;
+        static constexpr level_type no_label = inner_pq_t::no_label;
 
       public:
         ////////////////////////////////////////////////////////////////////////
@@ -1010,7 +1010,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         /// \brief The label of the current level.
         ////////////////////////////////////////////////////////////////////////
-        level_t current_level() const
+        level_type current_level() const
         { return _inner_pq.current_level(); }
 
         ////////////////////////////////////////////////////////////////////////
@@ -1022,7 +1022,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         /// \brief The label of the next (possibly empty) level.
         ////////////////////////////////////////////////////////////////////////
-        level_t next_level() /*const*/
+        level_type next_level() /*const*/
         { return _inner_pq.next_level(); }
 
         ////////////////////////////////////////////////////////////////////////
@@ -1034,12 +1034,12 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         /// \brief Push request to inner priority queue.
         ////////////////////////////////////////////////////////////////////////
-        void push(const elem_t& e)
+        void push(const value_type& v)
         {
-          if (e.source().is_flagged()) {
-            _outer_pq.push(arc(unflag(e.source()), e.target()));
+          if (v.source().is_flagged()) {
+            _outer_pq.push(arc(unflag(v.source()), v.target()));
           } else {
-            _inner_pq.push(e);
+            _inner_pq.push(v);
           }
         }
 
@@ -1047,7 +1047,7 @@ namespace adiar::internal
         /// \brief Set up the next nonempty level in the priority queue and the
         ///        sorter (down to the given `stop_level`).
         ////////////////////////////////////////////////////////////////////////
-        void setup_next_level(level_t stop_level = no_label)
+        void setup_next_level(level_type stop_level = no_label)
         { _inner_pq.setup_next_level(stop_level); }
 
         ////////////////////////////////////////////////////////////////////////
@@ -1071,7 +1071,7 @@ namespace adiar::internal
         ///
         /// \pre `can_pull() == true`
         ////////////////////////////////////////////////////////////////////////
-        elem_t top()
+        value_type top()
         { return _inner_pq.top(); }
 
         ////////////////////////////////////////////////////////////////////////
@@ -1079,7 +1079,7 @@ namespace adiar::internal
         ///
         /// \pre `can_pull() == true`
         ////////////////////////////////////////////////////////////////////////
-        elem_t peek()
+        value_type peek()
         { return _inner_pq.peek(); }
 
         ////////////////////////////////////////////////////////////////////////
@@ -1087,7 +1087,7 @@ namespace adiar::internal
         ///
         /// \pre `can_pull() == true`
         ////////////////////////////////////////////////////////////////////////
-        elem_t pull()
+        value_type pull()
         { return _inner_pq.pull(); }
 
         ////////////////////////////////////////////////////////////////////////
@@ -1211,7 +1211,7 @@ namespace adiar::internal
       up(const arc_stream<> &outer_arcs,
          outer_pq_t &outer_pq,
          node_writer &outer_writer,
-         const typename nesting_policy::shared_arcs_t &inner_arcs_file,
+         const typename nesting_policy::shared_arc_file_type &inner_arcs_file,
          const size_t inner_pq_memory,
          const size_t inner_pq_max_size,
          const size_t inner_sorters_memory,
@@ -1238,7 +1238,7 @@ namespace adiar::internal
                        "If there is a level, then there should also be something for it.");
           const level_info inner_level_info = inner_levels.pull();
 
-          const typename nesting_policy::label_t level = inner_level_info.level();
+          const typename nesting_policy::label_type level = inner_level_info.level();
 
           adiar_assert(!decorated_pq.has_current_level() || level == decorated_pq.current_level(),
                        "level and priority queue should be in sync");
@@ -1284,7 +1284,7 @@ namespace adiar::internal
       up(const arc_stream<> &outer_arcs,
          outer_pq_t &outer_pq,
          node_writer &outer_writer,
-         const typename nesting_policy::shared_arcs_t &inner_arcs_file,
+         const typename nesting_policy::shared_arc_file_type &inner_arcs_file,
          const size_t inner_memory,
          const bool   is_last_inner)
       {
@@ -1354,25 +1354,25 @@ namespace adiar::internal
            size_t outer_look_ahead,
            memory_mode_t outer_mem_mode>
   typename nesting_policy::reduced_t
-  __nested_sweep(const typename nesting_policy::shared_arcs_t &dag,
+  __nested_sweep(const typename nesting_policy::shared_arc_file_type &dag,
                  nesting_policy &policy_impl,
                  const size_t outer_pq_memory,
                  const size_t outer_roots_memory,
                  const size_t outer_pq_roots_max,
                  const size_t inner_memory)
   {
-    using level_t        = typename nesting_policy::label_t;
+    using level_type        = typename nesting_policy::label_type;
     using reduced_t      = typename nesting_policy::reduced_t;
     using unreduced_t    = typename nesting_policy::unreduced_t;
     using request_t      = typename nesting_policy::request_t;
     using request_pred_t = typename nesting_policy::request_pred_t;
-    using shared_arcs_t  = typename nesting_policy::shared_arcs_t;
-    using shared_nodes_t = typename nesting_policy::shared_nodes_t;
+    using shared_arc_file_type  = typename nesting_policy::shared_arc_file_type;
+    using shared_node_file_type = typename nesting_policy::shared_node_file_type;
 
     using inner_iter_t = nested_sweeping::outer::inner_iterator<nesting_policy>;
     inner_iter_t inner_iter(dag, policy_impl);
 
-    level_t next_inner = inner_iter.next_inner();
+    level_type next_inner = inner_iter.next_inner();
 
     // If there are no levels to do an inner sweep, then bail out with the
     // classic Reduce sweep.
@@ -1387,7 +1387,7 @@ namespace adiar::internal
     arc_stream<> outer_arcs(dag);
 
     // Set up (intermediate) output
-    shared_nodes_t outer_file = __reduce_init_output<nesting_policy>();
+    shared_node_file_type outer_file = __reduce_init_output<nesting_policy>();
 
     node_writer outer_writer(outer_file);
 
@@ -1557,7 +1557,7 @@ namespace adiar::internal
           const node n = node_of(e_low, e_high);
 
           // Apply Reduction rule 1?
-          const node::ptr_t reduction_rule_ret = nesting_policy::reduction_rule(n);
+          const node::pointer_type reduction_rule_ret = nesting_policy::reduction_rule(n);
           if (reduction_rule_ret != n.uid()) {
             // If so, preserve child in inner sweep
             if (!outer_levels.can_pull()) {
@@ -1566,7 +1566,7 @@ namespace adiar::internal
               if (reduction_rule_ret.is_terminal()) {
                 return reduced_t(reduction_rule_ret.value());
               }
-              outer_pq_decorator.push(arc(node::ptr_t::nil(), flag(reduction_rule_ret)));
+              outer_pq_decorator.push(arc(node::pointer_type::nil(), flag(reduction_rule_ret)));
             } else {
               do {
                 outer_pq_decorator.push(arc(outer_arcs.pull_internal().source(), flag(reduction_rule_ret)));
@@ -1578,7 +1578,7 @@ namespace adiar::internal
               adiar_assert(!outer_arcs.can_pull_internal(), "Should not have any parents at top-most level");
 
               const request_t r =
-                policy_impl.request_from_node(n, node::ptr_t::nil());
+                policy_impl.request_from_node(n, node::pointer_type::nil());
 
               adiar_assert(r.targets() > 0, "Requests are always to something");
               non_gc_request |= r.targets() > 1;
@@ -1633,13 +1633,13 @@ namespace adiar::internal
         const unreduced_t inner_unreduced =
           nested_sweeping::inner::down(policy_impl, outer_file, outer_roots, inner_memory);
 
-        if (inner_unreduced.template has<shared_nodes_t>()) {
+        if (inner_unreduced.template has<shared_node_file_type>()) {
           adiar_assert(!outer_levels.can_pull(),
                        "Should only collapse to a node file case when at the very top-level.");
-          adiar_assert(inner_unreduced.template get<shared_nodes_t>()->is_terminal(),
+          adiar_assert(inner_unreduced.template get<shared_node_file_type>()->is_terminal(),
                        "Should have collapsed to a terminal.");
 
-          return inner_unreduced.template get<shared_nodes_t>();
+          return inner_unreduced.template get<shared_node_file_type>();
         }
 
         // ---------------------------------------------------------------------
@@ -1647,8 +1647,8 @@ namespace adiar::internal
         adiar_assert(!inner_unreduced.template has<no_file>(),
                      "Inner Sweep returned something");
 
-        const shared_arcs_t inner_arcs =
-          inner_unreduced.template get<shared_arcs_t>();
+        const shared_arc_file_type inner_arcs =
+          inner_unreduced.template get<shared_arc_file_type>();
 
         outer_file = __reduce_init_output<nesting_policy>();
         outer_writer.attach(outer_file);
@@ -1672,7 +1672,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
         // TODO
 #endif
-        adiar_assert(next_inner <= nesting_policy::ptr_t::max_label,
+        adiar_assert(next_inner <= nesting_policy::pointer_type::max_label,
                      "Has another later sweep to do possible garbage collection");
 
         adiar_assert(outer_roots_memory <= inner_memory,
@@ -1775,20 +1775,20 @@ namespace adiar::internal
     using reduced_t      = typename nesting_policy::reduced_t;
     using request_t      = typename nesting_policy::request_t;
     using request_pred_t = typename nesting_policy::request_pred_t;
-    using shared_arcs_t  = typename nesting_policy::shared_arcs_t;
-    using shared_nodes_t = typename nesting_policy::shared_nodes_t;
+    using shared_arc_file_type  = typename nesting_policy::shared_arc_file_type;
+    using shared_node_file_type = typename nesting_policy::shared_node_file_type;
 
     adiar_assert(!input.empty(), "Input for Nested Sweeping should always be non-empty");
 
     // Is it a terminal?
-    if (input.template has<shared_nodes_t>() && input.template get<shared_nodes_t>()->is_terminal()) {
-      return reduced_t(input.template get<shared_nodes_t>(), input.negate);
+    if (input.template has<shared_node_file_type>() && input.template get<shared_node_file_type>()->is_terminal()) {
+      return reduced_t(input.template get<shared_node_file_type>(), input.negate);
     }
 
     // Otherwise obtain the semi-transposed DAG (construct it if necessary)
-    const shared_arcs_t dag = input.template has<shared_arcs_t>()
-      ? input.template get<shared_arcs_t>()
-      : transpose(reduced_t(input.template get<shared_nodes_t>(), input.negate));
+    const shared_arc_file_type dag = input.template has<shared_arc_file_type>()
+      ? input.template get<shared_arc_file_type>()
+      : transpose(reduced_t(input.template get<shared_node_file_type>(), input.negate));
 
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.

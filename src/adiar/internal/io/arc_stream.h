@@ -133,10 +133,10 @@ namespace adiar::internal
         return in_order_pullable;
       }
 
-      const arc::ptr_t in_order_source =
+      const arc::pointer_type in_order_source =
         parent_t::template peek<idx__terminals__in_order>().source();
 
-      const arc::ptr_t out_of_order_source =
+      const arc::pointer_type out_of_order_source =
         parent_t::template peek<idx__terminals__out_of_order>().source();
 
       if constexpr (reverse) {

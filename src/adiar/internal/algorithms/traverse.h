@@ -15,8 +15,8 @@ namespace adiar::internal
   {
     node_stream<> in_nodes(dd);
 
-    typename dd_t::node_t n   = in_nodes.pull();
-    typename dd_t::ptr_t  tgt = n.uid();
+    typename dd_t::node_type n   = in_nodes.pull();
+    typename dd_t::pointer_type  tgt = n.uid();
 
     while (!tgt.is_terminal() && !tgt.is_nil()) {
       while (n.uid() < tgt) { n = in_nodes.pull(); }

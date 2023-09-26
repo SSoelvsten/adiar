@@ -13,7 +13,7 @@ go_bandit([]() {
 
     describe("domain_isset(), domain_set(...), domain_unset()", []() {
       it("has domain after 'domain_set(file)'", []() {
-        adiar::shared_file<node::label_t> dom;
+        adiar::shared_file<node::label_type> dom;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(dom);
@@ -51,7 +51,7 @@ go_bandit([]() {
 
         AssertThat(domain_isset(), Is().True());
 
-        adiar::file_stream<node::label_t> ls(domain_get());
+        adiar::file_stream<node::label_type> ls(domain_get());
 
         AssertThat(ls.can_pull(), Is().False());
       });
@@ -62,7 +62,7 @@ go_bandit([]() {
 
         AssertThat(domain_isset(), Is().True());
 
-        adiar::file_stream<node::label_t> ls(domain_get());
+        adiar::file_stream<node::label_type> ls(domain_get());
 
         AssertThat(ls.can_pull(), Is().True());
         AssertThat(ls.pull(), Is().EqualTo(0u));
@@ -76,7 +76,7 @@ go_bandit([]() {
 
         AssertThat(domain_isset(), Is().True());
 
-        adiar::file_stream<node::label_t> ls(domain_get());
+        adiar::file_stream<node::label_type> ls(domain_get());
 
         AssertThat(ls.can_pull(), Is().True());
         AssertThat(ls.pull(), Is().EqualTo(0u));
@@ -109,7 +109,7 @@ go_bandit([]() {
         {
           AssertThat(domain_isset(), Is().True());
 
-          adiar::file_stream<node::label_t> ls(domain_get());
+          adiar::file_stream<node::label_type> ls(domain_get());
 
           AssertThat(ls.can_pull(), Is().True());
           AssertThat(ls.pull(), Is().EqualTo(0u));
@@ -127,7 +127,7 @@ go_bandit([]() {
         {
           AssertThat(domain_isset(), Is().True());
 
-          adiar::file_stream<node::label_t> ls(domain_get());
+          adiar::file_stream<node::label_type> ls(domain_get());
 
           AssertThat(ls.can_pull(), Is().True());
           AssertThat(ls.pull(), Is().EqualTo(0u));
@@ -156,7 +156,7 @@ go_bandit([]() {
         domain_set(gen);
         AssertThat(domain_isset(), Is().True());
 
-        adiar::file_stream<node::label_t> ls(domain_get());
+        adiar::file_stream<node::label_type> ls(domain_get());
 
         AssertThat(ls.can_pull(), Is().True());
         AssertThat(ls.pull(), Is().EqualTo(1u));
@@ -188,7 +188,7 @@ go_bandit([]() {
 
         AssertThat(domain_isset(), Is().True());
 
-        adiar::file_stream<node::label_t> ls(domain_get());
+        adiar::file_stream<node::label_type> ls(domain_get());
 
         AssertThat(ls.can_pull(), Is().True());
         AssertThat(ls.pull(), Is().EqualTo(0u));
@@ -217,7 +217,7 @@ go_bandit([]() {
         { // Check for xs
           AssertThat(domain_isset(), Is().True());
 
-          adiar::file_stream<node::label_t> ls(domain_get());
+          adiar::file_stream<node::label_type> ls(domain_get());
 
           AssertThat(ls.can_pull(), Is().True());
           AssertThat(ls.pull(), Is().EqualTo(2u));
@@ -237,7 +237,7 @@ go_bandit([]() {
         { // Check for ys
           AssertThat(domain_isset(), Is().True());
 
-          adiar::file_stream<node::label_t> ls(domain_get());
+          adiar::file_stream<node::label_type> ls(domain_get());
 
           AssertThat(ls.can_pull(), Is().True());
           AssertThat(ls.pull(), Is().EqualTo(0u));
@@ -252,7 +252,7 @@ go_bandit([]() {
       it("gives back the given domain file", []() {
         domain_unset();
 
-        adiar::shared_file<node::label_t> dom;
+        adiar::shared_file<node::label_type> dom;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(dom);
@@ -268,7 +268,7 @@ go_bandit([]() {
       it("can overwrite with another domain file", []() {
         domain_unset();
 
-        adiar::shared_file<node::label_t> dom1;
+        adiar::shared_file<node::label_type> dom1;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(dom1);
@@ -280,7 +280,7 @@ go_bandit([]() {
         AssertThat(domain_isset(), Is().True());
         AssertThat(domain_get(), Is().EqualTo(dom1));
 
-        adiar::shared_file<node::label_t> dom2;
+        adiar::shared_file<node::label_type> dom2;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(dom2);

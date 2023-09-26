@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <adiar/exception.h>
-#include <adiar/file.h>
+#include <adiar/file.h> // <-- TODO: Replace with <adiar/internal/io/file.h>
 #include <adiar/functional.h>
 
 // TODO: Make 'domain_var' independent of node type. Then remove this include.
@@ -28,7 +28,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The variable type of a domain variable.
   //////////////////////////////////////////////////////////////////////////////
-  using domain_var = internal::node::label_t;
+  using domain_var = internal::node::label_type;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The maximum supported domain variable.

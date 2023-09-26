@@ -38,7 +38,7 @@ namespace adiar::internal
       return file_count * stream_t::memory_usage();
     }
 
-    typedef ptr_uint64::label_t level_t;
+    using level_type = ptr_uint64::label_type;
 
   private:
     comp_t _comparator = comp_t();
@@ -94,12 +94,12 @@ namespace adiar::internal
     ///
     /// \pre `can_pull() == true`
     ////////////////////////////////////////////////////////////////////////////
-    level_t peek()
+    level_type peek()
     {
       adiar_assert(can_pull(), "Cannot peek past end of all streams");
 
       bool has_min_level = false;
-      level_t min_level = 0u;
+      level_type min_level = 0u;
       for (size_t idx = 0u; idx < file_count; idx++) {
         if (_level_streams[idx]->can_pull()
             && (!has_min_level || _comparator(level_of(_level_streams[idx]->peek()), min_level))) {
@@ -116,11 +116,11 @@ namespace adiar::internal
     ///
     /// \pre `can_pull() == true`
     ////////////////////////////////////////////////////////////////////////////
-    level_t pull()
+    level_type pull()
     {
       adiar_assert(can_pull(), "Cannot pull past end of all streams");
 
-      level_t min_level = peek();
+      level_type min_level = peek();
 
       // pull from all with min_level
       for (const unique_ptr<stream_t> &level_info_stream : _level_streams) {

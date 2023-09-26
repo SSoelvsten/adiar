@@ -15,8 +15,8 @@ namespace adiar
   class zdd_project_policy : public zdd_policy
   {
   public:
-    static inline zdd::ptr_t
-    resolve_root(const zdd::node_t &r, const bool_op &/*op*/)
+    static inline zdd::pointer_type
+    resolve_root(const zdd::node_type &r, const bool_op &/*op*/)
     {
       // TODO: should all but the last case not have a 'suppression taint'?
 
@@ -40,13 +40,13 @@ namespace adiar
 
   public:
     static inline bool
-    keep_terminal(const bool_op &/*op*/, const zdd::ptr_t &p)
+    keep_terminal(const bool_op &/*op*/, const zdd::pointer_type &p)
     {
       return p.value();
     }
 
     static constexpr bool
-    collapse_to_terminal(const bool_op &/*op*/, const zdd::ptr_t &/*p*/)
+    collapse_to_terminal(const bool_op &/*op*/, const zdd::pointer_type &/*p*/)
     {
       return false;
     }
@@ -63,22 +63,22 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_project(const zdd &A, const predicate<zdd::label_t> &dom)
+  __zdd zdd_project(const zdd &A, const predicate<zdd::label_type> &dom)
   {
     return internal::quantify<zdd_project_policy>(A, dom, or_op);
   }
 
-  __zdd zdd_project(zdd &&A, const predicate<zdd::label_t> &dom)
+  __zdd zdd_project(zdd &&A, const predicate<zdd::label_type> &dom)
   {
     return internal::quantify<zdd_project_policy>(std::forward<zdd>(A), dom, or_op);
   }
 
-  __zdd zdd_project(const zdd &A, const generator<zdd::label_t> &dom)
+  __zdd zdd_project(const zdd &A, const generator<zdd::label_type> &dom)
   {
     return internal::quantify<zdd_project_policy>(A, dom, or_op);
   }
 
-  __zdd zdd_project(zdd &&A, const generator<zdd::label_t> &dom)
+  __zdd zdd_project(zdd &&A, const generator<zdd::label_type> &dom)
   {
     return internal::quantify<zdd_project_policy>(A, dom, or_op);
   }

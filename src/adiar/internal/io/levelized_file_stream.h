@@ -19,7 +19,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief         File stream of levelized files.
   ///
-  /// \param T       The type of the file(s)'s elements
+  /// \param value_t The type of the file(s)'s elements
   ///
   /// \param reverse Whether the reading direction should be reversed
   ///
@@ -28,20 +28,22 @@ namespace adiar::internal
   ///         is equivalent to not reversing the underlying stream. Hence, we do
   ///         hide a negation of the \em reverse parameter.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename elem_t, bool reverse = false>
+  template <typename value_t, bool reverse = false>
   class levelized_file_stream
   {
   public:
-    static constexpr size_t streams = file_traits<elem_t>::files;
+    using value_type = value_t;
+
+    static constexpr size_t streams = file_traits<value_type>::files;
     static_assert(0 < streams, "There must be at least a single file to attach to.");
 
     static size_t memory_usage()
     {
-      return streams * file_stream<elem_t, reverse>::memory_usage();
+      return streams * file_stream<value_type, reverse>::memory_usage();
     }
 
   protected:
-    file_stream<elem_t, reverse> _streams[streams];
+    file_stream<value_type, reverse> _streams[streams];
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -51,20 +53,20 @@ namespace adiar::internal
     { }
 
     ////////////////////////////////////////////////////////////////////////////
-    levelized_file_stream(const levelized_file_stream<elem_t, reverse> &) = delete;
-    levelized_file_stream(levelized_file_stream<elem_t, reverse> &&) = delete;
+    levelized_file_stream(const levelized_file_stream<value_type, reverse> &) = delete;
+    levelized_file_stream(levelized_file_stream<value_type, reverse> &&) = delete;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a levelized file.
     ////////////////////////////////////////////////////////////////////////////
-    levelized_file_stream(const levelized_file<elem_t> &lf,
+    levelized_file_stream(const levelized_file<value_type> &lf,
                           const bool negate = false)
     { attach(lf, negate); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a shared levelized file.
     ////////////////////////////////////////////////////////////////////////////
-    levelized_file_stream(const shared_ptr<levelized_file<elem_t>> &lf,
+    levelized_file_stream(const shared_ptr<levelized_file<value_type>> &lf,
                           const bool negate = false)
     { attach(lf, negate); }
 
@@ -79,7 +81,7 @@ namespace adiar::internal
     ///
     /// \pre No `levelized_file_writer` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
-    void attach(const levelized_file<elem_t> &f,
+    void attach(const levelized_file<value_type> &f,
                 const bool negate = false)
     {
       if (!f.exists()) f.__touch();
@@ -93,7 +95,7 @@ namespace adiar::internal
     ///
     /// \pre No `levelized_file_writer` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
-    void attach(const shared_ptr<levelized_file<elem_t>> &f,
+    void attach(const shared_ptr<levelized_file<value_type>> &f,
                 const bool negate = false)
     {
       if (!f->exists()) f->touch();
@@ -153,7 +155,7 @@ namespace adiar::internal
     /// \pre `can_pull<s_idx>() == true`.
     ////////////////////////////////////////////////////////////////////////////
     template<size_t s_idx>
-    elem_t pull()
+    value_type pull()
     {
       static_assert(s_idx < streams, "Sub-stream index must be within [0; streams)");
       return _streams[s_idx].pull();
@@ -166,7 +168,7 @@ namespace adiar::internal
     /// \pre `can_pull<s_idx>() == true`.
     ////////////////////////////////////////////////////////////////////////////
     template<size_t s_idx>
-    elem_t peek()
+    value_type peek()
     {
       static_assert(s_idx < streams, "Sub-stream index must be within [0; streams)");
       return _streams[s_idx].peek();
@@ -207,15 +209,15 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a levelized file.
     ////////////////////////////////////////////////////////////////////////////
-    template<typename elem_t>
-    level_info_stream(const levelized_file<elem_t, false> &lf)
+    template<typename value_type>
+    level_info_stream(const levelized_file<value_type, false> &lf)
     { attach(lf); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a shared levelized file.
     ////////////////////////////////////////////////////////////////////////////
-    template<typename elem_t>
-    level_info_stream(const adiar::shared_ptr<levelized_file<elem_t, false>> &lf)
+    template<typename value_type>
+    level_info_stream(const adiar::shared_ptr<levelized_file<value_type, false>> &lf)
     { attach(lf); }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -239,8 +241,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Attach to a levelized file.
     ////////////////////////////////////////////////////////////////////////////
-    template<typename elem_t>
-    void attach(const levelized_file<elem_t, false> &lf)
+    template<typename value_type>
+    void attach(const levelized_file<value_type, false> &lf)
     {
       if (!lf.exists()) lf.__touch();
       parent_t::attach(lf._level_info_file, nullptr, false);
@@ -249,8 +251,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Attach to a shared levelized file.
     ////////////////////////////////////////////////////////////////////////////
-    template<typename elem_t>
-    void attach(const adiar::shared_ptr<levelized_file<elem_t, false>> &lf)
+    template<typename value_type>
+    void attach(const adiar::shared_ptr<levelized_file<value_type, false>> &lf)
     {
       if (!lf->exists()) lf->touch();
       parent_t::attach(lf->_level_info_file, lf, false);
@@ -267,10 +269,10 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     void attach(const __dd &diagram)
     {
-      if (diagram.has<__dd::shared_arcs_t>()) {
-        attach<arc>(diagram.get<__dd::shared_arcs_t>());
-      } else if (diagram.has<__dd::shared_nodes_t>()) {
-        attach<node>(diagram.get<__dd::shared_nodes_t>());
+      if (diagram.has<__dd::shared_arc_file_type>()) {
+        attach<arc>(diagram.get<__dd::shared_arc_file_type>());
+      } else if (diagram.has<__dd::shared_node_file_type>()) {
+        attach<node>(diagram.get<__dd::shared_node_file_type>());
       } else {
         // We should never be in the case of hooking into a 'no_file'. That type
         // should only be used internally within an algorithm and never escape

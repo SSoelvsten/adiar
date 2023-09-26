@@ -26,9 +26,9 @@ namespace adiar
     if (!_adiar_initialized && _tpie_initialized) {
       throw runtime_error("Adiar cannot be initialized after call to 'adiar_deinit()'");
     }
-    if (memory_limit_bytes < MINIMUM_MEMORY) {
+    if (memory_limit_bytes < minimum_memory) {
       throw invalid_argument("Adiar requires at least "
-                             + std::to_string(MINIMUM_MEMORY / 1024 / 1024)
+                             + std::to_string(minimum_memory / 1024 / 1024)
                              + " MiB of memory");
     }
 

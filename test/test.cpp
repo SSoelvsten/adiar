@@ -16,8 +16,8 @@ go_bandit([]() {
       AssertThrows(invalid_argument, adiar_init(0));
     });
 
-    it("throws exception when given 'MINIMUM_MEMORY - 1' memory", [&]() {
-      AssertThrows(invalid_argument, adiar_init(MINIMUM_MEMORY - 1));
+    it("throws exception when given 'minimum_memory - 1' memory", [&]() {
+      AssertThrows(invalid_argument, adiar_init(minimum_memory - 1));
     });
 
     it("can run 'adiar_init()'", [&]() {
@@ -132,7 +132,7 @@ go_bandit([]() {
 
     it("throws exception when reinitialized", [&]() {
       // TODO: remove when 'github.com/thomasmoelhave/tpie/issues/265' is fixed.
-      AssertThrows(runtime_error, adiar_init(MINIMUM_MEMORY));
+      AssertThrows(runtime_error, adiar_init(minimum_memory));
     });
   });
  });

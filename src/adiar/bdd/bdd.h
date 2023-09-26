@@ -25,10 +25,10 @@ namespace adiar
     __bdd();
 
     ////////////////////////////////////////////////////////////////////////////
-    __bdd(const internal::__dd::shared_nodes_t &f);
+    __bdd(const internal::__dd::shared_node_file_type &f);
 
     ////////////////////////////////////////////////////////////////////////////
-    __bdd(const internal::__dd::shared_arcs_t &f);
+    __bdd(const internal::__dd::shared_arc_file_type &f);
 
     ////////////////////////////////////////////////////////////////////////////
     __bdd(const bdd &bdd);
@@ -55,7 +55,7 @@ namespace adiar
     friend bdd bdd_not(const bdd&);
     friend bdd bdd_not(bdd&&);
     friend size_t bdd_nodecount(const bdd&);
-    friend typename internal::dd::label_t bdd_varcount(const bdd&);
+    friend typename bdd::label_type bdd_varcount(const bdd&);
 
     friend __bdd bdd_ite(const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else);
 
@@ -76,22 +76,50 @@ namespace adiar
     // Constructors
   public:
     ////////////////////////////////////////////////////////////////////////////
+    /// \brief Default construction, creating the false terminal.
+    ///
+    /// \see bdd_false
+    ////////////////////////////////////////////////////////////////////////////
     bdd();
 
     ////////////////////////////////////////////////////////////////////////////
-    bdd(const internal::dd::shared_nodes_t &f, bool negate = false);
+    /// \brief Implicit conversion from a terminal value to construct the
+    ///        `false` and `true` terminals.
+    ///
+    /// \see bdd_terminal, bdd_false, bdd_true
+    ////////////////////////////////////////////////////////////////////////////
+    bdd(bdd::terminal_type t);
+
+    /// \cond
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Constructor to wrap the node-based result of an algorithm.
+    ////////////////////////////////////////////////////////////////////////////
+    bdd(const bdd::shared_node_file_type &f, bool negate = false);
+    /// \endcond
 
     ////////////////////////////////////////////////////////////////////////////
-    bdd(const bdd &o);
+    /// \brief Copy construction, incrementing the reference count on the file
+    ///        underneath.
+    ////////////////////////////////////////////////////////////////////////////
+    bdd(const bdd &f);
 
     ////////////////////////////////////////////////////////////////////////////
-    bdd(bdd &&o);
+    /// \brief Move construction, taking over ownership of the files underneath.
+    ////////////////////////////////////////////////////////////////////////////
+    bdd(bdd &&f);
 
     ////////////////////////////////////////////////////////////////////////////
-    bdd(__bdd &&o);
-
+    /// \brief Implicit move conversion from a possibly to-be reduced result 
+    ///        from an algorithm to a `bdd`.
+    ///
+    /// \details Since the `adiar::internal::reduce` algorithm is run as part of
+    ///          this constructor, the scoping rules ensure we garbage collect
+    ///          irrelevant files as early as possible.
+    ///
+    /// \remark  Since the value `o` is forced to be moved, we force the content
+    ///          of `o` to be destructed after finishing the *Reduce* algorithm.
     ////////////////////////////////////////////////////////////////////////////
-    bdd(bool v);
+    bdd(__bdd &&f);
 
     ////////////////////////////////////////////////////////////////////////////
     // Assignment operator overloadings

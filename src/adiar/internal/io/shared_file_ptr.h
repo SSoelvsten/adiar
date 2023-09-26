@@ -24,19 +24,19 @@ namespace adiar::internal
   ///
   /// \param file_type The type of the underlying file
   //////////////////////////////////////////////////////////////////////////////
-  template <typename file_type>
-  class shared_file_ptr : public shared_ptr<file_type>
+  template <typename file_t>
+  class shared_file_ptr : public shared_ptr<file_t>
   {
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the file object.
     ////////////////////////////////////////////////////////////////////////////
-    typedef file_type file_t;
+    using file_type = file_t;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the file's elements.
     ////////////////////////////////////////////////////////////////////////////
-    typedef typename file_t::elem_t elem_t;
+    using value_type = typename file_type::value_type;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -141,47 +141,47 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Shared ownership of a file containing elements of the given type.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename elem_t>
-  using shared_file = shared_file_ptr<file<elem_t>>;
+  template <typename value_type>
+  using shared_file = shared_file_ptr<file<value_type>>;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Creates a new (temporary) file with shared ownership.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename elem_t>
-  inline shared_file<elem_t> make_shared_file() {
-    return adiar::make_shared<file<elem_t>>();
+  template <typename value_type>
+  inline shared_file<value_type> make_shared_file() {
+    return adiar::make_shared<file<value_type>>();
   }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Open a persisted file with shared ownership.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename elem_t>
-  inline shared_file<elem_t> make_shared_file(const std::string &p) {
-    return adiar::make_shared<file<elem_t>>(p);
+  template <typename value_type>
+  inline shared_file<value_type> make_shared_file(const std::string &p) {
+    return adiar::make_shared<file<value_type>>(p);
   }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Shared ownership of a levelized file.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename elem_t, bool split_on_levels = false>
-  using shared_levelized_file = shared_file_ptr<levelized_file<elem_t, split_on_levels>>;
+  template <typename value_type, bool split_on_levels = false>
+  using shared_levelized_file = shared_file_ptr<levelized_file<value_type, split_on_levels>>;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Creates a new (temporary) levelized file with shared ownership.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename elem_t, bool split_on_levels = false>
-  inline shared_levelized_file<elem_t, split_on_levels>
+  template <typename value_type, bool split_on_levels = false>
+  inline shared_levelized_file<value_type, split_on_levels>
   make_shared_levelized_file() {
-    return adiar::make_shared<levelized_file<elem_t, split_on_levels>>();
+    return adiar::make_shared<levelized_file<value_type, split_on_levels>>();
   }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Open a persisted file with shared ownership.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename elem_t, bool split_on_levels = false>
-  inline shared_levelized_file<elem_t, split_on_levels>
+  template <typename value_type, bool split_on_levels = false>
+  inline shared_levelized_file<value_type, split_on_levels>
   make_shared_levelized_file(const std::string &p) {
-    return adiar::make_shared<levelized_file<elem_t, split_on_levels>>(p);
+    return adiar::make_shared<levelized_file<value_type, split_on_levels>>(p);
   }
 }
 

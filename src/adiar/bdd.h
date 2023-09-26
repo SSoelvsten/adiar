@@ -81,7 +81,7 @@ namespace adiar
   ///
   /// \throws invalid_argument If `var` is a too large value.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_ithvar(bdd::label_t var);
+  bdd bdd_ithvar(bdd::label_type var);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The BDD representing the negation of the i'th variable.
@@ -93,7 +93,7 @@ namespace adiar
   ///
   /// \throws invalid_argument If `var` is a too large value.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_nithvar(bdd::label_t var);
+  bdd bdd_nithvar(bdd::label_type var);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The BDD representing the logical 'and' of all the given
@@ -107,7 +107,7 @@ namespace adiar
   ///
   /// \throws invalid_argument If `vars` are not in descending order.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_and(const generator<bdd::label_t> &vars);
+  bdd bdd_and(const generator<bdd::label_type> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The BDD representing the logical 'and' of all the given
@@ -141,7 +141,7 @@ namespace adiar
   ///
   /// \throws invalid_argument If `vars` are not in descending order.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_or(const generator<bdd::label_t> &vars);
+  bdd bdd_or(const generator<bdd::label_type> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      The BDD representing the logical 'or' of all the given
@@ -221,9 +221,9 @@ namespace adiar
   /// \see bdd_and
   ///
   /// \remark Since `bdd_and<IT>(begin, end)` has precedence over the implicit
-  ///         conversion from `bdd::shared_nodes_t` to `bdd`, we have to do it
+  ///         conversion from `bdd::shared_node_file_type` to `bdd`, we have to do it
   ///         explicitly ourselves.
-  inline __bdd bdd_and(const bdd::shared_nodes_t &f, const bdd::shared_nodes_t &g)
+  inline __bdd bdd_and(const bdd::shared_node_file_type &f, const bdd::shared_node_file_type &g)
   { return bdd_apply(bdd(f), bdd(g), and_op); }
   /// \endcond
 
@@ -263,9 +263,9 @@ namespace adiar
   /// \see bdd_or
   ///
   /// \remark Since `bdd_or<IT>(begin, end)` has precedence over the implicit
-  ///         conversion from `bdd::shared_nodes_t` to `bdd`, we have to do it
+  ///         conversion from `bdd::shared_node_file_type` to `bdd`, we have to do it
   ///         explicitly ourselves.
-  inline __bdd bdd_or(const bdd::shared_nodes_t &f, const bdd::shared_nodes_t &g)
+  inline __bdd bdd_or(const bdd::shared_node_file_type &f, const bdd::shared_node_file_type &g)
   { return bdd_apply(bdd(f), bdd(g), or_op); }
   /// \endcond
 
@@ -410,7 +410,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   // TODO v2.0 : Replace with `generator<pair<...>>`.
   __bdd bdd_restrict(const bdd &f,
-                     const shared_file<map_pair<bdd::label_t, assignment>> &xs);
+                     const shared_file<map_pair<bdd::label_type, assignment>> &xs);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Existential quantification of a single variable.
@@ -424,10 +424,10 @@ namespace adiar
   ///
   /// \returns   \f$ \exists x_{var} : f \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_exists(const bdd &f, bdd::label_t var);
+  __bdd bdd_exists(const bdd &f, bdd::label_type var);
 
   /// \cond
-  inline __bdd bdd_exists(bdd &&f, bdd::label_t var)
+  inline __bdd bdd_exists(bdd &&f, bdd::label_type var)
   { return bdd_exists(f, var); }
   /// \endcond
 
@@ -446,10 +446,10 @@ namespace adiar
   ///
   /// \returns    \f$ \exists x_i \in \texttt{vars} : f \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_exists(const bdd &f, const predicate<bdd::label_t> &vars);
+  __bdd bdd_exists(const bdd &f, const predicate<bdd::label_type> &vars);
 
   /// \cond
-  __bdd bdd_exists(bdd &&f, const predicate<bdd::label_t> &vars);
+  __bdd bdd_exists(bdd &&f, const predicate<bdd::label_type> &vars);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -466,10 +466,10 @@ namespace adiar
   ///
   /// \returns   \f$ \exists x_i \in \texttt{gen()} : f \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_exists(const bdd &f, const generator<bdd::label_t> &vars);
+  __bdd bdd_exists(const bdd &f, const generator<bdd::label_type> &vars);
 
   /// \cond
-  __bdd bdd_exists(bdd &&f, const generator<bdd::label_t> &vars);
+  __bdd bdd_exists(bdd &&f, const generator<bdd::label_type> &vars);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -510,10 +510,10 @@ namespace adiar
   ///
   /// \returns   \f$ \forall x_{var} : f \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_forall(const bdd &f, bdd::label_t var);
+  __bdd bdd_forall(const bdd &f, bdd::label_type var);
 
   /// \cond
-  inline __bdd bdd_forall(bdd &&f, bdd::label_t var)
+  inline __bdd bdd_forall(bdd &&f, bdd::label_type var)
   { return bdd_forall(f, var); }
   /// \endcond
 
@@ -532,10 +532,10 @@ namespace adiar
   ///
   /// \returns    \f$ \exists x_i \in \texttt{vars} : f \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_forall(const bdd &f, const predicate<bdd::label_t> &vars);
+  __bdd bdd_forall(const bdd &f, const predicate<bdd::label_type> &vars);
 
   /// \cond
-  __bdd bdd_forall(bdd &&f, const predicate<bdd::label_t> &vars);
+  __bdd bdd_forall(bdd &&f, const predicate<bdd::label_type> &vars);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -552,10 +552,10 @@ namespace adiar
   ///
   /// \returns   \f$ \forall x_i \in \texttt{gen()} : f \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_forall(const bdd &f, const generator<bdd::label_t> &vars);
+  __bdd bdd_forall(const bdd &f, const generator<bdd::label_type> &vars);
 
   /// \cond
-  __bdd bdd_forall(bdd &&f, const generator<bdd::label_t> &vars);
+  __bdd bdd_forall(bdd &&f, const generator<bdd::label_type> &vars);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -664,7 +664,7 @@ namespace adiar
   /// \brief The number of variables that influence the outcome of f, i.e. the
   ///        number of levels in the BDD.
   //////////////////////////////////////////////////////////////////////////////
-  bdd::label_t bdd_varcount(const bdd &f);
+  bdd::label_type bdd_varcount(const bdd &f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Count all unique (but not necessarily disjoint) paths to the true
@@ -688,7 +688,7 @@ namespace adiar
   /// \throws invalid_argument If varcount is not larger than the number of
   ///                          levels in the BDD.
   //////////////////////////////////////////////////////////////////////////////
-  uint64_t bdd_satcount(const bdd &f, bdd::label_t varcount);
+  uint64_t bdd_satcount(const bdd &f, bdd::label_type varcount);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Count the number of assignments x that make f(x) true.
@@ -713,12 +713,12 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Get the minimal occurring variable in this BDD.
   //////////////////////////////////////////////////////////////////////////////
-  bdd::label_t bdd_minvar(const bdd &f);
+  bdd::label_type bdd_minvar(const bdd &f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Get the maximal occurring variable in this BDD.
   //////////////////////////////////////////////////////////////////////////////
-  bdd::label_t bdd_maxvar(const bdd &f);
+  bdd::label_type bdd_maxvar(const bdd &f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically smallest x such that f(x) is true.
@@ -748,7 +748,7 @@ namespace adiar
   /// \param cb Callback function that is called in ascending order of the bdd's
   ///           levels with the (var, value) pairs of the assignment.
   //////////////////////////////////////////////////////////////////////////////
-  void bdd_satmin(const bdd &f, const consumer<bdd::label_t, bool> &cb);
+  void bdd_satmin(const bdd &f, const consumer<bdd::label_type, bool> &cb);
 
   //////////////////////////////////////////////////////////////////////////////
   // TODO: Iterator-based output
@@ -784,7 +784,7 @@ namespace adiar
   /// \param cb Callback function that is called in ascending order of the bdd's
   ///           levels with the (var, value) pairs of the assignment.
   //////////////////////////////////////////////////////////////////////////////
-  void bdd_satmax(const bdd &f, const consumer<bdd::label_t, bool> &cb);
+  void bdd_satmax(const bdd &f, const consumer<bdd::label_type, bool> &cb);
 
   //////////////////////////////////////////////////////////////////////////////
   // TODO: Iterator-based output
@@ -803,7 +803,7 @@ namespace adiar
   /// \param xs An assignment function of the type \f$ \texttt{label\_t}
   ///           \rightarrow \texttt{bool} \f$.
   //////////////////////////////////////////////////////////////////////////////
-  bool bdd_eval(const bdd &f, const predicate<bdd::label_t> &xs);
+  bool bdd_eval(const bdd &f, const predicate<bdd::label_type> &xs);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Evaluate a BDD according to an assignment to its variables.
@@ -821,7 +821,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   // TODO v2.0 : Replace with `generator<pair<...>>`
   bool bdd_eval(const bdd &f,
-                const shared_file<map_pair<bdd::label_t, boolean>> &xs);
+                const shared_file<map_pair<bdd::label_type, boolean>> &xs);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Get the labels of the levels of the BDD.
@@ -830,7 +830,7 @@ namespace adiar
   ///
   /// \param cb Callback function that consumes the levels (in ascending order).
   //////////////////////////////////////////////////////////////////////////////
-  void bdd_varprofile(const bdd &f, const consumer<bdd::label_t> &cb);
+  void bdd_varprofile(const bdd &f, const consumer<bdd::label_type> &cb);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Write the labels of the BDD's levels into the given container.
@@ -874,7 +874,7 @@ namespace adiar
   /// \returns   BDD that is true for the exact same assignments to variables in
   ///            the given domain.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_from(const zdd &A, const generator<bdd::label_t> &dom);
+  __bdd bdd_from(const zdd &A, const generator<bdd::label_type> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Obtains the BDD that represents the same function/set as the

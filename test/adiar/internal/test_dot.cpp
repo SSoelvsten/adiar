@@ -14,7 +14,7 @@ go_bandit([]() {
     });
 
     it("can output .dot for a BDD with internal nodes", [&]() {
-      shared_levelized_file<bdd::node_t> reduced_bdd;
+      shared_levelized_file<bdd::node_type> reduced_bdd;
 
       { // Garbage collect writer early
         node_writer rw(reduced_bdd);
@@ -55,7 +55,7 @@ go_bandit([]() {
     });
 
     it("can output .dot for a ZDD with internal nodes", [&]() {
-      shared_levelized_file<zdd::node_t> reduced_zdd;
+      shared_levelized_file<zdd::node_type> reduced_zdd;
 
       { // Garbage collect writer early
         node_writer rw(reduced_zdd);

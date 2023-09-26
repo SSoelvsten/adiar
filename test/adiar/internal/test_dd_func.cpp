@@ -29,7 +29,7 @@ go_bandit([]() {
       writer << node(42, node::max_id, false_ptr, true_ptr);
     }
 
-    shared_levelized_file<bdd::node_t> bdd_file;
+    shared_levelized_file<bdd::node_type> bdd_file;
     {
       node n3 = node(4, node::max_id, true_ptr, false_ptr);
       node n2 = node(3, node::max_id, n3.uid(), false_ptr);
@@ -38,7 +38,7 @@ go_bandit([]() {
       writer << n3 << n2 << n1;
     }
 
-    shared_levelized_file<zdd::node_t> zdd_file;
+    shared_levelized_file<zdd::node_type> zdd_file;
     {
       node n4 = node(2, node::max_id, true_ptr, true_ptr);
       node n3 = node(2, node::max_id-1, false_ptr, true_ptr);

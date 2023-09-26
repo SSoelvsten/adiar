@@ -61,7 +61,7 @@ namespace adiar
     /// \brief The unique identifier of a prior node.
     ///////////////////////////////////////////////////////////////////////////////
     // TODO: rename to 'ptr ptr' when using complement edges
-    /*const*/ internal::node::uid_t uid;
+    /*const*/ internal::node::uid_type uid;
 
     ///////////////////////////////////////////////////////////////////////////////
     /// \brief Unique shared reference for the parent builder object.
@@ -79,7 +79,7 @@ namespace adiar
     builder_ptr(const builder_ptr&) = default;
 
   private:
-    builder_ptr(const internal::node::uid_t &p,
+    builder_ptr(const internal::node::uid_type &p,
                 const shared_ptr<const builder_shared> &sp)
       : uid(p), builder_ref(sp)
     { }
@@ -90,15 +90,14 @@ namespace adiar
   ///
   /// \see bdd_builder
   ///////////////////////////////////////////////////////////////////////////////
-  typedef builder_ptr<bdd_policy> bdd_ptr;
+  using bdd_ptr = builder_ptr<bdd_policy>;
 
   ///////////////////////////////////////////////////////////////////////////////
   /// \brief Pointer for a ZDD node created by a ZDD builder.
   ///
   /// \see zdd_builder
   ///////////////////////////////////////////////////////////////////////////////
-  typedef builder_ptr<zdd_policy> zdd_ptr;
-
+  using zdd_ptr = builder_ptr<zdd_policy>;
 
   ///////////////////////////////////////////////////////////////////////////////
   /// \brief A builder for decision diagrams
@@ -118,12 +117,12 @@ namespace adiar
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Type of nodes created within the file.
     /////////////////////////////////////////////////////////////////////////////
-    typedef typename dd_policy::node_t node_t;
+    using node_type = typename dd_policy::node_type;
 
     /////////////////////////////////////////////////////////////////////////////
     /// \brief File containing all prior pushed nodes.
     /////////////////////////////////////////////////////////////////////////////
-    shared_ptr<internal::levelized_file<node_t>> nf;
+    shared_ptr<internal::levelized_file<node_type>> nf;
 
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Node writer to push new nodes into 'nf'.
@@ -143,12 +142,12 @@ namespace adiar
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Label of the current level.
     /////////////////////////////////////////////////////////////////////////////
-    typename dd_policy::label_t current_label;
+    typename dd_policy::label_type current_label;
 
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Next available level identifier for the current level.
     /////////////////////////////////////////////////////////////////////////////
-    typename dd_policy::id_t current_id;
+    typename dd_policy::id_type current_id;
 
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Number of yet unreferenced nodes.
@@ -199,7 +198,7 @@ namespace adiar
     ///
     /// \throws invalid_argument If pointers stem from another builder.
     /////////////////////////////////////////////////////////////////////////////
-    builder_ptr<dd_policy> add_node(typename dd_policy::label_t label,
+    builder_ptr<dd_policy> add_node(typename dd_policy::label_type label,
                                     const builder_ptr<dd_policy> &low,
                                     const builder_ptr<dd_policy> &high)
     {
@@ -229,10 +228,10 @@ namespace adiar
       }
 
       // Create potential node
-      const node_t n(label, current_id, low.uid, high.uid);
+      const node_type n(label, current_id, low.uid, high.uid);
 
       // Check whether this node is 'redundant'
-      const typename node_t::uid_t res_uid = dd_policy::reduction_rule(n);
+      const typename node_type::uid_type res_uid = dd_policy::reduction_rule(n);
 
       if (res_uid.is_terminal()) {
         created_terminal = true;
@@ -280,13 +279,13 @@ namespace adiar
     /// \throws invalid_argument If `label` and `high` are illegal (see \ref
     ///                          add_node).
     /////////////////////////////////////////////////////////////////////////////
-    builder_ptr<dd_policy> add_node(const typename dd_policy::label_t label,
+    builder_ptr<dd_policy> add_node(const typename dd_policy::label_type label,
                                     const bool low,
                                     const builder_ptr<dd_policy> &high)
     {
       attach_if_needed();
 
-      builder_ptr<dd_policy> low_ptr = make_ptr(typename node_t::ptr_t(low));
+      builder_ptr<dd_policy> low_ptr = make_ptr(typename node_type::pointer_type(low));
       return add_node(label, low_ptr, high);
     }
 
@@ -307,13 +306,13 @@ namespace adiar
     /// \throws invalid_argument If `label` and `low` are illegal (see \ref
     ///                          add_node).
     /////////////////////////////////////////////////////////////////////////////
-    builder_ptr<dd_policy> add_node(const typename dd_policy::label_t label,
+    builder_ptr<dd_policy> add_node(const typename dd_policy::label_type label,
                                     const builder_ptr<dd_policy> &low,
                                     const bool high)
     {
       attach_if_needed();
 
-      builder_ptr<dd_policy> high_ptr = make_ptr(typename node_t::ptr_t(high));
+      builder_ptr<dd_policy> high_ptr = make_ptr(typename node_type::pointer_type(high));
       return add_node(label, low, high_ptr);
     }
 
@@ -333,14 +332,14 @@ namespace adiar
     /// \throws invalid_argument If `label` violates the bottom-up ordering (see
     ///                          \ref add_node).
     /////////////////////////////////////////////////////////////////////////////
-    builder_ptr<dd_policy> add_node(const typename dd_policy::label_t label,
+    builder_ptr<dd_policy> add_node(const typename dd_policy::label_type label,
                                     const bool low,
                                     const bool high)
     {
       attach_if_needed();
 
-      builder_ptr<dd_policy> low_ptr = make_ptr(typename node_t::ptr_t(low));
-      builder_ptr<dd_policy> high_ptr = make_ptr(typename node_t::ptr_t(high));
+      builder_ptr<dd_policy> low_ptr = make_ptr(typename node_type::pointer_type(low));
+      builder_ptr<dd_policy> high_ptr = make_ptr(typename node_type::pointer_type(high));
       return add_node(label, low_ptr, high_ptr);
     }
 
@@ -360,7 +359,7 @@ namespace adiar
       created_terminal = true;
       terminal_val = terminal_value;
 
-      return make_ptr(typename node_t::ptr_t(terminal_value));
+      return make_ptr(typename node_type::pointer_type(terminal_value));
     }
 
     /////////////////////////////////////////////////////////////////////////////
@@ -385,7 +384,7 @@ namespace adiar
 
       if(!nw.has_pushed()) {
         if(created_terminal) {
-          nw.push(node_t(terminal_val));
+          nw.push(node_type(terminal_val));
         } else {
           throw domain_error("There must be at least one node or terminal in the decision diagram");
         }
@@ -422,7 +421,7 @@ namespace adiar
                      "`nw`'s attachment should be consistent with existence of `nf`");
 
         // Initialise file
-        nf = internal::make_shared_levelized_file<node_t>();
+        nf = internal::make_shared_levelized_file<node_type>();
         nw.attach(nf);
 
         // Initialise state variables
@@ -449,7 +448,7 @@ namespace adiar
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Create a builder_ptr with 'this' builder as its parent.
     /////////////////////////////////////////////////////////////////////////////
-    builder_ptr<dd_policy> make_ptr(const typename node_t::ptr_t &p) noexcept
+    builder_ptr<dd_policy> make_ptr(const typename node_type::pointer_type &p) noexcept
     {
       return builder_ptr<dd_policy>(p, builder_ref);
     }
@@ -460,14 +459,14 @@ namespace adiar
   ///
   /// \sa builder
   ///////////////////////////////////////////////////////////////////////////////
-  typedef builder<bdd_policy> bdd_builder;
+  using bdd_builder = builder<bdd_policy>;
 
   ///////////////////////////////////////////////////////////////////////////////
   /// \brief Builder for ZDDs
   ///
   /// \sa builder
   ///////////////////////////////////////////////////////////////////////////////
-  typedef builder<zdd_policy> zdd_builder;
+  using zdd_builder = builder<zdd_policy>;
 
   /// \}
   /////////////////////////////////////////////////////////////////////////////

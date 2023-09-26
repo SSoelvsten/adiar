@@ -19,7 +19,7 @@ go_bandit([]() {
 
         // AssertThat(af.semi_transposed, Is().True());
 
-        AssertThat(af.max_1level_cut, Is().EqualTo(MAX_CUT));
+        AssertThat(af.max_1level_cut, Is().EqualTo(max_cut));
 
         AssertThat(af.number_of_terminals[false], Is().EqualTo(0u));
         AssertThat(af.number_of_terminals[true],  Is().EqualTo(0u));
@@ -29,9 +29,9 @@ go_bandit([]() {
         levelized_file<arc> af;
 
         arc_writer aw(af);
-        aw.push_internal(arc(arc::ptr_t(0,0), false, arc::ptr_t(1,0)));
-        aw.push_internal(arc(arc::ptr_t(0,0), true,  arc::ptr_t(1,0)));
-        aw.push_internal(arc(arc::ptr_t(1,0), false, arc::ptr_t(2,0)));
+        aw.push_internal(arc(arc::pointer_type(0,0), false, arc::pointer_type(1,0)));
+        aw.push_internal(arc(arc::pointer_type(0,0), true,  arc::pointer_type(1,0)));
+        aw.push_internal(arc(arc::pointer_type(1,0), false, arc::pointer_type(2,0)));
         aw.detach();
 
         AssertThat(af.size(),   Is().EqualTo(3u));
@@ -43,7 +43,7 @@ go_bandit([]() {
 
         // AssertThat(af.semi_transposed, Is().True());
 
-        AssertThat(af.max_1level_cut, Is().EqualTo(MAX_CUT));
+        AssertThat(af.max_1level_cut, Is().EqualTo(max_cut));
 
         AssertThat(af.number_of_terminals[false], Is().EqualTo(0u));
         AssertThat(af.number_of_terminals[true],  Is().EqualTo(0u));
@@ -53,8 +53,8 @@ go_bandit([]() {
         levelized_file<arc> af;
 
         arc_writer aw(af);
-        aw.push_terminal(arc(arc::ptr_t(0,0), false, arc::ptr_t(true)));
-        aw.push_terminal(arc(arc::ptr_t(0,0), true,  arc::ptr_t(true)));
+        aw.push_terminal(arc(arc::pointer_type(0,0), false, arc::pointer_type(true)));
+        aw.push_terminal(arc(arc::pointer_type(0,0), true,  arc::pointer_type(true)));
         aw.detach();
 
         AssertThat(af.size(),   Is().EqualTo(2u));
@@ -73,9 +73,9 @@ go_bandit([]() {
         AssertThat(lfs.can_pull<0>(), Is().False());
 
         AssertThat(lfs.can_pull<1>(), Is().True());
-        AssertThat(lfs.pull<1>(),     Is().EqualTo(arc(arc::ptr_t(0,0), false, arc::ptr_t(true))));
+        AssertThat(lfs.pull<1>(),     Is().EqualTo(arc(arc::pointer_type(0,0), false, arc::pointer_type(true))));
         AssertThat(lfs.can_pull<1>(), Is().True());
-        AssertThat(lfs.pull<1>(),     Is().EqualTo(arc(arc::ptr_t(0,0), true,  arc::ptr_t(true))));
+        AssertThat(lfs.pull<1>(),     Is().EqualTo(arc(arc::pointer_type(0,0), true,  arc::pointer_type(true))));
         AssertThat(lfs.can_pull<1>(), Is().False());
 
         AssertThat(lfs.can_pull<2>(), Is().False());
@@ -85,8 +85,8 @@ go_bandit([]() {
         levelized_file<arc> af;
 
         arc_writer aw(af);
-        aw.push_terminal(arc(arc::ptr_t(0,0), true,  arc::ptr_t(true)));
-        aw.push_terminal(arc(arc::ptr_t(0,0), false, arc::ptr_t(false)));
+        aw.push_terminal(arc(arc::pointer_type(0,0), true,  arc::pointer_type(true)));
+        aw.push_terminal(arc(arc::pointer_type(0,0), false, arc::pointer_type(false)));
         aw.detach();
 
         AssertThat(af.size(),   Is().EqualTo(2u));
@@ -103,11 +103,11 @@ go_bandit([]() {
         AssertThat(lfs.can_pull<0>(), Is().False());
 
         AssertThat(lfs.can_pull<1>(), Is().True());
-        AssertThat(lfs.pull<1>(),     Is().EqualTo(arc(arc::ptr_t(0,0), true,  arc::ptr_t(true))));
+        AssertThat(lfs.pull<1>(),     Is().EqualTo(arc(arc::pointer_type(0,0), true,  arc::pointer_type(true))));
         AssertThat(lfs.can_pull<1>(), Is().False());
 
         AssertThat(lfs.can_pull<2>(), Is().True());
-        AssertThat(lfs.pull<2>(),     Is().EqualTo(arc(arc::ptr_t(0,0), false, arc::ptr_t(false))));
+        AssertThat(lfs.pull<2>(),     Is().EqualTo(arc(arc::pointer_type(0,0), false, arc::pointer_type(false))));
         AssertThat(lfs.can_pull<2>(), Is().False());
       });
 
@@ -116,14 +116,14 @@ go_bandit([]() {
 
         arc_writer aw(af);
 
-        aw << arc(arc::ptr_t(0,0), false, arc::ptr_t(1,0))
-           << arc(arc::ptr_t(1,0), true,  arc::ptr_t(true))   // <-- in-order
-           << arc(arc::ptr_t(1,1), false, arc::ptr_t(true))   // <-- in-order
-           << arc(arc::ptr_t(0,0), true,  arc::ptr_t(1,1))
-           << arc(arc::ptr_t(1,0), false, arc::ptr_t(2,0))
-           << arc(arc::ptr_t(2,0), false, arc::ptr_t(false))  // <-- in-order
-           << arc(arc::ptr_t(2,0), true,  arc::ptr_t(true))   // <-- in-order
-           << arc(arc::ptr_t(1,1), true,  arc::ptr_t(true));  // <-- out-of-order
+        aw << arc(arc::pointer_type(0,0), false, arc::pointer_type(1,0))
+           << arc(arc::pointer_type(1,0), true,  arc::pointer_type(true))   // <-- in-order
+           << arc(arc::pointer_type(1,1), false, arc::pointer_type(true))   // <-- in-order
+           << arc(arc::pointer_type(0,0), true,  arc::pointer_type(1,1))
+           << arc(arc::pointer_type(1,0), false, arc::pointer_type(2,0))
+           << arc(arc::pointer_type(2,0), false, arc::pointer_type(false))  // <-- in-order
+           << arc(arc::pointer_type(2,0), true,  arc::pointer_type(true))   // <-- in-order
+           << arc(arc::pointer_type(1,1), true,  arc::pointer_type(true));  // <-- out-of-order
 
         aw.detach();
 
@@ -139,25 +139,25 @@ go_bandit([]() {
 
         levelized_file_stream<arc> lfs(af);
         AssertThat(lfs.can_pull<0>(), Is().True());
-        AssertThat(lfs.pull<0>(),     Is().EqualTo(arc(arc::ptr_t(0,0), false, arc::ptr_t(1,0))));
+        AssertThat(lfs.pull<0>(),     Is().EqualTo(arc(arc::pointer_type(0,0), false, arc::pointer_type(1,0))));
         AssertThat(lfs.can_pull<0>(), Is().True());
-        AssertThat(lfs.pull<0>(),     Is().EqualTo(arc(arc::ptr_t(0,0), true,  arc::ptr_t(1,1))));
+        AssertThat(lfs.pull<0>(),     Is().EqualTo(arc(arc::pointer_type(0,0), true,  arc::pointer_type(1,1))));
         AssertThat(lfs.can_pull<0>(), Is().True());
-        AssertThat(lfs.pull<0>(),     Is().EqualTo(arc(arc::ptr_t(1,0), false, arc::ptr_t(2,0))));
+        AssertThat(lfs.pull<0>(),     Is().EqualTo(arc(arc::pointer_type(1,0), false, arc::pointer_type(2,0))));
         AssertThat(lfs.can_pull<0>(), Is().False());
 
         AssertThat(lfs.can_pull<1>(), Is().True());
-        AssertThat(lfs.pull<1>(),     Is().EqualTo(arc(arc::ptr_t(1,0), true,  arc::ptr_t(true))));
+        AssertThat(lfs.pull<1>(),     Is().EqualTo(arc(arc::pointer_type(1,0), true,  arc::pointer_type(true))));
         AssertThat(lfs.can_pull<1>(), Is().True());
-        AssertThat(lfs.pull<1>(),     Is().EqualTo(arc(arc::ptr_t(1,1), false, arc::ptr_t(true))));
+        AssertThat(lfs.pull<1>(),     Is().EqualTo(arc(arc::pointer_type(1,1), false, arc::pointer_type(true))));
         AssertThat(lfs.can_pull<1>(), Is().True());
-        AssertThat(lfs.pull<1>(),     Is().EqualTo(arc(arc::ptr_t(2,0), false, arc::ptr_t(false))));
+        AssertThat(lfs.pull<1>(),     Is().EqualTo(arc(arc::pointer_type(2,0), false, arc::pointer_type(false))));
         AssertThat(lfs.can_pull<1>(), Is().True());
-        AssertThat(lfs.pull<1>(),     Is().EqualTo(arc(arc::ptr_t(2,0), true,  arc::ptr_t(true))));
+        AssertThat(lfs.pull<1>(),     Is().EqualTo(arc(arc::pointer_type(2,0), true,  arc::pointer_type(true))));
         AssertThat(lfs.can_pull<1>(), Is().False());
 
         AssertThat(lfs.can_pull<2>(), Is().True());
-        AssertThat(lfs.pull<2>(),     Is().EqualTo(arc(arc::ptr_t(1,1), true,  arc::ptr_t(true))));
+        AssertThat(lfs.pull<2>(),     Is().EqualTo(arc(arc::pointer_type(1,1), true,  arc::pointer_type(true))));
         AssertThat(lfs.can_pull<2>(), Is().False());
       });
     });
@@ -175,29 +175,29 @@ go_bandit([]() {
        */
       {
         arc_writer aw(af);
-        aw << arc(arc::ptr_t(0,0), false, arc::ptr_t(1,0));
-        aw << arc(arc::ptr_t(1,0), true,  arc::ptr_t(true));  // <-- in-order
-        aw << arc(arc::ptr_t(1,1), false, arc::ptr_t(true));  // <-- in-order
-        aw << arc(arc::ptr_t(0,0), true,  arc::ptr_t(1,1));
-        aw << arc(arc::ptr_t(1,0), false, arc::ptr_t(2,0));
-        aw << arc(arc::ptr_t(2,0), false, arc::ptr_t(false)); // <-- in-order
-        aw << arc(arc::ptr_t(2,0), true,  arc::ptr_t(true));  // <-- in-order
-        aw << arc(arc::ptr_t(1,1), true,  arc::ptr_t(true));  // <-- out-of-order
+        aw << arc(arc::pointer_type(0,0), false, arc::pointer_type(1,0));
+        aw << arc(arc::pointer_type(1,0), true,  arc::pointer_type(true));  // <-- in-order
+        aw << arc(arc::pointer_type(1,1), false, arc::pointer_type(true));  // <-- in-order
+        aw << arc(arc::pointer_type(0,0), true,  arc::pointer_type(1,1));
+        aw << arc(arc::pointer_type(1,0), false, arc::pointer_type(2,0));
+        aw << arc(arc::pointer_type(2,0), false, arc::pointer_type(false)); // <-- in-order
+        aw << arc(arc::pointer_type(2,0), true,  arc::pointer_type(true));  // <-- in-order
+        aw << arc(arc::pointer_type(1,1), true,  arc::pointer_type(true));  // <-- out-of-order
       }
 
       it("merges terminal arcs on 'pull' [default: backwards]", [&af]() {
         arc_stream<> as(af);
 
         AssertThat(as.can_pull_terminal(), Is().True());
-        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::ptr_t(2,0), true,  arc::ptr_t(true))));
+        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::pointer_type(2,0), true,  arc::pointer_type(true))));
         AssertThat(as.can_pull_terminal(), Is().True());
-        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::ptr_t(2,0), false, arc::ptr_t(false))));
+        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::pointer_type(2,0), false, arc::pointer_type(false))));
         AssertThat(as.can_pull_terminal(), Is().True());
-        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::ptr_t(1,1), true,  arc::ptr_t(true))));
+        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::pointer_type(1,1), true,  arc::pointer_type(true))));
         AssertThat(as.can_pull_terminal(), Is().True());
-        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::ptr_t(1,1), false, arc::ptr_t(true))));
+        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::pointer_type(1,1), false, arc::pointer_type(true))));
         AssertThat(as.can_pull_terminal(), Is().True());
-        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::ptr_t(1,0), true,  arc::ptr_t(true))));
+        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::pointer_type(1,0), true,  arc::pointer_type(true))));
         AssertThat(as.can_pull_terminal(), Is().False());
       });
 
@@ -205,15 +205,15 @@ go_bandit([]() {
         arc_stream<true> as(af);
 
         AssertThat(as.can_pull_terminal(), Is().True());
-        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::ptr_t(1,0), true,  arc::ptr_t(true))));
+        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::pointer_type(1,0), true,  arc::pointer_type(true))));
         AssertThat(as.can_pull_terminal(), Is().True());
-        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::ptr_t(1,1), false, arc::ptr_t(true))));
+        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::pointer_type(1,1), false, arc::pointer_type(true))));
         AssertThat(as.can_pull_terminal(), Is().True());
-        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::ptr_t(1,1), true,  arc::ptr_t(true))));
+        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::pointer_type(1,1), true,  arc::pointer_type(true))));
         AssertThat(as.can_pull_terminal(), Is().True());
-        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::ptr_t(2,0), false, arc::ptr_t(false))));
+        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::pointer_type(2,0), false, arc::pointer_type(false))));
         AssertThat(as.can_pull_terminal(), Is().True());
-        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::ptr_t(2,0), true,  arc::ptr_t(true))));
+        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::pointer_type(2,0), true,  arc::pointer_type(true))));
         AssertThat(as.can_pull_terminal(), Is().False());
       });
 
@@ -221,15 +221,15 @@ go_bandit([]() {
         arc_stream<> as(af, true);
 
         AssertThat(as.can_pull_terminal(), Is().True());
-        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::ptr_t(2,0), true,  arc::ptr_t(false))));
+        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::pointer_type(2,0), true,  arc::pointer_type(false))));
         AssertThat(as.can_pull_terminal(), Is().True());
-        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::ptr_t(2,0), false, arc::ptr_t(true))));
+        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::pointer_type(2,0), false, arc::pointer_type(true))));
         AssertThat(as.can_pull_terminal(), Is().True());
-        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::ptr_t(1,1), true,  arc::ptr_t(false))));
+        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::pointer_type(1,1), true,  arc::pointer_type(false))));
         AssertThat(as.can_pull_terminal(), Is().True());
-        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::ptr_t(1,1), false, arc::ptr_t(false))));
+        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::pointer_type(1,1), false, arc::pointer_type(false))));
         AssertThat(as.can_pull_terminal(), Is().True());
-        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::ptr_t(1,0), true,  arc::ptr_t(false))));
+        AssertThat(as.pull_terminal(),     Is().EqualTo(arc(arc::pointer_type(1,0), true,  arc::pointer_type(false))));
         AssertThat(as.can_pull_terminal(), Is().False());
       });
 
@@ -237,11 +237,11 @@ go_bandit([]() {
         arc_stream<> as(af);
 
         AssertThat(as.can_pull_internal(), Is().True());
-        AssertThat(as.pull_internal(),     Is().EqualTo(arc(arc::ptr_t(1,0), false, arc::ptr_t(2,0))));
+        AssertThat(as.pull_internal(),     Is().EqualTo(arc(arc::pointer_type(1,0), false, arc::pointer_type(2,0))));
         AssertThat(as.can_pull_internal(), Is().True());
-        AssertThat(as.pull_internal(),     Is().EqualTo(arc(arc::ptr_t(0,0), true,  arc::ptr_t(1,1))));
+        AssertThat(as.pull_internal(),     Is().EqualTo(arc(arc::pointer_type(0,0), true,  arc::pointer_type(1,1))));
         AssertThat(as.can_pull_internal(), Is().True());
-        AssertThat(as.pull_internal(),     Is().EqualTo(arc(arc::ptr_t(0,0), false, arc::ptr_t(1,0))));
+        AssertThat(as.pull_internal(),     Is().EqualTo(arc(arc::pointer_type(0,0), false, arc::pointer_type(1,0))));
         AssertThat(as.can_pull_internal(), Is().False());
       });
 
@@ -338,8 +338,8 @@ go_bandit([]() {
 
         {
           arc_writer aw(af);
-          aw.push_terminal(arc(arc::ptr_t(0,0), false, arc::ptr_t(false)));
-          aw.push_terminal(arc(arc::ptr_t(0,0), true,  arc::ptr_t(true)));
+          aw.push_terminal(arc(arc::pointer_type(0,0), false, arc::pointer_type(false)));
+          aw.push_terminal(arc(arc::pointer_type(0,0), true,  arc::pointer_type(true)));
 
           aw.push(level_info(0,1));
           aw.detach();
@@ -355,8 +355,8 @@ go_bandit([]() {
 
         {
           arc_writer aw(af);
-          aw.push_terminal(arc(arc::ptr_t(0,0), false, arc::ptr_t(false)));
-          aw.push_terminal(arc(arc::ptr_t(0,0), true,  arc::ptr_t(true)));
+          aw.push_terminal(arc(arc::pointer_type(0,0), false, arc::pointer_type(false)));
+          aw.push_terminal(arc(arc::pointer_type(0,0), true,  arc::pointer_type(true)));
 
           aw.push(level_info(0,1));
           aw.detach();
@@ -365,7 +365,7 @@ go_bandit([]() {
         node_arc_stream ns(af);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::ptr_t(false), node::ptr_t(true))));
+        AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::pointer_type(false), node::pointer_type(true))));
 
         AssertThat(ns.can_pull(), Is().False());
       });
@@ -375,8 +375,8 @@ go_bandit([]() {
 
         {
           arc_writer aw(af);
-          aw.push_terminal(arc(arc::ptr_t(0,0), true,  arc::ptr_t(true)));
-          aw.push_terminal(arc(arc::ptr_t(0,0), false, arc::ptr_t(false)));
+          aw.push_terminal(arc(arc::pointer_type(0,0), true,  arc::pointer_type(true)));
+          aw.push_terminal(arc(arc::pointer_type(0,0), false, arc::pointer_type(false)));
 
           aw.push(level_info(0,1));
           aw.detach();
@@ -385,7 +385,7 @@ go_bandit([]() {
         node_arc_stream ns(af);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::ptr_t(false), node::ptr_t(true))));
+        AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::pointer_type(false), node::pointer_type(true))));
 
         AssertThat(ns.can_pull(), Is().False());
       });
@@ -409,23 +409,23 @@ go_bandit([]() {
 
           aw.push(level_info(0,1));
 
-          aw.push_internal(arc(arc::ptr_t(0,0), false,  arc::ptr_t(1,0)));
-          aw.push_terminal(arc(arc::ptr_t(1,0), false,  arc::ptr_t(false)));
+          aw.push_internal(arc(arc::pointer_type(0,0), false,  arc::pointer_type(1,0)));
+          aw.push_terminal(arc(arc::pointer_type(1,0), false,  arc::pointer_type(false)));
 
           aw.push(level_info(1,1));
 
-          aw.push_internal(arc(arc::ptr_t(0,0), true,   arc::ptr_t(2,0)));
-          aw.push_internal(arc(arc::ptr_t(1,0), true,   arc::ptr_t(2,0)));
+          aw.push_internal(arc(arc::pointer_type(0,0), true,   arc::pointer_type(2,0)));
+          aw.push_internal(arc(arc::pointer_type(1,0), true,   arc::pointer_type(2,0)));
 
           aw.push(level_info(2,1));
 
-          aw.push_internal(arc(arc::ptr_t(2,0), false,  arc::ptr_t(3,0)));
-          aw.push_terminal(arc(arc::ptr_t(3,0), false,  arc::ptr_t(false)));
-          aw.push_terminal(arc(arc::ptr_t(3,0), true,   arc::ptr_t(true)));
+          aw.push_internal(arc(arc::pointer_type(2,0), false,  arc::pointer_type(3,0)));
+          aw.push_terminal(arc(arc::pointer_type(3,0), false,  arc::pointer_type(false)));
+          aw.push_terminal(arc(arc::pointer_type(3,0), true,   arc::pointer_type(true)));
 
-          aw.push_internal(arc(arc::ptr_t(2,0), true,   arc::ptr_t(3,1)));
-          aw.push_terminal(arc(arc::ptr_t(3,1), false,  arc::ptr_t(true)));
-          aw.push_terminal(arc(arc::ptr_t(3,1), true,   arc::ptr_t(false)));
+          aw.push_internal(arc(arc::pointer_type(2,0), true,   arc::pointer_type(3,1)));
+          aw.push_terminal(arc(arc::pointer_type(3,1), false,  arc::pointer_type(true)));
+          aw.push_terminal(arc(arc::pointer_type(3,1), true,   arc::pointer_type(false)));
 
           aw.push(level_info(3,2));
 
@@ -435,19 +435,19 @@ go_bandit([]() {
         node_arc_stream ns(af);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::ptr_t(1,0), node::ptr_t(2,0))));
+        AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::pointer_type(1,0), node::pointer_type(2,0))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(),     Is().EqualTo(node(1,0, node::ptr_t(false), node::ptr_t(2,0))));
+        AssertThat(ns.pull(),     Is().EqualTo(node(1,0, node::pointer_type(false), node::pointer_type(2,0))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(),     Is().EqualTo(node(2,0, node::ptr_t(3,0), node::ptr_t(3,1))));
+        AssertThat(ns.pull(),     Is().EqualTo(node(2,0, node::pointer_type(3,0), node::pointer_type(3,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(),     Is().EqualTo(node(3,0, node::ptr_t(false), node::ptr_t(true))));
+        AssertThat(ns.pull(),     Is().EqualTo(node(3,0, node::pointer_type(false), node::pointer_type(true))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(),     Is().EqualTo(node(3,1, node::ptr_t(true), node::ptr_t(false))));
+        AssertThat(ns.pull(),     Is().EqualTo(node(3,1, node::pointer_type(true), node::pointer_type(false))));
 
         AssertThat(ns.can_pull(), Is().False());
       });
@@ -469,15 +469,15 @@ go_bandit([]() {
 
           aw.push(level_info(0,1));
 
-          aw.push_internal(arc(arc::ptr_t(0,0), true,   arc::ptr_t(1,0)));
-          aw.push_terminal(arc(arc::ptr_t(1,0), true,   arc::ptr_t(true)));
+          aw.push_internal(arc(arc::pointer_type(0,0), true,   arc::pointer_type(1,0)));
+          aw.push_terminal(arc(arc::pointer_type(1,0), true,   arc::pointer_type(true)));
 
           aw.push(level_info(1,1));
 
-          aw.push_internal(arc(arc::ptr_t(0,0), false,  arc::ptr_t(2,0)));
-          aw.push_internal(arc(arc::ptr_t(1,0), false,  arc::ptr_t(2,0)));
-          aw.push_terminal(arc(arc::ptr_t(2,0), false,  arc::ptr_t(false)));
-          aw.push_terminal(arc(arc::ptr_t(2,0), true,   arc::ptr_t(true)));
+          aw.push_internal(arc(arc::pointer_type(0,0), false,  arc::pointer_type(2,0)));
+          aw.push_internal(arc(arc::pointer_type(1,0), false,  arc::pointer_type(2,0)));
+          aw.push_terminal(arc(arc::pointer_type(2,0), false,  arc::pointer_type(false)));
+          aw.push_terminal(arc(arc::pointer_type(2,0), true,   arc::pointer_type(true)));
 
           aw.push(level_info(2,1));
 
@@ -487,13 +487,13 @@ go_bandit([]() {
         node_arc_stream ns(af);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::ptr_t(2,0), node::ptr_t(1,0))));
+        AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::pointer_type(2,0), node::pointer_type(1,0))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(),     Is().EqualTo(node(1,0, node::ptr_t(2,0), node::ptr_t(true))));
+        AssertThat(ns.pull(),     Is().EqualTo(node(1,0, node::pointer_type(2,0), node::pointer_type(true))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(),     Is().EqualTo(node(2,0, node::ptr_t(false), node::ptr_t(true))));
+        AssertThat(ns.pull(),     Is().EqualTo(node(2,0, node::pointer_type(false), node::pointer_type(true))));
 
         AssertThat(ns.can_pull(), Is().False());
       });
@@ -503,8 +503,8 @@ go_bandit([]() {
 
         {
           arc_writer aw(af);
-          aw.push_terminal(arc(arc::ptr_t(0,0), false, arc::ptr_t(false)));
-          aw.push_terminal(arc(arc::ptr_t(0,0), true,  arc::ptr_t(true)));
+          aw.push_terminal(arc(arc::pointer_type(0,0), false, arc::pointer_type(false)));
+          aw.push_terminal(arc(arc::pointer_type(0,0), true,  arc::pointer_type(true)));
 
           aw.push(level_info(0,1));
           aw.detach();
@@ -513,7 +513,7 @@ go_bandit([]() {
         node_arc_stream ns(af, true);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::ptr_t(true), node::ptr_t(false))));
+        AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::pointer_type(true), node::pointer_type(false))));
 
         AssertThat(ns.can_pull(), Is().False());
       });
@@ -523,8 +523,8 @@ go_bandit([]() {
 
         {
           arc_writer aw(af);
-          aw.push_terminal(arc(arc::ptr_t(0,0), false, arc::ptr_t(false)));
-          aw.push_terminal(arc(arc::ptr_t(0,0), true,  arc::ptr_t(true)));
+          aw.push_terminal(arc(arc::pointer_type(0,0), false, arc::pointer_type(false)));
+          aw.push_terminal(arc(arc::pointer_type(0,0), true,  arc::pointer_type(true)));
 
           aw.push(level_info(0,1));
           aw.detach();
@@ -533,7 +533,7 @@ go_bandit([]() {
         node_arc_stream<true> ns(af);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::ptr_t(false), node::ptr_t(true))));
+        AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::pointer_type(false), node::pointer_type(true))));
 
         AssertThat(ns.can_pull(), Is().False());
       });
@@ -557,24 +557,24 @@ go_bandit([]() {
 
           aw.push(level_info(0,1));
 
-          aw.push_internal(arc(arc::ptr_t(0,0), true,   arc::ptr_t(1,0)));
-          aw.push_terminal(arc(arc::ptr_t(1,0), false,  arc::ptr_t(false)));
+          aw.push_internal(arc(arc::pointer_type(0,0), true,   arc::pointer_type(1,0)));
+          aw.push_terminal(arc(arc::pointer_type(1,0), false,  arc::pointer_type(false)));
 
           aw.push(level_info(1,1));
 
-          aw.push_internal(arc(arc::ptr_t(0,0), false,  arc::ptr_t(2,0)));
-          aw.push_terminal(arc(arc::ptr_t(2,0), false,  arc::ptr_t(false)));
+          aw.push_internal(arc(arc::pointer_type(0,0), false,  arc::pointer_type(2,0)));
+          aw.push_terminal(arc(arc::pointer_type(2,0), false,  arc::pointer_type(false)));
 
-          aw.push_internal(arc(arc::ptr_t(1,0), true,   arc::ptr_t(2,1)));
-          aw.push_terminal(arc(arc::ptr_t(2,1), true,   arc::ptr_t(true)));
+          aw.push_internal(arc(arc::pointer_type(1,0), true,   arc::pointer_type(2,1)));
+          aw.push_terminal(arc(arc::pointer_type(2,1), true,   arc::pointer_type(true)));
 
           aw.push(level_info(2,2));
 
-          aw.push_internal(arc(arc::ptr_t(2,0), true,   arc::ptr_t(3,0)));
-          aw.push_internal(arc(arc::ptr_t(2,1), false,  arc::ptr_t(3,0)));
+          aw.push_internal(arc(arc::pointer_type(2,0), true,   arc::pointer_type(3,0)));
+          aw.push_internal(arc(arc::pointer_type(2,1), false,  arc::pointer_type(3,0)));
 
-          aw.push_terminal(arc(arc::ptr_t(3,0), false,  arc::ptr_t(false)));
-          aw.push_terminal(arc(arc::ptr_t(3,0), true,   arc::ptr_t(true)));
+          aw.push_terminal(arc(arc::pointer_type(3,0), false,  arc::pointer_type(false)));
+          aw.push_terminal(arc(arc::pointer_type(3,0), true,   arc::pointer_type(true)));
 
           aw.detach();
         }
@@ -582,19 +582,19 @@ go_bandit([]() {
         node_arc_stream<true> ns(af, true);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(),     Is().EqualTo(node(3,0, node::ptr_t(true), node::ptr_t(false))));
+        AssertThat(ns.pull(),     Is().EqualTo(node(3,0, node::pointer_type(true), node::pointer_type(false))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(),     Is().EqualTo(node(2,1, node::ptr_t(3,0),  node::ptr_t(false))));
+        AssertThat(ns.pull(),     Is().EqualTo(node(2,1, node::pointer_type(3,0),  node::pointer_type(false))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(),     Is().EqualTo(node(2,0, node::ptr_t(true), node::ptr_t(3,0))));
+        AssertThat(ns.pull(),     Is().EqualTo(node(2,0, node::pointer_type(true), node::pointer_type(3,0))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(),     Is().EqualTo(node(1,0, node::ptr_t(true), node::ptr_t(2,1))));
+        AssertThat(ns.pull(),     Is().EqualTo(node(1,0, node::pointer_type(true), node::pointer_type(2,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::ptr_t(2,0),  node::ptr_t(1,0))));
+        AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::pointer_type(2,0),  node::pointer_type(1,0))));
 
         AssertThat(ns.can_pull(), Is().False());
       });
@@ -604,8 +604,8 @@ go_bandit([]() {
 
         {
           arc_writer aw(af);
-          aw.push_terminal(arc(arc::ptr_t(0,0), false, arc::ptr_t(false)));
-          aw.push_terminal(arc(arc::ptr_t(0,0), true,  arc::ptr_t(true)));
+          aw.push_terminal(arc(arc::pointer_type(0,0), false, arc::pointer_type(false)));
+          aw.push_terminal(arc(arc::pointer_type(0,0), true,  arc::pointer_type(true)));
 
           aw.push(level_info(0,1));
           aw.detach();
@@ -615,7 +615,7 @@ go_bandit([]() {
           node_arc_stream ns(af);
 
           AssertThat(ns.can_pull(), Is().True());
-          AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::ptr_t(false), node::ptr_t(true))));
+          AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::pointer_type(false), node::pointer_type(true))));
 
           AssertThat(ns.can_pull(), Is().False());
         }
@@ -624,7 +624,7 @@ go_bandit([]() {
           node_arc_stream ns(af);
 
           AssertThat(ns.can_pull(), Is().True());
-          AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::ptr_t(false), node::ptr_t(true))));
+          AssertThat(ns.pull(),     Is().EqualTo(node(0,0, node::pointer_type(false), node::pointer_type(true))));
 
           AssertThat(ns.can_pull(), Is().False());
         }

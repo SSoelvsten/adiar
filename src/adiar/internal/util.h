@@ -23,7 +23,7 @@ namespace adiar::internal
   /// \brief Template to hide how to obtain the level from a data type.
   ////////////////////////////////////////////////////////////////////////////
   template<typename T>
-  inline ptr_uint64::label_t
+  inline ptr_uint64::label_type
   level_of(const T& t)
   {
     if constexpr (std::is_integral<T>::value) {
@@ -45,17 +45,17 @@ namespace adiar::internal
   };
 
   template<>
-  struct level_stream_t<file<ptr_uint64::label_t>>
+  struct level_stream_t<file<ptr_uint64::label_type>>
   {
     template<bool reverse = false>
-    using stream_t = file_stream<ptr_uint64::label_t, reverse>;
+    using stream_t = file_stream<ptr_uint64::label_type, reverse>;
   };
 
   template<>
-  struct level_stream_t<shared_file<ptr_uint64::label_t>>
+  struct level_stream_t<shared_file<ptr_uint64::label_type>>
   {
     template<bool reverse = false>
-    using stream_t = file_stream<ptr_uint64::label_t, reverse>;
+    using stream_t = file_stream<ptr_uint64::label_type, reverse>;
   };
 
   ////////////////////////////////////////////////////////////////////////////
@@ -90,7 +90,7 @@ namespace adiar::internal
   // TODO: Move to dd_func?
   template<typename dd_t>
   bool
-  has_level(const dd_t &in, const typename dd_t::label_t l)
+  has_level(const dd_t &in, const typename dd_t::label_type l)
   {
     level_info_stream<> in_meta(in);
     while(in_meta.can_pull()) {
@@ -131,7 +131,7 @@ namespace adiar::internal
       { // Split every node into their arcs.
         node_stream ns(dd);
         while (ns.can_pull()) {
-          const typename dd_t::node_t n = ns.pull();
+          const typename dd_t::node_type n = ns.pull();
 
           // TODO (non-binary nodes):
           aw << low_arc_of(n);

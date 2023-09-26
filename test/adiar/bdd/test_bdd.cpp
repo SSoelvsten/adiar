@@ -2,7 +2,7 @@
 
 go_bandit([]() {
   describe("src/adiar/bdd.h", []() {
-    shared_levelized_file<bdd::node_t> x0_nf;
+    shared_levelized_file<bdd::node_type> x0_nf;
 
     {
       node_writer nw_0(x0_nf);
@@ -13,7 +13,7 @@ go_bandit([]() {
 
     bdd x0(x0_nf);
 
-    shared_levelized_file<bdd::node_t> x1_nf;
+    shared_levelized_file<bdd::node_type> x1_nf;
 
     {
       node_writer nw_1(x1_nf);
@@ -24,7 +24,7 @@ go_bandit([]() {
 
     bdd x1(x1_nf);
 
-    shared_levelized_file<bdd::node_t> x0_and_x1_nf;
+    shared_levelized_file<bdd::node_type> x0_and_x1_nf;
 
     {
       node_writer nw_01(x0_and_x1_nf);
@@ -41,7 +41,7 @@ go_bandit([]() {
     bdd x0_and_x1(x0_and_x1_nf);
     bdd x0_nand_x1(x0_and_x1_nf, true);
 
-    shared_levelized_file<bdd::node_t> terminal_T_nf;
+    shared_levelized_file<bdd::node_type> terminal_T_nf;
 
     {
       node_writer nw_T(terminal_T_nf);
@@ -50,7 +50,7 @@ go_bandit([]() {
 
     bdd terminal_T(terminal_T_nf);
 
-    shared_levelized_file<bdd::node_t> terminal_F_nf;
+    shared_levelized_file<bdd::node_type> terminal_F_nf;
 
     {
       node_writer nw_F(terminal_F_nf);
@@ -62,30 +62,30 @@ go_bandit([]() {
     describe("__bdd", [&]() {
       it("should copy-construct values from bdd", [&]() {
         __bdd t1 = bdd(x0_and_x1);
-        AssertThat(t1.has<shared_levelized_file<bdd::node_t>>(), Is().True());
-        AssertThat(t1.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(x0_and_x1_nf));
+        AssertThat(t1.has<shared_levelized_file<bdd::node_type>>(), Is().True());
+        AssertThat(t1.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(x0_and_x1_nf));
         AssertThat(t1.negate, Is().False());
       });
 
       it("should copy-construct values from negated bdd", [&]() {
         __bdd t2 = bdd(x0_nand_x1);
-        AssertThat(t2.has<shared_levelized_file<bdd::node_t>>(), Is().True());
-        AssertThat(t2.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(x0_and_x1_nf));
+        AssertThat(t2.has<shared_levelized_file<bdd::node_type>>(), Is().True());
+        AssertThat(t2.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(x0_and_x1_nf));
         AssertThat(t2.negate, Is().True());
       });
 
       it("should copy-construct values from __bdd", [&]() {
         __bdd t1 = x0_and_x1;
         __bdd t2 = t1;
-        AssertThat(t2.has<shared_levelized_file<bdd::node_t>>(), Is().True());
-        AssertThat(t2.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(x0_and_x1_nf));
+        AssertThat(t2.has<shared_levelized_file<bdd::node_type>>(), Is().True());
+        AssertThat(t2.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(x0_and_x1_nf));
         AssertThat(t2.negate, Is().False());
       });
 
-      it("should copy-construct values from shared_levelized_file<bdd::node_t>", [&]() {
+      it("should copy-construct values from shared_levelized_file<bdd::node_type>", [&]() {
         __bdd t1 = x0_and_x1;
-        AssertThat(t1.has<shared_levelized_file<bdd::node_t>>(), Is().True());
-        AssertThat(t1.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(x0_and_x1_nf));
+        AssertThat(t1.has<shared_levelized_file<bdd::node_type>>(), Is().True());
+        AssertThat(t1.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(x0_and_x1_nf));
         AssertThat(t1.negate, Is().False());
       });
 
@@ -128,7 +128,7 @@ go_bandit([]() {
       AssertThat(t2, Is().EqualTo(terminal_F));
     });
 
-    it("should copy-construct shared_levelized_file<bdd::node_t> and negation back to bdd", [&]() {
+    it("should copy-construct shared_levelized_file<bdd::node_type> and negation back to bdd", [&]() {
       bdd t2 = bdd(__bdd(x0_and_x1));
       AssertThat(t2.file_ptr(), Is().EqualTo(x0_and_x1_nf));
       AssertThat(t2.is_negated(), Is().False());
@@ -151,7 +151,7 @@ go_bandit([]() {
         AssertThat(x0_and_x1, Is().Not().EqualTo(x0_nand_x1));
       });
 
-      shared_levelized_file<bdd::node_t> x0_and_x1_nf2;
+      shared_levelized_file<bdd::node_type> x0_and_x1_nf2;
 
       {
         node_writer nw_01(x0_and_x1_nf2);

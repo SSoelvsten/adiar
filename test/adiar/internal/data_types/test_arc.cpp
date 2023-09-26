@@ -15,7 +15,7 @@ go_bandit([]() {
         AssertThat(sizeof(arc), Is().EqualTo(2u * 8u));
       });
 
-      describe("arc(ptr_t &s, ptr_t &t)", [&] {
+      describe("arc(pointer_type &s, pointer_type &t)", [&] {
         it("creates arc (42,2) - -> F", [&]() {
           const arc a = { ptr_uint64(42,2,0), terminal_F };
 
@@ -57,7 +57,7 @@ go_bandit([]() {
         });
       });
 
-      describe("arc(ptr_t &s, ptr_t::out_idx o, ptr_t &t)", [&] {
+      describe("arc(pointer_type &s, pointer_type::out_idx o, pointer_type &t)", [&] {
         it("creates arc '(42,2) - -> F'", [&]() {
           const arc a = { uid_uint64(42,2), 0, terminal_F };
 

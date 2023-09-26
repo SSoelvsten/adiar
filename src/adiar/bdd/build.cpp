@@ -29,26 +29,26 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_ithvar(bdd::label_t label)
+  bdd bdd_ithvar(bdd::label_type label)
   {
     return internal::build_ithvar<bdd_policy>(label);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_nithvar(bdd::label_t label)
+  bdd bdd_nithvar(bdd::label_type label)
   {
     return bdd_not(internal::build_ithvar<bdd_policy>(label));
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_and(const generator<bdd::label_t> &vars)
+  bdd bdd_and(const generator<bdd::label_type> &vars)
   {
     internal::chain_high<bdd_policy> p;
     return internal::build_chain<>(p, vars);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_or(const generator<bdd::label_t> &vars)
+  bdd bdd_or(const generator<bdd::label_type> &vars)
   {
     internal::chain_low<bdd_policy> p;
     return internal::build_chain<>(p, vars);

@@ -52,8 +52,8 @@ namespace adiar
   class ignore_levels
   {
   public:
-    static size_t pq1_upper_bound(const internal::shared_levelized_file<zdd::node_t> &in_1,
-                                  const internal::shared_levelized_file<zdd::node_t> &in_2)
+    static size_t pq1_upper_bound(const internal::shared_levelized_file<zdd::node_type> &in_1,
+                                  const internal::shared_levelized_file<zdd::node_type> &in_2)
     {
       const safe_size_t max_2level_cut_1 = in_1->max_2level_cut[ct_1];
       const safe_size_t max_2level_cut_2 = in_2->max_2level_cut[ct_2];
@@ -61,8 +61,8 @@ namespace adiar
       return to_size(max_2level_cut_1 * max_2level_cut_2);
     }
 
-    static size_t pq2_upper_bound(const internal::shared_levelized_file<zdd::node_t> &in_1,
-                                  const internal::shared_levelized_file<zdd::node_t> &in_2)
+    static size_t pq2_upper_bound(const internal::shared_levelized_file<zdd::node_type> &in_1,
+                                  const internal::shared_levelized_file<zdd::node_type> &in_2)
     {
       const safe_size_t max_1level_cut_1 = in_1->max_1level_cut[ct_1];
       const safe_size_t max_1level_cut_2 = in_2->max_1level_cut[ct_2];
@@ -76,11 +76,11 @@ namespace adiar
     }
 
   public:
-    ignore_levels(const internal::shared_levelized_file<zdd::node_t> &/*f1*/,
-                  const internal::shared_levelized_file<zdd::node_t> &/*f2*/)
+    ignore_levels(const internal::shared_levelized_file<zdd::node_type> &/*f1*/,
+                  const internal::shared_levelized_file<zdd::node_type> &/*f2*/)
     { /* do nothing */ }
 
-    void next_level(zdd::label_t /* level */)
+    void next_level(zdd::label_type /* level */)
     { /* do nothing */ }
 
     bool on_step()
@@ -94,7 +94,7 @@ namespace adiar
     , public internal::prod2_mixed_level_merger<zdd_policy>
   {
   public:
-    typedef ignore_levels<internal::cut_type::Internal_True, internal::cut_type::Internal_True> level_check_t;
+    using level_check_t = ignore_levels<internal::cut_type::Internal_True, internal::cut_type::Internal_True>;
 
   public:
     static constexpr size_t lookahead_bound()
@@ -103,7 +103,7 @@ namespace adiar
     }
 
   public:
-    static bool resolve_terminals(const zdd::node_t &v1, const zdd::node_t &v2, bool &ret_value)
+    static bool resolve_terminals(const zdd::node_type &v1, const zdd::node_type &v2, bool &ret_value)
     {
       if (v1.is_terminal() && v2.is_terminal()) {
         ret_value = !v1.value() || v2.value();
@@ -119,7 +119,7 @@ namespace adiar
     }
 
   public:
-    static bool resolve_singletons(const zdd::node_t &v1, const zdd::node_t &v2)
+    static bool resolve_singletons(const zdd::node_type &v1, const zdd::node_type &v2)
     {
       return v1.label() == v2.label()
         && v1.low() <= v2.low() && v1.high() <= v2.high();
@@ -127,7 +127,7 @@ namespace adiar
 
   public:
     template<typename pq_1_t>
-    static bool resolve_request(pq_1_t &pq, const internal::tuple<zdd::ptr_t> &rp)
+    static bool resolve_request(pq_1_t &pq, const internal::tuple<zdd::pointer_type> &rp)
     {
       // Are they both a terminal? If so, check whether the left-hand side is true
       // and not the right, which would contradict being an implication (i.e.
@@ -177,7 +177,7 @@ namespace adiar
     , public internal::prod2_mixed_level_merger<zdd_policy>
   {
   public:
-    typedef ignore_levels<internal::cut_type::All, internal::cut_type::All> level_check_t;
+    using level_check_t = ignore_levels<internal::cut_type::All, internal::cut_type::All>;
 
   public:
     static constexpr size_t lookahead_bound()
@@ -186,14 +186,14 @@ namespace adiar
     }
 
   public:
-    static bool resolve_terminals(const zdd::node_t &v1, const zdd::node_t &v2, bool &ret_value)
+    static bool resolve_terminals(const zdd::node_type &v1, const zdd::node_type &v2, bool &ret_value)
     {
       ret_value = v1.is_false() || v2.is_false();
       return (v1.is_terminal() && v2.is_terminal()) || ret_value;
     }
 
   public:
-    static bool resolve_singletons(const zdd::node_t &v1, const zdd::node_t &v2)
+    static bool resolve_singletons(const zdd::node_type &v1, const zdd::node_type &v2)
     {
       return v1.label() != v2.label()
         || v1.low() != v2.low()
@@ -202,7 +202,7 @@ namespace adiar
 
   public:
     template<typename pq_1_t>
-    static bool resolve_request(pq_1_t &pq, const internal::tuple<zdd::ptr_t> &rp)
+    static bool resolve_request(pq_1_t &pq, const internal::tuple<zdd::pointer_type> &rp)
     {
       // Are they both a terminal? If so, check whether they both are true, which
       // verify there is a satisfiying conjunction (i.e. representing a shared

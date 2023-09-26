@@ -28,7 +28,7 @@ namespace adiar::internal
   class intercut_req : public arc
   { // TODO: replace with request class
   private:
-    ptr_uint64::label_t _level = ptr_uint64::max_label + 1u;
+    ptr_uint64::label_type _level = ptr_uint64::max_label + 1u;
 
   public:
     intercut_req() = default;
@@ -36,11 +36,11 @@ namespace adiar::internal
     ~intercut_req() = default;
 
   public:
-    intercut_req(ptr_uint64 source, ptr_uint64 target, ptr_uint64::label_t lvl) : arc(source, target), _level(lvl)
+    intercut_req(ptr_uint64 source, ptr_uint64 target, ptr_uint64::label_type lvl) : arc(source, target), _level(lvl)
     { }
 
   public:
-    ptr_uint64::label_t level() const
+    ptr_uint64::label_type level() const
     { return _level; }
   };
 
@@ -78,13 +78,13 @@ namespace adiar::internal
     ptr_uint64 tgt;
   };
 
-  typedef std::variant<intercut_rec_output, intercut_rec_skipto> intercut_rec;
+  using intercut_rec = std::variant<intercut_rec_output, intercut_rec_skipto>;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
   template<typename intercut_policy>
-  bool cut_terminal(const typename intercut_policy::label_t curr_level,
-                    const typename intercut_policy::label_t cut_level,
+  bool cut_terminal(const typename intercut_policy::label_type curr_level,
+                    const typename intercut_policy::label_type cut_level,
                     const bool terminal_value)
   {
     return curr_level < cut_level
@@ -102,12 +102,12 @@ namespace adiar::internal
     template<typename pq_t>
     static inline void forward(arc_writer &aw,
                                pq_t &pq,
-                               const typename intercut_policy::ptr_t source,
-                               const typename intercut_policy::ptr_t target,
-                               const typename intercut_policy::label_t curr_level,
-                               const typename intercut_policy::label_t next_cut)
+                               const typename intercut_policy::pointer_type source,
+                               const typename intercut_policy::pointer_type target,
+                               const typename intercut_policy::label_type curr_level,
+                               const typename intercut_policy::label_type next_cut)
     {
-      const typename intercut_policy::label_t target_level = target.is_node()
+      const typename intercut_policy::label_type target_level = target.is_node()
         ? target.label()
         : intercut_policy::max_label+1;
 
@@ -129,8 +129,8 @@ namespace adiar::internal
                                pq_t &/*pq*/,
                                const ptr_uint64 source,
                                const ptr_uint64 target,
-                               const ptr_uint64::label_t /*curr_level*/,
-                               const ptr_uint64::label_t /*next_cut*/)
+                               const ptr_uint64::label_type /*curr_level*/,
+                               const ptr_uint64::label_type /*next_cut*/)
     {
       aw.push_internal(arc(source, target));
     }
@@ -139,10 +139,10 @@ namespace adiar::internal
   template<typename intercut_policy, typename in_policy, typename pq_t>
   inline void intercut_in__pq(arc_writer &aw,
                               pq_t &pq,
-                              const typename intercut_policy::label_t out_label,
-                              const typename intercut_policy::ptr_t pq_target,
-                              const typename intercut_policy::ptr_t out_target,
-                              const typename intercut_policy::label_t l)
+                              const typename intercut_policy::label_type out_label,
+                              const typename intercut_policy::pointer_type pq_target,
+                              const typename intercut_policy::pointer_type out_target,
+                              const typename intercut_policy::label_type l)
   {
     adiar_assert(out_label <= out_target.label(),
                  "should forward/output a node on this level or ahead.");
@@ -159,23 +159,23 @@ namespace adiar::internal
 
   template<typename intercut_policy, typename pq_t>
   typename intercut_policy::unreduced_t __intercut (const typename intercut_policy::reduced_t &dd,
-                                                    const generator<typename intercut_policy::label_t> &xs,
+                                                    const generator<typename intercut_policy::label_type> &xs,
                                                     const size_t pq_memory,
                                                     const size_t max_pq_size)
   {
     node_stream<> in_nodes(dd);
     node n = in_nodes.pull();
 
-    // TODO: Only copy `xs` into a `shared_file<label_t>`, in the degenerate
+    // TODO: Only copy `xs` into a `shared_file<label_type>`, in the degenerate
     //       case, that we have to reverse it.
     //
     // In the general case, we have to use it both in the priority queue
     // `intercut_pq` below, and for a lookahead of the algorithm. The main issue
     // is how to design the priority queue such that it can retrieve, merge with
     // `dd_levels`, and expose `xs`.
-    shared_file<typename intercut_policy::label_t> hit_levels;
+    shared_file<typename intercut_policy::label_type> hit_levels;
     {
-      file_writer<typename intercut_policy::label_t> lw(hit_levels);
+      file_writer<typename intercut_policy::label_type> lw(hit_levels);
       for (auto x = xs(); x <= intercut_policy::max_label; x = xs()) {
         lw << x;
       }
@@ -189,16 +189,16 @@ namespace adiar::internal
       return intercut_policy::on_terminal_input(n.value(), dd, hit_levels);
     }
 
-    file_stream<typename intercut_policy::label_t> ls(hit_levels);
-    typename intercut_policy::label_t l = ls.pull();
+    file_stream<typename intercut_policy::label_type> ls(hit_levels);
+    typename intercut_policy::label_type l = ls.pull();
 
     shared_levelized_file<arc> out_arcs;
     arc_writer aw(out_arcs);
 
-    shared_file<typename intercut_policy::label_t> dd_levels;
+    shared_file<typename intercut_policy::label_type> dd_levels;
     {
-      file_writer<typename intercut_policy::label_t> lw(dd_levels);
-      dd_varprofile(dd, [&lw](const typename intercut_policy::label_t x) {
+      file_writer<typename intercut_policy::label_type> lw(dd_levels);
+      dd_varprofile(dd, [&lw](const typename intercut_policy::label_type x) {
         lw << x;
       });
     }
@@ -206,9 +206,9 @@ namespace adiar::internal
     pq_t intercut_pq({dd_levels, hit_levels}, pq_memory, max_pq_size, stats_intercut.lpq);
 
     // Add request for root in the queue
-    typename intercut_policy::label_t out_label = std::min(l, n.label());
+    typename intercut_policy::label_type out_label = std::min(l, n.label());
     intercut_pq.push(intercut_req(ptr_uint64::nil(), n.uid(), out_label));
-    typename intercut_policy::id_t out_id = 0;
+    typename intercut_policy::id_type out_id = 0;
 
     size_t max_1level_cut = 0;
 
@@ -262,7 +262,7 @@ namespace adiar::internal
             (aw, intercut_pq, out_label, n.uid(), rs.tgt, l);
         } else {
           const intercut_rec_output ro = std::get<intercut_rec_output>(r);
-          const node::uid_t out_uid(out_label, out_id++);
+          const node::uid_type out_uid(out_label, out_id++);
 
           intercut_out__pq<intercut_policy>::forward
             (aw, intercut_pq, out_uid.with(false), ro.low, out_label, l);
@@ -282,7 +282,7 @@ namespace adiar::internal
 
         const intercut_req request = intercut_pq.top();
         const intercut_rec_output ro = intercut_policy::hit_cut(request.target());
-        const node::uid_t out_uid(out_label, out_id++);
+        const node::uid_type out_uid(out_label, out_id++);
 
         intercut_out__pq<intercut_policy>::forward
           (aw, intercut_pq, out_uid.with(false), ro.low, out_label, l);
@@ -316,7 +316,7 @@ namespace adiar::internal
 
   template<typename intercut_policy>
   typename intercut_policy::unreduced_t intercut(const typename intercut_policy::reduced_t &dd,
-                                                 const generator<typename intercut_policy::label_t> &xs)
+                                                 const generator<typename intercut_policy::label_type> &xs)
   {
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.

@@ -12,7 +12,7 @@ namespace adiar
     return internal::dd_nodecount(A);
   }
 
-  zdd::label_t zdd_varcount(const zdd &A)
+  zdd::label_type zdd_varcount(const zdd &A)
   {
     return internal::dd_varcount(A);
   }

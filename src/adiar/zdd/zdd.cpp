@@ -5,6 +5,7 @@
 #include <memory>
 
 #include <adiar/domain.h>
+#include <adiar/exception.h>
 #include <adiar/internal/io/file_stream.h>
 #include <adiar/internal/dot.h>
 #include <adiar/internal/algorithms/convert.h>
@@ -23,11 +24,11 @@ namespace adiar
     : internal::__dd()
   { }
 
-  __zdd::__zdd(const internal::__dd::shared_nodes_t &f)
+  __zdd::__zdd(const internal::__dd::shared_node_file_type &f)
     : internal::__dd(f)
   { }
 
-  __zdd::__zdd(const internal::__dd::shared_arcs_t &f)
+  __zdd::__zdd(const internal::__dd::shared_arc_file_type &f)
     : internal::__dd(f)
   { }
 
@@ -37,43 +38,45 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // 'zdd' Constructors
-  zdd::zdd(const internal::dd::shared_nodes_t &f, bool negate)
-    : internal::dd(f, negate)
-  { }
-
   zdd::zdd()
     : zdd(zdd_empty())
   { }
 
-  zdd::zdd(bool v)
-    : zdd(zdd_terminal(v))
+  zdd::zdd(terminal_type t)
+    : zdd(zdd_terminal(t))
   { }
 
-  zdd::zdd(const zdd &o)
-    : internal::dd(o)
+  zdd::zdd(const internal::dd::shared_node_file_type &A, bool negate)
+    : internal::dd(A, negate)
+  { 
+    if (negate) { throw invalid_argument("ZDDs cannot be negated"); }
+  }
+
+  zdd::zdd(const zdd &A)
+    : internal::dd(A)
   { }
 
-  zdd::zdd(zdd &&o)
-    : internal::dd(o)
+  zdd::zdd(zdd &&A)
+    : internal::dd(A)
   { }
 
-  zdd::zdd(__zdd &&o)
-    : internal::dd(internal::reduce<zdd_policy>(std::forward<__zdd>(o)))
+  zdd::zdd(__zdd &&A)
+    : internal::dd(internal::reduce<zdd_policy>(std::move(A)))
   { }
 
   //////////////////////////////////////////////////////////////////////////////
   // Operators
 #define __zdd_oper(out_t, op)                                              \
   out_t operator op (__zdd &&lhs, __zdd &&rhs) {                           \
-    return zdd(std::forward<__zdd>(lhs)) op zdd(std::forward<__zdd>(rhs)); \
+    return zdd(std::move(lhs)) op zdd(std::move(rhs));                     \
   }                                                                        \
                                                                            \
   out_t operator op (const zdd &lhs, __zdd &&rhs) {                        \
-    return lhs op zdd(std::forward<__zdd>(rhs));                           \
+    return lhs op zdd(std::move(rhs));                                     \
   }                                                                        \
                                                                            \
   out_t operator op (__zdd &&lhs, const zdd &rhs) {                        \
-    return zdd(std::forward<__zdd>(lhs)) op rhs;                           \
+    return zdd(std::move(lhs)) op rhs;                                     \
   }
 
   __zdd_oper(__zdd, &)
@@ -97,7 +100,7 @@ namespace adiar
   zdd& zdd::operator= (__zdd &&other)
   {
     deref();
-    return (*this = internal::reduce<zdd_policy>(std::forward<__zdd>(other)));
+    return (*this = internal::reduce<zdd_policy>(std::move(other)));
   }
 
   __zdd operator~ (const zdd &A)
@@ -107,7 +110,7 @@ namespace adiar
 
   __zdd operator~ (__zdd &&A)
   {
-    return ~zdd(std::forward<__zdd>(A));
+    return ~zdd(std::move(A));
   }
 
   __zdd operator& (const zdd& lhs, const zdd& rhs)
@@ -190,24 +193,24 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Input variables
-  zdd::label_t zdd_minvar(const zdd &A)
+  zdd::label_type zdd_minvar(const zdd &A)
   {
     return internal::dd_minvar(A);
   }
 
-  zdd::label_t zdd_maxvar(const zdd &A)
+  zdd::label_type zdd_maxvar(const zdd &A)
   {
     return internal::dd_maxvar(A);
   }
 
-  void zdd_varprofile(const zdd &A, const consumer<zdd::label_t> &cb)
+  void zdd_varprofile(const zdd &A, const consumer<zdd::label_type> &cb)
   {
     return internal::dd_varprofile(A, cb);
   }
 
   //////////////////////////////////////////////////////////////////////////////
   // Conversion
-  __zdd zdd_from(const bdd &f, const generator<zdd::label_t> &dom)
+  __zdd zdd_from(const bdd &f, const generator<zdd::label_type> &dom)
   {
     return internal::intercut<internal::convert_dd_policy<zdd_policy, bdd_policy>>
       (f, dom);
@@ -215,7 +218,7 @@ namespace adiar
 
   __zdd zdd_from(const bdd &f)
   {
-    const shared_file<zdd::label_t> dom = domain_get();
+    const shared_file<zdd::label_type> dom = domain_get();
     internal::file_stream<domain_var> ds(dom);
 
     return internal::intercut<internal::convert_dd_policy<zdd_policy, bdd_policy>>

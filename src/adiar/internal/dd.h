@@ -23,7 +23,7 @@ namespace adiar::internal
   /// A std::variant is used to distinguish the type of file. This uses
   /// std::monostate to hold a 'nothing' value, i.e. when there is no file.
   //////////////////////////////////////////////////////////////////////////////
-  typedef std::monostate no_file;
+  using no_file = std::monostate;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \warning You should never explicitly be dealing with this class or have it
@@ -47,27 +47,27 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of nodes of this diagram.
     ////////////////////////////////////////////////////////////////////////////
-    using node_t = node;
+    using node_type = node;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the file object node-based representation of a diagram.
     ////////////////////////////////////////////////////////////////////////////
-    using shared_nodes_t = shared_levelized_file<node_t>;
+    using shared_node_file_type = shared_levelized_file<node_type>;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of nodes of this diagram.
     ////////////////////////////////////////////////////////////////////////////
-    using arc_t = arc;
+    using arc_type = arc;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the file object arc-based representation of a diagram.
     ////////////////////////////////////////////////////////////////////////////
-    using shared_arcs_t = shared_levelized_file<arc_t>;
+    using shared_arc_file_type = shared_levelized_file<arc_type>;
 
     ////////////////////////////////////////////////////////////////////////////
     // Union of levelized node or arc files to reflect the possible return types
     // of a function and a 'no_file' for 'error'.
-    std::variant<no_file, /*const*/ shared_nodes_t, /*const*/ shared_arcs_t>
+    std::variant<no_file, shared_node_file_type, shared_arc_file_type>
     _union;
 
     ////////////////////////////////////////////////////////////////////////////
@@ -79,17 +79,19 @@ namespace adiar::internal
     __dd()
     { }
 
-    __dd(const shared_nodes_t &f) : _union(f)
+    __dd(const shared_node_file_type &f) 
+      : _union(f)
     { }
 
-    __dd(const shared_arcs_t &f) : _union(f)
+    __dd(const shared_arc_file_type &f) 
+      : _union(f)
     { }
 
     __dd(const dd &dd);
 
     ////////////////////////////////////////////////////////////////////////////
     // Accessors
-    // TODO: change from 'file_t' to 'elem_t'.
+    // TODO: change from 'file_t' to 'file::value_type'.
     template<typename file_t>
     bool has() const
     {
@@ -115,11 +117,12 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     size_t size() const
     {
-      if (has<shared_arcs_t>()) {
-        return get<shared_arcs_t>()->size() / 2u;
+      if (has<shared_arc_file_type>()) {
+        // TODO (QMDD): Divide by node::outdegree instead of 2u
+        return get<shared_arc_file_type>()->size() / 2u;
       }
-      if (has<shared_nodes_t>()) {
-        return get<shared_nodes_t>()->size();
+      if (has<shared_node_file_type>()) {
+        return get<shared_node_file_type>()->size();
       }
       return 0u;
     }
@@ -132,14 +135,14 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     cut_size_t max_1level_cut(const cut_type ct) const
     {
-      if (has<shared_arcs_t>()) {
-        const shared_arcs_t &af = get<shared_arcs_t>();
+      if (has<shared_arc_file_type>()) {
+        const shared_arc_file_type &af = get<shared_arc_file_type>();
         return af->max_1level_cut
           + (includes_terminal(ct, false) ? af->number_of_terminals[false] : 0u)
           + (includes_terminal(ct, true)  ? af->number_of_terminals[true]  : 0u);
       }
-      if (has<shared_nodes_t>()) {
-        return get<shared_nodes_t>()->max_1level_cut[ct];
+      if (has<shared_node_file_type>()) {
+        return get<shared_node_file_type>()->max_1level_cut[ct];
       }
       return 0u;
     }
@@ -152,8 +155,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     cut_size_t max_2level_cut(const cut_type ct) const
     {
-      if (has<shared_arcs_t>()) {
-        const shared_arcs_t &af = get<shared_arcs_t>();
+      if (has<shared_arc_file_type>()) {
+        const shared_arc_file_type &af = get<shared_arc_file_type>();
         return std::min(// 3/2 times the 1-level cut
                         (3 * af->max_1level_cut) / 2
                         + (includes_terminal(ct, false) ? af->number_of_terminals[false] : 0u)
@@ -161,8 +164,8 @@ namespace adiar::internal
                         // At most the number of nodes + 1
                         (af->size() / 2u) + 1);
       }
-      if (has<shared_nodes_t>()) {
-        return get<shared_nodes_t>()->max_2level_cut[ct];
+      if (has<shared_node_file_type>()) {
+        return get<shared_node_file_type>()->max_2level_cut[ct];
       }
       return 0u;
     }
@@ -172,11 +175,11 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     size_t number_of_terminals(const bool value) const
     {
-      if (has<shared_arcs_t>()) {
-        return get<shared_arcs_t>()->number_of_terminals[negate ^ value];
+      if (has<shared_arc_file_type>()) {
+        return get<shared_arc_file_type>()->number_of_terminals[negate ^ value];
       }
-      if (has<shared_nodes_t>()) {
-        return get<shared_nodes_t>()->number_of_terminals[negate ^ value];
+      if (has<shared_node_file_type>()) {
+        return get<shared_node_file_type>()->number_of_terminals[negate ^ value];
       }
       return 0u;
     }
@@ -186,12 +189,12 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     size_t number_of_terminals() const
     {
-      if (has<shared_arcs_t>()) {
-        const shared_arcs_t &af = get<shared_arcs_t>();
+      if (has<shared_arc_file_type>()) {
+        const shared_arc_file_type &af = get<shared_arc_file_type>();
         return af->number_of_terminals[false] + af->number_of_terminals[true];
       }
-      if (has<shared_nodes_t>()) {
-        const shared_nodes_t &nf = get<shared_nodes_t>();
+      if (has<shared_node_file_type>()) {
+        const shared_node_file_type &nf = get<shared_node_file_type>();
         return nf->number_of_terminals[false] + nf->number_of_terminals[true];
       }
       return 0u;
@@ -213,42 +216,47 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of nodes of this diagram.
     ////////////////////////////////////////////////////////////////////////////
-    using node_t = node;
+    using node_type = node;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of pointers of this diagram.
     ////////////////////////////////////////////////////////////////////////////
-    using ptr_t = node_t::ptr_t;
+    using pointer_type = node_type::pointer_type;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of this node's variable label.
     ////////////////////////////////////////////////////////////////////////////
-    using label_t = node_t::label_t;
+    using label_type = node_type::label_type;
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief The maximal possible value for a unique identifier's label.
     //////////////////////////////////////////////////////////////////////////////
-    static constexpr label_t max_label = node_t::max_label;
+    static constexpr label_type max_label = node_type::max_label;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of this node's level identifier.
     ////////////////////////////////////////////////////////////////////////////
-    using id_t = node_t::id_t;
+    using id_type = node_type::id_type;
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief The maximal possible value for this nodes level identifier.
     //////////////////////////////////////////////////////////////////////////////
-    static constexpr id_t max_id = node_t::max_id;
+    static constexpr id_type max_id = node_type::max_id;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of a terminal value.
+    ////////////////////////////////////////////////////////////////////////////
+    using terminal_type = typename node_type::terminal_type;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief File type for the file object representing the diagram.
     ////////////////////////////////////////////////////////////////////////////
-    using nodes_t = levelized_file<node_t>;
+    using node_file_type = levelized_file<node_type>;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief File type for the shared file object representing the diagram.
     ////////////////////////////////////////////////////////////////////////////
-    using shared_nodes_t = shared_file_ptr<nodes_t>;
+    using shared_node_file_type = shared_file_ptr<node_file_type>;
 
     ////////////////////////////////////////////////////////////////////////////
     // Internal state
@@ -256,7 +264,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The file describing the actual DAG of the decision diagram.
     ////////////////////////////////////////////////////////////////////////////
-    shared_nodes_t file;
+    shared_node_file_type file;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Release the claim on the underlying file, thereby decreasing its
@@ -277,13 +285,36 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     // Constructors
   public:
-    dd(const shared_nodes_t &f, bool negate = false)
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Constructor to wrap the node-based result of an algorithm.
+    ////////////////////////////////////////////////////////////////////////////
+    dd(const shared_node_file_type &f, bool negate = false)
       : file(f), negate(negate)
     { }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Copy construction, incrementing the reference count on the file
+    ///        underneath.
+    ////////////////////////////////////////////////////////////////////////////
     dd(const dd &dd)
       : file(dd.file), negate(dd.negate)
     { }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Move construction, taking over ownership of the files underneath.
+    ////////////////////////////////////////////////////////////////////////////
+    dd(dd &&dd)
+      : file(std::move(dd.file)), negate(std::move(dd.negate))
+    { }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // NOTE:
+    //
+    //   To implement the specific DD, add the following move-conversion that
+    //   runs the Reduce algorithm.
+    //
+    // dd(__dd &&dd)
+    ////////////////////////////////////////////////////////////////////////////
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -297,7 +328,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Read-only access to the raw files and meta information.
     ////////////////////////////////////////////////////////////////////////////
-    const shared_nodes_t file_ptr() const
+    const shared_node_file_type file_ptr() const
     {
       return file;
     }
@@ -307,11 +338,12 @@ namespace adiar::internal
     ///        information, i.e. this is similar to writing
     ///        `.file_ptr()->`.
     ////////////////////////////////////////////////////////////////////////////
-    const nodes_t* operator->() const
+    const node_file_type* operator->() const
     {
       return file_ptr().get();
     }
 
+    /// \cond
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the 1-level cut of the desired type, i.e. of the sub-graph
     ///        including the desired type of arcs.
@@ -333,6 +365,7 @@ namespace adiar::internal
     {
       return file->max_2level_cut[negate_cut_type(ct)];
     }
+    /// \endcond
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The number of elements in the node file.
@@ -404,10 +437,10 @@ namespace adiar::internal
     friend bool dd_valueof(const dd_t &dd);
 
     template <typename dd_t>
-    friend label_t dd_minvar(const dd_t &dd);
+    friend label_type dd_minvar(const dd_t &dd);
 
     template <typename dd_t>
-    friend label_t dd_maxvar(const dd_t &dd);
+    friend label_type dd_maxvar(const dd_t &dd);
   };
 
   inline __dd::__dd(const dd &dd)
@@ -435,71 +468,73 @@ namespace adiar::internal
     using unreduced_t = __dd_type;
 
     ////////////////////////////////////////////////////////////////////////////
-    // Constants
-  public:
-    ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of nodes of this diagram.
     ////////////////////////////////////////////////////////////////////////////
-    using node_t = typename dd_type::node_t;
+    using node_type = typename dd_type::node_type;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of pointers of this diagram.
     ////////////////////////////////////////////////////////////////////////////
-    using ptr_t = typename dd_type::ptr_t;
+    using pointer_type = typename dd_type::pointer_type;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of pointers of this diagram.
     ////////////////////////////////////////////////////////////////////////////
-    using children_t = typename node_t::children_t;
+    using children_type = typename node_type::children_type;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of this node's variable label.
     ////////////////////////////////////////////////////////////////////////////
-    using label_t = typename dd_type::label_t;
+    using label_type = typename dd_type::label_type;
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief The maximal possible value for a unique identifier's label.
     //////////////////////////////////////////////////////////////////////////////
-    static constexpr label_t max_label = dd_type::max_label;
+    static constexpr label_type max_label = dd_type::max_label;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of this node's level identifier.
     ////////////////////////////////////////////////////////////////////////////
-    using id_t = typename dd_type::id_t;
+    using id_type = typename dd_type::id_type;
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief The maximal possible value for this nodes level identifier.
     //////////////////////////////////////////////////////////////////////////////
-    static constexpr id_t max_id = dd_type::max_id;
+    static constexpr id_type max_id = dd_type::max_id;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of a terminal value.
+    ////////////////////////////////////////////////////////////////////////////
+    using terminal_type = typename dd_type::terminal_type;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of shared nodes for this diagram type.
     ////////////////////////////////////////////////////////////////////////////
-    using shared_nodes_t = typename __dd_type::shared_nodes_t;
+    using shared_node_file_type = typename __dd_type::shared_node_file_type;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of shared arcs for this diagram type.
     ////////////////////////////////////////////////////////////////////////////
-    using shared_arcs_t = typename __dd_type::shared_arcs_t;
+    using shared_arc_file_type = typename __dd_type::shared_arc_file_type;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Function declaration
   public:
-    static inline ptr_t
-    reduction_rule(const node_t &n);
+    static inline pointer_type
+    reduction_rule(const node_type &n);
 
-    static inline children_t
-    reduction_rule_inv(const ptr_t &child);
+    static inline children_type
+    reduction_rule_inv(const pointer_type &child);
 
     // TODO: stop using these in favour of 'reduction_rule_inv' above
     static inline void
     compute_cofactor(const bool on_curr_level,
-                     ptr_t &low,
-                     ptr_t &high);
+                     pointer_type &low,
+                     pointer_type &high);
 
-    static inline children_t
+    static inline children_type
     compute_cofactor(const bool on_curr_level,
-                     const children_t &children);
+                     const children_type &children);
   };
   /// \endcond
 }

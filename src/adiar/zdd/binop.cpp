@@ -10,10 +10,10 @@
 
 namespace adiar
 {
-  bool can_left_shortcut_zdd(const bool_op &op, const zdd::ptr_t &terminal)
+  bool can_left_shortcut_zdd(const bool_op &op, const zdd::pointer_type &terminal)
   {
-    zdd::ptr_t terminal_F = zdd::ptr_t(false);
-    zdd::ptr_t terminal_T = zdd::ptr_t(true);
+    zdd::pointer_type terminal_F = zdd::pointer_type(false);
+    zdd::pointer_type terminal_T = zdd::pointer_type(true);
 
     return // Does it shortcut on this level?
       op(terminal, terminal_F) == terminal_F && op(terminal, terminal_T) == terminal_F
@@ -21,10 +21,10 @@ namespace adiar
       && op(terminal_F, terminal_F) == terminal_F && op(terminal_F,  terminal_T) == terminal_F;
   }
 
-  bool can_right_shortcut_zdd(const bool_op &op, const zdd::ptr_t &terminal)
+  bool can_right_shortcut_zdd(const bool_op &op, const zdd::pointer_type &terminal)
   {
-    zdd::ptr_t terminal_F = zdd::ptr_t(false);
-    zdd::ptr_t terminal_T = zdd::ptr_t(true);
+    zdd::pointer_type terminal_F = zdd::pointer_type(false);
+    zdd::pointer_type terminal_T = zdd::pointer_type(true);
 
     return // Does it shortcut on this level?
       op(terminal_F, terminal) == terminal_F && op(terminal_T,  terminal) == terminal_F
@@ -32,10 +32,10 @@ namespace adiar
       && op(terminal_F, terminal_F) == terminal_F && op(terminal_T,  terminal_F) == terminal_F;
   }
 
-  bool zdd_skippable(const bool_op &op, const zdd::node_t::children_t &r_high)
+  bool zdd_skippable(const bool_op &op, const zdd::node_type::children_type &r_high)
   {
     return (r_high[0].is_terminal() && r_high[1].is_terminal()
-            && op(r_high[0], r_high[1]) == zdd::ptr_t(false))
+            && op(r_high[0], r_high[1]) == zdd::pointer_type(false))
       || (r_high[0].is_terminal() && can_left_shortcut_zdd(op, r_high[0]))
       || (r_high[1].is_terminal() && can_right_shortcut_zdd(op, r_high[1]));
  }
@@ -51,8 +51,8 @@ namespace adiar
                                    const bool_op &op)
     {
       // Compute the results on all children.
-      zdd::ptr_t op_F = op(zdd::ptr_t(false), zdd::ptr_t(false));
-      zdd::ptr_t op_T = op(zdd::ptr_t(true), zdd::ptr_t(true));
+      zdd::pointer_type op_F = op(zdd::pointer_type(false), zdd::pointer_type(false));
+      zdd::pointer_type op_T = op(zdd::pointer_type(true), zdd::pointer_type(true));
 
       // Does it collapse to a terminal?
       if (op_F == op_T) {
@@ -69,15 +69,15 @@ namespace adiar
     {
       adiar_assert(zdd_isterminal(zdd_1) || zdd_isterminal(zdd_2));
 
-      const zdd::ptr_t terminal_F = zdd::ptr_t(false);
+      const zdd::pointer_type terminal_F = zdd::pointer_type(false);
 
       if (zdd_isterminal(zdd_1) && zdd_isterminal(zdd_2)) {
-        const zdd::ptr_t p1 = dd_valueof(zdd_1);
-        const zdd::ptr_t p2 = dd_valueof(zdd_2);
+        const zdd::pointer_type p1 = dd_valueof(zdd_1);
+        const zdd::pointer_type p2 = dd_valueof(zdd_2);
 
         return zdd_terminal(op(p1, p2).value());
       } else if (zdd_isterminal(zdd_1)) {
-        const zdd::ptr_t p1 = dd_valueof(zdd_1);
+        const zdd::pointer_type p1 = dd_valueof(zdd_1);
 
         if (can_left_shortcut_zdd(op, p1))  {
           // Shortcuts the left-most path to {Ø} and all others to Ø
@@ -87,7 +87,7 @@ namespace adiar
           return zdd_2;
         }
       } else { // if (is_terminal(zdd_2)) {
-        const zdd::ptr_t p2 = dd_valueof(zdd_2);
+        const zdd::pointer_type p2 = dd_valueof(zdd_2);
 
         if (can_right_shortcut_zdd(op, p2)) {
           // Shortcuts the left-most path to {Ø} and all others to Ø
@@ -103,30 +103,30 @@ namespace adiar
   public:
     static internal::cut_type left_cut(const bool_op &op)
     {
-      const bool incl_false = !can_left_shortcut_zdd(op, zdd::ptr_t(false));
-      const bool incl_true = !can_left_shortcut_zdd(op, zdd::ptr_t(true));
+      const bool incl_false = !can_left_shortcut_zdd(op, zdd::pointer_type(false));
+      const bool incl_true = !can_left_shortcut_zdd(op, zdd::pointer_type(true));
 
       return internal::cut_type_with(incl_false, incl_true);
     }
 
     static internal::cut_type right_cut(const bool_op &op)
     {
-      const bool incl_false = !can_right_shortcut_zdd(op, zdd::ptr_t(false));
-      const bool incl_true = !can_right_shortcut_zdd(op, zdd::ptr_t(true));
+      const bool incl_false = !can_right_shortcut_zdd(op, zdd::pointer_type(false));
+      const bool incl_true = !can_right_shortcut_zdd(op, zdd::pointer_type(true));
 
       return internal::cut_type_with(incl_false, incl_true);
     }
 
   private:
-    static internal::tuple<zdd::ptr_t>
+    static internal::tuple<zdd::pointer_type>
     __resolve_request(const bool_op &op,
-                      const internal::tuple<zdd::ptr_t> &r)
+                      const internal::tuple<zdd::pointer_type> &r)
     {
       if (r[0].is_terminal() && can_left_shortcut_zdd(op, r[0])) {
-        return { r[0], zdd::ptr_t(true) };
+        return { r[0], zdd::pointer_type(true) };
       }
       if (r[1].is_terminal() && can_right_shortcut_zdd(op, r[1])) {
-        return { zdd::ptr_t(true), r[1] };
+        return { zdd::pointer_type(true), r[1] };
       }
       return r;
     }
@@ -134,8 +134,8 @@ namespace adiar
   public:
     static internal::prod2_rec
     resolve_request(const bool_op &op,
-                    const internal::tuple<zdd::ptr_t>  &r_low,
-                    const internal::tuple<zdd::ptr_t > &r_high)
+                    const internal::tuple<zdd::pointer_type>  &r_low,
+                    const internal::tuple<zdd::pointer_type > &r_high)
     {
       // If r_high surely suppresses the node during the ZDD Reduce, then skip
       // creating it in the first place and just forward the edge to r_low.

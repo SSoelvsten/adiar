@@ -39,19 +39,19 @@ namespace adiar::internal
   ///
   /// \param elem_type       Type of the file's content.
   ////////////////////////////////////////////////////////////////////////////
-  template <typename elem_type>
-  class levelized_file<elem_type, false> : public file_traits<elem_type>::stats
+  template <typename value_t>
+  class levelized_file<value_t, false> : public file_traits<value_t>::stats
   {
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the file's elements.
     ////////////////////////////////////////////////////////////////////////////
-    typedef elem_type elem_t;
+    using value_type = value_t;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Number of files to collectively represent a DAG.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr size_t FILES = file_traits<elem_t>::files;
+    static constexpr size_t FILES = file_traits<value_type>::files;
     static_assert(0 < FILES, "The number of files must be positive");
 
   private:
@@ -100,7 +100,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Files describing the directed acyclic graph.
     ////////////////////////////////////////////////////////////////////////////
-    file<elem_t> _files [FILES];
+    file<value_type> _files [FILES];
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the file paths in '_level_info_file' and '_files' are
@@ -424,7 +424,7 @@ namespace adiar::internal
     /// \pre `is_persistent() == false` and no stream nor writer is attached to
     ///      this file.
     ////////////////////////////////////////////////////////////////////////////
-    template <typename pred_t = std::less<elem_t>>
+    template <typename pred_t = std::less<value_type>>
     void sort(size_t idx, pred_t pred = pred_t())
     {
       throw_if_persistent();
@@ -440,12 +440,12 @@ namespace adiar::internal
     /// \remark This new file is a temporary file and must be marked persisted
     ///         to be kept existing beyond the object's lifetime.
     ////////////////////////////////////////////////////////////////////////////
-    static levelized_file<elem_t, false> copy(const levelized_file<elem_t> &lf)
+    static levelized_file<value_type, false> copy(const levelized_file<value_type> &lf)
     {
-      levelized_file<elem_t, false> lf_copy;
+      levelized_file<value_type, false> lf_copy;
 
       for (size_t idx = 0; idx < FILES; idx++)
-        lf_copy._files[idx] = file<elem_t>::copy(lf._files[idx]);
+        lf_copy._files[idx] = file<value_type>::copy(lf._files[idx]);
       lf_copy._level_info_file = file<level_info>::copy(lf._level_info_file);
 
       return lf_copy;

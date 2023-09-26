@@ -73,7 +73,7 @@ namespace adiar::internal
       ///        counting any arcs to terminals).
       //////////////////////////////////////////////////////////////////////////
       // TODO: use array of size 1?
-      cut_size_t max_1level_cut = MAX_CUT;
+      cut_size_t max_1level_cut = max_cut;
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief The number of false and true terminals in the file. Index 0
@@ -91,10 +91,10 @@ namespace adiar::internal
   //       for .sort<0>()).
   //
   //       To this end:
-  //       - Rename 'levelized_file<elem_t>' to '__levelized_file<elem_t>'.
+  //       - Rename 'levelized_file<value_t>' to '__levelized_file<value_t>'.
   //
-  //       - Make 'levelized_file<elem_t>' be a class that publicly inherit the
-  //         base class '__levelized_file<elem_t>'.
+  //       - Make 'levelized_file<value_t>' be a class that publicly inherit the
+  //         base class '__levelized_file<value_t>'.
   //
   //       - Add a specialization for 'levelized_file<arc>' that also adds the
   //         'untranspose' function.

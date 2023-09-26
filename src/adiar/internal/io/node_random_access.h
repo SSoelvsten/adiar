@@ -14,35 +14,35 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Random-access to the contents of a levelized file of node.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename node_t = node, bool reverse = false>
+  template<typename node_type = node, bool reverse = false>
   class node_random_access
   {
     static_assert(!reverse, "Reversed logic is not implemented.");
 
-    using uid_t   = typename node_t::uid_t;
-    using label_t = typename node_t::label_t;
-    using id_t    = typename node_t::id_t;
+    using uid_type   = typename node_type::uid_type;
+    using label_type = typename node_type::label_type;
+    using id_type    = typename node_type::id_type;
 
   public:
     static size_t memory_usage(tpie::memory_size_type max_width)
     {
       return node_stream<reverse>::memory_usage()
-           + tpie::array<node_t>::memory_usage(max_width);
+           + tpie::array<node_type>::memory_usage(max_width);
     }
 
     static size_t memory_usage(const dd &diagram)
     {
       return node_stream<reverse>::memory_usage()
-        + tpie::array<node_t>::memory_usage(diagram->width);
+        + tpie::array<node_type>::memory_usage(diagram->width);
     }
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Value to mark there is no current level.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr label_t no_level = -1;
+    static constexpr label_type no_level = -1;
 
-    static_assert(uid_t::max_label < no_level,
+    static_assert(uid_type::max_label < no_level,
                   "'no_level' should be an invalid label value");
 
   private:
@@ -55,27 +55,27 @@ namespace adiar::internal
     /// \brief Maximum width of the contents of 'lfs'. This is the maximum
     /// number of elements needed to be placed within.
     ////////////////////////////////////////////////////////////////////////////
-    const id_t _max_width;
+    const id_type _max_width;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Buffer with all elements of the current level.
     ////////////////////////////////////////////////////////////////////////////
-    tpie::array<node_t> _level_buffer;
+    tpie::array<node_type> _level_buffer;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Buffer with all elements of the current level.
     ////////////////////////////////////////////////////////////////////////////
-    label_t _curr_level = no_level;
+    label_type _curr_level = no_level;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Width of the current level.
     ////////////////////////////////////////////////////////////////////////////
-    id_t _curr_width = 0;
+    id_type _curr_width = 0;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Root of the diagram.
     ////////////////////////////////////////////////////////////////////////////
-    uid_t _root;
+    uid_type _root;
 
     // TODO: Add canonicity flag to discern whether to compute the index (as
     //       now) or to use binary search.
@@ -92,7 +92,7 @@ namespace adiar::internal
     ///
     /// \pre The given levelized file is canonical.
     ////////////////////////////////////////////////////////////////////////////
-    node_random_access(const levelized_file<node_t> &f,
+    node_random_access(const levelized_file<node_type> &f,
                        const bool negate = false)
       : _ns(f, negate), _max_width(f.width), _level_buffer(f.width)
     {
@@ -105,7 +105,7 @@ namespace adiar::internal
     ///
     /// \pre The given shared levelized file is canonical.
     ////////////////////////////////////////////////////////////////////////////
-    node_random_access(const shared_ptr<levelized_file<node_t>> &f,
+    node_random_access(const shared_ptr<levelized_file<node_type>> &f,
                        const bool negate = false)
       : _ns(f, negate), _max_width(f->width), _level_buffer(f->width)
     {
@@ -141,7 +141,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Return root of the diagram.
     ////////////////////////////////////////////////////////////////////////////
-    uid_t root() const
+    uid_type root() const
     { return _root; }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -155,7 +155,7 @@ namespace adiar::internal
     ///
     /// \pre `has_next_level() == true`
     ////////////////////////////////////////////////////////////////////////////
-    label_t next_level()
+    label_type next_level()
     { return _ns.peek().uid().label(); }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -166,7 +166,7 @@ namespace adiar::internal
     ///
     /// \pre `has_current_level() == false` or `current_level() < level`
     ////////////////////////////////////////////////////////////////////////////
-    void setup_next_level(const label_t level)
+    void setup_next_level(const label_type level)
     {
       adiar_assert(!has_current_level() || current_level() < level);
 
@@ -205,14 +205,14 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The label of the current level.
     ////////////////////////////////////////////////////////////////////////////
-    label_t current_level() const
+    label_type current_level() const
     { return _curr_level; }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The width of the current level, i.e. the number of elements one
     ///        can access to.
     ////////////////////////////////////////////////////////////////////////////
-    label_t current_width() const
+    label_type current_width() const
     { return _curr_width; }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -227,7 +227,7 @@ namespace adiar::internal
     ///
     /// \pre `idx < current_width()`
     ////////////////////////////////////////////////////////////////////////////
-    const node_t& at(id_t idx) const
+    const node_type& at(id_type idx) const
     {
       adiar_assert(idx < current_width());
       return _level_buffer[idx];
@@ -236,12 +236,12 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the node with the given uid.
     ////////////////////////////////////////////////////////////////////////////
-    const node_t& at(uid_t u) const
+    const node_type& at(uid_type u) const
     {
       adiar_assert(u.label() == current_level());
 
       // adiar_assert(... < current_width()); is in 'return at(...)'
-      return at(current_width() - ((uid_t::max_id + 1u) - u.id()));
+      return at(current_width() - ((uid_type::max_id + 1u) - u.id()));
     }
   };
 }

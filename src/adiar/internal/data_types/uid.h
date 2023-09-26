@@ -19,25 +19,25 @@ namespace adiar::internal
   class __uid : public ptr_type
   {
   public:
-    typedef ptr_type ptr_t;
+    using pointer_type = ptr_type;
 
   public:
     // Provide 'default' constructors to ensure it being a 'POD' inside of TPIE.
     __uid() = default;
-    __uid(const __uid<ptr_t> &p) = default;
+    __uid(const __uid<pointer_type> &p) = default;
     ~__uid() = default;
 
   private:
-    static ptr_t clean_ptr(const ptr_t &p)
+    static pointer_type clean_ptr(const pointer_type &p)
     {
-      return p.is_node() ? ptr_t(p.label(), p.id()) : unflag(p);
+      return p.is_node() ? pointer_type(p.label(), p.id()) : unflag(p);
     }
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a uid of an internal node (label, id).
     ////////////////////////////////////////////////////////////////////////////
-    __uid(const ptr_t &p) : ptr_t(essential(p))
+    __uid(const pointer_type &p) : pointer_type(essential(p))
     {
       adiar_assert(!p.is_nil(), "UID must be created from non-nil value");
     }
@@ -50,30 +50,32 @@ namespace adiar::internal
     /* ================================= nil ================================ */
     // Remove anything related to nil
 
-    static inline constexpr ptr_t nil() = delete;
+    static inline constexpr pointer_type nil() = delete;
 
     bool is_nil() = delete;
 
     /* ================================ NODES =============================== */
     // Remove anything related to out-index
 
-    typename ptr_t::out_idx_t out_idx() = delete;
+    typename pointer_type::out_idx_type out_idx() = delete;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the `ptr` for this node uid with the given `out_idx`.
     ////////////////////////////////////////////////////////////////////////////
-    inline ptr_t with(const typename ptr_t::out_idx_t out_idx) const
+    inline pointer_type 
+    with(const typename pointer_type::out_idx_type out_idx) const
     {
-      adiar_assert(ptr_t::is_node());
-      return ptr_t(ptr_t::label(), ptr_t::id(), out_idx);
+      adiar_assert(pointer_type::is_node());
+      return pointer_type(pointer_type::label(), pointer_type::id(), out_idx);
     }
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a pointer to an internal node (label, id).
     ////////////////////////////////////////////////////////////////////////////
-    __uid(const typename ptr_t::label_t label, const typename ptr_t::id_t id)
-      : ptr_t(label, id)
+    __uid(const typename pointer_type::label_type label, 
+          const typename pointer_type::id_type id)
+      : pointer_type(label, id)
     { }
 
     /* ============================== TERMINALS ============================= */
@@ -81,8 +83,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a uid of a terminal node (v).
     ////////////////////////////////////////////////////////////////////////////
-    __uid(typename ptr_t::value_t v)
-      : ptr_t(v)
+    __uid(typename pointer_type::terminal_type v)
+      : pointer_type(v)
     { }
 
   public:
@@ -90,7 +92,7 @@ namespace adiar::internal
     /// \brief Whether this uid identifies a terminal node.
     ////////////////////////////////////////////////////////////////////////////
     inline bool is_terminal() const
-    { return ptr_t::is_terminal(); }
+    { return pointer_type::is_terminal(); }
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -98,11 +100,11 @@ namespace adiar::internal
 
   template<>
   inline ptr_uint64
-  __uid<ptr_uint64>::with(const ptr_uint64::out_idx_t out_idx) const
+  __uid<ptr_uint64>::with(const ptr_uint64::out_idx_type out_idx) const
   {
     // Based on the bit-layout, we can do this much faster than the one above.
-    constexpr uint64_t out_idx_mask = ~(max_out_idx << ptr_t::flag_bits);
-    return ptr_uint64((_raw & out_idx_mask) | ptr_t::encode_out_idx(out_idx));
+    constexpr uint64_t out_idx_mask = ~(max_out_idx << pointer_type::flag_bits);
+    return ptr_uint64((_raw & out_idx_mask) | pointer_type::encode_out_idx(out_idx));
   }
 
   template<>
@@ -111,7 +113,7 @@ namespace adiar::internal
   {
     // Since uid never is nil, then this is a slightly a faster logic than the
     // one in 'ptr' itself.
-    return _raw >= ptr_t::terminal_bit;
+    return _raw >= pointer_type::terminal_bit;
   }
 
   using uid_uint64 = __uid<ptr_uint64>;

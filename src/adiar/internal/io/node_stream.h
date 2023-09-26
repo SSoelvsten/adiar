@@ -83,7 +83,7 @@ namespace adiar::internal
     ///
     /// \pre     `can_pull() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    const node seek(const node::uid_t &u)
+    const node seek(const node::uid_type &u)
     { return parent_t::_streams[0].seek(u); }
   };
 }

@@ -5,6 +5,8 @@
 #include <stddef.h>
 #include <limits>
 
+#include <adiar/internal/assert.h>
+
 namespace adiar::internal
 {
   ////////////////////////////////////////////////////////////////////////////
@@ -15,12 +17,15 @@ namespace adiar::internal
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Maximum value for a cut.
   ////////////////////////////////////////////////////////////////////////////
-  constexpr cut_size_t MAX_CUT = std::numeric_limits<cut_size_t>::max();
+  constexpr cut_size_t max_cut = std::numeric_limits<cut_size_t>::max();
 
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Available types of cuts. This should be used with the
   ///        `max_ilevel_cut` variables in \ref shared_levelized_file<node>
   ///        in and \ref shared_levelized_file<arc>.
+  ///
+  /// \remark This is not an `enum class` to ensure it has implicit conversion
+  ///         to integers (and hence can be used for indexation).
   ////////////////////////////////////////////////////////////////////////////
   enum cut_type {
     /** Internal arcs only */
@@ -36,12 +41,12 @@ namespace adiar::internal
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Number of different types of cuts.
   ////////////////////////////////////////////////////////////////////////////
-  constexpr size_t CUT_TYPES = 4u;
+  constexpr size_t cut_types = 4u;
 
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Type for list of (all) possible cuts.
   ////////////////////////////////////////////////////////////////////////////
-  using cuts_t = std::array<cut_size_t, CUT_TYPES>;
+  using cuts_t = std::array<cut_size_t, cut_types>;
 
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Get the desired \ref cut_type based on whether to respectively
@@ -58,29 +63,31 @@ namespace adiar::internal
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Whether a type of cut includes arcs to the desired terminal.
   ////////////////////////////////////////////////////////////////////////////
-  inline bool includes_terminal(const cut_type cut, const bool terminal_val)
+  inline bool includes_terminal(const cut_type ct, const bool terminal_val)
   {
     return terminal_val
-      ? cut >= cut_type::Internal_True
-      : cut == cut_type::Internal_False || cut == cut_type::All;
+      ? ct >= cut_type::Internal_True
+      : ct == cut_type::Internal_False || ct == cut_type::All;
   }
 
-  inline bool includes_terminal(const size_t cut, const bool terminal_val)
+  inline bool includes_terminal(const size_t ct, const bool terminal_val)
   {
-    return includes_terminal(static_cast<cut_type>(cut), terminal_val);
+    adiar_assert(ct < cut_types);
+    return includes_terminal(static_cast<cut_type>(ct), terminal_val);
   }
 
   ////////////////////////////////////////////////////////////////////////////
   /// \brief The number of terminals included in a cut type.
   ////////////////////////////////////////////////////////////////////////////
-  inline size_t number_of_terminals(const cut_type cut)
+  inline size_t number_of_terminals(const cut_type ct)
   {
-    return includes_terminal(cut, false) + includes_terminal(cut, true);
+    return includes_terminal(ct, false) + includes_terminal(ct, true);
   }
 
-  inline size_t number_of_terminals(const size_t cut)
+  inline size_t number_of_terminals(const size_t ct)
   {
-    return number_of_terminals(static_cast<cut_type>(cut));
+    adiar_assert(ct < cut_types);
+    return number_of_terminals(static_cast<cut_type>(ct));
   }
 
   ////////////////////////////////////////////////////////////////////////////

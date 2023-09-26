@@ -25,7 +25,7 @@ size_t largest_nodes = 1;
  * finally by time. Most importantly, this means that any "snapshot" of the
  * board at a specific time-step are grouped together.
  */
-inline typename adiar::zdd::label_t int_of_position(int N, int r, int c, int t = 0)
+inline typename adiar::zdd::label_type int_of_position(int N, int r, int c, int t = 0)
 {
   return (N * N * t) + (N * r) + c;
 }

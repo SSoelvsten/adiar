@@ -11,13 +11,13 @@ namespace adiar::internal
   class level_info
   {
     // TODO (Larger variable identifiers):
-    //   template <typename level_t = ptr_uint64::label_t>
+    //   template <typename level_type = ptr_uint64::label_type>
   public:
-    using level_t = ptr_uint64::label_t;
+    using level_type = ptr_uint64::label_type;
 
     /* ================================ VARIABLES =========================== */
   private:
-    level_t _label;
+    level_type _label;
     size_t _width;
 
     /* ============================== CONSTRUCTORS ========================== */
@@ -31,7 +31,7 @@ namespace adiar::internal
     /// \brief Create a level_info for a variable and a certain width when using
     ///        the identity variable ordering.
     ////////////////////////////////////////////////////////////////////////////
-    level_info(level_t label, size_t width)
+    level_info(level_type label, size_t width)
       : _label(label), _width(width)
     { }
 
@@ -40,19 +40,19 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the label for a level.
     ////////////////////////////////////////////////////////////////////////////
-    level_t label() const
+    level_type label() const
     { return _label; }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the level.
     ////////////////////////////////////////////////////////////////////////////
-    level_t level() const
+    level_type level() const
     { return _label; }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the width (i.e. number of nodes) of this level.
     ////////////////////////////////////////////////////////////////////////////
-    level_t width() const
+    level_type width() const
     { return _width; }
 
     /* =============================== OPERATORS ============================ */

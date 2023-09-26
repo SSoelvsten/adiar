@@ -12,10 +12,10 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logic related to being a 'Zero-suppressed' Decision Diagram.
   //////////////////////////////////////////////////////////////////////////////
-  typedef internal::dd_policy<zdd, __zdd> zdd_policy;
+  using zdd_policy = internal::dd_policy<zdd, __zdd>;
 
   template<>
-  inline zdd::ptr_t
+  inline zdd::pointer_type
   zdd_policy::reduction_rule(const node &n)
   {
     if (n.high().is_false()) { return n.low(); }
@@ -23,29 +23,29 @@ namespace adiar
   }
 
   template<>
-  inline zdd::node_t::children_t
-  zdd_policy::reduction_rule_inv(const zdd::ptr_t &child)
+  inline zdd::node_type::children_type
+  zdd_policy::reduction_rule_inv(const zdd::pointer_type &child)
   {
-    return { child, zdd::ptr_t(false) };
+    return { child, zdd::pointer_type(false) };
   }
 
   // TODO: stop using these in favour of 'reduction_rule_inv' above
   template<>
   inline void
   zdd_policy::compute_cofactor(bool on_curr_level,
-                               /*const*/ zdd::ptr_t &,
-                               zdd::ptr_t &high)
+                               /*const*/ zdd::pointer_type &,
+                               zdd::pointer_type &high)
   {
-    if (!on_curr_level) { high = zdd::ptr_t(false); }
+    if (!on_curr_level) { high = zdd::pointer_type(false); }
   }
 
   template<>
-  inline zdd::node_t::children_t
+  inline zdd::node_type::children_type
   zdd_policy::compute_cofactor(const bool on_curr_level,
-                               const zdd::node_t::children_t &children)
+                               const zdd::node_type::children_type &children)
   {
     if (!on_curr_level) {
-      return zdd::node_t::children_t(children[false], zdd::ptr_t(false));
+      return zdd::node_type::children_type(children[false], zdd::pointer_type(false));
     }
     return children;
   }

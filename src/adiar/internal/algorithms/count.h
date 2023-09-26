@@ -19,10 +19,10 @@ namespace adiar::internal
   // Data structures
   struct path_sum
   { // TODO: replace with request class
-    node::uid_t target;
+    node::uid_type target;
     uint64_t sum;
 
-    node::label_t level() const
+    node::label_type level() const
     { return target.label(); }
   };
 
@@ -40,9 +40,9 @@ namespace adiar::internal
     }
   };
 
-  template <typename elem_t, size_t look_ahead, memory_mode_t mem_mode>
+  template <typename value_t, size_t look_ahead, memory_mode_t mem_mode>
   using count_priority_queue_t =
-    levelized_node_priority_queue<elem_t, count_queue_lt<elem_t>,
+    levelized_node_priority_queue<value_t, count_queue_lt<value_t>,
                                   look_ahead,
                                   mem_mode>;
 
@@ -52,11 +52,11 @@ namespace adiar::internal
   class path_count_policy : public dd_policy
   {
   public:
-    typedef path_sum queue_t;
+    using queue_t = path_sum;
 
     template<typename count_pq_t>
     inline static uint64_t forward_request(count_pq_t &count_pq,
-                                           const ptr_uint64::label_t /* varcount */,
+                                           const ptr_uint64::label_type /* varcount */,
                                            const ptr_uint64 child_to_resolve,
                                            const queue_t &request)
     {
@@ -82,7 +82,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   template<typename count_policy, typename count_pq_t>
   uint64_t __count(const typename count_policy::reduced_t &dd,
-                   const typename count_policy::label_t varcount,
+                   const typename count_policy::label_type varcount,
                    const size_t pq_max_memory,
                    const size_t pq_max_size)
   {
@@ -128,7 +128,7 @@ namespace adiar::internal
 
   template<typename count_policy>
   uint64_t count(const typename count_policy::reduced_t &dd,
-                 const typename count_policy::label_t varcount)
+                 const typename count_policy::label_type varcount)
   {
     adiar_assert(!dd_isterminal(dd),
                  "Count algorithm does not work on terminal-only edge case");

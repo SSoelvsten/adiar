@@ -12,17 +12,17 @@
 
 namespace adiar::internal
 {
-  template <memory_mode_t mem_mode, typename elem_t, typename comp_t = std::less<elem_t>>
+  template <memory_mode_t mem_mode, typename value_t, typename comp_t = std::less<value_t>>
   class priority_queue;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Wrapper for TPIE's internal binary heap.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename elem_t, typename comp_t>
-  class priority_queue<memory_mode_t::Internal, elem_t, comp_t>
+  template<typename value_t, typename comp_t>
+  class priority_queue<memory_mode_t::Internal, value_t, comp_t>
   {
   private:
-    using pq_t = tpie::internal_priority_queue<elem_t, comp_t>;
+    using pq_t = tpie::internal_priority_queue<value_t, comp_t>;
     pq_t pq;
 
   public:
@@ -42,6 +42,8 @@ namespace adiar::internal
 
     static constexpr size_t data_structures = 1u;
 
+    using value_type = value_t;
+
   public:
     priority_queue([[maybe_unused]] size_t memory_bytes, size_t max_size)
       : pq(max_size)
@@ -50,14 +52,14 @@ namespace adiar::internal
                    "Must be instantiated with enough memory.");
     }
 
-    elem_t top() const
+    value_type top() const
     { return pq.top(); }
 
     void pop()
     { pq.pop(); }
 
-    void push(const elem_t &e)
-    { pq.push(e); }
+    void push(const value_type &v)
+    { pq.push(v); }
 
     size_t size() const
     { return pq.size(); }
@@ -70,8 +72,8 @@ namespace adiar::internal
   /// \brief Type alias for sorter for partial type application of the
   ///        'internal' memory type.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename elem_t, typename comp_t = std::less<elem_t>>
-  using internal_priority_queue = priority_queue<memory_mode_t::Internal, elem_t, comp_t>;
+  template <typename value_t, typename comp_t = std::less<value_t>>
+  using internal_priority_queue = priority_queue<memory_mode_t::Internal, value_t, comp_t>;
 
   // LCOV_EXCL_START
   // TODO: Unit test external memory variants?
@@ -79,27 +81,31 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Wrapper for TPIE's internal binary heap.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename elem_t, typename comp_t>
-  class priority_queue<memory_mode_t::External, elem_t, comp_t>
+  template<typename value_t, typename comp_t>
+  class priority_queue<memory_mode_t::External, value_t, comp_t>
   {
   public:
     static constexpr size_t data_structures = 1u;
 
+    using value_type = value_t;
+
   private:
-    tpie::priority_queue<elem_t, comp_t> pq;
+    using pq_t = tpie::priority_queue<value_type, comp_t>;
+    pq_t pq;
 
   public:
-    priority_queue(size_t memory_bytes, size_t /*max_size*/) : pq(memory_bytes)
+    priority_queue(size_t memory_bytes, size_t /*max_size*/) 
+      : pq(memory_bytes)
     {}
 
-    elem_t top()
+    value_type top()
     { return pq.top(); }
 
     void pop()
     { pq.pop(); }
 
-    void push(const elem_t &e)
-    { pq.push(e); }
+    void push(const value_type &v)
+    { pq.push(v); }
 
     size_t size() const
     { return pq.size(); }
@@ -112,8 +118,8 @@ namespace adiar::internal
   /// \brief Type alias for sorter for partial type application of the
   ///        'external' memory type.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename elem_t, typename comp_t = std::less<elem_t>>
-  using external_priority_queue = priority_queue<memory_mode_t::External, elem_t, comp_t>;
+  template <typename value_t, typename comp_t = std::less<value_t>>
+  using external_priority_queue = priority_queue<memory_mode_t::External, value_t, comp_t>;
 
   // LCOV_EXCL_STOP
 }

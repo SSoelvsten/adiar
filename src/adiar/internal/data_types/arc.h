@@ -33,31 +33,31 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the pointer of this arc's source and target.
     ////////////////////////////////////////////////////////////////////////////
-    using ptr_t = ptr_uint64;
+    using pointer_type = ptr_uint64;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the a node's unique identifier.
     ////////////////////////////////////////////////////////////////////////////
-    using uid_t = __uid<ptr_t>;
+    using uid_type = __uid<pointer_type>;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of variable label.
     ////////////////////////////////////////////////////////////////////////////
-    using label_t = ptr_t::label_t;
+    using label_type = pointer_type::label_type;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of terminal values.
     ////////////////////////////////////////////////////////////////////////////
-    using value_t = ptr_t::value_t;
+    using terminal_type = pointer_type::terminal_type;
 
   private:
-    ptr_t _source;
+    pointer_type _source;
 
     // TODO (Attributed Edges):
     //   Add logic related to flag on 'target'.
     //   At that point, 'target()' should always return the unflagged value?
 
-    ptr_t _target;
+    pointer_type _target;
 
   public:
     // Provide 'default' constructors to ensure it being a 'POD' inside of TPIE.
@@ -74,7 +74,7 @@ namespace adiar::internal
     /// \pre The flags on both `source` and `target` are already set correctly
     ///      and the out-index on `source` is too.
     ////////////////////////////////////////////////////////////////////////////
-    arc(const ptr_t &source, const ptr_t &target)
+    arc(const pointer_type &source, const pointer_type &target)
       : _source(source), _target(target)
     {
       adiar_assert(!target.is_node() || target.out_idx() == 0u);
@@ -85,9 +85,9 @@ namespace adiar::internal
     ///
     /// \pre The flags on `target` is already set correctly.
     ////////////////////////////////////////////////////////////////////////////
-    arc(const uid_t &source,
-        const ptr_t::out_idx_t &out_idx,
-        const ptr_t &target)
+    arc(const uid_type &source,
+        const pointer_type::out_idx_type &out_idx,
+        const pointer_type &target)
       : _source(source.with(out_idx))
       , _target(target)
     {
@@ -100,19 +100,19 @@ namespace adiar::internal
     /// \brief Obtain 'source' value (including flag and out-index).
     ////////////////////////////////////////////////////////////////////////////
     // TODO Always return the essential pointer?
-    ptr_t source() const
+    pointer_type source() const
     { return _source; }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain 'target' value (including flag).
     ////////////////////////////////////////////////////////////////////////////
     // TODO Always return the essential pointer?
-    ptr_t target() const
+    pointer_type target() const
     { return _target; }
 
     /* ================================= FLAGS ============================== */
   public:
-    ptr_t::out_idx_t out_idx() const
+    pointer_type::out_idx_type out_idx() const
     { return _source.out_idx(); }
 
     /* ============================== COMPARATORS =========================== */

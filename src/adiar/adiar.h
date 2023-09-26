@@ -10,21 +10,26 @@
 #include <string>
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Core
-#include <adiar/access_mode.h>
-#include <adiar/assignment.h>
-#include <adiar/builder.h>
-#include <adiar/domain.h>
+/// Core types
 #include <adiar/exception.h>
-#include <adiar/file.h> // <-- TODO: Remove!
 #include <adiar/functional.h>
+#include <adiar/file.h> // <-- TODO: Remove!
+
+////////////////////////////////////////////////////////////////////////////////
+/// Core Settings
+#include <adiar/access_mode.h>
 #include <adiar/memory_mode.h>
 #include <adiar/quantify_mode.h>
+
+////////////////////////////////////////////////////////////////////////////////
+/// Global Domain
+#include <adiar/domain.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Decision Diagrams
 #include <adiar/bdd.h>
 #include <adiar/zdd.h>
+#include <adiar/builder.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Statistics
@@ -54,21 +59,21 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Minimum value of 128 MiB for the memory limit.
   //////////////////////////////////////////////////////////////////////////////
-  constexpr size_t MINIMUM_MEMORY = 128 * 1024 * 1024;
+  constexpr size_t minimum_memory = 128 * 1024 * 1024;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Initiates Adiar with the given amount of memory (given in bytes)
   ///
   /// \param memory_limit_bytes
   ///   The amount of internal memory (in bytes) that Adiar is allowed to use.
-  ///   This has to be at least MINIMUM_BYTES.
+  ///   This has to be at least minimum_memory.
   ///
   /// \param temp_dir
   ///   The directory in which to place all temporary files. Default on Linux is
   ///   the */tmp* library.
   ///
   /// \throws invalid_argument If `memory_limit_bytes` is set to a value less
-  ///                          than the `MINIMUM_MEMORY` required.
+  ///                          than the `minimum_memory` required.
   ///
   /// \throws runtime_error    If `adiar_init()` and then `adiar_deinit()` have
   ///                          been called previously.

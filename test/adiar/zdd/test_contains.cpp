@@ -2,8 +2,8 @@
 
 go_bandit([]() {
   describe("adiar/zdd/contains.cpp", [&]() {
-    shared_levelized_file<zdd::node_t> zdd_F;
-    shared_levelized_file<zdd::node_t> zdd_T;
+    shared_levelized_file<zdd::node_type> zdd_F;
+    shared_levelized_file<zdd::node_type> zdd_T;
 
     { // Garbage collect writers to free write-lock
       node_writer nw_F(zdd_F);
@@ -16,7 +16,7 @@ go_bandit([]() {
     const ptr_uint64 terminal_F = ptr_uint64(false);
     const ptr_uint64 terminal_T = ptr_uint64(true);
 
-    shared_levelized_file<zdd::node_t> zdd_x0;
+    shared_levelized_file<zdd::node_type> zdd_x0;
     // { { 0 } }
     /*
     //      1        ---- x0
@@ -30,7 +30,7 @@ go_bandit([]() {
 
     // TODO: tests...
 
-    shared_levelized_file<zdd::node_t> zdd_x1_null;
+    shared_levelized_file<zdd::node_type> zdd_x1_null;
     // { Ø, { 1 } }
     /*
     //      1         ---- x1
@@ -44,7 +44,7 @@ go_bandit([]() {
 
     // TODO: tests...
 
-    shared_levelized_file<zdd::node_t> zdd_1;
+    shared_levelized_file<zdd::node_type> zdd_1;
     // { Ø, { 0,2 }, { 0,3 } { 1,2 }, { 1,3 }, { 1,2,3 }, { 0,2,3 } }
     /*
     //          1      ---- x0
@@ -68,7 +68,7 @@ go_bandit([]() {
       nw << n1_5 << n1_4 << n1_3 << n1_2 << n1_1;
     }
 
-    shared_levelized_file<zdd::node_t> zdd_2;
+    shared_levelized_file<zdd::node_type> zdd_2;
     // { { 6 }, { 2,4 }, { 2,6 }, { 2,4,6 } }
     /*
     //         1       ---- x2

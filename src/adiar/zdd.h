@@ -74,7 +74,7 @@ namespace adiar
   ///
   /// \throws invalid_argument If `dom` is not in *descending* order.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_ithvar(zdd::label_t var, const generator<zdd::label_t> &dom);
+  zdd zdd_ithvar(zdd::label_type var, const generator<zdd::label_type> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The set of bitvectors over a given domain where *var* is set to
@@ -92,7 +92,7 @@ namespace adiar
   ///                          *descending* order.
   //////////////////////////////////////////////////////////////////////////////
   template<typename IT>
-  zdd zdd_ithvar(zdd::label_t var, IT begin, IT end)
+  zdd zdd_ithvar(zdd::label_type var, IT begin, IT end)
   { return zdd_ithvar(var, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -104,7 +104,7 @@ namespace adiar
   /// \pre       `domain_isset() == true` and the variable `var` should
   ///            occur in the global domain.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_ithvar(zdd::label_t var);
+  zdd zdd_ithvar(zdd::label_type var);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The set of bitvectors over a given domain where *var* is set to
@@ -124,7 +124,7 @@ namespace adiar
   ///
   /// \throws invalid_argument If `dom` is not in *descending* order.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_nithvar(zdd::label_t var, const generator<zdd::label_t> &dom);
+  zdd zdd_nithvar(zdd::label_type var, const generator<zdd::label_type> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The set of bitvectors over a given domain where *var* is set
@@ -142,7 +142,7 @@ namespace adiar
   ///                          *descending* order.
   //////////////////////////////////////////////////////////////////////////////
   template<typename IT>
-  zdd zdd_nithvar(zdd::label_t var, IT begin, IT end)
+  zdd zdd_nithvar(zdd::label_type var, IT begin, IT end)
   { return zdd_nithvar(var, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -154,7 +154,7 @@ namespace adiar
   /// \pre       `domain_isset() == true` and the variable `var` should
   ///            occur in the global domain.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_nithvar(zdd::label_t var);
+  zdd zdd_nithvar(zdd::label_type var);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The family { { 1, 2, ..., k } }.
@@ -168,7 +168,7 @@ namespace adiar
   ///
   /// \throws invalid_argument If `vars` are not in *descending* order.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_vars(const generator<zdd::label_t> &vars);
+  zdd zdd_vars(const generator<zdd::label_type> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The family { { 1, 2, ..., k } }.
@@ -195,7 +195,7 @@ namespace adiar
   ///
   /// \throws invalid_argument If `var` is a too large value.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_singleton(zdd::label_t var);
+  zdd zdd_singleton(zdd::label_type var);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The family { {1}, {2}, ..., {k} }.
@@ -209,7 +209,7 @@ namespace adiar
   ///
   /// \throws invalid_argument If `vars` are not in *descending* order.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_singletons(const generator<zdd::label_t> &vars);
+  zdd zdd_singletons(const generator<zdd::label_type> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The family { {1}, {2}, ..., {k} }.
@@ -237,7 +237,7 @@ namespace adiar
   ///
   /// \throws invalid_argument If `vars` are not in *ascending* order.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_powerset(const generator<zdd::label_t> &vars);
+  zdd zdd_powerset(const generator<zdd::label_type> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The powerset of all given variables.
@@ -262,7 +262,7 @@ namespace adiar
   ///
   /// \see zdd_empty
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_bot(const generator<zdd::label_t> &dom);
+  zdd zdd_bot(const generator<zdd::label_type> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       Bottom of the powerset lattice.
@@ -291,7 +291,7 @@ namespace adiar
   ///
   /// \see zdd_powerset, zdd_null
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_top(const generator<zdd::label_t> &dom);
+  zdd zdd_top(const generator<zdd::label_type> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       Top of the powerset lattice.
@@ -410,7 +410,7 @@ namespace adiar
   /// \returns
   /// \f$ \{ \mathit{vars} \Delta a \mid a \in A \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_change(const zdd &A, const generator<zdd::label_t> &vars);
+  __zdd zdd_change(const zdd &A, const generator<zdd::label_type> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      The symmetric difference between each set in the family and
@@ -438,7 +438,7 @@ namespace adiar
   ///
   /// \returns    \f$ 2^{\mathit{dom}} \setminus A \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_complement(const zdd &A, const generator<zdd::label_t> &dom);
+  __zdd zdd_complement(const zdd &A, const generator<zdd::label_type> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Complement of A within the given domain.
@@ -494,7 +494,7 @@ namespace adiar
   /// \returns
   /// \f$ \bigcup_{a \in A, i \in 2^{vars}} (a \cup i) \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_expand(const zdd &A, const generator<zdd::label_t> &vars);
+  __zdd zdd_expand(const zdd &A, const generator<zdd::label_type> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Expands the domain of the given ZDD to also include the given
@@ -528,7 +528,7 @@ namespace adiar
   /// \returns
   /// \f$ \{ a \in A \mid \forall i \in \mathit{vars} : i \not\in a \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_offset(const zdd &A, const generator<zdd::label_t> &vars);
+  __zdd zdd_offset(const zdd &A, const generator<zdd::label_type> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Subset that do \em not include the given set of variables.
@@ -558,7 +558,7 @@ namespace adiar
   /// \returns
   /// \f$ \{ a \in A \mid \forall i \in \mathit{vars} : i \in a \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_onset(const zdd &A, const generator<zdd::label_t> &vars);
+  __zdd zdd_onset(const zdd &A, const generator<zdd::label_type> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Subset that \em do include the given set of variables.
@@ -587,10 +587,10 @@ namespace adiar
   /// \returns
   /// \f$ \prod_{\mathit{dom}}(A) = \{ a \setminus \mathit{dom}^c \mid a \in A \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_project(const zdd &A, const predicate<zdd::label_t> &dom);
+  __zdd zdd_project(const zdd &A, const predicate<zdd::label_type> &dom);
 
   /// \cond
-  __zdd zdd_project(zdd &&A, const predicate<zdd::label_t> &dom);
+  __zdd zdd_project(zdd &&A, const predicate<zdd::label_type> &dom);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -606,10 +606,10 @@ namespace adiar
   /// \returns
   /// \f$ \prod_{\mathit{dom}}(A) = \{ a \setminus \mathit{dom}^c \mid a \in A \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_project(const zdd &A, const generator<zdd::label_t> &dom);
+  __zdd zdd_project(const zdd &A, const generator<zdd::label_type> &dom);
 
   /// \cond
-  __zdd zdd_project(zdd &&A, const generator<zdd::label_t> &dom);
+  __zdd zdd_project(zdd &&A, const generator<zdd::label_type> &dom);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -784,7 +784,7 @@ namespace adiar
   /// \brief The number of variables that exist in the family of sets, i.e. the
   ///        number of levels in the ZDD.
   //////////////////////////////////////////////////////////////////////////////
-  zdd::label_t zdd_varcount(const zdd &A);
+  zdd::label_type zdd_varcount(const zdd &A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The number of sets in the family of sets.
@@ -802,12 +802,12 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Get the minimal occurring variable in this ZDD.
   //////////////////////////////////////////////////////////////////////////////
-  zdd::label_t zdd_minvar(const zdd &A);
+  zdd::label_type zdd_minvar(const zdd &A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Get the maximal occurring variable in this ZDD.
   //////////////////////////////////////////////////////////////////////////////
-  zdd::label_t zdd_maxvar(const zdd &A);
+  zdd::label_type zdd_maxvar(const zdd &A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Whether the family includes the given set of labels
@@ -819,7 +819,7 @@ namespace adiar
   ///
   /// \returns Whether \f$ a \in A \f$
   //////////////////////////////////////////////////////////////////////////////
-  bool zdd_contains(const zdd &A, const generator<zdd::label_t> &a);
+  bool zdd_contains(const zdd &A, const generator<zdd::label_type> &a);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       Whether the family includes the given set of labels
@@ -853,7 +853,7 @@ namespace adiar
   ///
   /// \pre `A != zdd_empty()`
   //////////////////////////////////////////////////////////////////////////////
-  void zdd_minelem(const zdd &A, const consumer<zdd::label_t> &cb);
+  void zdd_minelem(const zdd &A, const consumer<zdd::label_type> &cb);
 
   //////////////////////////////////////////////////////////////////////////////
   // TODO: Iterator-based output
@@ -878,7 +878,7 @@ namespace adiar
   ///
   /// \pre `A != zdd_empty()`
   //////////////////////////////////////////////////////////////////////////////
-  void zdd_maxelem(const zdd &A, const consumer<zdd::label_t> &cb);
+  void zdd_maxelem(const zdd &A, const consumer<zdd::label_type> &cb);
 
   //////////////////////////////////////////////////////////////////////////////
   // TODO: Iterator-based output
@@ -893,7 +893,7 @@ namespace adiar
   ///
   /// \param cb Callback function that consumes the levels in *ascending* order.
   //////////////////////////////////////////////////////////////////////////////
-  void zdd_varprofile(const zdd &A, const consumer<zdd::label_t> &cb);
+  void zdd_varprofile(const zdd &A, const consumer<zdd::label_type> &cb);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Write the labels of the ZDD's levels into the given container.
@@ -936,7 +936,7 @@ namespace adiar
   /// \returns   ZDD that is true for the exact same assignments to variables in
   ///            the given domain.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_from(const bdd &f, const generator<zdd::label_t> &dom);
+  __zdd zdd_from(const bdd &f, const generator<zdd::label_type> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Obtains the ZDD that represents the same function/set as the

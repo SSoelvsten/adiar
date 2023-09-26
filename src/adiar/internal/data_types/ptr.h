@@ -17,7 +17,7 @@ namespace adiar::internal
   }
 
   // TODO (ADD (32-bit)):
-  //   Template 'ptr_uint64' with 'value_t' of how to interpret the bits of a
+  //   Template 'ptr_uint64' with 'terminal_t' of how to interpret the bits of a
   //   terminal. To this end, one wants to use 'std::bit_cast' in the internal
   //   logic. Use 'static_assert' to ensure the desired type indeed fits into
   //   62 bits of memory.
@@ -25,14 +25,14 @@ namespace adiar::internal
   // TODO (ADD (64-bit)):
   // TODO (10+ TiB Decision Diagrams):
   //   Create a new 'ptr_templ' class that does not compress all information
-  //   into a single 64-bit unsigned integer. The 'label_t' and 'id_t' should be
+  //   into a single 64-bit unsigned integer. The 'label_type' and 'id_type' should be
   //   provided as template parameters and the 'max_id' and 'max_label' should
   //   be derived based on 'std::numeric_limits<XXXX_t>::max()'.
   //
-  //   For ADDs it should furthermore be templated with 'value_t'.
+  //   For ADDs it should furthermore be templated with 'terminal_t'.
 
   // TODO (LDD):
-  //   Extend 'ptr_t' to a 'weighted_ptr' with a templated `weight_t`.
+  //   Extend 'pointer_type' to a 'weighted_ptr' with a templated `weight_t`.
 
   // TODO (QMDD):
   //   Same as for LDD but with the weight specifically being complex values.
@@ -50,7 +50,7 @@ namespace adiar::internal
   /// \remark A pointer may be flagged. For an arc's source this marks the arc
   ///         being a 'high' rather than a 'low' arc.
   ///
-  /// \sa uid_t
+  /// \see uid_type
   //////////////////////////////////////////////////////////////////////////////
   class ptr_uint64
   {
@@ -102,7 +102,7 @@ namespace adiar::internal
     constexpr ptr_uint64(const uint64_t raw) : _raw(raw)
     { }
 
-    template<typename ptr_t>
+    template<typename pointer_type>
     friend class __uid;
 
     /* ============================= ATTRIBUTES ============================= */
@@ -168,7 +168,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the out-degree.
     ////////////////////////////////////////////////////////////////////////////
-    using out_idx_t = uint64_t;
+    using out_idx_type = uint64_t;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -186,7 +186,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The maximal possible value for the out index.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr out_idx_t max_out_idx = outdegree - 1;
+    static constexpr out_idx_type max_out_idx = outdegree - 1;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -198,7 +198,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type able to hold the label of a variable.
     ////////////////////////////////////////////////////////////////////////////
-    typedef uint32_t label_t;
+    using label_type = uint32_t;
 
   private:
     ////////////////////////////////////////////////////////////////////////////
@@ -210,13 +210,13 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The maximal possible value for a unique identifier's label.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr label_t max_label = (1ull << label_bits) - 1;
+    static constexpr label_type max_label = (1ull << label_bits) - 1;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of a level identifier.
     ////////////////////////////////////////////////////////////////////////////
-    using id_t = uint64_t;
+    using id_type = uint64_t;
 
   private:
     ////////////////////////////////////////////////////////////////////////////
@@ -233,11 +233,14 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The maximal possible value for a level identifier.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr id_t max_id = (1ull << id_bits) - 1;
+    static constexpr id_type max_id = (1ull << id_bits) - 1;
 
   private:
-    friend ptr_uint64 essential(const ptr_uint64 &p);
-    friend ptr_uint64 with_out_idx(const ptr_uint64 &p, const out_idx_t out_idx);
+    friend ptr_uint64 
+    essential(const ptr_uint64 &p);
+  
+    friend ptr_uint64 
+    with_out_idx(const ptr_uint64 &p, const out_idx_type out_idx);
 
     ////////////////////////////////////////////////////////////////////////////
     /// When the <tt>is_node</tt> flag is true, then it is a pointer to a node,
@@ -261,27 +264,32 @@ namespace adiar::internal
     /// their level-identifier, and finally by their .
     ////////////////////////////////////////////////////////////////////////////
   protected:
-    static uint64_t encode_label(const label_t label)
+    static uint64_t 
+    encode_label(const label_type label)
     {
       adiar_assert(label <= max_label, "Cannot represent given label");
       return (uint64_t) label << (id_bits + out_idx_bits + flag_bits);
     }
 
-    static uint64_t encode_id(const id_t id)
+    static uint64_t 
+    encode_id(const id_type id)
     {
       adiar_assert(id <= max_id, "Cannot represent given id");
       return (uint64_t) id << (out_idx_bits + flag_bits);
     }
 
-    static uint64_t encode_out_idx(const out_idx_t out_idx)
-    { return (uint64_t) out_idx << (flag_bits); }
+    static uint64_t 
+    encode_out_idx(const out_idx_type out_idx)
+    { 
+      return (uint64_t) out_idx << (flag_bits); 
+    }
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a pointer to an internal node (label, id) with
     ///        weight 0.
     ////////////////////////////////////////////////////////////////////////////
-    ptr_uint64(const label_t label, const id_t id)
+    ptr_uint64(const label_type label, const id_type id)
       : _raw(encode_label(label) | encode_id(id))
     { }
 
@@ -289,7 +297,7 @@ namespace adiar::internal
     /// \brief Constructor for a pointer to an internal node (label, id) with
     ///        given weight.
     ////////////////////////////////////////////////////////////////////////////
-    ptr_uint64(const label_t label, const id_t id, const out_idx_t out_idx)
+    ptr_uint64(const label_type label, const id_type id, const out_idx_type out_idx)
       : _raw(encode_label(label) | encode_id(id) | encode_out_idx(out_idx))
     { }
 
@@ -297,7 +305,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether a pointer is for an internal node (label, id).
     ////////////////////////////////////////////////////////////////////////////
-    inline bool is_node() const
+    inline bool 
+    is_node() const
     {
       return _raw <= ~ptr_uint64::terminal_bit;
     }
@@ -307,7 +316,8 @@ namespace adiar::internal
     ///
     /// \pre `is_node()` evaluates to `true.`
     ////////////////////////////////////////////////////////////////////////////
-    inline label_t label() const
+    inline label_type 
+    label() const
     {
       return _raw >> (id_bits + out_idx_bits + flag_bits);
     }
@@ -317,7 +327,8 @@ namespace adiar::internal
     ///
     /// \pre `is_node()` evaluates to `true.`
     ////////////////////////////////////////////////////////////////////////////
-    inline id_t id() const
+    inline id_type 
+    id() const
     {
       return (_raw >> (out_idx_bits + flag_bits)) & max_id;
     }
@@ -329,7 +340,8 @@ namespace adiar::internal
     ///
     /// \sa arc
     ////////////////////////////////////////////////////////////////////////////
-    inline out_idx_t out_idx() const
+    inline out_idx_type 
+    out_idx() const
     {
       return (_raw >> flag_bits) & max_out_idx;
     }
@@ -339,7 +351,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of terminal values.
     ////////////////////////////////////////////////////////////////////////////
-    typedef bool value_t;
+    using terminal_type = bool;
 
   public:
     friend inline ptr_uint64 negate(ptr_uint64 p);
@@ -371,14 +383,15 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a pointer to a terminal node (v).
     ////////////////////////////////////////////////////////////////////////////
-    ptr_uint64(const value_t v) : _raw(terminal_bit | (v << flag_bits))
+    ptr_uint64(const terminal_type v) : _raw(terminal_bit | (v << flag_bits))
     { }
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether this pointer points to a terminal node.
     ////////////////////////////////////////////////////////////////////////////
-    inline bool is_terminal() const
+    inline bool 
+    is_terminal() const
     {
       return !is_nil() && _raw >= ptr_uint64::terminal_bit;
     }
@@ -388,7 +401,8 @@ namespace adiar::internal
     ///
     /// \pre `is_terminal()` evaluates to `true`.
     ////////////////////////////////////////////////////////////////////////////
-    inline value_t value() const
+    inline terminal_type 
+    value() const
     {
       adiar_assert(is_terminal());
 
@@ -402,7 +416,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether this pointer points to the `false` terminal.
     ////////////////////////////////////////////////////////////////////////////
-    inline bool is_false() const
+    inline bool 
+    is_false() const
     {
       return is_terminal() && !value();
     }
@@ -410,7 +425,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether this pointer points to the `true` terminal.
     ////////////////////////////////////////////////////////////////////////////
-    inline bool is_true() const
+    inline bool 
+    is_true() const
     {
       return is_terminal() && value();
     }
@@ -418,7 +434,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether a pointer is for a node on a given level.
     ////////////////////////////////////////////////////////////////////////////
-    inline bool on_level(const label_t level) const
+    inline bool 
+    on_level(const label_type level) const
     {
       return is_terminal() ? false : label() == level;
     }
@@ -546,7 +563,7 @@ namespace adiar::internal
   /// \pre `p.is_node() == true`
   //////////////////////////////////////////////////////////////////////////////
   inline ptr_uint64 with_out_idx(const ptr_uint64 &p,
-                                 const ptr_uint64::out_idx_t out_idx)
+                                 const ptr_uint64::out_idx_type out_idx)
   {
     adiar_assert(p.is_node());
 

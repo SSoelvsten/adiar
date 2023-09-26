@@ -10,13 +10,13 @@ go_bandit([]() {
     const std::vector<int> dom_0123  = { 0, 1, 2, 3};
     const std::vector<int> dom_024   = { 0, 2, 4 };
 
-    shared_levelized_file<dd::node_t> nf_F;
+    shared_levelized_file<dd::node_type> nf_F;
     {
       node_writer w(nf_F);
       w << node(false);
     }
 
-    shared_levelized_file<dd::node_t> nf_T;
+    shared_levelized_file<dd::node_type> nf_T;
     {
       node_writer w(nf_T);
       w << node(true);
@@ -25,19 +25,19 @@ go_bandit([]() {
     const ptr_uint64 terminal_F = ptr_uint64(false);
     const ptr_uint64 terminal_T = ptr_uint64(true);
 
-    shared_levelized_file<dd::node_t> nf_x0;
+    shared_levelized_file<dd::node_type> nf_x0;
     {
       node_writer nw(nf_x0);
       nw << node(0, node::max_id, terminal_F, terminal_T);
     }
 
-    shared_levelized_file<dd::node_t> nf_x1;
+    shared_levelized_file<dd::node_type> nf_x1;
     {
       node_writer nw(nf_x1);
       nw << node(1, node::max_id, terminal_F, terminal_T);
     }
 
-    shared_levelized_file<dd::node_t> nf_x2;
+    shared_levelized_file<dd::node_type> nf_x2;
     {
       node_writer nw(nf_x2);
       nw << node(2, node::max_id, terminal_F, terminal_T);
@@ -50,21 +50,21 @@ go_bandit([]() {
     zdd zdd_x1(nf_x1);
     zdd zdd_x2(nf_x2);
 
-    shared_levelized_file<dd::node_t> nf_x0_null;
+    shared_levelized_file<dd::node_type> nf_x0_null;
     {
       node_writer nw(nf_x0_null);
       nw << node(0, node::max_id, terminal_T, terminal_T);
     }
     zdd zdd_x0_null(nf_x0_null);
 
-    shared_levelized_file<dd::node_t> nf_x1_null;
+    shared_levelized_file<dd::node_type> nf_x1_null;
     {
       node_writer nw(nf_x1_null);
       nw << node(1, node::max_id, terminal_T, terminal_T);
     }
     zdd zdd_x1_null(nf_x1_null);
 
-    shared_levelized_file<dd::node_t> nf_x2_null;
+    shared_levelized_file<dd::node_type> nf_x2_null;
     {
       node_writer nw(nf_x2_null);
       nw << node(2, node::max_id, terminal_T, terminal_T);
@@ -73,7 +73,7 @@ go_bandit([]() {
 
     // Fig. 5 from Minato: "Zero-suppressed BDDs and their applications". This
     // is the ZDD version of Fig. 3 in the same paper.
-    shared_levelized_file<dd::node_t> nf_minato_fig5;
+    shared_levelized_file<dd::node_type> nf_minato_fig5;
     {
       const node n2 = node(1, node::max_id, terminal_F, terminal_T);
       const node n1 = node(0, node::max_id, n2.uid(), terminal_T);
@@ -365,7 +365,7 @@ go_bandit([]() {
       });
 
       it("collapses to T terminal on pow(dom) with dom = { 0,1,2 }", [&]() {
-        shared_levelized_file<bdd::node_t> nf_pow_dom;
+        shared_levelized_file<bdd::node_type> nf_pow_dom;
         {
           const node n2 = node(2, node::max_id, terminal_T, terminal_T);
           const node n1 = node(1, node::max_id, n2.uid(), n2.uid());
@@ -390,7 +390,7 @@ go_bandit([]() {
       });
 
       it("collapses to T terminal on pow(dom) with dom = { 0,2,4 }", [&]() {
-        shared_levelized_file<zdd::node_t> nf_pow_dom;
+        shared_levelized_file<zdd::node_type> nf_pow_dom;
         {
           const node n2 = node(4, node::max_id, terminal_T, terminal_T);
           const node n1 = node(2, node::max_id, n2.uid(), n2.uid());
@@ -425,7 +425,7 @@ go_bandit([]() {
         //          F T
         */
 
-        shared_levelized_file<zdd::node_t> nf;
+        shared_levelized_file<zdd::node_type> nf;
         {
           const node n4 = node(2, node::max_id,   terminal_F, terminal_T);
           const node n3 = node(1, node::max_id,   n4.uid(), n4.uid());
@@ -591,7 +591,7 @@ go_bandit([]() {
       });
 
       it("converts [Minato] Fig. 11 (dom = { 0,1,2,3 })", [&]() {
-        shared_levelized_file<zdd::node_t> nf;
+        shared_levelized_file<zdd::node_type> nf;
         {
           const node n3 = node(3, node::max_id, terminal_T, terminal_T);
           const node n2 = node(2, node::max_id, n3.uid(), n3.uid());
@@ -651,7 +651,7 @@ go_bandit([]() {
       });
 
       it("converts [Minato] Fig. 15 (dom = { 0,1,2 })", [&]() {
-        shared_levelized_file<zdd::node_t> nf;
+        shared_levelized_file<zdd::node_type> nf;
         {
           const node n3 = node(2, node::max_id, terminal_F, terminal_T);
           const node n2 = node(1, node::max_id, n3.uid(), terminal_T);
@@ -715,7 +715,7 @@ go_bandit([]() {
 
       // Other large cases
       it("converts { Ø, { 0,1 }, { 0,2 }, { 1,2 } } with dom = { 0,1,2 } only adding true-chain", [&]() {
-        shared_levelized_file<zdd::node_t> nf_in;
+        shared_levelized_file<zdd::node_type> nf_in;
         // In dom = { 0,1,2 }
         /*
         //      _1_      ---- x0
@@ -793,7 +793,7 @@ go_bandit([]() {
       it("bridges over root and others, and creates pre and post chains", [&]() {
         std::vector<int> dom = { 0, 1, 2, 3, 4, 5, 6 };
 
-        shared_levelized_file<zdd::node_t> in;
+        shared_levelized_file<zdd::node_type> in;
         /*
         //                      ---- x0
         //
@@ -1161,7 +1161,7 @@ go_bandit([]() {
       });
 
       it("kills and bridges root on ~x1 with dom = { 0,1,2 }", [&]() {
-        shared_levelized_file<bdd::node_t> nf;
+        shared_levelized_file<bdd::node_type> nf;
         {
           node_writer nw(nf);
           nw << node(1, node::max_id, terminal_T, terminal_F);
@@ -1200,7 +1200,7 @@ go_bandit([]() {
       });
 
       it("kills root into { Ø } on ~x0 into with dom = { 0 }", [&]() {
-        shared_levelized_file<bdd::node_t> nf;
+        shared_levelized_file<bdd::node_type> nf;
         {
           node_writer nw(nf);
           nw << node(0, node::max_id, terminal_T, terminal_F);
@@ -1221,7 +1221,7 @@ go_bandit([]() {
       });
 
       it("collapses false-chain into { Ø } on with dom = { 0,2,4 }", [&]() {
-        shared_levelized_file<bdd::node_t> nf;
+        shared_levelized_file<bdd::node_type> nf;
         {
           const node n3 = node(4, node::max_id, terminal_T, terminal_F);
           const node n2 = node(2, node::max_id, n3.uid(), terminal_F);
@@ -1247,7 +1247,7 @@ go_bandit([]() {
 
       // Minato examples
       it("converts [Minato] Fig. 3 into Fig. 5 with dom = { 0,1,2 } ", [&]() {
-        shared_levelized_file<bdd::node_t> nf;
+        shared_levelized_file<bdd::node_type> nf;
         {
           const node n4 = node(2, node::max_id,   terminal_T, terminal_F);
           const node n3 = node(1, node::max_id,   n4.uid(), terminal_F);
@@ -1291,7 +1291,7 @@ go_bandit([]() {
       });
 
       it("converts [Minato] Fig. 3 into Fig. 5 with dom = { 0,1,2,3 } ", [&]() {
-        shared_levelized_file<bdd::node_t> nf;
+        shared_levelized_file<bdd::node_type> nf;
         {
           const node n5 = node(3, node::max_id,   terminal_T, terminal_F);
           const node n4 = node(2, node::max_id,   n5.uid(), terminal_F);
@@ -1336,7 +1336,7 @@ go_bandit([]() {
       });
 
       it("converts [Minato] Fig. 11 with dom = { 0,1,2,3 } ", [&]() {
-        shared_levelized_file<bdd::node_t> nf;
+        shared_levelized_file<bdd::node_type> nf;
         {
           const node n4 = node(3, node::max_id,   terminal_T, terminal_F);
           const node n3 = node(2, node::max_id,   n4.uid(), terminal_F);
@@ -1389,7 +1389,7 @@ go_bandit([]() {
       });
 
       it("converts [Minato] Fig. 15 with dom = { 0,1,2 } ", [&]() {
-        shared_levelized_file<bdd::node_t> nf;
+        shared_levelized_file<bdd::node_type> nf;
         {
           const node n5 = node(2, node::max_id,   terminal_F, terminal_T);
           const node n4 = node(2, node::max_id-1, terminal_T, terminal_F);
@@ -1483,7 +1483,7 @@ go_bandit([]() {
       });
 
       it("collapses false-chain into { Ø } on with set dom = { 0,2,4 }", [&]() {
-        shared_levelized_file<bdd::node_t> nf;
+        shared_levelized_file<bdd::node_type> nf;
         {
           const node n3 = node(4, node::max_id, terminal_T, terminal_F);
           const node n2 = node(2, node::max_id, n3.uid(), terminal_F);

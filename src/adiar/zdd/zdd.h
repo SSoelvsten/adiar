@@ -26,10 +26,10 @@ namespace adiar
     __zdd();
 
     ////////////////////////////////////////////////////////////////////////////
-    __zdd(const internal::__dd::shared_nodes_t &f);
+    __zdd(const internal::__dd::shared_node_file_type &f);
 
     ////////////////////////////////////////////////////////////////////////////
-    __zdd(const internal::__dd::shared_arcs_t &f);
+    __zdd(const internal::__dd::shared_arc_file_type &f);
 
     ////////////////////////////////////////////////////////////////////////////
     __zdd(const zdd &zdd);
@@ -58,7 +58,7 @@ namespace adiar
 
     // |- functions
     friend size_t zdd_nodecount(const zdd&);
-    friend zdd::label_t zdd_varcount(const zdd&);
+    friend zdd::label_type zdd_varcount(const zdd&);
 
     friend bool zdd_subseteq(const zdd&, const zdd&);
     friend bool zdd_disjoint(const zdd &, const zdd &);
@@ -80,22 +80,50 @@ namespace adiar
     // Constructors
   public:
     ////////////////////////////////////////////////////////////////////////////
-    zdd(const internal::dd::shared_nodes_t &f, bool negate = false);
-
+    /// \brief Default construction, creating the empty set Ø.
+    ///
+    /// \see zdd_empty
     ////////////////////////////////////////////////////////////////////////////
     zdd();
 
     ////////////////////////////////////////////////////////////////////////////
-    zdd(bool v);
+    /// \brief Implicit conversion from a terminal value to respectively
+    ///        construct Ø and {Ø} from respectively 0 and 1.
+    ///
+    /// \see zdd_terminal, zdd_empty, zdd_null
+    ////////////////////////////////////////////////////////////////////////////
+    zdd(zdd::terminal_type t);
+
+    /// \cond
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Constructor to wrap the node-based result of an algorithm.
+    ////////////////////////////////////////////////////////////////////////////
+    zdd(const zdd::shared_node_file_type &A, bool negate = false);
+    /// \endcond
 
     ////////////////////////////////////////////////////////////////////////////
-    zdd(const zdd &o);
+    /// \brief Copy construction, incrementing thre reference count on the file
+    ///        underneath.
+    ////////////////////////////////////////////////////////////////////////////
+    zdd(const zdd &oA);
 
     ////////////////////////////////////////////////////////////////////////////
-    zdd(zdd &&o);
+    /// \brief Move construction, taking over ownership of the files underneath.
+    ////////////////////////////////////////////////////////////////////////////
+    zdd(zdd &&A);
 
     ////////////////////////////////////////////////////////////////////////////
-    zdd(__zdd &&o);
+    /// \brief Implicit move conversion from a possibly to-be reduced result
+    ///        from an algorithm to a `zdd`.
+    ///
+    /// \details Since the `adiar::internal::reduce` algorithm is run as part of
+    ///          this constructor, the scoping rules ensure we garbage collect
+    ///          irrelevant files as early as possible.
+    ///
+    /// \remark  Since the value `o` is forced to be moved, we force the content
+    ///          of `o` to be destructed after finishing the *Reduce* algorithm.
+    ////////////////////////////////////////////////////////////////////////////
+    zdd(__zdd &&A);
 
     ////////////////////////////////////////////////////////////////////////////
     // Accessors overwrite
@@ -122,8 +150,10 @@ namespace adiar
     {
       return add_false_cofactor(ct, file->max_2level_cut);
     }
+    /// \endcond
 
   private:
+    /// \cond
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Accounts for the false arc added due to using a co-factor.
     ////////////////////////////////////////////////////////////////////////////

@@ -76,18 +76,18 @@ public:
     while (!inner_pq.empty()) {
       inner_pq.setup_next_level();
 
-      const node::label_t level_label = inner_pq.current_level();
-      node::id_t level_size = 0u;
+      const node::label_type level_label = inner_pq.current_level();
+      node::id_type level_size = 0u;
 
       while (!inner_pq.empty_level()) {
         // Give node a new name
-        const node::uid_t u(level_label, level_size++);
+        const node::uid_type u(level_label, level_size++);
 
         // Get target of next request
         adiar_assert(!inner_pq.top().target.first().is_flagged(),
                      "Double checking decorator indeed hides taint");
 
-        const node::ptr_t next = inner_pq.top().target.first();
+        const node::pointer_type next = inner_pq.top().target.first();
 
         // Seek node in stream and forward its out-going edges
         const node n = ns.seek(next);
@@ -116,12 +116,12 @@ private:
   //////////////////////////////////////////////////////////////////////////////
   template<bool is_high, typename inner_pq_t>
   void forward_arc(inner_pq_t &inner_pq, arc_writer &aw,
-                   const node::uid_t &uid, const node::ptr_t &c)
+                   const node::uid_type &uid, const node::pointer_type &c)
   {
     if (c.is_terminal()) {
       aw.push_terminal({ uid, is_high, ~c });
     } else {
-      inner_pq.push({{c, node::ptr_t::nil()}, {}, {uid.with(is_high)}});
+      inner_pq.push({{c, node::pointer_type::nil()}, {}, {uid.with(is_high)}});
     }
   }
 
@@ -129,7 +129,7 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether it wants to sweep on some level.
   //////////////////////////////////////////////////////////////////////////////
-  bool has_sweep(node::ptr_t::label_t l) const
+  bool has_sweep(node::pointer_type::label_type l) const
   { return (l % _nesting_modulo) == 0u; }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -151,7 +151,7 @@ public:
   request_from_node(const node &n, const ptr_uint64 &parent)
   {
     // Always pick high child
-    return request_t({n.high(), only_gc ? node::ptr_t::nil() : n.high()},
+    return request_t({n.high(), only_gc ? node::pointer_type::nil() : n.high()},
                      {},
                      {parent});
   }
@@ -215,25 +215,25 @@ public:
     while (!inner_pq.empty()) {
       inner_pq.setup_next_level();
 
-      const node::label_t level_label = inner_pq.current_level();
-      node::id_t level_size = 0u;
+      const node::label_type level_label = inner_pq.current_level();
+      node::id_type level_size = 0u;
 
       while (!inner_pq.empty_level()) {
         // Get target of next request
-        const node::ptr_t next = inner_pq.top().target.first();
-        node::ptr_t t;
+        const node::pointer_type next = inner_pq.top().target.first();
+        node::pointer_type t;
 
         if (next.label() % _nesting_modulo == 1) {
           // Collapse immediately to a terminal
-          t = node::ptr_t(level_label % (_nesting_modulo+1) > 0);
+          t = node::pointer_type(level_label % (_nesting_modulo+1) > 0);
         } else {
           // Create a simple (i, _, _) node with two terminals.
-          t = node::ptr_t(level_label, level_size++);
+          t = node::pointer_type(level_label, level_size++);
 
-          const node::ptr_t t0((level_label)   % (_nesting_modulo) > 1);
+          const node::pointer_type t0((level_label)   % (_nesting_modulo) > 1);
           aw.push_terminal({ t, false, t0 });
 
-          const node::ptr_t t1((level_label+1) % (_nesting_modulo) > 1);
+          const node::pointer_type t1((level_label+1) % (_nesting_modulo) > 1);
           aw.push_terminal({ t, true,  t1 });
         }
 
@@ -258,7 +258,7 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether it wants to sweep on some level.
   //////////////////////////////////////////////////////////////////////////////
-  bool has_sweep(node::ptr_t::label_t l) const
+  bool has_sweep(node::pointer_type::label_type l) const
   { return (l % _nesting_modulo) == 0u; }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -350,10 +350,10 @@ go_bandit([]() {
 
           test_roots_sorter_t s(1024, 16);
 
-          const test_request_t i1({arc::ptr_t(1,1), arc::ptr_t::nil()}, {}, {arc::ptr_t(0,0, false)});
+          const test_request_t i1({arc::pointer_type(1,1), arc::pointer_type::nil()}, {}, {arc::pointer_type(0,0, false)});
           s.push(i1);
 
-          const test_request_t i2({arc::ptr_t(1,0), arc::ptr_t::nil()}, {}, {arc::ptr_t(0,0, true)});
+          const test_request_t i2({arc::pointer_type(1,0), arc::pointer_type::nil()}, {}, {arc::pointer_type(0,0, true)});
           s.push(i2);
 
           s.sort();
@@ -384,24 +384,24 @@ go_bandit([]() {
           test_roots_sorter_t s(1024, 16);
 
           {
-            const reduce_arc i1 = arc(arc::ptr_t(0,0), false, arc::ptr_t(1,1));
+            const reduce_arc i1 = arc(arc::pointer_type(0,0), false, arc::pointer_type(1,1));
             s.push(i1);
 
-            const reduce_arc i2 = arc(arc::ptr_t(0,0), true,  arc::ptr_t(1,0));
+            const reduce_arc i2 = arc(arc::pointer_type(0,0), true,  arc::pointer_type(1,0));
             s.push(i2);
           }
 
           s.sort();
 
           AssertThat(s.can_pull(), Is().True());
-          const test_request_t e1({arc::ptr_t(1,0)}, {}, {arc::ptr_t(0,0, true)});
+          const test_request_t e1({arc::pointer_type(1,0)}, {}, {arc::pointer_type(0,0, true)});
           const test_request_t o1 = s.pull();
 
           AssertThat(o1.target,      Is().EqualTo(e1.target));
           AssertThat(o1.data.source, Is().EqualTo(flag(e1.data.source)));
 
           AssertThat(s.can_pull(), Is().True());
-          const test_request_t e2({arc::ptr_t(1,1)}, {}, {arc::ptr_t(0,0, false)});
+          const test_request_t e2({arc::pointer_type(1,1)}, {}, {arc::pointer_type(0,0, false)});
           const test_request_t o2 = s.pull();
 
           AssertThat(o2.target,      Is().EqualTo(e2.target));
@@ -421,24 +421,24 @@ go_bandit([]() {
           test_roots_sorter_t s(1024, 16);
 
           {
-            const reduce_arc a1 = arc(arc::ptr_t(0,0), false, arc::ptr_t(1,1));
+            const reduce_arc a1 = arc(arc::pointer_type(0,0), false, arc::pointer_type(1,1));
             s.push(a1);
 
-            const reduce_arc a2 = arc(arc::ptr_t(0,0), true,  arc::ptr_t(1,0));
+            const reduce_arc a2 = arc(arc::pointer_type(0,0), true,  arc::pointer_type(1,0));
             s.push(a2);
           }
 
           s.sort();
 
           AssertThat(s.can_pull(), Is().True());
-          const test_request_t e1({arc::ptr_t(1,0), arc::ptr_t::nil()}, {}, {arc::ptr_t(0,0, true)});
+          const test_request_t e1({arc::pointer_type(1,0), arc::pointer_type::nil()}, {}, {arc::pointer_type(0,0, true)});
           const test_request_t o1 = s.pull();
 
           AssertThat(o1.target,      Is().EqualTo(e1.target));
           AssertThat(o1.data.source, Is().EqualTo(flag(e1.data.source)));
 
           AssertThat(s.can_pull(), Is().True());
-          const test_request_t e2({arc::ptr_t(1,1), arc::ptr_t::nil()}, {}, {arc::ptr_t(0,0, false)});
+          const test_request_t e2({arc::pointer_type(1,1), arc::pointer_type::nil()}, {}, {arc::pointer_type(0,0, false)});
           const test_request_t o2 = s.pull();
 
           AssertThat(o2.target,      Is().EqualTo(e2.target));
@@ -457,10 +457,10 @@ go_bandit([]() {
 
           test_roots_sorter_t s(1024, 16);
 
-          const test_request_t i1({arc::ptr_t(3,3), arc::ptr_t::nil()}, {}, {arc::ptr_t(2,0, false)});
-          const test_request_t i2({arc::ptr_t(3,1), arc::ptr_t::nil()}, {}, {arc::ptr_t(2,0, true)});
-          const test_request_t i3({arc::ptr_t(3,2), arc::ptr_t::nil()}, {}, {arc::ptr_t(2,1, false)});
-          const test_request_t i4({arc::ptr_t(3,4), arc::ptr_t::nil()}, {}, {arc::ptr_t(2,1, true)});
+          const test_request_t i1({arc::pointer_type(3,3), arc::pointer_type::nil()}, {}, {arc::pointer_type(2,0, false)});
+          const test_request_t i2({arc::pointer_type(3,1), arc::pointer_type::nil()}, {}, {arc::pointer_type(2,0, true)});
+          const test_request_t i3({arc::pointer_type(3,2), arc::pointer_type::nil()}, {}, {arc::pointer_type(2,1, false)});
+          const test_request_t i4({arc::pointer_type(3,4), arc::pointer_type::nil()}, {}, {arc::pointer_type(2,1, true)});
 
           {
             s.push(reduce_arc(arc(i1.data.source, i1.target[0])));
@@ -508,10 +508,10 @@ go_bandit([]() {
 
           test_roots_sorter_t s(1024, 16);
 
-          const test_request_t i1({arc::ptr_t(3,3), arc::ptr_t::nil()}, {}, {arc::ptr_t(2,0, false)});
-          const test_request_t i2({arc::ptr_t(3,2), arc::ptr_t::nil()}, {}, {arc::ptr_t(2,0, true)});
-          const test_request_t i3({arc::ptr_t(3,2), arc::ptr_t::nil()}, {}, {arc::ptr_t(2,1, false)});
-          const test_request_t i4({arc::ptr_t(3,1), arc::ptr_t::nil()}, {}, {arc::ptr_t(2,1, true)});
+          const test_request_t i1({arc::pointer_type(3,3), arc::pointer_type::nil()}, {}, {arc::pointer_type(2,0, false)});
+          const test_request_t i2({arc::pointer_type(3,2), arc::pointer_type::nil()}, {}, {arc::pointer_type(2,0, true)});
+          const test_request_t i3({arc::pointer_type(3,2), arc::pointer_type::nil()}, {}, {arc::pointer_type(2,1, false)});
+          const test_request_t i4({arc::pointer_type(3,1), arc::pointer_type::nil()}, {}, {arc::pointer_type(2,1, true)});
 
           {
             s.push(reduce_arc(arc(i1.data.source, i1.target[0])));
@@ -569,8 +569,8 @@ go_bandit([]() {
           test_roots_sorter_t s1(1024, 16);
           test_roots_sorter_t s2(1024, 16);
 
-          const test_request_t i1({arc::ptr_t(3,2)}, {}, {arc::ptr_t(2,0, false)});
-          const test_request_t i2({arc::ptr_t(3,1)}, {}, {arc::ptr_t(2,1, true)});
+          const test_request_t i1({arc::pointer_type(3,2)}, {}, {arc::pointer_type(2,0, false)});
+          const test_request_t i2({arc::pointer_type(3,1)}, {}, {arc::pointer_type(2,1, true)});
 
           s1.push(i1);
           s1.push(i2);
@@ -605,15 +605,15 @@ go_bandit([]() {
           test_roots_sorter_t s1(1024, 16);
           test_roots_sorter_t s2(1024, 16);
 
-          const test_request_t i1({arc::ptr_t(3,3)}, {}, {arc::ptr_t(2,0, false)});
-          const test_request_t i2({arc::ptr_t(3,1)}, {}, {arc::ptr_t(2,1, true)});
+          const test_request_t i1({arc::pointer_type(3,3)}, {}, {arc::pointer_type(2,0, false)});
+          const test_request_t i2({arc::pointer_type(3,1)}, {}, {arc::pointer_type(2,1, true)});
 
           s1.push(i1);
           s1.push(i2);
 
           s2.move(s1); // From hereon forward s1 is in an illegal state
 
-          const test_request_t i3({arc::ptr_t(3,2)}, {}, {arc::ptr_t(2,1, false)});
+          const test_request_t i3({arc::pointer_type(3,2)}, {}, {arc::pointer_type(2,1, false)});
           s2.push(i3);
 
           s2.sort();
@@ -651,16 +651,16 @@ go_bandit([]() {
 
           AssertThat(s.size(), Is().EqualTo(0u));
 
-          s.push(arc(arc::ptr_t(2,0), false, arc::ptr_t(3,0)));
+          s.push(arc(arc::pointer_type(2,0), false, arc::pointer_type(3,0)));
           AssertThat(s.size(), Is().EqualTo(1u));
 
-          s.push({ {arc::ptr_t(3,0)}, {}, {arc::ptr_t(2,0, true)} });
+          s.push({ {arc::pointer_type(3,0)}, {}, {arc::pointer_type(2,0, true)} });
           AssertThat(s.size(), Is().EqualTo(2u));
 
           s.reset();
           AssertThat(s.size(), Is().EqualTo(0u));
 
-          s.push({ {arc::ptr_t(1,0)}, {}, {arc::ptr_t(0,0, true)} });
+          s.push({ {arc::pointer_type(1,0)}, {}, {arc::pointer_type(0,0, true)} });
           AssertThat(s.size(), Is().EqualTo(1u));
         });
 
@@ -676,17 +676,17 @@ go_bandit([]() {
 
           AssertThat(s.deepest_source(), Is().EqualTo(test_roots_sorter_t::no_level));
 
-          const reduce_arc a1 = arc(arc::ptr_t(0,0), false, arc::ptr_t(1,1));
+          const reduce_arc a1 = arc(arc::pointer_type(0,0), false, arc::pointer_type(1,1));
           s.push(a1);
 
           AssertThat(s.deepest_source(), Is().EqualTo(0u));
 
-          const reduce_arc a2 = arc(arc::ptr_t(1,0), false, arc::ptr_t(2,0));
+          const reduce_arc a2 = arc(arc::pointer_type(1,0), false, arc::pointer_type(2,0));
           s.push(a2);
 
           AssertThat(s.deepest_source(), Is().EqualTo(1u));
 
-          const reduce_arc a3 = arc(arc::ptr_t(0,0), true, arc::ptr_t(1,0));
+          const reduce_arc a3 = arc(arc::pointer_type(0,0), true, arc::pointer_type(1,0));
           s.push(a3);
 
           AssertThat(s.deepest_source(), Is().EqualTo(1u));
@@ -704,12 +704,12 @@ go_bandit([]() {
 
           AssertThat(s.deepest_source(), Is().EqualTo(test_roots_sorter_t::no_level));
 
-          const reduce_arc a1 = arc(arc::ptr_t(2,0), false, arc::ptr_t(3,1));
+          const reduce_arc a1 = arc(arc::pointer_type(2,0), false, arc::pointer_type(3,1));
           s.push(a1);
 
           AssertThat(s.deepest_source(), Is().EqualTo(2u));
 
-          const reduce_arc a2 = arc(arc::ptr_t(1,0), false, arc::ptr_t(4,0));
+          const reduce_arc a2 = arc(arc::pointer_type(1,0), false, arc::pointer_type(4,0));
           s.push(a2);
 
           AssertThat(s.deepest_source(), Is().EqualTo(2u));
@@ -727,17 +727,17 @@ go_bandit([]() {
 
           AssertThat(s.deepest_source(), Is().EqualTo(test_roots_sorter_t::no_level));
 
-          const test_request_t r1({arc::ptr_t(1,1)}, {}, {arc::ptr_t(0,0, false)});
+          const test_request_t r1({arc::pointer_type(1,1)}, {}, {arc::pointer_type(0,0, false)});
           s.push(r1);
 
           AssertThat(s.deepest_source(), Is().EqualTo(0u));
 
-          const test_request_t r2({arc::ptr_t(2,0)}, {}, {arc::ptr_t(1,0, false)});
+          const test_request_t r2({arc::pointer_type(2,0)}, {}, {arc::pointer_type(1,0, false)});
           s.push(r2);
 
           AssertThat(s.deepest_source(), Is().EqualTo(1u));
 
-          const test_request_t r3({arc::ptr_t(1,0)}, {}, {arc::ptr_t(0,0, true)});
+          const test_request_t r3({arc::pointer_type(1,0)}, {}, {arc::pointer_type(0,0, true)});
           s.push(r3);
 
           AssertThat(s.deepest_source(), Is().EqualTo(1u));
@@ -755,12 +755,12 @@ go_bandit([]() {
 
           AssertThat(s.deepest_source(), Is().EqualTo(test_roots_sorter_t::no_level));
 
-          const test_request_t r1({arc::ptr_t(3,1)}, {}, {arc::ptr_t(2,0, false)});
+          const test_request_t r1({arc::pointer_type(3,1)}, {}, {arc::pointer_type(2,0, false)});
           s.push(r1);
 
           AssertThat(s.deepest_source(), Is().EqualTo(2u));
 
-          const test_request_t r2({arc::ptr_t(4,0)}, {}, {arc::ptr_t(1,0, false)});
+          const test_request_t r2({arc::pointer_type(4,0)}, {}, {arc::pointer_type(1,0, false)});
           s.push(r2);
 
           AssertThat(s.deepest_source(), Is().EqualTo(2u));
@@ -778,7 +778,7 @@ go_bandit([]() {
 
           AssertThat(s.deepest_source(), Is().EqualTo(test_roots_sorter_t::no_level));
 
-          const reduce_arc a1 = arc(arc::ptr_t(2,0), false, arc::ptr_t(1,1));
+          const reduce_arc a1 = arc(arc::pointer_type(2,0), false, arc::pointer_type(1,1));
           s.push(a1);
 
           AssertThat(s.deepest_source(), Is().EqualTo(2u));
@@ -787,7 +787,7 @@ go_bandit([]() {
 
           AssertThat(s.deepest_source(), Is().EqualTo(test_roots_sorter_t::no_level));
 
-          const reduce_arc a2 = arc(arc::ptr_t(1,0), false, arc::ptr_t(2,0));
+          const reduce_arc a2 = arc(arc::pointer_type(1,0), false, arc::pointer_type(2,0));
           s.push(a2);
 
           AssertThat(s.deepest_source(), Is().EqualTo(1u));
@@ -985,7 +985,7 @@ go_bandit([]() {
           test_decorator d(pq, sorter, 2);
 
           // internal at threshold
-          d.push(arc(arc::ptr_t::nil(), arc::ptr_t(42,0)));
+          d.push(arc(arc::pointer_type::nil(), arc::pointer_type(42,0)));
 
           AssertThat(pq.size(), Is().EqualTo(0u));
           AssertThat(sorter.size(), Is().EqualTo(1u));
@@ -1006,9 +1006,9 @@ go_bandit([]() {
           //          / \
           //          F T
           */
-          const node::ptr_t n1(1,0);
-          const node::ptr_t n2(2,0);
-          const node::ptr_t n3(3,0);
+          const node::pointer_type n1(1,0);
+          const node::pointer_type n2(2,0);
+          const node::pointer_type n3(3,0);
 
           shared_levelized_file<arc> dag;
 
@@ -1045,9 +1045,9 @@ go_bandit([]() {
           //          / \
           //          F T
           */
-          const node::ptr_t n1(1,0);
-          const node::ptr_t n2(2,0);
-          const node::ptr_t n3(3,0);
+          const node::pointer_type n1(1,0);
+          const node::pointer_type n2(2,0);
+          const node::pointer_type n3(3,0);
 
           shared_levelized_file<arc> dag;
 
@@ -1087,10 +1087,10 @@ go_bandit([]() {
           //           / \
           //           F T
           */
-          const node::ptr_t n1(0,0);
-          const node::ptr_t n2(2,0);
-          const node::ptr_t n3(3,0);
-          const node::ptr_t n4(4,0);
+          const node::pointer_type n1(0,0);
+          const node::pointer_type n2(2,0);
+          const node::pointer_type n3(3,0);
+          const node::pointer_type n4(4,0);
 
           shared_levelized_file<arc> dag;
 
@@ -1897,9 +1897,9 @@ go_bandit([]() {
       });
 
       describe("inner::up__arc_stream__decorator", [&terminal_F, &terminal_T]() {
-        const arc::ptr_t n0(0,0);
-        const arc::ptr_t n1(1,0);
-        const arc::ptr_t n2(2,0);
+        const arc::pointer_type n0(0,0);
+        const arc::pointer_type n1(1,0);
+        const arc::pointer_type n2(2,0);
 
         shared_levelized_file<arc> outer;
         { // Garbage collect writer to free write-lock
@@ -2001,13 +2001,13 @@ go_bandit([]() {
           //      / \
           //      F T
           */
-          const arc::ptr_t terminal_F(false);
-          const arc::ptr_t terminal_T(true);
+          const arc::pointer_type terminal_F(false);
+          const arc::pointer_type terminal_T(true);
 
-          const arc::ptr_t n1(0,0);
-          const arc::ptr_t n2(1,0);
-          const arc::ptr_t n3(1,1);
-          const arc::ptr_t n4(2,0);
+          const arc::pointer_type n1(0,0);
+          const arc::pointer_type n2(1,0);
+          const arc::pointer_type n3(1,1);
+          const arc::pointer_type n4(2,0);
 
           shared_levelized_file<arc> in;
 
@@ -2046,13 +2046,13 @@ go_bandit([]() {
           out_writer.unsafe_max_1level_cut({ 0, 1, 1, 2 });
 
           // 3 ---> 4
-          pq.push(arc(arcs.pull_internal().source(), node::ptr_t(2, node::max_id)));
+          pq.push(arc(arcs.pull_internal().source(), node::pointer_type(2, node::max_id)));
           // 3 - -> 4
-          pq.push(arc(arcs.pull_internal().source(), node::ptr_t(2, node::max_id)));
+          pq.push(arc(arcs.pull_internal().source(), node::pointer_type(2, node::max_id)));
           // 2 ---> 4
-          pq.push(arc(arcs.pull_internal().source(), node::ptr_t(2, node::max_id)));
+          pq.push(arc(arcs.pull_internal().source(), node::pointer_type(2, node::max_id)));
           // 2 - -> 4
-          pq.push(arc(arcs.pull_internal().source(), node::ptr_t(2, node::max_id)));
+          pq.push(arc(arcs.pull_internal().source(), node::pointer_type(2, node::max_id)));
 
           pq.setup_next_level(1);
 
@@ -2100,12 +2100,12 @@ go_bandit([]() {
           //    / \ / \
           //    T F F T
           */
-          const arc::ptr_t terminal_F(false);
-          const arc::ptr_t terminal_T(true);
+          const arc::pointer_type terminal_F(false);
+          const arc::pointer_type terminal_T(true);
 
-          const arc::ptr_t n1(0,0);
-          const arc::ptr_t n2(1,0);
-          const arc::ptr_t n3(1,1);
+          const arc::pointer_type n1(0,0);
+          const arc::pointer_type n2(1,0);
+          const arc::pointer_type n3(1,1);
 
           shared_levelized_file<arc> in;
 
@@ -2182,12 +2182,12 @@ go_bandit([]() {
           //    / \ / \
           //    F T T F
           */
-          const arc::ptr_t terminal_F(false);
-          const arc::ptr_t terminal_T(true);
+          const arc::pointer_type terminal_F(false);
+          const arc::pointer_type terminal_T(true);
 
-          const arc::ptr_t n1(0,0);
-          const arc::ptr_t n2(1,0);
-          const arc::ptr_t n3(1,1);
+          const arc::pointer_type n1(0,0);
+          const arc::pointer_type n2(1,0);
+          const arc::pointer_type n3(1,1);
 
           shared_levelized_file<arc> in;
 
@@ -2268,14 +2268,14 @@ go_bandit([]() {
           //         / \ / \
           //         T F F T
           */
-          const arc::ptr_t terminal_F(false);
-          const arc::ptr_t terminal_T(true);
+          const arc::pointer_type terminal_F(false);
+          const arc::pointer_type terminal_T(true);
 
-          const arc::ptr_t n1(0,0);
-          const arc::ptr_t n2(1,0);
-          const arc::ptr_t n3(1,1);
-          const arc::ptr_t n4(2,0);
-          const arc::ptr_t n5(2,1);
+          const arc::pointer_type n1(0,0);
+          const arc::pointer_type n2(1,0);
+          const arc::pointer_type n3(1,1);
+          const arc::pointer_type n4(2,0);
+          const arc::pointer_type n5(2,1);
 
           shared_levelized_file<arc> in;
 
@@ -2321,11 +2321,11 @@ go_bandit([]() {
           out_writer.unsafe_max_1level_cut({ 0, 2, 3, 5 });
 
           // 3 ---> 5
-          pq.push(arc(arcs.pull_internal().source(), node::ptr_t(2, node::max_id)));
+          pq.push(arc(arcs.pull_internal().source(), node::pointer_type(2, node::max_id)));
           // 3 - -> 4
-          pq.push(arc(arcs.pull_internal().source(), node::ptr_t(2, node::max_id-1)));
+          pq.push(arc(arcs.pull_internal().source(), node::pointer_type(2, node::max_id-1)));
           // 2 - -> 4
-          pq.push(arc(arcs.pull_internal().source(), node::ptr_t(2, node::max_id-1)));
+          pq.push(arc(arcs.pull_internal().source(), node::pointer_type(2, node::max_id-1)));
 
           pq.setup_next_level(1);
 
@@ -2362,12 +2362,12 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         node::ptr_t(2, node::max_id-1),
-                                                         node::ptr_t(2, node::max_id))));
+                                                         node::pointer_type(2, node::max_id-1),
+                                                         node::pointer_type(2, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id-1,
-                                                         node::ptr_t(2, node::max_id-1),
+                                                         node::pointer_type(2, node::max_id-1),
                                                          terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
@@ -2395,13 +2395,13 @@ go_bandit([]() {
           //         / \
           //         F T
           */
-          const arc::ptr_t terminal_F(false);
-          const arc::ptr_t terminal_T(true);
+          const arc::pointer_type terminal_F(false);
+          const arc::pointer_type terminal_T(true);
 
-          const arc::ptr_t n1(0,0);
-          const arc::ptr_t n2(1,0);
-          const arc::ptr_t n3(1,1);
-          const arc::ptr_t n4(2,0);
+          const arc::pointer_type n1(0,0);
+          const arc::pointer_type n2(1,0);
+          const arc::pointer_type n3(1,1);
+          const arc::pointer_type n4(2,0);
 
           shared_levelized_file<arc> in;
 
@@ -2441,11 +2441,11 @@ go_bandit([]() {
           out_writer.unsafe_max_1level_cut({ 0, 1, 2, 2 });
 
           // 3 ---> 4
-          pq.push(arc(arcs.pull_internal().source(), node::ptr_t(2, node::max_id)));
+          pq.push(arc(arcs.pull_internal().source(), node::pointer_type(2, node::max_id)));
           // 3 - -> 4
-          pq.push(arc(arcs.pull_internal().source(), node::ptr_t(2, node::max_id)));
+          pq.push(arc(arcs.pull_internal().source(), node::pointer_type(2, node::max_id)));
           // 2 - -> 4
-          pq.push(arc(arcs.pull_internal().source(), node::ptr_t(2, node::max_id)));
+          pq.push(arc(arcs.pull_internal().source(), node::pointer_type(2, node::max_id)));
 
           pq.setup_next_level(1);
 
@@ -2477,7 +2477,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         node::ptr_t(2, node::max_id),
+                                                         node::pointer_type(2, node::max_id),
                                                          terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
@@ -2503,13 +2503,13 @@ go_bandit([]() {
           //       / \
           //       F T
           */
-          const arc::ptr_t terminal_F(false);
-          const arc::ptr_t terminal_T(true);
+          const arc::pointer_type terminal_F(false);
+          const arc::pointer_type terminal_T(true);
 
-          const arc::ptr_t n1(0,0);
-          const arc::ptr_t n2(1,0);
-          const arc::ptr_t n3(1,1);
-          const arc::ptr_t n4(2,0);
+          const arc::pointer_type n1(0,0);
+          const arc::pointer_type n2(1,0);
+          const arc::pointer_type n3(1,1);
+          const arc::pointer_type n4(2,0);
 
           shared_levelized_file<arc> in;
 
@@ -2550,7 +2550,7 @@ go_bandit([]() {
           // HACK: do not set 1-level cut to see desired behaviour
 
           // 2 - -> 4
-          pq.push(arc(arcs.pull_internal().source(), node::ptr_t(2, node::max_id)));
+          pq.push(arc(arcs.pull_internal().source(), node::pointer_type(2, node::max_id)));
 
           pq.setup_next_level(1);
 
@@ -2582,7 +2582,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         node::ptr_t(2, node::max_id),
+                                                         node::pointer_type(2, node::max_id),
                                                          terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
@@ -2608,14 +2608,14 @@ go_bandit([]() {
           //    / \ / \
           //    T F F T
           */
-          const arc::ptr_t terminal_F(false);
-          const arc::ptr_t terminal_T(true);
+          const arc::pointer_type terminal_F(false);
+          const arc::pointer_type terminal_T(true);
 
-          const arc::ptr_t n1(0,0);
-          const arc::ptr_t n2(1,0);
-          const arc::ptr_t n3(1,1);
-          const arc::ptr_t n4(2,0);
-          const arc::ptr_t n5(2,1);
+          const arc::pointer_type n1(0,0);
+          const arc::pointer_type n2(1,0);
+          const arc::pointer_type n3(1,1);
+          const arc::pointer_type n4(2,0);
+          const arc::pointer_type n5(2,1);
 
           shared_levelized_file<arc> in;
 
@@ -2661,13 +2661,13 @@ go_bandit([]() {
           out_writer.unsafe_max_1level_cut({ 0, 2, 2, 4 });
 
           // 3 ---> 5
-          pq.push(arc(arcs.pull_internal().source(), node::ptr_t(2, node::max_id)));
+          pq.push(arc(arcs.pull_internal().source(), node::pointer_type(2, node::max_id)));
           // 2 ---> 5
-          pq.push(arc(arcs.pull_internal().source(), node::ptr_t(2, node::max_id)));
+          pq.push(arc(arcs.pull_internal().source(), node::pointer_type(2, node::max_id)));
           // 3 - -> 4
-          pq.push(arc(arcs.pull_internal().source(), node::ptr_t(2, node::max_id-1)));
+          pq.push(arc(arcs.pull_internal().source(), node::pointer_type(2, node::max_id-1)));
           // 2 - -> 4
-          pq.push(arc(arcs.pull_internal().source(), node::ptr_t(2, node::max_id-1)));
+          pq.push(arc(arcs.pull_internal().source(), node::pointer_type(2, node::max_id-1)));
 
           pq.setup_next_level(1);
 
@@ -2704,13 +2704,13 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         node::ptr_t(2, node::max_id-1),
-                                                         node::ptr_t(2, node::max_id))));
+                                                         node::pointer_type(2, node::max_id-1),
+                                                         node::pointer_type(2, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id-1,
-                                                         node::ptr_t(2, node::max_id-1),
-                                                         node::ptr_t(2, node::max_id))));
+                                                         node::pointer_type(2, node::max_id-1),
+                                                         node::pointer_type(2, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -2731,10 +2731,10 @@ go_bandit([]() {
           //     / \
           //     T T
           */
-          const arc::ptr_t terminal_F(false);
-          const arc::ptr_t terminal_T(true);
+          const arc::pointer_type terminal_F(false);
+          const arc::pointer_type terminal_T(true);
 
-          const arc::ptr_t n1(0,0);
+          const arc::pointer_type n1(0,0);
 
           shared_levelized_file<arc> in;
 
@@ -2795,12 +2795,12 @@ go_bandit([]() {
           //     ||  ||
           //     T   T
           */
-          const arc::ptr_t terminal_F(false);
-          const arc::ptr_t terminal_T(true);
+          const arc::pointer_type terminal_F(false);
+          const arc::pointer_type terminal_T(true);
 
-          const arc::ptr_t n1(0,0);
-          const arc::ptr_t n2(1,0);
-          const arc::ptr_t n3(1,1);
+          const arc::pointer_type n1(0,0);
+          const arc::pointer_type n2(1,0);
+          const arc::pointer_type n3(1,1);
 
           shared_levelized_file<arc> in;
 
@@ -2913,7 +2913,7 @@ go_bandit([]() {
           //        2   3   4    ---- x1
           */
           inner_roots_t inner_roots(1024, 8);
-          const node::uid_t u1 = node::uid_t(0,0);
+          const node::uid_type u1 = node::uid_type(0,0);
 
           inner_roots.push({{n2.uid()}, {}, {u1.with(false)}});
           inner_roots.push({{n3.uid()}, {}, {u1.with(true)}});
@@ -2986,8 +2986,8 @@ go_bandit([]() {
           */
 
           inner_roots_t inner_roots(1024, 8);
-          const node::uid_t u0 = node::uid_t(0,0);
-          const node::uid_t u1 = node::uid_t(0,1);
+          const node::uid_type u0 = node::uid_type(0,0);
+          const node::uid_type u1 = node::uid_type(0,1);
 
           inner_roots.push({{n2.uid()}, {}, {u0.with(false)}});
           inner_roots.push({{n3.uid()}, {}, {u0.with(true)}});
@@ -3065,7 +3065,7 @@ go_bandit([]() {
           //  / \
           //  F T
           */
-          const node n1(1, node::max_id, node::ptr_t(false), node::ptr_t(true));
+          const node n1(1, node::max_id, node::pointer_type(false), node::pointer_type(true));
 
           shared_levelized_file<node> outer_file;
           { // Garbage collect writer to free write-lock
@@ -3075,7 +3075,7 @@ go_bandit([]() {
 
           inner_roots_t inner_roots(1024, 8);
 
-          inner_roots.push({{n1.uid()}, {}, {node::ptr_t::nil()}});
+          inner_roots.push({{n1.uid()}, {}, {node::pointer_type::nil()}});
 
           const shared_levelized_file<node> out =
             nested_sweeping::inner::down(test_policy, outer_file, inner_roots, memory_available())
@@ -3766,7 +3766,7 @@ go_bandit([]() {
           out_pq.setup_next_level();
 
           AssertThat(out_pq.can_pull(), Is().True()); // Edge is tainted by reduction rule 1
-          AssertThat(out_pq.pull(), Is().EqualTo(arc(n1, true, node::ptr_t(3, node::max_id))));
+          AssertThat(out_pq.pull(), Is().EqualTo(arc(n1, true, node::pointer_type(3, node::max_id))));
           AssertThat(out_pq.can_pull(), Is().True()); // Edge is tainted by reduction rule 1
           AssertThat(out_pq.pull(), Is().EqualTo(arc(n1, false, terminal_F)));
 
@@ -3857,7 +3857,7 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
                                                        terminal_T,
-                                                       node::ptr_t(3, node::max_id))));
+                                                       node::pointer_type(3, node::max_id))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
@@ -4271,7 +4271,7 @@ go_bandit([]() {
         // n3
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       node::ptr_t(3, node::max_id),
+                                                       node::pointer_type(3, node::max_id),
                                                        terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
@@ -4476,14 +4476,14 @@ go_bandit([]() {
         // n3
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                       node::ptr_t(5, node::max_id),
+                                                       node::pointer_type(5, node::max_id),
                                                        terminal_T)));
 
         // n1
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       node::ptr_t(3, node::max_id),
-                                                       node::ptr_t(5, node::max_id))));
+                                                       node::pointer_type(3, node::max_id),
+                                                       node::pointer_type(5, node::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -4688,7 +4688,7 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
                                                        terminal_F,
-                                                       node::ptr_t(5, node::max_id))));
+                                                       node::pointer_type(5, node::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -5366,20 +5366,20 @@ go_bandit([]() {
           // n5
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         node::ptr_t(5, node::max_id),
+                                                         node::pointer_type(5, node::max_id),
                                                          terminal_T)));
 
           // n4
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id-1,
                                                          terminal_F,
-                                                         node::ptr_t(5, node::max_id))));
+                                                         node::pointer_type(5, node::max_id))));
 
           // n1
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         node::ptr_t(3, node::max_id-1),
-                                                         node::ptr_t(3, node::max_id))));
+                                                         node::pointer_type(3, node::max_id-1),
+                                                         node::pointer_type(3, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -5505,12 +5505,12 @@ go_bandit([]() {
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
                                                          terminal_F,
-                                                         node::ptr_t(5, node::max_id))));
+                                                         node::pointer_type(5, node::max_id))));
 
           // n1
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         node::ptr_t(3, node::max_id),
+                                                         node::pointer_type(3, node::max_id),
                                                          terminal_F)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
@@ -5573,18 +5573,18 @@ go_bandit([]() {
         //           / \/ \
         //           F  T F
         */
-        const node::ptr_t n1(1,0);
-        const node::ptr_t n2(2,0);
-        const node::ptr_t n3(3,0);
-        const node::ptr_t n4(5,0);
-        const node::ptr_t n5(5,1);
-        const node::ptr_t n6(5,2);
-        const node::ptr_t n7(6,0);
-        const node::ptr_t n8(7,0);
-        const node::ptr_t n9(7,1);
+        const node::pointer_type n1(1,0);
+        const node::pointer_type n2(2,0);
+        const node::pointer_type n3(3,0);
+        const node::pointer_type n4(5,0);
+        const node::pointer_type n5(5,1);
+        const node::pointer_type n6(5,2);
+        const node::pointer_type n7(6,0);
+        const node::pointer_type n8(7,0);
+        const node::pointer_type n9(7,1);
 
-        const node::ptr_t terminal_F(false);
-        const node::ptr_t terminal_T(true);
+        const node::pointer_type terminal_F(false);
+        const node::pointer_type terminal_T(true);
 
         shared_levelized_file<arc> in;
 
@@ -5667,13 +5667,13 @@ go_bandit([]() {
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
                                                          terminal_T,
-                                                         node::ptr_t(7, node::max_id))));
+                                                         node::pointer_type(7, node::max_id))));
 
           // n1
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         node::ptr_t(5, node::max_id),
-                                                         node::ptr_t(7, node::max_id-1))));
+                                                         node::pointer_type(5, node::max_id),
+                                                         node::pointer_type(7, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -5731,13 +5731,13 @@ go_bandit([]() {
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
                                                          terminal_T,
-                                                         node::ptr_t(7, node::max_id))));
+                                                         node::pointer_type(7, node::max_id))));
 
           // n1
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         node::ptr_t(5, node::max_id),
-                                                         node::ptr_t(7, node::max_id-1))));
+                                                         node::pointer_type(5, node::max_id),
+                                                         node::pointer_type(7, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -5830,25 +5830,25 @@ go_bandit([]() {
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
                                                          terminal_T,
-                                                         node::ptr_t(7, node::max_id-1))));
+                                                         node::pointer_type(7, node::max_id-1))));
 
           // n4
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-1,
                                                          terminal_T,
-                                                         node::ptr_t(7, node::max_id-1))));
+                                                         node::pointer_type(7, node::max_id-1))));
 
           // n3
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         node::ptr_t(5, node::max_id-1),
-                                                         node::ptr_t(5, node::max_id))));
+                                                         node::pointer_type(5, node::max_id-1),
+                                                         node::pointer_type(5, node::max_id))));
 
           // n1
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         node::ptr_t(3, node::max_id),
-                                                         node::ptr_t(7, node::max_id))));
+                                                         node::pointer_type(3, node::max_id),
+                                                         node::pointer_type(7, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -5910,13 +5910,13 @@ go_bandit([]() {
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
                                                          terminal_T,
-                                                         node::ptr_t(7, node::max_id))));
+                                                         node::pointer_type(7, node::max_id))));
 
           // n1
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         node::ptr_t(5, node::max_id),
-                                                         node::ptr_t(7, node::max_id-1))));
+                                                         node::pointer_type(5, node::max_id),
+                                                         node::pointer_type(7, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 

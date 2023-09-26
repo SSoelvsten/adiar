@@ -14,14 +14,14 @@ namespace adiar::internal
 {
   template<typename dd_policy>
   inline
-  shared_levelized_file<typename dd_policy::node_t>
+  shared_levelized_file<typename dd_policy::node_type>
   build_terminal(bool value)
   {
-    using node_t = typename dd_policy::node_t;
-    shared_levelized_file<node_t> nf;
+    using node_type = typename dd_policy::node_type;
+    shared_levelized_file<node_type> nf;
     {
       node_writer nw(nf);
-      nw.unsafe_push(node_t(value));
+      nw.unsafe_push(node_type(value));
       nw.unsafe_set_number_of_terminals(!value, value);
       nw.unsafe_set_canonical(true);
     }
@@ -31,20 +31,20 @@ namespace adiar::internal
 
   template<typename dd_policy>
   inline
-  shared_levelized_file<typename dd_policy::node_t>
-  build_ithvar(typename dd_policy::label_t label)
+  shared_levelized_file<typename dd_policy::node_type>
+  build_ithvar(typename dd_policy::label_type label)
   {
-    using node_t = typename dd_policy::node_t;
-    using ptr_t = typename node_t::ptr_t;
+    using node_type = typename dd_policy::node_type;
+    using pointer_type = typename node_type::pointer_type;
 
-    if (node_t::max_label < label) {
+    if (node_type::max_label < label) {
       throw invalid_argument("Cannot represent that large a label");
     }
 
-    shared_levelized_file<node_t> nf;
+    shared_levelized_file<node_type> nf;
     {
       node_writer nw(nf);
-      nw.unsafe_push(node(label, ptr_t::max_id, ptr_t(false), ptr_t(true)));
+      nw.unsafe_push(node(label, pointer_type::max_id, pointer_type(false), pointer_type(true)));
       nw.unsafe_push(level_info(label,1u));
       nw.unsafe_set_canonical(true);
     }
@@ -59,16 +59,16 @@ namespace adiar::internal
     static constexpr bool init_terminal = INIT_TERMINAL;
 
     constexpr bool
-    skip(const typename dd_policy::label_t &) const
+    skip(const typename dd_policy::label_type &) const
     { return false; }
 
-    inline typename dd_policy::node_t
-    make_node(const typename dd_policy::label_t &l,
-              const typename dd_policy::ptr_t &r) const
+    inline typename dd_policy::node_type
+    make_node(const typename dd_policy::label_type &l,
+              const typename dd_policy::pointer_type &r) const
     {
-      return typename dd_policy::node_t(l, dd_policy::max_id,
+      return typename dd_policy::node_type(l, dd_policy::max_id,
                                         r,
-                                        typename dd_policy::ptr_t(HIGH_VAL));
+                                        typename dd_policy::pointer_type(HIGH_VAL));
     }
   };
 
@@ -79,15 +79,15 @@ namespace adiar::internal
     static constexpr bool init_terminal = INIT_TERMINAL;
 
     constexpr bool
-    skip(const typename dd_policy::label_t &) const
+    skip(const typename dd_policy::label_type &) const
     { return false; }
 
-    inline typename dd_policy::node_t
-    make_node(const typename dd_policy::label_t &l,
-              const typename dd_policy::ptr_t &r) const
+    inline typename dd_policy::node_type
+    make_node(const typename dd_policy::label_type &l,
+              const typename dd_policy::pointer_type &r) const
     {
-      return typename dd_policy::node_t(l, dd_policy::max_id,
-                                        typename dd_policy::ptr_t(LOW_VAL),
+      return typename dd_policy::node_type(l, dd_policy::max_id,
+                                        typename dd_policy::pointer_type(LOW_VAL),
                                         r);
     }
   };
@@ -99,29 +99,29 @@ namespace adiar::internal
     static constexpr bool init_terminal = INIT_TERMINAL;
 
     constexpr bool
-    skip(const typename dd_policy::label_t &) const
+    skip(const typename dd_policy::label_type &) const
     { return false; }
 
-    inline typename dd_policy::node_t
-    make_node(const typename dd_policy::label_t &l,
-              const typename dd_policy::ptr_t &r) const
+    inline typename dd_policy::node_type
+    make_node(const typename dd_policy::label_type &l,
+              const typename dd_policy::pointer_type &r) const
     {
-      return typename dd_policy::node_t(l, dd_policy::max_id, r, r);
+      return typename dd_policy::node_type(l, dd_policy::max_id, r, r);
     }
   };
 
   template<typename chain_policy>
   inline typename chain_policy::reduced_t
   build_chain(const chain_policy &policy,
-              const generator<typename chain_policy::reduced_t::label_t> &vars)
+              const generator<typename chain_policy::reduced_t::label_type> &vars)
   {
-    typename chain_policy::label_t next_label = vars();
+    typename chain_policy::label_type next_label = vars();
 
     if (chain_policy::max_label < next_label) {
       return build_terminal<chain_policy>(chain_policy::init_terminal);
     }
 
-    shared_levelized_file<typename chain_policy::node_t> nf;
+    shared_levelized_file<typename chain_policy::node_type> nf;
     node_writer nw(nf);
 
     size_t max_internal_cut      = 1;
@@ -130,7 +130,7 @@ namespace adiar::internal
     bool   terminal_at_bottom[2] = {false, false};
     size_t terminals[2]          = {0u, 0u};
 
-    node::ptr_t root = node::ptr_t(chain_policy::init_terminal);
+    node::pointer_type root = node::pointer_type(chain_policy::init_terminal);
 
     while(next_label <= chain_policy::max_label) {
       // Fail if generator is increasing.

@@ -26,8 +26,8 @@ namespace adiar::internal
   // Data structures
   struct mapping
   {
-    node::uid_t old_uid;
-    node::uid_t new_uid;
+    node::uid_type old_uid;
+    node::uid_type new_uid;
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The level at which this nodes source belongs to.
     ////////////////////////////////////////////////////////////////////////////
-    arc::label_t level() const
+    arc::label_type level() const
     { return source().label(); }
   };
 
@@ -178,10 +178,10 @@ namespace adiar::internal
   /// \brief Create the output file with correct initial meta data already set.
   //////////////////////////////////////////////////////////////////////////////
   template<typename dd_policy>
-  shared_levelized_file<typename dd_policy::node_t>
+  shared_levelized_file<typename dd_policy::node_type>
   __reduce_init_output()
   {
-    shared_levelized_file<typename dd_policy::node_t> out_file;
+    shared_levelized_file<typename dd_policy::node_type> out_file;
     out_file->canonical = true;
 
     out_file->max_1level_cut[cut_type::Internal]       = 0u;
@@ -259,7 +259,7 @@ namespace adiar::internal
             typename arc_stream_t>
   size_t
   __reduce_level(arc_stream_t &arcs,
-                 const typename dd_policy::label_t label,
+                 const typename dd_policy::label_type label,
                  pq_t &reduce_pq,
                  node_writer &out_writer,
                  const size_t sorters_memory,
@@ -280,8 +280,8 @@ namespace adiar::internal
             || reduce_pq.can_pull()) {
       // TODO (MDD):
       // TODO (QMDD):
-      //   Use __reduce_get_next node_t::outdegree times to create a
-      //   node_t::children_t.
+      //   Use __reduce_get_next node_type::outdegree times to create a
+      //   node_type::children_type.
       const arc e_high = __reduce_get_next(reduce_pq, arcs);
       const arc e_low  = __reduce_get_next(reduce_pq, arcs);
 
@@ -289,7 +289,7 @@ namespace adiar::internal
       adiar_assert(n.label() == label, "Label is for desired level");
 
       // Apply Reduction rule 1
-      const node::ptr_t reduction_rule_ret = dd_policy::reduction_rule(n);
+      const node::pointer_type reduction_rule_ret = dd_policy::reduction_rule(n);
       if (reduction_rule_ret != n.uid()) {
         // Open red1_mapping first (and create file on disk) when at least one
         // element is written to it.
@@ -315,8 +315,8 @@ namespace adiar::internal
     // Sort and apply Reduction rule 2
     child_grouping.sort();
 
-    typename dd_policy::id_t out_id = dd_policy::max_id;
-    node out_node = node(node::uid_t(), ptr_uint64::nil(), ptr_uint64::nil());
+    typename dd_policy::id_type out_id = dd_policy::max_id;
+    node out_node = node(node::uid_type(), ptr_uint64::nil(), ptr_uint64::nil());
 
     while (child_grouping.can_pull()) {
       const node next_node = child_grouping.pull();
@@ -349,14 +349,14 @@ namespace adiar::internal
     red2_mapping.sort();
 
     // Merging of red1_mapping and red2_mapping
-    mapping next_red1 = { node::uid_t(), node::uid_t() }; // <-- dummy value
+    mapping next_red1 = { node::uid_type(), node::uid_type() }; // <-- dummy value
     bool has_next_red1 = red1_mapping.is_open() && red1_mapping.size() > 0;
     if (has_next_red1) {
       red1_mapping.seek(0);
       next_red1 = red1_mapping.read();
     }
 
-    mapping next_red2 = { node::uid_t(), node::uid_t() }; // <-- dummy value
+    mapping next_red2 = { node::uid_type(), node::uid_type() }; // <-- dummy value
     bool has_next_red2 = red2_mapping.can_pull();
     if (has_next_red2) {
       next_red2 = red2_mapping.pull();
@@ -480,7 +480,7 @@ namespace adiar::internal
   /// \brief Reduce an entire decision diagram bottom-up.
   //////////////////////////////////////////////////////////////////////////////
   template<typename dd_policy, typename pq_t>
-  shared_levelized_file<typename dd_policy::node_t>
+  shared_levelized_file<typename dd_policy::node_type>
   __reduce(const shared_levelized_file<arc> &in_file,
            const size_t lpq_memory,
            const size_t sorters_memory)
@@ -494,7 +494,7 @@ namespace adiar::internal
     level_info_stream<> levels(in_file);
 
     // Set up output
-    shared_levelized_file<typename dd_policy::node_t> out_file =
+    shared_levelized_file<typename dd_policy::node_type> out_file =
       __reduce_init_output<dd_policy>();
 
     node_writer out_writer(out_file);
@@ -518,7 +518,7 @@ namespace adiar::internal
         out_writer.unsafe_set_number_of_terminals(!terminal_val, terminal_val);
         __reduce_cut_add(out_file->max_1level_cut, 0u, !terminal_val, terminal_val);
       } else {
-        const typename dd_policy::label_t label = e_low.source().label();
+        const typename dd_policy::label_type label = e_low.source().label();
 
         out_writer.unsafe_push(node(label, dd_policy::max_id, e_low.target(), e_high.target()));
 
@@ -536,7 +536,7 @@ namespace adiar::internal
       }
 
       // Copy over 1-level cut to 2-level cut.
-      for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
+      for(size_t ct = 0u; ct < cut_types; ct++) {
         out_file->max_2level_cut[ct] = out_file->max_1level_cut[ct];
       }
 
@@ -553,7 +553,7 @@ namespace adiar::internal
       adiar_assert(arcs.can_pull_terminal() || !reduce_pq.empty(),
                    "If there is a level, then there should also be something for it.");
       const level_info current_level_info = levels.pull();
-      const typename dd_policy::label_t level = current_level_info.level();
+      const typename dd_policy::label_type level = current_level_info.level();
 
       adiar_assert(!reduce_pq.has_current_level() || level == reduce_pq.current_level(),
                    "level and priority queue should be in sync");
@@ -586,13 +586,13 @@ namespace adiar::internal
     adiar_assert(!input.empty(), "Input for Reduce should always be non-empty");
 
     // Is it already reduced?
-    if (input.template has<typename dd_policy::shared_nodes_t>()) {
-      return typename dd_policy::reduced_t(input.template get<typename dd_policy::shared_nodes_t>(),
+    if (input.template has<typename dd_policy::shared_node_file_type>()) {
+      return typename dd_policy::reduced_t(input.template get<typename dd_policy::shared_node_file_type>(),
                                            input.negate);
     }
 
     // Get unreduced input
-    const typename dd_policy::shared_arcs_t in_file = input.template get<typename dd_policy::shared_arcs_t>();
+    const typename dd_policy::shared_arc_file_type in_file = input.template get<typename dd_policy::shared_arc_file_type>();
 
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.
