@@ -61,9 +61,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   template<typename IT>
   void adiar_set_domain(IT begin, IT end)
-  {
-    return adiar_set_domain(make_generator(begin, end));
-  }
+  { return adiar_set_domain(make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Set the domain globally for all of Adiar.
