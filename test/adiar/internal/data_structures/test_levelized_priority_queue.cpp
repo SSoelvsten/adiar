@@ -77,7 +77,7 @@ go_bandit([]() {
     //
     // TODO: Are we not missing some unit tests for the very simple accessors?
 
-    describe("levelized_priority_queue<..., look_ahead=1, ..., INIT_LEVEL=1>", []() {
+    describe("levelized_priority_queue<..., look_ahead=1, ..., init_level=1>", []() {
       //////////////////////////////////////////////////////////////////////////
       //                          initialisation                              //
       it("initialises #levels = 0", []() {
@@ -2156,7 +2156,7 @@ go_bandit([]() {
       });
     });
 
-    describe("levelized_priority_queue<..., look_ahead=0, ..., INIT_LEVEL=1>", []() {
+    describe("levelized_priority_queue<..., look_ahead=0, ..., init_level=1>", []() {
       //////////////////////////////////////////////////////////////////////////
       //                          initialisation                              //
       it("initialises correctly", []() {
@@ -4210,7 +4210,7 @@ go_bandit([]() {
       });
     });
 
-    describe("levelized_priority_queue<..., look_ahead=1, ..., INIT_LEVEL=0>", []() {
+    describe("levelized_priority_queue<..., look_ahead=1, ..., init_level=0>", []() {
       it("initialises #levels = 0", []() {
         adiar::shared_file<ptr_uint64::label_t> f;
 
@@ -4550,7 +4550,7 @@ go_bandit([]() {
       });
     });
 
-    describe("levelized_priority_queue<..., look_ahead=0, ..., INIT_LEVEL=0>", []() {
+    describe("levelized_priority_queue<..., look_ahead=0, ..., init_level=0>", []() {
       it("initialises correctly", []() {
         adiar::shared_file<ptr_uint64::label_t> f;
 
@@ -4778,7 +4778,7 @@ go_bandit([]() {
       });
     });
 
-    describe("levelized_priority_queue<..., INIT_LEVEL=1, look_ahead=3>", []() {
+    describe("levelized_priority_queue<..., init_level=1, look_ahead=3>", []() {
       // TODO: size, pop, peek tests and more
 
       it("initialises with #levels = 0", []() {
