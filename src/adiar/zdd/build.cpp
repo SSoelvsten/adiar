@@ -135,6 +135,21 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
+  zdd zdd_bot(const generator<zdd::label_t> &/*dom*/)
+  {
+    return zdd_empty();
+  }
+
+  zdd zdd_bot()
+  {
+    return zdd_empty();
+  }
+
+  zdd zdd_top(const generator<zdd::label_t> &dom)
+  {
+    return zdd_powerset(dom);
+  }
+
   zdd zdd_top()
   {
     if (!adiar_has_domain()) {
