@@ -2,5 +2,5 @@
 
 namespace adiar
 {
-  access_mode_t access_mode = access_mode_t::AUTO;
+  access_mode_t access_mode = access_mode_t::Auto;
 }

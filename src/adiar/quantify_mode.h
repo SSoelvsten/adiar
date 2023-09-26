@@ -22,20 +22,20 @@ namespace adiar
   /// \details
   ///   | Enum Value  | Effect                                                |
   ///   |-------------|-------------------------------------------------------|
-  ///   | `AUTO`      | Automatically decide on the approach to use.          |
-  ///   | `NESTED`    | Use the *nested sweeping* framework.                  |
-  ///   | `PARTIAL`   | Use repeated *partial quantification*.                |
-  ///   | `SINGLETON` | Quantify each variable *independently* one at a time. |
+  ///   | `Auto`      | Automatically decide on the approach to use.          |
+  ///   | `Nested`    | Use the *nested sweeping* framework.                  |
+  ///   | `Partial`   | Use repeated *partial quantification*.                |
+  ///   | `Singleton` | Quantify each variable *independently* one at a time. |
   ///
   /// \remark Not all approaches can apply to each algorithm. If the desired
   ///         approach does not apply, then an approach that is *less* than it
-  ///         is used instead, e.g. if `PARTIAL` is picked but not possible then
+  ///         is used instead, e.g. if `Partial` is picked but not possible then
   ///         `INDIVIDUAL` is used.
   //////////////////////////////////////////////////////////////////////////////
-  enum class quantify_mode_t { AUTO, NESTED, PARTIAL, SINGLETON };
+  enum class quantify_mode_t { Auto, Nested, Partial, Singleton };
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief The current quantification mode (default: `AUTO`).
+  /// \brief The current quantification mode (default: `Auto`).
   ///
   /// \details
   ///   If you want to force *Adiar* to a specific quantify approach then you
@@ -43,7 +43,7 @@ namespace adiar
   ///   above four values. For example, one can force *Adiar* always use nested
   ///   sweeping with the following piece of code.
   ///   ```cpp
-  ///   adiar::quantify_mode = adiar::quantify_mode_t::NESTED
+  ///   adiar::quantify_mode = adiar::quantify_mode_t::Nested
   ///   ```
   //////////////////////////////////////////////////////////////////////////////
   extern quantify_mode_t quantify_mode;

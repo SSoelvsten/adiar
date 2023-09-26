@@ -166,24 +166,36 @@ as possible. This nicely aligns Adiar's codebase with the *std* (and the
 *tpie*) namespace that the developers are used to anyway. Furthermore, this way
 of writing might be easier to read.
 
-- Use `snake_case` for namespaces, classes, variables, and functions.
-- Type names are suffixed with `_t` or `_type` (preferably the latter).
+- For *namespaces*, *classes*, *variables*, and *functions* use `snake_case`.
+  The only other exceptions are *enum* values and the public API (see below).
+
+  - Preprocessing variables use *SNAKE_CASE*.
+
+  - We cannot use *snake_case* or *SNAKE_CASE* for enum values since that may
+    clash with keywords or preprocessing variables. Hence, we have settled on
+    `Snake_Case`.
+
+  - Yet, in the public *BDD* API we run into some problems. What we really want
+    is to have the `bdd` and `zdd` "class" prefix all functions as a namespace,
+    e.g. we would write `adiar::bdd h = adiar::bdd::and(f,g)`. Yet we cannot do
+    so since `and`, `or`, and `xor` are keywords in C++.
+
+    So we need some alternative. Yet, each is a compromise in some way.
+    Currently, we have chosen to stick with a naming scheme that aligns with the
+    C API of *BuDDy* and *Sylvan* and does not clash too much with the use of
+    *snake_case*:
+
+    All functions of the public API are of the form `{prefix}_{functionname}`,
+    e.g. `bdd_and(f,g)` by prepending `bdd_` onto the `and(f,g)` function name.
+    Functions names that consist of multiple words, e.g. *is true*, is written
+    in *nocase*, e.g. `bdd_istrue(f)`.
+
+- Type variables (*kinds*) are suffixed with `_type` (preferably the latter).
+  Template type parameters are suffixed with `_t` such that it can be reexposed
+  with the `_type` suffix without creating a name clash.
+
 - Private class member variables are prefixed with a single `_`; public ones may
   also be prefixed as such.
-
-Yet, in the public *BDD* API we run into some problems. What we really want is
-to have the `bdd` and `zdd` "class" prefix all functions as a namespace, e.g. we
-would write `adiar::bdd h = adiar::bdd::and(f,g)`. Yet we cannot do so since
-`and`, `or`, and `xor` are keywords in C++.
-
-So we need some alternative. Yet, each is a compromise in some way. Currently,
-we have chosen to stick with a naming scheme that aligns with the C API of
-*BuDDy* and *Sylvan* and does not clash too much with the use of *snake_case*:
-
-- All functions of the public API are of the form `{prefix}_{functionname}`,
-  e.g. `bdd_and(f,g)` by prepending `bdd_` onto the `and(f,g)` function name.
-  Functions names that consist of multiple words, e.g. *is true*, is written in
-  *nocase*, e.g. `bdd_istrue(f)`.
 
 ### §4 No Almost Always Auto!
 

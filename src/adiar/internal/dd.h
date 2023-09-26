@@ -364,10 +364,10 @@ namespace adiar::internal
       if (!negate) { return ct; }
 
       switch (ct) {
-      case cut_type::INTERNAL_FALSE:
-        return cut_type::INTERNAL_TRUE;
-      case cut_type::INTERNAL_TRUE:
-        return cut_type::INTERNAL_FALSE;
+      case cut_type::Internal_False:
+        return cut_type::Internal_True;
+      case cut_type::Internal_True:
+        return cut_type::Internal_False;
       default:
         return ct;
       }

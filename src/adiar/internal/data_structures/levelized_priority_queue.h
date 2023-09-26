@@ -96,7 +96,7 @@ namespace adiar::internal
   template <typename            element_t,
             typename            element_comp_t = std::less<element_t>,
             ptr_uint64::label_t LOOK_AHEAD     = ADIAR_LPQ_LOOKAHEAD,
-            memory_mode_t       memory_mode    = memory_mode_t::EXTERNAL,
+            memory_mode_t       memory_mode    = memory_mode_t::External,
             typename            file_t         = shared_file_ptr<levelized_file<element_t>>,
             size_t              FILES          = 1u,
             typename            level_comp_t   = std::less<ptr_uint64::label_t>,
@@ -188,8 +188,8 @@ namespace adiar::internal
   public:
     static tpie::memory_size_type memory_usage(tpie::memory_size_type no_elements)
     {
-      return priority_queue<memory_mode_t::INTERNAL, elem_t, elem_comp_t>::memory_usage(no_elements)
-        + BUCKETS * sorter<memory_mode_t::INTERNAL, elem_t, elem_comp_t>::memory_usage(no_elements)
+      return priority_queue<memory_mode_t::Internal, elem_t, elem_comp_t>::memory_usage(no_elements)
+        + BUCKETS * sorter<memory_mode_t::Internal, elem_t, elem_comp_t>::memory_usage(no_elements)
         + const_memory_usage();
     }
 
@@ -205,10 +205,10 @@ namespace adiar::internal
       //       can hold when given an equal share of the memory.
       const size_t memory_per_data_structure = (memory_bytes - const_memory_bytes) / DATA_STRUCTURES;
 
-      const size_t sorter_fits = sorter<memory_mode_t::INTERNAL, elem_t, elem_comp_t>
+      const size_t sorter_fits = sorter<memory_mode_t::Internal, elem_t, elem_comp_t>
         ::memory_fits(memory_per_data_structure);
 
-      const size_t priority_queue_fits = priority_queue<memory_mode_t::INTERNAL, elem_t, elem_comp_t>
+      const size_t priority_queue_fits = priority_queue<memory_mode_t::Internal, elem_t, elem_comp_t>
         ::memory_fits(memory_per_data_structure);
 
       const size_t res = std::min(sorter_fits, priority_queue_fits);
@@ -346,13 +346,13 @@ namespace adiar::internal
       // GCC bug 85282: One cannot do a member class specialization of each of
       // the two following cases. So, we will have to resort to a constexpr
       // if-statement instead.
-      if constexpr (mem_mode == memory_mode_t::INTERNAL) {
+      if constexpr (mem_mode == memory_mode_t::Internal) {
         // ---------------------------------------------------------------------
-        // INTERNAL MEMORY MODE:
+        // Internal MEMORY MODE:
         //   Divide memory in equal parts
 
         return memory_given / DATA_STRUCTURES;
-      } else if constexpr (mem_mode == memory_mode_t::EXTERNAL) {
+      } else if constexpr (mem_mode == memory_mode_t::External) {
         // ---------------------------------------------------------------------
         // EXTERNAL MEMORY MODE:
         //   Use 1/(4Buckets + 1)th of the memory and at least 8 MiB.
@@ -366,8 +366,8 @@ namespace adiar::internal
         // LCOV_EXCL_STOP
       } else {
         // ---------------------------------------------------------------------
-        static_assert(mem_mode == memory_mode_t::INTERNAL && mem_mode == memory_mode_t::EXTERNAL,
-                      "Memory mode must be 'INTERNAL' or 'EXTERNAL' at compile-time");
+        static_assert(mem_mode == memory_mode_t::Internal && mem_mode == memory_mode_t::External,
+                      "Memory mode must be 'Internal' or 'EXTERNAL' at compile-time");
       }
     }
 
@@ -1029,12 +1029,12 @@ namespace adiar::internal
   public:
     static tpie::memory_size_type memory_usage(tpie::memory_size_type no_elements)
     {
-      return priority_queue<memory_mode_t::INTERNAL, elem_t, elem_comp_t>::memory_usage(no_elements);
+      return priority_queue<memory_mode_t::Internal, elem_t, elem_comp_t>::memory_usage(no_elements);
     }
 
     static tpie::memory_size_type memory_fits(tpie::memory_size_type memory_bytes)
     {
-      return priority_queue<memory_mode_t::INTERNAL, elem_t, elem_comp_t>::memory_fits(memory_bytes);
+      return priority_queue<memory_mode_t::Internal, elem_t, elem_comp_t>::memory_fits(memory_bytes);
     }
 
   private:
@@ -1364,7 +1364,7 @@ namespace adiar::internal
   template <typename      elem_t,
             typename      elem_comp_t = std::less<elem_t>,
             node::label_t LOOK_AHEAD  = ADIAR_LPQ_LOOKAHEAD,
-            memory_mode_t mem_mode    = memory_mode_t::EXTERNAL,
+            memory_mode_t mem_mode    = memory_mode_t::External,
             size_t        FILES       = 1u,
             node::label_t INIT_LEVEL  = 1u>
   using levelized_node_priority_queue =
@@ -1381,7 +1381,7 @@ namespace adiar::internal
   template <typename      elem_t,
             typename      elem_comp_t = std::less<elem_t>,
             arc::label_t  LOOK_AHEAD  = ADIAR_LPQ_LOOKAHEAD,
-            memory_mode_t mem_mode    = memory_mode_t::EXTERNAL,
+            memory_mode_t mem_mode    = memory_mode_t::External,
             size_t        FILES       = 1u,
             arc::label_t  INIT_LEVEL  = 1u>
   using levelized_arc_priority_queue =
@@ -1398,7 +1398,7 @@ namespace adiar::internal
   template <typename      elem_t,
             typename      elem_comp_t = std::less<elem_t>,
             arc::label_t  LOOK_AHEAD  = ADIAR_LPQ_LOOKAHEAD,
-            memory_mode_t mem_mode    = memory_mode_t::EXTERNAL,
+            memory_mode_t mem_mode    = memory_mode_t::External,
             size_t        FILES       = 1u,
             arc::label_t  INIT_LEVEL  = 1u>
   using levelized_node_arc_priority_queue =
@@ -1414,7 +1414,7 @@ namespace adiar::internal
   template <typename            elem_t,
             typename            elem_comp_t = std::less<elem_t>,
             ptr_uint64::label_t LOOK_AHEAD  = ADIAR_LPQ_LOOKAHEAD,
-            memory_mode_t       mem_mode    = memory_mode_t::EXTERNAL,
+            memory_mode_t       mem_mode    = memory_mode_t::External,
             size_t              FILES       = 1u,
             ptr_uint64::label_t INIT_LEVEL  = 1u>
   using levelized_label_priority_queue =

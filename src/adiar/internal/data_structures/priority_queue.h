@@ -19,7 +19,7 @@ namespace adiar::internal
   /// \brief Wrapper for TPIE's internal binary heap.
   //////////////////////////////////////////////////////////////////////////////
   template<typename elem_t, typename comp_t>
-  class priority_queue<memory_mode_t::INTERNAL, elem_t, comp_t>
+  class priority_queue<memory_mode_t::Internal, elem_t, comp_t>
   {
   private:
     using pq_t = tpie::internal_priority_queue<elem_t, comp_t>;
@@ -71,7 +71,7 @@ namespace adiar::internal
   ///        'internal' memory type.
   //////////////////////////////////////////////////////////////////////////////
   template <typename elem_t, typename comp_t = std::less<elem_t>>
-  using internal_priority_queue = priority_queue<memory_mode_t::INTERNAL, elem_t, comp_t>;
+  using internal_priority_queue = priority_queue<memory_mode_t::Internal, elem_t, comp_t>;
 
   // LCOV_EXCL_START
   // TODO: Unit test external memory variants?
@@ -80,7 +80,7 @@ namespace adiar::internal
   /// \brief Wrapper for TPIE's internal binary heap.
   //////////////////////////////////////////////////////////////////////////////
   template<typename elem_t, typename comp_t>
-  class priority_queue<memory_mode_t::EXTERNAL, elem_t, comp_t>
+  class priority_queue<memory_mode_t::External, elem_t, comp_t>
   {
   public:
     static constexpr size_t DATA_STRUCTURES = 1u;
@@ -113,7 +113,7 @@ namespace adiar::internal
   ///        'external' memory type.
   //////////////////////////////////////////////////////////////////////////////
   template <typename elem_t, typename comp_t = std::less<elem_t>>
-  using external_priority_queue = priority_queue<memory_mode_t::EXTERNAL, elem_t, comp_t>;
+  using external_priority_queue = priority_queue<memory_mode_t::External, elem_t, comp_t>;
 
   // LCOV_EXCL_STOP
 }

@@ -22,7 +22,7 @@ namespace adiar::internal
   /// \brief Wrapper for TPIE's internal vector with standard quick-sort.
   //////////////////////////////////////////////////////////////////////////////
   template <typename elem_t, typename pred_t>
-  class sorter<memory_mode_t::INTERNAL, elem_t, pred_t>
+  class sorter<memory_mode_t::Internal, elem_t, pred_t>
   {
   private:
     using array_t = tpie::array<elem_t>;
@@ -50,18 +50,18 @@ namespace adiar::internal
 
     static constexpr size_t DATA_STRUCTURES = 1u;
 
-    static unique_ptr<sorter<memory_mode_t::INTERNAL, elem_t, pred_t>>
+    static unique_ptr<sorter<memory_mode_t::Internal, elem_t, pred_t>>
     make_unique(size_t memory_bytes,
                 size_t no_elements,
                 size_t no_sorters = 1,
                 pred_t pred = pred_t())
     {
-      return adiar::make_unique<sorter<memory_mode_t::INTERNAL, elem_t, pred_t>>
+      return adiar::make_unique<sorter<memory_mode_t::Internal, elem_t, pred_t>>
         (memory_bytes, no_elements, no_sorters, pred);
     }
 
     static void
-    reset_unique(unique_ptr<sorter<memory_mode_t::INTERNAL, elem_t, pred_t>> &u_ptr,
+    reset_unique(unique_ptr<sorter<memory_mode_t::Internal, elem_t, pred_t>> &u_ptr,
                  size_t /*memory_bytes*/,
                  size_t /*no_elements*/,
                  size_t /*no_sorters*/ = 1,
@@ -139,7 +139,7 @@ namespace adiar::internal
   ///        'internal' memory type.
   //////////////////////////////////////////////////////////////////////////////
   template <typename elem_t, typename comp_t = std::less<elem_t>>
-  using internal_sorter = sorter<memory_mode_t::INTERNAL, elem_t, comp_t>;
+  using internal_sorter = sorter<memory_mode_t::Internal, elem_t, comp_t>;
 
   // LCOV_EXCL_START
   // TODO: Unit test external memory variants?
@@ -152,7 +152,7 @@ namespace adiar::internal
   /// it should be.
   //////////////////////////////////////////////////////////////////////////////
   template <typename elem_t, typename pred_t>
-  class sorter<memory_mode_t::EXTERNAL, elem_t, pred_t>
+  class sorter<memory_mode_t::External, elem_t, pred_t>
   {
   private:
     tpie::merge_sorter<elem_t, false, pred_t> _sorter;
@@ -165,17 +165,17 @@ namespace adiar::internal
   public:
     static constexpr size_t DATA_STRUCTURES = 1u;
 
-    static unique_ptr<sorter<memory_mode_t::EXTERNAL, elem_t, pred_t>>
+    static unique_ptr<sorter<memory_mode_t::External, elem_t, pred_t>>
     make_unique(size_t memory_bytes,
                 size_t no_elements,
                 size_t no_sorters = 1,
                 pred_t pred = pred_t())
     {
-      return adiar::make_unique<sorter<memory_mode_t::EXTERNAL, elem_t, pred_t>>
+      return adiar::make_unique<sorter<memory_mode_t::External, elem_t, pred_t>>
         (memory_bytes, no_elements, no_sorters, pred);
     }
 
-    static void reset_unique(unique_ptr<sorter<memory_mode_t::EXTERNAL, elem_t, pred_t>> &u_ptr,
+    static void reset_unique(unique_ptr<sorter<memory_mode_t::External, elem_t, pred_t>> &u_ptr,
                              size_t memory_bytes,
                              size_t no_elements,
                              size_t no_sorters = 1,
@@ -199,7 +199,7 @@ namespace adiar::internal
       // necessary to sort these elements in internal memory. We don't need to
       // allocate more than a constant of this for the external memory case.
       const tpie::memory_size_type no_elements_memory =
-        2 * sorter<memory_mode_t::INTERNAL, elem_t, pred_t>::memory_usage(no_elements);
+        2 * sorter<memory_mode_t::Internal, elem_t, pred_t>::memory_usage(no_elements);
 
       // =======================================================================
       // Case 1: A single sorter.
@@ -354,7 +354,7 @@ namespace adiar::internal
   ///        'external' memory type.
   //////////////////////////////////////////////////////////////////////////////
   template <typename elem_t, typename comp_t = std::less<elem_t>>
-  using external_sorter = sorter<memory_mode_t::EXTERNAL, elem_t, comp_t>;
+  using external_sorter = sorter<memory_mode_t::External, elem_t, comp_t>;
 
   // LCOV_EXCL_STOP
 }

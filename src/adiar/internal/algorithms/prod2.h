@@ -508,13 +508,13 @@ namespace adiar::internal
                                     const bool_op &op)
   {
     // Cuts for left-hand side
-    const safe_size_t left_cut_internal = cut::get(in_0, cut_type::INTERNAL);
+    const safe_size_t left_cut_internal = cut::get(in_0, cut_type::Internal);
 
     const cut_type left_ct = prod_policy::left_cut(op);
     const safe_size_t left_cut_terminals = cut::get(in_0, left_ct) - left_cut_internal;
 
     // Cuts for right-hand side
-    const safe_size_t right_cut_internal = cut::get(in_1, cut_type::INTERNAL);
+    const safe_size_t right_cut_internal = cut::get(in_1, cut_type::Internal);
 
     const cut_type right_ct = prod_policy::right_cut(op);
     const safe_size_t right_cut_terminals = cut::get(in_1, right_ct) - right_cut_internal;
@@ -536,8 +536,8 @@ namespace adiar::internal
                                     const bool_op &op)
   {
     // Left-hand side
-    const safe_size_t left_2level_cut = in_0.max_2level_cut(cut_type::INTERNAL);
-    const safe_size_t left_1level_cut = in_0.max_1level_cut(cut_type::INTERNAL);
+    const safe_size_t left_2level_cut = in_0.max_2level_cut(cut_type::Internal);
+    const safe_size_t left_1level_cut = in_0.max_1level_cut(cut_type::Internal);
 
     const cut_type left_ct = prod_policy::left_cut(op);
     const safe_size_t left_terminal_vals = number_of_terminals(left_ct);
@@ -545,8 +545,8 @@ namespace adiar::internal
     const safe_size_t left_terminal_arcs =  in_0.max_1level_cut(left_ct) - left_1level_cut;
 
     // Right-hand side
-    const safe_size_t right_2level_cut = in_1.max_2level_cut(cut_type::INTERNAL);
-    const safe_size_t right_1level_cut = in_1.max_1level_cut(cut_type::INTERNAL);
+    const safe_size_t right_2level_cut = in_1.max_2level_cut(cut_type::Internal);
+    const safe_size_t right_1level_cut = in_1.max_1level_cut(cut_type::Internal);
 
     const cut_type right_ct = prod_policy::right_cut(op);
     const safe_size_t right_terminal_vals = number_of_terminals(right_ct);
@@ -671,15 +671,15 @@ namespace adiar::internal
                                         __prod2_2level_upper_bound<prod_policy>(in_0, in_1, op),
                                         __prod2_ilevel_upper_bound<prod_policy>(in_0, in_1, op)});
 
-    const bool internal_only = memory_mode == memory_mode_t::INTERNAL;
-    const bool external_only = memory_mode == memory_mode_t::EXTERNAL;
+    const bool internal_only = memory_mode == memory_mode_t::Internal;
+    const bool external_only = memory_mode == memory_mode_t::External;
 
     // TODO: define this otherwise
     // 2 mega byte
     constexpr size_t ra_thresshold = 2 * 1024 * 1024 / sizeof(typename prod_policy::node_t);
 
-    if (access_mode == access_mode_t::RA
-        || (access_mode == access_mode_t::AUTO
+    if (access_mode == access_mode_t::Random_Access
+        || (access_mode == access_mode_t::Auto
             // The smallest of the canonical inputs, must be under the thresshold
             && (   (in_0->canonical && in_1->canonical && std::min(in_0->width, in_1->width) <= ra_thresshold)
                 || (in_0->canonical && in_0->width <= ra_thresshold)
@@ -716,7 +716,7 @@ namespace adiar::internal
         - arc_writer::memory_usage();
 
       const size_t pq_memory_fits =
-        prod_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::memory_fits(pq_available_memory);
+        prod_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::memory_fits(pq_available_memory);
 
       const size_t max_pq_size = internal_only ? std::min(pq_memory_fits, pq_1_bound) : pq_1_bound;
 
@@ -725,21 +725,21 @@ namespace adiar::internal
         stats_prod2.lpq.unbucketed += 1u;
 #endif
         return __prod2_ra<prod_policy,
-                          prod_priority_queue_t<0, memory_mode_t::INTERNAL>>
+                          prod_priority_queue_t<0, memory_mode_t::Internal>>
           (ra_in_0, ra_in_1, ra_op, pq_available_memory, max_pq_size);
       } else if (!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
         stats_prod2.lpq.internal += 1u;
 #endif
         return __prod2_ra<prod_policy,
-                          prod_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>>
+                          prod_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>>
           (ra_in_0, ra_in_1, ra_op, pq_available_memory, max_pq_size);
       } else {
 #ifdef ADIAR_STATS
         stats_prod2.lpq.external += 1u;
 #endif
         return __prod2_ra<prod_policy,
-                          prod_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>>
+                          prod_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::External>>
           (ra_in_0, ra_in_1, ra_op, pq_available_memory, max_pq_size);
       }
     }
@@ -763,10 +763,10 @@ namespace adiar::internal
       - arc_writer::memory_usage();
 
     constexpr size_t data_structures_in_pq_1 =
-      prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::DATA_STRUCTURES;
+      prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::DATA_STRUCTURES;
 
     constexpr size_t data_structures_in_pq_2 =
-      prod_priority_queue_2_t<memory_mode_t::INTERNAL>::DATA_STRUCTURES;
+      prod_priority_queue_2_t<memory_mode_t::Internal>::DATA_STRUCTURES;
 
     const size_t pq_1_internal_memory =
       (aux_available_memory / (data_structures_in_pq_1 + data_structures_in_pq_2)) * data_structures_in_pq_1;
@@ -774,10 +774,10 @@ namespace adiar::internal
     const size_t pq_2_internal_memory = aux_available_memory - pq_1_internal_memory;
 
     const size_t pq_1_memory_fits =
-      prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::memory_fits(pq_1_internal_memory);
+      prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::memory_fits(pq_1_internal_memory);
 
     const size_t pq_2_memory_fits =
-      prod_priority_queue_2_t<memory_mode_t::INTERNAL>::memory_fits(pq_2_internal_memory);
+      prod_priority_queue_2_t<memory_mode_t::Internal>::memory_fits(pq_2_internal_memory);
 
     const size_t max_pq_1_size = internal_only ? std::min(pq_1_memory_fits, pq_1_bound) : pq_1_bound;
 
@@ -790,8 +790,8 @@ namespace adiar::internal
       stats_prod2.lpq.unbucketed += 1u;
 #endif
       return __prod2_pq<prod_policy,
-                        prod_priority_queue_1_t<0, memory_mode_t::INTERNAL>,
-                        prod_priority_queue_2_t<memory_mode_t::INTERNAL>>
+                        prod_priority_queue_1_t<0, memory_mode_t::Internal>,
+                        prod_priority_queue_2_t<memory_mode_t::Internal>>
         (in_0, in_1, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
     } else if(!external_only && max_pq_1_size <= pq_1_memory_fits
                              && max_pq_2_size <= pq_2_memory_fits) {
@@ -799,8 +799,8 @@ namespace adiar::internal
       stats_prod2.lpq.internal += 1u;
 #endif
       return __prod2_pq<prod_policy,
-                        prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>,
-                        prod_priority_queue_2_t<memory_mode_t::INTERNAL>>
+                        prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>,
+                        prod_priority_queue_2_t<memory_mode_t::Internal>>
         (in_0, in_1, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
     } else {
 #ifdef ADIAR_STATS
@@ -810,8 +810,8 @@ namespace adiar::internal
       const size_t pq_2_memory = pq_1_memory;
 
       return __prod2_pq<prod_policy,
-                        prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>,
-                        prod_priority_queue_2_t<memory_mode_t::EXTERNAL>>
+                        prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::External>,
+                        prod_priority_queue_2_t<memory_mode_t::External>>
         (in_0, in_1, op, pq_1_memory, max_pq_1_size, pq_2_memory, max_pq_2_size);
     }
   }

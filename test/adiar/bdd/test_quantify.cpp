@@ -756,10 +756,10 @@ go_bandit([]() {
 
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->levels(), Is().EqualTo(0u));
 
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::Internal], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::Internal_False], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::Internal_True], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::All], Is().EqualTo(1u));
 
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[false], Is().EqualTo(0u));
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[true],  Is().EqualTo(1u));
@@ -776,10 +776,10 @@ go_bandit([]() {
 
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->levels(), Is().EqualTo(0u));
 
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::Internal], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::Internal_False], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::Internal_True], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::All], Is().EqualTo(1u));
 
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[false], Is().EqualTo(0u));
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[true],  Is().EqualTo(1u));
@@ -1423,8 +1423,8 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd_1));
       });
 
-      describe("quantify_mode == SINGLETON", [&]() {
-        quantify_mode = quantify_mode_t::SINGLETON;
+      describe("quantify_mode == Singleton", [&]() {
+        quantify_mode = quantify_mode_t::Singleton;
 
         it("quantifies odd variables in BDD 4 [&&]", [&]() {
           bdd out = bdd_exists(bdd_4, [](const bdd::label_t x) -> bool {
@@ -1582,11 +1582,11 @@ go_bandit([]() {
           // TODO: meta variables...
         });
 
-        quantify_mode = quantify_mode_t::AUTO;
+        quantify_mode = quantify_mode_t::Auto;
       });
 
-      describe("quantify_mode == PARTIAL", [&]() {
-        quantify_mode = quantify_mode_t::PARTIAL;
+      describe("quantify_mode == Partial", [&]() {
+        quantify_mode = quantify_mode_t::Partial;
 
         it("collapses during initial transposition of all variables in BDD 4 [&&]", [&]() {
           std::vector<bdd::label_t> call_history;
@@ -2266,11 +2266,11 @@ go_bandit([]() {
           AssertThat(call_history.at(41), Is().EqualTo(13u));
         });
 
-        quantify_mode = quantify_mode_t::AUTO;
+        quantify_mode = quantify_mode_t::Auto;
       });
 
-      describe("quantify_mode == NESTED", [&]() {
-        quantify_mode = quantify_mode_t::NESTED;
+      describe("quantify_mode == Nested", [&]() {
+        quantify_mode = quantify_mode_t::Nested;
 
         it("quantifies odd variables in BDD 4", [&]() {
           std::vector<bdd::label_t> call_history;
@@ -2736,11 +2736,11 @@ go_bandit([]() {
           // TODO: meta variables...
         });
 
-        quantify_mode = quantify_mode_t::AUTO;
+        quantify_mode = quantify_mode_t::Auto;
       });
 
-      describe("quantify_mode == AUTO", [&]() {
-        quantify_mode = quantify_mode_t::AUTO;
+      describe("quantify_mode == Auto", [&]() {
+        quantify_mode = quantify_mode_t::Auto;
 
         it("collapses during initial transposition of all variables in BDD 4 [&&]", [&]() {
           std::vector<bdd::label_t> call_history;
@@ -3707,7 +3707,7 @@ go_bandit([]() {
           AssertThat(call_history.at(24), Is().EqualTo(0u));
         });
 
-        quantify_mode = quantify_mode_t::AUTO;
+        quantify_mode = quantify_mode_t::Auto;
       });
     });
 
@@ -3717,8 +3717,8 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd_1));
       });
 
-      describe("quantify_mode == SINGLETON", [&]() {
-        quantify_mode = quantify_mode_t::SINGLETON;
+      describe("quantify_mode == Singleton", [&]() {
+        quantify_mode = quantify_mode_t::Singleton;
 
         it("quantifies 3, 1, -1 in BDD 4 [&&]", [&]() {
           bdd::label_t var = 3;
@@ -3833,11 +3833,11 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
-        quantify_mode = quantify_mode_t::AUTO;
+        quantify_mode = quantify_mode_t::Auto;
       });
 
-      describe("quantify_mode == NESTED", [&]() {
-        quantify_mode = quantify_mode_t::NESTED;
+      describe("quantify_mode == Nested", [&]() {
+        quantify_mode = quantify_mode_t::Nested;
 
         it("quantifies 3, 1, -1 in BDD 4 [&&]", [&]() {
           bdd::label_t var = 3;
@@ -4063,7 +4063,7 @@ go_bandit([]() {
           // TODO: meta variables
         });
 
-        quantify_mode = quantify_mode_t::AUTO;
+        quantify_mode = quantify_mode_t::Auto;
       });
     });
 
@@ -4457,8 +4457,8 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd_1));
       });
 
-      describe("quantify_mode == SINGLETON", [&]() {
-        quantify_mode = quantify_mode_t::SINGLETON;
+      describe("quantify_mode == Singleton", [&]() {
+        quantify_mode = quantify_mode_t::Singleton;
 
         it("quantifies even variables in BDD 1 [const &]", [&]() {
           const bdd in = bdd_1;
@@ -4551,19 +4551,19 @@ go_bandit([]() {
           // TODO: meta variables...
         });
 
-        quantify_mode = quantify_mode_t::AUTO;
+        quantify_mode = quantify_mode_t::Auto;
       });
 
-      describe("quantify_mode == PARTIAL", [&]() {
-        quantify_mode = quantify_mode_t::PARTIAL;
+      describe("quantify_mode == Partial", [&]() {
+        quantify_mode = quantify_mode_t::Partial;
 
         // TODO
 
-        quantify_mode = quantify_mode_t::AUTO;
+        quantify_mode = quantify_mode_t::Auto;
       });
 
-      describe("quantify_mode == NESTED", [&]() {
-        quantify_mode = quantify_mode_t::NESTED;
+      describe("quantify_mode == Nested", [&]() {
+        quantify_mode = quantify_mode_t::Nested;
 
         it("quantifies even variables in BDD 1", [&]() {
           const bdd out = bdd_forall(bdd_1, [](const bdd::label_t x) -> bool {
@@ -4659,11 +4659,11 @@ go_bandit([]() {
           // TODO: meta variables
         });
 
-        quantify_mode = quantify_mode_t::AUTO;
+        quantify_mode = quantify_mode_t::Auto;
       });
 
-      describe("quantify_mode == AUTO", [&]() {
-        quantify_mode = quantify_mode_t::AUTO;
+      describe("quantify_mode == Auto", [&]() {
+        quantify_mode = quantify_mode_t::Auto;
 
         it("quantifies odd variables in BDD 1", [&]() {
           const bdd out = bdd_forall(bdd_1, [](const bdd::label_t x) -> bool {
@@ -4687,7 +4687,7 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
-        quantify_mode = quantify_mode_t::AUTO;
+        quantify_mode = quantify_mode_t::Auto;
       });
     });
 
@@ -4697,8 +4697,8 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd_1));
       });
 
-      describe("quantify_mode == SINGLETON", [&]() {
-        quantify_mode = quantify_mode_t::SINGLETON;
+      describe("quantify_mode == Singleton", [&]() {
+        quantify_mode = quantify_mode_t::Singleton;
 
         it("quantifies 0, -2 in BDD 1 [const &]", [&]() {
           const bdd in = bdd_1;
@@ -4776,11 +4776,11 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
-        quantify_mode = quantify_mode_t::AUTO;
+        quantify_mode = quantify_mode_t::Auto;
       });
 
-      describe("quantify_mode == NESTED", [&]() {
-        quantify_mode = quantify_mode_t::NESTED;
+      describe("quantify_mode == Nested", [&]() {
+        quantify_mode = quantify_mode_t::Nested;
 
         it("quantifies 0, -2 in BDD 1", [&]() {
           bdd::label_t var = 0;
@@ -4912,7 +4912,7 @@ go_bandit([]() {
           // TODO: meta variables
         });
 
-        quantify_mode = quantify_mode_t::AUTO;
+        quantify_mode = quantify_mode_t::Auto;
       });
     });
 

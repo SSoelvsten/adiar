@@ -26,14 +26,14 @@ namespace adiar
   /// \details
   ///   | Enum Value | Effect                                         |
   ///   |------------|------------------------------------------------|
-  ///   | `AUTO`     | Automatically decide on type of memory to use. |
-  ///   | `INTERNAL` | Always use *internal* memory.                  |
-  ///   | `EXTERNAL` | Always use *external* memory.                  |
+  ///   | `Auto`     | Automatically decide on type of memory to use. |
+  ///   | `Internal` | Always use *internal* memory.                  |
+  ///   | `External` | Always use *external* memory.                  |
   //////////////////////////////////////////////////////////////////////////////
-  enum class memory_mode_t { AUTO, INTERNAL, EXTERNAL };
+  enum class memory_mode_t { Auto, Internal, External };
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief The current memory mode (default: `AUTO`).
+  /// \brief The current memory mode (default: `Auto`).
   ///
   /// \details
   ///   If you want to force *Adiar* to a specific memory mode then you should set the
@@ -41,10 +41,10 @@ namespace adiar
   ///   example, one can force *Adiar* always use internal memory with the
   ///   following piece of code.
   ///   ```cpp
-  ///   adiar::memory_mode = adiar::memory_mode_t::INTERNAL
+  ///   adiar::memory_mode = adiar::memory_mode_t::Internal
   ///   ```
   ///
-  /// \warning Using `INTERNAL` may lead to crashes if an input or output is
+  /// \warning Using `Internal` may lead to crashes if an input or output is
   ///          too large!
   //////////////////////////////////////////////////////////////////////////////
   extern memory_mode_t memory_mode;

@@ -19,21 +19,21 @@ namespace adiar
   /// \{
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether Adiar should exclusively use random access (RA) or
-  ///        priority queues (PQ) or automatically pick either way based on
-  ///        size of input.
+  /// \brief Whether Adiar should exclusively use random access
+  ///        (`Random_Access`) or priority queues (`Priority_Queue`) or
+  ///        automatically pick either way based on the width of inputs.
   ///
   /// \details
-  ///   | Enum Value | Effect                                         |
-  ///   |------------|------------------------------------------------|
-  ///   | `AUTO`     | Automatically decide on type of access to use. |
-  ///   | `RA`       | Always use *random access*.                    |
-  ///   | `PQ`       | Always use *priority queues*.                  |
+  ///   | Enum Value       | Effect                                         |
+  ///   |------------------|------------------------------------------------|
+  ///   | `Auto`           | Automatically decide on type of access to use. |
+  ///   | `Random_Access`  | Always use *random access*.                    |
+  ///   | `Priority_Queue` | Always use *priority queues*.                  |
   //////////////////////////////////////////////////////////////////////////////
-  enum class access_mode_t { AUTO, RA, PQ };
+  enum class access_mode_t { Auto, Random_Access, Priority_Queue };
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief The current access mode (default: `AUTO`).
+  /// \brief The current access mode (default: `Auto`).
   ///
   /// \details
   ///   If you want to force *Adiar* to a specific access mode then you should
@@ -41,11 +41,11 @@ namespace adiar
   ///   values. For example, one can force *Adiar* always use random access with
   ///   the following piece of code.
   ///   ```cpp
-  ///   adiar::access_mode = adiar::access_mode_t::RA
+  ///   adiar::access_mode = adiar::access_mode_t::Random_Access
   ///   ```
   ///
-  /// \warning Using `RA` may lead to crashes if all inputs are too wide or
-  ///          input to random access is not canonical!
+  /// \warning Using `Random_Access` may lead to crashes if all inputs are too
+  ///          wide or input to random access is not canonical!
   //////////////////////////////////////////////////////////////////////////////
   extern access_mode_t access_mode;
 

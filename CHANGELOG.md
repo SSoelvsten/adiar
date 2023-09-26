@@ -14,11 +14,11 @@
 
 ## Optimisations
 
-- The `access_mode` enum has been added as a new global setting. If set to *AUTO* or to *RA* then `bdd_apply`, `zdd_binop`, and their derivatives will use random access on one of the input (if possible). This circumvents using an entire priority queue, thereby drastically improving performance. This is especially beneficial when applying an operator to a very large decision diagram together with a narrow one.
+- The `access_mode` enum has been added as a new global setting. If set to *AUTO* or to *Random_Access* then `bdd_apply`, `zdd_binop`, and their derivatives will use random access on one of the input (if possible). This circumvents using an entire priority queue, thereby drastically improving performance. This is especially beneficial when applying an operator to a very large decision diagram together with a narrow one.
 - Added proper algoritms for the quantification of multi-variable quantificiation. To this end, there are now three separate algorithms. The `quantify_mode` enum can be used to pick what algorithm to use (the default is a heuristic that picks between all three algorithms)
-  1. The *v1.x* approach of quantifying a single variable at a time still persists (`quantify_mode::SINGLETON`).
-  2. The *v1.x* algorithm has been generalized to (partially) handle multiple variables at once in a single sweep (`quantify_mode::PARTIAL`). Furthermore, this generalized sweep can be rerun on its own unreduced result (skipping the possibly costly and unecessary Reduce sweep).
-  3. Implemented the *nested sweeping* framework to add support for an I/O-efficient simulation of BDD operations that (may) recurse on intermediate results. This provides a completely new multi-variable quantification operations that is similar to the one in other BDD packages (`quantify_mode::NESTED`).
+  1. The *v1.x* approach of quantifying a single variable at a time still persists (`quantify_mode::Singleton`).
+  2. The *v1.x* algorithm has been generalized to (partially) handle multiple variables at once in a single sweep (`quantify_mode::Partial`). Furthermore, this generalized sweep can be rerun on its own unreduced result (skipping the possibly costly and unecessary Reduce sweep).
+  3. Implemented the *nested sweeping* framework to add support for an I/O-efficient simulation of BDD operations that (may) recurse on intermediate results. This provides a completely new multi-variable quantification operations that is similar to the one in other BDD packages (`quantify_mode::Nested`).
 
 ## Bug Fixes
 

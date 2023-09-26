@@ -32,14 +32,14 @@ namespace adiar::internal
     enum reduce_strategy
     {
       /** Always use the canonical reduce algorithm. */
-      ALWAYS_CANONICAL,
+      Always_Canonical,
       /** Use canonical reduce at the very end for the final output. */
-      FINAL_CANONICAL,
+      Final_Canonical,
       /** Always use the faster non-canonical reduce. */
-      NEVER_CANONICAL,
-      /** In-between `ALWAYS_CANONICAL` and `FINAL_CANONICAL`; whether the
+      Never_Canonical,
+      /** In-between `Always_Canonical` and `Final_Canonical`; whether the
           canonical reduce is used depends on heuristics. */
-      AUTO
+      Auto
     };
 
     template<typename ptr_t>
@@ -47,7 +47,7 @@ namespace adiar::internal
     __reduce_decrement_cut(cuts_t &c, const ptr_t& p)
     {
       if (p.is_terminal()) {
-        c[cut_type::ALL]--;
+        c[cut_type::All]--;
         c[cut_type_with(!p.value(), p.value())]--;
       } else {
         for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
@@ -872,13 +872,13 @@ namespace adiar::internal
         const size_t inner_remaining_memory = inner_memory - inner_stream_memory - inner_pq_memory;
 
         const size_t inner_pq_fits =
-          nesting_policy::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::memory_fits(inner_pq_memory);
+          nesting_policy::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::memory_fits(inner_pq_memory);
 
         const size_t inner_pq_bound = policy_impl.pq_bound(outer_file, outer_roots.size());
 
-        const bool external_only = memory_mode == memory_mode_t::EXTERNAL;
+        const bool external_only = memory_mode == memory_mode_t::External;
 
-        const size_t inner_pq_max_size = memory_mode == memory_mode_t::INTERNAL
+        const size_t inner_pq_max_size = memory_mode == memory_mode_t::Internal
           ? std::min(inner_pq_fits, inner_pq_bound)
           : inner_pq_bound;
 
@@ -890,7 +890,7 @@ namespace adiar::internal
           adiar_assert(inner_pq_max_size <= inner_pq_fits,
                       "'no_lookahead' implies it should (in practice) satisfy the '<='");
 
-          using inner_pq_t = typename nesting_policy::template pq_t<0, memory_mode_t::INTERNAL>;
+          using inner_pq_t = typename nesting_policy::template pq_t<0, memory_mode_t::Internal>;
           inner_pq_t inner_pq({typename nesting_policy::reduced_t(outer_file)},
                               inner_pq_memory, inner_pq_max_size,
                               stats.inner.down.lpq);
@@ -903,7 +903,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
           stats.inner.down.lpq.internal += 1u;
 #endif
-          using inner_pq_t = typename nesting_policy::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>;
+          using inner_pq_t = typename nesting_policy::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>;
           inner_pq_t inner_pq({typename nesting_policy::reduced_t(outer_file)},
                               inner_pq_memory, inner_pq_max_size,
                               stats.inner.down.lpq);
@@ -916,7 +916,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
           stats.inner.down.lpq.external += 1u;
 #endif
-          using inner_pq_t = typename nesting_policy::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>;
+          using inner_pq_t = typename nesting_policy::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::External>;
           inner_pq_t inner_pq({typename nesting_policy::reduced_t(outer_file)},
                               inner_pq_memory, inner_pq_max_size,
                               stats.inner.down.lpq);
@@ -1243,8 +1243,8 @@ namespace adiar::internal
           adiar_assert(!decorated_pq.has_current_level() || level == decorated_pq.current_level(),
                        "level and priority queue should be in sync");
 
-          if (nesting_policy::reduce_strategy == nested_sweeping::NEVER_CANONICAL ||
-              (nesting_policy::reduce_strategy == nested_sweeping::FINAL_CANONICAL && !is_last_inner)) {
+          if (nesting_policy::reduce_strategy == nested_sweeping::Never_Canonical ||
+              (nesting_policy::reduce_strategy == nested_sweeping::Final_Canonical && !is_last_inner)) {
 #ifdef ADIAR_STATS
             // TODO
 #endif
@@ -1303,20 +1303,20 @@ namespace adiar::internal
           inner_aux_available_memory - inner_pq_memory - tpie::file_stream<mapping>::memory_usage();
 
         const tpie::memory_size_type inner_pq_memory_fits =
-          up__pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::memory_fits(inner_pq_memory);
+          up__pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::memory_fits(inner_pq_memory);
 
         const size_t inner_pq_bound = inner_arcs_file->max_1level_cut;
 
-        const size_t inner_pq_max_size = memory_mode == memory_mode_t::INTERNAL
+        const size_t inner_pq_max_size = memory_mode == memory_mode_t::Internal
           ? std::min(inner_pq_memory_fits, inner_pq_bound)
           : inner_pq_bound;
 
-        const bool external_only = memory_mode == memory_mode_t::EXTERNAL;
+        const bool external_only = memory_mode == memory_mode_t::External;
         if (!external_only && inner_pq_max_size <= no_lookahead_bound(1)) {
 #ifdef ADIAR_STATS
           stats.inner.up.lpq.unbucketed += 1u;
 #endif
-          using inner_pq_t = up__pq_t<0, memory_mode_t::INTERNAL>;
+          using inner_pq_t = up__pq_t<0, memory_mode_t::Internal>;
           up<nesting_policy, inner_pq_t>(outer_arcs, outer_pq, outer_writer,
                                          inner_arcs_file,
                                          inner_pq_memory, inner_pq_max_size, inner_sorters_memory,
@@ -1326,7 +1326,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
           stats.inner.up.lpq.internal += 1u;
 #endif
-          using inner_pq_t = up__pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>;
+          using inner_pq_t = up__pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>;
           up<nesting_policy, inner_pq_t>(outer_arcs, outer_pq, outer_writer,
                                          inner_arcs_file,
                                          inner_pq_memory, inner_pq_max_size, inner_sorters_memory,
@@ -1335,7 +1335,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
           stats.inner.up.lpq.external += 1u;
 #endif
-          using inner_pq_t = up__pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>;
+          using inner_pq_t = up__pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::External>;
           up<nesting_policy, inner_pq_t>(outer_arcs, outer_pq, outer_writer,
                                          inner_arcs_file,
                                          inner_pq_memory, inner_pq_max_size, inner_sorters_memory,
@@ -1456,7 +1456,7 @@ namespace adiar::internal
       // CASE Unnested Level with no nested sweep above:
       //   Reduce this level (without decorators).
       if (next_inner == inner_iter_t::NONE) {
-        if constexpr (nesting_policy::reduce_strategy == nested_sweeping::NEVER_CANONICAL) {
+        if constexpr (nesting_policy::reduce_strategy == nested_sweeping::Never_Canonical) {
 #ifdef ADIAR_STATS
           // TODO
 #endif
@@ -1487,9 +1487,9 @@ namespace adiar::internal
       if (next_inner < outer_level.level()) {
         outer_pq_decorator_t outer_pq_decorator(outer_pq, outer_roots, next_inner);
 
-        if (/*constexpr*/ nesting_policy::reduce_strategy == nested_sweeping::NEVER_CANONICAL ||
-            /*constexpr*/ nesting_policy::reduce_strategy == nested_sweeping::FINAL_CANONICAL ||
-            (nesting_policy::reduce_strategy == nested_sweeping::AUTO && auto_fast_reduce)) {
+        if (/*constexpr*/ nesting_policy::reduce_strategy == nested_sweeping::Never_Canonical ||
+            /*constexpr*/ nesting_policy::reduce_strategy == nested_sweeping::Final_Canonical ||
+            (nesting_policy::reduce_strategy == nested_sweeping::Auto && auto_fast_reduce)) {
 #ifdef ADIAR_STATS
           // TODO
 #endif
@@ -1512,9 +1512,9 @@ namespace adiar::internal
                outer_sorters_memory, unreduced_width);
           }
 
-          // AUTO Strategy: Use the fast reduce from the next level (until next
+          //  Strategy: Use the fast reduce from the next level (until next
           // inner sweep) if this level did not change considerably in size.
-          if constexpr (nesting_policy::reduce_strategy == nested_sweeping::AUTO) {
+          if constexpr (nesting_policy::reduce_strategy == nested_sweeping::Auto) {
             const double threshold = 0.05;
 
             const double prior = static_cast<double>(unreduced_width);
@@ -1533,7 +1533,7 @@ namespace adiar::internal
       adiar_assert(outer_level.level() == next_inner,
                    "'next_inner' level is not skipped");
 
-      // Reset fast reduce for AUTO strategy.
+      // Reset fast reduce for  strategy.
       auto_fast_reduce = false;
 
       // -----------------------------------------------------------------------
@@ -1813,12 +1813,12 @@ namespace adiar::internal
       // Output streams
       - node_writer::memory_usage();
 
-    using outer_default_lpq_t = nested_sweeping::outer::up__pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>;
+    using outer_default_lpq_t = nested_sweeping::outer::up__pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>;
 
     constexpr size_t data_structures_in_pq = outer_default_lpq_t::DATA_STRUCTURES;
 
     using internal_roots_sorter_t =
-      nested_sweeping::outer::roots_sorter<memory_mode_t::INTERNAL, request_t, request_pred_t>;
+      nested_sweeping::outer::roots_sorter<memory_mode_t::Internal, request_t, request_pred_t>;
 
     constexpr size_t data_structures_in_roots = internal_roots_sorter_t::DATA_STRUCTURES;
 
@@ -1834,28 +1834,28 @@ namespace adiar::internal
 
     const size_t pq_roots_bound = dag->max_1level_cut;
 
-    const size_t outer_pq_roots_max = memory_mode == memory_mode_t::INTERNAL
+    const size_t outer_pq_roots_max = memory_mode == memory_mode_t::Internal
       ? std::min({outer_pq_memory_fits, outer_roots_memory_fits, pq_roots_bound})
       : pq_roots_bound;
 
-    const bool external_only = memory_mode == memory_mode_t::EXTERNAL;
+    const bool external_only = memory_mode == memory_mode_t::External;
     if (!external_only && outer_pq_roots_max <= no_lookahead_bound(1)) {
 #ifdef ADIAR_STATS
       stats_reduce.lpq.unbucketed += 1u;
 #endif
-      return __nested_sweep<nesting_policy, 0, memory_mode_t::INTERNAL>
+      return __nested_sweep<nesting_policy, 0, memory_mode_t::Internal>
         (dag, policy_impl, outer_pq_memory, outer_roots_memory, outer_pq_roots_max, inner_memory);
     } else if(!external_only && outer_pq_roots_max <= outer_pq_memory_fits && outer_pq_roots_max <= outer_roots_memory_fits) {
 #ifdef ADIAR_STATS
       stats_reduce.lpq.internal += 1u;
 #endif
-      return __nested_sweep<nesting_policy, ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>
+      return __nested_sweep<nesting_policy, ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>
         (dag, policy_impl, outer_pq_memory, outer_roots_memory, outer_pq_roots_max, inner_memory);
     } else {
 #ifdef ADIAR_STATS
       stats_reduce.lpq.external += 1u;
 #endif
-      return __nested_sweep<nesting_policy, ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>
+      return __nested_sweep<nesting_policy, ADIAR_LPQ_LOOKAHEAD, memory_mode_t::External>
         (dag, policy_impl, outer_pq_memory, outer_roots_memory, outer_pq_roots_max, inner_memory);
     }
   }

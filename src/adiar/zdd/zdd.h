@@ -133,7 +133,7 @@ namespace adiar
 
       // Bit-mask (allowing implicit conversion to size_t with bit-operators) to
       // get the cut-type WITHOUT the false arcs.
-      constexpr size_t bit_mask = internal::cut_type::INTERNAL_TRUE;
+      constexpr size_t bit_mask = internal::cut_type::Internal_True;
       const internal::cut_type ct_excl_false = static_cast<internal::cut_type>(ct & bit_mask);
 
       // In product construction algorithms we need to take into account the
