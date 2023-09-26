@@ -45,6 +45,9 @@ namespace adiar::internal
     unique_ptr<stream_t> _level_streams[file_count];
 
   public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Attach onto the given list of files.
+    ////////////////////////////////////////////////////////////////////////////
     void hook(const file_t (&fs) [file_count])
     {
       for (size_t idx = 0u; idx < file_count; idx++) {
@@ -52,6 +55,9 @@ namespace adiar::internal
       }
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Attach onto the given list of decision diagrams.
+    ////////////////////////////////////////////////////////////////////////////
     void hook(const dd (&dds) [file_count])
     {
       for (size_t idx = 0u; idx < file_count; idx++) {
@@ -59,6 +65,9 @@ namespace adiar::internal
       }
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Attach onto the given list of (unreduced) decision diagrams.
+    ////////////////////////////////////////////////////////////////////////////
     void hook(const __dd (&dds) [file_count])
     {
       for (size_t idx = 0u; idx < file_count; idx++) {
@@ -66,6 +75,9 @@ namespace adiar::internal
       }
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether there are more levels to fetch.
+    ////////////////////////////////////////////////////////////////////////////
     bool can_pull()
     {
       for (size_t idx = 0u; idx < file_count; idx++) {
@@ -76,6 +88,11 @@ namespace adiar::internal
       return false;
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain the next level.
+    ///
+    /// \pre `can_pull() == true`
+    ////////////////////////////////////////////////////////////////////////////
     level_t peek()
     {
       adiar_assert(can_pull(), "Cannot peek past end of all streams");
@@ -93,6 +110,11 @@ namespace adiar::internal
       return min_level;
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain the next level and go to the next.
+    ///
+    /// \pre `can_pull() == true`
+    ////////////////////////////////////////////////////////////////////////////
     level_t pull()
     {
       adiar_assert(can_pull(), "Cannot pull past end of all streams");
