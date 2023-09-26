@@ -7,9 +7,44 @@
 
 namespace adiar
 {
+  bool zdd_iscanonical(const zdd& A)
+  {
+    return internal::dd_iscanonical(A);
+  }
+
+  bool zdd_isterminal(const zdd& A)
+  {
+    return internal::dd_isterminal(A);
+  }
+
+  bool zdd_isfalse(const zdd& A)
+  {
+    return internal::dd_isfalse(A);
+  }
+
+  bool zdd_isempty(const zdd &A)
+  {
+    return zdd_isfalse(A);
+  }
+
+  bool zdd_istrue(const zdd& A)
+  {
+    return internal::dd_istrue(A);
+  }
+
+  bool zdd_isnull(const zdd &A)
+  {
+    return zdd_istrue(A);
+  }
+
   bool zdd_equal(const zdd &s1, const zdd &s2)
   {
     return internal::is_isomorphic(s1, s2);
+  }
+
+  bool zdd_unequal(const zdd &A, const zdd &B)
+  {
+    return !zdd_equal(A,B);
   }
 
   //////////////////////////////////////////////////////////////////////////////
