@@ -180,11 +180,11 @@ namespace adiar
       _lvl = n.label();
 
       // set default to all skipped levels
-      while (_lvls.can_pull() && internal::__level_of(_lvls.peek()) < _lvl) {
-        _callback(internal::__level_of(_lvls.pull()), visitor_t::default_direction);
+      while (_lvls.can_pull() && internal::level_of(_lvls.peek()) < _lvl) {
+        _callback(internal::level_of(_lvls.pull()), visitor_t::default_direction);
       }
       // skip visited level (if exists)
-      if (_lvls.can_pull() && internal::__level_of(_lvls.peek()) == _lvl) {
+      if (_lvls.can_pull() && internal::level_of(_lvls.peek()) == _lvl) {
         _lvls.pull();
       }
 
@@ -197,8 +197,8 @@ namespace adiar
       _visitor.visit(s);
 
       while (_lvls.can_pull()) {
-        if (internal::__level_of(_lvls.peek()) <= _lvl) { _lvls.pull(); continue; };
-        _callback(internal::__level_of(_lvls.pull()), visitor_t::default_direction);
+        if (internal::level_of(_lvls.peek()) <= _lvl) { _lvls.pull(); continue; };
+        _callback(internal::level_of(_lvls.pull()), visitor_t::default_direction);
       }
     }
   };
