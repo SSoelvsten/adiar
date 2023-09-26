@@ -190,9 +190,9 @@ of writing might be easier to read.
     Functions names that consist of multiple words, e.g. *is true*, is written
     in *nocase*, e.g. `bdd_istrue(f)`.
 
-- Type variables (*kinds*) are suffixed with `_type` (preferably the latter).
-  Template type parameters are suffixed with `_t` such that it can be reexposed
-  with the `_type` suffix without creating a name clash.
+- Type variables exposed from a class have their names suffixed with `_type`.
+  Global types and template type parameters are suffixed with `_t`. This aligns
+  with *std* and prevents shadowing between the two.
 
 - Private class member variables are prefixed with a single `_`; non-static
   public ones may also be prefixed as such.
