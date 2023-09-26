@@ -51,13 +51,19 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
+  template<>
+  struct internal::level_stream_t<shared_file<map_pair<bdd::label_t, assignment>>>
+  {
+    template<bool reverse = false>
+    using stream_t = internal::file_stream<map_pair<bdd::label_t, assignment>>;
+  };
+
   __bdd bdd_restrict(const bdd &dd,
                      const shared_file<map_pair<bdd::label_t, assignment>> &a)
   {
     if (a->size() == 0
         || bdd_isterminal(dd)
-        || internal::disjoint_levels<shared_file<map_pair<bdd::label_t, assignment>>,
-                                     internal::file_stream<map_pair<bdd::label_t, assignment>>>(a, dd)) {
+        || internal::disjoint_levels(a, dd)) {
       return dd;
     }
 

@@ -11,31 +11,6 @@
 
 namespace adiar::internal
 {
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Defines at compile time the type of the file stream to use for
-  ///        reading the levels from some file(s).
-  //////////////////////////////////////////////////////////////////////////////
-  template<typename file_t>
-  struct level_stream_t
-  {
-    template<bool reverse>
-    using stream_t = level_info_stream<reverse>;
-  };
-
-  template<>
-  struct level_stream_t<file<ptr_uint64::label_t>>
-  {
-    template<bool reverse>
-    using stream_t = file_stream<ptr_uint64::label_t, reverse>;
-  };
-
-  template<>
-  struct level_stream_t<shared_file<ptr_uint64::label_t>>
-  {
-    template<bool reverse>
-    using stream_t = file_stream<ptr_uint64::label_t, reverse>;
-  };
-
   // TODO (code clarity):
   //   Add to 'file_t' an enum with 'Ascending'/'Descending' to then derive the
   //   comparator in conjunction with 'reverse'.

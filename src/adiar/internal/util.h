@@ -9,13 +9,12 @@
 #include <adiar/internal/dd.h>
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/convert.h>
+#include <adiar/internal/io/file.h>
+#include <adiar/internal/io/shared_file_ptr.h>
 #include <adiar/internal/io/levelized_file.h>
 #include <adiar/internal/io/levelized_file_stream.h>
-
-// TODO: remove these imports
 #include <adiar/internal/io/arc_file.h>
 #include <adiar/internal/io/arc_writer.h>
-#include <adiar/internal/io/node_file.h>
 #include <adiar/internal/io/node_stream.h>
 
 namespace adiar::internal
@@ -34,16 +33,43 @@ namespace adiar::internal
     }
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Defines at compile time the type of the file stream to use for
+  ///        reading the levels from some file(s).
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename file_t>
+  struct level_stream_t
+  {
+    template<bool reverse = false>
+    using stream_t = level_info_stream<reverse>;
+  };
+
+  template<>
+  struct level_stream_t<file<ptr_uint64::label_t>>
+  {
+    template<bool reverse = false>
+    using stream_t = file_stream<ptr_uint64::label_t, reverse>;
+  };
+
+  template<>
+  struct level_stream_t<shared_file<ptr_uint64::label_t>>
+  {
+    template<bool reverse = false>
+    using stream_t = file_stream<ptr_uint64::label_t, reverse>;
+  };
+
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Obtain whether the levels in two files are disjoint.
   ////////////////////////////////////////////////////////////////////////////
   // TODO: Move to dd_func?
-  template<typename in1_t = dd, typename stream1_t = level_info_stream<>,
-           typename in2_t = dd, typename stream2_t = level_info_stream<>>
+  template<typename in1_t, typename in2_t>
   bool
   disjoint_levels(const in1_t &in1, const in2_t &in2)
   {
+    using stream1_t = typename level_stream_t<in1_t>::template stream_t<false>;
     stream1_t s1(in1);
+
+    using stream2_t = typename level_stream_t<in2_t>::template stream_t<false>;
     stream2_t s2(in2);
 
     while(s1.can_pull() && s2.can_pull()) {
@@ -61,7 +87,7 @@ namespace adiar::internal
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Whether a certain level exists in a file.
   ////////////////////////////////////////////////////////////////////////////
-  // TODO: Move to dd_func
+  // TODO: Move to dd_func?
   template<typename dd_t>
   bool
   has_level(const dd_t &in, const typename dd_t::label_t l)
@@ -92,9 +118,8 @@ namespace adiar::internal
   ///
   /// \see reduce
   ////////////////////////////////////////////////////////////////////////////
-  // TODO: Move to dd_func
   template <typename dd_t>
-  inline shared_levelized_file<arc>
+  shared_levelized_file<arc>
   transpose(const dd_t &dd)
   {
     adiar_assert(!dd->is_terminal());
