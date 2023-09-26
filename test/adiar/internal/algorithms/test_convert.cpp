@@ -28,19 +28,19 @@ go_bandit([]() {
     shared_levelized_file<dd::node_t> nf_x0;
     {
       node_writer nw(nf_x0);
-      nw << node(0, node::MAX_ID, terminal_F, terminal_T);
+      nw << node(0, node::max_id, terminal_F, terminal_T);
     }
 
     shared_levelized_file<dd::node_t> nf_x1;
     {
       node_writer nw(nf_x1);
-      nw << node(1, node::MAX_ID, terminal_F, terminal_T);
+      nw << node(1, node::max_id, terminal_F, terminal_T);
     }
 
     shared_levelized_file<dd::node_t> nf_x2;
     {
       node_writer nw(nf_x2);
-      nw << node(2, node::MAX_ID, terminal_F, terminal_T);
+      nw << node(2, node::max_id, terminal_F, terminal_T);
     }
 
     zdd zdd_F(nf_F);
@@ -53,21 +53,21 @@ go_bandit([]() {
     shared_levelized_file<dd::node_t> nf_x0_null;
     {
       node_writer nw(nf_x0_null);
-      nw << node(0, node::MAX_ID, terminal_T, terminal_T);
+      nw << node(0, node::max_id, terminal_T, terminal_T);
     }
     zdd zdd_x0_null(nf_x0_null);
 
     shared_levelized_file<dd::node_t> nf_x1_null;
     {
       node_writer nw(nf_x1_null);
-      nw << node(1, node::MAX_ID, terminal_T, terminal_T);
+      nw << node(1, node::max_id, terminal_T, terminal_T);
     }
     zdd zdd_x1_null(nf_x1_null);
 
     shared_levelized_file<dd::node_t> nf_x2_null;
     {
       node_writer nw(nf_x2_null);
-      nw << node(2, node::MAX_ID, terminal_T, terminal_T);
+      nw << node(2, node::max_id, terminal_T, terminal_T);
     }
     zdd zdd_x2_null(nf_x2_null);
 
@@ -75,8 +75,8 @@ go_bandit([]() {
     // is the ZDD version of Fig. 3 in the same paper.
     shared_levelized_file<dd::node_t> nf_minato_fig5;
     {
-      const node n2 = node(1, node::MAX_ID, terminal_F, terminal_T);
-      const node n1 = node(0, node::MAX_ID, n2.uid(), terminal_T);
+      const node n2 = node(1, node::max_id, terminal_F, terminal_T);
+      const node n1 = node(0, node::max_id, n2.uid(), terminal_T);
 
       node_writer nw(nf_minato_fig5);
       nw << n2 << n1;
@@ -142,18 +142,18 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
                                                        terminal_T,
                                                        terminal_F)));
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
-                                                       ptr_uint64(2, ptr_uint64::MAX_ID),
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
+                                                       ptr_uint64(2, ptr_uint64::max_id),
                                                        terminal_F)));
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
-                                                       ptr_uint64(1, ptr_uint64::MAX_ID),
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
+                                                       ptr_uint64(1, ptr_uint64::max_id),
                                                        terminal_F)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
@@ -367,9 +367,9 @@ go_bandit([]() {
       it("collapses to T terminal on pow(dom) with dom = { 0,1,2 }", [&]() {
         shared_levelized_file<bdd::node_t> nf_pow_dom;
         {
-          const node n2 = node(2, node::MAX_ID, terminal_T, terminal_T);
-          const node n1 = node(1, node::MAX_ID, n2.uid(), n2.uid());
-          const node n0 = node(0, node::MAX_ID, n1.uid(), n1.uid());
+          const node n2 = node(2, node::max_id, terminal_T, terminal_T);
+          const node n1 = node(1, node::max_id, n2.uid(), n2.uid());
+          const node n0 = node(0, node::max_id, n1.uid(), n1.uid());
 
           node_writer nw(nf_pow_dom);
           nw << n2 << n1 << n0;
@@ -392,9 +392,9 @@ go_bandit([]() {
       it("collapses to T terminal on pow(dom) with dom = { 0,2,4 }", [&]() {
         shared_levelized_file<zdd::node_t> nf_pow_dom;
         {
-          const node n2 = node(4, node::MAX_ID, terminal_T, terminal_T);
-          const node n1 = node(2, node::MAX_ID, n2.uid(), n2.uid());
-          const node n0 = node(0, node::MAX_ID, n1.uid(), n1.uid());
+          const node n2 = node(4, node::max_id, terminal_T, terminal_T);
+          const node n1 = node(2, node::max_id, n2.uid(), n2.uid());
+          const node n0 = node(0, node::max_id, n1.uid(), n1.uid());
 
           node_writer nw(nf_pow_dom);
           nw << n2 << n1 << n0;
@@ -427,10 +427,10 @@ go_bandit([]() {
 
         shared_levelized_file<zdd::node_t> nf;
         {
-          const node n4 = node(2, node::MAX_ID,   terminal_F, terminal_T);
-          const node n3 = node(1, node::MAX_ID,   n4.uid(), n4.uid());
-          const node n2 = node(1, node::MAX_ID-1, terminal_F, n4.uid());
-          const node n1 = node(0, node::MAX_ID,   n2.uid(), n3.uid());
+          const node n4 = node(2, node::max_id,   terminal_F, terminal_T);
+          const node n3 = node(1, node::max_id,   n4.uid(), n4.uid());
+          const node n2 = node(1, node::max_id-1, terminal_F, n4.uid());
+          const node n1 = node(0, node::max_id,   n2.uid(), n3.uid());
 
           node_writer nw(nf);
           nw << n4 << n3 << n2 << n1;
@@ -593,9 +593,9 @@ go_bandit([]() {
       it("converts [Minato] Fig. 11 (dom = { 0,1,2,3 })", [&]() {
         shared_levelized_file<zdd::node_t> nf;
         {
-          const node n3 = node(3, node::MAX_ID, terminal_T, terminal_T);
-          const node n2 = node(2, node::MAX_ID, n3.uid(), n3.uid());
-          const node n1 = node(1, node::MAX_ID, n2.uid(), terminal_T);
+          const node n3 = node(3, node::max_id, terminal_T, terminal_T);
+          const node n2 = node(2, node::max_id, n3.uid(), n3.uid());
+          const node n1 = node(1, node::max_id, n2.uid(), terminal_T);
 
           node_writer nw(nf);
           nw << n3 << n2 << n1;
@@ -653,9 +653,9 @@ go_bandit([]() {
       it("converts [Minato] Fig. 15 (dom = { 0,1,2 })", [&]() {
         shared_levelized_file<zdd::node_t> nf;
         {
-          const node n3 = node(2, node::MAX_ID, terminal_F, terminal_T);
-          const node n2 = node(1, node::MAX_ID, n3.uid(), terminal_T);
-          const node n1 = node(0, node::MAX_ID, n3.uid(), n2.uid());
+          const node n3 = node(2, node::max_id, terminal_F, terminal_T);
+          const node n2 = node(1, node::max_id, n3.uid(), terminal_T);
+          const node n1 = node(0, node::max_id, n3.uid(), n2.uid());
 
           node_writer nw(nf);
           nw << n3 << n2 << n1;
@@ -727,10 +727,10 @@ go_bandit([]() {
         //      F T
         */
         {
-          const node n4 = node(2, node::MAX_ID,   terminal_F, terminal_T);
-          const node n3 = node(1, node::MAX_ID,   n4.uid(), terminal_T);
-          const node n2 = node(1, node::MAX_ID-1, terminal_T, n4.uid());
-          const node n1 = node(0, node::MAX_ID,   n2.uid(), n3.uid());
+          const node n4 = node(2, node::max_id,   terminal_F, terminal_T);
+          const node n3 = node(1, node::max_id,   n4.uid(), terminal_T);
+          const node n2 = node(1, node::max_id-1, terminal_T, n4.uid());
+          const node n1 = node(0, node::max_id,   n2.uid(), n3.uid());
 
           node_writer nw(nf_in);
           nw << n4 << n3 << n2 << n1;
@@ -812,13 +812,13 @@ go_bandit([]() {
         //           T T
         */
         {
-          const node n7 = node(6, node::MAX_ID,   terminal_T, terminal_T);
-          const node n6 = node(5, node::MAX_ID,   n7.uid(), n7.uid());
-          const node n5 = node(5, node::MAX_ID-1, terminal_F, n7.uid());
-          const node n4 = node(4, node::MAX_ID,   n6.uid(), terminal_T);
-          const node n3 = node(4, node::MAX_ID-1, n5.uid(), n6.uid());
-          const node n2 = node(3, node::MAX_ID,   n3.uid(), n4.uid());
-          const node n1 = node(1, node::MAX_ID,   n2.uid(), n2.uid());
+          const node n7 = node(6, node::max_id,   terminal_T, terminal_T);
+          const node n6 = node(5, node::max_id,   n7.uid(), n7.uid());
+          const node n5 = node(5, node::max_id-1, terminal_F, n7.uid());
+          const node n4 = node(4, node::max_id,   n6.uid(), terminal_T);
+          const node n3 = node(4, node::max_id-1, n5.uid(), n6.uid());
+          const node n2 = node(3, node::max_id,   n3.uid(), n4.uid());
+          const node n1 = node(1, node::max_id,   n2.uid(), n2.uid());
 
           node_writer w(in);
           w << n7 << n6 << n5 << n4 << n3 << n2 << n1;
@@ -930,18 +930,18 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
                                                        terminal_T,
                                                        terminal_F)));
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
-                                                       ptr_uint64(2, ptr_uint64::MAX_ID),
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
+                                                       ptr_uint64(2, ptr_uint64::max_id),
                                                        terminal_F)));
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
-                                                       ptr_uint64(1, ptr_uint64::MAX_ID),
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
+                                                       ptr_uint64(1, ptr_uint64::max_id),
                                                        terminal_F)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
@@ -1048,19 +1048,19 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
                                                        terminal_T,
                                                        terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
-                                                       ptr_uint64(2, ptr_uint64::MAX_ID),
-                                                       ptr_uint64(2, ptr_uint64::MAX_ID))));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
+                                                       ptr_uint64(2, ptr_uint64::max_id),
+                                                       ptr_uint64(2, ptr_uint64::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
-                                                       ptr_uint64(1, ptr_uint64::MAX_ID),
-                                                       ptr_uint64(1, ptr_uint64::MAX_ID))));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
+                                                       ptr_uint64(1, ptr_uint64::max_id),
+                                                       ptr_uint64(1, ptr_uint64::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1164,7 +1164,7 @@ go_bandit([]() {
         shared_levelized_file<bdd::node_t> nf;
         {
           node_writer nw(nf);
-          nw << node(1, node::MAX_ID, terminal_T, terminal_F);
+          nw << node(1, node::max_id, terminal_T, terminal_F);
         }
         bdd in(nf);
 
@@ -1203,7 +1203,7 @@ go_bandit([]() {
         shared_levelized_file<bdd::node_t> nf;
         {
           node_writer nw(nf);
-          nw << node(0, node::MAX_ID, terminal_T, terminal_F);
+          nw << node(0, node::max_id, terminal_T, terminal_F);
         }
         bdd in(nf);
 
@@ -1223,9 +1223,9 @@ go_bandit([]() {
       it("collapses false-chain into { Ø } on with dom = { 0,2,4 }", [&]() {
         shared_levelized_file<bdd::node_t> nf;
         {
-          const node n3 = node(4, node::MAX_ID, terminal_T, terminal_F);
-          const node n2 = node(2, node::MAX_ID, n3.uid(), terminal_F);
-          const node n1 = node(0, node::MAX_ID, n2.uid(), terminal_F);
+          const node n3 = node(4, node::max_id, terminal_T, terminal_F);
+          const node n2 = node(2, node::max_id, n3.uid(), terminal_F);
+          const node n1 = node(0, node::max_id, n2.uid(), terminal_F);
 
           node_writer nw(nf);
           nw << n3 << n2 << n1;
@@ -1249,10 +1249,10 @@ go_bandit([]() {
       it("converts [Minato] Fig. 3 into Fig. 5 with dom = { 0,1,2 } ", [&]() {
         shared_levelized_file<bdd::node_t> nf;
         {
-          const node n4 = node(2, node::MAX_ID,   terminal_T, terminal_F);
-          const node n3 = node(1, node::MAX_ID,   n4.uid(), terminal_F);
-          const node n2 = node(1, node::MAX_ID-1, terminal_F, n4.uid());
-          const node n1 = node(0, node::MAX_ID,   n2.uid(), n3.uid());
+          const node n4 = node(2, node::max_id,   terminal_T, terminal_F);
+          const node n3 = node(1, node::max_id,   n4.uid(), terminal_F);
+          const node n2 = node(1, node::max_id-1, terminal_F, n4.uid());
+          const node n1 = node(0, node::max_id,   n2.uid(), n3.uid());
 
           node_writer nw(nf);
           nw << n4 << n3 << n2 << n1;
@@ -1293,11 +1293,11 @@ go_bandit([]() {
       it("converts [Minato] Fig. 3 into Fig. 5 with dom = { 0,1,2,3 } ", [&]() {
         shared_levelized_file<bdd::node_t> nf;
         {
-          const node n5 = node(3, node::MAX_ID,   terminal_T, terminal_F);
-          const node n4 = node(2, node::MAX_ID,   n5.uid(), terminal_F);
-          const node n3 = node(1, node::MAX_ID,   n4.uid(), terminal_F);
-          const node n2 = node(1, node::MAX_ID-1, terminal_F, n4.uid());
-          const node n1 = node(0, node::MAX_ID,   n2.uid(), n3.uid());
+          const node n5 = node(3, node::max_id,   terminal_T, terminal_F);
+          const node n4 = node(2, node::max_id,   n5.uid(), terminal_F);
+          const node n3 = node(1, node::max_id,   n4.uid(), terminal_F);
+          const node n2 = node(1, node::max_id-1, terminal_F, n4.uid());
+          const node n1 = node(0, node::max_id,   n2.uid(), n3.uid());
 
           node_writer nw(nf);
           nw << n5 << n4 << n3 << n2 << n1;
@@ -1338,10 +1338,10 @@ go_bandit([]() {
       it("converts [Minato] Fig. 11 with dom = { 0,1,2,3 } ", [&]() {
         shared_levelized_file<bdd::node_t> nf;
         {
-          const node n4 = node(3, node::MAX_ID,   terminal_T, terminal_F);
-          const node n3 = node(2, node::MAX_ID,   n4.uid(), terminal_F);
-          const node n2 = node(1, node::MAX_ID-1, terminal_T, n3.uid());
-          const node n1 = node(0, node::MAX_ID,   n2.uid(), terminal_F);
+          const node n4 = node(3, node::max_id,   terminal_T, terminal_F);
+          const node n3 = node(2, node::max_id,   n4.uid(), terminal_F);
+          const node n2 = node(1, node::max_id-1, terminal_T, n3.uid());
+          const node n1 = node(0, node::max_id,   n2.uid(), terminal_F);
 
           node_writer nw(nf);
           nw << n4 << n3 << n2 << n1;
@@ -1391,11 +1391,11 @@ go_bandit([]() {
       it("converts [Minato] Fig. 15 with dom = { 0,1,2 } ", [&]() {
         shared_levelized_file<bdd::node_t> nf;
         {
-          const node n5 = node(2, node::MAX_ID,   terminal_F, terminal_T);
-          const node n4 = node(2, node::MAX_ID-1, terminal_T, terminal_F);
-          const node n3 = node(1, node::MAX_ID,   n5.uid(), terminal_F);
-          const node n2 = node(1, node::MAX_ID-1, n5.uid(), n4.uid());
-          const node n1 = node(0, node::MAX_ID,   n3.uid(), n2.uid());
+          const node n5 = node(2, node::max_id,   terminal_F, terminal_T);
+          const node n4 = node(2, node::max_id-1, terminal_T, terminal_F);
+          const node n3 = node(1, node::max_id,   n5.uid(), terminal_F);
+          const node n2 = node(1, node::max_id-1, n5.uid(), n4.uid());
+          const node n1 = node(0, node::max_id,   n3.uid(), n2.uid());
 
           node_writer nw(nf);
           nw << n5 << n4 << n3 << n2 << n1;
@@ -1452,19 +1452,19 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
                                                        terminal_T,
                                                        terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
-                                                       ptr_uint64(2, ptr_uint64::MAX_ID),
-                                                       ptr_uint64(2, ptr_uint64::MAX_ID))));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
+                                                       ptr_uint64(2, ptr_uint64::max_id),
+                                                       ptr_uint64(2, ptr_uint64::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
-                                                       ptr_uint64(1, ptr_uint64::MAX_ID),
-                                                       ptr_uint64(1, ptr_uint64::MAX_ID))));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
+                                                       ptr_uint64(1, ptr_uint64::max_id),
+                                                       ptr_uint64(1, ptr_uint64::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1485,9 +1485,9 @@ go_bandit([]() {
       it("collapses false-chain into { Ø } on with set dom = { 0,2,4 }", [&]() {
         shared_levelized_file<bdd::node_t> nf;
         {
-          const node n3 = node(4, node::MAX_ID, terminal_T, terminal_F);
-          const node n2 = node(2, node::MAX_ID, n3.uid(), terminal_F);
-          const node n1 = node(0, node::MAX_ID, n2.uid(), terminal_F);
+          const node n3 = node(4, node::max_id, terminal_T, terminal_F);
+          const node n2 = node(2, node::max_id, n3.uid(), terminal_F);
+          const node n1 = node(0, node::max_id, n2.uid(), terminal_F);
 
           node_writer nw(nf);
           nw << n3 << n2 << n1;

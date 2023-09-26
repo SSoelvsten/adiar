@@ -17,9 +17,9 @@ go_bandit([]() {
         //                 F T
          */
 
-        const node n3 = node(2, node::MAX_ID, false_ptr, true_ptr);
-        const node n2 = node(1, node::MAX_ID, true_ptr, n3.uid());
-        const node n1 = node(0, node::MAX_ID, n2.uid(), n3.uid());
+        const node n3 = node(2, node::max_id, false_ptr, true_ptr);
+        const node n2 = node(1, node::max_id, true_ptr, n3.uid());
+        const node n1 = node(0, node::max_id, n2.uid(), n3.uid());
 
         shared_levelized_file<bdd::node_t> in;
         {
@@ -86,11 +86,11 @@ go_bandit([]() {
         //            F T
          */
 
-        const node n5 = node(3, node::MAX_ID,   false_ptr, true_ptr);
-        const node n4 = node(2, node::MAX_ID,   n5.uid(),  true_ptr);
-        const node n3 = node(2, node::MAX_ID-1, false_ptr, n5.uid());
-        const node n2 = node(1, node::MAX_ID,   n3.uid(),  n4.uid());
-        const node n1 = node(0, node::MAX_ID,   n3.uid(),  n2.uid());
+        const node n5 = node(3, node::max_id,   false_ptr, true_ptr);
+        const node n4 = node(2, node::max_id,   n5.uid(),  true_ptr);
+        const node n3 = node(2, node::max_id-1, false_ptr, n5.uid());
+        const node n2 = node(1, node::max_id,   n3.uid(),  n4.uid());
+        const node n1 = node(0, node::max_id,   n3.uid(),  n2.uid());
 
         shared_levelized_file<bdd::node_t> in;
         {
@@ -172,11 +172,11 @@ go_bandit([]() {
         //         F T   T T
          */
 
-        const node n5 = node(2, node::MAX_ID,   true_ptr,  true_ptr);
-        const node n4 = node(2, node::MAX_ID-1, false_ptr, true_ptr);
-        const node n3 = node(1, node::MAX_ID,   n4.uid(),  n4.uid());
-        const node n2 = node(1, node::MAX_ID-1, false_ptr, n5.uid());
-        const node n1 = node(0, node::MAX_ID,   n2.uid(),  n3.uid());
+        const node n5 = node(2, node::max_id,   true_ptr,  true_ptr);
+        const node n4 = node(2, node::max_id-1, false_ptr, true_ptr);
+        const node n3 = node(1, node::max_id,   n4.uid(),  n4.uid());
+        const node n2 = node(1, node::max_id-1, false_ptr, n5.uid());
+        const node n1 = node(0, node::max_id,   n2.uid(),  n3.uid());
 
         shared_levelized_file<bdd::node_t> in;
         {

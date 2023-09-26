@@ -26,7 +26,7 @@ namespace adiar
       : gen(a)
     {
       l = gen();
-      has_l = l <= zdd::MAX_LABEL;
+      has_l = l <= zdd::max_label;
     }
 
     inline zdd::ptr_t visit(const zdd::node_t &n)
@@ -37,12 +37,12 @@ namespace adiar
 
       if (has_l) {
         // Did we miss a label before the root?
-        if (is_first_visit && l < visited_label) { return zdd::ptr_t::NIL(); }
+        if (is_first_visit && l < visited_label) { return zdd::ptr_t::nil(); }
 
         // Will we miss a label?
-        if (l == visited_label && l <= zdd::MAX_LABEL) { l = gen(); }
+        if (l == visited_label && l <= zdd::max_label) { l = gen(); }
         if (next_ptr.is_node() && visited_label < l && l < next_ptr.label()) {
-          return zdd::ptr_t::NIL();
+          return zdd::ptr_t::nil();
         }
       }
 
@@ -54,7 +54,7 @@ namespace adiar
     { terminal_val = s; }
 
     inline bool get_result()
-    { return terminal_val && zdd::MAX_LABEL < l; }
+    { return terminal_val && zdd::max_label < l; }
   };
 
   bool zdd_contains(const zdd &zdd, const generator<zdd::label_t> &a)

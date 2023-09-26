@@ -40,10 +40,10 @@ namespace adiar::internal
     }
   };
 
-  template <typename elem_t, size_t LOOK_AHEAD, memory_mode_t mem_mode>
+  template <typename elem_t, size_t look_ahead, memory_mode_t mem_mode>
   using count_priority_queue_t =
     levelized_node_priority_queue<elem_t, count_queue_lt<elem_t>,
-                                  LOOK_AHEAD,
+                                  look_ahead,
                                   mem_mode>;
 
   //////////////////////////////////////////////////////////////////////////////

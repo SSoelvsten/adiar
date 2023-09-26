@@ -37,11 +37,11 @@ namespace adiar
   template<uint8_t nodes_carried>
   using ite_request = internal::request_data<3, internal::with_parent, nodes_carried>;
 
-  template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
+  template<size_t look_ahead, memory_mode_t mem_mode>
   using ite_priority_queue_1_t =
   internal::levelized_node_priority_queue<ite_request<0>,
                                           internal::request_data_first_lt<ite_request<0>>,
-                                          LOOK_AHEAD, mem_mode, 3>;
+                                          look_ahead, mem_mode, 3>;
 
   template<memory_mode_t mem_mode>
   using ite_priority_queue_2_t =
@@ -68,8 +68,8 @@ namespace adiar
     // It can be approximated as:
     // max(bdd_if.max_1level_cut, bdd_then.max_1level_cut + bdd_else.max_1level_cut)
 
-    internal::node::ptr_t root_then = internal::node::ptr_t::NIL();
-    internal::node::ptr_t root_else = internal::node::ptr_t::NIL();
+    internal::node::ptr_t root_then = internal::node::ptr_t::nil();
+    internal::node::ptr_t root_else = internal::node::ptr_t::nil();
 
     internal::shared_levelized_file<bdd::node_t> out_nodes;
     internal::node_writer nw(out_nodes);
@@ -172,14 +172,14 @@ namespace adiar
 
     // Remove irrelevant parts of a request to prune requests similar to
     // shortcutting the operator in bdd_apply.
-    r_then = r_if.is_false() ? internal::node::ptr_t::NIL() : r_then;
-    r_else = r_if.is_true()  ? internal::node::ptr_t::NIL() : r_else;
+    r_then = r_if.is_false() ? internal::node::ptr_t::nil() : r_then;
+    r_else = r_if.is_true()  ? internal::node::ptr_t::nil() : r_else;
 
     if (r_if.is_terminal() && r_then.is_terminal()) {
-      // => ~internal::node::ptr_t::NIL() => r_if is a terminal with the 'true' value
+      // => ~internal::node::ptr_t::nil() => r_if is a terminal with the 'true' value
       aw.push_terminal(internal::arc(source, r_then));
     } else if (r_if.is_terminal() && r_else.is_terminal()) {
-      // => ~internal::node::ptr_t::NIL() => r_if is a terminal with the 'false' value
+      // => ~internal::node::ptr_t::nil() => r_if is a terminal with the 'false' value
       aw.push_terminal(internal::arc(source, r_else));
     } else {
       ite_pq_1.push({ {r_if, r_then, r_else}, {}, {source} });
@@ -263,8 +263,8 @@ namespace adiar
           && (ite_pq_2.empty() || ite_pq_1.top().target.first() < ite_pq_2.top().target.second())
           && (ite_pq_3.empty() || ite_pq_1.top().target.first() < ite_pq_3.top().target.third())) {
         req = { ite_pq_1.top().target,
-                {{ { internal::node::ptr_t::NIL(), internal::node::ptr_t::NIL() },
-                   { internal::node::ptr_t::NIL(), internal::node::ptr_t::NIL() } }},
+                {{ { internal::node::ptr_t::nil(), internal::node::ptr_t::nil() },
+                   { internal::node::ptr_t::nil(), internal::node::ptr_t::nil() } }},
                 ite_pq_1.top().data };
 
         ite_pq_1.pop();
@@ -274,7 +274,7 @@ namespace adiar
 
         req = { ite_pq_2.top().target ,
                 { ite_pq_2.top().node_carry[0],
-                  { internal::node::ptr_t::NIL(), internal::node::ptr_t::NIL() } },
+                  { internal::node::ptr_t::nil(), internal::node::ptr_t::nil() } },
                 ite_pq_2.top().data };
 
         ite_pq_2.pop();
@@ -416,7 +416,7 @@ namespace adiar
       }
 
       // Resolve request
-      adiar_assert(out_id < bdd::MAX_ID, "Has run out of ids");
+      adiar_assert(out_id < bdd::max_id, "Has run out of ids");
       const internal::node::uid_t out_uid(out_label, out_id++);
 
       __ite_resolve_request(ite_pq_1, aw, out_uid.with(false), low_if, low_then, low_else);
@@ -555,13 +555,13 @@ namespace adiar
       - internal::arc_writer::memory_usage();
 
     constexpr size_t data_structures_in_pq_1 =
-      ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::DATA_STRUCTURES;
+      ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::data_structures;
 
     constexpr size_t data_structures_in_pq_2 =
-      ite_priority_queue_2_t<memory_mode_t::Internal>::DATA_STRUCTURES;
+      ite_priority_queue_2_t<memory_mode_t::Internal>::data_structures;
 
     constexpr size_t data_structures_in_pq_3 =
-      ite_priority_queue_3_t<memory_mode_t::Internal>::DATA_STRUCTURES;
+      ite_priority_queue_3_t<memory_mode_t::Internal>::data_structures;
 
     const size_t pq_1_internal_memory =
       (aux_available_memory / (data_structures_in_pq_1 + data_structures_in_pq_2 + data_structures_in_pq_3)) * data_structures_in_pq_1;

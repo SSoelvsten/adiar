@@ -48,7 +48,7 @@ namespace adiar::internal
       return ret;
     }
 
-    static constexpr size_t DATA_STRUCTURES = 1u;
+    static constexpr size_t data_structures = 1u;
 
     static unique_ptr<sorter<memory_mode_t::Internal, elem_t, pred_t>>
     make_unique(size_t memory_bytes,
@@ -163,7 +163,7 @@ namespace adiar::internal
     size_t _pulls = 0u;
 
   public:
-    static constexpr size_t DATA_STRUCTURES = 1u;
+    static constexpr size_t data_structures = 1u;
 
     static unique_ptr<sorter<memory_mode_t::External, elem_t, pred_t>>
     make_unique(size_t memory_bytes,

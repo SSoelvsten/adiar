@@ -25,7 +25,7 @@ go_bandit([]() {
 
     { // Garbage collect writers to free write-lock
       node_writer nw(zdd_x1);
-      nw << node(1, node::MAX_ID, terminal_F, terminal_T);
+      nw << node(1, node::max_id, terminal_F, terminal_T);
     }
 
     shared_levelized_file<zdd::node_t> zdd_1;
@@ -43,13 +43,13 @@ go_bandit([]() {
     //      F T
     */
 
-    const node n1_7 = node(10, zdd::MAX_ID,   terminal_F,   terminal_T);
-    const node n1_6 = node(8,  zdd::MAX_ID,   terminal_T,   terminal_T);
-    const node n1_5 = node(8,  zdd::MAX_ID-1, n1_7.uid(), terminal_T);
-    const node n1_4 = node(6,  zdd::MAX_ID,   n1_5.uid(), n1_6.uid());
-    const node n1_3 = node(4,  zdd::MAX_ID,   n1_4.uid(), terminal_T);
-    const node n1_2 = node(4,  zdd::MAX_ID-1, terminal_F,   n1_4.uid());
-    const node n1_1 = node(2,  zdd::MAX_ID,   n1_2.uid(), n1_3.uid());
+    const node n1_7 = node(10, zdd::max_id,   terminal_F,   terminal_T);
+    const node n1_6 = node(8,  zdd::max_id,   terminal_T,   terminal_T);
+    const node n1_5 = node(8,  zdd::max_id-1, n1_7.uid(), terminal_T);
+    const node n1_4 = node(6,  zdd::max_id,   n1_5.uid(), n1_6.uid());
+    const node n1_3 = node(4,  zdd::max_id,   n1_4.uid(), terminal_T);
+    const node n1_2 = node(4,  zdd::max_id-1, terminal_F,   n1_4.uid());
+    const node n1_1 = node(2,  zdd::max_id,   n1_2.uid(), n1_3.uid());
 
     { // Garbage collect writers to free write-lock
       node_writer nw(zdd_1);
@@ -104,7 +104,7 @@ go_bandit([]() {
         node_test_stream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(42, node::MAX_ID, terminal_T, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(42, node::max_id, terminal_T, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -132,12 +132,12 @@ go_bandit([]() {
         node_test_stream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, node::MAX_ID, terminal_T, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id, terminal_T, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(0, node::MAX_ID,
-                                                ptr_uint64(2, ptr_uint64::MAX_ID),
-                                                ptr_uint64(2, ptr_uint64::MAX_ID))));
+        AssertThat(ns.pull(), Is().EqualTo(node(0, node::max_id,
+                                                ptr_uint64(2, ptr_uint64::max_id),
+                                                ptr_uint64(2, ptr_uint64::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -165,7 +165,7 @@ go_bandit([]() {
 
         { // Garbage collect writer to free write-lock
           node_writer w(in);
-          w << node(1, node::MAX_ID, terminal_F, terminal_T);
+          w << node(1, node::max_id, terminal_F, terminal_T);
         }
 
         const std::vector<int> vars = { 0 };
@@ -211,8 +211,8 @@ go_bandit([]() {
 
         { // Garbage collect writer to free write-lock
           node_writer w(in);
-          w << node(4, node::MAX_ID, terminal_F, terminal_T)
-            << node(3, node::MAX_ID, terminal_T, ptr_uint64(4, ptr_uint64::MAX_ID))
+          w << node(4, node::max_id, terminal_F, terminal_T)
+            << node(3, node::max_id, terminal_T, ptr_uint64(4, ptr_uint64::max_id))
             ;
         }
 
@@ -277,7 +277,7 @@ go_bandit([]() {
 
         { // Garbage collect writer to free write-lock
           node_writer w(in);
-          w << node(3, node::MAX_ID, terminal_T, terminal_T);
+          w << node(3, node::max_id, terminal_T, terminal_T);
         }
 
         const std::vector<int> vars = { 0, 2, 4 };
@@ -343,9 +343,9 @@ go_bandit([]() {
 
         { // Garbage collect writer to free write-lock
           node_writer w(in);
-          w << node(3, node::MAX_ID, terminal_F, terminal_T)
-            << node(2, node::MAX_ID, ptr_uint64(3, ptr_uint64::MAX_ID), terminal_T)
-            << node(1, node::MAX_ID, terminal_F, ptr_uint64(2, ptr_uint64::MAX_ID));
+          w << node(3, node::max_id, terminal_F, terminal_T)
+            << node(2, node::max_id, ptr_uint64(3, ptr_uint64::max_id), terminal_T)
+            << node(1, node::max_id, terminal_F, ptr_uint64(2, ptr_uint64::max_id));
         }
 
         const std::vector<int> vars = { 4, 5, 6 };
@@ -427,8 +427,8 @@ go_bandit([]() {
 
         { // Garbage collect writer to free write-lock
           node_writer w(in);
-          w << node(2, node::MAX_ID, terminal_F, terminal_T)
-            << node(0, node::MAX_ID, terminal_F, ptr_uint64(2, ptr_uint64::MAX_ID));
+          w << node(2, node::max_id, terminal_F, terminal_T)
+            << node(0, node::max_id, terminal_F, ptr_uint64(2, ptr_uint64::max_id));
         }
 
         const std::vector<int> vars = { 1 };
@@ -483,8 +483,8 @@ go_bandit([]() {
 
         { // Garbage collect writer to free write-lock
           node_writer w(in);
-          w << node(3, node::MAX_ID, terminal_F, terminal_T)
-            << node(0, node::MAX_ID, terminal_F, ptr_uint64(3, ptr_uint64::MAX_ID));
+          w << node(3, node::max_id, terminal_F, terminal_T)
+            << node(0, node::max_id, terminal_F, ptr_uint64(3, ptr_uint64::max_id));
         }
 
         const std::vector<int> vars = { 1, 2 };
@@ -548,9 +548,9 @@ go_bandit([]() {
 
         { // Garbage collect writer to free write-lock
           node_writer w(in);
-          w << node(2, node::MAX_ID,   terminal_T, terminal_T)
-            << node(2, node::MAX_ID-1, terminal_F, terminal_T)
-            << node(0, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(2, ptr_uint64::MAX_ID));
+          w << node(2, node::max_id,   terminal_T, terminal_T)
+            << node(2, node::max_id-1, terminal_F, terminal_T)
+            << node(0, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(2, ptr_uint64::max_id));
         }
 
         const std::vector<int> vars = { 1 };

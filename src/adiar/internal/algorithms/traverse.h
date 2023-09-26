@@ -26,7 +26,7 @@ namespace adiar::internal
       tgt = visitor.visit(n);
 
       adiar_assert((tgt == n.low()) || (tgt == n.high()) || (tgt.is_nil()),
-                   "Visitor pointer should be within the diagram or NIL");
+                   "Visitor pointer should be within the diagram or nil");
     }
     if (!tgt.is_nil()) {
       visitor.visit(tgt.value());

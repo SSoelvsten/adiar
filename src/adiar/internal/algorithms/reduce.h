@@ -68,14 +68,14 @@ namespace adiar::internal
   /// \brief Decorator on the levelized priority queue to also keep track of
   ///        the number of arcs to each terminal.
   ////////////////////////////////////////////////////////////////////////////
-  template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
+  template<size_t look_ahead, memory_mode_t mem_mode>
   class reduce_priority_queue : public levelized_arc_priority_queue<reduce_arc, reduce_queue_lt,
-                                                                    LOOK_AHEAD,
+                                                                    look_ahead,
                                                                     mem_mode>
   {
   private:
     using inner_lpq = levelized_arc_priority_queue<reduce_arc, reduce_queue_lt,
-                                                   LOOK_AHEAD,
+                                                   look_ahead,
                                                    mem_mode>;
 
     ////////////////////////////////////////////////////////////////////////////
@@ -280,7 +280,7 @@ namespace adiar::internal
             || reduce_pq.can_pull()) {
       // TODO (MDD):
       // TODO (QMDD):
-      //   Use __reduce_get_next node_t::OUTDEGREE times to create a
+      //   Use __reduce_get_next node_t::outdegree times to create a
       //   node_t::children_t.
       const arc e_high = __reduce_get_next(reduce_pq, arcs);
       const arc e_low  = __reduce_get_next(reduce_pq, arcs);
@@ -315,8 +315,8 @@ namespace adiar::internal
     // Sort and apply Reduction rule 2
     child_grouping.sort();
 
-    typename dd_policy::id_t out_id = dd_policy::MAX_ID;
-    node out_node = node(node::uid_t(), ptr_uint64::NIL(), ptr_uint64::NIL());
+    typename dd_policy::id_t out_id = dd_policy::max_id;
+    node out_node = node(node::uid_t(), ptr_uint64::nil(), ptr_uint64::nil());
 
     while (child_grouping.can_pull()) {
       const node next_node = child_grouping.pull();
@@ -340,7 +340,7 @@ namespace adiar::internal
     }
 
     // Add number of nodes to level information, if any nodes were pushed to the output.
-    const size_t reduced_width = dd_policy::MAX_ID - out_id;
+    const size_t reduced_width = dd_policy::max_id - out_id;
     if (reduced_width > 0) {
       out_writer.unsafe_push(level_info(label, reduced_width));
     }
@@ -520,7 +520,7 @@ namespace adiar::internal
       } else {
         const typename dd_policy::label_t label = e_low.source().label();
 
-        out_writer.unsafe_push(node(label, dd_policy::MAX_ID, e_low.target(), e_high.target()));
+        out_writer.unsafe_push(node(label, dd_policy::max_id, e_low.target(), e_high.target()));
 
         out_writer.unsafe_push(level_info(label,1u));
 

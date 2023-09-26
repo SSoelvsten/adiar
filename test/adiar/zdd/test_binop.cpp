@@ -22,10 +22,10 @@ go_bandit([]() {
 
     { // Garbage collect writers early
       node_writer nw_x0(zdd_x0);
-      nw_x0 << node(0, node::MAX_ID, terminal_F, terminal_T);
+      nw_x0 << node(0, node::max_id, terminal_F, terminal_T);
 
       node_writer nw_x1(zdd_x1);
-      nw_x1 << node(1, node::MAX_ID, terminal_F, terminal_T);
+      nw_x1 << node(1, node::max_id, terminal_F, terminal_T);
     }
 
     describe("simple cases without access mode requirements", [&]() {
@@ -419,14 +419,14 @@ go_bandit([]() {
 
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
-            nw_a << node(3, node::MAX_ID, terminal_F, terminal_T)
-                << node(1, node::MAX_ID, ptr_uint64(3, ptr_uint64::MAX_ID), terminal_T)
-                << node(0, node::MAX_ID, terminal_F, ptr_uint64(1, ptr_uint64::MAX_ID))
+            nw_a << node(3, node::max_id, terminal_F, terminal_T)
+                << node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), terminal_T)
+                << node(0, node::max_id, terminal_F, ptr_uint64(1, ptr_uint64::max_id))
               ;
 
             node_writer nw_b(zdd_b);
-            nw_b << node(2, node::MAX_ID, terminal_F, terminal_T)
-                << node(0, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), ptr_uint64(2, ptr_uint64::MAX_ID))
+            nw_b << node(2, node::max_id, terminal_F, terminal_T)
+                << node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id))
               ;
           }
 
@@ -505,13 +505,13 @@ go_bandit([]() {
 
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
-            nw_a << node(1, node::MAX_ID, terminal_F, terminal_T)
-                << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), ptr_uint64(1, ptr_uint64::MAX_ID))
+            nw_a << node(1, node::max_id, terminal_F, terminal_T)
+                << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id))
               ;
 
             node_writer nw_b(zdd_b);
-            nw_b << node(2, node::MAX_ID, terminal_F, terminal_T)
-                << node(0, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), ptr_uint64(2, ptr_uint64::MAX_ID))
+            nw_b << node(2, node::max_id, terminal_F, terminal_T)
+                << node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id))
               ;
           }
 
@@ -580,15 +580,15 @@ go_bandit([]() {
 
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
-            nw_a << node(3, node::MAX_ID, terminal_F, terminal_T)
-                << node(2, node::MAX_ID, ptr_uint64(3, ptr_uint64::MAX_ID), ptr_uint64(3, ptr_uint64::MAX_ID))
-                << node(1, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), ptr_uint64(3, ptr_uint64::MAX_ID))
-                << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), terminal_T)
+            nw_a << node(3, node::max_id, terminal_F, terminal_T)
+                << node(2, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(3, ptr_uint64::max_id))
+                << node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(3, ptr_uint64::max_id))
+                << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), terminal_T)
               ;
 
             node_writer nw_b(zdd_b);
-            nw_b << node(3, node::MAX_ID, terminal_F, terminal_T)
-                << node(0, node::MAX_ID, ptr_uint64(3, ptr_uint64::MAX_ID), ptr_uint64(3, ptr_uint64::MAX_ID))
+            nw_b << node(3, node::max_id, terminal_F, terminal_T)
+                << node(0, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(3, ptr_uint64::max_id))
               ;
           }
 
@@ -694,7 +694,7 @@ go_bandit([]() {
 
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
-            nw_a << node(0, node::MAX_ID, terminal_T, terminal_T);
+            nw_a << node(0, node::max_id, terminal_T, terminal_T);
           }
 
           __zdd out = zdd_intsec(zdd_a, zdd_T);
@@ -730,8 +730,8 @@ go_bandit([]() {
 
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
-            nw_a << node(1, node::MAX_ID, terminal_F, terminal_T)
-                << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), terminal_T)
+            nw_a << node(1, node::max_id, terminal_F, terminal_T)
+                << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), terminal_T)
               ;
           }
 
@@ -769,14 +769,14 @@ go_bandit([]() {
 
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
-            nw_a << node(1, node::MAX_ID, terminal_F, terminal_T)
-                << node(1, node::MAX_ID-1, terminal_T, terminal_T)
-                << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID-1), ptr_uint64(1, ptr_uint64::MAX_ID))
+            nw_a << node(1, node::max_id, terminal_F, terminal_T)
+                << node(1, node::max_id-1, terminal_T, terminal_T)
+                << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id))
               ;
 
             node_writer nw_b(zdd_b);
-            nw_b << node(1, node::MAX_ID, terminal_F, terminal_T)
-                << node(0, node::MAX_ID, terminal_F, ptr_uint64(1, ptr_uint64::MAX_ID))
+            nw_b << node(1, node::max_id, terminal_F, terminal_T)
+                << node(0, node::max_id, terminal_F, ptr_uint64(1, ptr_uint64::max_id))
               ;
           }
 
@@ -829,8 +829,8 @@ go_bandit([]() {
 
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
-            nw_a << node(1, node::MAX_ID, terminal_F, terminal_T)
-                << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), ptr_uint64(1, ptr_uint64::MAX_ID))
+            nw_a << node(1, node::max_id, terminal_F, terminal_T)
+                << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id))
               ;
           }
 
@@ -874,9 +874,9 @@ go_bandit([]() {
 
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
-            nw_a << node(2, node::MAX_ID, terminal_T, terminal_T)
-                << node(2, node::MAX_ID-1, terminal_F, terminal_T)
-                << node(0, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(2, ptr_uint64::MAX_ID))
+            nw_a << node(2, node::max_id, terminal_T, terminal_T)
+                << node(2, node::max_id-1, terminal_F, terminal_T)
+                << node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(2, ptr_uint64::max_id))
               ;
           }
 
@@ -884,9 +884,9 @@ go_bandit([]() {
 
           { // Garbage collect writers early
             node_writer nw_b(zdd_b);
-            nw_b << node(2, node::MAX_ID, terminal_T, terminal_F)
-                << node(2, node::MAX_ID-1, terminal_F, terminal_T)
-                << node(1, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), ptr_uint64(2, ptr_uint64::MAX_ID-1))
+            nw_b << node(2, node::max_id, terminal_T, terminal_F)
+                << node(2, node::max_id-1, terminal_F, terminal_T)
+                << node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id-1))
               ;
           }
 
@@ -930,10 +930,10 @@ go_bandit([]() {
 
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
-            nw_a << node(2, node::MAX_ID, terminal_T, terminal_T)
-                << node(2, node::MAX_ID-1, terminal_F, terminal_T)
-                << node(1, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), ptr_uint64(2, ptr_uint64::MAX_ID-1))
-                << node(0, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), ptr_uint64(1, ptr_uint64::MAX_ID))
+            nw_a << node(2, node::max_id, terminal_T, terminal_T)
+                << node(2, node::max_id-1, terminal_F, terminal_T)
+                << node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id-1))
+                << node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id))
               ;
           }
 
@@ -941,10 +941,10 @@ go_bandit([]() {
 
           { // Garbage collect writers early
             node_writer nw_b(zdd_b);
-            nw_b << node(2, node::MAX_ID, terminal_T, terminal_T)
-                << node(2, node::MAX_ID-1, terminal_F, terminal_T)
-                << node(1, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID-1), terminal_T)
-                << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), ptr_uint64(2, ptr_uint64::MAX_ID))
+            nw_b << node(2, node::max_id, terminal_T, terminal_T)
+                << node(2, node::max_id-1, terminal_F, terminal_T)
+                << node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id-1), terminal_T)
+                << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id))
               ;
           }
 
@@ -1002,13 +1002,13 @@ go_bandit([]() {
 
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
-            nw_a << node(1, node::MAX_ID, terminal_F, terminal_T)
-                << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), terminal_T)
+            nw_a << node(1, node::max_id, terminal_F, terminal_T)
+                << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), terminal_T)
               ;
 
             node_writer nw_b(zdd_b);
-            nw_b << node(1, node::MAX_ID, terminal_F, terminal_T)
-                << node(0, node::MAX_ID, terminal_F, ptr_uint64(1, ptr_uint64::MAX_ID))
+            nw_b << node(1, node::max_id, terminal_F, terminal_T)
+                << node(0, node::max_id, terminal_F, ptr_uint64(1, ptr_uint64::max_id))
               ;
           }
 
@@ -1056,17 +1056,17 @@ go_bandit([]() {
 
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
-            nw_a << node(2, node::MAX_ID,   terminal_T, terminal_T)
-                << node(2, node::MAX_ID-1, terminal_F, terminal_T)
-                << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(2, ptr_uint64::MAX_ID))
-                << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID),   ptr_uint64(2, ptr_uint64::MAX_ID))
+            nw_a << node(2, node::max_id,   terminal_T, terminal_T)
+                << node(2, node::max_id-1, terminal_F, terminal_T)
+                << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(2, ptr_uint64::max_id))
+                << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id),   ptr_uint64(2, ptr_uint64::max_id))
               ;
 
             node_writer nw_b(zdd_b);
-            nw_b << node(2, node::MAX_ID,   terminal_T, terminal_T)
-                << node(2, node::MAX_ID-1, terminal_F, terminal_T)
-                << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(2, ptr_uint64::MAX_ID))
-                << node(0, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(1, ptr_uint64::MAX_ID))
+            nw_b << node(2, node::max_id,   terminal_T, terminal_T)
+                << node(2, node::max_id-1, terminal_F, terminal_T)
+                << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(2, ptr_uint64::max_id))
+                << node(0, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id))
               ;
           }
 
@@ -1126,14 +1126,14 @@ go_bandit([]() {
 
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
-            nw_a << node(1, node::MAX_ID, terminal_F, terminal_T)
-                << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), terminal_T)
+            nw_a << node(1, node::max_id, terminal_F, terminal_T)
+                << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), terminal_T)
               ;
 
             node_writer nw_b(zdd_b);
-            nw_b << node(2, node::MAX_ID, terminal_F, terminal_T)
-                << node(1, node::MAX_ID, terminal_F, terminal_T)
-                << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), ptr_uint64(2, ptr_uint64::MAX_ID))
+            nw_b << node(2, node::max_id, terminal_F, terminal_T)
+                << node(1, node::max_id, terminal_F, terminal_T)
+                << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id))
               ;
           }
 
@@ -1191,14 +1191,14 @@ go_bandit([]() {
 
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
-            nw_a << node(2, node::MAX_ID, terminal_F, terminal_T)
-                << node(1, node::MAX_ID, terminal_T, ptr_uint64(2, ptr_uint64::MAX_ID))
-                << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), ptr_uint64(2, ptr_uint64::MAX_ID))
+            nw_a << node(2, node::max_id, terminal_F, terminal_T)
+                << node(1, node::max_id, terminal_T, ptr_uint64(2, ptr_uint64::max_id))
+                << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id))
               ;
 
             node_writer nw_b(zdd_b);
-            nw_b << node(1, node::MAX_ID, terminal_T, terminal_T)
-                << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), terminal_T)
+            nw_b << node(1, node::max_id, terminal_T, terminal_T)
+                << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), terminal_T)
               ;
           }
 
@@ -1256,14 +1256,14 @@ go_bandit([]() {
 
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
-            nw_a << node(2, node::MAX_ID, terminal_F, terminal_T)
-                << node(1, node::MAX_ID, terminal_T, ptr_uint64(2, ptr_uint64::MAX_ID))
-                << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), ptr_uint64(2, ptr_uint64::MAX_ID))
+            nw_a << node(2, node::max_id, terminal_F, terminal_T)
+                << node(1, node::max_id, terminal_T, ptr_uint64(2, ptr_uint64::max_id))
+                << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id))
               ;
 
             node_writer nw_b(zdd_b);
-            nw_b << node(2, node::MAX_ID, terminal_T, terminal_T)
-                << node(0, node::MAX_ID, terminal_F, ptr_uint64(2, ptr_uint64::MAX_ID))
+            nw_b << node(2, node::max_id, terminal_T, terminal_T)
+                << node(0, node::max_id, terminal_F, ptr_uint64(2, ptr_uint64::max_id))
               ;
           }
 
@@ -1367,7 +1367,7 @@ go_bandit([]() {
 
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
-            nw_a << node(0, node::MAX_ID, terminal_T, terminal_T);
+            nw_a << node(0, node::max_id, terminal_T, terminal_T);
           }
 
           __zdd out = zdd_diff(zdd_a, zdd_T);
@@ -1409,12 +1409,12 @@ go_bandit([]() {
 
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
-            nw_a  << node(1, node::MAX_ID, terminal_F, terminal_T)
-                  << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), ptr_uint64(1, ptr_uint64::MAX_ID))
+            nw_a  << node(1, node::max_id, terminal_F, terminal_T)
+                  << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id))
               ;
 
             node_writer nw_b(zdd_b);
-            nw_b << node(1, node::MAX_ID, terminal_T, terminal_T);
+            nw_b << node(1, node::max_id, terminal_T, terminal_T);
           }
 
           __zdd out = zdd_diff(zdd_a, zdd_b);
@@ -1467,14 +1467,14 @@ go_bandit([]() {
 
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
-            nw_a  << node(2, node::MAX_ID, terminal_T, terminal_T)
-                  << node(1, node::MAX_ID, terminal_F, terminal_T)
-                  << node(1, node::MAX_ID-1, terminal_F, ptr_uint64(2, ptr_uint64::MAX_ID))
-                  << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID-1), ptr_uint64(1, ptr_uint64::MAX_ID))
+            nw_a  << node(2, node::max_id, terminal_T, terminal_T)
+                  << node(1, node::max_id, terminal_F, terminal_T)
+                  << node(1, node::max_id-1, terminal_F, ptr_uint64(2, ptr_uint64::max_id))
+                  << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id))
               ;
 
             node_writer nw_b(zdd_b);
-            nw_b << node(1, node::MAX_ID, terminal_T, terminal_T);
+            nw_b << node(1, node::max_id, terminal_T, terminal_T);
           }
 
           __zdd out = zdd_diff(zdd_a, zdd_b);
@@ -1548,7 +1548,7 @@ go_bandit([]() {
 
             { // Garbage collect early and free write-lock
               node_writer nw_m(zdd_maybe_x0);
-              nw_m << node(0, node::MAX_ID, terminal_T, terminal_T);
+              nw_m << node(0, node::max_id, terminal_T, terminal_T);
             }
 
             /*
@@ -1691,11 +1691,11 @@ go_bandit([]() {
         //              F T    T T
         */
 
-        node nt_5 = node(2, node::MAX_ID, terminal_T, terminal_T);
-        node nt_4 = node(2, node::MAX_ID - 1, terminal_F, terminal_T);
-        node nt_3 = node(1, node::MAX_ID, nt_4, nt_5);
-        node nt_2 = node(1, node::MAX_ID - 1, nt_5, nt_4);
-        node nt_1 = node(0, node::MAX_ID, nt_2, nt_3);
+        node nt_5 = node(2, node::max_id, terminal_T, terminal_T);
+        node nt_4 = node(2, node::max_id - 1, terminal_F, terminal_T);
+        node nt_3 = node(1, node::max_id, nt_4, nt_5);
+        node nt_2 = node(1, node::max_id - 1, nt_5, nt_4);
+        node nt_1 = node(0, node::max_id, nt_2, nt_3);
 
         { // Garbage collect early and free write-lock
           node_writer nw_t(zdd_thin);
@@ -1721,13 +1721,13 @@ go_bandit([]() {
         //            F T
         */
 
-        node nw_7 = node(3, node::MAX_ID, terminal_F, terminal_T);
-        node nw_6 = node(2, node::MAX_ID, terminal_T, terminal_T);
-        node nw_5 = node(2, node::MAX_ID - 1, terminal_F, terminal_T);
-        node nw_4 = node(2, node::MAX_ID - 2, terminal_F, nw_7);
-        node nw_3 = node(1, node::MAX_ID, nw_6, nw_5);
-        node nw_2 = node(1, node::MAX_ID - 1, nw_5, nw_4);
-        node nw_1 = node(0, node::MAX_ID, nw_2, nw_3);
+        node nw_7 = node(3, node::max_id, terminal_F, terminal_T);
+        node nw_6 = node(2, node::max_id, terminal_T, terminal_T);
+        node nw_5 = node(2, node::max_id - 1, terminal_F, terminal_T);
+        node nw_4 = node(2, node::max_id - 2, terminal_F, nw_7);
+        node nw_3 = node(1, node::max_id, nw_6, nw_5);
+        node nw_2 = node(1, node::max_id - 1, nw_5, nw_4);
+        node nw_1 = node(0, node::max_id, nw_2, nw_3);
 
         { // Garbage collect early and free write-lock
           node_writer nw_w(zdd_wide);
@@ -1914,15 +1914,15 @@ go_bandit([]() {
         //         F T  T T
         */
 
-        node nc_9 = node(3, node::MAX_ID, terminal_T, terminal_T);
-        node nc_8 = node(3, node::MAX_ID - 1, terminal_F, terminal_T);
-        node nc_7 = node(2, node::MAX_ID, terminal_T, terminal_T);
-        node nc_6 = node(2, node::MAX_ID - 1, terminal_F, terminal_T);
-        node nc_5 = node(2, node::MAX_ID - 2, terminal_F, nc_9);
-        node nc_4 = node(2, node::MAX_ID - 3, terminal_F, nc_8);
-        node nc_3 = node(1, node::MAX_ID, nc_5, nc_7);
-        node nc_2 = node(1, node::MAX_ID - 1, nc_4, nc_6);
-        node nc_1 = node(0, node::MAX_ID, nc_2, nc_3);
+        node nc_9 = node(3, node::max_id, terminal_T, terminal_T);
+        node nc_8 = node(3, node::max_id - 1, terminal_F, terminal_T);
+        node nc_7 = node(2, node::max_id, terminal_T, terminal_T);
+        node nc_6 = node(2, node::max_id - 1, terminal_F, terminal_T);
+        node nc_5 = node(2, node::max_id - 2, terminal_F, nc_9);
+        node nc_4 = node(2, node::max_id - 3, terminal_F, nc_8);
+        node nc_3 = node(1, node::max_id, nc_5, nc_7);
+        node nc_2 = node(1, node::max_id - 1, nc_4, nc_6);
+        node nc_1 = node(0, node::max_id, nc_2, nc_3);
 
         { // Garbage collect early and free write-lock
           node_writer nw_c(zdd_canon);
@@ -1948,13 +1948,13 @@ go_bandit([]() {
         //               F T
         */
 
-        node nn_7 = node(3, node::MAX_ID, terminal_F, terminal_T);
-        node nn_6 = node(2, node::MAX_ID, terminal_T, terminal_T);
-        node nn_5 = node(2, node::MAX_ID - 1, nn_7, terminal_T);
-        node nn_4 = node(2, node::MAX_ID - 2, terminal_F, terminal_T);
-        node nn_3 = node(1, node::MAX_ID, nn_6, nn_4);
-        node nn_2 = node(1, node::MAX_ID - 1, nn_4, nn_5);
-        node nn_1 = node(0, node::MAX_ID, nn_2, nn_3);
+        node nn_7 = node(3, node::max_id, terminal_F, terminal_T);
+        node nn_6 = node(2, node::max_id, terminal_T, terminal_T);
+        node nn_5 = node(2, node::max_id - 1, nn_7, terminal_T);
+        node nn_4 = node(2, node::max_id - 2, terminal_F, terminal_T);
+        node nn_3 = node(1, node::max_id, nn_6, nn_4);
+        node nn_2 = node(1, node::max_id - 1, nn_4, nn_5);
+        node nn_1 = node(0, node::max_id, nn_2, nn_3);
 
         { // Garbage collect early and free write-lock
           node_writer nw_n(zdd_non_canon);
@@ -2187,15 +2187,15 @@ go_bandit([]() {
 
             { // Garbage collect writers early
               node_writer nw_a(zdd_a);
-              nw_a << node(3, node::MAX_ID, terminal_F, terminal_T)
-                  << node(2, node::MAX_ID, ptr_uint64(3, ptr_uint64::MAX_ID), ptr_uint64(3, ptr_uint64::MAX_ID))
-                  << node(1, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), ptr_uint64(3, ptr_uint64::MAX_ID))
-                  << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), terminal_T)
+              nw_a << node(3, node::max_id, terminal_F, terminal_T)
+                  << node(2, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(3, ptr_uint64::max_id))
+                  << node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(3, ptr_uint64::max_id))
+                  << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), terminal_T)
                 ;
 
               node_writer nw_b(zdd_b);
-              nw_b << node(3, node::MAX_ID, terminal_F, terminal_T)
-                  << node(0, node::MAX_ID, ptr_uint64(3, ptr_uint64::MAX_ID), ptr_uint64(3, ptr_uint64::MAX_ID))
+              nw_b << node(3, node::max_id, terminal_F, terminal_T)
+                  << node(0, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(3, ptr_uint64::max_id))
                 ;
             }
 
@@ -2280,8 +2280,8 @@ go_bandit([]() {
             //       F   T
             */
 
-            node na_2 = node(1, node::MAX_ID, terminal_F, terminal_T);
-            node na_1 = node(0, node::MAX_ID, na_2, terminal_T);
+            node na_2 = node(1, node::max_id, terminal_F, terminal_T);
+            node na_1 = node(0, node::max_id, na_2, terminal_T);
 
             { // Garbage collect writers early
               node_writer nw_a(zdd_a);
@@ -2302,9 +2302,9 @@ go_bandit([]() {
             //       F   T   T
             */
 
-            node nb_3 = node(1, node::MAX_ID, terminal_T, terminal_T);
-            node nb_2 = node(1, node::MAX_ID - 1, terminal_F, terminal_T);
-            node nb_1 = node(0, node::MAX_ID, nb_2, nb_3);
+            node nb_3 = node(1, node::max_id, terminal_T, terminal_T);
+            node nb_2 = node(1, node::max_id - 1, terminal_F, terminal_T);
+            node nb_1 = node(0, node::max_id, nb_2, nb_3);
 
             { // Garbage collect writers early
               node_writer nw_b(zdd_b);
@@ -2380,9 +2380,9 @@ go_bandit([]() {
             //             T   T
             */
 
-            node na_3 = node(2, node::MAX_ID, terminal_T, terminal_T);
-            node na_2 = node(1, node::MAX_ID, terminal_F, terminal_T);
-            node na_1 = node(0, node::MAX_ID, na_2, na_3);
+            node na_3 = node(2, node::max_id, terminal_T, terminal_T);
+            node na_2 = node(1, node::max_id, terminal_F, terminal_T);
+            node na_1 = node(0, node::max_id, na_2, na_3);
 
             { // Garbage collect writers early
               node_writer nw_a(zdd_a);
@@ -2403,9 +2403,9 @@ go_bandit([]() {
             //       F   T   T
             */
 
-            node nb_3 = node(1, node::MAX_ID, terminal_T, terminal_T);
-            node nb_2 = node(1, node::MAX_ID - 1, terminal_F, terminal_T);
-            node nb_1 = node(0, node::MAX_ID, nb_2, nb_3);
+            node nb_3 = node(1, node::max_id, terminal_T, terminal_T);
+            node nb_2 = node(1, node::max_id - 1, terminal_F, terminal_T);
+            node nb_1 = node(0, node::max_id, nb_2, nb_3);
 
             { // Garbage collect writers early
               node_writer nw_b(zdd_b);
@@ -2495,10 +2495,10 @@ go_bandit([]() {
             //             F T T T
             */
 
-            node na_4 = node(2, node::MAX_ID, terminal_T, terminal_T);
-            node na_3 = node(2, node::MAX_ID - 1, terminal_F, terminal_T);
-            node na_2 = node(1, node::MAX_ID, na_3, na_4);
-            node na_1 = node(0, node::MAX_ID, terminal_F, na_2);
+            node na_4 = node(2, node::max_id, terminal_T, terminal_T);
+            node na_3 = node(2, node::max_id - 1, terminal_F, terminal_T);
+            node na_2 = node(1, node::max_id, na_3, na_4);
+            node na_1 = node(0, node::max_id, terminal_F, na_2);
 
             { // Garbage collect early and free write-lock
               node_writer nw_a(zdd_a);
@@ -2521,9 +2521,9 @@ go_bandit([]() {
             //               F   T
             */
 
-            node nb_3 = node(2, node::MAX_ID, terminal_F, terminal_T);
-            node nb_2 = node(1, node::MAX_ID, terminal_F, nb_3);
-            node nb_1 = node(0, node::MAX_ID, nb_2, nb_2);
+            node nb_3 = node(2, node::max_id, terminal_F, terminal_T);
+            node nb_2 = node(1, node::max_id, terminal_F, nb_3);
+            node nb_1 = node(0, node::max_id, nb_2, nb_2);
 
             { // Garbage collect early and free write-lock
               node_writer nw_b(zdd_b);
@@ -2604,8 +2604,8 @@ go_bandit([]() {
             //           F T
             */
 
-            node na_2 = node(1, node::MAX_ID, terminal_F, terminal_T);
-            node na_1 = node(0, node::MAX_ID, na_2, terminal_T);
+            node na_2 = node(1, node::max_id, terminal_F, terminal_T);
+            node na_1 = node(0, node::max_id, na_2, terminal_T);
 
             { // Garbage collect early and free write-lock
               node_writer nw_a(zdd_a);
@@ -2624,7 +2624,7 @@ go_bandit([]() {
             //             T
             */
 
-            node nb_1 = node(0, node::MAX_ID, terminal_T, terminal_T);
+            node nb_1 = node(0, node::max_id, terminal_T, terminal_T);
 
             { // Garbage collect early and free write-lock
               node_writer nw_b(zdd_b);
@@ -2695,9 +2695,9 @@ go_bandit([]() {
             //               T T F T
             */
 
-            node na_3 = node(1, node::MAX_ID, terminal_F, terminal_T);
-            node na_2 = node(1, node::MAX_ID - 1, terminal_T, terminal_T);
-            node na_1 = node(0, node::MAX_ID, na_2, na_3);
+            node na_3 = node(1, node::max_id, terminal_F, terminal_T);
+            node na_2 = node(1, node::max_id - 1, terminal_T, terminal_T);
+            node na_1 = node(0, node::max_id, na_2, na_3);
 
             { // Garbage collect early and free write-lock
               node_writer nw_a(zdd_a);
@@ -2718,9 +2718,9 @@ go_bandit([]() {
             //               F T T T
             */
 
-            node nb_3 = node(1, node::MAX_ID, terminal_T, terminal_T);
-            node nb_2 = node(1, node::MAX_ID - 1, terminal_F, terminal_T);
-            node nb_1 = node(0, node::MAX_ID, nb_2, nb_3);
+            node nb_3 = node(1, node::max_id, terminal_T, terminal_T);
+            node nb_2 = node(1, node::max_id - 1, terminal_F, terminal_T);
+            node nb_1 = node(0, node::max_id, nb_2, nb_3);
 
             { // Garbage collect early and free write-lock
               node_writer nw_b(zdd_b);

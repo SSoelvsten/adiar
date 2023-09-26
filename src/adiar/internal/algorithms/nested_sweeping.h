@@ -86,11 +86,11 @@ namespace adiar::internal
       bool terminal_val = false /* <-- dummy value */;
 
       // Pull out all nodes from pq and terminal_arcs for this level
-      typename dd_policy::id_t out_id = dd_policy::MAX_ID;
+      typename dd_policy::id_t out_id = dd_policy::max_id;
 
       while (pq.can_pull() || (arcs.can_pull_terminal() && arcs.peek_terminal().source().label() == label)) {
         // TODO (MDD / QMDD):
-        //   Use __reduce_get_next node_t::OUTDEGREE times to create a node_t::children_t.
+        //   Use __reduce_get_next node_t::outdegree times to create a node_t::children_t.
         const arc e_high = __reduce_get_next(pq, arcs);
         const arc e_low  = __reduce_get_next(pq, arcs);
 
@@ -144,8 +144,8 @@ namespace adiar::internal
       // Add number of nodes to level information, if any nodes were pushed to
       // the output. Furthermore, mark as non-canonical if at least two nodes
       // were output (their order might very much have been wrong).
-      if (out_id != dd_policy::MAX_ID) {
-        const size_t width = dd_policy::MAX_ID - out_id;
+      if (out_id != dd_policy::max_id) {
+        const size_t width = dd_policy::max_id - out_id;
         out_writer.unsafe_push(level_info(label, width));
 
         if (width > 1u) {
@@ -176,8 +176,6 @@ namespace adiar::internal
       class roots_sorter
       {
       public:
-        static constexpr size_t DATA_STRUCTURES = 1u;
-
         ////////////////////////////////////////////////////////////////////////
         /// \brief Type of the elements.
         ////////////////////////////////////////////////////////////////////////
@@ -202,8 +200,10 @@ namespace adiar::internal
         using sorter_t = sorter<mem_mode, elem_t, elem_comp_t>;
 
         ////////////////////////////////////////////////////////////////////////
-        static constexpr typename elem_t::label_t NO_LEVEL =
+        static constexpr typename elem_t::label_t no_level =
           static_cast<typename elem_t::label_t>(-1);
+
+        static constexpr size_t data_structures = sorter_t::data_structures;
 
       private:
         ////////////////////////////////////////////////////////////////////////
@@ -214,7 +214,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         /// \brief Maximum source seen
         ////////////////////////////////////////////////////////////////////////
-        typename elem_t::ptr_t _max_source = elem_t::ptr_t::NIL();
+        typename elem_t::ptr_t _max_source = elem_t::ptr_t::nil();
 
         ////////////////////////////////////////////////////////////////////////
         // NOTE: There is not '_terminals[2]' like in the priority queue, since
@@ -279,12 +279,12 @@ namespace adiar::internal
           // TODO: support requests with more than just the source
 
           // TODO: Is there a better way to explicitly set the remainders of
-          //       target to NIL?
+          //       target to nil?
 
           if constexpr (elem_t::cardinality == 1u) {
             push(elem_t({a.target()}, {}, {flag(a.source())}));
           } else if constexpr (elem_t::cardinality == 2u) {
-            push(elem_t({a.target(), elem_t::ptr_t::NIL()}, {}, {a.source()}));
+            push(elem_t({a.target(), elem_t::ptr_t::nil()}, {}, {a.source()}));
           } else {
             static_assert(elem_t::cardinality <= 2u,
                           "Missing implementation for larger than binary combinators");
@@ -315,7 +315,7 @@ namespace adiar::internal
         void reset()
         {
           sorter_t::reset_unique(_sorter_ptr, _memory_bytes, _no_arcs);
-          _max_source = elem_t::ptr_t::NIL();
+          _max_source = elem_t::ptr_t::nil();
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -341,14 +341,14 @@ namespace adiar::internal
         /// \brief Level of the deepest source
         ////////////////////////////////////////////////////////////////////////
         typename elem_t::label_t deepest_source()
-        { return _max_source.is_nil() ? NO_LEVEL : _max_source.label(); }
+        { return _max_source.is_nil() ? no_level : _max_source.label(); }
       };
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief Default priority queue for the Outer Up Sweep.
       //////////////////////////////////////////////////////////////////////////
-      template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
-      using up__pq_t = reduce_priority_queue<LOOK_AHEAD, mem_mode>;
+      template<size_t look_ahead, memory_mode_t mem_mode>
+      using up__pq_t = reduce_priority_queue<look_ahead, mem_mode>;
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief Decorator for the Reduce priority queue that either forwards
@@ -407,7 +407,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////////
         /// \brief Value to reflect 'out of levels'.
         ////////////////////////////////////////////////////////////////////////////
-        static constexpr level_t NO_LABEL = outer_pq_t::NO_LABEL;
+        static constexpr level_t no_label = outer_pq_t::no_label;
 
       public:
         ////////////////////////////////////////////////////////////////////////
@@ -493,7 +493,7 @@ namespace adiar::internal
         ///
         /// \param e The request with some `target` and `data.source`
         ///
-        /// \pre   The request's source must be above `_next_inner` or `NIL`.
+        /// \pre   The request's source must be above `_next_inner` or `nil`.
         ///
         /// \see request, request_with_data
         ////////////////////////////////////////////////////////////////////////
@@ -511,7 +511,7 @@ namespace adiar::internal
         /// \brief Set up the next nonempty level in the priority queue and the
         ///        sorter (down to the given `stop_level`).
         ////////////////////////////////////////////////////////////////////////
-        void setup_next_level(level_t stop_level = NO_LABEL)
+        void setup_next_level(level_t stop_level = no_label)
         {
           _outer_pq.setup_next_level(stop_level);
           adiar_assert(_next_inner <= _outer_pq.current_level(),
@@ -553,12 +553,12 @@ namespace adiar::internal
         { }
 
       public:
-        static constexpr level_t NONE = static_cast<level_t>(-1);
+        static constexpr level_t end = static_cast<level_t>(-1);
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief Obtain the next level to do an inner sweep to pull.
         ///
-        /// \returns The next inner level that should be recursed on (or `NONE`
+        /// \returns The next inner level that should be recursed on (or `end`
         ///          if none are left)
         ////////////////////////////////////////////////////////////////////////
         level_t next_inner()
@@ -567,7 +567,7 @@ namespace adiar::internal
             const level_t l = _lis.pull().level();
             if (_policy_impl.has_sweep(l)) { return l; }
           }
-          return NONE;
+          return end;
         }
       };
     } // namespace outer
@@ -635,7 +635,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////////
         /// \brief Value to reflect 'out of levels'.
         ////////////////////////////////////////////////////////////////////////////
-        static constexpr level_t NO_LABEL = inner_pq_t::NO_LABEL;
+        static constexpr level_t no_label = inner_pq_t::no_label;
 
       public:
         ////////////////////////////////////////////////////////////////////////
@@ -687,7 +687,7 @@ namespace adiar::internal
         /// \brief Set up the next nonempty level in the priority queue and the
         ///        sorter (down to the given `stop_level`).
         ////////////////////////////////////////////////////////////////////////
-        void setup_next_level(level_t stop_level = NO_LABEL)
+        void setup_next_level(level_t stop_level = no_label)
         {
           if (_outer_roots.can_pull()) {
             stop_level = std::min(stop_level, _outer_roots.top().level());
@@ -931,8 +931,8 @@ namespace adiar::internal
       //////////////////////////////////////////////////////////////////////////
       /// \brief Default priority queue for the Inner Up Sweep.
       //////////////////////////////////////////////////////////////////////////
-      template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
-      using up__pq_t = outer::up__pq_t<LOOK_AHEAD, mem_mode>;
+      template<size_t look_ahead, memory_mode_t mem_mode>
+      using up__pq_t = outer::up__pq_t<look_ahead, mem_mode>;
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief Decorator for a (levelized) priority queue that either forwards
@@ -989,7 +989,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////////
         /// \brief Value to reflect 'out of levels'.
         ////////////////////////////////////////////////////////////////////////////
-        static constexpr level_t NO_LABEL = inner_pq_t::NO_LABEL;
+        static constexpr level_t no_label = inner_pq_t::no_label;
 
       public:
         ////////////////////////////////////////////////////////////////////////
@@ -1047,7 +1047,7 @@ namespace adiar::internal
         /// \brief Set up the next nonempty level in the priority queue and the
         ///        sorter (down to the given `stop_level`).
         ////////////////////////////////////////////////////////////////////////
-        void setup_next_level(level_t stop_level = NO_LABEL)
+        void setup_next_level(level_t stop_level = no_label)
         { _inner_pq.setup_next_level(stop_level); }
 
         ////////////////////////////////////////////////////////////////////////
@@ -1376,7 +1376,7 @@ namespace adiar::internal
 
     // If there are no levels to do an inner sweep, then bail out with the
     // classic Reduce sweep.
-    if (next_inner == inner_iter_t::NONE) {
+    if (next_inner == inner_iter_t::end) {
 #ifdef ADIAR_STATS
       // TODO
 #endif
@@ -1449,13 +1449,13 @@ namespace adiar::internal
       adiar_assert(!outer_pq.has_current_level()
                    || outer_level.level() == outer_pq.current_level(),
                    "level and priority queue should be in sync");
-      adiar_assert(next_inner == inner_iter_t::NONE || next_inner <= outer_level.level(),
+      adiar_assert(next_inner == inner_iter_t::end || next_inner <= outer_level.level(),
                    "next_inner level should (if it exists) be above current level (inclusive).");
 
       // -----------------------------------------------------------------------
       // CASE Unnested Level with no nested sweep above:
       //   Reduce this level (without decorators).
-      if (next_inner == inner_iter_t::NONE) {
+      if (next_inner == inner_iter_t::end) {
         if constexpr (nesting_policy::reduce_strategy == nested_sweeping::Never_Canonical) {
 #ifdef ADIAR_STATS
           // TODO
@@ -1566,7 +1566,7 @@ namespace adiar::internal
               if (reduction_rule_ret.is_terminal()) {
                 return reduced_t(reduction_rule_ret.value());
               }
-              outer_pq_decorator.push(arc(node::ptr_t::NIL(), flag(reduction_rule_ret)));
+              outer_pq_decorator.push(arc(node::ptr_t::nil(), flag(reduction_rule_ret)));
             } else {
               do {
                 outer_pq_decorator.push(arc(outer_arcs.pull_internal().source(), flag(reduction_rule_ret)));
@@ -1578,7 +1578,7 @@ namespace adiar::internal
               adiar_assert(!outer_arcs.can_pull_internal(), "Should not have any parents at top-most level");
 
               const request_t r =
-                policy_impl.request_from_node(n, node::ptr_t::NIL());
+                policy_impl.request_from_node(n, node::ptr_t::nil());
 
               adiar_assert(r.targets() > 0, "Requests are always to something");
               non_gc_request |= r.targets() > 1;
@@ -1606,7 +1606,7 @@ namespace adiar::internal
       // Obtain the next level to sweep nestedly on.
       next_inner = inner_iter.next_inner();
 
-      const bool is_last_inner = next_inner == inner_iter_t::NONE;
+      const bool is_last_inner = next_inner == inner_iter_t::end;
 
       const bool run_inner =
         // We have some requests to sweep on
@@ -1672,7 +1672,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
         // TODO
 #endif
-        adiar_assert(next_inner <= nesting_policy::ptr_t::MAX_LABEL,
+        adiar_assert(next_inner <= nesting_policy::ptr_t::max_label,
                      "Has another later sweep to do possible garbage collection");
 
         adiar_assert(outer_roots_memory <= inner_memory,
@@ -1716,22 +1716,22 @@ namespace adiar::internal
                      "All forwarded arcs for 'label' should be processed");
 
         const size_t terminal_stop_level =
-          outer_arcs.can_pull_terminal() ? outer_arcs.peek_terminal().source().label() : outer_pq_t::NO_LABEL;
+          outer_arcs.can_pull_terminal() ? outer_arcs.peek_terminal().source().label() : outer_pq_t::no_label;
 
         const size_t outer_roots_stop_level =
-          !outer_roots.empty() ? outer_roots.deepest_source() : outer_pq_t::NO_LABEL;
+          !outer_roots.empty() ? outer_roots.deepest_source() : outer_pq_t::no_label;
 
-        adiar_assert(terminal_stop_level != outer_pq_t::NO_LABEL
-                     || outer_roots_stop_level != outer_pq_t::NO_LABEL
+        adiar_assert(terminal_stop_level != outer_pq_t::no_label
+                     || outer_roots_stop_level != outer_pq_t::no_label
                      || !outer_pq.empty(),
                      "There must be some (known) level ready to be forwarded to.");
 
-        const size_t stop_level = terminal_stop_level == outer_pq_t::NO_LABEL    ? outer_roots_stop_level
-                                : outer_roots_stop_level == outer_pq_t::NO_LABEL ? terminal_stop_level
+        const size_t stop_level = terminal_stop_level == outer_pq_t::no_label    ? outer_roots_stop_level
+                                : outer_roots_stop_level == outer_pq_t::no_label ? terminal_stop_level
                                 : std::max(terminal_stop_level, outer_roots_stop_level)
           ;
 
-        adiar_assert(stop_level != outer_pq_t::NO_LABEL || !outer_pq.empty(),
+        adiar_assert(stop_level != outer_pq_t::no_label || !outer_pq.empty(),
                      "There must be some (known) level ready to be forwarded to.");
 
         outer_pq.setup_next_level(stop_level);
@@ -1815,12 +1815,12 @@ namespace adiar::internal
 
     using outer_default_lpq_t = nested_sweeping::outer::up__pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>;
 
-    constexpr size_t data_structures_in_pq = outer_default_lpq_t::DATA_STRUCTURES;
+    constexpr size_t data_structures_in_pq = outer_default_lpq_t::data_structures;
 
     using internal_roots_sorter_t =
       nested_sweeping::outer::roots_sorter<memory_mode_t::Internal, request_t, request_pred_t>;
 
-    constexpr size_t data_structures_in_roots = internal_roots_sorter_t::DATA_STRUCTURES;
+    constexpr size_t data_structures_in_roots = internal_roots_sorter_t::data_structures;
 
     const size_t outer_pq_memory =
       (aux_outer_memory / (data_structures_in_pq + data_structures_in_roots)) * data_structures_in_pq;

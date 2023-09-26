@@ -61,9 +61,9 @@ struct lpq_test_gt {
 typedef shared_file_ptr<levelized_file<lpq_test_data>> lpq_test_file;
 typedef levelized_file_writer<lpq_test_data> lpq_test_writer;
 
-template <typename file_t, size_t LOOK_AHEAD>
+template <typename file_t, size_t look_ahead>
 using test_priority_queue = levelized_priority_queue<lpq_test_data, lpq_test_lt,
-                                                     LOOK_AHEAD,
+                                                     look_ahead,
                                                      memory_mode_t::Internal,
                                                      file_t, 1u, std::less<>, false,
                                                      1u>;
@@ -77,7 +77,7 @@ go_bandit([]() {
     //
     // TODO: Are we not missing some unit tests for the very simple accessors?
 
-    describe("levelized_priority_queue<..., LOOK_AHEAD=1, ..., INIT_LEVEL=1>", []() {
+    describe("levelized_priority_queue<..., look_ahead=1, ..., INIT_LEVEL=1>", []() {
       //////////////////////////////////////////////////////////////////////////
       //                          initialisation                              //
       it("initialises #levels = 0", []() {
@@ -2156,7 +2156,7 @@ go_bandit([]() {
       });
     });
 
-    describe("levelized_priority_queue<..., LOOK_AHEAD=0, ..., INIT_LEVEL=1>", []() {
+    describe("levelized_priority_queue<..., look_ahead=0, ..., INIT_LEVEL=1>", []() {
       //////////////////////////////////////////////////////////////////////////
       //                          initialisation                              //
       it("initialises correctly", []() {
@@ -4096,7 +4096,7 @@ go_bandit([]() {
     });
 
     //Fixed (ub)
-    describe("levelized_priority_queue<..., LOOK_AHEAD=0, lpq_test_gt, ..., std::greater<>, ...>", []() {
+    describe("levelized_priority_queue<..., look_ahead=0, lpq_test_gt, ..., std::greater<>, ...>", []() {
       adiar::shared_file<ptr_uint64::label_t> f;
 
       { // Garbage collect the writer early
@@ -4210,7 +4210,7 @@ go_bandit([]() {
       });
     });
 
-    describe("levelized_priority_queue<..., LOOK_AHEAD=1, ..., INIT_LEVEL=0>", []() {
+    describe("levelized_priority_queue<..., look_ahead=1, ..., INIT_LEVEL=0>", []() {
       it("initialises #levels = 0", []() {
         adiar::shared_file<ptr_uint64::label_t> f;
 
@@ -4347,7 +4347,7 @@ go_bandit([]() {
     });
 
     describe("levelized_priority_queue<..., level_reverse=true, ...>", []() {
-      // TODO: these tests break with a LOOK_AHEAD of 0. Is this indicating some bug?
+      // TODO: these tests break with a look_ahead of 0. Is this indicating some bug?
 
       it("can setup buckets in reverse order", []() {
         lpq_test_file f;
@@ -4550,7 +4550,7 @@ go_bandit([]() {
       });
     });
 
-    describe("levelized_priority_queue<..., LOOK_AHEAD=0, ..., INIT_LEVEL=0>", []() {
+    describe("levelized_priority_queue<..., look_ahead=0, ..., INIT_LEVEL=0>", []() {
       it("initialises correctly", []() {
         adiar::shared_file<ptr_uint64::label_t> f;
 
@@ -4710,7 +4710,7 @@ go_bandit([]() {
       });
     });
 
-    describe("levelized_priority_queue<..., LOOK_AHEAD=0, ..., FILES=2, ...>", []() {
+    describe("levelized_priority_queue<..., look_ahead=0, ..., FILES=2, ...>", []() {
       it("can push into and pull from merge of two meta files' levels", []() {
         lpq_test_file f1;
         lpq_test_file f2;
@@ -4778,7 +4778,7 @@ go_bandit([]() {
       });
     });
 
-    describe("levelized_priority_queue<..., INIT_LEVEL=1, LOOK_AHEAD=3>", []() {
+    describe("levelized_priority_queue<..., INIT_LEVEL=1, look_ahead=3>", []() {
       // TODO: size, pop, peek tests and more
 
       it("initialises with #levels = 0", []() {

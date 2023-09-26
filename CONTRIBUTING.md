@@ -194,8 +194,8 @@ of writing might be easier to read.
   Template type parameters are suffixed with `_t` such that it can be reexposed
   with the `_type` suffix without creating a name clash.
 
-- Private class member variables are prefixed with a single `_`; public ones may
-  also be prefixed as such.
+- Private class member variables are prefixed with a single `_`; non-static
+  public ones may also be prefixed as such.
 
 ### §4 No Almost Always Auto!
 

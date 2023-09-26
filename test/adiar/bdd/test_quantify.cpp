@@ -31,8 +31,8 @@ go_bandit([]() {
     */
     shared_levelized_file<bdd::node_t> bdd_1;
 
-    const node n1_2 = node(1, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
-    const node n1_1 = node(0, node::MAX_ID, ptr_uint64(true), n1_2.uid());
+    const node n1_2 = node(1, node::max_id, ptr_uint64(false), ptr_uint64(true));
+    const node n1_1 = node(0, node::max_id, ptr_uint64(true), n1_2.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw_1(bdd_1);
@@ -52,11 +52,11 @@ go_bandit([]() {
     */
     shared_levelized_file<bdd::node_t> bdd_2;
 
-    const node n2_5 = node(2, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
-    const node n2_4 = node(2, node::MAX_ID-1, ptr_uint64(true), ptr_uint64(false));
-    const node n2_3 = node(1, node::MAX_ID, n2_5.uid(), ptr_uint64(false));
-    const node n2_2 = node(1, node::MAX_ID-1, n2_4.uid(), n2_5.uid());
-    const node n2_1 = node(0, node::MAX_ID, n2_2.uid(), n2_3.uid());
+    const node n2_5 = node(2, node::max_id, ptr_uint64(false), ptr_uint64(true));
+    const node n2_4 = node(2, node::max_id-1, ptr_uint64(true), ptr_uint64(false));
+    const node n2_3 = node(1, node::max_id, n2_5.uid(), ptr_uint64(false));
+    const node n2_2 = node(1, node::max_id-1, n2_4.uid(), n2_5.uid());
+    const node n2_1 = node(0, node::max_id, n2_2.uid(), n2_3.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw_2(bdd_2);
@@ -76,10 +76,10 @@ go_bandit([]() {
     */
     shared_levelized_file<bdd::node_t> bdd_3;
 
-    const node n3_4 = node(2, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
-    const node n3_3 = node(2, node::MAX_ID-1, ptr_uint64(true), ptr_uint64(false));
-    const node n3_2 = node(1, node::MAX_ID, n3_3.uid(), n3_4.uid());
-    const node n3_1 = node(0, node::MAX_ID, n3_3.uid(), n3_2.uid());
+    const node n3_4 = node(2, node::max_id, ptr_uint64(false), ptr_uint64(true));
+    const node n3_3 = node(2, node::max_id-1, ptr_uint64(true), ptr_uint64(false));
+    const node n3_2 = node(1, node::max_id, n3_3.uid(), n3_4.uid());
+    const node n3_1 = node(0, node::max_id, n3_3.uid(), n3_2.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw_3(bdd_3);
@@ -101,11 +101,11 @@ go_bandit([]() {
     */
     shared_levelized_file<bdd::node_t> bdd_4;
 
-    const node n4_5 = node(3, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
-    const node n4_4 = node(2, node::MAX_ID, n4_5.uid(), ptr_uint64(true));
-    const node n4_3 = node(2, node::MAX_ID-1, ptr_uint64(false), n4_5.uid());
-    const node n4_2 = node(1, node::MAX_ID, n4_3.uid(), n4_4.uid());
-    const node n4_1 = node(0, node::MAX_ID, n4_3.uid(), n4_2.uid());
+    const node n4_5 = node(3, node::max_id, ptr_uint64(false), ptr_uint64(true));
+    const node n4_4 = node(2, node::max_id, n4_5.uid(), ptr_uint64(true));
+    const node n4_3 = node(2, node::max_id-1, ptr_uint64(false), n4_5.uid());
+    const node n4_2 = node(1, node::max_id, n4_3.uid(), n4_4.uid());
+    const node n4_1 = node(0, node::max_id, n4_3.uid(), n4_2.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw_4(bdd_4);
@@ -125,10 +125,10 @@ go_bandit([]() {
     */
     shared_levelized_file<bdd::node_t> bdd_5;
 
-    const node n5_4 = node(2, node::MAX_ID, ptr_uint64(true), ptr_uint64(false));
-    const node n5_3 = node(2, node::MAX_ID-1, ptr_uint64(false), ptr_uint64(true));
-    const node n5_2 = node(1, node::MAX_ID, n5_3.uid(), n5_4.uid());
-    const node n5_1 = node(0, node::MAX_ID, ptr_uint64(false), n5_2.uid());
+    const node n5_4 = node(2, node::max_id, ptr_uint64(true), ptr_uint64(false));
+    const node n5_3 = node(2, node::max_id-1, ptr_uint64(false), ptr_uint64(true));
+    const node n5_2 = node(1, node::max_id, n5_3.uid(), n5_4.uid());
+    const node n5_1 = node(0, node::max_id, ptr_uint64(false), n5_2.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw_5(bdd_5);
@@ -141,7 +141,7 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw_x2(bdd_x2);
-      nw_x2 << node(2, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
+      nw_x2 << node(2, node::max_id, ptr_uint64(false), ptr_uint64(true));
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -162,14 +162,14 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw_6(bdd_6);
-      nw_6 << node(3, node::MAX_ID,   ptr_uint64(false),                   ptr_uint64(true))                    // 8
-           << node(3, node::MAX_ID-1, ptr_uint64(true),                    ptr_uint64(false))                   // 7
-           << node(2, node::MAX_ID,   ptr_uint64(3, ptr_uint64::MAX_ID),   ptr_uint64(true))                    // 6
-           << node(2, node::MAX_ID-1, ptr_uint64(3, ptr_uint64::MAX_ID-1), ptr_uint64(false))                   // 5
-           << node(2, node::MAX_ID-2, ptr_uint64(false),                   ptr_uint64(3, ptr_uint64::MAX_ID))   // 4
-           << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID-2), ptr_uint64(2, ptr_uint64::MAX_ID))   // 3
-           << node(1, node::MAX_ID-1, ptr_uint64(2, ptr_uint64::MAX_ID),   ptr_uint64(2, ptr_uint64::MAX_ID-1)) // 2
-           << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID),   ptr_uint64(1, ptr_uint64::MAX_ID-1)) // 1
+      nw_6 << node(3, node::max_id,   ptr_uint64(false),                   ptr_uint64(true))                    // 8
+           << node(3, node::max_id-1, ptr_uint64(true),                    ptr_uint64(false))                   // 7
+           << node(2, node::max_id,   ptr_uint64(3, ptr_uint64::max_id),   ptr_uint64(true))                    // 6
+           << node(2, node::max_id-1, ptr_uint64(3, ptr_uint64::max_id-1), ptr_uint64(false))                   // 5
+           << node(2, node::max_id-2, ptr_uint64(false),                   ptr_uint64(3, ptr_uint64::max_id))   // 4
+           << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-2), ptr_uint64(2, ptr_uint64::max_id))   // 3
+           << node(1, node::max_id-1, ptr_uint64(2, ptr_uint64::max_id),   ptr_uint64(2, ptr_uint64::max_id-1)) // 2
+           << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id),   ptr_uint64(1, ptr_uint64::max_id-1)) // 1
         ;
     }
 
@@ -179,15 +179,15 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw_6(bdd_6_x4T);
-      nw_6 << node(4, node::MAX_ID,   ptr_uint64(false),                   ptr_uint64(true))                    // T
-           << node(3, node::MAX_ID,   ptr_uint64(false),                   ptr_uint64(4, ptr_uint64::MAX_ID))   // 8
-           << node(3, node::MAX_ID-1, ptr_uint64(4, ptr_uint64::MAX_ID),   ptr_uint64(false))                   // 7
-           << node(2, node::MAX_ID,   ptr_uint64(3, ptr_uint64::MAX_ID),   ptr_uint64(4, ptr_uint64::MAX_ID))   // 6
-           << node(2, node::MAX_ID-1, ptr_uint64(3, ptr_uint64::MAX_ID-1), ptr_uint64(false))                   // 5
-           << node(2, node::MAX_ID-2, ptr_uint64(false),                   ptr_uint64(3, ptr_uint64::MAX_ID))   // 4
-           << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID-2), ptr_uint64(2, ptr_uint64::MAX_ID))   // 3
-           << node(1, node::MAX_ID-1, ptr_uint64(2, ptr_uint64::MAX_ID),   ptr_uint64(2, ptr_uint64::MAX_ID-1)) // 2
-           << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID),   ptr_uint64(1, ptr_uint64::MAX_ID-1)) // 1
+      nw_6 << node(4, node::max_id,   ptr_uint64(false),                   ptr_uint64(true))                    // T
+           << node(3, node::max_id,   ptr_uint64(false),                   ptr_uint64(4, ptr_uint64::max_id))   // 8
+           << node(3, node::max_id-1, ptr_uint64(4, ptr_uint64::max_id),   ptr_uint64(false))                   // 7
+           << node(2, node::max_id,   ptr_uint64(3, ptr_uint64::max_id),   ptr_uint64(4, ptr_uint64::max_id))   // 6
+           << node(2, node::max_id-1, ptr_uint64(3, ptr_uint64::max_id-1), ptr_uint64(false))                   // 5
+           << node(2, node::max_id-2, ptr_uint64(false),                   ptr_uint64(3, ptr_uint64::max_id))   // 4
+           << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-2), ptr_uint64(2, ptr_uint64::max_id))   // 3
+           << node(1, node::max_id-1, ptr_uint64(2, ptr_uint64::max_id),   ptr_uint64(2, ptr_uint64::max_id-1)) // 2
+           << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id),   ptr_uint64(1, ptr_uint64::max_id-1)) // 1
         ;
     }
 
@@ -208,11 +208,11 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw_7(bdd_7);
-      nw_7 << node(2, node::MAX_ID,   ptr_uint64(false),      ptr_uint64(true))       // 5
-           << node(2, node::MAX_ID-1, ptr_uint64(true),       ptr_uint64(false))      // 4
-           << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID),   ptr_uint64(2, ptr_uint64::MAX_ID-1)) // 3
-           << node(1, node::MAX_ID-1, ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(2, ptr_uint64::MAX_ID))   // 2
-           << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID),   ptr_uint64(1, ptr_uint64::MAX_ID-1)) // 1
+      nw_7 << node(2, node::max_id,   ptr_uint64(false),      ptr_uint64(true))       // 5
+           << node(2, node::max_id-1, ptr_uint64(true),       ptr_uint64(false))      // 4
+           << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id),   ptr_uint64(2, ptr_uint64::max_id-1)) // 3
+           << node(1, node::max_id-1, ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(2, ptr_uint64::max_id))   // 2
+           << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id),   ptr_uint64(1, ptr_uint64::max_id-1)) // 1
         ;
     }
 
@@ -236,19 +236,19 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw_8a(bdd_8a);
-      nw_8a << node(3, node::MAX_ID,   ptr_uint64(false),      ptr_uint64(true))       // 5
-            << node(2, node::MAX_ID,   ptr_uint64(false),      ptr_uint64(3, ptr_uint64::MAX_ID))   // 4
-            << node(2, node::MAX_ID-1, ptr_uint64(true),       ptr_uint64(3, ptr_uint64::MAX_ID))   // 3
-            << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(2, ptr_uint64::MAX_ID))   // 2
-            << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID),   ptr_uint64(3, ptr_uint64::MAX_ID))   // 1
+      nw_8a << node(3, node::max_id,   ptr_uint64(false),      ptr_uint64(true))       // 5
+            << node(2, node::max_id,   ptr_uint64(false),      ptr_uint64(3, ptr_uint64::max_id))   // 4
+            << node(2, node::max_id-1, ptr_uint64(true),       ptr_uint64(3, ptr_uint64::max_id))   // 3
+            << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(2, ptr_uint64::max_id))   // 2
+            << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id),   ptr_uint64(3, ptr_uint64::max_id))   // 1
         ;
 
       node_writer nw_8b(bdd_8b);
-      nw_8b << node(3, node::MAX_ID,   ptr_uint64(false),      ptr_uint64(true))       // 5
-            << node(2, node::MAX_ID,   ptr_uint64(3, ptr_uint64::MAX_ID),   ptr_uint64(false))      // 4
-            << node(2, node::MAX_ID-1, ptr_uint64(3, ptr_uint64::MAX_ID),   ptr_uint64(true))       // 3
-            << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(2, ptr_uint64::MAX_ID))   // 2
-            << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID),   ptr_uint64(3, ptr_uint64::MAX_ID))   // 1
+      nw_8b << node(3, node::max_id,   ptr_uint64(false),      ptr_uint64(true))       // 5
+            << node(2, node::max_id,   ptr_uint64(3, ptr_uint64::max_id),   ptr_uint64(false))      // 4
+            << node(2, node::max_id-1, ptr_uint64(3, ptr_uint64::max_id),   ptr_uint64(true))       // 3
+            << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(2, ptr_uint64::max_id))   // 2
+            << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id),   ptr_uint64(3, ptr_uint64::max_id))   // 1
         ;
     }
 
@@ -269,14 +269,14 @@ go_bandit([]() {
     //      / \
     //      F T
     */
-    const node n9T_8 = node(6, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
-    const node n9T_7 = node(5, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
-    const node n9T_6 = node(4, node::MAX_ID,   n9T_8.uid(),       n9T_7.uid());
-    const node n9T_5 = node(3, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
-    const node n9T_4 = node(3, node::MAX_ID-1, n9T_6.uid(),       ptr_uint64(false));
-    const node n9T_3 = node(2, node::MAX_ID,   n9T_5.uid(),       n9T_7.uid());
-    const node n9T_2 = node(2, node::MAX_ID-1, n9T_4.uid(),       n9T_5.uid());
-    const node n9T_1 = node(1, node::MAX_ID,   n9T_2.uid(),       n9T_3.uid());
+    const node n9T_8 = node(6, node::max_id,   ptr_uint64(false), ptr_uint64(true));
+    const node n9T_7 = node(5, node::max_id,   ptr_uint64(false), ptr_uint64(true));
+    const node n9T_6 = node(4, node::max_id,   n9T_8.uid(),       n9T_7.uid());
+    const node n9T_5 = node(3, node::max_id,   ptr_uint64(false), ptr_uint64(true));
+    const node n9T_4 = node(3, node::max_id-1, n9T_6.uid(),       ptr_uint64(false));
+    const node n9T_3 = node(2, node::max_id,   n9T_5.uid(),       n9T_7.uid());
+    const node n9T_2 = node(2, node::max_id-1, n9T_4.uid(),       n9T_5.uid());
+    const node n9T_1 = node(1, node::max_id,   n9T_2.uid(),       n9T_3.uid());
 
     shared_levelized_file<bdd::node_t> bdd_9T;
     { // Garbage collect writer to free write-lock
@@ -301,14 +301,14 @@ go_bandit([]() {
     //            / \
     //            F T
     */
-    const node n9F_8 = node(6, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
-    const node n9F_7 = node(5, node::MAX_ID,   ptr_uint64(false), n9F_8.uid());
-    const node n9F_6 = node(4, node::MAX_ID,   ptr_uint64(false), n9F_7.uid());
-    const node n9F_5 = node(3, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
-    const node n9F_4 = node(3, node::MAX_ID-1, n9F_6.uid(),       ptr_uint64(false));
-    const node n9F_3 = node(2, node::MAX_ID,   n9F_5.uid(),       n9F_7.uid());
-    const node n9F_2 = node(2, node::MAX_ID-1, n9F_4.uid(),       n9F_5.uid());
-    const node n9F_1 = node(1, node::MAX_ID,   n9F_2.uid(),       n9F_3.uid());
+    const node n9F_8 = node(6, node::max_id,   ptr_uint64(false), ptr_uint64(true));
+    const node n9F_7 = node(5, node::max_id,   ptr_uint64(false), n9F_8.uid());
+    const node n9F_6 = node(4, node::max_id,   ptr_uint64(false), n9F_7.uid());
+    const node n9F_5 = node(3, node::max_id,   ptr_uint64(false), ptr_uint64(true));
+    const node n9F_4 = node(3, node::max_id-1, n9F_6.uid(),       ptr_uint64(false));
+    const node n9F_3 = node(2, node::max_id,   n9F_5.uid(),       n9F_7.uid());
+    const node n9F_2 = node(2, node::max_id-1, n9F_4.uid(),       n9F_5.uid());
+    const node n9F_1 = node(1, node::max_id,   n9F_2.uid(),       n9F_3.uid());
 
     shared_levelized_file<bdd::node_t> bdd_9F;
 
@@ -332,14 +332,14 @@ go_bandit([]() {
     //             / \
     //             F T
     */
-    const node n10_8 = node(4, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
-    const node n10_7 = node(3, node::MAX_ID,   n10_8.uid(),       ptr_uint64(true));
-    const node n10_6 = node(3, node::MAX_ID-1, n10_8.uid(),       n10_8.uid());
-    const node n10_5 = node(3, node::MAX_ID-2, ptr_uint64(true),  n10_8.uid());
-    const node n10_4 = node(2, node::MAX_ID,   n10_6.uid(),       n10_7.uid());
-    const node n10_3 = node(2, node::MAX_ID-1, n10_5.uid(),       n10_6.uid());
-    const node n10_2 = node(1, node::MAX_ID,   n10_3.uid(),       n10_4.uid());
-    const node n10_1 = node(0, node::MAX_ID,   ptr_uint64(false), n10_2.uid());
+    const node n10_8 = node(4, node::max_id,   ptr_uint64(false), ptr_uint64(true));
+    const node n10_7 = node(3, node::max_id,   n10_8.uid(),       ptr_uint64(true));
+    const node n10_6 = node(3, node::max_id-1, n10_8.uid(),       n10_8.uid());
+    const node n10_5 = node(3, node::max_id-2, ptr_uint64(true),  n10_8.uid());
+    const node n10_4 = node(2, node::max_id,   n10_6.uid(),       n10_7.uid());
+    const node n10_3 = node(2, node::max_id-1, n10_5.uid(),       n10_6.uid());
+    const node n10_2 = node(1, node::max_id,   n10_3.uid(),       n10_4.uid());
+    const node n10_1 = node(0, node::max_id,   ptr_uint64(false), n10_2.uid());
 
     shared_levelized_file<bdd::node_t> bdd_10;
 
@@ -361,10 +361,10 @@ go_bandit([]() {
     */
     shared_levelized_file<bdd::node_t> bdd_11;
 
-    node n11_4 = node(6, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
-    node n11_3 = node(6, node::MAX_ID-1, ptr_uint64(true),  ptr_uint64(false));
-    node n11_2 = node(4, node::MAX_ID,   n11_3.uid(),       n11_4.uid());
-    node n11_1 = node(2, node::MAX_ID,   n11_3.uid(),       n11_2.uid());
+    node n11_4 = node(6, node::max_id,   ptr_uint64(false), ptr_uint64(true));
+    node n11_3 = node(6, node::max_id-1, ptr_uint64(true),  ptr_uint64(false));
+    node n11_2 = node(4, node::max_id,   n11_3.uid(),       n11_4.uid());
+    node n11_1 = node(2, node::max_id,   n11_3.uid(),       n11_2.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw_11(bdd_11);
@@ -386,13 +386,13 @@ go_bandit([]() {
     //              / \
     //              F T
     */
-    const node n12a_7 = node(4, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
-    const node n12a_6 = node(3, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
-    const node n12a_5 = node(3, node::MAX_ID-1, ptr_uint64(true),  ptr_uint64(false));
-    const node n12a_4 = node(2, node::MAX_ID,   n12a_6.uid(),      n12a_7.uid());
-    const node n12a_3 = node(2, node::MAX_ID-1, n12a_5.uid(),      n12a_6.uid());
-    const node n12a_2 = node(1, node::MAX_ID,   n12a_3.uid(),      n12a_4.uid());
-    const node n12a_1 = node(0, node::MAX_ID,   n12a_3.uid(),      n12a_2.uid());
+    const node n12a_7 = node(4, node::max_id,   ptr_uint64(false), ptr_uint64(true));
+    const node n12a_6 = node(3, node::max_id,   ptr_uint64(false), ptr_uint64(true));
+    const node n12a_5 = node(3, node::max_id-1, ptr_uint64(true),  ptr_uint64(false));
+    const node n12a_4 = node(2, node::max_id,   n12a_6.uid(),      n12a_7.uid());
+    const node n12a_3 = node(2, node::max_id-1, n12a_5.uid(),      n12a_6.uid());
+    const node n12a_2 = node(1, node::max_id,   n12a_3.uid(),      n12a_4.uid());
+    const node n12a_1 = node(0, node::max_id,   n12a_3.uid(),      n12a_2.uid());
 
     shared_levelized_file<bdd::node_t> bdd_12a;
 
@@ -417,14 +417,14 @@ go_bandit([]() {
     //      / \   / \
     //      T F   F T
     */
-    const node n12b_8 = node(4, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
-    const node n12b_7 = node(4, node::MAX_ID-1, ptr_uint64(true),  ptr_uint64(false));
-    const node n12b_6 = node(3, node::MAX_ID,   ptr_uint64(false), n12b_8.uid());
-    const node n12b_5 = node(3, node::MAX_ID-1, n12b_7.uid(),      ptr_uint64(false));
-    const node n12b_4 = node(2, node::MAX_ID,   n12b_6.uid(),      n12b_8.uid());
-    const node n12b_3 = node(2, node::MAX_ID-1, n12b_5.uid(),      n12b_6.uid());
-    const node n12b_2 = node(1, node::MAX_ID,   n12b_3.uid(),      n12b_4.uid());
-    const node n12b_1 = node(0, node::MAX_ID,   n12b_3.uid(),      n12b_2.uid());
+    const node n12b_8 = node(4, node::max_id,   ptr_uint64(false), ptr_uint64(true));
+    const node n12b_7 = node(4, node::max_id-1, ptr_uint64(true),  ptr_uint64(false));
+    const node n12b_6 = node(3, node::max_id,   ptr_uint64(false), n12b_8.uid());
+    const node n12b_5 = node(3, node::max_id-1, n12b_7.uid(),      ptr_uint64(false));
+    const node n12b_4 = node(2, node::max_id,   n12b_6.uid(),      n12b_8.uid());
+    const node n12b_3 = node(2, node::max_id-1, n12b_5.uid(),      n12b_6.uid());
+    const node n12b_2 = node(1, node::max_id,   n12b_3.uid(),      n12b_4.uid());
+    const node n12b_1 = node(0, node::max_id,   n12b_3.uid(),      n12b_2.uid());
 
     shared_levelized_file<bdd::node_t> bdd_12b;
 
@@ -470,22 +470,22 @@ go_bandit([]() {
     */
 
     // This is definitely NOT canonical... it is not worth making.
-    const node n13_16 = node(7, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
-    const node n13_15 = node(6, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
-    const node n13_14 = node(6, node::MAX_ID-1, ptr_uint64(true),  ptr_uint64(false));
-    const node n13_13 = node(5, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
-    const node n13_12 = node(5, node::MAX_ID-1, ptr_uint64(true),  ptr_uint64(false));
-    const node n13_11 = node(4, node::MAX_ID,   n13_12.uid(),      n13_13.uid());
-    const node n13_10 = node(4, node::MAX_ID-1, n13_13.uid(),      n13_12.uid());
-    const node n13_9  = node(4, node::MAX_ID-2, n13_14.uid(),      n13_15.uid());
-    const node n13_8  = node(4, node::MAX_ID-3, n13_15.uid(),      n13_14.uid());
-    const node n13_7  = node(3, node::MAX_ID,   n13_10.uid(),      n13_11.uid());
-    const node n13_6  = node(3, node::MAX_ID-1, ptr_uint64(false), n13_16.uid());
-    const node n13_5  = node(2, node::MAX_ID,   ptr_uint64(false), n13_16.uid());
-    const node n13_4  = node(2, node::MAX_ID-1, n13_8.uid(),       n13_9.uid());
-    const node n13_3  = node(1, node::MAX_ID,   n13_6.uid(),       n13_7.uid());
-    const node n13_2  = node(1, node::MAX_ID-1, n13_4.uid(),       n13_5.uid());
-    const node n13_1  = node(0, node::MAX_ID,   n13_2.uid(),       n13_3.uid());
+    const node n13_16 = node(7, node::max_id,   ptr_uint64(false), ptr_uint64(true));
+    const node n13_15 = node(6, node::max_id,   ptr_uint64(false), ptr_uint64(true));
+    const node n13_14 = node(6, node::max_id-1, ptr_uint64(true),  ptr_uint64(false));
+    const node n13_13 = node(5, node::max_id,   ptr_uint64(false), ptr_uint64(true));
+    const node n13_12 = node(5, node::max_id-1, ptr_uint64(true),  ptr_uint64(false));
+    const node n13_11 = node(4, node::max_id,   n13_12.uid(),      n13_13.uid());
+    const node n13_10 = node(4, node::max_id-1, n13_13.uid(),      n13_12.uid());
+    const node n13_9  = node(4, node::max_id-2, n13_14.uid(),      n13_15.uid());
+    const node n13_8  = node(4, node::max_id-3, n13_15.uid(),      n13_14.uid());
+    const node n13_7  = node(3, node::max_id,   n13_10.uid(),      n13_11.uid());
+    const node n13_6  = node(3, node::max_id-1, ptr_uint64(false), n13_16.uid());
+    const node n13_5  = node(2, node::max_id,   ptr_uint64(false), n13_16.uid());
+    const node n13_4  = node(2, node::max_id-1, n13_8.uid(),       n13_9.uid());
+    const node n13_3  = node(1, node::max_id,   n13_6.uid(),       n13_7.uid());
+    const node n13_2  = node(1, node::max_id-1, n13_4.uid(),       n13_5.uid());
+    const node n13_1  = node(0, node::max_id,   n13_2.uid(),       n13_3.uid());
 
     shared_levelized_file<bdd::node_t> bdd_13;
 
@@ -516,19 +516,19 @@ go_bandit([]() {
     //              /  \ /  \
     //              T  F F  T
     */
-    const node n14_13 = node(8, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
-    const node n14_12 = node(8, node::MAX_ID-1, ptr_uint64(true),  ptr_uint64(false));
-    const node n14_11 = node(7, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
-    const node n14_10 = node(7, node::MAX_ID-1, ptr_uint64(true),  ptr_uint64(false));
-    const node n14_9  = node(6, node::MAX_ID,   n14_12.uid(),      n14_13.uid());
-    const node n14_8  = node(5, node::MAX_ID,   n14_9.uid(),       n14_11.uid());
-    const node n14_7  = node(5, node::MAX_ID-1, n14_10.uid(),      n14_9.uid());
-    const node n14_6  = node(4, node::MAX_ID,   n14_8.uid(),       ptr_uint64(false));
-    const node n14_5  = node(4, node::MAX_ID-1, n14_7.uid(),       n14_8.uid());
-    const node n14_4  = node(4, node::MAX_ID-2, ptr_uint64(false), n14_7.uid());
-    const node n14_3  = node(3, node::MAX_ID,   n14_5.uid(),       n14_6.uid());
-    const node n14_2  = node(3, node::MAX_ID-1, n14_4.uid(),       n14_5.uid());
-    const node n14_1  = node(2, node::MAX_ID,   n14_2.uid(),       n14_3.uid());
+    const node n14_13 = node(8, node::max_id,   ptr_uint64(false), ptr_uint64(true));
+    const node n14_12 = node(8, node::max_id-1, ptr_uint64(true),  ptr_uint64(false));
+    const node n14_11 = node(7, node::max_id,   ptr_uint64(false), ptr_uint64(true));
+    const node n14_10 = node(7, node::max_id-1, ptr_uint64(true),  ptr_uint64(false));
+    const node n14_9  = node(6, node::max_id,   n14_12.uid(),      n14_13.uid());
+    const node n14_8  = node(5, node::max_id,   n14_9.uid(),       n14_11.uid());
+    const node n14_7  = node(5, node::max_id-1, n14_10.uid(),      n14_9.uid());
+    const node n14_6  = node(4, node::max_id,   n14_8.uid(),       ptr_uint64(false));
+    const node n14_5  = node(4, node::max_id-1, n14_7.uid(),       n14_8.uid());
+    const node n14_4  = node(4, node::max_id-2, ptr_uint64(false), n14_7.uid());
+    const node n14_3  = node(3, node::max_id,   n14_5.uid(),       n14_6.uid());
+    const node n14_2  = node(3, node::max_id-1, n14_4.uid(),       n14_5.uid());
+    const node n14_1  = node(2, node::max_id,   n14_2.uid(),       n14_3.uid());
 
     shared_levelized_file<bdd::node_t> bdd_14a;
 
@@ -547,8 +547,8 @@ go_bandit([]() {
     //                  |     / \
     //               BDD 14   F T
     */
-    const node n14b_2  = node(1, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
-    const node n14b_1  = node(0, node::MAX_ID,   n14_1.uid(),       n14b_2.uid());
+    const node n14b_2  = node(1, node::max_id,   ptr_uint64(false), ptr_uint64(true));
+    const node n14b_1  = node(0, node::max_id,   n14_1.uid(),       n14b_2.uid());
 
     shared_levelized_file<bdd::node_t> bdd_14b;
 
@@ -660,53 +660,53 @@ go_bandit([]() {
     // NOTE: This is not going to be canonical (i.e. ordered) because that would
     //       become too messy.
 
-    const node n15_o  = node(13, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
-    const node n15_n  = node(13, node::MAX_ID-1, ptr_uint64(true),  ptr_uint64(false));
+    const node n15_o  = node(13, node::max_id,   ptr_uint64(false), ptr_uint64(true));
+    const node n15_n  = node(13, node::max_id-1, ptr_uint64(true),  ptr_uint64(false));
 
-    const node n15_17 = node(12, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true));
-    const node n15_16 = node(12, node::MAX_ID-1, ptr_uint64(true),  ptr_uint64(false));
+    const node n15_17 = node(12, node::max_id,   ptr_uint64(false), ptr_uint64(true));
+    const node n15_16 = node(12, node::max_id-1, ptr_uint64(true),  ptr_uint64(false));
 
-    const node n15_m  = node(11, node::MAX_ID,   n15_o.uid(),       n15_n.uid());
-    const node n15_l  = node(11, node::MAX_ID-1, n15_n.uid(),       n15_o.uid());
-    const node n15_15 = node(11, node::MAX_ID-2, n15_17.uid(),      n15_16.uid());
-    const node n15_14 = node(11, node::MAX_ID-3, n15_16.uid(),      n15_17.uid());
+    const node n15_m  = node(11, node::max_id,   n15_o.uid(),       n15_n.uid());
+    const node n15_l  = node(11, node::max_id-1, n15_n.uid(),       n15_o.uid());
+    const node n15_15 = node(11, node::max_id-2, n15_17.uid(),      n15_16.uid());
+    const node n15_14 = node(11, node::max_id-3, n15_16.uid(),      n15_17.uid());
 
-    const node n15_k  = node(10, node::MAX_ID,   n15_m.uid(),       n15_l.uid());
-    const node n15_j  = node(10, node::MAX_ID-1, n15_l.uid(),       n15_m.uid());
-    const node n15_13 = node(10, node::MAX_ID-2, n15_15.uid(),      n15_14.uid());
-    const node n15_12 = node(10, node::MAX_ID-3, n15_14.uid(),      n15_15.uid());
+    const node n15_k  = node(10, node::max_id,   n15_m.uid(),       n15_l.uid());
+    const node n15_j  = node(10, node::max_id-1, n15_l.uid(),       n15_m.uid());
+    const node n15_13 = node(10, node::max_id-2, n15_15.uid(),      n15_14.uid());
+    const node n15_12 = node(10, node::max_id-3, n15_14.uid(),      n15_15.uid());
 
-    const node n15_i  = node(9,  node::MAX_ID,   n15_k.uid(),       n15_j.uid());
-    const node n15_h  = node(9,  node::MAX_ID-1, n15_j.uid(),       n15_k.uid());
-    const node n15_11 = node(9,  node::MAX_ID-2, n15_13.uid(),      n15_12.uid());
-    const node n15_10 = node(9,  node::MAX_ID-3, n15_12.uid(),      n15_13.uid());
+    const node n15_i  = node(9,  node::max_id,   n15_k.uid(),       n15_j.uid());
+    const node n15_h  = node(9,  node::max_id-1, n15_j.uid(),       n15_k.uid());
+    const node n15_11 = node(9,  node::max_id-2, n15_13.uid(),      n15_12.uid());
+    const node n15_10 = node(9,  node::max_id-3, n15_12.uid(),      n15_13.uid());
 
-    const node n15_g  = node(8,  node::MAX_ID,   n15_i.uid(),       n15_h.uid());
-    const node n15_f  = node(8,  node::MAX_ID-1, n15_h.uid(),       n15_i.uid());
-    const node n15_9  = node(8,  node::MAX_ID-2, n15_11.uid(),      n15_10.uid());
-    const node n15_8  = node(8,  node::MAX_ID-3, n15_10.uid(),      n15_11.uid());
+    const node n15_g  = node(8,  node::max_id,   n15_i.uid(),       n15_h.uid());
+    const node n15_f  = node(8,  node::max_id-1, n15_h.uid(),       n15_i.uid());
+    const node n15_9  = node(8,  node::max_id-2, n15_11.uid(),      n15_10.uid());
+    const node n15_8  = node(8,  node::max_id-3, n15_10.uid(),      n15_11.uid());
 
-    const node n15_7  = node(7,  node::MAX_ID,   n15_8.uid(),       n15_9.uid());
+    const node n15_7  = node(7,  node::max_id,   n15_8.uid(),       n15_9.uid());
 
-    const node n15_d  = node(6,  node::MAX_ID,   n15_f.uid(),       n15_g.uid());
-    const node n15_6  = node(6,  node::MAX_ID-1, n15_7.uid(),       n15_9.uid());
-    const node n15_5  = node(6,  node::MAX_ID-2, n15_8.uid(),       n15_7.uid());
+    const node n15_d  = node(6,  node::max_id,   n15_f.uid(),       n15_g.uid());
+    const node n15_6  = node(6,  node::max_id-1, n15_7.uid(),       n15_9.uid());
+    const node n15_5  = node(6,  node::max_id-2, n15_8.uid(),       n15_7.uid());
 
-    const node n15_c  = node(5,  node::MAX_ID,   n15_d.uid(),       ptr_uint64(false));
-    const node n15_b  = node(5,  node::MAX_ID-1, ptr_uint64(false), n15_d.uid());
-    const node n15_4  = node(5,  node::MAX_ID-2, n15_5.uid(),       n15_6.uid());
+    const node n15_c  = node(5,  node::max_id,   n15_d.uid(),       ptr_uint64(false));
+    const node n15_b  = node(5,  node::max_id-1, ptr_uint64(false), n15_d.uid());
+    const node n15_4  = node(5,  node::max_id-2, n15_5.uid(),       n15_6.uid());
 
-    const node n15_3  = node(4,  node::MAX_ID,   n15_4.uid(),       ptr_uint64(false));
-    const node n15_2  = node(4,  node::MAX_ID-1, ptr_uint64(false), n15_4.uid());
+    const node n15_3  = node(4,  node::max_id,   n15_4.uid(),       ptr_uint64(false));
+    const node n15_2  = node(4,  node::max_id-1, ptr_uint64(false), n15_4.uid());
 
-    const node n15_1  = node(3,  node::MAX_ID,   n15_2.uid(),       n15_3.uid());
+    const node n15_1  = node(3,  node::max_id,   n15_2.uid(),       n15_3.uid());
 
-    const node n15_a  = node(2,  node::MAX_ID,   n15_b.uid(),       n15_c.uid());
+    const node n15_a  = node(2,  node::max_id,   n15_b.uid(),       n15_c.uid());
 
-    const node n15_r3 = node(1,  node::MAX_ID,   n15_5.uid(),       n15_d.uid());
-    const node n15_r2 = node(1,  node::MAX_ID-1, n15_1.uid(),       n15_a.uid());
+    const node n15_r3 = node(1,  node::max_id,   n15_5.uid(),       n15_d.uid());
+    const node n15_r2 = node(1,  node::max_id-1, n15_1.uid(),       n15_a.uid());
 
-    const node n15_r1 = node(0,  node::MAX_ID,   n15_r2.uid(),      n15_r3.uid());
+    const node n15_r1 = node(0,  node::max_id,   n15_r2.uid(),      n15_r3.uid());
 
     shared_levelized_file<bdd::node_t> bdd_15;
 
@@ -1024,7 +1024,7 @@ go_bandit([]() {
 
         arc_test_stream arcs(out);
 
-        // Note, that node (2,0) reflects (3,NIL) since while n4 < NIL we process this
+        // Note, that node (2,0) reflects (3,nil) since while n4 < nil we process this
         // request without forwarding n3 through the secondary priority queue
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(),
@@ -1075,7 +1075,7 @@ go_bandit([]() {
 
         arc_test_stream arcs(out);
 
-        // Note, that node (2,0) reflects (3,NIL) while n4 < NIL since we process this
+        // Note, that node (2,0) reflects (3,nil) while n4 < nil since we process this
         // request without forwarding n3 through the secondary priority queue
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(),
@@ -1118,7 +1118,7 @@ go_bandit([]() {
 
         arc_test_stream arcs(out);
 
-        // Note, that node (2,0) reflects (3,NIL) while n4 < NIL since we process this
+        // Note, that node (2,0) reflects (3,nil) while n4 < nil since we process this
         // request without forwarding n3 through the secondary priority queue
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(),
@@ -1159,10 +1159,10 @@ go_bandit([]() {
       it("can shortcut/prune irrelevant subtrees [OR-chain]", [&]() {
         shared_levelized_file<bdd::node_t> bdd_chain;
 
-        node n4 = node(3, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
-        node n3 = node(2, node::MAX_ID, n4.uid(), ptr_uint64(true));
-        node n2 = node(1, node::MAX_ID, n3.uid(), ptr_uint64(true));
-        node n1 = node(0, node::MAX_ID, n2.uid(), ptr_uint64(true));
+        node n4 = node(3, node::max_id, ptr_uint64(false), ptr_uint64(true));
+        node n3 = node(2, node::max_id, n4.uid(), ptr_uint64(true));
+        node n2 = node(1, node::max_id, n3.uid(), ptr_uint64(true));
+        node n1 = node(0, node::max_id, n2.uid(), ptr_uint64(true));
 
         { // Garbage collect writer to free write-lock
           node_writer bdd_chain_w(bdd_chain);
@@ -1434,13 +1434,13 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (3)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
                                                          ptr_uint64(false),
                                                          ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
-                                                         ptr_uint64(2, ptr_uint64::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
+                                                         ptr_uint64(2, ptr_uint64::max_id),
                                                          ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
@@ -1466,13 +1466,13 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
                                                          ptr_uint64(false),
                                                          ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
-                                                         ptr_uint64(3, ptr_uint64::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
+                                                         ptr_uint64(3, ptr_uint64::max_id),
                                                          ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
@@ -1499,13 +1499,13 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
                                                          ptr_uint64(false),
                                                          ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (2')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
-                                                         ptr_uint64(3, ptr_uint64::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
+                                                         ptr_uint64(3, ptr_uint64::max_id),
                                                          ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
@@ -1638,13 +1638,13 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
                                                          ptr_uint64(false),
                                                          ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (2')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
-                                                         ptr_uint64(3, ptr_uint64::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
+                                                         ptr_uint64(3, ptr_uint64::max_id),
                                                          ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
@@ -1760,29 +1760,29 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (8)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id,
                                                          node::ptr_t(false),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-1,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-1,
                                                          node::ptr_t(true),
                                                          node::ptr_t(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5,6,8)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
                                                          node::ptr_t(true),
-                                                         node::ptr_t(4, node::MAX_ID))));
+                                                         node::ptr_t(4, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5,6)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID-1,
-                                                         node::ptr_t(4, node::MAX_ID-1),
-                                                         node::ptr_t(4, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id-1,
+                                                         node::ptr_t(4, node::max_id-1),
+                                                         node::ptr_t(4, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
-                                                         node::ptr_t(3, node::MAX_ID-1),
-                                                         node::ptr_t(3, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
+                                                         node::ptr_t(3, node::max_id-1),
+                                                         node::ptr_t(3, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1843,94 +1843,94 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id,
                                                          node::ptr_t(false),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (15)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id,
                                                          node::ptr_t(false),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (15,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID-1,
-                                                         node::ptr_t(7, node::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id-1,
+                                                         node::ptr_t(7, node::max_id),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (14)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID-2,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id-2,
                                                          node::ptr_t(true),
                                                          node::ptr_t(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (14,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID-3,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id-3,
                                                          node::ptr_t(true),
-                                                         node::ptr_t(7, node::MAX_ID))));
+                                                         node::ptr_t(7, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (13,15)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
-                                                         node::ptr_t(6, node::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
+                                                         node::ptr_t(6, node::max_id),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (13,15,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID-1,
-                                                         node::ptr_t(6, node::MAX_ID-1),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-1,
+                                                         node::ptr_t(6, node::max_id-1),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (13,14,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID-2,
-                                                         node::ptr_t(6, node::MAX_ID-3),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-2,
+                                                         node::ptr_t(6, node::max_id-3),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (12,15,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID-3,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-3,
                                                          node::ptr_t(true),
-                                                         node::ptr_t(6, node::MAX_ID-1))));
+                                                         node::ptr_t(6, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (12,14)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID-4,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-4,
                                                          node::ptr_t(true),
-                                                         node::ptr_t(6, node::MAX_ID-2))));
+                                                         node::ptr_t(6, node::max_id-2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (12,14,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID-5,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-5,
                                                          node::ptr_t(true),
-                                                         node::ptr_t(6, node::MAX_ID-3))));
+                                                         node::ptr_t(6, node::max_id-3))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (9,11,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID,
-                                                         node::ptr_t(5, node::MAX_ID-5),
-                                                         node::ptr_t(5, node::MAX_ID-1))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id,
+                                                         node::ptr_t(5, node::max_id-5),
+                                                         node::ptr_t(5, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (8,11,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-1,
-                                                         node::ptr_t(5, node::MAX_ID-3),
-                                                         node::ptr_t(5, node::MAX_ID-2))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-1,
+                                                         node::ptr_t(5, node::max_id-3),
+                                                         node::ptr_t(5, node::max_id-2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (9,10,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-2,
-                                                         node::ptr_t(5, node::MAX_ID-2),
-                                                         node::ptr_t(5, node::MAX_ID-3))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-2,
+                                                         node::ptr_t(5, node::max_id-2),
+                                                         node::ptr_t(5, node::max_id-3))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (8,10)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-3,
-                                                         node::ptr_t(5, node::MAX_ID),
-                                                         node::ptr_t(5, node::MAX_ID-4))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-3,
+                                                         node::ptr_t(5, node::max_id),
+                                                         node::ptr_t(5, node::max_id-4))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (6,7,9,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
-                                                         node::ptr_t(4, node::MAX_ID-2),
-                                                         node::ptr_t(4, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
+                                                         node::ptr_t(4, node::max_id-2),
+                                                         node::ptr_t(4, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (6,7,8)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID-1,
-                                                         node::ptr_t(4, node::MAX_ID-3),
-                                                         node::ptr_t(4, node::MAX_ID-1))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id-1,
+                                                         node::ptr_t(4, node::max_id-3),
+                                                         node::ptr_t(4, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (4,5,6,7)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
-                                                         node::ptr_t(3, node::MAX_ID-1),
-                                                         node::ptr_t(3, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
+                                                         node::ptr_t(3, node::max_id-1),
+                                                         node::ptr_t(3, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -2010,157 +2010,157 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (o)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(13, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(13, node::max_id,
                                                          node::ptr_t(false),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (n)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(13, node::MAX_ID-1,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(13, node::max_id-1,
                                                          node::ptr_t(true),
                                                          node::ptr_t(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (17,o)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::MAX_ID,
-                                                         node::ptr_t(13, node::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::max_id,
+                                                         node::ptr_t(13, node::max_id),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (17,n)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::MAX_ID-1,
-                                                         node::ptr_t(13, node::MAX_ID-1),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::max_id-1,
+                                                         node::ptr_t(13, node::max_id-1),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (16,o)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::MAX_ID-2,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::max_id-2,
                                                          node::ptr_t(true),
-                                                         node::ptr_t(13, node::MAX_ID))));
+                                                         node::ptr_t(13, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (16,n)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::MAX_ID-3,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::max_id-3,
                                                          node::ptr_t(true),
-                                                         node::ptr_t(13, node::MAX_ID-1))));
+                                                         node::ptr_t(13, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (14,l)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::MAX_ID,
-                                                         node::ptr_t(12, node::MAX_ID-3),
-                                                         node::ptr_t(12, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::max_id,
+                                                         node::ptr_t(12, node::max_id-3),
+                                                         node::ptr_t(12, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (14,m)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::MAX_ID-1,
-                                                         node::ptr_t(12, node::MAX_ID-2),
-                                                         node::ptr_t(12, node::MAX_ID-1))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::max_id-1,
+                                                         node::ptr_t(12, node::max_id-2),
+                                                         node::ptr_t(12, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (15,l)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::MAX_ID-2,
-                                                         node::ptr_t(12, node::MAX_ID-1),
-                                                         node::ptr_t(12, node::MAX_ID-2))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::max_id-2,
+                                                         node::ptr_t(12, node::max_id-1),
+                                                         node::ptr_t(12, node::max_id-2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (15,m)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::MAX_ID-3,
-                                                         node::ptr_t(12, node::MAX_ID),
-                                                         node::ptr_t(12, node::MAX_ID-3))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::max_id-3,
+                                                         node::ptr_t(12, node::max_id),
+                                                         node::ptr_t(12, node::max_id-3))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (13,k)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::MAX_ID,
-                                                         node::ptr_t(11, node::MAX_ID-3),
-                                                         node::ptr_t(11, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::max_id,
+                                                         node::ptr_t(11, node::max_id-3),
+                                                         node::ptr_t(11, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (13,j)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::MAX_ID-1,
-                                                         node::ptr_t(11, node::MAX_ID-2),
-                                                         node::ptr_t(11, node::MAX_ID-1))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::max_id-1,
+                                                         node::ptr_t(11, node::max_id-2),
+                                                         node::ptr_t(11, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (12,k)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::MAX_ID-2,
-                                                         node::ptr_t(11, node::MAX_ID-1),
-                                                         node::ptr_t(11, node::MAX_ID-2))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::max_id-2,
+                                                         node::ptr_t(11, node::max_id-1),
+                                                         node::ptr_t(11, node::max_id-2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (12,j)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::MAX_ID-3,
-                                                         node::ptr_t(11, node::MAX_ID),
-                                                         node::ptr_t(11, node::MAX_ID-3))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::max_id-3,
+                                                         node::ptr_t(11, node::max_id),
+                                                         node::ptr_t(11, node::max_id-3))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (10,h)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::MAX_ID,
-                                                         node::ptr_t(10, node::MAX_ID-3),
-                                                         node::ptr_t(10, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::max_id,
+                                                         node::ptr_t(10, node::max_id-3),
+                                                         node::ptr_t(10, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (10,i)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::MAX_ID-1,
-                                                         node::ptr_t(10, node::MAX_ID-2),
-                                                         node::ptr_t(10, node::MAX_ID-1))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::max_id-1,
+                                                         node::ptr_t(10, node::max_id-2),
+                                                         node::ptr_t(10, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (11,h)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::MAX_ID-2,
-                                                         node::ptr_t(10, node::MAX_ID-1),
-                                                         node::ptr_t(10, node::MAX_ID-2))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::max_id-2,
+                                                         node::ptr_t(10, node::max_id-1),
+                                                         node::ptr_t(10, node::max_id-2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (11,i)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::MAX_ID-3,
-                                                         node::ptr_t(10, node::MAX_ID),
-                                                         node::ptr_t(10, node::MAX_ID-3))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::max_id-3,
+                                                         node::ptr_t(10, node::max_id),
+                                                         node::ptr_t(10, node::max_id-3))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (9,g)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::MAX_ID,
-                                                         node::ptr_t(9, node::MAX_ID-3),
-                                                         node::ptr_t(9, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::max_id,
+                                                         node::ptr_t(9, node::max_id-3),
+                                                         node::ptr_t(9, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (8,g)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::MAX_ID-1,
-                                                         node::ptr_t(9, node::MAX_ID-1),
-                                                         node::ptr_t(9, node::MAX_ID-2))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::max_id-1,
+                                                         node::ptr_t(9, node::max_id-1),
+                                                         node::ptr_t(9, node::max_id-2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (8,f)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::MAX_ID-2,
-                                                         node::ptr_t(9, node::MAX_ID),
-                                                         node::ptr_t(9, node::MAX_ID-3))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::max_id-2,
+                                                         node::ptr_t(9, node::max_id),
+                                                         node::ptr_t(9, node::max_id-3))));
 
           // NOTE: (9,f) because the pair (7,f) is is merged with (8) which
           //       prunes that entire subtree away.
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7,8,f)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::MAX_ID,
-                                                         node::ptr_t(8, node::MAX_ID-2),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id,
+                                                         node::ptr_t(8, node::max_id-2),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7,g,9)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::MAX_ID-1,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id-1,
                                                          node::ptr_t(true),
-                                                         node::ptr_t(8, node::MAX_ID))));
+                                                         node::ptr_t(8, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7,g)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::MAX_ID-2,
-                                                         node::ptr_t(8, node::MAX_ID-1),
-                                                         node::ptr_t(8, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id-2,
+                                                         node::ptr_t(8, node::max_id-1),
+                                                         node::ptr_t(8, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (6,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID,
-                                                         node::ptr_t(7, node::MAX_ID),
-                                                         node::ptr_t(7, node::MAX_ID-1))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id,
+                                                         node::ptr_t(7, node::max_id),
+                                                         node::ptr_t(7, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID-1,
-                                                         node::ptr_t(8, node::MAX_ID-2),
-                                                         node::ptr_t(7, node::MAX_ID-2))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id-1,
+                                                         node::ptr_t(8, node::max_id-2),
+                                                         node::ptr_t(7, node::max_id-2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (4,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
-                                                         node::ptr_t(6, node::MAX_ID-1),
-                                                         node::ptr_t(6, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
+                                                         node::ptr_t(6, node::max_id-1),
+                                                         node::ptr_t(6, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (3,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID,
-                                                         node::ptr_t(5, node::MAX_ID),
-                                                         node::ptr_t(6, node::MAX_ID-1))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id,
+                                                         node::ptr_t(5, node::max_id),
+                                                         node::ptr_t(6, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (2,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-1,
-                                                         node::ptr_t(6, node::MAX_ID-1),
-                                                         node::ptr_t(5, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-1,
+                                                         node::ptr_t(6, node::max_id-1),
+                                                         node::ptr_t(5, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
-                                                         node::ptr_t(4, node::MAX_ID-1),
-                                                         node::ptr_t(4, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
+                                                         node::ptr_t(4, node::max_id-1),
+                                                         node::ptr_t(4, node::max_id))));
 
           // NOTE: The root (1,a,5,d) has x2 suppressed as the choice at (a)
           //       only is relevant for (b) and (c), not for (d).
@@ -2283,13 +2283,13 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (3)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
                                                          ptr_uint64(false),
                                                          ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
-                                                         ptr_uint64(2, ptr_uint64::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
+                                                         ptr_uint64(2, ptr_uint64::max_id),
                                                          ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
@@ -2367,19 +2367,19 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
                                                          ptr_uint64(false),
                                                          ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
-                                                         ptr_uint64(5, node::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
+                                                         ptr_uint64(5, node::max_id),
                                                          ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
                                                          ptr_uint64(true),
-                                                         ptr_uint64(3, node::MAX_ID))));
+                                                         ptr_uint64(3, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -2407,13 +2407,13 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
                                                          ptr_uint64(false),
                                                          ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
-                                                         ptr_uint64(5, node::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
+                                                         ptr_uint64(5, node::max_id),
                                                          ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
@@ -2461,7 +2461,7 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
                                                          ptr_uint64(false),
                                                          ptr_uint64(true))));
 
@@ -2537,157 +2537,157 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (o)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(13, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(13, node::max_id,
                                                          node::ptr_t(false),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (n)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(13, node::MAX_ID-1,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(13, node::max_id-1,
                                                          node::ptr_t(true),
                                                          node::ptr_t(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (17,o)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::MAX_ID,
-                                                         node::ptr_t(13, node::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::max_id,
+                                                         node::ptr_t(13, node::max_id),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (17,n)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::MAX_ID-1,
-                                                         node::ptr_t(13, node::MAX_ID-1),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::max_id-1,
+                                                         node::ptr_t(13, node::max_id-1),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (16,o)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::MAX_ID-2,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::max_id-2,
                                                          node::ptr_t(true),
-                                                         node::ptr_t(13, node::MAX_ID))));
+                                                         node::ptr_t(13, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (16,n)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::MAX_ID-3,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::max_id-3,
                                                          node::ptr_t(true),
-                                                         node::ptr_t(13, node::MAX_ID-1))));
+                                                         node::ptr_t(13, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (14,l)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::MAX_ID,
-                                                         node::ptr_t(12, node::MAX_ID-3),
-                                                         node::ptr_t(12, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::max_id,
+                                                         node::ptr_t(12, node::max_id-3),
+                                                         node::ptr_t(12, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (14,m)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::MAX_ID-1,
-                                                         node::ptr_t(12, node::MAX_ID-2),
-                                                         node::ptr_t(12, node::MAX_ID-1))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::max_id-1,
+                                                         node::ptr_t(12, node::max_id-2),
+                                                         node::ptr_t(12, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (15,l)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::MAX_ID-2,
-                                                         node::ptr_t(12, node::MAX_ID-1),
-                                                         node::ptr_t(12, node::MAX_ID-2))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::max_id-2,
+                                                         node::ptr_t(12, node::max_id-1),
+                                                         node::ptr_t(12, node::max_id-2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (15,m)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::MAX_ID-3,
-                                                         node::ptr_t(12, node::MAX_ID),
-                                                         node::ptr_t(12, node::MAX_ID-3))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::max_id-3,
+                                                         node::ptr_t(12, node::max_id),
+                                                         node::ptr_t(12, node::max_id-3))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (13,k)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::MAX_ID,
-                                                         node::ptr_t(11, node::MAX_ID-3),
-                                                         node::ptr_t(11, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::max_id,
+                                                         node::ptr_t(11, node::max_id-3),
+                                                         node::ptr_t(11, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (13,j)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::MAX_ID-1,
-                                                         node::ptr_t(11, node::MAX_ID-2),
-                                                         node::ptr_t(11, node::MAX_ID-1))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::max_id-1,
+                                                         node::ptr_t(11, node::max_id-2),
+                                                         node::ptr_t(11, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (12,k)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::MAX_ID-2,
-                                                         node::ptr_t(11, node::MAX_ID-1),
-                                                         node::ptr_t(11, node::MAX_ID-2))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::max_id-2,
+                                                         node::ptr_t(11, node::max_id-1),
+                                                         node::ptr_t(11, node::max_id-2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (12,j)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::MAX_ID-3,
-                                                         node::ptr_t(11, node::MAX_ID),
-                                                         node::ptr_t(11, node::MAX_ID-3))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::max_id-3,
+                                                         node::ptr_t(11, node::max_id),
+                                                         node::ptr_t(11, node::max_id-3))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (10,h)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::MAX_ID,
-                                                         node::ptr_t(10, node::MAX_ID-3),
-                                                         node::ptr_t(10, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::max_id,
+                                                         node::ptr_t(10, node::max_id-3),
+                                                         node::ptr_t(10, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (10,i)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::MAX_ID-1,
-                                                         node::ptr_t(10, node::MAX_ID-2),
-                                                         node::ptr_t(10, node::MAX_ID-1))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::max_id-1,
+                                                         node::ptr_t(10, node::max_id-2),
+                                                         node::ptr_t(10, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (11,h)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::MAX_ID-2,
-                                                         node::ptr_t(10, node::MAX_ID-1),
-                                                         node::ptr_t(10, node::MAX_ID-2))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::max_id-2,
+                                                         node::ptr_t(10, node::max_id-1),
+                                                         node::ptr_t(10, node::max_id-2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (11,i)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::MAX_ID-3,
-                                                         node::ptr_t(10, node::MAX_ID),
-                                                         node::ptr_t(10, node::MAX_ID-3))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::max_id-3,
+                                                         node::ptr_t(10, node::max_id),
+                                                         node::ptr_t(10, node::max_id-3))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (9,g)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::MAX_ID,
-                                                         node::ptr_t(9, node::MAX_ID-3),
-                                                         node::ptr_t(9, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::max_id,
+                                                         node::ptr_t(9, node::max_id-3),
+                                                         node::ptr_t(9, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (8,g)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::MAX_ID-1,
-                                                         node::ptr_t(9, node::MAX_ID-1),
-                                                         node::ptr_t(9, node::MAX_ID-2))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::max_id-1,
+                                                         node::ptr_t(9, node::max_id-1),
+                                                         node::ptr_t(9, node::max_id-2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (8,f)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::MAX_ID-2,
-                                                         node::ptr_t(9, node::MAX_ID),
-                                                         node::ptr_t(9, node::MAX_ID-3))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::max_id-2,
+                                                         node::ptr_t(9, node::max_id),
+                                                         node::ptr_t(9, node::max_id-3))));
 
           // NOTE: (9,f) because the pair (7,f) is is merged with (8) which
           //       prunes that entire subtree away.
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7,8,f)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::MAX_ID,
-                                                         node::ptr_t(8, node::MAX_ID-2),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id,
+                                                         node::ptr_t(8, node::max_id-2),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7,g,9)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::MAX_ID-1,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id-1,
                                                          node::ptr_t(true),
-                                                         node::ptr_t(8, node::MAX_ID))));
+                                                         node::ptr_t(8, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7,g)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::MAX_ID-2,
-                                                         node::ptr_t(8, node::MAX_ID-1),
-                                                         node::ptr_t(8, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id-2,
+                                                         node::ptr_t(8, node::max_id-1),
+                                                         node::ptr_t(8, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (6,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID,
-                                                         node::ptr_t(7, node::MAX_ID),
-                                                         node::ptr_t(7, node::MAX_ID-1))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id,
+                                                         node::ptr_t(7, node::max_id),
+                                                         node::ptr_t(7, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID-1,
-                                                         node::ptr_t(8, node::MAX_ID-2),
-                                                         node::ptr_t(7, node::MAX_ID-2))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id-1,
+                                                         node::ptr_t(8, node::max_id-2),
+                                                         node::ptr_t(7, node::max_id-2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (4,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
-                                                         node::ptr_t(6, node::MAX_ID-1),
-                                                         node::ptr_t(6, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
+                                                         node::ptr_t(6, node::max_id-1),
+                                                         node::ptr_t(6, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (3,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID,
-                                                         node::ptr_t(5, node::MAX_ID),
-                                                         node::ptr_t(6, node::MAX_ID-1))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id,
+                                                         node::ptr_t(5, node::max_id),
+                                                         node::ptr_t(6, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (2,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-1,
-                                                         node::ptr_t(6, node::MAX_ID-1),
-                                                         node::ptr_t(5, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-1,
+                                                         node::ptr_t(6, node::max_id-1),
+                                                         node::ptr_t(5, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
-                                                         node::ptr_t(4, node::MAX_ID-1),
-                                                         node::ptr_t(4, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
+                                                         node::ptr_t(4, node::max_id-1),
+                                                         node::ptr_t(4, node::max_id))));
 
           // NOTE: The root (1,a,5,d) has x2 suppressed as the choice at (a)
           //       only is relevant for (b) and (c), not for (d).
@@ -2796,13 +2796,13 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
                                                          ptr_uint64(false),
                                                          ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (2')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
-                                                         ptr_uint64(3, ptr_uint64::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
+                                                         ptr_uint64(3, ptr_uint64::max_id),
                                                          ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
@@ -2929,29 +2929,29 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (8)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id,
                                                          node::ptr_t(false),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-1,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-1,
                                                          node::ptr_t(true),
                                                          node::ptr_t(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5,6,8)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
                                                          node::ptr_t(true),
-                                                         node::ptr_t(4, node::MAX_ID))));
+                                                         node::ptr_t(4, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5,6)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID-1,
-                                                         node::ptr_t(4, node::MAX_ID-1),
-                                                         node::ptr_t(4, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id-1,
+                                                         node::ptr_t(4, node::max_id-1),
+                                                         node::ptr_t(4, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
-                                                         node::ptr_t(3, node::MAX_ID-1),
-                                                         node::ptr_t(3, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
+                                                         node::ptr_t(3, node::max_id-1),
+                                                         node::ptr_t(3, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -3019,94 +3019,94 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id,
                                                          node::ptr_t(false),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (15)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id,
                                                          node::ptr_t(false),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (15,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID-1,
-                                                         node::ptr_t(7, node::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id-1,
+                                                         node::ptr_t(7, node::max_id),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (14)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID-2,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id-2,
                                                          node::ptr_t(true),
                                                          node::ptr_t(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (14,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID-3,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id-3,
                                                          node::ptr_t(true),
-                                                         node::ptr_t(7, node::MAX_ID))));
+                                                         node::ptr_t(7, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (13,15)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
-                                                         node::ptr_t(6, node::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
+                                                         node::ptr_t(6, node::max_id),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (13,15,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID-1,
-                                                         node::ptr_t(6, node::MAX_ID-1),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-1,
+                                                         node::ptr_t(6, node::max_id-1),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (13,14,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID-2,
-                                                         node::ptr_t(6, node::MAX_ID-3),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-2,
+                                                         node::ptr_t(6, node::max_id-3),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (12,15,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID-3,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-3,
                                                          node::ptr_t(true),
-                                                         node::ptr_t(6, node::MAX_ID-1))));
+                                                         node::ptr_t(6, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (12,14)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID-4,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-4,
                                                          node::ptr_t(true),
-                                                         node::ptr_t(6, node::MAX_ID-2))));
+                                                         node::ptr_t(6, node::max_id-2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (12,14,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID-5,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-5,
                                                          node::ptr_t(true),
-                                                         node::ptr_t(6, node::MAX_ID-3))));
+                                                         node::ptr_t(6, node::max_id-3))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (9,11,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID,
-                                                         node::ptr_t(5, node::MAX_ID-5),
-                                                         node::ptr_t(5, node::MAX_ID-1))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id,
+                                                         node::ptr_t(5, node::max_id-5),
+                                                         node::ptr_t(5, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (8,11,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-1,
-                                                         node::ptr_t(5, node::MAX_ID-3),
-                                                         node::ptr_t(5, node::MAX_ID-2))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-1,
+                                                         node::ptr_t(5, node::max_id-3),
+                                                         node::ptr_t(5, node::max_id-2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (9,10,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-2,
-                                                         node::ptr_t(5, node::MAX_ID-2),
-                                                         node::ptr_t(5, node::MAX_ID-3))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-2,
+                                                         node::ptr_t(5, node::max_id-2),
+                                                         node::ptr_t(5, node::max_id-3))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (8,10)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-3,
-                                                         node::ptr_t(5, node::MAX_ID),
-                                                         node::ptr_t(5, node::MAX_ID-4))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-3,
+                                                         node::ptr_t(5, node::max_id),
+                                                         node::ptr_t(5, node::max_id-4))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (6,7,9,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
-                                                         node::ptr_t(4, node::MAX_ID-2),
-                                                         node::ptr_t(4, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
+                                                         node::ptr_t(4, node::max_id-2),
+                                                         node::ptr_t(4, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (6,7,8)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID-1,
-                                                         node::ptr_t(4, node::MAX_ID-3),
-                                                         node::ptr_t(4, node::MAX_ID-1))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id-1,
+                                                         node::ptr_t(4, node::max_id-3),
+                                                         node::ptr_t(4, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (4,5,6,7)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
-                                                         node::ptr_t(3, node::MAX_ID-1),
-                                                         node::ptr_t(3, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
+                                                         node::ptr_t(3, node::max_id-1),
+                                                         node::ptr_t(3, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -3193,7 +3193,7 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
                                                          node::ptr_t(false),
                                                          node::ptr_t(true))));
 
@@ -3247,157 +3247,157 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (o)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(13, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(13, node::max_id,
                                                          node::ptr_t(false),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (n)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(13, node::MAX_ID-1,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(13, node::max_id-1,
                                                          node::ptr_t(true),
                                                          node::ptr_t(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (17,o)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::MAX_ID,
-                                                         node::ptr_t(13, node::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::max_id,
+                                                         node::ptr_t(13, node::max_id),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (17,n)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::MAX_ID-1,
-                                                         node::ptr_t(13, node::MAX_ID-1),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::max_id-1,
+                                                         node::ptr_t(13, node::max_id-1),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (16,o)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::MAX_ID-2,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::max_id-2,
                                                          node::ptr_t(true),
-                                                         node::ptr_t(13, node::MAX_ID))));
+                                                         node::ptr_t(13, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (16,n)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::MAX_ID-3,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::max_id-3,
                                                          node::ptr_t(true),
-                                                         node::ptr_t(13, node::MAX_ID-1))));
+                                                         node::ptr_t(13, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (14,l)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::MAX_ID,
-                                                         node::ptr_t(12, node::MAX_ID-3),
-                                                         node::ptr_t(12, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::max_id,
+                                                         node::ptr_t(12, node::max_id-3),
+                                                         node::ptr_t(12, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (14,m)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::MAX_ID-1,
-                                                         node::ptr_t(12, node::MAX_ID-2),
-                                                         node::ptr_t(12, node::MAX_ID-1))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::max_id-1,
+                                                         node::ptr_t(12, node::max_id-2),
+                                                         node::ptr_t(12, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (15,l)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::MAX_ID-2,
-                                                         node::ptr_t(12, node::MAX_ID-1),
-                                                         node::ptr_t(12, node::MAX_ID-2))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::max_id-2,
+                                                         node::ptr_t(12, node::max_id-1),
+                                                         node::ptr_t(12, node::max_id-2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (15,m)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::MAX_ID-3,
-                                                         node::ptr_t(12, node::MAX_ID),
-                                                         node::ptr_t(12, node::MAX_ID-3))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::max_id-3,
+                                                         node::ptr_t(12, node::max_id),
+                                                         node::ptr_t(12, node::max_id-3))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (13,k)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::MAX_ID,
-                                                         node::ptr_t(11, node::MAX_ID-3),
-                                                         node::ptr_t(11, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::max_id,
+                                                         node::ptr_t(11, node::max_id-3),
+                                                         node::ptr_t(11, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (13,j)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::MAX_ID-1,
-                                                         node::ptr_t(11, node::MAX_ID-2),
-                                                         node::ptr_t(11, node::MAX_ID-1))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::max_id-1,
+                                                         node::ptr_t(11, node::max_id-2),
+                                                         node::ptr_t(11, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (12,k)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::MAX_ID-2,
-                                                         node::ptr_t(11, node::MAX_ID-1),
-                                                         node::ptr_t(11, node::MAX_ID-2))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::max_id-2,
+                                                         node::ptr_t(11, node::max_id-1),
+                                                         node::ptr_t(11, node::max_id-2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (12,j)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::MAX_ID-3,
-                                                         node::ptr_t(11, node::MAX_ID),
-                                                         node::ptr_t(11, node::MAX_ID-3))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::max_id-3,
+                                                         node::ptr_t(11, node::max_id),
+                                                         node::ptr_t(11, node::max_id-3))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (10,h)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::MAX_ID,
-                                                         node::ptr_t(10, node::MAX_ID-3),
-                                                         node::ptr_t(10, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::max_id,
+                                                         node::ptr_t(10, node::max_id-3),
+                                                         node::ptr_t(10, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (10,i)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::MAX_ID-1,
-                                                         node::ptr_t(10, node::MAX_ID-2),
-                                                         node::ptr_t(10, node::MAX_ID-1))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::max_id-1,
+                                                         node::ptr_t(10, node::max_id-2),
+                                                         node::ptr_t(10, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (11,h)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::MAX_ID-2,
-                                                         node::ptr_t(10, node::MAX_ID-1),
-                                                         node::ptr_t(10, node::MAX_ID-2))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::max_id-2,
+                                                         node::ptr_t(10, node::max_id-1),
+                                                         node::ptr_t(10, node::max_id-2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (11,i)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::MAX_ID-3,
-                                                         node::ptr_t(10, node::MAX_ID),
-                                                         node::ptr_t(10, node::MAX_ID-3))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::max_id-3,
+                                                         node::ptr_t(10, node::max_id),
+                                                         node::ptr_t(10, node::max_id-3))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (9,g)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::MAX_ID,
-                                                         node::ptr_t(9, node::MAX_ID-3),
-                                                         node::ptr_t(9, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::max_id,
+                                                         node::ptr_t(9, node::max_id-3),
+                                                         node::ptr_t(9, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (8,g)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::MAX_ID-1,
-                                                         node::ptr_t(9, node::MAX_ID-1),
-                                                         node::ptr_t(9, node::MAX_ID-2))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::max_id-1,
+                                                         node::ptr_t(9, node::max_id-1),
+                                                         node::ptr_t(9, node::max_id-2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (8,f)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::MAX_ID-2,
-                                                         node::ptr_t(9, node::MAX_ID),
-                                                         node::ptr_t(9, node::MAX_ID-3))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::max_id-2,
+                                                         node::ptr_t(9, node::max_id),
+                                                         node::ptr_t(9, node::max_id-3))));
 
           // NOTE: (9,f) because the pair (7,f) is is merged with (8) which
           //       prunes that entire subtree away.
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7,8,f)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::MAX_ID,
-                                                         node::ptr_t(8, node::MAX_ID-2),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id,
+                                                         node::ptr_t(8, node::max_id-2),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7,g,9)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::MAX_ID-1,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id-1,
                                                          node::ptr_t(true),
-                                                         node::ptr_t(8, node::MAX_ID))));
+                                                         node::ptr_t(8, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7,g)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::MAX_ID-2,
-                                                         node::ptr_t(8, node::MAX_ID-1),
-                                                         node::ptr_t(8, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id-2,
+                                                         node::ptr_t(8, node::max_id-1),
+                                                         node::ptr_t(8, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (6,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID,
-                                                         node::ptr_t(7, node::MAX_ID),
-                                                         node::ptr_t(7, node::MAX_ID-1))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id,
+                                                         node::ptr_t(7, node::max_id),
+                                                         node::ptr_t(7, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::MAX_ID-1,
-                                                         node::ptr_t(8, node::MAX_ID-2),
-                                                         node::ptr_t(7, node::MAX_ID-2))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id-1,
+                                                         node::ptr_t(8, node::max_id-2),
+                                                         node::ptr_t(7, node::max_id-2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (4,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
-                                                         node::ptr_t(6, node::MAX_ID-1),
-                                                         node::ptr_t(6, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
+                                                         node::ptr_t(6, node::max_id-1),
+                                                         node::ptr_t(6, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (3,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID,
-                                                         node::ptr_t(5, node::MAX_ID),
-                                                         node::ptr_t(6, node::MAX_ID-1))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id,
+                                                         node::ptr_t(5, node::max_id),
+                                                         node::ptr_t(6, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (2,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-1,
-                                                         node::ptr_t(6, node::MAX_ID-1),
-                                                         node::ptr_t(5, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-1,
+                                                         node::ptr_t(6, node::max_id-1),
+                                                         node::ptr_t(5, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
-                                                         node::ptr_t(4, node::MAX_ID-1),
-                                                         node::ptr_t(4, node::MAX_ID))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
+                                                         node::ptr_t(4, node::max_id-1),
+                                                         node::ptr_t(4, node::max_id))));
 
           // NOTE: The root (1,a,5,d) has x2 suppressed as the choice at (a)
           //       only is relevant for (b) and (c), not for (d).
@@ -3526,29 +3526,29 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (4)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id,
                                                          node::ptr_t(false),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (6)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-1,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-1,
                                                          node::ptr_t(true),
                                                          node::ptr_t(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (2)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
-                                                         node::ptr_t(4, node::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
+                                                         node::ptr_t(4, node::max_id),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (3)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID-1,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id-1,
                                                          node::ptr_t(true),
-                                                         node::ptr_t(4, node::MAX_ID-1))));
+                                                         node::ptr_t(4, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
-                                                         node::ptr_t(3, node::MAX_ID),
-                                                         node::ptr_t(3, node::MAX_ID-1))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
+                                                         node::ptr_t(3, node::max_id),
+                                                         node::ptr_t(3, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -3615,33 +3615,33 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (4)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id,
                                                          node::ptr_t(false),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (6)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-1,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-1,
                                                          node::ptr_t(true),
                                                          node::ptr_t(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (2)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
-                                                         node::ptr_t(4, node::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
+                                                         node::ptr_t(4, node::max_id),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (3)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID-1,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id-1,
                                                          node::ptr_t(true),
-                                                         node::ptr_t(4, node::MAX_ID-1))));
+                                                         node::ptr_t(4, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
-                                                         node::ptr_t(3, node::MAX_ID),
-                                                         node::ptr_t(3, node::MAX_ID-1))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
+                                                         node::ptr_t(3, node::max_id),
+                                                         node::ptr_t(3, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1*)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
-                                                         node::ptr_t(2, node::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
+                                                         node::ptr_t(2, node::max_id),
                                                          node::ptr_t(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
@@ -3732,13 +3732,13 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (3)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
                                                          ptr_uint64(false),
                                                          ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
-                                                         ptr_uint64(2, ptr_uint64::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
+                                                         ptr_uint64(2, ptr_uint64::max_id),
                                                          ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
@@ -3768,13 +3768,13 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
                                                          ptr_uint64(false),
                                                          ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (2')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
-                                                         ptr_uint64(3, ptr_uint64::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
+                                                         ptr_uint64(3, ptr_uint64::max_id),
                                                          ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
@@ -3851,13 +3851,13 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (3)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
                                                          ptr_uint64(false),
                                                          ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
-                                                         ptr_uint64(2, ptr_uint64::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
+                                                         ptr_uint64(2, ptr_uint64::max_id),
                                                          ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
@@ -3905,19 +3905,19 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
                                                          ptr_uint64(false),
                                                          ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
-                                                         ptr_uint64(5, node::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
+                                                         ptr_uint64(5, node::max_id),
                                                          ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
                                                          ptr_uint64(true),
-                                                         ptr_uint64(3, node::MAX_ID))));
+                                                         ptr_uint64(3, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -3948,13 +3948,13 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
                                                          ptr_uint64(false),
                                                          ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
-                                                         ptr_uint64(5, node::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
+                                                         ptr_uint64(5, node::max_id),
                                                          ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
@@ -4011,7 +4011,7 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
                                                          ptr_uint64(false),
                                                          ptr_uint64(true))));
 
@@ -4097,13 +4097,13 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // (3)
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
                                                        ptr_uint64(false),
                                                        ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
-                                                       ptr_uint64(2, ptr_uint64::MAX_ID),
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
+                                                       ptr_uint64(2, ptr_uint64::max_id),
                                                        ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
@@ -4128,13 +4128,13 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // (5)
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
                                                        ptr_uint64(false),
                                                        ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // (2')
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
-                                                       ptr_uint64(3, ptr_uint64::MAX_ID),
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
+                                                       ptr_uint64(3, ptr_uint64::max_id),
                                                        ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
@@ -4159,13 +4159,13 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // (5)
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
                                                        ptr_uint64(false),
                                                        ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // (2')
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
-                                                       ptr_uint64(3, ptr_uint64::MAX_ID),
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
+                                                       ptr_uint64(3, ptr_uint64::max_id),
                                                        ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
@@ -4469,7 +4469,7 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
                                                          ptr_uint64(false),
                                                          ptr_uint64(true))));
 
@@ -4493,7 +4493,7 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
                                                          ptr_uint64(true),
                                                          ptr_uint64(false))));
 
@@ -4573,7 +4573,7 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
                                                          ptr_uint64(false),
                                                          ptr_uint64(true))));
 
@@ -4595,19 +4595,19 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
                                                          ptr_uint64(true),
                                                          ptr_uint64(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
-                                                         ptr_uint64(5, node::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
+                                                         ptr_uint64(5, node::max_id),
                                                          ptr_uint64(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
                                                          ptr_uint64(false),
-                                                         ptr_uint64(3, node::MAX_ID))));
+                                                         ptr_uint64(3, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -4635,13 +4635,13 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
                                                          ptr_uint64(true),
                                                          ptr_uint64(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
-                                                         ptr_uint64(5, node::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
+                                                         ptr_uint64(5, node::max_id),
                                                          ptr_uint64(false))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
@@ -4673,7 +4673,7 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
                                                          ptr_uint64(true),
                                                          ptr_uint64(false))));
 
@@ -4714,7 +4714,7 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
                                                          ptr_uint64(false),
                                                          ptr_uint64(true))));
 
@@ -4740,7 +4740,7 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
                                                          ptr_uint64(true),
                                                          ptr_uint64(false))));
 
@@ -4794,7 +4794,7 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
                                                          ptr_uint64(false),
                                                          ptr_uint64(true))));
 
@@ -4820,7 +4820,7 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
                                                          ptr_uint64(true),
                                                          ptr_uint64(false))));
 
@@ -4845,19 +4845,19 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
                                                          ptr_uint64(true),
                                                          ptr_uint64(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
-                                                         ptr_uint64(5, node::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
+                                                         ptr_uint64(5, node::max_id),
                                                          ptr_uint64(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
                                                          ptr_uint64(false),
-                                                         ptr_uint64(3, node::MAX_ID))));
+                                                         ptr_uint64(3, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -4888,13 +4888,13 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
                                                          ptr_uint64(true),
                                                          ptr_uint64(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
-                                                         ptr_uint64(5, node::MAX_ID),
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
+                                                         ptr_uint64(5, node::max_id),
                                                          ptr_uint64(false))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
@@ -4926,7 +4926,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
                                                        ptr_uint64(false),
                                                        ptr_uint64(true))));
 
@@ -4947,7 +4947,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
                                                        ptr_uint64(true),
                                                        ptr_uint64(false))));
 

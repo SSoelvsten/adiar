@@ -121,7 +121,7 @@ namespace adiar::internal
     }
 
     // Sort internal arcs by their target
-    af->sort<arc_target_lt>(file_traits<arc>::IDX__INTERNAL);
+    af->sort<arc_target_lt>(file_traits<arc>::idx__internal);
     return af;
   }
 }

@@ -24,7 +24,7 @@ namespace adiar::internal
   /// \remark If `source` is flagged, then this is a high arc rather than a low
   ///         arc.
   ///
-  /// \remark  `source` may be NIL
+  /// \remark  `source` may be nil
   //////////////////////////////////////////////////////////////////////////////
   class arc
   {

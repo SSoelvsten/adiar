@@ -5,7 +5,7 @@ go_bandit([]() {
     shared_levelized_file<zdd::node_t> x0_nf;
     {
       node_writer nw_0(x0_nf);
-      nw_0 << node(0, node::MAX_ID,
+      nw_0 << node(0, node::max_id,
                           ptr_uint64(false),
                           ptr_uint64(true));
     }
@@ -15,7 +15,7 @@ go_bandit([]() {
     shared_levelized_file<zdd::node_t> x1_nf;
     {
       node_writer nw_1(x1_nf);
-      nw_1 << node(1, node::MAX_ID,
+      nw_1 << node(1, node::max_id,
                           ptr_uint64(false),
                           ptr_uint64(true));
     }
@@ -26,12 +26,12 @@ go_bandit([]() {
     {
       node_writer nw_01(x0_or_x1_nf);
 
-      nw_01 << node(1, node::MAX_ID,
+      nw_01 << node(1, node::max_id,
                            ptr_uint64(false),
                            ptr_uint64(true));
 
-      nw_01 << node(0, node::MAX_ID,
-                           ptr_uint64(1, ptr_uint64::MAX_ID),
+      nw_01 << node(0, node::max_id,
+                           ptr_uint64(1, ptr_uint64::max_id),
                            ptr_uint64(true));
     }
 
@@ -114,7 +114,7 @@ go_bandit([]() {
         shared_levelized_file<zdd::node_t> x0_nf_2;
 
         { node_writer nw_0(x0_nf_2);
-          nw_0 << node(0, node::MAX_ID,
+          nw_0 << node(0, node::max_id,
                               ptr_uint64(false),
                               ptr_uint64(true));
         }
@@ -148,8 +148,8 @@ go_bandit([]() {
         shared_levelized_file<zdd::node_t> expected;
         {
           node_writer nw(expected);
-          nw << node(1, node::MAX_ID, ptr_uint64(false), ptr_uint64(true))
-             << node(0, node::MAX_ID, ptr_uint64(true), ptr_uint64(1, ptr_uint64::MAX_ID));
+          nw << node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))
+             << node(0, node::max_id, ptr_uint64(true), ptr_uint64(1, ptr_uint64::max_id));
         }
 
         AssertThat(~x0_or_x1 == zdd(expected), Is().True());

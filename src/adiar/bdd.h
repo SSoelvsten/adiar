@@ -75,7 +75,7 @@ namespace adiar
   /// \brief     The BDD representing the i'th variable.
   ///
   /// \param var The label of the desired variable. This value must be smaller
-  ///            or equals to `bdd::MAX_LABEL`.
+  ///            or equals to `bdd::max_label`.
   ///
   /// \returns   \f$ x_{var} \f$
   ///
@@ -87,7 +87,7 @@ namespace adiar
   /// \brief     The BDD representing the negation of the i'th variable.
   ///
   /// \param var The label of the desired variable. This value must be smaller
-  ///            or equals to `bdd::MAX_LABEL`.
+  ///            or equals to `bdd::max_label`.
   ///
   /// \returns   \f$ \neg x_{var} \f$
   ///
@@ -458,7 +458,7 @@ namespace adiar
   ///
   /// \param gen Generator function, that produces variables to be quantified in
   ///            *descending* order. When none are left to-be quantified, it
-  ///            returns a value larger than `bdd::MAX_LABEL`.
+  ///            returns a value larger than `bdd::max_label`.
   ///
   /// \returns   \f$ \exists x_i \in \texttt{gen()} : f \f$
   //////////////////////////////////////////////////////////////////////////////
@@ -544,7 +544,7 @@ namespace adiar
   ///
   /// \param gen Generator function, that produces variables to be quantified in
   ///            *descending* order. When none are left to-be quantified, it
-  ///            returns a value larger than `bdd::MAX_LABEL`, e.g. -1.
+  ///            returns a value larger than `bdd::max_label`, e.g. -1.
   ///
   /// \returns   \f$ \forall x_i \in \texttt{gen()} : f \f$
   //////////////////////////////////////////////////////////////////////////////

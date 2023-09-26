@@ -12,7 +12,7 @@ namespace adiar::internal
   /// \brief   A unique identifier a decision diagram node.
   ///
   /// \details This essentially is a *ptr* guaranteed to point to a node, i.e.
-  ///          it is \em never NIL, and without any associated information,
+  ///          it is \em never nil, and without any associated information,
   ///          e.g. \em without a flag.
   //////////////////////////////////////////////////////////////////////////////
   template<typename ptr_type>
@@ -47,10 +47,10 @@ namespace adiar::internal
 
     bool is_flagged() = delete;
 
-    /* ================================= NIL ================================ */
-    // Remove anything related to NIL
+    /* ================================= nil ================================ */
+    // Remove anything related to nil
 
-    static inline constexpr ptr_t NIL() = delete;
+    static inline constexpr ptr_t nil() = delete;
 
     bool is_nil() = delete;
 
@@ -101,7 +101,7 @@ namespace adiar::internal
   __uid<ptr_uint64>::with(const ptr_uint64::out_idx_t out_idx) const
   {
     // Based on the bit-layout, we can do this much faster than the one above.
-    constexpr uint64_t out_idx_mask = ~(MAX_OUT_IDX << ptr_t::FLAG_BITS);
+    constexpr uint64_t out_idx_mask = ~(max_out_idx << ptr_t::flag_bits);
     return ptr_uint64((_raw & out_idx_mask) | ptr_t::encode_out_idx(out_idx));
   }
 
@@ -111,7 +111,7 @@ namespace adiar::internal
   {
     // Since uid never is nil, then this is a slightly a faster logic than the
     // one in 'ptr' itself.
-    return _raw >= ptr_t::TERMINAL_BIT;
+    return _raw >= ptr_t::terminal_bit;
   }
 
   using uid_uint64 = __uid<ptr_uint64>;

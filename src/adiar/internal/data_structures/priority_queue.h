@@ -40,7 +40,7 @@ namespace adiar::internal
       return ret;
     }
 
-    static constexpr size_t DATA_STRUCTURES = 1u;
+    static constexpr size_t data_structures = 1u;
 
   public:
     priority_queue([[maybe_unused]] size_t memory_bytes, size_t max_size)
@@ -83,7 +83,7 @@ namespace adiar::internal
   class priority_queue<memory_mode_t::External, elem_t, comp_t>
   {
   public:
-    static constexpr size_t DATA_STRUCTURES = 1u;
+    static constexpr size_t data_structures = 1u;
 
   private:
     tpie::priority_queue<elem_t, comp_t> pq;

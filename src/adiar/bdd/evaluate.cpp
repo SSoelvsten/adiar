@@ -123,7 +123,7 @@ namespace adiar
       while (es.can_pull()) {
         const e kv = es.pull();
 
-        const bdd::node_t n(kv.key(), bdd::MAX_ID,
+        const bdd::node_t n(kv.key(), bdd::max_id,
                             kv.value() ? bdd::ptr_t(false) : latest,
                             kv.value() ? latest : bdd::ptr_t(false));
 
@@ -162,7 +162,7 @@ namespace adiar
     visitor_t   _visitor;
     callback_t& _callback;
 
-    bdd::label_t _lvl = bdd::MAX_LABEL+1u;
+    bdd::label_t _lvl = bdd::max_label+1u;
     lvl_stream_t _lvls;
 
   public:

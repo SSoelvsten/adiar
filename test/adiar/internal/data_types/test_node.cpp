@@ -90,14 +90,14 @@ go_bandit([]() {
         const node terminal_node_T = node(true);
         const node terminal_node_F = node(false);
 
-        it("has NIL() children [F]", [&]() {
-          AssertThat(terminal_node_F.low(), Is().EqualTo(node::ptr_t::NIL()));
-          AssertThat(terminal_node_F.high(), Is().EqualTo(node::ptr_t::NIL()));
+        it("has nil() children [F]", [&]() {
+          AssertThat(terminal_node_F.low(), Is().EqualTo(node::ptr_t::nil()));
+          AssertThat(terminal_node_F.high(), Is().EqualTo(node::ptr_t::nil()));
         });
 
-        it("has NIL() children [T]", [&]() {
-          AssertThat(terminal_node_T.low(), Is().EqualTo(node::ptr_t::NIL()));
-          AssertThat(terminal_node_T.high(), Is().EqualTo(node::ptr_t::NIL()));
+        it("has nil() children [T]", [&]() {
+          AssertThat(terminal_node_T.low(), Is().EqualTo(node::ptr_t::nil()));
+          AssertThat(terminal_node_T.high(), Is().EqualTo(node::ptr_t::nil()));
         });
 
         describe("is_terminal", [&]() {

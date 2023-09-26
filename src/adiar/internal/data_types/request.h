@@ -99,7 +99,7 @@ namespace adiar::internal
     /// \brief The value to be inserted in empy slots in the `node_carry`.
     ////////////////////////////////////////////////////////////////////////////
     static inline constexpr children_t NO_CHILDREN()
-    { return children_t(ptr_t::NIL()); }
+    { return children_t(ptr_t::nil()); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The number of nodes actually carried by this request.
@@ -119,16 +119,16 @@ namespace adiar::internal
     uint8_t targets() const
     {
       if constexpr (sorted_target) {
-        // Since NIL is the greatest value, we can look for the first nil entry
+        // Since nil is the greatest value, we can look for the first nil entry
         // (if any).
         for (uint8_t i = 0u; i < cardinality; i++) {
-          if (target[i] == ptr_t::NIL()) { return i; }
+          if (target[i] == ptr_t::nil()) { return i; }
         }
         return cardinality;
       } else { // !sorted_target
         uint8_t sum = 0u;
         for (uint8_t i = 0u; i < cardinality; i++) {
-          if (target[i] != ptr_t::NIL()) { sum++; }
+          if (target[i] != ptr_t::nil()) { sum++; }
         }
         return sum;
       }
@@ -198,9 +198,9 @@ namespace adiar::internal
     {
       uint8_t sum = 0u;
       for (uint8_t n_idx = 0u; n_idx < node_carry_size; n_idx++) {
-        if (node_carry[n_idx][0] == base::ptr_t::NIL()) {
+        if (node_carry[n_idx][0] == base::ptr_t::nil()) {
           adiar_assert(node_carry[n_idx] == base::NO_CHILDREN(),
-                       "Either no entry is NIL or all of them are");
+                       "Either no entry is nil or all of them are");
           break;
         }
         sum++;
@@ -217,7 +217,7 @@ namespace adiar::internal
     bool empty_carry() const
     {
       if constexpr (node_carry_size == 0u) return true;
-      return node_carry[0][0] == base::ptr_t::NIL();
+      return node_carry[0][0] == base::ptr_t::nil();
     }
 
     /* ============================ CONSTRUCTORS ============================ */

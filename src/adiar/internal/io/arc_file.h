@@ -37,17 +37,17 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief File index for internal arcs.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr size_t IDX__INTERNAL = 0u;
+    static constexpr size_t idx__internal = 0u;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief File index for terminal arcs generated out-of-order.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr size_t IDX__TERMINALS__IN_ORDER = 1u;
+    static constexpr size_t idx__terminals__in_order = 1u;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief File index for terminal arcs generated out-of-order.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr size_t IDX__TERMINALS__OUT_OF_ORDER = 2u;
+    static constexpr size_t idx__terminals__out_of_order = 2u;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Text to pretty-print in '.dot' output.
@@ -82,7 +82,7 @@ namespace adiar::internal
       //////////////////////////////////////////////////////////////////////////
       size_t number_of_terminals[2] = { 0, 0 };
 
-      // TODO: if allowing to be a terminal (with NIL -> {0,1} arcs), then
+      // TODO: if allowing to be a terminal (with nil -> {0,1} arcs), then
       //       create base_stats class to inherit here and in node_file from.
     };
   };

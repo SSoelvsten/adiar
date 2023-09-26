@@ -26,7 +26,7 @@ namespace adiar::internal
   // TODO (10+ TiB Decision Diagrams):
   //   Create a new 'ptr_templ' class that does not compress all information
   //   into a single 64-bit unsigned integer. The 'label_t' and 'id_t' should be
-  //   provided as template parameters and the 'MAX_ID' and 'MAX_LABEL' should
+  //   provided as template parameters and the 'max_id' and 'max_label' should
   //   be derived based on 'std::numeric_limits<XXXX_t>::max()'.
   //
   //   For ADDs it should furthermore be templated with 'value_t'.
@@ -36,15 +36,15 @@ namespace adiar::internal
 
   // TODO (QMDD):
   //   Same as for LDD but with the weight specifically being complex values.
-  //   Furthermore, template the `OUTDEGREE` to use an extra bit for the out
+  //   Furthermore, template the `outdegree` to use an extra bit for the out
   //   index.
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief A (possibly flagged) unique identifier of a terminal, an internal
-  ///        node, or nothing (`NIL`).
+  ///        node, or nothing (`nil`).
   ///
   /// \remark The layout of a pointer is such, that unique identifiers precede
-  ///         terminals which in turn precede NIL. The ordering on unique
+  ///         terminals which in turn precede nil. The ordering on unique
   ///         identifiers and terminals are lifted to pointers.
   ///
   /// \remark A pointer may be flagged. For an arc's source this marks the arc
@@ -68,7 +68,7 @@ namespace adiar::internal
     ///          of the middle areas differ (see below).
     ///
     ///  - `_` : The layout of these 62 bits change based on whether it
-    ///          describes a terminal, an internal node, or NIL.
+    ///          describes a terminal, an internal node, or nil.
     ///
     ///  - `F` : A boolean flag. This is currently only used in arcs to identify
     ///          high and low arcs (see below).
@@ -85,7 +85,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Total number of bits.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr uint8_t TOTAL_BITS = sizeof(uint64_t)*8u;
+    static constexpr uint8_t total_bits = sizeof(uint64_t)*8u;
 
     // --------------------------------------------------
     // befriend other functions that need access to 'raw'
@@ -114,17 +114,17 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Number of flags
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr uint8_t FLAG_BITS = 1u;
+    static constexpr uint8_t flag_bits = 1u;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Generic bit-flag.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr uint64_t FLAG_MASK = 0x0000000000000001ull;
+    static constexpr uint64_t flag_mask = 0x0000000000000001ull;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Generic bit-flag.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr uint64_t FLAG_BIT = FLAG_MASK;
+    static constexpr uint64_t flag_bit = flag_mask;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -132,13 +132,13 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     inline bool is_flagged() const
     {
-      return _raw & ptr_uint64::FLAG_MASK;
+      return _raw & ptr_uint64::flag_mask;
     }
 
-    /* ================================= NIL ================================ */
+    /* ================================= nil ================================ */
   protected:
-    static constexpr uint64_t NIL_VAL =
-      std::numeric_limits<uint64_t>::max() ^ FLAG_MASK;
+    static constexpr uint64_t nil_val =
+      std::numeric_limits<uint64_t>::max() ^ flag_mask;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -149,18 +149,18 @@ namespace adiar::internal
     ///          instead we provide a special value that works with this
     ///          specific setup.
     ///
-    /// \remark  A NIL value always comes after all other types of pointers.
+    /// \remark  A nil value always comes after all other types of pointers.
     ////////////////////////////////////////////////////////////////////////////
-    static inline constexpr ptr_uint64 NIL()
-    { return ptr_uint64{ NIL_VAL }; }
+    static inline constexpr ptr_uint64 nil()
+    { return ptr_uint64{ nil_val }; }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether a pointer is NIL.
+    /// \brief Whether a pointer is nil.
     ////////////////////////////////////////////////////////////////////////////
     inline bool is_nil() const
     {
-      // Check for flagged and unflagged NIL
-      return _raw >= NIL_VAL;
+      // Check for flagged and unflagged nil
+      return _raw >= nil_val;
     }
 
     /* ================================ NODES =============================== */
@@ -180,19 +180,19 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     // TODO (QMDD):
     //   Make into a template parameter
-    static constexpr size_t OUTDEGREE = 2u;
+    static constexpr size_t outdegree = 2u;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The maximal possible value for the out index.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr out_idx_t MAX_OUT_IDX = OUTDEGREE - 1;
+    static constexpr out_idx_t max_out_idx = outdegree - 1;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Number of bits used to store the out0index.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr uint8_t OUT_IDX_BITS = log2(MAX_OUT_IDX);
+    static constexpr uint8_t out_idx_bits = log2(max_out_idx);
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -204,13 +204,13 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The number of bits for a label.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr uint8_t LABEL_BITS = 24u;
+    static constexpr uint8_t label_bits = 24u;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The maximal possible value for a unique identifier's label.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr label_t MAX_LABEL = (1ull << LABEL_BITS) - 1;
+    static constexpr label_t max_label = (1ull << label_bits) - 1;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -224,16 +224,16 @@ namespace adiar::internal
     ///
     /// \details Take up the remaining bits for the ID. This dictates the
     ///          maximum width possible for a single level: a level cannot
-    ///          exceed \$2^{ID_BITS} \cdot 3 \cdot 8\$ bytes.
+    ///          exceed \$2^{id_bits} \cdot 3 \cdot 8\$ bytes.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr uint8_t ID_BITS =
-      TOTAL_BITS - 1u - LABEL_BITS - OUT_IDX_BITS - FLAG_BITS;
+    static constexpr uint8_t id_bits =
+      total_bits - 1u - label_bits - out_idx_bits - flag_bits;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The maximal possible value for a level identifier.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr id_t MAX_ID = (1ull << ID_BITS) - 1;
+    static constexpr id_t max_id = (1ull << id_bits) - 1;
 
   private:
     friend ptr_uint64 essential(const ptr_uint64 &p);
@@ -263,18 +263,18 @@ namespace adiar::internal
   protected:
     static uint64_t encode_label(const label_t label)
     {
-      adiar_assert(label <= MAX_LABEL, "Cannot represent given label");
-      return (uint64_t) label << (ID_BITS + OUT_IDX_BITS + FLAG_BITS);
+      adiar_assert(label <= max_label, "Cannot represent given label");
+      return (uint64_t) label << (id_bits + out_idx_bits + flag_bits);
     }
 
     static uint64_t encode_id(const id_t id)
     {
-      adiar_assert(id <= MAX_ID, "Cannot represent given id");
-      return (uint64_t) id << (OUT_IDX_BITS + FLAG_BITS);
+      adiar_assert(id <= max_id, "Cannot represent given id");
+      return (uint64_t) id << (out_idx_bits + flag_bits);
     }
 
     static uint64_t encode_out_idx(const out_idx_t out_idx)
-    { return (uint64_t) out_idx << (FLAG_BITS); }
+    { return (uint64_t) out_idx << (flag_bits); }
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -299,7 +299,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     inline bool is_node() const
     {
-      return _raw <= ~ptr_uint64::TERMINAL_BIT;
+      return _raw <= ~ptr_uint64::terminal_bit;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -309,7 +309,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     inline label_t label() const
     {
-      return _raw >> (ID_BITS + OUT_IDX_BITS + FLAG_BITS);
+      return _raw >> (id_bits + out_idx_bits + flag_bits);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -319,7 +319,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     inline id_t id() const
     {
-      return (_raw >> (OUT_IDX_BITS + FLAG_BITS)) & MAX_ID;
+      return (_raw >> (out_idx_bits + flag_bits)) & max_id;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -331,7 +331,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     inline out_idx_t out_idx() const
     {
-      return (_raw >> FLAG_BITS) & MAX_OUT_IDX;
+      return (_raw >> flag_bits) & max_out_idx;
     }
 
     /* ============================== TERMINALS ============================= */
@@ -360,18 +360,18 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Terminal bit-flag.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr uint64_t TERMINAL_BIT = 0x8000000000000000ull;
+    static constexpr uint64_t terminal_bit = 0x8000000000000000ull;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Terminal bit-flag mask.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr uint64_t VALUE_MASK = 0x0000000000000002ull;
+    static constexpr uint64_t value_mask = 0x0000000000000002ull;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a pointer to a terminal node (v).
     ////////////////////////////////////////////////////////////////////////////
-    ptr_uint64(const value_t v) : _raw(TERMINAL_BIT | (v << FLAG_BITS))
+    ptr_uint64(const value_t v) : _raw(terminal_bit | (v << flag_bits))
     { }
 
   public:
@@ -380,7 +380,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     inline bool is_terminal() const
     {
-      return !is_nil() && _raw >= ptr_uint64::TERMINAL_BIT;
+      return !is_nil() && _raw >= ptr_uint64::terminal_bit;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -396,7 +396,7 @@ namespace adiar::internal
       //   Negate resulting value based on 'is_flagged()'? It might actually be
       //   better to completely ditch the flag for terminals; this will
       //   simplify quite a lot of the logic.
-      return (_raw & ~TERMINAL_BIT) >> FLAG_BITS;
+      return (_raw & ~terminal_bit) >> flag_bits;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -455,7 +455,7 @@ namespace adiar::internal
     ptr_uint64 operator~ () const
     {
       adiar_assert(this->is_terminal());
-      return ptr_uint64(VALUE_MASK ^ _raw);
+      return ptr_uint64(value_mask ^ _raw);
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -469,7 +469,7 @@ namespace adiar::internal
       adiar_assert(this->is_terminal());
       adiar_assert(o.is_terminal());
 
-      return ptr_uint64(TERMINAL_BIT | (this->_raw ^ o._raw));
+      return ptr_uint64(terminal_bit | (this->_raw ^ o._raw));
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -508,7 +508,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   inline ptr_uint64 flag(const ptr_uint64 &p)
   {
-    return p._raw | ptr_uint64::FLAG_BIT;
+    return p._raw | ptr_uint64::flag_bit;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -516,7 +516,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   inline ptr_uint64 unflag(const ptr_uint64 &p)
   {
-    return p._raw & (~ptr_uint64::FLAG_MASK);
+    return p._raw & (~ptr_uint64::flag_mask);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -530,12 +530,12 @@ namespace adiar::internal
     const uint64_t _raw = p._raw;
 
     constexpr uint64_t main_mask =
-      ~((1ull << ptr_uint64::FLAG_BITS) - 1u);
+      ~((1ull << ptr_uint64::flag_bits) - 1u);
 
     constexpr uint64_t node_mask =
-      ~(((1ull << ptr_uint64::OUT_IDX_BITS) - 1u) << ptr_uint64::FLAG_BITS) & main_mask;
+      ~(((1ull << ptr_uint64::out_idx_bits) - 1u) << ptr_uint64::flag_bits) & main_mask;
 
-    return _raw > ptr_uint64::TERMINAL_BIT
+    return _raw > ptr_uint64::terminal_bit
       ? (_raw & main_mask)
       : (_raw & node_mask);
   }
@@ -551,7 +551,7 @@ namespace adiar::internal
     adiar_assert(p.is_node());
 
     constexpr uint64_t out_idx_mask =
-      ~(((1ull << ptr_uint64::OUT_IDX_BITS) - 1u) << ptr_uint64::FLAG_BITS);
+      ~(((1ull << ptr_uint64::out_idx_bits) - 1u) << ptr_uint64::flag_bits);
 
     return (p._raw & out_idx_mask) | ptr_uint64::encode_out_idx(out_idx);
   }

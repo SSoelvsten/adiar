@@ -208,7 +208,7 @@ namespace adiar
       if(low.builder_ref != builder_ref || high.builder_ref != builder_ref) {
         throw invalid_argument("Cannot use pointers from a different builder");
       }
-      if(label > dd_policy::MAX_LABEL) {
+      if(label > dd_policy::max_label) {
         throw invalid_argument("Nodes must have a valid label");
       }
       if(label > current_label) {
@@ -224,7 +224,7 @@ namespace adiar
       // Update label and ID if necessary
       if(label < current_label) {
         current_label = label;
-        current_id = dd_policy::MAX_ID;
+        current_id = dd_policy::max_id;
       }
 
       // Create potential node
@@ -425,8 +425,8 @@ namespace adiar
         nw.attach(nf);
 
         // Initialise state variables
-        current_label    = dd_policy::MAX_LABEL;
-        current_id       = dd_policy::MAX_ID;
+        current_label    = dd_policy::max_label;
+        current_id       = dd_policy::max_id;
         created_terminal = false;
         terminal_val     = false;
         unref_nodes      = 0;

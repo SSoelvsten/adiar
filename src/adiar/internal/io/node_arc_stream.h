@@ -30,14 +30,14 @@ namespace adiar::internal
     }
 
   private:
-    static constexpr size_t IDX__INTERNAL =
-      file_traits<arc>::IDX__INTERNAL;
+    static constexpr size_t idx__internal =
+      file_traits<arc>::idx__internal;
 
-    static constexpr size_t IDX__TERMINALS__IN_ORDER =
-      file_traits<arc>::IDX__TERMINALS__IN_ORDER;
+    static constexpr size_t idx__terminals__in_order =
+      file_traits<arc>::idx__terminals__in_order;
 
-    static constexpr size_t IDX__TERMINALS__OUT_OF_ORDER =
-      file_traits<arc>::IDX__TERMINALS__OUT_OF_ORDER;
+    static constexpr size_t idx__terminals__out_of_order =
+      file_traits<arc>::idx__terminals__out_of_order;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -89,7 +89,7 @@ namespace adiar::internal
     void attach(levelized_file<arc> &file, const bool negate = false)
     {
       if (file.semi_transposed) {
-        file.sort<arc_source_lt>(IDX__INTERNAL);
+        file.sort<arc_source_lt>(idx__internal);
         file.semi_transposed = false;
       }
       parent_t::attach(file, negate);
@@ -104,7 +104,7 @@ namespace adiar::internal
                 const bool negate = false)
     {
       if (file->semi_transposed) {
-        file->sort<arc_source_lt>(IDX__INTERNAL);
+        file->sort<arc_source_lt>(idx__internal);
         file->semi_transposed = false;
       }
       parent_t::attach(file, negate);

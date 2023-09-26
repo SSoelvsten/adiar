@@ -28,7 +28,7 @@ namespace adiar::internal
   class intercut_req : public arc
   { // TODO: replace with request class
   private:
-    ptr_uint64::label_t _level = ptr_uint64::MAX_LABEL + 1u;
+    ptr_uint64::label_t _level = ptr_uint64::max_label + 1u;
 
   public:
     intercut_req() = default;
@@ -57,10 +57,10 @@ namespace adiar::internal
     }
   };
 
-  template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
+  template<size_t look_ahead, memory_mode_t mem_mode>
   using intercut_priority_queue_t =
     levelized_label_priority_queue<intercut_req, intercut_req_lt,
-                                   LOOK_AHEAD,
+                                   look_ahead,
                                    mem_mode,
                                    2u,
                                    0u>;
@@ -88,7 +88,7 @@ namespace adiar::internal
                     const bool terminal_value)
   {
     return curr_level < cut_level
-      && cut_level <= intercut_policy::MAX_LABEL
+      && cut_level <= intercut_policy::max_label
       && (!terminal_value || intercut_policy::cut_true_terminal)
       && ( terminal_value || intercut_policy::cut_false_terminal);
   }
@@ -109,7 +109,7 @@ namespace adiar::internal
     {
       const typename intercut_policy::label_t target_level = target.is_node()
         ? target.label()
-        : intercut_policy::MAX_LABEL+1;
+        : intercut_policy::max_label+1;
 
       if (target.is_terminal() && !cut_terminal<intercut_policy>(curr_level, next_cut, target.value())) {
         aw.push_terminal(arc(source, target));
@@ -176,7 +176,7 @@ namespace adiar::internal
     shared_file<typename intercut_policy::label_t> hit_levels;
     {
       file_writer<typename intercut_policy::label_t> lw(hit_levels);
-      for (auto x = xs(); x <= intercut_policy::MAX_LABEL; x = xs()) {
+      for (auto x = xs(); x <= intercut_policy::max_label; x = xs()) {
         lw << x;
       }
 
@@ -207,7 +207,7 @@ namespace adiar::internal
 
     // Add request for root in the queue
     typename intercut_policy::label_t out_label = std::min(l, n.label());
-    intercut_pq.push(intercut_req(ptr_uint64::NIL(), n.uid(), out_label));
+    intercut_pq.push(intercut_req(ptr_uint64::nil(), n.uid(), out_label));
     typename intercut_policy::id_t out_id = 0;
 
     size_t max_1level_cut = 0;
@@ -231,7 +231,7 @@ namespace adiar::internal
       }
 
       if(!ls.can_pull() && l <= out_label) {
-        l = intercut_policy::MAX_LABEL + 1;
+        l = intercut_policy::max_label + 1;
       }
 
       // Resolve requests that end at the cut for this level
