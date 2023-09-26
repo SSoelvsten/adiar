@@ -222,9 +222,9 @@ namespace adiar::internal
       : _elems{elem}
     {
       // TODO: replace with a (templated) default value (?)
-      if constexpr (2 <= CARDINALITY) _elems[1] = elem;
-      if constexpr (3 <= CARDINALITY) _elems[2] = elem;
-      if constexpr (4 <= CARDINALITY) _elems[3] = elem;
+      if constexpr (2 <= cardinality) _elems[1] = elem;
+      if constexpr (3 <= cardinality) _elems[2] = elem;
+      if constexpr (4 <= cardinality) _elems[3] = elem;
     }
 
     ////////////////////////////////////////////////////////////////////////////
