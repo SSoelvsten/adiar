@@ -86,7 +86,7 @@ namespace adiar
   {
     if (!_adiar_initialized) return;
 
-    adiar_unset_domain();
+    domain_unset();
 
     tpie::tpie_finish(tpie::ALL);
     _adiar_initialized = false;

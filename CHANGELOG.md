@@ -115,7 +115,7 @@ A *file<label_t>* can globally be set as the problem domain, i.e. the set of var
   sets the global domain variable.
 - `adiar_has_domain()`
   checks whether a global domain already is set.
-- `adiar_get_domain()`
+- `domain_get()`
   provides the current *file<label_t>* that acts as the global domain (assuming `adiar_has_domain()` evaluates to `true`).
 
 ## Binary Decision Diagrams

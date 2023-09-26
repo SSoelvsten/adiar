@@ -101,7 +101,7 @@ namespace adiar
   ///
   /// \param var The variable to be forced to true.
   ///
-  /// \pre       `adiar_has_domain() == true` and the variable `var` should
+  /// \pre       `domain_isset() == true` and the variable `var` should
   ///            occur in the global domain.
   //////////////////////////////////////////////////////////////////////////////
   zdd zdd_ithvar(zdd::label_t var);
@@ -151,7 +151,7 @@ namespace adiar
   ///
   /// \param var The variable to be forced to false.
   ///
-  /// \pre       `adiar_has_domain() == true` and the variable `var` should
+  /// \pre       `domain_isset() == true` and the variable `var` should
   ///            occur in the global domain.
   //////////////////////////////////////////////////////////////////////////////
   zdd zdd_nithvar(zdd::label_t var);
@@ -462,7 +462,7 @@ namespace adiar
   ///
   /// \returns   \f$ 2^{\mathit{dom}} \setminus A \f$
   ///
-  /// \see adiar_set_domain adiar_has_domain
+  /// \see domain_set domain_isset
   ///
   /// \pre       The global \ref module__domain is set to a set of variables
   ///            that is equals to or a superset of the variables in `A`.

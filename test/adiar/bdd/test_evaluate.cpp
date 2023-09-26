@@ -530,7 +530,7 @@ go_bandit([]() {
       }
 
       describe("bdd_satmin(f) [bdd levels]", [&]() {
-        adiar_unset_domain();
+        domain_unset();
 
         it("returns same file for true terminal", [&]() {
           bdd out = bdd_satmin(bdd_T);
@@ -804,7 +804,7 @@ go_bandit([]() {
 
       describe("bdd_satmin(f) [domain]", [&]() {
         it("should retrieve evaluation [0] in domain { 0,1,2 }", [&]() {
-          adiar_set_domain(3);
+          domain_set(3);
           bdd out = bdd_satmin(bdd_0);
 
           // Check it looks all right
@@ -855,8 +855,8 @@ go_bandit([]() {
         });
 
         it("should retrieve evaluation [2] in domain { 0,2,4 }", [&]() {
-          std::vector<domain_var_t> dom = { 0,2,4 };
-          adiar_set_domain(dom.begin(), dom.end());
+          std::vector<domain_var> dom = { 0,2,4 };
+          domain_set(dom.begin(), dom.end());
 
           bdd out = bdd_satmin(bdd_2);
 
@@ -923,11 +923,11 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
         });
 
-        adiar_unset_domain();
+        domain_unset();
       });
 
       describe("bdd_satmin(f, cb) [bdd levels]", [&]() {
-        adiar_unset_domain();
+        domain_unset();
 
         it("is never called for true terminal", [&]() {
           size_t calls = 0u;
@@ -1027,7 +1027,7 @@ go_bandit([]() {
 
       describe("bdd_satmin(f, cb) [bdd levels]", [&]() {
         it("is called with full domain for [0]", [&]() {
-          adiar_set_domain(2);
+          domain_set(2);
 
           size_t calls = 0;
           std::vector<std::pair<bdd::label_t, bool>> expected =
@@ -1047,7 +1047,7 @@ go_bandit([]() {
 
         it("is called with expected evaluation [2]", [&]() {
           std::vector<bdd::label_t> dom = { 0,2,4 };
-          adiar_set_domain(dom.begin(), dom.end());
+          domain_set(dom.begin(), dom.end());
 
           size_t calls = 0;
           std::vector<std::pair<bdd::label_t, bool>> expected =
@@ -1067,7 +1067,7 @@ go_bandit([]() {
       });
 
       describe("bdd_satmin(f, begin, end) [bdd levels]", [&]() {
-        adiar_unset_domain();
+        domain_unset();
 
         // TODO
       });
@@ -1077,7 +1077,7 @@ go_bandit([]() {
       });
 
       describe("bdd_satmax(f) [bdd levels]", [&]() {
-        adiar_unset_domain();
+        domain_unset();
 
         it("should retrieve maximal evaluation [1]", [&]() {
           bdd out = bdd_satmax(bdd_1);
@@ -1414,7 +1414,7 @@ go_bandit([]() {
 
       describe("bdd_satmax(f) [domain]", [&]() {
         it("should retrieve maximal evaluation [~1] in domain { 0, 1, ..., 5 }", [&]() {
-          adiar_set_domain(6);
+          domain_set(6);
           bdd out = bdd_satmax(bdd_1);
 
           // Check it looks all right
@@ -1489,7 +1489,7 @@ go_bandit([]() {
         });
 
         it("should retrieve maximal evaluation [~2] in domain { 0, 1, ..., 5 }", [&]() {
-          adiar_set_domain(5);
+          domain_set(5);
 
           bdd out = bdd_satmax(bdd_not(bdd_2));
 
@@ -1558,7 +1558,7 @@ go_bandit([]() {
 
         it("should retrieve maximal evaluation [~2] in domain { 0, 2, 4 }", [&]() {
           std::vector<bdd::label_t> dom = { 0,2,4 };
-          adiar_set_domain(dom.begin(), dom.end());
+          domain_set(dom.begin(), dom.end());
 
           bdd out = bdd_satmax(bdd_not(bdd_2));
 
@@ -1618,11 +1618,11 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
         });
 
-        adiar_unset_domain();
+        domain_unset();
       });
 
       describe("bdd_satmax(f, cb) [bdd levels]", [&]() {
-        adiar_unset_domain();
+        domain_unset();
 
         it("should retrieve maximal evaluation [1]", [&]() {
           size_t calls = 0;
@@ -1723,7 +1723,7 @@ go_bandit([]() {
 
       describe("bdd_satmax(f, cb) [domain]", [&]() {
         it("should retrieve maximal evaluation [~1] in domain { 0, 1, ..., 5 }", [&]() {
-          adiar_set_domain(6);
+          domain_set(6);
 
           size_t calls = 0;
           std::vector<std::pair<bdd::label_t, bool>> expected =
@@ -1741,7 +1741,7 @@ go_bandit([]() {
         });
 
         it("should retrieve maximal evaluation [~2] in domain { 0, 1, ..., 5 }", [&]() {
-          adiar_set_domain(5);
+          domain_set(5);
 
           size_t calls = 0;
           std::vector<std::pair<bdd::label_t, bool>> expected =
@@ -1760,7 +1760,7 @@ go_bandit([]() {
 
         it("should retrieve maximal evaluation [~2] in domain { 0, 2, 4 }", [&]() {
           std::vector<bdd::label_t> dom = { 0,2,4 };
-          adiar_set_domain(dom.begin(), dom.end());
+          domain_set(dom.begin(), dom.end());
 
           bdd out = bdd_satmax(bdd_not(bdd_2));
 
@@ -1779,11 +1779,11 @@ go_bandit([]() {
           AssertThat(calls, Is().EqualTo(3u + 1u));
         });
 
-        adiar_unset_domain();
+        domain_unset();
       });
 
       describe("bdd_satmax(f, begin, end) [bdd levels]", [&]() {
-        adiar_unset_domain();
+        domain_unset();
 
         // TODO
       });

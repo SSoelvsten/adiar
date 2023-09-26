@@ -909,7 +909,7 @@ go_bandit([]() {
 
     describe("zdd_complement(A)", [&]() {
       it("produces pow(U) on F terminal with set domain U = { 0, 1, 2, 3 }", [&]() {
-        adiar_set_domain(dom_0123.begin(), dom_0123.end());
+        domain_set(dom_0123.begin(), dom_0123.end());
 
         __zdd out = zdd_complement(zdd_F);
 
@@ -963,7 +963,7 @@ go_bandit([]() {
       });
 
       it("produces pow(U) \\ Ø on T terminal with set domain U = { 1, 2, 3, 4 }", [&]() {
-        adiar_set_domain(dom_1234.begin(), dom_1234.end());
+        domain_set(dom_1234.begin(), dom_1234.end());
 
         __zdd out = zdd_complement(zdd_T);
 

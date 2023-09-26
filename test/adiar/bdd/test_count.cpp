@@ -127,7 +127,7 @@ go_bandit([]() {
 
     // Set domain to be empty
     adiar::shared_file<bdd::label_t> empty_dom;
-    adiar_set_domain(empty_dom);
+    domain_set(empty_dom);
 
     describe("bdd_nodecount", [&]() {
       it("can count number of nodes", [&]() {
@@ -297,7 +297,7 @@ go_bandit([]() {
         label_writer lw(dom);
         lw << 0 << 1 << 2 << 3 << 4 << 5 << 6;
       }
-      adiar_set_domain(dom);
+      domain_set(dom);
 
       it("can count assignments leading to T terminals [1]", [&]() {
         AssertThat(bdd_satcount(bdd_1), Is().EqualTo(8u * 5u));

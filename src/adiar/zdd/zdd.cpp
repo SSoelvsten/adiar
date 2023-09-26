@@ -215,8 +215,8 @@ namespace adiar
 
   __zdd zdd_from(const bdd &f)
   {
-    const shared_file<zdd::label_t> dom = adiar_get_domain();
-    internal::file_stream<domain_var_t> ds(dom);
+    const shared_file<zdd::label_t> dom = domain_get();
+    internal::file_stream<domain_var> ds(dom);
 
     return internal::intercut<internal::convert_dd_policy<zdd_policy, bdd_policy>>
       (f, make_generator(ds));

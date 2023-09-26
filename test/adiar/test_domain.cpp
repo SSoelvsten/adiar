@@ -1,18 +1,18 @@
 #include "../test.h"
 
 go_bandit([]() {
-  adiar_unset_domain();
+  domain_unset();
 
   describe("adiar/domain.h", []() {
-    describe("adiar_has_domain(), adiar_get_domain()", []() {
+    describe("domain_isset(), domain_get()", []() {
       it("throws exception when getting missing domain", []() {
-        AssertThat(adiar_has_domain(), Is().False());
-        AssertThrows(domain_error, adiar_get_domain());
+        AssertThat(domain_isset(), Is().False());
+        AssertThrows(domain_error, domain_get());
       });
     });
 
-    describe("adiar_has_domain(), adiar_set_domain(...), adiar_unset_domain()", []() {
-      it("has domain after 'adiar_set_domain(file)'", []() {
+    describe("domain_isset(), domain_set(...), domain_unset()", []() {
+      it("has domain after 'domain_set(file)'", []() {
         adiar::shared_file<node::label_t> dom;
 
         { // Garbage collect writer to free write-lock
@@ -20,49 +20,49 @@ go_bandit([]() {
           lw << 1 << 2 << 3;
         }
 
-        AssertThat(adiar_has_domain(), Is().False());
-        adiar_set_domain(dom);
-        AssertThat(adiar_has_domain(), Is().True());
+        AssertThat(domain_isset(), Is().False());
+        domain_set(dom);
+        AssertThat(domain_isset(), Is().True());
       });
 
       it("can remove prior domain", []() {
-        AssertThat(adiar_has_domain(), Is().True());
-        adiar_unset_domain();
-        AssertThat(adiar_has_domain(), Is().False());
+        AssertThat(domain_isset(), Is().True());
+        domain_unset();
+        AssertThat(domain_isset(), Is().False());
       });
 
       it("can remove with no prior domain", []() {
-        AssertThat(adiar_has_domain(), Is().False());
-        adiar_unset_domain();
-        AssertThat(adiar_has_domain(), Is().False());
+        AssertThat(domain_isset(), Is().False());
+        domain_unset();
+        AssertThat(domain_isset(), Is().False());
       });
 
-      it("has domain after 'adiar_set_domain(varcount)'", []() {
-        AssertThat(adiar_has_domain(), Is().False());
-        adiar_set_domain(42);
-        AssertThat(adiar_has_domain(), Is().True());
+      it("has domain after 'domain_set(varcount)'", []() {
+        AssertThat(domain_isset(), Is().False());
+        domain_set(42);
+        AssertThat(domain_isset(), Is().True());
       });
     });
 
-    describe("adiar_has_domain(), adiar_get_domain(), adiar_set_domain(...)", []() {
+    describe("domain_isset(), domain_get(), domain_set(...)", []() {
       it("gives back domain with varcount [0]", []() {
-        adiar_unset_domain();
-        adiar_set_domain(0);
+        domain_unset();
+        domain_set(0);
 
-        AssertThat(adiar_has_domain(), Is().True());
+        AssertThat(domain_isset(), Is().True());
 
-        adiar::file_stream<node::label_t> ls(adiar_get_domain());
+        adiar::file_stream<node::label_t> ls(domain_get());
 
         AssertThat(ls.can_pull(), Is().False());
       });
 
       it("gives back domain with varcount [1]", []() {
-        adiar_unset_domain();
-        adiar_set_domain(1);
+        domain_unset();
+        domain_set(1);
 
-        AssertThat(adiar_has_domain(), Is().True());
+        AssertThat(domain_isset(), Is().True());
 
-        adiar::file_stream<node::label_t> ls(adiar_get_domain());
+        adiar::file_stream<node::label_t> ls(domain_get());
 
         AssertThat(ls.can_pull(), Is().True());
         AssertThat(ls.pull(), Is().EqualTo(0u));
@@ -71,12 +71,12 @@ go_bandit([]() {
       });
 
       it("gives back domain with varcount [7]", []() {
-        adiar_unset_domain();
-        adiar_set_domain(7);
+        domain_unset();
+        domain_set(7);
 
-        AssertThat(adiar_has_domain(), Is().True());
+        AssertThat(domain_isset(), Is().True());
 
-        adiar::file_stream<node::label_t> ls(adiar_get_domain());
+        adiar::file_stream<node::label_t> ls(domain_get());
 
         AssertThat(ls.can_pull(), Is().True());
         AssertThat(ls.pull(), Is().EqualTo(0u));
@@ -103,13 +103,13 @@ go_bandit([]() {
       });
 
       it("can overwrite with new varcount [2,3]", []() {
-        adiar_unset_domain();
+        domain_unset();
 
-        adiar_set_domain(3);
+        domain_set(3);
         {
-          AssertThat(adiar_has_domain(), Is().True());
+          AssertThat(domain_isset(), Is().True());
 
-          adiar::file_stream<node::label_t> ls(adiar_get_domain());
+          adiar::file_stream<node::label_t> ls(domain_get());
 
           AssertThat(ls.can_pull(), Is().True());
           AssertThat(ls.pull(), Is().EqualTo(0u));
@@ -123,11 +123,11 @@ go_bandit([]() {
           AssertThat(ls.can_pull(), Is().False());
         }
 
-        adiar_set_domain(2);
+        domain_set(2);
         {
-          AssertThat(adiar_has_domain(), Is().True());
+          AssertThat(domain_isset(), Is().True());
 
-          adiar::file_stream<node::label_t> ls(adiar_get_domain());
+          adiar::file_stream<node::label_t> ls(domain_get());
 
           AssertThat(ls.can_pull(), Is().True());
           AssertThat(ls.pull(), Is().EqualTo(0u));
@@ -140,23 +140,23 @@ go_bandit([]() {
       });
 
       it("can copy the Fibonacci numbers from a generator", []() {
-        adiar_unset_domain();
+        domain_unset();
 
-        domain_var_t x = 1;
-        domain_var_t y = 1;
+        domain_var x = 1;
+        domain_var y = 1;
 
         const auto gen = [&x, &y]() {
-          const domain_var_t z = x + y;
+          const domain_var z = x + y;
           x = y;
           y = z;
 
-          return x > 13 ?  MAX_DOMAIN_VAR+1 : x;
+          return x > 13 ?  domain_max+1 : x;
         };
 
-        adiar_set_domain(gen);
-        AssertThat(adiar_has_domain(), Is().True());
+        domain_set(gen);
+        AssertThat(domain_isset(), Is().True());
 
-        adiar::file_stream<node::label_t> ls(adiar_get_domain());
+        adiar::file_stream<node::label_t> ls(domain_get());
 
         AssertThat(ls.can_pull(), Is().True());
         AssertThat(ls.pull(), Is().EqualTo(1u));
@@ -180,15 +180,15 @@ go_bandit([]() {
       });
 
       it("can copy from an iterator", []() {
-        adiar_unset_domain();
+        domain_unset();
 
         std::vector<int> xs = { 0, 1, 3, 5, 42 };
 
-        adiar_set_domain(xs.begin(), xs.end());
+        domain_set(xs.begin(), xs.end());
 
-        AssertThat(adiar_has_domain(), Is().True());
+        AssertThat(domain_isset(), Is().True());
 
-        adiar::file_stream<node::label_t> ls(adiar_get_domain());
+        adiar::file_stream<node::label_t> ls(domain_get());
 
         AssertThat(ls.can_pull(), Is().True());
         AssertThat(ls.pull(), Is().EqualTo(0u));
@@ -209,15 +209,15 @@ go_bandit([]() {
       });
 
       it("can overwrite with another iterator", []() {
-        adiar_unset_domain();
+        domain_unset();
 
         std::vector<int> xs = { 2, 4, 5 };
 
-        adiar_set_domain(xs.begin(), xs.end());
+        domain_set(xs.begin(), xs.end());
         { // Check for xs
-          AssertThat(adiar_has_domain(), Is().True());
+          AssertThat(domain_isset(), Is().True());
 
-          adiar::file_stream<node::label_t> ls(adiar_get_domain());
+          adiar::file_stream<node::label_t> ls(domain_get());
 
           AssertThat(ls.can_pull(), Is().True());
           AssertThat(ls.pull(), Is().EqualTo(2u));
@@ -233,11 +233,11 @@ go_bandit([]() {
 
         std::vector<int> ys = { 0, 3 };
 
-        adiar_set_domain(ys.begin(), ys.end());
+        domain_set(ys.begin(), ys.end());
         { // Check for ys
-          AssertThat(adiar_has_domain(), Is().True());
+          AssertThat(domain_isset(), Is().True());
 
-          adiar::file_stream<node::label_t> ls(adiar_get_domain());
+          adiar::file_stream<node::label_t> ls(domain_get());
 
           AssertThat(ls.can_pull(), Is().True());
           AssertThat(ls.pull(), Is().EqualTo(0u));
@@ -250,7 +250,7 @@ go_bandit([]() {
       });
 
       it("gives back the given domain file", []() {
-        adiar_unset_domain();
+        domain_unset();
 
         adiar::shared_file<node::label_t> dom;
 
@@ -259,14 +259,14 @@ go_bandit([]() {
           lw << 1 << 2 << 3;
         }
 
-        adiar_set_domain(dom);
+        domain_set(dom);
 
-        AssertThat(adiar_has_domain(), Is().True());
-        AssertThat(adiar_get_domain(), Is().EqualTo(dom));
+        AssertThat(domain_isset(), Is().True());
+        AssertThat(domain_get(), Is().EqualTo(dom));
       });
 
       it("can overwrite with another domain file", []() {
-        adiar_unset_domain();
+        domain_unset();
 
         adiar::shared_file<node::label_t> dom1;
 
@@ -275,10 +275,10 @@ go_bandit([]() {
           lw << 1 << 2 << 3;
         }
 
-        adiar_set_domain(dom1);
+        domain_set(dom1);
 
-        AssertThat(adiar_has_domain(), Is().True());
-        AssertThat(adiar_get_domain(), Is().EqualTo(dom1));
+        AssertThat(domain_isset(), Is().True());
+        AssertThat(domain_get(), Is().EqualTo(dom1));
 
         adiar::shared_file<node::label_t> dom2;
 
@@ -287,10 +287,10 @@ go_bandit([]() {
           lw << 4 << 9 << 35;
         }
 
-        adiar_set_domain(dom2);
+        domain_set(dom2);
 
-        AssertThat(adiar_has_domain(), Is().True());
-        AssertThat(adiar_get_domain(), Is().EqualTo(dom2));
+        AssertThat(domain_isset(), Is().True());
+        AssertThat(domain_get(), Is().EqualTo(dom2));
       });
     });
 

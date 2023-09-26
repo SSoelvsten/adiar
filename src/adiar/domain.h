@@ -15,7 +15,7 @@
 #include <adiar/file.h>
 #include <adiar/functional.h>
 
-// TODO: Make 'domain_var_t' independent of node type. Then remove this include.
+// TODO: Make 'domain_var' independent of node type. Then remove this include.
 #include <adiar/internal/data_types/node.h>
 
 namespace adiar
@@ -28,17 +28,17 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The variable type of a domain variable.
   //////////////////////////////////////////////////////////////////////////////
-  using domain_var_t = internal::node::label_t;
+  using domain_var = internal::node::label_t;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The maximum supported domain variable.
   //////////////////////////////////////////////////////////////////////////////
-  constexpr domain_var_t MAX_DOMAIN_VAR = internal::node::max_label;
+  constexpr domain_var domain_max = internal::node::max_label;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Set the domain globally for all of Adiar to be [*0, varcount*).
   //////////////////////////////////////////////////////////////////////////////
-  void adiar_set_domain(const domain_var_t varcount);
+  void domain_set(const domain_var varcount);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Set the domain globally for all of Adiar to be the variables
@@ -46,9 +46,9 @@ namespace adiar
   ///
   /// \param dom Generator that produces variables to be quantified in
   ///            *ascending* order. When none are left, it must return a value
-  ///            greater than `max_domain_var`.
+  ///            greater than `domain_max`.
   //////////////////////////////////////////////////////////////////////////////
-  void adiar_set_domain(const generator<domain_var_t> &dom);
+  void domain_set(const generator<domain_var> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Set the domain globally for all of Adiar to be the variables
@@ -60,36 +60,49 @@ namespace adiar
   /// \param end   Iterator that marks the end for `begin`.
   //////////////////////////////////////////////////////////////////////////////
   template<typename IT>
-  void adiar_set_domain(IT begin, IT end)
-  { return adiar_set_domain(make_generator(begin, end)); }
+  void domain_set(IT begin, IT end)
+  { return domain_set(make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Set the domain globally for all of Adiar.
   ///
+  /// \details   This may be usable, if one needs to change the domain, but
+  ///            wants to set it back again to the prior value without recreating
+  ///            the entire file.
+  ///
   /// \param dom A \ref shared_file containing all labels of the problem domain
   ///            in ascending order.
+  ///
+  /// \see domain_get()
   //////////////////////////////////////////////////////////////////////////////
-  void adiar_set_domain(const shared_file<domain_var_t> &dom);
+  void domain_set(const shared_file<domain_var> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Removes any globally shared domain variables (if any).
   ///
-  /// \sa adiar_set_domain
+  /// \sa domain_set
   //////////////////////////////////////////////////////////////////////////////
-  void adiar_unset_domain();
+  void domain_unset();
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether Adiar has a global domain.
   //////////////////////////////////////////////////////////////////////////////
-  bool adiar_has_domain();
+  bool domain_isset();
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief  Returns the global domain if `adiar_has_domain() == true`.
+  /// \brief   Returns the global domain.
   ///
-  /// \throws domain_error If no domain is yet set, i.e.
-  ///         `adiar_has_domain() == false`.
+  /// \details This may be usable, if one needs to change the domain, but
+  ///          wants to set it back again to the prior value without recreating
+  ///          the entire file.
+  ///
+  /// \pre `domain_isset() == true`
+  ///
+  /// \throws domain_error If no domain is set, i.e. `domain_isset() == false`.
+  ///
+  /// \see domain_set(const shared_file<domain_var> &dom)
   //////////////////////////////////////////////////////////////////////////////
-  shared_file<domain_var_t> adiar_get_domain();
+  shared_file<domain_var> domain_get();
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////

@@ -206,9 +206,9 @@ namespace adiar
   template<typename visitor_t, typename callback_t>
   inline void __bdd_satX(const bdd &f, callback_t &_cb)
   {
-    if (adiar_has_domain()) {
-      bdd_sat_visitor<visitor_t, callback_t, internal::file_stream<domain_var_t>, internal::shared_file<domain_var_t>>
-        v(_cb, adiar_get_domain());
+    if (domain_isset()) {
+      bdd_sat_visitor<visitor_t, callback_t, internal::file_stream<domain_var>, internal::shared_file<domain_var>>
+        v(_cb, domain_get());
       internal::traverse(f,v);
     } else {
       bdd_sat_visitor<visitor_t, callback_t, internal::level_info_stream<>, bdd>
