@@ -25,7 +25,7 @@ namespace snowhouse
   };
 }
 
-stats_t::levelized_priority_queue_t stats_lpq_tests;
+statistics::levelized_priority_queue_t stats_lpq_tests;
 
 namespace adiar::internal
 {

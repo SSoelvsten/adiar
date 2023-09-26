@@ -2,5 +2,5 @@
 
 namespace adiar::internal
 {
-  stats_t::prod2_t stats_prod2;
+  statistics::prod2_t stats_prod2;
 }

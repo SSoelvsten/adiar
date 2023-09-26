@@ -57,7 +57,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Struct holding statistics on the levelized priority queue
   //////////////////////////////////////////////////////////////////////////////
-  extern stats_t::levelized_priority_queue_t stats_levelized_priority_queue;
+  extern statistics::levelized_priority_queue_t stats_levelized_priority_queue;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Levelized Priority Queue with a finite circular array of sorters
@@ -329,7 +329,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Reference to struct to store non-global stats into.
     ////////////////////////////////////////////////////////////////////////////
-    stats_t::levelized_priority_queue_t &_stats;
+    statistics::levelized_priority_queue_t &_stats;
 #endif
 
   private:
@@ -372,7 +372,7 @@ namespace adiar::internal
     }
 
     levelized_priority_queue(tpie::memory_size_type memory_given, size_t max_size,
-                             [[maybe_unused]] stats_t::levelized_priority_queue_t &stats)
+                             [[maybe_unused]] statistics::levelized_priority_queue_t &stats)
       : _max_size(max_size)
       , _memory_given(memory_given)
       , _memory_for_buckets(memory_given - _memory_occupied_by_merger - mem_overflow_queue(memory_given))
@@ -398,7 +398,7 @@ namespace adiar::internal
     levelized_priority_queue(const level_file_t (& files) [level_files],
                              tpie::memory_size_type memory_given,
                              size_t max_size,
-                             stats_t::levelized_priority_queue_t &stats)
+                             statistics::levelized_priority_queue_t &stats)
       : levelized_priority_queue(memory_given, max_size, stats)
     {
       _level_merger.hook(files);
@@ -415,7 +415,7 @@ namespace adiar::internal
     levelized_priority_queue(const dd (& dds) [level_files],
                              tpie::memory_size_type memory_given,
                              size_t max_size,
-                             stats_t::levelized_priority_queue_t &stats)
+                             statistics::levelized_priority_queue_t &stats)
       : levelized_priority_queue(memory_given, max_size, stats)
     {
       _level_merger.hook(dds);
@@ -432,7 +432,7 @@ namespace adiar::internal
     levelized_priority_queue(const __dd (& dds) [level_files],
                              tpie::memory_size_type memory_given,
                              size_t max_size,
-                             stats_t::levelized_priority_queue_t &stats)
+                             statistics::levelized_priority_queue_t &stats)
       : levelized_priority_queue(memory_given, max_size, stats)
     {
       _level_merger.hook(dds);
@@ -1078,12 +1078,12 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Reference to struct to store non-global stats into.
     ////////////////////////////////////////////////////////////////////////////
-    stats_t::levelized_priority_queue_t &_stats;
+    statistics::levelized_priority_queue_t &_stats;
 #endif
 
   private:
     levelized_priority_queue(tpie::memory_size_type memory_given, size_t max_size,
-                             [[maybe_unused]] stats_t::levelized_priority_queue_t &stats)
+                             [[maybe_unused]] statistics::levelized_priority_queue_t &stats)
       : _max_size(max_size),
         _memory_given(memory_given),
         _priority_queue(memory_given, max_size)
@@ -1103,7 +1103,7 @@ namespace adiar::internal
     levelized_priority_queue(const level_file_t (& /*files*/) [level_files],
                              tpie::memory_size_type memory_given,
                              size_t max_size,
-                             stats_t::levelized_priority_queue_t &stats)
+                             statistics::levelized_priority_queue_t &stats)
       : levelized_priority_queue(memory_given, max_size, stats)
     { }
 
@@ -1117,7 +1117,7 @@ namespace adiar::internal
     levelized_priority_queue(const dd (& /*dds*/) [level_files],
                              tpie::memory_size_type memory_given,
                              size_t max_size,
-                             stats_t::levelized_priority_queue_t &stats)
+                             statistics::levelized_priority_queue_t &stats)
       : levelized_priority_queue(memory_given, max_size, stats)
     { }
 
@@ -1131,7 +1131,7 @@ namespace adiar::internal
     levelized_priority_queue(const __dd (& /*dds*/) [level_files],
                              tpie::memory_size_type memory_given,
                              size_t max_size,
-                             stats_t::levelized_priority_queue_t &stats)
+                             statistics::levelized_priority_queue_t &stats)
       : levelized_priority_queue(memory_given, max_size, stats)
     { }
 

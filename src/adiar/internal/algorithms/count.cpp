@@ -2,5 +2,5 @@
 
 namespace adiar::internal
 {
-  stats_t::count_t stats_count;
+  statistics::count_t stats_count;
 }

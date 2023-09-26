@@ -2,5 +2,5 @@
 
 namespace adiar::internal
 {
-  stats_t::substitute_t stats_substitute;
+  statistics::substitute_t stats_substitute;
 }

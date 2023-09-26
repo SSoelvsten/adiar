@@ -2,5 +2,5 @@
 
 namespace adiar::internal
 {
-  stats_t::reduce_t stats_reduce;
+  statistics::reduce_t stats_reduce;
 }

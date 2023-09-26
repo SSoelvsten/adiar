@@ -53,7 +53,7 @@ namespace adiar
 
       // Initialise Adiar state
       // - reset statistics
-      adiar_statsreset();
+      statistics_reset();
 
       // - reset enum settings
       access_mode   = access_mode_t::Auto;

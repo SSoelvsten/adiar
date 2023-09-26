@@ -15,7 +15,7 @@ namespace adiar::internal
 {
   //////////////////////////////////////////////////////////////////////////////
   /// Struct to hold statistics for equality checking
-  extern stats_t::equality_t stats_equality;
+  extern statistics::equality_t stats_equality;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Compute whether two shared levelized node files (with associated

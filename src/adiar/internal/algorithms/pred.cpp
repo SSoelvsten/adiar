@@ -6,7 +6,7 @@
 
 namespace adiar::internal
 {
-  stats_t::equality_t stats_equality;
+  statistics::equality_t stats_equality;
 
   //////////////////////////////////////////////////////////////////////////////
   // Slow O(sort(N)) I/Os comparison by traversing the product construction and

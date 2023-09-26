@@ -24,7 +24,7 @@ namespace adiar::internal
   {
     ////////////////////////////////////////////////////////////////////////////
     /// Struct to hold statistics
-    extern stats_t::nested_sweeping_t stats;
+    extern statistics::nested_sweeping_t stats;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Choice of Reduce algorithm to use.
