@@ -99,7 +99,9 @@ namespace adiar
   /// \brief       The BDD representing the logical 'and' of all the given
   ///              variables, i.e. a *term* of variables.
   ///
-  /// \param vars Generator of labels of variables in descending order
+  /// \param vars Generator of labels of variables in *descending* order. When
+  ///             none are left it must return a value greater than
+  ///             `bdd::max_label`.
   ///
   /// \returns    \f$ \bigwedge_{x \in \mathit{vars}} x \f$
   ///
@@ -131,7 +133,9 @@ namespace adiar
   /// \details    Creates a BDD with a chain of nodes on the 'low' arc to the
   ///             true child, and false otherwise.
   ///
-  /// \param vars Generator of labels of variables in descending order
+  /// \param vars Generator of labels of variables in *descending* order. When
+  ///             none are left it must return a value greater than
+  ///             `bdd::max_label`.
   ///
   /// \returns    \f$ \bigvee_{x \in \mathit{vars}} x \f$
   ///
@@ -863,7 +867,9 @@ namespace adiar
   ///
   /// \param A   Family of a set (within the given domain)
   ///
-  /// \param dom Generator function of domain variables in ascending order
+  /// \param dom Generator function of domain variables in *ascending* order.
+  ///            When none are left it must return a value greater than
+  ///            `bdd::max_label`.
   ///
   /// \returns   BDD that is true for the exact same assignments to variables in
   ///            the given domain.

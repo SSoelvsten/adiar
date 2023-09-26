@@ -45,8 +45,8 @@ namespace adiar
   ///        produced by the given generator function.
   ///
   /// \param dom Generator that produces variables to be quantified in
-  ///            *ascending* order. When none are left to-be quantified, it must
-  ///            return a value greater than `MAX_DOMAIN_VAR`.
+  ///            *ascending* order. When none are left, it must return a value
+  ///            greater than `max_domain_var`.
   //////////////////////////////////////////////////////////////////////////////
   void adiar_set_domain(const generator<domain_var_t> &dom);
 
