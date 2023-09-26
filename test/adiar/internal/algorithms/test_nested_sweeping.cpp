@@ -1190,7 +1190,7 @@ go_bandit([]() {
           sorter.sort();
         });
 
-        stats_t::levelized_priority_queue_t lpq_stats;
+        statistics::levelized_priority_queue_t lpq_stats;
 
         using test_pq_t = levelized_node_priority_queue<test_request_t,
                                                         request_first_lt<test_request_t>,

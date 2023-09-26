@@ -2,5 +2,5 @@
 
 namespace adiar::internal
 {
-  stats_t::intercut_t stats_intercut;
+  statistics::intercut_t stats_intercut;
 }

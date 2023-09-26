@@ -2,5 +2,5 @@
 
 namespace adiar::internal
 {
-  stats_t::node_file_t stats_node_file;
+  statistics::node_file_t stats_node_file;
 }

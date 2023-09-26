@@ -17,7 +17,11 @@
 
 namespace adiar
 {
-  stats_t adiar_stats()
+  // TODO: Move ownership of statistics object into `statistics.cpp`. This way,
+  //       statistics do not need to be recompiled every time an algorithm is
+  //       changed.
+
+  statistics statistics_get()
   {
 #ifndef ADIAR_STATS
     std::cerr << "Statistics not gathered. Please compile with 'ADIAR_STATS'" << std::endl;
@@ -48,7 +52,7 @@ namespace adiar
     };
   }
 
-  void adiar_statsreset()
+  void statistics_reset()
   {
     // i/o
     internal::stats_arc_file                 = {};
@@ -160,7 +164,7 @@ namespace adiar
     indent_level--;
   }
 
-  void __printstat_lpq(std::ostream &o, const stats_t::levelized_priority_queue_t& stats)
+  void __printstat_lpq(std::ostream &o, const statistics::levelized_priority_queue_t& stats)
   {
     if (indent_level == 0) {
       o << indent << bold_on << "Levelized Priority Queue" << bold_off << endl;
@@ -203,7 +207,7 @@ namespace adiar
   }
 
 
-  void __printstat_alg_base(std::ostream &o, const stats_t::__alg_base& stats)
+  void __printstat_alg_base(std::ostream &o, const statistics::__alg_base& stats)
   {
     o << indent << bold_on << "levelized priority queue" << bold_off << endl;
 
@@ -546,7 +550,7 @@ namespace adiar
   }
 
 
-  void adiar_printstat(std::ostream &o)
+  void statistics_print(std::ostream &o)
   {
     o << bold_on << "Adiar statistics" << bold_off << endl;
     o << endl;

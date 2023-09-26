@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
     // =====  Your code ends here  =====
   }
 
-  adiar::adiar_printstat();
+  adiar::statistics_print();
 
   adiar::adiar_deinit();
   exit(0);

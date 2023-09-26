@@ -197,7 +197,7 @@ int main(int argc, char* argv[]) {
 
   // Output statistics
 #ifdef ADIAR_TEST_PRINT_STATS
-  adiar::adiar_printstat();
+  adiar::statistics_print();
 #endif
 
 #ifndef ADIAR_TEST_NO_INIT

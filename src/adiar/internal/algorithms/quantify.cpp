@@ -2,5 +2,5 @@
 
 namespace adiar::internal
 {
-  stats_t::quantify_t stats_quantify;
+  statistics::quantify_t stats_quantify;
 }

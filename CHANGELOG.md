@@ -248,7 +248,7 @@ Adds support for *zero-suppressed* decision diagrams with the `zdd` class. All o
 Compile Adiar with `ADIAR_STATS` or `ADIAR_STATS_EXTRA` to gather statistics about the execution of the internal algorithms. With `ADIAR_STATS`, Adiar will record all statistics that only introduce a small constant time overhead to every operation. `ADIAR_STATS_EXTRA` also gathers much more detailed information, such as the bucket-hits of the levelized priority queue, which does introduce a linear-time overhead to every operation.
 
 - `stats_t adiar_stats()` to obtain a copy of the raw data values.
-- `void adiar_printstat(std::ostream)` to print all statistics to an output stream.
+- `void stats_print(std::ostream)` to print all statistics to an output stream.
 
 
 # v1.0.1
