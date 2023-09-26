@@ -195,27 +195,27 @@ namespace adiar::internal
     nw.unsafe_set_canonical(true);
 
     // 1-level cuts
-    nf->max_1level_cut[cut_type::INTERNAL] = max_internal_cut;
+    nf->max_1level_cut[cut_type::Internal] = max_internal_cut;
 
-    nf->max_1level_cut[cut_type::INTERNAL_FALSE] =
+    nf->max_1level_cut[cut_type::Internal_False] =
       std::max<size_t>({
-          nf->max_1level_cut[cut_type::INTERNAL],
+          nf->max_1level_cut[cut_type::Internal],
           terminals_internal[false] + terminals[false] - terminal_at_bottom[false],
           terminals[false]
         });
 
-    nf->max_1level_cut[cut_type::INTERNAL_TRUE] =
+    nf->max_1level_cut[cut_type::Internal_True] =
       std::max<size_t>({
-          nf->max_1level_cut[cut_type::INTERNAL],
+          nf->max_1level_cut[cut_type::Internal],
           terminals_internal[true] + terminals[true] - terminal_at_bottom[true],
           terminals[true]
         });
 
-    nf->max_1level_cut[cut_type::ALL] =
+    nf->max_1level_cut[cut_type::All] =
       std::max<size_t>({
-          nf->max_1level_cut[cut_type::INTERNAL],
-          nf->max_1level_cut[cut_type::INTERNAL_FALSE],
-          nf->max_1level_cut[cut_type::INTERNAL_TRUE],
+          nf->max_1level_cut[cut_type::Internal],
+          nf->max_1level_cut[cut_type::Internal_False],
+          nf->max_1level_cut[cut_type::Internal_True],
           terminals[false] + terminals[true]
         });
 

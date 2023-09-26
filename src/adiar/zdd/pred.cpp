@@ -94,7 +94,7 @@ namespace adiar
     , public internal::prod2_mixed_level_merger<zdd_policy>
   {
   public:
-    typedef ignore_levels<internal::cut_type::INTERNAL_TRUE, internal::cut_type::INTERNAL_TRUE> level_check_t;
+    typedef ignore_levels<internal::cut_type::Internal_True, internal::cut_type::Internal_True> level_check_t;
 
   public:
     static constexpr size_t lookahead_bound()
@@ -177,7 +177,7 @@ namespace adiar
     , public internal::prod2_mixed_level_merger<zdd_policy>
   {
   public:
-    typedef ignore_levels<internal::cut_type::ALL, internal::cut_type::ALL> level_check_t;
+    typedef ignore_levels<internal::cut_type::All, internal::cut_type::All> level_check_t;
 
   public:
     static constexpr size_t lookahead_bound()

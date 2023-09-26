@@ -146,22 +146,22 @@ namespace adiar::internal
         const cut_size_t max_1level_internal_cut =
           _max_1level_short_internal + _number_of_long_internal_arcs;
 
-        _file_ptr->max_1level_cut[cut_type::INTERNAL] = max_1level_internal_cut;
+        _file_ptr->max_1level_cut[cut_type::Internal] = max_1level_internal_cut;
 
         const size_t terminals_above_bottom[2] = {
           _file_ptr->number_of_terminals[false] - _terminals_at_bottom[false],
           _file_ptr->number_of_terminals[true]  - _terminals_at_bottom[true]
         };
 
-        _file_ptr->max_1level_cut[cut_type::INTERNAL_FALSE] =
+        _file_ptr->max_1level_cut[cut_type::Internal_False] =
           std::max(max_1level_internal_cut + terminals_above_bottom[false],
                    _file_ptr->number_of_terminals[false]);
 
-        _file_ptr->max_1level_cut[cut_type::INTERNAL_TRUE] =
+        _file_ptr->max_1level_cut[cut_type::Internal_True] =
           std::max(max_1level_internal_cut + terminals_above_bottom[true],
                    _file_ptr->number_of_terminals[true]);
 
-        _file_ptr->max_1level_cut[cut_type::ALL] =
+        _file_ptr->max_1level_cut[cut_type::All] =
           std::max(max_1level_internal_cut + terminals_above_bottom[false] + terminals_above_bottom[true],
                    _file_ptr->number_of_terminals[false] + _file_ptr->number_of_terminals[true]);
       }
@@ -367,10 +367,10 @@ namespace adiar::internal
       const bool is_terminal = number_of_false + number_of_true == 1;
 
       if (is_terminal) {
-        _file_ptr->max_1level_cut[cut_type::INTERNAL]       = 0u;
-        _file_ptr->max_1level_cut[cut_type::INTERNAL_FALSE] = number_of_false;
-        _file_ptr->max_1level_cut[cut_type::INTERNAL_TRUE]  = number_of_true;
-        _file_ptr->max_1level_cut[cut_type::ALL]            = 1u;
+        _file_ptr->max_1level_cut[cut_type::Internal]       = 0u;
+        _file_ptr->max_1level_cut[cut_type::Internal_False] = number_of_false;
+        _file_ptr->max_1level_cut[cut_type::Internal_True]  = number_of_true;
+        _file_ptr->max_1level_cut[cut_type::All]            = 1u;
       } else {
         for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
           // Use smallest sound upper bound. Since it is not a terminal, then there
@@ -396,8 +396,8 @@ namespace adiar::internal
           // Upper bound based on 1-level cut
           const cut_size_t ub_from_1level_cut =
             _file_ptr->max_1level_cut[ct] < MAX_CUT / 3u
-            ? ((_file_ptr->max_1level_cut[cut_type::INTERNAL] * 3u) / 2u
-               + (_file_ptr->max_1level_cut[ct] - _file_ptr->max_1level_cut[cut_type::INTERNAL]))
+            ? ((_file_ptr->max_1level_cut[cut_type::Internal] * 3u) / 2u
+               + (_file_ptr->max_1level_cut[ct] - _file_ptr->max_1level_cut[cut_type::Internal]))
             : MAX_CUT;
 
           // Use smallest sound upper bound.

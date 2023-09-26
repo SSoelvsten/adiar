@@ -113,10 +113,10 @@ namespace adiar
 
     for(size_t ct = 0u; ct < internal::CUT_TYPES; ct++) {
       out_nodes->max_1level_cut[ct] =
-        std::max(bdd_if->max_1level_cut[internal::cut_type::ALL],
+        std::max(bdd_if->max_1level_cut[internal::cut_type::All],
                  bdd_then->max_1level_cut[ct] + bdd_else->max_1level_cut[ct]);
       out_nodes->max_2level_cut[ct] =
-        std::max(bdd_if->max_2level_cut[internal::cut_type::ALL],
+        std::max(bdd_if->max_2level_cut[internal::cut_type::All],
                  bdd_then->max_2level_cut[ct] + bdd_else->max_2level_cut[ct]);
     }
 
@@ -459,21 +459,21 @@ namespace adiar
                                   const internal::dd &in_else)
   {
     // 2-level cuts for 'if', where we split the false and true arcs away.
-    const safe_size_t if_cut_internal = cut::get(in_if, internal::cut_type::INTERNAL);
-    const safe_size_t if_cut_falses   = cut::get(in_if, internal::cut_type::INTERNAL_FALSE) - if_cut_internal;
-    const safe_size_t if_cut_trues    = cut::get(in_if, internal::cut_type::INTERNAL_TRUE)  - if_cut_internal;
+    const safe_size_t if_cut_internal = cut::get(in_if, internal::cut_type::Internal);
+    const safe_size_t if_cut_falses   = cut::get(in_if, internal::cut_type::Internal_False) - if_cut_internal;
+    const safe_size_t if_cut_trues    = cut::get(in_if, internal::cut_type::Internal_True)  - if_cut_internal;
 
     // 2-level cuts for 'then'
-    const safe_size_t then_cut_internal = cut::get(in_then, internal::cut_type::INTERNAL);
-    const safe_size_t then_cut_falses   = cut::get(in_then, internal::cut_type::INTERNAL_FALSE) - then_cut_internal;
-    const safe_size_t then_cut_trues    = cut::get(in_then, internal::cut_type::INTERNAL_TRUE)  - then_cut_internal;
-    const safe_size_t then_cut_all      = cut::get(in_then, internal::cut_type::ALL);
+    const safe_size_t then_cut_internal = cut::get(in_then, internal::cut_type::Internal);
+    const safe_size_t then_cut_falses   = cut::get(in_then, internal::cut_type::Internal_False) - then_cut_internal;
+    const safe_size_t then_cut_trues    = cut::get(in_then, internal::cut_type::Internal_True)  - then_cut_internal;
+    const safe_size_t then_cut_all      = cut::get(in_then, internal::cut_type::All);
 
     // 2-level cuts for 'else'
-    const safe_size_t else_cut_internal = cut::get(in_else, internal::cut_type::INTERNAL);
-    const safe_size_t else_cut_falses   = cut::get(in_else, internal::cut_type::INTERNAL_FALSE) - else_cut_internal;
-    const safe_size_t else_cut_trues    = cut::get(in_else, internal::cut_type::INTERNAL_TRUE)  - else_cut_internal;
-    const safe_size_t else_cut_all      = cut::get(in_else, internal::cut_type::ALL);
+    const safe_size_t else_cut_internal = cut::get(in_else, internal::cut_type::Internal);
+    const safe_size_t else_cut_falses   = cut::get(in_else, internal::cut_type::Internal_False) - else_cut_internal;
+    const safe_size_t else_cut_trues    = cut::get(in_else, internal::cut_type::Internal_True)  - else_cut_internal;
+    const safe_size_t else_cut_all      = cut::get(in_else, internal::cut_type::All);
 
     // Compute 2-level cut where irrelevant pairs of terminals are not paired
     return to_size((if_cut_internal * (then_cut_all * else_cut_internal + then_cut_internal * else_cut_all
@@ -555,13 +555,13 @@ namespace adiar
       - internal::arc_writer::memory_usage();
 
     constexpr size_t data_structures_in_pq_1 =
-      ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::DATA_STRUCTURES;
+      ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::DATA_STRUCTURES;
 
     constexpr size_t data_structures_in_pq_2 =
-      ite_priority_queue_2_t<memory_mode_t::INTERNAL>::DATA_STRUCTURES;
+      ite_priority_queue_2_t<memory_mode_t::Internal>::DATA_STRUCTURES;
 
     constexpr size_t data_structures_in_pq_3 =
-      ite_priority_queue_3_t<memory_mode_t::INTERNAL>::DATA_STRUCTURES;
+      ite_priority_queue_3_t<memory_mode_t::Internal>::DATA_STRUCTURES;
 
     const size_t pq_1_internal_memory =
       (aux_available_memory / (data_structures_in_pq_1 + data_structures_in_pq_2 + data_structures_in_pq_3)) * data_structures_in_pq_1;
@@ -573,16 +573,16 @@ namespace adiar
       aux_available_memory - pq_1_internal_memory - pq_2_internal_memory;
 
     const size_t pq_1_memory_fits =
-      ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::memory_fits(pq_1_internal_memory);
+      ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::memory_fits(pq_1_internal_memory);
 
     const size_t pq_2_memory_fits =
-      ite_priority_queue_2_t<memory_mode_t::INTERNAL>::memory_fits(pq_2_internal_memory);
+      ite_priority_queue_2_t<memory_mode_t::Internal>::memory_fits(pq_2_internal_memory);
 
     const size_t pq_3_memory_fits =
-      ite_priority_queue_3_t<memory_mode_t::INTERNAL>::memory_fits(pq_3_internal_memory);
+      ite_priority_queue_3_t<memory_mode_t::Internal>::memory_fits(pq_3_internal_memory);
 
-    const bool internal_only = memory_mode == memory_mode_t::INTERNAL;
-    const bool external_only = memory_mode == memory_mode_t::EXTERNAL;
+    const bool internal_only = memory_mode == memory_mode_t::Internal;
+    const bool external_only = memory_mode == memory_mode_t::External;
 
     const size_t pq_1_bound = std::min({__ite_ilevel_upper_bound<internal::get_2level_cut, 2u>(bdd_if, bdd_then, bdd_else),
                                         __ite_ilevel_upper_bound(bdd_if, bdd_then, bdd_else)});
@@ -601,9 +601,9 @@ namespace adiar
 #ifdef ADIAR_STATS
       stats_prod3.lpq.unbucketed += 1u;
 #endif
-      return __bdd_ite<ite_priority_queue_1_t<0, memory_mode_t::INTERNAL>,
-                       ite_priority_queue_2_t<memory_mode_t::INTERNAL>,
-                       ite_priority_queue_3_t<memory_mode_t::INTERNAL>>
+      return __bdd_ite<ite_priority_queue_1_t<0, memory_mode_t::Internal>,
+                       ite_priority_queue_2_t<memory_mode_t::Internal>,
+                       ite_priority_queue_3_t<memory_mode_t::Internal>>
         (bdd_if, bdd_then, bdd_else, pq_1_internal_memory, max_pq_1_size,
          pq_2_internal_memory, max_pq_2_size, pq_3_internal_memory, max_pq_3_size);
     } else if(!external_only && max_pq_1_size <= pq_1_memory_fits
@@ -612,9 +612,9 @@ namespace adiar
 #ifdef ADIAR_STATS
       stats_prod3.lpq.internal += 1u;
 #endif
-      return __bdd_ite<ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>,
-                       ite_priority_queue_2_t<memory_mode_t::INTERNAL>,
-                       ite_priority_queue_3_t<memory_mode_t::INTERNAL>>
+      return __bdd_ite<ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>,
+                       ite_priority_queue_2_t<memory_mode_t::Internal>,
+                       ite_priority_queue_3_t<memory_mode_t::Internal>>
         (bdd_if, bdd_then, bdd_else, pq_1_internal_memory, max_pq_1_size,
          pq_2_internal_memory, max_pq_2_size, pq_3_internal_memory, max_pq_3_size);
     } else {
@@ -625,9 +625,9 @@ namespace adiar
       const size_t pq_2_memory = pq_1_memory;
       const size_t pq_3_memory = pq_1_memory;
 
-      return __bdd_ite<ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>,
-                       ite_priority_queue_2_t<memory_mode_t::EXTERNAL>,
-                       ite_priority_queue_3_t<memory_mode_t::EXTERNAL>>
+      return __bdd_ite<ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::External>,
+                       ite_priority_queue_2_t<memory_mode_t::External>,
+                       ite_priority_queue_3_t<memory_mode_t::External>>
         (bdd_if, bdd_then, bdd_else, pq_1_memory, max_pq_1_size,
          pq_2_memory, max_pq_2_size, pq_3_memory, max_pq_3_size);
     }

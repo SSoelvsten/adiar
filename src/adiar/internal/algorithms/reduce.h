@@ -184,10 +184,10 @@ namespace adiar::internal
     shared_levelized_file<typename dd_policy::node_t> out_file;
     out_file->canonical = true;
 
-    out_file->max_1level_cut[cut_type::INTERNAL]       = 0u;
-    out_file->max_1level_cut[cut_type::INTERNAL_FALSE] = 0u;
-    out_file->max_1level_cut[cut_type::INTERNAL_TRUE]  = 0u;
-    out_file->max_1level_cut[cut_type::ALL]            = 0u;
+    out_file->max_1level_cut[cut_type::Internal]       = 0u;
+    out_file->max_1level_cut[cut_type::Internal_False] = 0u;
+    out_file->max_1level_cut[cut_type::Internal_True]  = 0u;
+    out_file->max_1level_cut[cut_type::All]            = 0u;
 
     return out_file;
   }
@@ -215,18 +215,18 @@ namespace adiar::internal
                                const cut_size_t false_arcs,
                                const cut_size_t true_arcs)
   {
-    cut[cut_type::INTERNAL]       += internal_arcs;
-    cut[cut_type::INTERNAL_FALSE] += internal_arcs + false_arcs;
-    cut[cut_type::INTERNAL_TRUE]  += internal_arcs + true_arcs;
-    cut[cut_type::ALL]            += internal_arcs + false_arcs + true_arcs;
+    cut[cut_type::Internal]       += internal_arcs;
+    cut[cut_type::Internal_False] += internal_arcs + false_arcs;
+    cut[cut_type::Internal_True]  += internal_arcs + true_arcs;
+    cut[cut_type::All]            += internal_arcs + false_arcs + true_arcs;
   }
 
   inline void __reduce_cut_add(cuts_t &cut, const ptr_uint64 target)
   {
-    cut[cut_type::INTERNAL]       += target.is_node();
-    cut[cut_type::INTERNAL_FALSE] += target.is_node() + target.is_false();
-    cut[cut_type::INTERNAL_TRUE]  += target.is_node() + target.is_true();
-    cut[cut_type::ALL]            += 1u;
+    cut[cut_type::Internal]       += target.is_node();
+    cut[cut_type::Internal_False] += target.is_node() + target.is_false();
+    cut[cut_type::Internal_True]  += target.is_node() + target.is_true();
+    cut[cut_type::All]            += 1u;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -524,15 +524,15 @@ namespace adiar::internal
 
         out_writer.unsafe_push(level_info(label,1u));
 
-        out_file->max_1level_cut[cut_type::INTERNAL]       = 1u;
+        out_file->max_1level_cut[cut_type::Internal]       = 1u;
 
-        out_file->max_1level_cut[cut_type::INTERNAL_FALSE] =
+        out_file->max_1level_cut[cut_type::Internal_False] =
           std::max(!e_low.target().value() + !e_high.target().value(), 1);
 
-        out_file->max_1level_cut[cut_type::INTERNAL_TRUE]  =
+        out_file->max_1level_cut[cut_type::Internal_True]  =
           std::max(e_low.target().value() + e_high.target().value(), 1);
 
-        out_file->max_1level_cut[cut_type::ALL]            = 2u;
+        out_file->max_1level_cut[cut_type::All]            = 2u;
       }
 
       // Copy over 1-level cut to 2-level cut.
@@ -611,10 +611,10 @@ namespace adiar::internal
     const size_t sorters_memory = aux_available_memory - pq_memory - tpie::file_stream<mapping>::memory_usage();
 
     const tpie::memory_size_type pq_memory_fits =
-      reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::memory_fits(pq_memory);
+      reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::memory_fits(pq_memory);
 
-    const bool internal_only = memory_mode == memory_mode_t::INTERNAL;
-    const bool external_only = memory_mode == memory_mode_t::EXTERNAL;
+    const bool internal_only = memory_mode == memory_mode_t::Internal;
+    const bool external_only = memory_mode == memory_mode_t::External;
 
     const size_t pq_bound = in_file->max_1level_cut;
 
@@ -624,19 +624,19 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
       stats_reduce.lpq.unbucketed += 1u;
 #endif
-      return __reduce<dd_policy, reduce_priority_queue<0, memory_mode_t::INTERNAL>>
+      return __reduce<dd_policy, reduce_priority_queue<0, memory_mode_t::Internal>>
         (in_file, pq_memory, sorters_memory);
     } else if(!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
       stats_reduce.lpq.internal += 1u;
 #endif
-      return __reduce<dd_policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>>
+      return __reduce<dd_policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>>
         (in_file, pq_memory, sorters_memory);
     } else {
 #ifdef ADIAR_STATS
       stats_reduce.lpq.external += 1u;
 #endif
-      return __reduce<dd_policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>>
+      return __reduce<dd_policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::External>>
         (in_file, pq_memory, sorters_memory);
     }
   }

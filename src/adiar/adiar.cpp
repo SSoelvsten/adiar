@@ -6,7 +6,6 @@
 #include <tpie/memory.h>
 #include <tpie/tempname.h>
 
-#include <adiar/domain.h>
 #include <adiar/internal/assert.h>
 #include <adiar/internal/block_size.h>
 #include <adiar/internal/memory.h>
@@ -56,10 +55,12 @@ namespace adiar
       // - reset statistics
       adiar_statsreset();
 
-      // - reset memory moyde
-      memory_mode = memory_mode_t::AUTO;
+      // - reset enum settings
+      access_mode   = access_mode_t::Auto;
+      memory_mode   = memory_mode_t::Auto;
+      quantify_mode = quantify_mode_t::Auto;
 
-      // - all done, mark iniitialized
+      // - all done, mark initialized
       _adiar_initialized = true;
     } catch (const std::exception &e) {
       // LCOV_EXCL_START

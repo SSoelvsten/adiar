@@ -2,5 +2,5 @@
 
 namespace adiar
 {
-  memory_mode_t memory_mode = memory_mode_t::AUTO;
+  memory_mode_t memory_mode = memory_mode_t::Auto;
 }

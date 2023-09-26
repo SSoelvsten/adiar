@@ -471,174 +471,174 @@ go_bandit([]() {
 
       describe("max 1-level cut", [&]() {
         it("is exact for F", [&]() {
-          AssertThat(nf_F.max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
-          AssertThat(nf_F.max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
-          AssertThat(nf_F.max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
-          AssertThat(nf_F.max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+          AssertThat(nf_F.max_1level_cut[cut_type::Internal], Is().EqualTo(0u));
+          AssertThat(nf_F.max_1level_cut[cut_type::Internal_False], Is().EqualTo(1u));
+          AssertThat(nf_F.max_1level_cut[cut_type::Internal_True], Is().EqualTo(0u));
+          AssertThat(nf_F.max_1level_cut[cut_type::All], Is().EqualTo(1u));
         });
 
         it("is exact for T", [&]() {
-          AssertThat(nf_T.max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
-          AssertThat(nf_T.max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
-          AssertThat(nf_T.max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
-          AssertThat(nf_T.max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+          AssertThat(nf_T.max_1level_cut[cut_type::Internal], Is().EqualTo(0u));
+          AssertThat(nf_T.max_1level_cut[cut_type::Internal_False], Is().EqualTo(0u));
+          AssertThat(nf_T.max_1level_cut[cut_type::Internal_True], Is().EqualTo(1u));
+          AssertThat(nf_T.max_1level_cut[cut_type::All], Is().EqualTo(1u));
         });
 
         it("is exact for x42", [&]() {
-          AssertThat(nf_42.max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
-          AssertThat(nf_42.max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
-          AssertThat(nf_42.max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
-          AssertThat(nf_42.max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
+          AssertThat(nf_42.max_1level_cut[cut_type::Internal], Is().EqualTo(1u));
+          AssertThat(nf_42.max_1level_cut[cut_type::Internal_False], Is().EqualTo(1u));
+          AssertThat(nf_42.max_1level_cut[cut_type::Internal_True], Is().EqualTo(1u));
+          AssertThat(nf_42.max_1level_cut[cut_type::All], Is().EqualTo(2u));
         });
 
         it("is exact for ~x42", [&]() {
-          AssertThat(nf_not42.max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
-          AssertThat(nf_not42.max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
-          AssertThat(nf_not42.max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
-          AssertThat(nf_not42.max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
+          AssertThat(nf_not42.max_1level_cut[cut_type::Internal], Is().EqualTo(1u));
+          AssertThat(nf_not42.max_1level_cut[cut_type::Internal_False], Is().EqualTo(1u));
+          AssertThat(nf_not42.max_1level_cut[cut_type::Internal_True], Is().EqualTo(1u));
+          AssertThat(nf_not42.max_1level_cut[cut_type::All], Is().EqualTo(2u));
         });
 
         it("is exact for x0 & x1", [&]() {
-          AssertThat(nf_0and1.max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
-          AssertThat(nf_0and1.max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
-          AssertThat(nf_0and1.max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
-          AssertThat(nf_0and1.max_1level_cut[cut_type::ALL], Is().EqualTo(3u));
+          AssertThat(nf_0and1.max_1level_cut[cut_type::Internal], Is().EqualTo(1u));
+          AssertThat(nf_0and1.max_1level_cut[cut_type::Internal_False], Is().EqualTo(2u));
+          AssertThat(nf_0and1.max_1level_cut[cut_type::Internal_True], Is().EqualTo(1u));
+          AssertThat(nf_0and1.max_1level_cut[cut_type::All], Is().EqualTo(3u));
         });
 
         it("is exact for x0 & x1 & 2", [&]() {
-          AssertThat(nf_0and1and2.max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
-          AssertThat(nf_0and1and2.max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(3u));
-          AssertThat(nf_0and1and2.max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
-          AssertThat(nf_0and1and2.max_1level_cut[cut_type::ALL], Is().EqualTo(4u));
+          AssertThat(nf_0and1and2.max_1level_cut[cut_type::Internal], Is().EqualTo(1u));
+          AssertThat(nf_0and1and2.max_1level_cut[cut_type::Internal_False], Is().EqualTo(3u));
+          AssertThat(nf_0and1and2.max_1level_cut[cut_type::Internal_True], Is().EqualTo(1u));
+          AssertThat(nf_0and1and2.max_1level_cut[cut_type::All], Is().EqualTo(4u));
         });
 
         it("is exact for x0 & x1 | c2", [&]() {
-          AssertThat(nf_0and1_or_2.max_1level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
-          AssertThat(nf_0and1_or_2.max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
-          AssertThat(nf_0and1_or_2.max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(3u));
-          AssertThat(nf_0and1_or_2.max_1level_cut[cut_type::ALL], Is().EqualTo(3u));
+          AssertThat(nf_0and1_or_2.max_1level_cut[cut_type::Internal], Is().EqualTo(2u));
+          AssertThat(nf_0and1_or_2.max_1level_cut[cut_type::Internal_False], Is().EqualTo(2u));
+          AssertThat(nf_0and1_or_2.max_1level_cut[cut_type::Internal_True], Is().EqualTo(3u));
+          AssertThat(nf_0and1_or_2.max_1level_cut[cut_type::All], Is().EqualTo(3u));
         });
 
         it("is exact for x21 ^ x42", [&]() {
-          AssertThat(nf_21xor42.max_1level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
-          AssertThat(nf_21xor42.max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
-          AssertThat(nf_21xor42.max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
-          AssertThat(nf_21xor42.max_1level_cut[cut_type::ALL], Is().EqualTo(4u));
+          AssertThat(nf_21xor42.max_1level_cut[cut_type::Internal], Is().EqualTo(2u));
+          AssertThat(nf_21xor42.max_1level_cut[cut_type::Internal_False], Is().EqualTo(2u));
+          AssertThat(nf_21xor42.max_1level_cut[cut_type::Internal_True], Is().EqualTo(2u));
+          AssertThat(nf_21xor42.max_1level_cut[cut_type::All], Is().EqualTo(4u));
         });
 
         it("is exact for (x0 + x1 + x2 + x3) mod 2", [&]() {
-          AssertThat(nf_sum01234_mod2.max_1level_cut[cut_type::INTERNAL], Is().EqualTo(4u));
-          AssertThat(nf_sum01234_mod2.max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(4u));
-          AssertThat(nf_sum01234_mod2.max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(4u));
-          AssertThat(nf_sum01234_mod2.max_1level_cut[cut_type::ALL], Is().EqualTo(4u));
+          AssertThat(nf_sum01234_mod2.max_1level_cut[cut_type::Internal], Is().EqualTo(4u));
+          AssertThat(nf_sum01234_mod2.max_1level_cut[cut_type::Internal_False], Is().EqualTo(4u));
+          AssertThat(nf_sum01234_mod2.max_1level_cut[cut_type::Internal_True], Is().EqualTo(4u));
+          AssertThat(nf_sum01234_mod2.max_1level_cut[cut_type::All], Is().EqualTo(4u));
         });
       });
 
       describe("2-level cut", [&]() {
         it("is exact for F", [&]() {
-          AssertThat(nf_F.max_2level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
-          AssertThat(nf_F.max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
-          AssertThat(nf_F.max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
-          AssertThat(nf_F.max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
+          AssertThat(nf_F.max_2level_cut[cut_type::Internal], Is().EqualTo(0u));
+          AssertThat(nf_F.max_2level_cut[cut_type::Internal_False], Is().EqualTo(1u));
+          AssertThat(nf_F.max_2level_cut[cut_type::Internal_True], Is().EqualTo(0u));
+          AssertThat(nf_F.max_2level_cut[cut_type::All], Is().EqualTo(1u));
         });
 
         it("is exact for T", [&]() {
-          AssertThat(nf_T.max_2level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
-          AssertThat(nf_T.max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
-          AssertThat(nf_T.max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
-          AssertThat(nf_T.max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
+          AssertThat(nf_T.max_2level_cut[cut_type::Internal], Is().EqualTo(0u));
+          AssertThat(nf_T.max_2level_cut[cut_type::Internal_False], Is().EqualTo(0u));
+          AssertThat(nf_T.max_2level_cut[cut_type::Internal_True], Is().EqualTo(1u));
+          AssertThat(nf_T.max_2level_cut[cut_type::All], Is().EqualTo(1u));
         });
 
         it("is exact for x42", [&]() {
-          AssertThat(nf_42.max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
-          AssertThat(nf_42.max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
-          AssertThat(nf_42.max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
-          AssertThat(nf_42.max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
+          AssertThat(nf_42.max_2level_cut[cut_type::Internal], Is().EqualTo(1u));
+          AssertThat(nf_42.max_2level_cut[cut_type::Internal_False], Is().EqualTo(1u));
+          AssertThat(nf_42.max_2level_cut[cut_type::Internal_True], Is().EqualTo(1u));
+          AssertThat(nf_42.max_2level_cut[cut_type::All], Is().EqualTo(2u));
         });
 
         it("is exact for ~x42", [&]() {
-          AssertThat(nf_not42.max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
-          AssertThat(nf_not42.max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
-          AssertThat(nf_not42.max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
-          AssertThat(nf_not42.max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
+          AssertThat(nf_not42.max_2level_cut[cut_type::Internal], Is().EqualTo(1u));
+          AssertThat(nf_not42.max_2level_cut[cut_type::Internal_False], Is().EqualTo(1u));
+          AssertThat(nf_not42.max_2level_cut[cut_type::Internal_True], Is().EqualTo(1u));
+          AssertThat(nf_not42.max_2level_cut[cut_type::All], Is().EqualTo(2u));
         });
 
         // The maximum 1-level and maximum 2-level cuts are the same.
         it("is copy of 1-level for x0 & x1", [&]() {
-          AssertThat(nf_0and1.max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
-          AssertThat(nf_0and1.max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
-          AssertThat(nf_0and1.max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
-          AssertThat(nf_0and1.max_2level_cut[cut_type::ALL], Is().EqualTo(3u));
+          AssertThat(nf_0and1.max_2level_cut[cut_type::Internal], Is().EqualTo(1u));
+          AssertThat(nf_0and1.max_2level_cut[cut_type::Internal_False], Is().EqualTo(2u));
+          AssertThat(nf_0and1.max_2level_cut[cut_type::Internal_True], Is().EqualTo(1u));
+          AssertThat(nf_0and1.max_2level_cut[cut_type::All], Is().EqualTo(3u));
         });
 
         it("is copy of 1-level for x0 & x1 & 2", [&]() {
-          AssertThat(nf_0and1and2.max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
-          AssertThat(nf_0and1and2.max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(3u));
-          AssertThat(nf_0and1and2.max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
-          AssertThat(nf_0and1and2.max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
+          AssertThat(nf_0and1and2.max_2level_cut[cut_type::Internal], Is().EqualTo(1u));
+          AssertThat(nf_0and1and2.max_2level_cut[cut_type::Internal_False], Is().EqualTo(3u));
+          AssertThat(nf_0and1and2.max_2level_cut[cut_type::Internal_True], Is().EqualTo(1u));
+          AssertThat(nf_0and1and2.max_2level_cut[cut_type::All], Is().EqualTo(4u));
         });
 
         it("is copy of 1-level for x0 & x1 | c2", [&]() {
-          AssertThat(nf_0and1_or_2.max_2level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
-          AssertThat(nf_0and1_or_2.max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
-          AssertThat(nf_0and1_or_2.max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(3u));
-          AssertThat(nf_0and1_or_2.max_2level_cut[cut_type::ALL], Is().EqualTo(3u));
+          AssertThat(nf_0and1_or_2.max_2level_cut[cut_type::Internal], Is().EqualTo(2u));
+          AssertThat(nf_0and1_or_2.max_2level_cut[cut_type::Internal_False], Is().EqualTo(2u));
+          AssertThat(nf_0and1_or_2.max_2level_cut[cut_type::Internal_True], Is().EqualTo(3u));
+          AssertThat(nf_0and1_or_2.max_2level_cut[cut_type::All], Is().EqualTo(3u));
         });
 
         it("is soundly upper bounded for x21 ^ x42", [&]() {
-          AssertThat(nf_21xor42.max_2level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
+          AssertThat(nf_21xor42.max_2level_cut[cut_type::Internal], Is().EqualTo(2u));
 
-          AssertThat(nf_21xor42.max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
-          AssertThat(nf_21xor42.max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(4u));
+          AssertThat(nf_21xor42.max_2level_cut[cut_type::Internal_False], Is().GreaterThanOrEqualTo(2u));
+          AssertThat(nf_21xor42.max_2level_cut[cut_type::Internal_False], Is().LessThanOrEqualTo(4u));
 
-          AssertThat(nf_21xor42.max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(2u));
-          AssertThat(nf_21xor42.max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(4u));
+          AssertThat(nf_21xor42.max_2level_cut[cut_type::Internal_True], Is().GreaterThanOrEqualTo(2u));
+          AssertThat(nf_21xor42.max_2level_cut[cut_type::Internal_True], Is().LessThanOrEqualTo(4u));
 
-          AssertThat(nf_21xor42.max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
+          AssertThat(nf_21xor42.max_2level_cut[cut_type::All], Is().EqualTo(4u));
         });
 
         it("is soundly upper bounded for (x0 + x1 + x2 + x3 + x4) mod 2", [&]() {
           // Uses upper bounds derived from 1-level cut.
-          AssertThat(nf_sum01234_mod2.max_2level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(4u));
-          AssertThat(nf_sum01234_mod2.max_2level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(6u));
+          AssertThat(nf_sum01234_mod2.max_2level_cut[cut_type::Internal], Is().GreaterThanOrEqualTo(4u));
+          AssertThat(nf_sum01234_mod2.max_2level_cut[cut_type::Internal], Is().LessThanOrEqualTo(6u));
 
-          AssertThat(nf_sum01234_mod2.max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(4u));
-          AssertThat(nf_sum01234_mod2.max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(8u));
+          AssertThat(nf_sum01234_mod2.max_2level_cut[cut_type::Internal_False], Is().GreaterThanOrEqualTo(4u));
+          AssertThat(nf_sum01234_mod2.max_2level_cut[cut_type::Internal_False], Is().LessThanOrEqualTo(8u));
 
-          AssertThat(nf_sum01234_mod2.max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(4u));
-          AssertThat(nf_sum01234_mod2.max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(8u));
+          AssertThat(nf_sum01234_mod2.max_2level_cut[cut_type::Internal_True], Is().GreaterThanOrEqualTo(4u));
+          AssertThat(nf_sum01234_mod2.max_2level_cut[cut_type::Internal_True], Is().LessThanOrEqualTo(8u));
 
-          AssertThat(nf_sum01234_mod2.max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
-          AssertThat(nf_sum01234_mod2.max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(8u));
+          AssertThat(nf_sum01234_mod2.max_2level_cut[cut_type::All], Is().GreaterThanOrEqualTo(4u));
+          AssertThat(nf_sum01234_mod2.max_2level_cut[cut_type::All], Is().LessThanOrEqualTo(8u));
         });
 
         // The maximum 2-level cut greater than the maximum 1-level cut.
         it("is soundly upper bounded when 2-level cut > 1-level cut [A]", [&]() {
-          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(4u));
-          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(6u));
+          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut_type::Internal], Is().GreaterThanOrEqualTo(4u));
+          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut_type::Internal], Is().LessThanOrEqualTo(6u));
 
-          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(4u));
-          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(6u));
+          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut_type::Internal_False], Is().GreaterThanOrEqualTo(4u));
+          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut_type::Internal_False], Is().LessThanOrEqualTo(6u));
 
-          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(5u));
-          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(8u));
+          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut_type::Internal_True], Is().GreaterThanOrEqualTo(5u));
+          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut_type::Internal_True], Is().LessThanOrEqualTo(8u));
 
-          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(5u));
-          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(8u));
+          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut_type::All], Is().GreaterThanOrEqualTo(5u));
+          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut_type::All], Is().LessThanOrEqualTo(8u));
         });
 
         it("is soundly upper bounded when 2-level cut > 1-level cut [B]", [&]() {
-          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(4u));
-          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(6u));
+          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut_type::Internal], Is().GreaterThanOrEqualTo(4u));
+          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut_type::Internal], Is().LessThanOrEqualTo(6u));
 
-          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(4u));
-          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(7u));
+          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut_type::Internal_False], Is().GreaterThanOrEqualTo(4u));
+          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut_type::Internal_False], Is().LessThanOrEqualTo(7u));
 
-          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(4u));
-          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(7u));
+          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut_type::Internal_True], Is().GreaterThanOrEqualTo(4u));
+          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut_type::Internal_True], Is().LessThanOrEqualTo(7u));
 
-          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(5u));
-          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(8u));
+          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut_type::All], Is().GreaterThanOrEqualTo(5u));
+          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut_type::All], Is().LessThanOrEqualTo(8u));
         });
       });
     });

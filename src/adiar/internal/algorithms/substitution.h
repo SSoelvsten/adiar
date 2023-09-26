@@ -213,7 +213,7 @@ namespace adiar::internal
   template<typename substitute_policy>
   size_t __substitute_2level_upper_bound(const typename substitute_policy::reduced_t &dd)
   {
-    const safe_size_t max_2level_cut = dd.max_2level_cut(cut_type::INTERNAL);
+    const safe_size_t max_2level_cut = dd.max_2level_cut(cut_type::Internal);
     return to_size(max_2level_cut + 2u);
   }
 
@@ -231,10 +231,10 @@ namespace adiar::internal
       - node_stream<>::memory_usage() - arc_writer::memory_usage();
 
     const tpie::memory_size_type pq_memory_fits =
-      substitute_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::memory_fits(aux_available_memory);
+      substitute_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::memory_fits(aux_available_memory);
 
-    const bool internal_only = memory_mode == memory_mode_t::INTERNAL;
-    const bool external_only = memory_mode == memory_mode_t::EXTERNAL;
+    const bool internal_only = memory_mode == memory_mode_t::Internal;
+    const bool external_only = memory_mode == memory_mode_t::External;
 
     const size_t pq_bound = __substitute_2level_upper_bound<substitute_policy>(dd);
 
@@ -245,21 +245,21 @@ namespace adiar::internal
       stats_substitute.lpq.unbucketed += 1u;
 #endif
       return __substitute<substitute_policy, substitute_assignment_mgr,
-                          substitute_priority_queue_t<0, memory_mode_t::INTERNAL>>
+                          substitute_priority_queue_t<0, memory_mode_t::Internal>>
         (dd, amgr, aux_available_memory, max_pq_size);
     } else if(!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
       stats_substitute.lpq.internal += 1u;
 #endif
       return __substitute<substitute_policy, substitute_assignment_mgr,
-                          substitute_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>>
+                          substitute_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>>
         (dd, amgr, aux_available_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
       stats_substitute.lpq.external += 1u;
 #endif
       return __substitute<substitute_policy, substitute_assignment_mgr,
-                          substitute_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>>
+                          substitute_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::External>>
         (dd, amgr, aux_available_memory, max_pq_size);
     }
   }

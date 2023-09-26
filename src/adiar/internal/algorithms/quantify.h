@@ -364,7 +364,7 @@ namespace adiar::internal
   size_t __quantify_ilevel_upper_bound(const in_t &in,
                                        const bool_op &op)
   {
-    const cut_type ct_internal  = cut_type::INTERNAL;
+    const cut_type ct_internal  = cut_type::Internal;
     const cut_type ct_terminals = quantify_policy::cut_with_terminals(op);
 
     const safe_size_t max_cut_internal  = cut::get(in, ct_internal);
@@ -445,25 +445,25 @@ namespace adiar::internal
       - arc_writer::memory_usage();
 
     constexpr size_t data_structures_in_pq_1 =
-      pq_1_template<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::DATA_STRUCTURES;
+      pq_1_template<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::DATA_STRUCTURES;
 
     constexpr size_t data_structures_in_pq_2 =
-      quantify_priority_queue_2_t<memory_mode_t::INTERNAL>::DATA_STRUCTURES;
+      quantify_priority_queue_2_t<memory_mode_t::Internal>::DATA_STRUCTURES;
 
     const size_t pq_1_internal_memory =
       (aux_available_memory / (data_structures_in_pq_1 + data_structures_in_pq_2)) * data_structures_in_pq_1;
 
     const size_t pq_1_memory_fits =
-      pq_1_template<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::memory_fits(pq_1_internal_memory);
+      pq_1_template<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::memory_fits(pq_1_internal_memory);
 
     const size_t pq_2_internal_memory =
       aux_available_memory - pq_1_internal_memory;
 
     const size_t pq_2_memory_fits =
-      quantify_priority_queue_2_t<memory_mode_t::INTERNAL>::memory_fits(pq_2_internal_memory);
+      quantify_priority_queue_2_t<memory_mode_t::Internal>::memory_fits(pq_2_internal_memory);
 
-    const bool internal_only = memory_mode == memory_mode_t::INTERNAL;
-    const bool external_only = memory_mode == memory_mode_t::EXTERNAL;
+    const bool internal_only = memory_mode == memory_mode_t::Internal;
+    const bool external_only = memory_mode == memory_mode_t::External;
 
     const size_t pq_1_bound = std::min({__quantify_ilevel_upper_bound<quantify_policy, get_2level_cut, 2u>(in,op),
                                         __quantify_ilevel_upper_bound(in)});
@@ -479,8 +479,8 @@ namespace adiar::internal
       stats_quantify.lpq.unbucketed += 1u;
 #endif
       return __quantify<node_stream_t,
-                        pq_1_template<0, memory_mode_t::INTERNAL>,
-                        quantify_priority_queue_2_t<memory_mode_t::INTERNAL>>
+                        pq_1_template<0, memory_mode_t::Internal>,
+                        quantify_priority_queue_2_t<memory_mode_t::Internal>>
         (in, policy_impl, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
     } else if(!external_only && max_pq_1_size <= pq_1_memory_fits
                              && max_pq_2_size <= pq_2_memory_fits) {
@@ -488,8 +488,8 @@ namespace adiar::internal
       stats_quantify.lpq.internal += 1u;
 #endif
       return __quantify<node_stream_t,
-                        pq_1_template<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>,
-                        quantify_priority_queue_2_t<memory_mode_t::INTERNAL>>
+                        pq_1_template<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>,
+                        quantify_priority_queue_2_t<memory_mode_t::Internal>>
         (in, policy_impl, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
     } else {
 #ifdef ADIAR_STATS
@@ -499,8 +499,8 @@ namespace adiar::internal
       const size_t pq_2_memory = pq_1_memory;
 
       return __quantify<node_stream_t,
-                        pq_1_template<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>,
-                        quantify_priority_queue_2_t<memory_mode_t::EXTERNAL>>
+                        pq_1_template<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::External>,
+                        quantify_priority_queue_2_t<memory_mode_t::External>>
         (in, policy_impl, op, pq_1_memory, max_pq_1_size, pq_2_memory, max_pq_2_size);
     }
   }
@@ -588,10 +588,10 @@ namespace adiar::internal
     static size_t pq_memory(const size_t inner_memory)
     {
       constexpr size_t data_structures_in_pq_1 =
-        quantify_priority_queue_1_node_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::DATA_STRUCTURES;
+        quantify_priority_queue_1_node_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::DATA_STRUCTURES;
 
       constexpr size_t data_structures_in_pq_2 =
-        quantify_priority_queue_2_t<memory_mode_t::INTERNAL>::DATA_STRUCTURES;
+        quantify_priority_queue_2_t<memory_mode_t::Internal>::DATA_STRUCTURES;
 
       return  (inner_memory / (data_structures_in_pq_1 + data_structures_in_pq_2)) * data_structures_in_pq_1;
     }
@@ -635,24 +635,24 @@ namespace adiar::internal
              const size_t inner_remaining_memory) const
     {
       const size_t pq_2_memory_fits =
-        quantify_priority_queue_2_t<memory_mode_t::INTERNAL>::memory_fits(inner_remaining_memory);
+        quantify_priority_queue_2_t<memory_mode_t::Internal>::memory_fits(inner_remaining_memory);
 
       const size_t pq_2_bound =
         __quantify_ilevel_upper_bound<quantify_policy, get_1level_cut, 0u>
           (typename quantify_policy::reduced_t(outer_file), _op);
 
-      const size_t max_pq_2_size = memory_mode == memory_mode_t::INTERNAL
+      const size_t max_pq_2_size = memory_mode == memory_mode_t::Internal
         ? std::min(pq_2_memory_fits, pq_2_bound)
         : pq_2_bound;
 
-      if(memory_mode != memory_mode_t::EXTERNAL && max_pq_2_size <= pq_2_memory_fits) {
-        using inner_pq_2_t = quantify_priority_queue_2_t<memory_mode_t::INTERNAL>;
+      if(memory_mode != memory_mode_t::External && max_pq_2_size <= pq_2_memory_fits) {
+        using inner_pq_2_t = quantify_priority_queue_2_t<memory_mode_t::Internal>;
         inner_pq_2_t inner_pq_2(inner_remaining_memory, max_pq_2_size);
 
         return __quantify<node_stream<>, inner_pq_1_t, inner_pq_2_t>
           (outer_file, *this, _op, inner_pq_1, inner_pq_2);
       } else {
-        using inner_pq_2_t = quantify_priority_queue_2_t<memory_mode_t::EXTERNAL>;
+        using inner_pq_2_t = quantify_priority_queue_2_t<memory_mode_t::External>;
         inner_pq_2_t inner_pq_2(inner_remaining_memory, max_pq_2_size);
 
         return __quantify<node_stream<>, inner_pq_1_t, inner_pq_2_t>
@@ -695,7 +695,7 @@ namespace adiar::internal
 
     ////////////////////////////////////////////////////////////////////////////
     static constexpr internal::nested_sweeping::reduce_strategy reduce_strategy =
-      internal::nested_sweeping::AUTO;
+      internal::nested_sweeping::Auto;
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -829,7 +829,7 @@ namespace adiar::internal
     }
 
     switch (quantify_mode) {
-    case quantify_mode_t::PARTIAL:
+    case quantify_mode_t::Partial:
       { // ---------------------------------------------------------------------
         // Case: Repeated partial quantification
 #ifdef ADIAR_STATS
@@ -848,7 +848,7 @@ namespace adiar::internal
         return res;
       }
 
-    case quantify_mode_t::SINGLETON:
+    case quantify_mode_t::Singleton:
       { // ---------------------------------------------------------------------
         // Case: Repeated single variable quantification
 #ifdef ADIAR_STATS
@@ -863,7 +863,7 @@ namespace adiar::internal
         return dd;
       }
 
-    case quantify_mode_t::NESTED:
+    case quantify_mode_t::Nested:
       { // ---------------------------------------------------------------------
         // Case: Nested Sweeping
 #ifdef ADIAR_STATS
@@ -873,7 +873,7 @@ namespace adiar::internal
         return nested_sweep<>(quantify<quantify_policy>(std::move(dd), label, op),
                               inner_impl);
       }
-    case quantify_mode_t::AUTO:
+    case quantify_mode_t::Auto:
       { // ---------------------------------------------------------------------
         // Case: Partial/Singleton Quantification + Nested Sweeping
         const size_t dd_size = dd.size();
@@ -1055,8 +1055,8 @@ namespace adiar::internal
     // NOTE: read-once access with 'gen' makes partial quantification not
     //       possible.
     switch (quantify_mode) {
-    case quantify_mode_t::PARTIAL:
-    case quantify_mode_t::SINGLETON:
+    case quantify_mode_t::Partial:
+    case quantify_mode_t::Singleton:
       { // -------------------------------------------------------------------
         // Case: Repeated single variable quantification
         // TODO: correctly handle quantify_policy::quantify_onset
@@ -1113,8 +1113,8 @@ namespace adiar::internal
         }
       }
 
-    case quantify_mode_t::AUTO:
-    case quantify_mode_t::NESTED:
+    case quantify_mode_t::Auto:
+    case quantify_mode_t::Nested:
       { // ---------------------------------------------------------------------
         // Case: Nested Sweeping
         //

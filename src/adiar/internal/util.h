@@ -111,7 +111,7 @@ namespace adiar::internal
         }
       }
       { // Copy over meta information
-        af->max_1level_cut = dd->max_1level_cut[cut_type::INTERNAL];
+        af->max_1level_cut = dd->max_1level_cut[cut_type::Internal];
 
         level_info_stream<> lis(dd);
         while (lis.can_pull()) {

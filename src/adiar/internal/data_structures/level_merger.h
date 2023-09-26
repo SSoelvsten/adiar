@@ -37,7 +37,7 @@ namespace adiar::internal
   };
 
   // TODO (code clarity):
-  //   Add to 'file_t' an enum with 'ASCENDING'/'DESCENDING' to then derive the
+  //   Add to 'file_t' an enum with 'Ascending'/'Descending' to then derive the
   //   comparator in conjunction with 'reverse'.
 
   //////////////////////////////////////////////////////////////////////////////

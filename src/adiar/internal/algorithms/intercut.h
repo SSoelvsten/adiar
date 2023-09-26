@@ -333,10 +333,10 @@ namespace adiar::internal
     const size_t pq_memory = aux_available_memory;
 
     const size_t pq_memory_fits =
-      intercut_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::memory_fits(pq_memory);
+      intercut_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::memory_fits(pq_memory);
 
-    const bool internal_only = memory_mode == memory_mode_t::INTERNAL;
-    const bool external_only = memory_mode == memory_mode_t::EXTERNAL;
+    const bool internal_only = memory_mode == memory_mode_t::Internal;
+    const bool external_only = memory_mode == memory_mode_t::External;
 
     const size_t pq_bound = __intercut_2level_upper_bound<intercut_policy>(dd);
 
@@ -347,21 +347,21 @@ namespace adiar::internal
       stats_intercut.lpq.unbucketed += 1u;
 #endif
       return __intercut<intercut_policy,
-                        intercut_priority_queue_t<0, memory_mode_t::INTERNAL>>
+                        intercut_priority_queue_t<0, memory_mode_t::Internal>>
         (dd, xs, pq_memory, max_pq_size);
     } else if(!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
       stats_intercut.lpq.internal += 1u;
 #endif
       return __intercut<intercut_policy,
-                        intercut_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>>
+                        intercut_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>>
         (dd, xs, pq_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
       stats_intercut.lpq.external += 1u;
 #endif
       return __intercut<intercut_policy,
-                        intercut_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>>
+                        intercut_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::External>>
         (dd, xs, pq_memory, max_pq_size);
     }
   }

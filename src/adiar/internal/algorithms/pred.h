@@ -223,10 +223,10 @@ namespace adiar::internal
       - comp_policy::level_check_t::memory_usage();
 
     constexpr size_t data_structures_in_pq_1 =
-      comparison_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::DATA_STRUCTURES;
+      comparison_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::DATA_STRUCTURES;
 
     constexpr size_t data_structures_in_pq_2 =
-      comparison_priority_queue_2_t<memory_mode_t::INTERNAL>::DATA_STRUCTURES;
+      comparison_priority_queue_2_t<memory_mode_t::Internal>::DATA_STRUCTURES;
 
     const size_t pq_1_internal_memory =
       (aux_available_memory / (data_structures_in_pq_1 + data_structures_in_pq_2)) * data_structures_in_pq_1;
@@ -234,13 +234,13 @@ namespace adiar::internal
     const size_t pq_2_internal_memory = aux_available_memory - pq_1_internal_memory;
 
     const size_t pq_1_memory_fits =
-      comparison_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::memory_fits(pq_1_internal_memory);
+      comparison_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::memory_fits(pq_1_internal_memory);
 
     const size_t pq_2_memory_fits =
-      comparison_priority_queue_2_t<memory_mode_t::INTERNAL>::memory_fits(pq_2_internal_memory);
+      comparison_priority_queue_2_t<memory_mode_t::Internal>::memory_fits(pq_2_internal_memory);
 
-    const bool internal_only = memory_mode == memory_mode_t::INTERNAL;
-    const bool external_only = memory_mode == memory_mode_t::EXTERNAL;
+    const bool internal_only = memory_mode == memory_mode_t::Internal;
+    const bool external_only = memory_mode == memory_mode_t::External;
 
     const size_t pq_1_bound = comp_policy::level_check_t::pq1_upper_bound(f0, f1);
 
@@ -256,8 +256,8 @@ namespace adiar::internal
       stats_equality.lpq.unbucketed += 1u;
 #endif
       return __comparison_check<comp_policy,
-                                comparison_priority_queue_1_t<0, memory_mode_t::INTERNAL>,
-                                comparison_priority_queue_2_t<memory_mode_t::INTERNAL>>
+                                comparison_priority_queue_1_t<0, memory_mode_t::Internal>,
+                                comparison_priority_queue_2_t<memory_mode_t::Internal>>
         (f0, f1, negate0, negate1, pq_1_internal_memory, pq_2_internal_memory, max_pq_1_size);
     } else if(!external_only && max_pq_1_size <= pq_1_memory_fits
                              && max_pq_2_size <= pq_2_memory_fits) {
@@ -265,8 +265,8 @@ namespace adiar::internal
       stats_equality.lpq.internal += 1u;
 #endif
       return __comparison_check<comp_policy,
-                                comparison_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>,
-                                comparison_priority_queue_2_t<memory_mode_t::INTERNAL>>
+                                comparison_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>,
+                                comparison_priority_queue_2_t<memory_mode_t::Internal>>
         (f0, f1, negate0, negate1, pq_1_internal_memory, pq_2_internal_memory, max_pq_1_size);
     } else {
 #ifdef ADIAR_STATS
@@ -276,8 +276,8 @@ namespace adiar::internal
       const size_t pq_2_memory = pq_1_memory;
 
       return __comparison_check<comp_policy,
-                                comparison_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>,
-                                comparison_priority_queue_2_t<memory_mode_t::EXTERNAL>>
+                                comparison_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::External>,
+                                comparison_priority_queue_2_t<memory_mode_t::External>>
         (f0, f1, negate0, negate1, pq_1_memory, pq_2_memory, max_pq_1_size);
     }
   }

@@ -54,7 +54,7 @@ namespace adiar
     static inline internal::cut_type
     cut_with_terminals(const bool_op &/*op*/)
     {
-      return internal::cut_type::ALL;
+      return internal::cut_type::All;
     }
 
   public:

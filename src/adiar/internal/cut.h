@@ -24,13 +24,13 @@ namespace adiar::internal
   ////////////////////////////////////////////////////////////////////////////
   enum cut_type {
     /** Internal arcs only */
-    INTERNAL       = 0, // 0x00
+    Internal       = 0, // 0x00
     /** Internal arcs and false arcs only */
-    INTERNAL_FALSE = 1, // 0x01
+    Internal_False = 1, // 0x01
     /** Internal arcs and true arcs only */
-    INTERNAL_TRUE  = 2, // 0x10
+    Internal_True  = 2, // 0x10
     /** All types of arcs: internal, false, and true */
-    ALL            = 3  // 0x11
+    All            = 3  // 0x11
   };
 
   ////////////////////////////////////////////////////////////////////////////
@@ -61,8 +61,8 @@ namespace adiar::internal
   inline bool includes_terminal(const cut_type cut, const bool terminal_val)
   {
     return terminal_val
-      ? cut >= cut_type::INTERNAL_TRUE
-      : cut == cut_type::INTERNAL_FALSE || cut == cut_type::ALL;
+      ? cut >= cut_type::Internal_True
+      : cut == cut_type::Internal_False || cut == cut_type::All;
   }
 
   inline bool includes_terminal(const size_t cut, const bool terminal_val)
