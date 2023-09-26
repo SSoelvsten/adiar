@@ -6,6 +6,7 @@
 #include <string>
 
 #include <adiar/exception.h>
+#include <adiar/internal/assert.h>
 #include <adiar/internal/io/file.h>
 #include <adiar/internal/io/file_stream.h>
 #include <adiar/internal/cut.h>

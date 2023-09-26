@@ -2,6 +2,7 @@
 
 #include <adiar/bdd/bdd_policy.h>
 
+#include <adiar/internal/assert.h>
 #include <adiar/internal/algorithms/nested_sweeping.h>
 #include <adiar/internal/algorithms/reduce.h>
 #include <adiar/internal/data_structures/levelized_priority_queue.h>

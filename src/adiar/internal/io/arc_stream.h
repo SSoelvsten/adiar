@@ -1,6 +1,7 @@
 #ifndef ADIAR_INTERNAL_IO_ARC_STREAM_H
 #define ADIAR_INTERNAL_IO_ARC_STREAM_H
 
+#include <adiar/internal/assert.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/io/levelized_file.h>
 #include <adiar/internal/io/levelized_file_stream.h>

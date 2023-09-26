@@ -2,6 +2,8 @@
 #include <adiar/zdd/zdd_policy.h>
 
 #include <adiar/domain.h>
+
+#include <adiar/internal/assert.h>
 #include <adiar/internal/unreachable.h>
 #include <adiar/internal/algorithms/build.h>
 #include <adiar/internal/algorithms/intercut.h>

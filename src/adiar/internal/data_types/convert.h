@@ -1,6 +1,7 @@
 #ifndef ADIAR_INTERNAL_DATA_TYPES_CONVERT_H
 #define ADIAR_INTERNAL_DATA_TYPES_CONVERT_H
 
+#include <adiar/internal/assert.h>
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/node.h>
 

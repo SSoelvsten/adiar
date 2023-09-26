@@ -3,6 +3,7 @@
 
 #include <utility>
 
+#include <adiar/internal/assert.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/algorithms/quantify.h>
 #include <adiar/internal/data_types/level_info.h>

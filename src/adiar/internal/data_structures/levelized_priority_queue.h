@@ -4,6 +4,7 @@
 #include <limits>
 
 #include <adiar/memory_mode.h>
+#include <adiar/internal/assert.h>
 #include <adiar/internal/dd.h>
 #include <adiar/internal/memory.h>
 #include <adiar/internal/data_structures/level_merger.h>

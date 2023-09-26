@@ -2,6 +2,7 @@
 #define ADIAR_INTERNAL_IO_NODE_WRITER_H
 
 #include <adiar/exception.h>
+#include <adiar/internal/assert.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/level_info.h>

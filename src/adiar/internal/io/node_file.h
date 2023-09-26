@@ -2,6 +2,7 @@
 #define ADIAR_INTERNAL_IO_NODE_FILE_H
 
 #include <adiar/statistics.h>
+#include <adiar/internal/assert.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/io/file.h>
 #include <adiar/internal/io/levelized_file.h>

@@ -7,6 +7,7 @@
 #include <adiar/bool_op.h>
 #include <adiar/memory_mode.h>
 #include <adiar/bdd/bdd.h>
+#include <adiar/internal/assert.h>
 #include <adiar/internal/cnl.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/dd.h>

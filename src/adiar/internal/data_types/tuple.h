@@ -3,6 +3,7 @@
 
 #include <algorithm>
 
+#include <adiar/internal/assert.h>
 #include <adiar/internal/data_types/ptr.h>
 
 namespace adiar::internal

@@ -4,6 +4,7 @@
 #include <adiar/exception.h>
 #include <adiar/bdd/bdd_policy.h>
 #include <adiar/zdd/zdd_policy.h>
+#include <adiar/internal/assert.h>
 #include <adiar/internal/memory.h>
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/data_types/node.h>

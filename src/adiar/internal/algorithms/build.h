@@ -2,6 +2,7 @@
 #define ADIAR_INTERNAL_ALGORITHMS_BUILD_H
 
 #include <adiar/exception.h>
+#include <adiar/internal/assert.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/data_types/node.h>

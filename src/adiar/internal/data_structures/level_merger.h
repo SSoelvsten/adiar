@@ -1,6 +1,7 @@
 #ifndef ADIAR_INTERNAL_DATA_STRUCTURES_LEVEL_MERGER_H
 #define ADIAR_INTERNAL_DATA_STRUCTURES_LEVEL_MERGER_H
 
+#include <adiar/internal/assert.h>
 #include <adiar/internal/dd.h>
 #include <adiar/internal/memory.h>
 #include <adiar/internal/io/file.h>
