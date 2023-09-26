@@ -28,18 +28,18 @@ namespace adiar
       static constexpr bool init_terminal = false;
 
       constexpr bool
-      skip(const typename dd_policy::label_t &) const
+      skip(const typename dd_policy::label_type &) const
       { return false; }
 
       inline
-      bdd::node_t
-      make_node(const zdd::label_t &l, const zdd::ptr_t &r) const
+      bdd::node_type
+      make_node(const zdd::label_type &l, const zdd::pointer_type &r) const
       {
         if (r.is_terminal()) {
           adiar_assert(r.value() == false, "Root should be Ø");
-          return zdd::node_t(l, zdd::max_id, r, zdd_policy::ptr_t(true));
+          return zdd::node_type(l, zdd::max_id, r, zdd_policy::pointer_type(true));
         } else {
-          return zdd::node_t(l, zdd::max_id, r, r);
+          return zdd::node_type(l, zdd::max_id, r, r);
         }
       }
 
@@ -54,10 +54,10 @@ namespace adiar
     }
 
     static zdd on_terminal_input(const bool terminal_value, const zdd& /*dd*/,
-                                 const shared_file<zdd::label_t> &universe)
+                                 const shared_file<zdd::label_type> &universe)
     {
       // TODO: remove
-      internal::file_stream<zdd::label_t, true> ls(universe);
+      internal::file_stream<zdd::label_type, true> ls(universe);
 
       if (terminal_value) { // Include everything but Ø
         on_true_terminal_chain_policy p;
@@ -79,15 +79,15 @@ namespace adiar
     // Yet, this is only 2 nodes that we can kill; that is 4 arcs. This is 32
     // bytes of data and very few computation cycles. For very large cases the
     // shortcutting in branch-prediction probably offsets this?
-    static internal::intercut_rec_output hit_existing(const zdd::node_t &n)
+    static internal::intercut_rec_output hit_existing(const zdd::node_type &n)
     {
-      const zdd::ptr_t low = n.low().is_terminal() ? negate(n.low()) : n.low();
-      const zdd::ptr_t high = n.high().is_terminal() ? negate(n.high()) : n.high();
+      const zdd::pointer_type low = n.low().is_terminal() ? negate(n.low()) : n.low();
+      const zdd::pointer_type high = n.high().is_terminal() ? negate(n.high()) : n.high();
 
       return internal::intercut_rec_output { low, high };
     }
 
-    static internal::intercut_rec_output hit_cut(const zdd::ptr_t &target)
+    static internal::intercut_rec_output hit_cut(const zdd::pointer_type &target)
     {
       // T chain: We are definitely outside of the given set
       if (target.is_true()) {
@@ -95,23 +95,23 @@ namespace adiar
       }
 
       // Otherwise, check whether this variable is true and so we move to the T chain
-      return internal::intercut_rec_output { target, zdd::ptr_t(true) };
+      return internal::intercut_rec_output { target, zdd::pointer_type(true) };
     }
 
     // LCOV_EXCL_START
-    static internal::intercut_rec_output miss_existing(const zdd::node_t &/*n*/)
+    static internal::intercut_rec_output miss_existing(const zdd::node_type &/*n*/)
     { adiar_unreachable(); }
     // LCOV_EXCL_STOP
   };
 
-  __zdd zdd_complement(const zdd &dd, const generator<zdd::label_t> &dom)
+  __zdd zdd_complement(const zdd &dd, const generator<zdd::label_type> &dom)
   {
     return internal::intercut<zdd_complement_policy>(dd, dom);
   }
 
   __zdd zdd_complement(const zdd &dd)
   {
-    const shared_file<zdd::label_t> dom = domain_get();
+    const shared_file<zdd::label_type> dom = domain_get();
     internal::file_stream<domain_var> ds(dom);
 
     return internal::intercut<zdd_complement_policy>

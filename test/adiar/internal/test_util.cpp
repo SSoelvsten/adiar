@@ -21,7 +21,7 @@ go_bandit([]() {
         const node n2 = node(1, node::max_id, true_ptr, n3.uid());
         const node n1 = node(0, node::max_id, n2.uid(), n3.uid());
 
-        shared_levelized_file<bdd::node_t> in;
+        shared_levelized_file<bdd::node_type> in;
         {
           node_writer writer(in);
           writer << n3 << n2 << n1;
@@ -92,7 +92,7 @@ go_bandit([]() {
         const node n2 = node(1, node::max_id,   n3.uid(),  n4.uid());
         const node n1 = node(0, node::max_id,   n3.uid(),  n2.uid());
 
-        shared_levelized_file<bdd::node_t> in;
+        shared_levelized_file<bdd::node_type> in;
         {
           node_writer writer(in);
           writer << n5 << n4 << n3 << n2 << n1;
@@ -178,7 +178,7 @@ go_bandit([]() {
         const node n2 = node(1, node::max_id-1, false_ptr, n5.uid());
         const node n1 = node(0, node::max_id,   n2.uid(),  n3.uid());
 
-        shared_levelized_file<bdd::node_t> in;
+        shared_levelized_file<bdd::node_type> in;
         {
           node_writer writer(in);
           writer << n5 << n4 << n3 << n2 << n1;

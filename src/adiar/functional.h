@@ -110,12 +110,12 @@ namespace adiar
   /// \brief Wrap an `adiar::internal::file_stream` into a generator function.
   ////////////////////////////////////////////////////////////////////////////
   template<typename stream_t>
-  inline generator<typename stream_t::elem_t>
+  inline generator<typename stream_t::value_type>
   make_generator(stream_t &s)
   {
     return [&s]() {
       if (!s.can_pull()) {
-        return static_cast<typename stream_t::elem_t>(-1);
+        return static_cast<typename stream_t::value_type>(-1);
       }
       return s.pull();
     };

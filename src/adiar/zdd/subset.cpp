@@ -11,23 +11,23 @@ namespace adiar
   template<assignment FIX_VALUE>
   class zdd_subset_labels
   {
-    const generator<zdd::label_t> &gen;
+    const generator<zdd::label_type> &gen;
 
     /// \brief The current level (including the current algorithm level)
-    zdd::label_t l_incl = zdd::max_label+1;
+    zdd::label_type l_incl = zdd::max_label+1;
 
     /// \brief The next level (definitely excluding the current level)
-    zdd::label_t l_excl = zdd::max_label+1;
+    zdd::label_type l_excl = zdd::max_label+1;
 
     /// We will rememeber how far the algorithm in substitution.h has got
-    zdd::label_t alg_level = 0;
+    zdd::label_type alg_level = 0;
 
   public:
     /// We will remember whether any level of the input actually matched.
     bool l_match = false;
 
   public:
-    zdd_subset_labels(const generator<zdd::label_t> &g)
+    zdd_subset_labels(const generator<zdd::label_type> &g)
       : gen(g)
     {
       l_incl = gen();
@@ -36,7 +36,7 @@ namespace adiar
 
   private:
     /// \brief Forwards through the input to the given level
-    inline void forward_to_level(const zdd::label_t new_level)
+    inline void forward_to_level(const zdd::label_type new_level)
     {
       adiar_assert(alg_level <= new_level,
                    "The algorithm should ask for the levels in increasing order.");
@@ -51,7 +51,7 @@ namespace adiar
 
   public:
     /// \brief Obtain the assignment for the current level
-    assignment assignment_for_level(const zdd::label_t new_level)
+    assignment assignment_for_level(const zdd::label_type new_level)
     {
       forward_to_level(new_level);
 
@@ -69,7 +69,7 @@ namespace adiar
     }
 
     /// \brief Get the current level (including the current algorithm level)
-    zdd::label_t level_incl()
+    zdd::label_type level_incl()
     {
       return l_incl;
     }
@@ -81,7 +81,7 @@ namespace adiar
     }
 
     /// \brief Get the next level (excluding the current one)
-    zdd::label_t level_excl()
+    zdd::label_type level_excl()
     {
       if (alg_level < l_incl) { return l_incl; }
       return l_excl;
@@ -93,14 +93,14 @@ namespace adiar
   class zdd_offset_policy : public zdd_policy
   {
   public:
-    static internal::substitute_rec keep_node(const zdd::node_t &n, assignment_mgr &/*amgr*/)
+    static internal::substitute_rec keep_node(const zdd::node_type &n, assignment_mgr &/*amgr*/)
     { return internal::substitute_rec_output { n }; }
 
-    static internal::substitute_rec fix_false(const zdd::node_t &n, assignment_mgr &/*amgr*/)
+    static internal::substitute_rec fix_false(const zdd::node_type &n, assignment_mgr &/*amgr*/)
     { return internal::substitute_rec_skipto { n.low() }; }
 
     // LCOV_EXCL_START
-    static internal::substitute_rec fix_true(const zdd::node_t &/*n*/, assignment_mgr &/*amgr*/)
+    static internal::substitute_rec fix_true(const zdd::node_type &/*n*/, assignment_mgr &/*amgr*/)
     { adiar_unreachable(); }
     // LCOV_EXCL_STOP
 
@@ -109,7 +109,7 @@ namespace adiar
     { return zdd_terminal(terminal_val); }
   };
 
-  __zdd zdd_offset(const zdd &A, const generator<zdd::label_t> &vars)
+  __zdd zdd_offset(const zdd &A, const generator<zdd::label_type> &vars)
   {
     // Both { Ø }, and Ø cannot have more variables removed
     if (zdd_isterminal(A)) { return A; }
@@ -134,38 +134,38 @@ namespace adiar
   class zdd_onset_policy : public zdd_policy
   {
   public:
-    static internal::substitute_rec keep_node(const zdd::node_t &n, assignment_mgr &amgr)
+    static internal::substitute_rec keep_node(const zdd::node_type &n, assignment_mgr &amgr)
     {
       if (amgr.has_level_incl()) {
         // If recursion goes past the intended level, then it is replaced with
         // the false terminal.
-        const zdd::ptr_t low  = n.low().is_terminal() || n.low().label() > amgr.level_incl()
-          ? zdd::ptr_t(false)
+        const zdd::pointer_type low  = n.low().is_terminal() || n.low().label() > amgr.level_incl()
+          ? zdd::pointer_type(false)
           : n.low();
 
         // If this applies to high, then the node should be skipped entirely.
         if (n.high().is_terminal() || n.high().label() > amgr.level_incl()) {
           return internal::substitute_rec_skipto { low };
         }
-        return internal::substitute_rec_output { zdd::node_t(n.uid(), low, n.high()) };
+        return internal::substitute_rec_output { zdd::node_type(n.uid(), low, n.high()) };
       }
       return internal::substitute_rec_output { n };
     }
 
     // LCOV_EXCL_START
-    static internal::substitute_rec fix_false(const zdd::node_t &/*n*/, assignment_mgr &/*amgr*/)
+    static internal::substitute_rec fix_false(const zdd::node_type &/*n*/, assignment_mgr &/*amgr*/)
     { adiar_unreachable(); }
     // LCOV_EXCL_STOP
 
-    static internal::substitute_rec fix_true(const zdd::node_t &n, assignment_mgr &amgr)
+    static internal::substitute_rec fix_true(const zdd::node_type &n, assignment_mgr &amgr)
     {
       if (amgr.has_level_excl()) {
         if (n.high().is_terminal() || n.high().label() > amgr.level_excl()) {
-          return internal::substitute_rec_skipto { zdd::ptr_t(false) };
+          return internal::substitute_rec_skipto { zdd::pointer_type(false) };
         }
       }
 
-      return internal::substitute_rec_output { zdd::node_t(n.uid(), zdd::ptr_t(false), n.high()) };
+      return internal::substitute_rec_output { zdd::node_type(n.uid(), zdd::pointer_type(false), n.high()) };
     }
 
   public:
@@ -175,7 +175,7 @@ namespace adiar
     }
   };
 
-  __zdd zdd_onset(const zdd &A, const generator<zdd::label_t> &xs)
+  __zdd zdd_onset(const zdd &A, const generator<zdd::label_type> &xs)
   {
     if (zdd_isfalse(A)) { return A; }
 

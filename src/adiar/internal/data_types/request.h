@@ -63,15 +63,15 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     static constexpr bool sorted_target = cardinality == 1u || inputs == 1u;
 
-    typedef node::label_t label_t;
-    typedef node::ptr_t ptr_t;
+    using label_type = node::label_type;
+    using pointer_type = node::pointer_type;
 
     /* ========================== RECURSION TARGET ========================== */
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the target tuple.
     ////////////////////////////////////////////////////////////////////////////
-    typedef tuple<ptr_t, cardinality, sorted_target> target_t;
+    using target_t = tuple<pointer_type, cardinality, sorted_target>;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Target node(s) of recursion request.
@@ -81,7 +81,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The level at which this request should be resolved.
     ////////////////////////////////////////////////////////////////////////////
-    ptr_t::label_t level() const
+    pointer_type::label_type level() const
     { return target.first().label(); }
 
     /* ============================= NODE CARRY ============================= */
@@ -94,13 +94,13 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the set of children carried to the last in `target`.
     ////////////////////////////////////////////////////////////////////////////
-    typedef node::children_t children_t;
+    using children_type = node::children_type;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The value to be inserted in empy slots in the `node_carry`.
     ////////////////////////////////////////////////////////////////////////////
-    static inline constexpr children_t NO_CHILDREN()
-    { return children_t(ptr_t::nil()); }
+    static inline constexpr children_type NO_CHILDREN()
+    { return children_type(pointer_type::nil()); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The number of nodes actually carried by this request.
@@ -123,13 +123,13 @@ namespace adiar::internal
         // Since nil is the greatest value, we can look for the first nil entry
         // (if any).
         for (uint8_t i = 0u; i < cardinality; i++) {
-          if (target[i] == ptr_t::nil()) { return i; }
+          if (target[i] == pointer_type::nil()) { return i; }
         }
         return cardinality;
       } else { // !sorted_target
         uint8_t sum = 0u;
         for (uint8_t i = 0u; i < cardinality; i++) {
-          if (target[i] != ptr_t::nil()) { sum++; }
+          if (target[i] != pointer_type::nil()) { sum++; }
         }
         return sum;
       }
@@ -155,7 +155,7 @@ namespace adiar::internal
     ///        node carry.
     ////////////////////////////////////////////////////////////////////////////
     request(const target_t &t,
-            const std::array<children_t, node_carry_size>&/*nc*/)
+            const std::array<children_type, node_carry_size>&/*nc*/)
       : request(t)
     { }
   };
@@ -182,13 +182,13 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Set of nodes of prior visited nodes in `target`.
     ///
-    /// \details This is not implemented as a `std::array<children_t,
+    /// \details This is not implemented as a `std::array<children_type,
     /// node_carry_size>` because for `node_carry_size` being 0 we still spend 8
     /// bytes on empty space.
     ///
     /// \sa NO_CHILDREN
     ////////////////////////////////////////////////////////////////////////////
-    std::array<typename base::children_t, node_carry_size> node_carry;
+    std::array<typename base::children_type, node_carry_size> node_carry;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The number of nodes actually carried within `node_carry`.
@@ -199,7 +199,7 @@ namespace adiar::internal
     {
       uint8_t sum = 0u;
       for (uint8_t n_idx = 0u; n_idx < node_carry_size; n_idx++) {
-        if (node_carry[n_idx][0] == base::ptr_t::nil()) {
+        if (node_carry[n_idx][0] == base::pointer_type::nil()) {
           adiar_assert(node_carry[n_idx] == base::NO_CHILDREN(),
                        "Either no entry is nil or all of them are");
           break;
@@ -218,7 +218,7 @@ namespace adiar::internal
     bool empty_carry() const
     {
       if constexpr (node_carry_size == 0u) return true;
-      return node_carry[0][0] == base::ptr_t::nil();
+      return node_carry[0][0] == base::pointer_type::nil();
     }
 
     /* ============================ CONSTRUCTORS ============================ */
@@ -231,7 +231,7 @@ namespace adiar::internal
   public:
     // Provide 'non-default' constructors to make it easy to use outside of TPIE.
     request(const typename base::target_t &t,
-            const std::array<typename base::children_t, node_carry_size> &nc)
+            const std::array<typename base::children_type, node_carry_size> &nc)
       : base(t), node_carry(nc)
     { }
   };
@@ -245,8 +245,8 @@ namespace adiar::internal
   {
     inline bool operator()(const request_t &a, const request_t &b)
     {
-      const typename request_t::label_t label_a = a.target.first().label();
-      const typename request_t::label_t label_b = b.target.first().label();
+      const typename request_t::label_type label_a = a.target.first().label();
+      const typename request_t::label_type label_b = b.target.first().label();
       
       if constexpr (request_t::cardinality == 2) {
         constexpr size_t o_idx = 1u - idx;
@@ -296,7 +296,7 @@ namespace adiar::internal
   /// \sa request
   //////////////////////////////////////////////////////////////////////////////
   template<uint8_t cardinality,
-           typename data_type,
+           typename data_t,
            uint8_t node_carry_size = 0u,
            uint8_t inputs = cardinality>
   class request_data : public request<cardinality, node_carry_size, inputs>
@@ -309,12 +309,12 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the extra data carried with this recursion request.
     ////////////////////////////////////////////////////////////////////////////
-    typedef data_type data_t;
+    using data_type = data_t;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Extra data related to this recursion request tuple.
     ////////////////////////////////////////////////////////////////////////////
-    data_t data;
+    data_type data;
 
     /* ============================ CONSTRUCTORS ============================ */
   public:
@@ -326,8 +326,8 @@ namespace adiar::internal
   public:
     // Provide 'non-default' constructors to make it easy to use outside of TPIE.
     request_data(const typename request_t::target_t &t,
-                 const std::array<typename request_t::children_t, node_carry_size> &nc,
-                 const data_t &d)
+                 const std::array<typename request_t::children_type, node_carry_size> &nc,
+                 const data_type &d)
       : request_t(t, nc), data(d)
     { }
   };
@@ -339,7 +339,7 @@ namespace adiar::internal
   {
     inline bool operator()(const request_t &a, const request_t &b)
     {
-      if (request_t::data_t::sort_on_tiebreak && a.target == b.target) {
+      if (request_t::data_type::sort_on_tiebreak && a.target == b.target) {
         return a.data < b.data;
       }
       return request_lt<idx, request_t>()(a, b);
@@ -351,7 +351,7 @@ namespace adiar::internal
   {
     inline bool operator()(const request_t &a, const request_t &b)
     {
-      if (request_t::data_t::sort_on_tiebreak && a.target == b.target) {
+      if (request_t::data_type::sort_on_tiebreak && a.target == b.target) {
         return a.data < b.data;
       }
       return request_first_lt<request_t>()(a, b);
@@ -363,7 +363,7 @@ namespace adiar::internal
   {
     inline bool operator()(const request_t &a, const request_t &b)
     {
-      if (request_t::data_t::sort_on_tiebreak && a.target == b.target) {
+      if (request_t::data_type::sort_on_tiebreak && a.target == b.target) {
         return a.data < b.data;
       }
       return request_second_lt<request_t>()(a, b);
@@ -375,7 +375,7 @@ namespace adiar::internal
   {
     inline bool operator()(const request_t &a, const request_t &b)
     {
-      if (request_t::data_t::sort_on_tiebreak && a.target == b.target) {
+      if (request_t::data_type::sort_on_tiebreak && a.target == b.target) {
         return a.data < b.data;
       }
       return request_third_lt<request_t>()(a, b);
@@ -395,7 +395,7 @@ namespace adiar::internal
 #endif
 
     ////////////////////////////////////////////////////////////////////////////
-    node::ptr_t source;
+    node::pointer_type source;
 
     ////////////////////////////////////////////////////////////////////////////
     inline bool operator< (const with_parent &o) const

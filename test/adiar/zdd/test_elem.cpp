@@ -2,8 +2,8 @@
 
 go_bandit([]() {
   describe("adiar/zdd/elem.cpp", [&]() {
-    shared_levelized_file<zdd::node_t> zdd_F;
-    shared_levelized_file<zdd::node_t> zdd_T;
+    shared_levelized_file<zdd::node_type> zdd_F;
+    shared_levelized_file<zdd::node_type> zdd_T;
 
     { // Garbage collect writers to free write-lock
       node_writer nw_F(zdd_F);
@@ -16,7 +16,7 @@ go_bandit([]() {
     const ptr_uint64 terminal_T = ptr_uint64(true);
     const ptr_uint64 terminal_F = ptr_uint64(false);
 
-    shared_levelized_file<zdd::node_t> zdd_1;
+    shared_levelized_file<zdd::node_type> zdd_1;
     // { { 0 }, { 1 }, { 0,2 }, { 1,2 } }
     /*
     //      1     ---- x0
@@ -37,7 +37,7 @@ go_bandit([]() {
       nw << n3 << n2 << n1;
     }
 
-    shared_levelized_file<zdd::node_t> zdd_2;
+    shared_levelized_file<zdd::node_type> zdd_2;
     // { Ø, { 1 }, { 2 }, { 2,3 } }
     /*
     //       1      ---- x1
@@ -58,7 +58,7 @@ go_bandit([]() {
       nw << n3 << n2 << n1;
     }
 
-    shared_levelized_file<zdd::node_t> zdd_3;
+    shared_levelized_file<zdd::node_type> zdd_3;
     // { { 2,4 }, { 0,2 }, { 0,4 } }
     /*
     //      _1_      ---- x0
@@ -79,7 +79,7 @@ go_bandit([]() {
       nw << n4 << n3 << n2 << n1;
     }
 
-    shared_levelized_file<zdd::node_t> zdd_4;
+    shared_levelized_file<zdd::node_type> zdd_4;
     // { {1}, {0,1} }
     /*
     //      1      ---- x0
@@ -104,7 +104,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_type(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -133,7 +133,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_type(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -162,7 +162,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(1, zdd::max_id, terminal_F, terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_type(1, zdd::max_id, terminal_F, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -194,7 +194,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_type(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -223,13 +223,13 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(4, zdd::max_id,
+        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_type(4, zdd::max_id,
                                                               terminal_F,
                                                               terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(2, zdd::max_id,
+        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_type(2, zdd::max_id,
                                                               terminal_F,
-                                                              zdd::ptr_t(4, zdd::max_id))));
+                                                              zdd::pointer_type(4, zdd::max_id))));
 
 
         AssertThat(out_nodes.can_pull(), Is().False());
@@ -265,7 +265,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(1, zdd::max_id, terminal_F, terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_type(1, zdd::max_id, terminal_F, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -294,7 +294,7 @@ go_bandit([]() {
     describe("zdd_minelem(A, cb)", [&]() {
       it("makes no calls for { Ø } on { Ø }", [&]() {
         size_t calls = 0u;
-        const auto cb = [&calls](zdd::label_t) {
+        const auto cb = [&calls](zdd::label_type) {
           calls++;
         };
 
@@ -304,9 +304,9 @@ go_bandit([]() {
 
       it("calls with 1 on [1]", [&]() {
         size_t calls = 0u;
-        std::vector<zdd::label_t> expected { 1 };
+        std::vector<zdd::label_type> expected { 1 };
 
-        const auto cb = [&calls, &expected](zdd::label_t x) {
+        const auto cb = [&calls, &expected](zdd::label_type x) {
           AssertThat(x, Is().EqualTo(expected.at(calls)));
           calls++;
         };
@@ -317,7 +317,7 @@ go_bandit([]() {
 
       it("makes no calls for { Ø } on [2]", [&]() {
         size_t calls = 0u;
-        const auto cb = [&calls](zdd::label_t) {
+        const auto cb = [&calls](zdd::label_type) {
           calls++;
         };
 
@@ -327,9 +327,9 @@ go_bandit([]() {
 
       it("calls with 2,4 on [3]", [&]() {
         size_t calls = 0u;
-        std::vector<zdd::label_t> expected { 2,4 };
+        std::vector<zdd::label_type> expected { 2,4 };
 
-        const auto cb = [&calls, &expected](zdd::label_t x) {
+        const auto cb = [&calls, &expected](zdd::label_type x) {
           AssertThat(x, Is().EqualTo(expected.at(calls)));
           calls++;
         };
@@ -340,9 +340,9 @@ go_bandit([]() {
 
       it("calls with 1 on [4]", [&]() {
         size_t calls = 0u;
-        std::vector<zdd::label_t> expected { 1 };
+        std::vector<zdd::label_type> expected { 1 };
 
-        const auto cb = [&calls, &expected](zdd::label_t x) {
+        const auto cb = [&calls, &expected](zdd::label_type x) {
           AssertThat(x, Is().EqualTo(expected.at(calls)));
           calls++;
         };
@@ -360,7 +360,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_type(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -389,7 +389,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_type(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -418,13 +418,13 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(2, zdd::max_id,
+        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_type(2, zdd::max_id,
                                                               terminal_F,
                                                               terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(0, zdd::max_id,
+        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_type(0, zdd::max_id,
                                                               terminal_F,
-                                                              zdd::ptr_t(2, zdd::max_id))));
+                                                              zdd::pointer_type(2, zdd::max_id))));
 
 
         AssertThat(out_nodes.can_pull(), Is().False());
@@ -460,7 +460,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(1, zdd::max_id, terminal_F, terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_type(1, zdd::max_id, terminal_F, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -492,13 +492,13 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(1, zdd::max_id,
+        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_type(1, zdd::max_id,
                                                               terminal_F,
                                                               terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(0, zdd::max_id,
+        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_type(0, zdd::max_id,
                                                               terminal_F,
-                                                              zdd::ptr_t(1, zdd::max_id))));
+                                                              zdd::pointer_type(1, zdd::max_id))));
 
 
         AssertThat(out_nodes.can_pull(), Is().False());
@@ -532,7 +532,7 @@ go_bandit([]() {
     describe("zdd_maxelem(A, cb)", [&]() {
       it("makes no calls for { Ø } on { Ø }", [&]() {
         size_t calls = 0u;
-        const auto cb = [&calls](zdd::label_t) {
+        const auto cb = [&calls](zdd::label_type) {
           calls++;
         };
 
@@ -544,9 +544,9 @@ go_bandit([]() {
 
       it("calls 0,2 on [1]", [&]() {
         size_t calls = 0u;
-        std::vector<zdd::label_t> expected { 0,2 };
+        std::vector<zdd::label_type> expected { 0,2 };
 
-        const auto cb = [&calls, &expected](zdd::label_t x) {
+        const auto cb = [&calls, &expected](zdd::label_type x) {
           AssertThat(x, Is().EqualTo(expected.at(calls)));
           calls++;
         };
@@ -557,9 +557,9 @@ go_bandit([]() {
 
       it("calls with 1 on [2]", [&]() {
         size_t calls = 0u;
-        std::vector<zdd::label_t> expected { 1 };
+        std::vector<zdd::label_type> expected { 1 };
 
-        const auto cb = [&calls, &expected](zdd::label_t x) {
+        const auto cb = [&calls, &expected](zdd::label_type x) {
           AssertThat(x, Is().EqualTo(expected.at(calls)));
           calls++;
         };
@@ -570,9 +570,9 @@ go_bandit([]() {
 
       it("calls with 0,1 on [4]", [&]() {
         size_t calls = 0u;
-        std::vector<zdd::label_t> expected { 0,1 };
+        std::vector<zdd::label_type> expected { 0,1 };
 
-        const auto cb = [&calls, &expected](zdd::label_t x) {
+        const auto cb = [&calls, &expected](zdd::label_type x) {
           AssertThat(x, Is().EqualTo(expected.at(calls)));
           calls++;
         };

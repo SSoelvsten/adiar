@@ -5,7 +5,7 @@ go_bandit([]() {
   describe("adiar/internal/algoritms/pred.h", []() {
     describe("is_isomorphic", []() {
       describe("Trivial cases", []() {
-        shared_levelized_file<dd::node_t>
+        shared_levelized_file<dd::node_type>
         terminal_F, x21, x42, x21_and_x22, x21_and_x22_and_x42, x21_and_x42, x21_xor_x42;
 
         { // Garbage collect writers to free write-lock
@@ -94,7 +94,7 @@ go_bandit([]() {
           // and x3 (i.e. the same number of nodes and levels). One with 3
           // nodes for x2 and one node for x3 and one with 2 nodes for x2 and x3.
 
-          shared_levelized_file<dd::node_t> seven_a, seven_b;
+          shared_levelized_file<dd::node_type> seven_a, seven_b;
 
           { // Garbage collect writers to free write-lock
             node_writer w_seven_a(seven_a);
@@ -126,7 +126,7 @@ go_bandit([]() {
 
       //////////////////////
       // Sink-only cases
-      shared_levelized_file<dd::node_t> F_a, F_b, T_a;
+      shared_levelized_file<dd::node_type> F_a, F_b, T_a;
 
       { // Garbage collect writers to free write-lock
         node_writer nw_F_a(F_a);
@@ -146,7 +146,7 @@ go_bandit([]() {
           / \
           F T
       */
-      shared_levelized_file<dd::node_t> x42_a, x42_b, not_x42;
+      shared_levelized_file<dd::node_type> x42_a, x42_b, not_x42;
 
       { // Garbage collect writers to free write-lock
         node_writer wa(x42_a);
@@ -164,7 +164,7 @@ go_bandit([]() {
           / \       / \
           T T       F F
       */
-      shared_levelized_file<dd::node_t> x69_T, x69_F;
+      shared_levelized_file<dd::node_type> x69_T, x69_F;
 
       { // Garbage collect writers to free write-lock
         node_writer wT(x69_T);

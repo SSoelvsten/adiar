@@ -78,8 +78,8 @@ namespace adiar::internal
     node_arc_stream(const __dd &diagram)
       : parent_t(/*need to sort before attach*/)
     {
-      adiar_assert(diagram.template has<__dd::shared_arcs_t>());
-      attach(diagram.template get<__dd::shared_arcs_t>(), diagram.negate);
+      adiar_assert(diagram.template has<__dd::shared_arc_file_type>());
+      attach(diagram.template get<__dd::shared_arc_file_type>(), diagram.negate);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -166,7 +166,7 @@ namespace adiar::internal
     ///
     /// \pre     `can_pull() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    const node seek(const node::uid_t &u);
+    const node seek(const node::uid_type &u);
     // TODO
 
   private:
@@ -182,8 +182,8 @@ namespace adiar::internal
         if (!parent_t::can_pull_internal()) { return false; }
       }
 
-      const arc::ptr_t internal_source = parent_t::peek_internal().source();
-      const arc::ptr_t terminal_source = parent_t::peek_terminal().source();
+      const arc::pointer_type internal_source = parent_t::peek_internal().source();
+      const arc::pointer_type terminal_source = parent_t::peek_terminal().source();
 
       if constexpr (reverse) {
         return internal_source > terminal_source;

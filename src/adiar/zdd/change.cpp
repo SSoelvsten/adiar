@@ -28,11 +28,11 @@ namespace adiar
 
     static zdd on_terminal_input(const bool terminal_value,
                                  const zdd& dd,
-                                 const internal::shared_file<zdd::label_t> &vars)
+                                 const internal::shared_file<zdd::label_type> &vars)
     {
       // TODO: simplify with generator function as input
       if (terminal_value) {
-        internal::file_stream<zdd::label_t, true> ls(vars);
+        internal::file_stream<zdd::label_type, true> ls(vars);
         return zdd_vars(make_generator(ls));
       } else {
         return dd;
@@ -44,7 +44,7 @@ namespace adiar
       return zdd_terminal(terminal_value);
     }
 
-    static internal::intercut_rec hit_existing(const zdd::node_t &n)
+    static internal::intercut_rec hit_existing(const zdd::node_type &n)
     {
       if (n.low().is_false()) {
         return internal::intercut_rec_skipto { n.high() };
@@ -53,18 +53,18 @@ namespace adiar
       return internal::intercut_rec_output { n.high(), n.low() };
     }
 
-    static internal::intercut_rec_output hit_cut(const zdd::ptr_t &target)
+    static internal::intercut_rec_output hit_cut(const zdd::pointer_type &target)
     {
-      return internal::intercut_rec_output { zdd::ptr_t(false), target };
+      return internal::intercut_rec_output { zdd::pointer_type(false), target };
     }
 
-    static internal::intercut_rec_output miss_existing(const zdd::node_t &n)
+    static internal::intercut_rec_output miss_existing(const zdd::node_type &n)
     {
       return internal::intercut_rec_output { n.low(), n.high() };
     }
   };
 
-  __zdd zdd_change(const zdd &dd, const generator<zdd::label_t> &vars)
+  __zdd zdd_change(const zdd &dd, const generator<zdd::label_type> &vars)
   {
     return internal::intercut<zdd_change_policy>(dd, vars);
   }

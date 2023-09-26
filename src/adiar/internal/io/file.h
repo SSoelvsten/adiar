@@ -37,27 +37,27 @@ namespace adiar::internal
   ///          file's content is part of the type and to provide auxiliary
   ///          functions.
   ///
-  /// \param   elem_type Type of the file's content.
+  /// \tparam  value_t Type of the file's content.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename elem_type> // <-- header_t
+  template <typename value_t> // <-- header_t
   class file // : public file_traits<elem_type>::stats
   {
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the file's elements.
     ////////////////////////////////////////////////////////////////////////////
-    typedef elem_type elem_t;
+    using value_type = value_t;
 
-    static_assert(std::is_pod<elem_t>::value, "File content must be a POD");
+    static_assert(std::is_pod<value_type>::value, "File content must be a POD");
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Access flags to be used privately within reader's and writers.
     ////////////////////////////////////////////////////////////////////////////
-    typedef tpie::access_type access_t;
+    using access_type = tpie::access_type;
 
-    static constexpr access_t read_access  = tpie::access_type::access_read;
-    static constexpr access_t write_access = tpie::access_type::access_write;
+    static constexpr access_type read_access  = tpie::access_type::access_read;
+    static constexpr access_type write_access = tpie::access_type::access_write;
 
   private:
     ////////////////////////////////////////////////////////////////////////////
@@ -74,17 +74,17 @@ namespace adiar::internal
 
     ////////////////////////////////////////////////////////////////////////////
     // Befriend the few places that need direct access to these variables.
-    template <typename elem_t, bool REVERSE>
+    template <typename value_type, bool REVERSE>
     friend class file_stream;
 
-    template <typename elem_t>
+    template <typename value_type>
     friend class file_writer;
 
-    template <typename elem_t, bool split_on_levels>
+    template <typename value_type, bool split_on_levels>
     friend class levelized_file;
 
     // Remove?
-    template <typename elem_t>
+    template <typename value_type>
     friend class levelized_file_writer;
 
   public:
@@ -153,7 +153,7 @@ namespace adiar::internal
     {
       if (!exists()) { return 0u; }
 
-      tpie::file_stream<elem_t> fs;
+      tpie::file_stream<value_type> fs;
       fs.open(_tpie_file, read_access);
       return fs.size();
     }
@@ -171,7 +171,7 @@ namespace adiar::internal
       if (exists()) return;
 
       // The file exists on disk, after opening it with write_access.
-      tpie::file_stream<elem_t> fs;
+      tpie::file_stream<value_type> fs;
       fs.open(_tpie_file, write_access);
     }
 
@@ -260,7 +260,7 @@ namespace adiar::internal
           std::filesystem::rename(path(), new_path);
         } catch(std::filesystem::filesystem_error& e1) {
 #ifndef NDEBUG
-          std::cerr << "Adiar: unable to move file<elem_t> in O(1) time" << std::endl
+          std::cerr << "Adiar: unable to move file<value_type> in O(1) time" << std::endl
                     << "       what(): " << e1.what() <<  std::endl;
 #endif
           // Did the file disappear and everything just is in shambles?
@@ -275,7 +275,7 @@ namespace adiar::internal
             std::filesystem::remove(path());
           } catch (std::filesystem::filesystem_error& e2) {
 #ifndef NDEBUG
-            std::cerr << "Adiar: unable to copy-delete file<elem_t> in O(N) time" << std::endl
+            std::cerr << "Adiar: unable to copy-delete file<value_type> in O(N) time" << std::endl
                       << "       what(): " << e2.what() <<  std::endl;
 #endif
             throw static_cast<system_error>(e2);
@@ -295,7 +295,7 @@ namespace adiar::internal
     /// \pre `is_persistent() == false` and `file_stream` nor `file_writer` is
     ///      attached to this file.
     ////////////////////////////////////////////////////////////////////////////
-    template <typename pred_t = std::less<elem_t>>
+    template <typename pred_t = std::less<value_type>>
     void sort(pred_t pred = pred_t())
     {
       // Disallow sorting a persistent file
@@ -306,7 +306,7 @@ namespace adiar::internal
       if (size() == 0u) return;
 
       // Use TPIE's file sorting.
-      tpie::file_stream<elem_t> fs;
+      tpie::file_stream<value_type> fs;
       fs.open(_tpie_file);
 
       tpie::progress_indicator_null pi;
@@ -320,11 +320,11 @@ namespace adiar::internal
     /// \remark This new file is a temporary file and must be marked persisted
     ///         to be kept existing beyond the object's lifetime.
     ////////////////////////////////////////////////////////////////////////////
-    static file<elem_t> copy(const file<elem_t> &f)
+    static file<value_type> copy(const file<value_type> &f)
     {
-      if (!f.exists()) { return file<elem_t>(); }
+      if (!f.exists()) { return file<value_type>(); }
 
-      file<elem_t> ret;
+      file<value_type> ret;
       std::filesystem::copy(f.path(), ret.path());
       return ret;
     }

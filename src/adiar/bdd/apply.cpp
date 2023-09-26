@@ -18,12 +18,12 @@ namespace adiar
     static __bdd resolve_same_file(const bdd &bdd_1, const bdd &bdd_2,
                                    const bool_op &op)
     {
-      bdd::ptr_t terminal_1_F = bdd::ptr_t(bdd_1.negate);
-      bdd::ptr_t terminal_2_F = bdd::ptr_t(bdd_2.negate);
+      bdd::pointer_type terminal_1_F = bdd::pointer_type(bdd_1.negate);
+      bdd::pointer_type terminal_2_F = bdd::pointer_type(bdd_2.negate);
 
       // Compute the results on all children.
-      bdd::ptr_t op_F = op(terminal_1_F, terminal_2_F);
-      bdd::ptr_t op_T = op(negate(terminal_1_F), negate(terminal_2_F));
+      bdd::pointer_type op_F = op(terminal_1_F, terminal_2_F);
+      bdd::pointer_type op_T = op(negate(terminal_1_F), negate(terminal_2_F));
 
       // Does it collapse to a terminal?
       if (op_F == op_T) {
@@ -41,15 +41,15 @@ namespace adiar
       adiar_assert(bdd_isterminal(bdd_1) || bdd_isterminal(bdd_2));
 
       if (bdd_isterminal(bdd_1) && bdd_isterminal(bdd_2)) {
-        const bdd::ptr_t p1 = bdd::ptr_t(dd_valueof(bdd_1));
-        const bdd::ptr_t p2 = bdd::ptr_t(dd_valueof(bdd_2));
+        const bdd::pointer_type p1 = bdd::pointer_type(dd_valueof(bdd_1));
+        const bdd::pointer_type p2 = bdd::pointer_type(dd_valueof(bdd_2));
 
         return bdd_terminal(op(p1, p2).value());
       } else if (bdd_isterminal(bdd_1)) {
-        const bdd::ptr_t p1 = bdd::ptr_t(dd_valueof(bdd_1));
+        const bdd::pointer_type p1 = bdd::pointer_type(dd_valueof(bdd_1));
 
         if (can_left_shortcut(op, p1)) {
-          return bdd_terminal(op(p1, bdd::ptr_t(false)).value());
+          return bdd_terminal(op(p1, bdd::pointer_type(false)).value());
         }
         if (is_left_irrelevant(op, p1)) {
           return bdd_2;
@@ -57,10 +57,10 @@ namespace adiar
         // if (is_left_negating(op, p1))
         return bdd_not(bdd_2);
       } else { // if (bdd_isterminal(bdd_2)) {
-        const bdd::ptr_t p2 = bdd::ptr_t(dd_valueof(bdd_2));
+        const bdd::pointer_type p2 = bdd::pointer_type(dd_valueof(bdd_2));
 
         if (can_right_shortcut(op, p2)) {
-          return bdd_terminal(op(bdd::ptr_t(false), p2).value());
+          return bdd_terminal(op(bdd::pointer_type(false), p2).value());
         }
         if (is_right_irrelevant(op, p2)) {
           return bdd_1;
@@ -74,30 +74,30 @@ namespace adiar
   public:
     static internal::cut_type left_cut(const bool_op &op)
     {
-      const bool incl_false = !can_left_shortcut(op, bdd::ptr_t(false));
-      const bool incl_true = !can_left_shortcut(op, bdd::ptr_t(true));
+      const bool incl_false = !can_left_shortcut(op, bdd::pointer_type(false));
+      const bool incl_true = !can_left_shortcut(op, bdd::pointer_type(true));
 
       return internal::cut_type_with(incl_false, incl_true);
     }
 
     static internal::cut_type right_cut(const bool_op &op)
     {
-      const bool incl_false = !can_right_shortcut(op, bdd::ptr_t(false));
-      const bool incl_true = !can_right_shortcut(op, bdd::ptr_t(true));
+      const bool incl_false = !can_right_shortcut(op, bdd::pointer_type(false));
+      const bool incl_true = !can_right_shortcut(op, bdd::pointer_type(true));
 
       return internal::cut_type_with(incl_false, incl_true);
     }
 
   private:
-    static internal::tuple<bdd::ptr_t>
+    static internal::tuple<bdd::pointer_type>
     __resolve_request(const bool_op &op,
-                      const internal::tuple<bdd::ptr_t> &r)
+                      const internal::tuple<bdd::pointer_type> &r)
     {
       if (r[0].is_terminal() && can_left_shortcut(op, r[0])) {
-        return { r[0], bdd::ptr_t(true) };
+        return { r[0], bdd::pointer_type(true) };
       }
       if (r[1].is_terminal() && can_right_shortcut(op, r[1])) {
-        return { bdd::ptr_t(true), r[1] };
+        return { bdd::pointer_type(true), r[1] };
       }
       return r;
     }
@@ -105,8 +105,8 @@ namespace adiar
   public:
     static internal::prod2_rec
     resolve_request(const bool_op &op,
-                    const internal::tuple<bdd::ptr_t> &r_low,
-                    const internal::tuple<bdd::ptr_t> &r_high)
+                    const internal::tuple<bdd::pointer_type> &r_low,
+                    const internal::tuple<bdd::pointer_type> &r_high)
     {
       return internal::prod2_rec_output {
         __resolve_request(op, r_low),

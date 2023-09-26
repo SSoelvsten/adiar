@@ -53,7 +53,7 @@ namespace adiar::internal
       : in_meta_1(f0)
     { }
 
-    void next_level(ptr_uint64::label_t /* level */)
+    void next_level(ptr_uint64::label_type /* level */)
     { // Ignore input, since only used with the isomorphism_policy below.
       curr_level_size = in_meta_1.pull().width();
       curr_level_processed = 0;
@@ -86,15 +86,15 @@ namespace adiar::internal
     // Since we guarantee to be on the same level, then we merely provide a noop
     // (similar to the bdd_policy) for the cofactor.
     static inline void compute_cofactor([[maybe_unused]] const bool on_curr_level,
-                                        dd::ptr_t &/*low*/,
-                                        dd::ptr_t &/*high*/)
+                                        dd::pointer_type &/*low*/,
+                                        dd::pointer_type &/*high*/)
     { adiar_assert(on_curr_level, "No request have mixed levels"); }
 
     // Since we guarantee to be on the same level, then we merely provide a noop
     // (similar to the bdd_policy) for the cofactor.
-    static inline dd::node_t::children_t
+    static inline dd::node_type::children_type
     compute_cofactor([[maybe_unused]] const bool on_curr_level,
-                     const dd::node_t::children_t &children)
+                     const dd::node_type::children_type &children)
     {
       adiar_assert(on_curr_level, "No request have mixed levels");
       return children;
@@ -116,7 +116,7 @@ namespace adiar::internal
     , public prod2_same_level_merger<isomorphism_dd_policy>
   {
   public:
-    typedef input_bound_levels<false> level_check_t;
+    using level_check_t = input_bound_levels<false>;
 
   public:
     static constexpr size_t lookahead_bound()
@@ -125,7 +125,7 @@ namespace adiar::internal
     }
 
   public:
-    static bool resolve_terminals(const dd::node_t &v1, const dd::node_t &v2, bool &ret_value)
+    static bool resolve_terminals(const dd::node_type &v1, const dd::node_type &v2, bool &ret_value)
     {
       ret_value = v1.is_terminal() && v2.is_terminal() && v1.value() == v2.value();
 #ifdef ADIAR_STATS
@@ -135,7 +135,7 @@ namespace adiar::internal
     }
 
   public:
-    static bool resolve_singletons(const dd::node_t &v1, const dd::node_t &v2)
+    static bool resolve_singletons(const dd::node_type &v1, const dd::node_type &v2)
     {
 #ifdef ADIAR_STATS
       stats_equality.slow_check.exit_on_root += 1u;
@@ -146,7 +146,7 @@ namespace adiar::internal
 
   public:
     template<typename pq_1_t>
-    static bool resolve_request(pq_1_t &pq, const tuple<dd::ptr_t> &rp)
+    static bool resolve_request(pq_1_t &pq, const tuple<dd::pointer_type> &rp)
     {
       // Are they both a terminal (and the same terminal)?
       if (rp[0].is_terminal() || rp[1].is_terminal()) {

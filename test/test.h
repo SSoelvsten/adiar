@@ -28,7 +28,7 @@ using level_info_test_stream = level_info_stream<true>;
 class node_test_stream: public node_stream<true>
 {
 public:
-  node_test_stream(const shared_levelized_file<dd::node_t> &f)
+  node_test_stream(const shared_levelized_file<dd::node_type> &f)
     : node_stream<true>(f)
   { }
 
@@ -37,7 +37,7 @@ public:
   { }
 
   node_test_stream(const __bdd &f)
-    : node_stream<true>(f.get<__bdd::shared_nodes_t>(), f.negate)
+    : node_stream<true>(f.get<__bdd::shared_node_file_type>(), f.negate)
   { }
 
   node_test_stream(const zdd &f)
@@ -45,7 +45,7 @@ public:
   { }
 
   node_test_stream(const __zdd &f)
-    : node_stream<true>(f.get<__zdd::shared_nodes_t>(), f.negate)
+    : node_stream<true>(f.get<__zdd::shared_node_file_type>(), f.negate)
   { }
 };
 
@@ -57,11 +57,11 @@ public:
   { }
 
   arc_test_stream(const __bdd &bdd)
-    : arc_stream<true>(bdd.get<__bdd::shared_arcs_t>())
+    : arc_stream<true>(bdd.get<__bdd::shared_arc_file_type>())
   { }
 
   arc_test_stream(const __zdd &zdd)
-    : arc_stream<true>(zdd.get<__zdd::shared_arcs_t>())
+    : arc_stream<true>(zdd.get<__zdd::shared_arc_file_type>())
   { }
 };
 
@@ -153,9 +153,9 @@ namespace snowhouse
   };
 
   template<>
-  struct Stringizer<adiar::map_pair<adiar::bdd::label_t, adiar::assignment>>
+  struct Stringizer<adiar::map_pair<adiar::bdd::label_type, adiar::assignment>>
   {
-    static std::string ToString(const adiar::map_pair<adiar::bdd::label_t, adiar::assignment>& a)
+    static std::string ToString(const adiar::map_pair<adiar::bdd::label_type, adiar::assignment>& a)
     {
       std::stringstream stream;
       stream << "assignment: [x" << a.key() << "|->" << static_cast<size_t>(a.value()) << "]";

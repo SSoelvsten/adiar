@@ -64,7 +64,7 @@ namespace adiar::internal
                                   2u,
                                   0u>;
 
-  typedef request<2, 1> pred_request_2;
+  using pred_request_2 = request<2, 1>;
 
   template<memory_mode_t mem_mode>
   using comparison_priority_queue_2_t =
@@ -120,7 +120,7 @@ namespace adiar::internal
       if (comparison_pq_1.can_pull() && (comparison_pq_2.empty() ||
                                          comparison_pq_1.top().target.first() < comparison_pq_2.top().target.second())) {
         req = { comparison_pq_1.top().target,
-                { {{ node::ptr_t::nil(), node::ptr_t::nil() }} } };
+                { {{ node::pointer_type::nil(), node::pointer_type::nil() }} } };
         comparison_pq_1.pop();
       } else {
         req = comparison_pq_2.top();
@@ -128,7 +128,7 @@ namespace adiar::internal
       }
 
       // Seek request partially in stream
-      const typename comp_policy::ptr_t t_seek =
+      const typename comp_policy::pointer_type t_seek =
         req.empty_carry() ? req.target.first() : req.target.second();
 
       while (v0.uid() < t_seek && in_nodes_0.can_pull()) {
@@ -148,7 +148,7 @@ namespace adiar::internal
           && req.target[0].is_node() && req.target[1].is_node()
           && req.target[0].label() == req.target[1].label()
           && (v0.uid() != req.target[0] || v1.uid() != req.target[1])) {
-        const typename comp_policy::children_t children =
+        const typename comp_policy::children_type children =
           (req.target[0] == v0.uid() ? v0 : v1).children();
 
         comparison_pq_2.push({ req.target, { children } });
@@ -161,14 +161,14 @@ namespace adiar::internal
       }
 
       // Obtain children or root for both nodes (depending on level)
-      const tuple<typename comp_policy::children_t, 2> children =
+      const tuple<typename comp_policy::children_type, 2> children =
         comp_policy::merge(req, t_seek, v0, v1);
 
       // Create pairing of product children and obtain new recursion targets
-      const tuple<typename comp_policy::ptr_t> rec_pair_0 =
+      const tuple<typename comp_policy::pointer_type> rec_pair_0 =
         { children[0][false], children[1][false] };
 
-      const tuple<typename comp_policy::ptr_t> rec_pair_1 =
+      const tuple<typename comp_policy::pointer_type> rec_pair_1 =
         { children[0][true], children[1][true] };
 
       // Forward pairing and return early if possible

@@ -35,54 +35,54 @@ namespace adiar::internal
     static constexpr size_t outdegree = 2u;
 
     // TODO (ADD (64-bit)):
-    //   template with 'uid_t' reexpose it (and its related 'ptr') with typedefs.
+    //   template with 'uid_type' reexpose it (and its related 'ptr') with typedefs.
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the pointer of this node's children.
     ////////////////////////////////////////////////////////////////////////////
-    typedef ptr_uint64 ptr_t;
+    using pointer_type = ptr_uint64;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of this node's unique identifier.
     ////////////////////////////////////////////////////////////////////////////
-    typedef __uid<ptr_t> uid_t;
+    using uid_type = __uid<pointer_type>;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of terminal values.
     ////////////////////////////////////////////////////////////////////////////
-    typedef ptr_t::value_t value_t;
+    using terminal_type = pointer_type::terminal_type;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of this node's variable label.
     ////////////////////////////////////////////////////////////////////////////
-    typedef ptr_t::label_t label_t;
+    using label_type = pointer_type::label_type;
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief The maximal possible value for a unique identifier's label.
     //////////////////////////////////////////////////////////////////////////////
-    static constexpr label_t max_label = ptr_t::max_label;
+    static constexpr label_type max_label = pointer_type::max_label;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of this node's level identifier.
     ////////////////////////////////////////////////////////////////////////////
-    typedef ptr_t::id_t id_t;
+    using id_type = pointer_type::id_type;
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief The maximal possible value for this nodes level identifier.
     //////////////////////////////////////////////////////////////////////////////
-    static constexpr id_t max_id = ptr_t::max_id;
+    static constexpr id_type max_id = pointer_type::max_id;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the children tuple.
     ////////////////////////////////////////////////////////////////////////////
-    typedef tuple<ptr_t, outdegree> children_t;
+    using children_type = tuple<pointer_type, outdegree>;
 
   private:
     // TODO (Attributed Edges):
     //   Add logic related to flag on children.
 
-    uid_t _uid;
-    children_t _children;
+    uid_type _uid;
+    children_type _children;
 
   public:
     // Provide 'default' constructors to ensure it being a 'POD' inside of TPIE.
@@ -94,7 +94,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The unique identifier of this node
     ////////////////////////////////////////////////////////////////////////////
-    inline uid_t uid() const
+    inline uid_type uid() const
     { return _uid; }
 
     /* ============================== TERMINAL NODE ========================= */
@@ -104,8 +104,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct *terminal* node `(value, nil, nil)`.
     ////////////////////////////////////////////////////////////////////////////
-    node(const value_t value)
-      : _uid(ptr_t(value)), _children(ptr_uint64::nil())
+    node(const terminal_type value)
+      : _uid(pointer_type(value)), _children(ptr_uint64::nil())
     { }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -119,7 +119,7 @@ namespace adiar::internal
     ///
     /// \pre `is_terminal()` evaluates to `true`.
     ////////////////////////////////////////////////////////////////////////////
-    inline value_t value() const
+    inline terminal_type value() const
     {
       adiar_assert(is_terminal());
       return _uid.value();
@@ -147,19 +147,19 @@ namespace adiar::internal
 
     // TODO (QMDD):
     //   Add generic version of the two constructors below that takes a
-    //   'children_t' as argument.
+    //   'children_type' as argument.
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct node `(uid, low, high)`.
     ////////////////////////////////////////////////////////////////////////////
-    node(const uid_t &u, const ptr_t &l, const ptr_t &h)
+    node(const uid_type &u, const pointer_type &l, const pointer_type &h)
       : _uid(u), _children{l, h}
     { }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct *internal* node `((label, id), low, high)`.
     ////////////////////////////////////////////////////////////////////////////
-    node(const label_t label, const id_t id, const ptr_t &l, const ptr_t &h)
+    node(const label_type label, const id_type id, const pointer_type &l, const pointer_type &h)
       : _uid(label, id), _children{l, h}
     {
       adiar_assert(!l.is_nil(), "Cannot create a node with nil child");
@@ -174,7 +174,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct *internal* node `((label, id), low, high)`.
     ////////////////////////////////////////////////////////////////////////////
-    node(const label_t label, const id_t id, const node &l, const ptr_t &h)
+    node(const label_type label, const id_type id, const node &l, const pointer_type &h)
       : node(label, id, l.uid(), h)
     {
       adiar_assert(outdegree == 2, "Constructor is for binary node only.");
@@ -183,7 +183,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct *internal* node `((label, id), low, high)`.
     ////////////////////////////////////////////////////////////////////////////
-    node(const label_t label, const id_t id, const ptr_t &l, const node &h)
+    node(const label_type label, const id_type id, const pointer_type &l, const node &h)
       : node(label, id, l, h.uid())
     {
       adiar_assert(outdegree == 2, "Constructor is for binary node only.");
@@ -192,7 +192,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct *internal* node `((label, id), low, high)`.
     ////////////////////////////////////////////////////////////////////////////
-    node(const label_t label, const id_t id, const node &l, const node &h)
+    node(const label_type label, const id_type id, const node &l, const node &h)
       : node(label, id, l.uid(), h.uid())
     {
       adiar_assert(outdegree == 2, "Constructor is for binary node only.");
@@ -204,7 +204,7 @@ namespace adiar::internal
     /// \pre `is_terminal()` evaluates to `false`.
     ////////////////////////////////////////////////////////////////////////////
     // TODO: Rename to `level()` when introducing variable ordering
-    inline label_t label() const
+    inline label_type label() const
     {
       adiar_assert(!is_terminal());
       return uid().label();
@@ -215,7 +215,7 @@ namespace adiar::internal
     ///
     /// \pre `is_terminal()` evaluates to `false`.
     ////////////////////////////////////////////////////////////////////////////
-    inline id_t id() const
+    inline id_type id() const
     {
       adiar_assert(!is_terminal());
       return uid().id();
@@ -224,7 +224,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether a node is on a given level, i.e. has the given label.
     ////////////////////////////////////////////////////////////////////////////
-    inline bool on_level(const label_t level) const
+    inline bool on_level(const label_type level) const
     { return uid().on_level(level); }
 
     /* ================================= CHILDREN =========================== */
@@ -232,13 +232,13 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The node's children sorted based on the semantics of this node.
     ////////////////////////////////////////////////////////////////////////////
-    inline const children_t& children() const
+    inline const children_type& children() const
     { return _children; }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The node's i'th child (sorted based on the semantics).
     ////////////////////////////////////////////////////////////////////////////
-    inline ptr_t child(const size_t i) const
+    inline pointer_type child(const size_t i) const
     {
       adiar_assert(i < outdegree, "'i' must be a valid children index.");
       return _children[i];
@@ -252,7 +252,7 @@ namespace adiar::internal
     ///
     /// \see child
     ////////////////////////////////////////////////////////////////////////////
-    inline ptr_t low() const
+    inline pointer_type low() const
     {
       adiar_assert(outdegree == 2,
                    "Semantics of 'low' is only defined for binary nodes.");
@@ -268,7 +268,7 @@ namespace adiar::internal
     ///
     /// \see child
     ////////////////////////////////////////////////////////////////////////////
-    inline ptr_t high() const
+    inline pointer_type high() const
     {
       adiar_assert(outdegree == 2,
                    "Semantics of 'high' is only defined for binary node.");
@@ -313,14 +313,14 @@ namespace adiar::internal
     node operator~ () const
     {
       if (this->is_terminal()) {
-        return node(~this->_uid, ptr_t::nil(), ptr_t::nil());
+        return node(~this->_uid, pointer_type::nil(), pointer_type::nil());
       }
 
-      const ptr_t low  = this->_children[0].is_terminal()
+      const pointer_type low  = this->_children[0].is_terminal()
         ? ~this->_children[0]
         :  this->_children[0];
 
-      const ptr_t high = this->_children[1].is_terminal()
+      const pointer_type high = this->_children[1].is_terminal()
         ? ~this->_children[1]
         :  this->_children[1];
 
@@ -337,49 +337,49 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Ordering of node in comparison to a unique identifier.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool operator< (const node &n, const node::uid_t &u)
+  inline bool operator< (const node &n, const node::uid_type &u)
   { return n.uid() < u; }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Ordering of node in comparison to a unique identifier.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool operator< (const node::uid_t &u, const node &n)
+  inline bool operator< (const node::uid_type &u, const node &n)
   { return u < n.uid(); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Ordering of node in comparison to a unique identifier.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool operator<= (const node &n, const node::uid_t &u)
+  inline bool operator<= (const node &n, const node::uid_type &u)
   { return n.uid() <= u; }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Ordering of node in comparison to a unique identifier.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool operator<= (const node::uid_t &u, const node &n)
+  inline bool operator<= (const node::uid_type &u, const node &n)
   { return u <= n.uid(); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Ordering of node in comparison to a unique identifier.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool operator> (const node &n, const node::uid_t &u)
+  inline bool operator> (const node &n, const node::uid_type &u)
   { return n.uid() > u; }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Ordering of node in comparison to a unique identifier.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool operator> (const node::uid_t &u, const node &n)
+  inline bool operator> (const node::uid_type &u, const node &n)
   { return u > n.uid(); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Ordering of node in comparison to a unique identifier.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool operator>= (const node &n, const node::uid_t &u)
+  inline bool operator>= (const node &n, const node::uid_type &u)
   { return n.uid() >= u; }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Ordering of node in comparison to a unique identifier.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool operator>= (const node::uid_t &u, const node &n)
+  inline bool operator>= (const node::uid_type &u, const node &n)
   { return u >= n.uid(); }
 }
 

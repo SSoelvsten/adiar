@@ -23,16 +23,17 @@ namespace adiar::internal
     static_assert(std::is_base_of<__dd, typename to_policy::unreduced_t>::value);
 
   public:
-    typedef typename from_policy::reduced_t reduced_t;
-    typedef typename from_policy::ptr_t ptr_t;
-    typedef typename from_policy::node_t node_t;
+    using reduced_t    = typename from_policy::reduced_t;
+    using pointer_type = typename from_policy::pointer_type;
+    using node_type    = typename from_policy::node_type;
 
-    typedef typename to_policy::unreduced_t unreduced_t;
-    typedef typename to_policy::label_t label_t;
-    typedef typename to_policy::id_t id_t;
+    using unreduced_t  = typename to_policy::unreduced_t;
+    using label_type   = typename to_policy::label_type;
+    using id_type      = typename to_policy::id_type;
 
-    static constexpr typename to_policy::label_t max_label = to_policy::max_label;
-    static constexpr typename to_policy::id_t max_id = to_policy::max_id;
+    static constexpr label_type max_label = to_policy::max_label;
+
+    static constexpr id_type max_id = to_policy::max_id;
 
   public:
     static constexpr bool may_skip = true;
@@ -52,25 +53,25 @@ namespace adiar::internal
     static typename to_policy::reduced_t
     on_terminal_input(const bool terminal_value,
                       const typename from_policy::reduced_t& /*dd*/,
-                      const shared_file<typename from_policy::label_t> &dom)
+                      const shared_file<typename from_policy::label_type> &dom)
     {
       adiar_assert(dom->size() > 0, "Emptiness check is before terminal check");
 
-      node::uid_t prior_node = node::uid_t(terminal_value);
+      node::uid_type prior_node = node::uid_type(terminal_value);
 
-      shared_levelized_file<bdd::node_t> nf;
+      shared_levelized_file<bdd::node_type> nf;
 
       bool has_output = true;
       node_writer nw(nf);
 
-      file_stream<typename from_policy::label_t, true> ls(dom);
+      file_stream<typename from_policy::label_type, true> ls(dom);
 
       while(ls.can_pull()) {
-        const typename to_policy::label_t next_label = ls.pull();
+        const typename to_policy::label_type next_label = ls.pull();
 
         const tuple children = from_policy::reduction_rule_inv(prior_node);
         const node next_node = node(next_label, to_policy::max_id, children[0], children[1]);
-        const typename to_policy::ptr_t reduction_result = to_policy::reduction_rule(next_node);
+        const typename to_policy::pointer_type reduction_result = to_policy::reduction_rule(next_node);
 
         if (reduction_result == next_node.uid()) { // Output
           prior_node = next_node.uid();
@@ -100,14 +101,14 @@ namespace adiar::internal
 
     static intercut_rec hit_existing(const node &n)
     {
-      const node::ptr_t to_reduction = to_policy::reduction_rule(n);
+      const node::pointer_type to_reduction = to_policy::reduction_rule(n);
       if (to_reduction != n.uid()) {
         return intercut_rec_skipto { to_reduction };
       }
       return intercut_rec_output { n.low(), n.high() };
     }
 
-    static intercut_rec_output hit_cut(const node::ptr_t target)
+    static intercut_rec_output hit_cut(const node::pointer_type target)
    {
       const tuple children = from_policy::reduction_rule_inv(target);
 

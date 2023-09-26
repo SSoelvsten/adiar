@@ -12,17 +12,17 @@ namespace adiar
 {
   class substitute_assignment_file_mgr
   {
-    file_stream<map_pair<bdd::label_t, assignment>> mps;
-    map_pair<bdd::label_t, assignment> mp;
+    file_stream<map_pair<bdd::label_type, assignment>> mps;
+    map_pair<bdd::label_type, assignment> mp;
 
   public:
-    substitute_assignment_file_mgr(const shared_file<map_pair<bdd::label_t, assignment>> &mpf)
+    substitute_assignment_file_mgr(const shared_file<map_pair<bdd::label_type, assignment>> &mpf)
       : mps(mpf)
     {
       mp = mps.pull();
     }
 
-    assignment assignment_for_level(bdd::label_t level) {
+    assignment assignment_for_level(bdd::label_type level) {
       while (mp.level() < level && mps.can_pull()) {
         mp = mps.pull();
       }
@@ -36,13 +36,13 @@ namespace adiar
   class bdd_restrict_policy : public bdd_policy
   {
   public:
-    static internal::substitute_rec keep_node(const bdd::node_t &n, substitute_assignment_file_mgr &/*amgr*/)
+    static internal::substitute_rec keep_node(const bdd::node_type &n, substitute_assignment_file_mgr &/*amgr*/)
     { return internal::substitute_rec_output { n }; }
 
-    static internal::substitute_rec fix_false(const bdd::node_t &n, substitute_assignment_file_mgr &/*amgr*/)
+    static internal::substitute_rec fix_false(const bdd::node_type &n, substitute_assignment_file_mgr &/*amgr*/)
     { return internal::substitute_rec_skipto { n.low() }; }
 
-    static internal::substitute_rec fix_true(const bdd::node_t &n, substitute_assignment_file_mgr &/*amgr*/)
+    static internal::substitute_rec fix_true(const bdd::node_type &n, substitute_assignment_file_mgr &/*amgr*/)
     { return internal::substitute_rec_skipto { n.high() }; }
 
   public:
@@ -52,14 +52,14 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   template<>
-  struct internal::level_stream_t<shared_file<map_pair<bdd::label_t, assignment>>>
+  struct internal::level_stream_t<shared_file<map_pair<bdd::label_type, assignment>>>
   {
     template<bool reverse = false>
-    using stream_t = internal::file_stream<map_pair<bdd::label_t, assignment>>;
+    using stream_t = internal::file_stream<map_pair<bdd::label_type, assignment>>;
   };
 
   __bdd bdd_restrict(const bdd &dd,
-                     const shared_file<map_pair<bdd::label_t, assignment>> &a)
+                     const shared_file<map_pair<bdd::label_type, assignment>> &a)
   {
     if (a->size() == 0
         || bdd_isterminal(dd)

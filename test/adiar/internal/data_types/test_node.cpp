@@ -18,7 +18,7 @@ go_bandit([]() {
       });
 
       describe("node(...), .label(), .id(), .low(), .high()", [&]() {
-        it("should create node [label_t, id_t, ptr_uint64, ptr_uint64] [1]", [&]() {
+        it("should create node [label_type, id_type, ptr_uint64, ptr_uint64] [1]", [&]() {
           const node n = node(3u,12u, terminal_F, terminal_T);
           AssertThat(n.uid(), Is().EqualTo(ptr_uint64(3,12)));
           AssertThat(n.label(), Is().EqualTo(3u));
@@ -30,7 +30,7 @@ go_bandit([]() {
           AssertThat(n.high(), Is().EqualTo(terminal_T));
         });
 
-        it("should create node [label_t, id_t, ptr_uint64, ptr_uint64] [2]", [&]() {
+        it("should create node [label_type, id_type, ptr_uint64, ptr_uint64] [2]", [&]() {
           const node n = node(3u,42u, terminal_T, terminal_F);
           AssertThat(n.uid(), Is().EqualTo(ptr_uint64(3,42)));
           AssertThat(n.label(), Is().EqualTo(3u));
@@ -42,7 +42,7 @@ go_bandit([]() {
           AssertThat(n.high(), Is().EqualTo(terminal_F));
         });
 
-        it("should create node [label_t, id_t, node&, node&]", [&]() {
+        it("should create node [label_type, id_type, node&, node&]", [&]() {
           const node n_child1 = node(3u,12u, terminal_F, terminal_T);
           const node n_child2 = node(3u,42u, terminal_T, terminal_F);
 
@@ -57,7 +57,7 @@ go_bandit([]() {
           AssertThat(n.high(), Is().EqualTo(n_child2.uid()));
         });
 
-        it("should create node [label_t, id_t, node&, ptr_uint64]", [&]() {
+        it("should create node [label_type, id_type, node&, ptr_uint64]", [&]() {
           const node n_child = node(2u,2u, terminal_F, terminal_T);
 
           const node n = node(1u,7u,terminal_T,n_child);
@@ -71,7 +71,7 @@ go_bandit([]() {
           AssertThat(n.high(), Is().EqualTo(n_child.uid()));
         });
 
-        it("should create node [label_t, id_t, ptr_uint64, node&]", [&]() {
+        it("should create node [label_type, id_type, ptr_uint64, node&]", [&]() {
           const node n_child = node(2u,2u, terminal_F,terminal_T);
 
           const node n = node(0u,3u, terminal_T,n_child);
@@ -91,13 +91,13 @@ go_bandit([]() {
         const node terminal_node_F = node(false);
 
         it("has nil() children [F]", [&]() {
-          AssertThat(terminal_node_F.low(), Is().EqualTo(node::ptr_t::nil()));
-          AssertThat(terminal_node_F.high(), Is().EqualTo(node::ptr_t::nil()));
+          AssertThat(terminal_node_F.low(), Is().EqualTo(node::pointer_type::nil()));
+          AssertThat(terminal_node_F.high(), Is().EqualTo(node::pointer_type::nil()));
         });
 
         it("has nil() children [T]", [&]() {
-          AssertThat(terminal_node_T.low(), Is().EqualTo(node::ptr_t::nil()));
-          AssertThat(terminal_node_T.high(), Is().EqualTo(node::ptr_t::nil()));
+          AssertThat(terminal_node_T.low(), Is().EqualTo(node::pointer_type::nil()));
+          AssertThat(terminal_node_T.high(), Is().EqualTo(node::pointer_type::nil()));
         });
 
         describe("is_terminal", [&]() {
@@ -278,7 +278,7 @@ go_bandit([]() {
       describe("comparators [uid]", [&]() {
         it("should primarily sort by label [ 1]", [&]() {
           const node n = node(0u, 1u, terminal_F, terminal_T);
-          const node::uid_t u = node::uid_t(1u,0u);
+          const node::uid_type u = node::uid_type(1u,0u);
 
           AssertThat(n, Is().LessThan(u));
           AssertThat(n, Is().LessThanOrEqualTo(u));
@@ -288,7 +288,7 @@ go_bandit([]() {
 
         it("should primarily sort by label [!1]", [&]() {
           const node n = node(0u, 1u, terminal_F, terminal_T);
-          const node::uid_t u = node::uid_t(1u,0u);
+          const node::uid_type u = node::uid_type(1u,0u);
 
           AssertThat(u, Is().Not().LessThan(n));
           AssertThat(u, Is().Not().LessThanOrEqualTo(n));
@@ -298,7 +298,7 @@ go_bandit([]() {
 
         it("should primarily sort by label [ 2]", [&]() {
           const node n = node(21u, 8u, terminal_F, terminal_T);
-          const node::uid_t u = node::uid_t(42u,2u);
+          const node::uid_type u = node::uid_type(42u,2u);
 
           AssertThat(n, Is().LessThan(u));
           AssertThat(n, Is().LessThanOrEqualTo(u));
@@ -308,7 +308,7 @@ go_bandit([]() {
 
         it("should primarily sort by label [ 3]", [&]() {
           const node n = node(1u, 1u, terminal_F, terminal_T);
-          const node::uid_t u = node::uid_t(0u,2u);
+          const node::uid_type u = node::uid_type(0u,2u);
 
           AssertThat(u, Is().LessThan(n));
           AssertThat(u, Is().LessThanOrEqualTo(n));
@@ -318,7 +318,7 @@ go_bandit([]() {
 
         it("should primarily sort by label [ 4]", [&]() {
           const node n = node(42u, 0u, terminal_F, terminal_T);
-          const node::uid_t u = node::uid_t(21u,8u);
+          const node::uid_type u = node::uid_type(21u,8u);
 
           AssertThat(u, Is().LessThan(n));
           AssertThat(u, Is().LessThanOrEqualTo(n));
@@ -328,7 +328,7 @@ go_bandit([]() {
 
         it("should primarily sort by label [!4]", [&]() {
           const node n = node(42u, 0u, terminal_F, terminal_T);
-          const node::uid_t u = node::uid_t(21u,8u);
+          const node::uid_type u = node::uid_type(21u,8u);
 
           AssertThat(n, Is().Not().LessThan(u));
           AssertThat(n, Is().Not().LessThanOrEqualTo(u));
@@ -338,7 +338,7 @@ go_bandit([]() {
 
         it("should secondly sort by id     [ 1]", [&]() {
           const node n = node(42u, 0u, terminal_F, terminal_T);
-          const node::uid_t u = node::uid_t(42u, 1u);
+          const node::uid_type u = node::uid_type(42u, 1u);
 
           AssertThat(n, Is().LessThan(u));
           AssertThat(n, Is().LessThanOrEqualTo(u));
@@ -348,7 +348,7 @@ go_bandit([]() {
 
         it("should secondly sort by id     [ 2]", [&]() {
           const node n = node(42u, 1u, terminal_F, terminal_T);
-          const node::uid_t u = node::uid_t(42u, 0u);
+          const node::uid_type u = node::uid_type(42u, 0u);
 
           AssertThat(u, Is().LessThan(n));
           AssertThat(u, Is().LessThanOrEqualTo(n));

@@ -30,11 +30,11 @@ namespace adiar
 
     static zdd on_terminal_input(const bool terminal_value,
                                  const zdd& dd,
-                                 const internal::shared_file<zdd::label_t> &labels)
+                                 const internal::shared_file<zdd::label_type> &labels)
     {
       // TODO: simplify when labels are a generator
       if (terminal_value) {
-        internal::file_stream<zdd::label_t, true> ls(labels);
+        internal::file_stream<zdd::label_type, true> ls(labels);
         return zdd_powerset(make_generator(ls));
       } else {
         return dd;
@@ -47,25 +47,25 @@ namespace adiar
     // LCOV_EXCL_STOP
 
     // LCOV_EXCL_START
-    static inline internal::intercut_rec hit_existing(const zdd::node_t &/*n*/)
+    static inline internal::intercut_rec hit_existing(const zdd::node_type &/*n*/)
     {
       // The user should NOT have supplied a label that hits any existing nodes.
       adiar_unreachable();
     }
     // LCOV_EXCL_STOP
 
-    static inline internal::intercut_rec_output hit_cut(const zdd::ptr_t &target)
+    static inline internal::intercut_rec_output hit_cut(const zdd::pointer_type &target)
     {
       return internal::intercut_rec_output { target, target };
     }
 
-    static inline internal::intercut_rec_output miss_existing(const zdd::node_t &n)
+    static inline internal::intercut_rec_output miss_existing(const zdd::node_type &n)
     {
       return internal::intercut_rec_output { n.low(), n.high() };
     }
   };
 
-  __zdd zdd_expand(const zdd &dd, const generator<zdd::label_t> &vars)
+  __zdd zdd_expand(const zdd &dd, const generator<zdd::label_type> &vars)
   {
     return internal::intercut<zdd_expand_policy>(dd, vars);
   }

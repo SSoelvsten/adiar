@@ -170,8 +170,8 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(42, node::max_id,
-                                                node::ptr_t(false),
-                                                node::ptr_t(true))));
+                                                node::pointer_type(false),
+                                                node::pointer_type(true))));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
@@ -208,8 +208,8 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(7, node::max_id,
-                                                node::ptr_t(false),
-                                                node::ptr_t(true))));
+                                                node::pointer_type(false),
+                                                node::pointer_type(true))));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
@@ -246,13 +246,13 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(42, node::max_id,
-                                                node::ptr_t(true),
-                                                node::ptr_t(true))));
+                                                node::pointer_type(true),
+                                                node::pointer_type(true))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(21, node::max_id,
-                                                node::ptr_t(false),
-                                                node::ptr_t(42, node::max_id))));
+                                                node::pointer_type(false),
+                                                node::pointer_type(42, node::max_id))));
 
 
         AssertThat(ns.can_pull(), Is().False());
@@ -292,13 +292,13 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(42, node::max_id,
-                                                node::ptr_t(false),
-                                                node::ptr_t(true))));
+                                                node::pointer_type(false),
+                                                node::pointer_type(true))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(21, node::max_id,
-                                                node::ptr_t(42, node::max_id),
-                                                node::ptr_t(42, node::max_id))));
+                                                node::pointer_type(42, node::max_id),
+                                                node::pointer_type(42, node::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -337,18 +337,18 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(42, node::max_id,
-                                                node::ptr_t(true),
-                                                node::ptr_t(true))));
+                                                node::pointer_type(true),
+                                                node::pointer_type(true))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(21, node::max_id,
-                                                node::ptr_t(false),
-                                                node::ptr_t(42, node::max_id))));
+                                                node::pointer_type(false),
+                                                node::pointer_type(42, node::max_id))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(10, node::max_id,
-                                                node::ptr_t(21, node::max_id),
-                                                node::ptr_t(21, node::max_id))));
+                                                node::pointer_type(21, node::max_id),
+                                                node::pointer_type(21, node::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -399,24 +399,24 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id,
-                                                node::ptr_t(true),
-                                                node::ptr_t(true))));
+                                                node::pointer_type(true),
+                                                node::pointer_type(true))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id,
-                                                node::ptr_t(3, node::max_id),
-                                                node::ptr_t(3, node::max_id))));
+                                                node::pointer_type(3, node::max_id),
+                                                node::pointer_type(3, node::max_id))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                node::ptr_t(false),
-                                                node::ptr_t(2, node::max_id))));
+                                                node::pointer_type(false),
+                                                node::pointer_type(2, node::max_id))));
 
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(0, node::max_id,
-                                                node::ptr_t(1, node::max_id),
-                                                node::ptr_t(1, node::max_id))));
+                                                node::pointer_type(1, node::max_id),
+                                                node::pointer_type(1, node::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -531,8 +531,8 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(21, zdd::max_id,
-                                                node::ptr_t(true),
-                                                node::ptr_t(true))));
+                                                node::pointer_type(true),
+                                                node::pointer_type(true))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -568,8 +568,8 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(42, zdd::max_id,
-                                                node::ptr_t(true),
-                                                node::ptr_t(true))));
+                                                node::pointer_type(true),
+                                                node::pointer_type(true))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -605,13 +605,13 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, zdd::max_id,
-                                                node::ptr_t(true),
-                                                node::ptr_t(true))));
+                                                node::pointer_type(true),
+                                                node::pointer_type(true))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(0, zdd::max_id,
-                                                node::ptr_t(2, zdd::max_id),
-                                                node::ptr_t(2, zdd::max_id))));
+                                                node::pointer_type(2, zdd::max_id),
+                                                node::pointer_type(2, zdd::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -660,18 +660,18 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id,
-                                                node::ptr_t(true),
-                                                node::ptr_t(true))));
+                                                node::pointer_type(true),
+                                                node::pointer_type(true))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                node::ptr_t(3, node::max_id),
-                                                node::ptr_t(3, node::max_id))));
+                                                node::pointer_type(3, node::max_id),
+                                                node::pointer_type(3, node::max_id))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(0, node::max_id,
-                                                node::ptr_t(1, node::max_id),
-                                                node::ptr_t(1, node::max_id))));
+                                                node::pointer_type(1, node::max_id),
+                                                node::pointer_type(1, node::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -710,18 +710,18 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id,
-                                                node::ptr_t(true),
-                                                node::ptr_t(true))));
+                                                node::pointer_type(true),
+                                                node::pointer_type(true))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                node::ptr_t(2, node::max_id),
-                                                node::ptr_t(2, node::max_id))));
+                                                node::pointer_type(2, node::max_id),
+                                                node::pointer_type(2, node::max_id))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(0, node::max_id,
-                                                node::ptr_t(1, node::max_id),
-                                                node::ptr_t(1, node::max_id))));
+                                                node::pointer_type(1, node::max_id),
+                                                node::pointer_type(1, node::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -760,18 +760,18 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id,
-                                                node::ptr_t(true),
-                                                node::ptr_t(true))));
+                                                node::pointer_type(true),
+                                                node::pointer_type(true))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id,
-                                                node::ptr_t(3, node::max_id),
-                                                node::ptr_t(3, node::max_id))));
+                                                node::pointer_type(3, node::max_id),
+                                                node::pointer_type(3, node::max_id))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                node::ptr_t(2, node::max_id),
-                                                node::ptr_t(2, node::max_id))));
+                                                node::pointer_type(2, node::max_id),
+                                                node::pointer_type(2, node::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 

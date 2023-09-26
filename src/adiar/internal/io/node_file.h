@@ -63,7 +63,7 @@ namespace adiar::internal
       /// \sa    cut_type
       //////////////////////////////////////////////////////////////////////////
       cuts_t max_1level_cut =
-        { MAX_CUT, MAX_CUT, MAX_CUT, MAX_CUT };
+        { max_cut, max_cut, max_cut, max_cut };
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief An upper bound for the maximum 2-level cut of the DAG (with or
@@ -73,7 +73,7 @@ namespace adiar::internal
       /// \sa    cut_type
       //////////////////////////////////////////////////////////////////////////
       cuts_t max_2level_cut =
-        { MAX_CUT, MAX_CUT, MAX_CUT, MAX_CUT };
+        { max_cut, max_cut, max_cut, max_cut };
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief The number of false and true terminals in the file. Index 0

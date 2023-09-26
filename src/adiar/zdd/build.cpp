@@ -30,30 +30,30 @@ namespace adiar
   class zdd_ithvar_policy : public zdd_policy
   {
   private:
-    const zdd::label_t var;
+    const zdd::label_type var;
 
   public:
-    zdd_ithvar_policy(zdd::label_t v) : var(v)
+    zdd_ithvar_policy(zdd::label_type v) : var(v)
     { }
 
   public:
     static constexpr bool init_terminal = true;
 
     constexpr bool
-    skip(const zdd_policy::label_t &) const
+    skip(const zdd_policy::label_type &) const
     { return false; }
 
-    inline zdd_policy::node_t
-    make_node(const zdd_policy::label_t &l, const zdd_policy::ptr_t &r) const
+    inline zdd_policy::node_type
+    make_node(const zdd_policy::label_type &l, const zdd_policy::pointer_type &r) const
     {
       if (l == var) {
-        return zdd_policy::node_t(l, zdd_policy::max_id, zdd_policy::ptr_t(false), r);
+        return zdd_policy::node_type(l, zdd_policy::max_id, zdd_policy::pointer_type(false), r);
       }
-      return zdd_policy::node_t(l, zdd_policy::max_id, r, r);
+      return zdd_policy::node_type(l, zdd_policy::max_id, r, r);
     }
   };
 
-  zdd zdd_ithvar(const zdd::label_t var, const generator<zdd::label_t> &dom)
+  zdd zdd_ithvar(const zdd::label_type var, const generator<zdd::label_type> &dom)
   {
     // TODO: Move empty dom edge-case inside of `internal::build_chain<>`?
 
@@ -63,7 +63,7 @@ namespace adiar
     return zdd_istrue(res) ? zdd_empty() : res;
   }
 
-  zdd zdd_ithvar(const zdd::label_t var)
+  zdd zdd_ithvar(const zdd::label_type var)
   {
     const shared_file<domain_var> dom = domain_get();
     internal::file_stream<domain_var, true> ds(dom);
@@ -75,31 +75,31 @@ namespace adiar
   class zdd_nithvar_policy : public zdd_policy
   {
   private:
-    const zdd::label_t var;
+    const zdd::label_type var;
 
   public:
-    zdd_nithvar_policy(zdd::label_t v) : var(v)
+    zdd_nithvar_policy(zdd::label_type v) : var(v)
     { }
 
   public:
     static constexpr bool init_terminal = true;
 
     inline bool
-    skip(const zdd_policy::label_t &l) const
+    skip(const zdd_policy::label_type &l) const
     { return l == var; }
 
-    inline zdd_policy::node_t
-    make_node(const zdd_policy::label_t &l, const zdd_policy::ptr_t &r) const
-    { return zdd_policy::node_t(l, zdd_policy::max_id, r, r); }
+    inline zdd_policy::node_type
+    make_node(const zdd_policy::label_type &l, const zdd_policy::pointer_type &r) const
+    { return zdd_policy::node_type(l, zdd_policy::max_id, r, r); }
   };
 
-  zdd zdd_nithvar(const zdd::label_t var, const generator<zdd::label_t> &dom)
+  zdd zdd_nithvar(const zdd::label_type var, const generator<zdd::label_type> &dom)
   {
     zdd_nithvar_policy p(var);
     return internal::build_chain<>(p, dom);
   }
 
-  zdd zdd_nithvar(const zdd::label_t var)
+  zdd zdd_nithvar(const zdd::label_type var)
   {
     const shared_file<domain_var> dom = domain_get();
     internal::file_stream<domain_var, true> ds(dom);
@@ -108,34 +108,34 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_vars(const generator<zdd::label_t> &vars)
+  zdd zdd_vars(const generator<zdd::label_type> &vars)
   {
     internal::chain_high<zdd_policy> p;
     return internal::build_chain<>(p, vars);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_singleton(const zdd::label_t label)
+  zdd zdd_singleton(const zdd::label_type label)
   {
     return internal::build_ithvar<zdd_policy>(label);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_singletons(const generator<zdd::label_t> &vars)
+  zdd zdd_singletons(const generator<zdd::label_type> &vars)
   {
     internal::chain_low<zdd_policy> p;
     return internal::build_chain<>(p, vars);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_powerset(const generator<zdd::label_t> &vars)
+  zdd zdd_powerset(const generator<zdd::label_type> &vars)
   {
     internal::chain_both<zdd_policy> p;
     return internal::build_chain<>(p, vars);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_bot(const generator<zdd::label_t> &/*dom*/)
+  zdd zdd_bot(const generator<zdd::label_type> &/*dom*/)
   {
     return zdd_empty();
   }
@@ -145,7 +145,7 @@ namespace adiar
     return zdd_empty();
   }
 
-  zdd zdd_top(const generator<zdd::label_t> &dom)
+  zdd zdd_top(const generator<zdd::label_type> &dom)
   {
     return zdd_powerset(dom);
   }

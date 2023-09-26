@@ -2,8 +2,8 @@
 
 go_bandit([]() {
   describe("adiar/zdd/expand.cpp", [&]() {
-    shared_levelized_file<zdd::node_t> zdd_F;
-    shared_levelized_file<zdd::node_t> zdd_T;
+    shared_levelized_file<zdd::node_type> zdd_F;
+    shared_levelized_file<zdd::node_type> zdd_T;
 
     { // Garbage collect writers to free write-lock
       node_writer nw_F(zdd_F);
@@ -16,7 +16,7 @@ go_bandit([]() {
     const ptr_uint64 terminal_F = ptr_uint64(false);
     const ptr_uint64 terminal_T = ptr_uint64(true);
 
-    shared_levelized_file<zdd::node_t> zdd_x1;
+    shared_levelized_file<zdd::node_type> zdd_x1;
     /*
     //         1              ---- x1
     //        / \
@@ -28,7 +28,7 @@ go_bandit([]() {
       nw << node(1, node::max_id, terminal_F, terminal_T);
     }
 
-    shared_levelized_file<zdd::node_t> zdd_1;
+    shared_levelized_file<zdd::node_type> zdd_1;
     /*
     //         _1_            ---- x2
     //        /   \
@@ -65,35 +65,35 @@ go_bandit([]() {
         const std::vector<int> vars = { };
 
         __zdd out = zdd_expand(zdd_F, vars.begin(), vars.end());
-        AssertThat(out.get<shared_levelized_file<zdd::node_t>>(), Is().EqualTo(zdd_F));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(zdd_F));
       });
 
       it("returns same file for { Ø } on empty labels", [&]() {
         const std::vector<int> vars = { };
 
         __zdd out = zdd_expand(zdd_T, vars.begin(), vars.end());
-        AssertThat(out.get<shared_levelized_file<zdd::node_t>>(), Is().EqualTo(zdd_T));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(zdd_T));
       });
 
       it("returns same file for { {1} } on empty labels", [&]() {
         const std::vector<int> vars = { };
 
         __zdd out = zdd_expand(zdd_x1, vars.begin(), vars.end());
-        AssertThat(out.get<shared_levelized_file<zdd::node_t>>(), Is().EqualTo(zdd_x1));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(zdd_x1));
       });
 
       it("returns same file for [1] on empty labels", [&]() {
         const std::vector<int> vars = { };
 
         __zdd out = zdd_expand(zdd_x1, vars.begin(), vars.end());
-        AssertThat(out.get<shared_levelized_file<zdd::node_t>>(), Is().EqualTo(zdd_x1));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(zdd_x1));
       });
 
       it("returns same file for Ø on (1,2)", [&]() {
         const std::vector<int> vars = { 1, 2 };
 
         __zdd out = zdd_expand(zdd_F, vars.begin(), vars.end());
-        AssertThat(out.get<shared_levelized_file<zdd::node_t>>(), Is().EqualTo(zdd_F));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(zdd_F));
       });
 
       it("returns don't care node for { Ø } on (42)", [&]() {
@@ -115,13 +115,13 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::Internal], Is().EqualTo(1u));
-        AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::Internal_False], Is().EqualTo(1u));
-        AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::Internal_True], Is().EqualTo(2u));
-        AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::All], Is().EqualTo(2u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut_type::Internal], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut_type::Internal_False], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut_type::Internal_True], Is().EqualTo(2u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut_type::All], Is().EqualTo(2u));
 
-        AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("returns don't care chain for { Ø } on (0,2)", [&]() {
@@ -151,17 +151,17 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::Internal], Is().EqualTo(2u));
-        AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::Internal_False], Is().EqualTo(2u));
-        AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::Internal_True], Is().EqualTo(2u));
-        AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::All], Is().EqualTo(2u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut_type::Internal], Is().EqualTo(2u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut_type::Internal_False], Is().EqualTo(2u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut_type::Internal_True], Is().EqualTo(2u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut_type::All], Is().EqualTo(2u));
 
-        AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("adds new root for { { 1 } } on (0)", [&]() {
-        shared_levelized_file<zdd::node_t> in;
+        shared_levelized_file<zdd::node_type> in;
 
         { // Garbage collect writer to free write-lock
           node_writer w(in);
@@ -200,14 +200,14 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(2u));
 
-        AssertThat(out.get<__zdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out.get<__zdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("adds node chain for { { 3 }, { 3,4 } } on (0,2)", [&]() {
-        shared_levelized_file<zdd::node_t> in;
+        shared_levelized_file<zdd::node_type> in;
 
         { // Garbage collect writer to free write-lock
           node_writer w(in);
@@ -266,14 +266,14 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(2u));
 
-        AssertThat(out.get<__zdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out.get<__zdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("adds nodes before and after for { Ø, { 3 } } on (0,2,4)", [&]() {
-        shared_levelized_file<zdd::node_t> in;
+        shared_levelized_file<zdd::node_type> in;
 
         { // Garbage collect writer to free write-lock
           node_writer w(in);
@@ -330,16 +330,16 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(2u));
 
-        AssertThat(out.get<__zdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(out.get<__zdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("adds nodes for T terminal but not F terminal for { { 1,2 }, { 1,3 } } on (4,5,6)", [&]() {
         // Alternative title: Only creates one terminal-chain.
 
-        shared_levelized_file<zdd::node_t> in;
+        shared_levelized_file<zdd::node_type> in;
 
         { // Garbage collect writer to free write-lock
           node_writer w(in);
@@ -416,14 +416,14 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(2u));
 
-        AssertThat(out.get<__zdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out.get<__zdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("adds node in between levels { { 0,2 } } on (1)", [&]() {
-        shared_levelized_file<zdd::node_t> in;
+        shared_levelized_file<zdd::node_type> in;
 
         { // Garbage collect writer to free write-lock
           node_writer w(in);
@@ -472,14 +472,14 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(2u));
 
-        AssertThat(out.get<__zdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out.get<__zdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("adds nodes in between levels { { 0,3 } } on (1,2)", [&]() {
-        shared_levelized_file<zdd::node_t> in;
+        shared_levelized_file<zdd::node_type> in;
 
         { // Garbage collect writer to free write-lock
           node_writer w(in);
@@ -537,14 +537,14 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(2u));
 
-        AssertThat(out.get<__zdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out.get<__zdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("adds different don't care nodes on different arcs cut for { {0}, {2}, { 0,2 } } on (1,2)", [&]() {
-        shared_levelized_file<zdd::node_t> in;
+        shared_levelized_file<zdd::node_type> in;
 
         { // Garbage collect writer to free write-lock
           node_writer w(in);
@@ -606,10 +606,10 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(4u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(4u));
 
-        AssertThat(out.get<__zdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out.get<__zdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(3u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(3u));
       });
 
       it("adds don't care nodes before, in between, and after for [1] on (0,1,3,5,7,9,11)", [&]() {
@@ -783,10 +783,10 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(6u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(6u));
 
-        AssertThat(out.get<__zdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out.get<__zdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
     });
   });

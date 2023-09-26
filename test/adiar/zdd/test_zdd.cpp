@@ -2,7 +2,7 @@
 
 go_bandit([]() {
   describe("adiar/zdd/zdd.h", [&]() {
-    shared_levelized_file<zdd::node_t> x0_nf;
+    shared_levelized_file<zdd::node_type> x0_nf;
     {
       node_writer nw_0(x0_nf);
       nw_0 << node(0, node::max_id,
@@ -12,7 +12,7 @@ go_bandit([]() {
 
     zdd x0(x0_nf);
 
-    shared_levelized_file<zdd::node_t> x1_nf;
+    shared_levelized_file<zdd::node_type> x1_nf;
     {
       node_writer nw_1(x1_nf);
       nw_1 << node(1, node::max_id,
@@ -22,7 +22,7 @@ go_bandit([]() {
 
     zdd x1(x1_nf);
 
-    shared_levelized_file<zdd::node_t> x0_or_x1_nf;
+    shared_levelized_file<zdd::node_type> x0_or_x1_nf;
     {
       node_writer nw_01(x0_or_x1_nf);
 
@@ -37,7 +37,7 @@ go_bandit([]() {
 
     zdd x0_or_x1(x0_or_x1_nf);
 
-    shared_levelized_file<zdd::node_t> terminal_T_nf;
+    shared_levelized_file<zdd::node_type> terminal_T_nf;
     {
       node_writer nw_T(terminal_T_nf);
       nw_T << node(true);
@@ -45,7 +45,7 @@ go_bandit([]() {
 
     zdd terminal_T(terminal_T_nf);
 
-    shared_levelized_file<zdd::node_t> terminal_F_nf;
+    shared_levelized_file<zdd::node_type> terminal_F_nf;
     {
       node_writer nw_F(terminal_F_nf);
       nw_F << node(false);
@@ -56,27 +56,27 @@ go_bandit([]() {
     describe("__zdd class", [&]() {
       it("should copy-construct values from zdd", [&]() {
         __zdd t1 = x0_or_x1;
-        AssertThat(t1.has<shared_levelized_file<zdd::node_t>>(), Is().True());
-        AssertThat(t1.get<shared_levelized_file<zdd::node_t>>(), Is().EqualTo(x0_or_x1_nf));
+        AssertThat(t1.has<shared_levelized_file<zdd::node_type>>(), Is().True());
+        AssertThat(t1.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(x0_or_x1_nf));
         AssertThat(t1.negate, Is().False());
       });
 
       it("should copy-construct values from __zdd", [&]() {
         __zdd t1 = x0_or_x1;
         __zdd t2 = t1;
-        AssertThat(t2.has<shared_levelized_file<zdd::node_t>>(), Is().True());
-        AssertThat(t2.get<shared_levelized_file<zdd::node_t>>(), Is().EqualTo(x0_or_x1_nf));
+        AssertThat(t2.has<shared_levelized_file<zdd::node_type>>(), Is().True());
+        AssertThat(t2.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(x0_or_x1_nf));
         AssertThat(t2.negate, Is().False());
       });
 
-      it("should copy-construct values from shared_levelized_file<zdd::node_t>", [&]() {
+      it("should copy-construct values from shared_levelized_file<zdd::node_type>", [&]() {
         __zdd t1 = x0_or_x1;
-        AssertThat(t1.has<shared_levelized_file<zdd::node_t>>(), Is().True());
-        AssertThat(t1.get<shared_levelized_file<zdd::node_t>>(), Is().EqualTo(x0_or_x1_nf));
+        AssertThat(t1.has<shared_levelized_file<zdd::node_type>>(), Is().True());
+        AssertThat(t1.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(x0_or_x1_nf));
         AssertThat(t1.negate, Is().False());
       });
 
-      __zdd::shared_arcs_t af;
+      __zdd::shared_arc_file_type af;
 
       {
         arc_writer aw(af);
@@ -92,14 +92,14 @@ go_bandit([]() {
 
       af->max_1level_cut = 1;
 
-      it("should copy-construct values from __zdd::shared_arcs_t", [&]() {
+      it("should copy-construct values from __zdd::shared_arc_file_type", [&]() {
         __zdd t1 = af;
-        AssertThat(t1.has<__zdd::shared_arcs_t>(), Is().True());
-        AssertThat(t1.get<__zdd::shared_arcs_t>(), Is().EqualTo(af));
+        AssertThat(t1.has<__zdd::shared_arc_file_type>(), Is().True());
+        AssertThat(t1.get<__zdd::shared_arc_file_type>(), Is().EqualTo(af));
         AssertThat(t1.negate, Is().False());
       });
 
-      it("should reduce on copy construct to zdd with __zdd::shared_arcs_t", [&]() {
+      it("should reduce on copy construct to zdd with __zdd::shared_arc_file_type", [&]() {
         zdd out = __zdd(af);
         AssertThat(out, Is().EqualTo(x0_or_x1));
       });
@@ -111,7 +111,7 @@ go_bandit([]() {
       });
 
       it("should accept {{0}} == {{0}} (different files)", [&]() {
-        shared_levelized_file<zdd::node_t> x0_nf_2;
+        shared_levelized_file<zdd::node_type> x0_nf_2;
 
         { node_writer nw_0(x0_nf_2);
           nw_0 << node(0, node::max_id,
@@ -137,7 +137,7 @@ go_bandit([]() {
       });
 
       it("should compute {{0},{1}}' == {Ø,{0,1}} with dom {0,1}", [&]() {
-        adiar::shared_file<zdd::label_t> dom;
+        adiar::shared_file<zdd::label_type> dom;
         {
           label_writer lw(dom);
           lw << 0 << 1;
@@ -145,7 +145,7 @@ go_bandit([]() {
 
         domain_set(dom);
 
-        shared_levelized_file<zdd::node_t> expected;
+        shared_levelized_file<zdd::node_type> expected;
         {
           node_writer nw(expected);
           nw << node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))
@@ -161,7 +161,7 @@ go_bandit([]() {
       });
 
       it("should compute with __zdd&& operators [|,~,-,]", [&]() {
-          adiar::shared_file<zdd::label_t> dom;
+          adiar::shared_file<zdd::label_type> dom;
           {
             label_writer lw(dom);
             lw << 0 << 1;
@@ -197,7 +197,7 @@ go_bandit([]() {
       });
     });
 
-    it("should copy-construct shared_levelized_file<zdd::node_t> and negation back to zdd", [&]() {
+    it("should copy-construct shared_levelized_file<zdd::node_type> and negation back to zdd", [&]() {
       zdd t2 = zdd(__zdd(x0_or_x1));
       AssertThat(t2.file_ptr(), Is().EqualTo(x0_or_x1_nf));
       AssertThat(t2.is_negated(), Is().False());

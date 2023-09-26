@@ -5,7 +5,7 @@ go_bandit([]() {
     ptr_uint64 terminal_T = ptr_uint64(true);
     ptr_uint64 terminal_F = ptr_uint64(false);
 
-    shared_levelized_file<zdd::node_t> zdd_1;
+    shared_levelized_file<zdd::node_type> zdd_1;
     /*
              1       ---- x0
             / \
@@ -27,7 +27,7 @@ go_bandit([]() {
       nw_1 << n4 << n3 << n2 << n1;
     }
 
-    shared_levelized_file<zdd::node_t> zdd_2;
+    shared_levelized_file<zdd::node_type> zdd_2;
     /*
                      ---- x0
 
@@ -45,7 +45,7 @@ go_bandit([]() {
       nw_2 << n2 << n1;
     }
 
-    shared_levelized_file<zdd::node_t> zdd_T;
+    shared_levelized_file<zdd::node_type> zdd_T;
     /*
           T
     */
@@ -56,7 +56,7 @@ go_bandit([]() {
       nw_T << node(true);
     }
 
-    shared_levelized_file<zdd::node_t> zdd_F;
+    shared_levelized_file<zdd::node_type> zdd_F;
     /*
           F
     */
@@ -67,7 +67,7 @@ go_bandit([]() {
       nw_F << node(false);
     }
 
-    shared_levelized_file<zdd::node_t> zdd_root_1;
+    shared_levelized_file<zdd::node_type> zdd_root_1;
     /*
            1    ---- x1
           / \

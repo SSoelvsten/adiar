@@ -16,13 +16,15 @@ namespace adiar::internal
   ///
   /// \sa node_writer arc_writer
   //////////////////////////////////////////////////////////////////////////////
-  template <typename elem_t>
+  template <typename value_t>
   class levelized_file_writer
   {
   public:
+    using value_type = value_t;
+
     static size_t memory_usage()
     {
-      return file_traits<elem_t>::files * file_writer<elem_t>::memory_usage()
+      return file_traits<value_type>::files * file_writer<value_type>::memory_usage()
            + 1u * file_writer<level_info>::memory_usage();
     }
 
@@ -30,19 +32,19 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Pointer to update the meta information.
     ////////////////////////////////////////////////////////////////////////////
-    adiar::shared_ptr<levelized_file<elem_t>> _file_ptr;
+    adiar::shared_ptr<levelized_file<value_type>> _file_ptr;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Writers for the file with level information.
     ////////////////////////////////////////////////////////////////////////////
     file_writer<level_info> _level_writer;
 
-    static constexpr size_t elem_writers = file_traits<elem_t>::files;
+    static constexpr size_t elem_writers = file_traits<value_type>::files;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Writers for each of the files with 'elem_t'.
+    /// \brief Writers for each of the files with 'value_type'.
     ////////////////////////////////////////////////////////////////////////////
-    file_writer<elem_t> _elem_writers [elem_writers];
+    file_writer<value_type> _elem_writers [elem_writers];
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -55,7 +57,7 @@ namespace adiar::internal
     ///
     /// \pre No file stream or other writer is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
-    levelized_file_writer(levelized_file<elem_t> &f)
+    levelized_file_writer(levelized_file<value_type> &f)
     { attach(f); }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -63,7 +65,7 @@ namespace adiar::internal
     ///
     /// \pre No file stream or other writer is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
-    levelized_file_writer(adiar::shared_ptr<levelized_file<elem_t>> f)
+    levelized_file_writer(adiar::shared_ptr<levelized_file<value_type>> f)
     { attach(f); }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -80,31 +82,31 @@ namespace adiar::internal
     ///          ensure, that the file in question is not destructed before
     ///          `.detach()` is called.
     ////////////////////////////////////////////////////////////////////////////
-    void attach(levelized_file<elem_t> &f)
+    void attach(levelized_file<value_type> &f)
     {
       if (attached()) { detach(); }
 
       // The stack variable is made accessible in '_file_ptr', but it should not
       // be garbage collected. Hence, we provide a do-nothing deleter to the
       // 'std::shared_ptr' directly.
-      _file_ptr = std::shared_ptr<levelized_file<elem_t>>(&f, [](void *) {});
+      _file_ptr = std::shared_ptr<levelized_file<value_type>>(&f, [](void *) {});
 
       _level_writer.attach(f._level_info_file, nullptr);
-      for (size_t s_idx = 0; s_idx < file_traits<elem_t>::files; s_idx++)
+      for (size_t s_idx = 0; s_idx < file_traits<value_type>::files; s_idx++)
         _elem_writers[s_idx].attach(f._files[s_idx], nullptr);
     }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Attach to a shared file.
     ////////////////////////////////////////////////////////////////////////////
-    void attach(adiar::shared_ptr<levelized_file<elem_t>> f)
+    void attach(adiar::shared_ptr<levelized_file<value_type>> f)
     {
       if (attached()) { detach(); }
 
       _file_ptr = f;
 
       _level_writer.attach(f->_level_info_file, f);
-      for (size_t s_idx = 0; s_idx < file_traits<elem_t>::files; s_idx++)
+      for (size_t s_idx = 0; s_idx < file_traits<value_type>::files; s_idx++)
         _elem_writers[s_idx].attach(f->_files[s_idx], f);
     }
 
@@ -153,7 +155,7 @@ namespace adiar::internal
     ///
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    levelized_file_writer<elem_t>& operator<< (const level_info& li)
+    levelized_file_writer<value_type>& operator<< (const level_info& li)
     {
       this->push(li);
       return *this;
@@ -166,7 +168,7 @@ namespace adiar::internal
     /// \param  e     Element to push.
     ////////////////////////////////////////////////////////////////////////////
     template<size_t s_idx>
-    void push(const elem_t &e)
+    void push(const value_type &e)
     {
       static_assert(s_idx < elem_writers,
                     "Sub-stream index must be within [0; elem_writers).");

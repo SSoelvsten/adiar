@@ -13,7 +13,7 @@ using test_map_pair = map_pair<int, test_map_value>;
 go_bandit([]() {
   describe("adiar/map.h", []() {
     describe("map_pair<key, value>", []() {
-      describe("var_mapping<...>(label_t, enum), .key(), .value(), .raw_value()", []() {
+      describe("var_mapping<...>(label_type, enum), .key(), .value(), .raw_value()", []() {
         it("provides access to variable [42]", []() {
           test_map_pair a(42, test_map_value::False);
           AssertThat(a.key(), Is().EqualTo(42));
@@ -106,7 +106,7 @@ go_bandit([]() {
         });
       });
 
-      describe("test_map_pair(label_t, bool)", []() {
+      describe("test_map_pair(label_type, bool)", []() {
         it("converts correctly from boolean value [0]", []() {
           test_map_pair a(42, false);
           AssertThat(a.key(), Is().EqualTo(42));

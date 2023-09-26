@@ -15,7 +15,7 @@ namespace adiar
   // Data structures
   struct sat_sum : internal::path_sum
   {
-    bdd::label_t levels_visited = 0u;
+    bdd::label_type levels_visited = 0u;
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -34,12 +34,12 @@ namespace adiar
   class sat_count_policy : public bdd_policy
   {
   public:
-    typedef sat_sum queue_t;
+    using queue_t = sat_sum;
 
     template<typename count_pq_t>
     inline static uint64_t forward_request(count_pq_t &count_pq,
-                                           const bdd::label_t varcount,
-                                           const bdd::ptr_t child_to_resolve,
+                                           const bdd::label_type varcount,
+                                           const bdd::pointer_type child_to_resolve,
                                            const queue_t &request)
     {
       adiar_assert(request.sum > 0, "No 'empty' request should be created");
@@ -47,7 +47,7 @@ namespace adiar
       adiar_assert(request.levels_visited < varcount,
                    "Cannot have already visited more levels than are expected");
 
-      bdd::label_t levels_visited = request.levels_visited + 1u;
+      bdd::label_type levels_visited = request.levels_visited + 1u;
 
       if (child_to_resolve.is_terminal()) {
         return child_to_resolve.value()
@@ -81,7 +81,7 @@ namespace adiar
     return internal::dd_nodecount(f);
   }
 
-  bdd::label_t bdd_varcount(const bdd &f)
+  bdd::label_type bdd_varcount(const bdd &f)
   {
     return internal::dd_varcount(f);
   }
@@ -93,7 +93,7 @@ namespace adiar
       : internal::count<internal::path_count_policy<bdd_policy>>(f, bdd_varcount(f));
   }
 
-  uint64_t bdd_satcount(const bdd& f, bdd::label_t varcount)
+  uint64_t bdd_satcount(const bdd& f, bdd::label_type varcount)
   {
     if (varcount < bdd_varcount(f)) {
       throw invalid_argument("'varcount' ought to be at least the number of levels in the BDD");
@@ -108,8 +108,8 @@ namespace adiar
 
   uint64_t bdd_satcount(const bdd &f)
   {
-    const bdd::label_t domain_size = domain_isset() ? domain_get()->size() : 0;
-    const bdd::label_t varcount = bdd_varcount(f);
+    const bdd::label_type domain_size = domain_isset() ? domain_get()->size() : 0;
+    const bdd::label_type varcount = bdd_varcount(f);
     return bdd_satcount(f, std::max(domain_size, varcount));
   };
 }

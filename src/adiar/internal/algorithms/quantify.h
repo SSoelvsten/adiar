@@ -66,11 +66,11 @@ namespace adiar::internal
   template<typename quantify_policy, typename pq_1_t>
   inline void __quantify_forward_request(pq_1_t &quantify_pq_1,
                                          arc_writer &aw,
-                                         const typename quantify_policy::ptr_t source,
+                                         const typename quantify_policy::pointer_type source,
                                          const quantify_request<0>::target_t &target)
   {
     adiar_assert(!target.first().is_nil(),
-                 "ptr_t::nil() should only ever end up being placed in target[1]");
+                 "pointer_type::nil() should only ever end up being placed in target[1]");
 
     if (target.first().is_terminal()) {
       adiar_assert(target.second().is_nil(),
@@ -102,9 +102,9 @@ namespace adiar::internal
   }
 
   template<typename quantify_policy, size_t targets>
-  inline tuple<typename quantify_policy::ptr_t, targets, true>
+  inline tuple<typename quantify_policy::pointer_type, targets, true>
   __quantify_resolve_request(const bool_op &op,
-                             std::array<typename quantify_policy::ptr_t, targets> ts)
+                             std::array<typename quantify_policy::pointer_type, targets> ts)
   {
     { // Sort array with pointers
       // TODO (optimisation): Abuse array is tiny with single-swap (2) / insertion-sort (3+)
@@ -118,7 +118,7 @@ namespace adiar::internal
       adiar_assert(ts_max_idx < i, "i is always ahead of 'ts_max_idx'");
 
       // Stop early at maximum value of 'nil'
-      if (ts[i] == quantify_policy::ptr_t::nil()) { break; }
+      if (ts[i] == quantify_policy::pointer_type::nil()) { break; }
 
       // Move new unique element at next spot for 'ts_max_idx'
       if (ts[ts_max_idx] != ts[i] &&
@@ -127,7 +127,7 @@ namespace adiar::internal
       }
     }
     for (size_t i = ts_max_idx+1; i < ts.size(); ++i) {
-      ts[i] = quantify_policy::ptr_t::nil();
+      ts[i] = quantify_policy::pointer_type::nil();
     }
 
     // Is the final element a collapsing terminal?
@@ -144,7 +144,7 @@ namespace adiar::internal
       adiar_assert(!ts[1].is_nil(), "Cannot be nil at i <= ts_max_elem");
       ts[0] = max_shortcuts ? ts[ts_max_idx] : op(ts[0], ts[1]);
       for (size_t i = 1u; i <= ts_max_idx; ++i) {
-        ts[i] = quantify_policy::ptr_t::nil();
+        ts[i] = quantify_policy::pointer_type::nil();
       }
     }
 
@@ -169,7 +169,7 @@ namespace adiar::internal
     //   Use '.seek(...)' with 'in_nodes' instead such that it only needs to be
     //   opened once in the caller of this function.
     node_stream_t in_nodes(in);
-    typename quantify_policy::node_t v = in_nodes.pull();
+    typename quantify_policy::node_type v = in_nodes.pull();
 
     // Set up output
     shared_levelized_file<arc> out_arcs;
@@ -182,8 +182,8 @@ namespace adiar::internal
 
       // Set up level
       quantify_pq_1.setup_next_level();
-      const typename quantify_policy::label_t out_label = quantify_pq_1.current_level();
-      typename quantify_policy::id_t out_id = 0;
+      const typename quantify_policy::label_type out_label = quantify_pq_1.current_level();
+      typename quantify_policy::id_type out_id = 0;
 
       // TODO: move quantification test out here instead
 
@@ -196,7 +196,7 @@ namespace adiar::internal
         if (quantify_pq_1.can_pull()
             && (quantify_pq_2.empty() || quantify_pq_1.top().target.first() < quantify_pq_2.top().target.second())) {
           req = { quantify_pq_1.top().target,
-                  {{ { node::ptr_t::nil(), node::ptr_t::nil() } }},
+                  {{ { node::pointer_type::nil(), node::pointer_type::nil() } }},
                   quantify_pq_1.top().data };
           quantify_pq_1.pop();
         } else {
@@ -248,10 +248,10 @@ namespace adiar::internal
 
         // Recreate children of the two targeted nodes (or possibly the
         // suppressed node for target.second()).
-        const node::children_t children0 =
+        const node::children_type children0 =
           req.empty_carry() ? v.children() : req.node_carry[0];
 
-        const node::children_t children1 =
+        const node::children_type children1 =
           req.target.second().on_level(out_label)
           ? v.children()
           : quantify_policy::reduction_rule_inv(req.target.second());
@@ -262,14 +262,14 @@ namespace adiar::internal
         // CASE: Partial Quantification of Tuple (f,g).
         if constexpr (quantify_policy::partial_quantification) {
           if (should_quantify) {
-            const tuple<typename quantify_policy::ptr_t, 4, true> rec_all =
+            const tuple<typename quantify_policy::pointer_type, 4, true> rec_all =
               __quantify_resolve_request<quantify_policy, 4>(op, {children0[false], children0[true],
                                                                   children1[false], children1[true]});
 
-            if (rec_all[2] == quantify_policy::ptr_t::nil()) {
+            if (rec_all[2] == quantify_policy::pointer_type::nil()) {
               // Collapsed to a terminal?
               if (req.data.source.is_nil() && rec_all[0].is_terminal()) {
-                adiar_assert(rec_all[1] == quantify_policy::ptr_t::nil(),
+                adiar_assert(rec_all[1] == quantify_policy::pointer_type::nil(),
                              "Operator should already be applied");
 
                 return typename quantify_policy::reduced_t(rec_all[0].value());
@@ -288,7 +288,7 @@ namespace adiar::internal
               policy_impl.remaining_nodes++;
 
               // Output an intermediate node at this level to be quantified later.
-              const node::uid_t out_uid(out_label, out_id++);
+              const node::uid_type out_uid(out_label, out_id++);
 
               quantify_request<0>::target_t rec0(rec_all[0], rec_all[1]);
 
@@ -318,7 +318,7 @@ namespace adiar::internal
         // TODO (optimisation):
         //   Skip node creation due to Reduction Rule 1
 
-        const node::uid_t out_uid(out_label, out_id++);
+        const node::uid_type out_uid(out_label, out_id++);
 
         quantify_request<0>::target_t rec0 =
           __quantify_resolve_request<quantify_policy, 2>(op, {children0[false], children1[false]});
@@ -393,14 +393,14 @@ namespace adiar::internal
              const size_t pq_2_memory, const size_t max_pq_2_size)
   {
     // Check for trivial terminal-only return on shortcutting the root
-    typename quantify_policy::node_t root;
+    typename quantify_policy::node_type root;
 
     { // Detach and garbage collect node_stream<>
       node_stream_t in_nodes(in);
       root = in_nodes.pull();
 
       if (policy_impl.should_quantify(root.label()) && (root.low().is_terminal() || root.high().is_terminal())) {
-        typename quantify_policy::ptr_t result = quantify_policy::resolve_root(root, op);
+        typename quantify_policy::pointer_type result = quantify_policy::resolve_root(root, op);
 
         if (result != root.uid() && result.is_terminal()) {
           return typename quantify_policy::reduced_t(result.value());
@@ -530,17 +530,17 @@ namespace adiar::internal
   class single_quantify_policy : public quantify_policy
   {
   private:
-    const typename quantify_policy::label_t _level;
+    const typename quantify_policy::label_type _level;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
-    single_quantify_policy(typename quantify_policy::label_t level)
+    single_quantify_policy(typename quantify_policy::label_type level)
       : _level(level)
     { }
 
     ////////////////////////////////////////////////////////////////////////////
     inline bool
-    should_quantify(typename quantify_policy::label_t level) const
+    should_quantify(typename quantify_policy::label_type level) const
     { return _level == level; }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -550,7 +550,7 @@ namespace adiar::internal
   template<typename quantify_policy>
   typename quantify_policy::unreduced_t
   quantify(const typename quantify_policy::reduced_t &in,
-           const typename quantify_policy::label_t label,
+           const typename quantify_policy::label_type label,
            const bool_op &op)
   {
 
@@ -597,7 +597,7 @@ namespace adiar::internal
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    size_t pq_bound(const typename quantify_policy::shared_nodes_t &outer_file,
+    size_t pq_bound(const typename quantify_policy::shared_node_file_type &outer_file,
                     const size_t /*outer_roots*/) const
     {
       const typename quantify_policy::reduced_t outer_wrapper(outer_file);
@@ -617,13 +617,13 @@ namespace adiar::internal
     /// always-false predicate that is immediate to the compiler.
     //////////////////////////////////////////////////////////////////////////////
     constexpr bool
-    should_quantify(typename quantify_policy::label_t /*level*/) const
+    should_quantify(typename quantify_policy::label_type /*level*/) const
     { return false; }
 
     ////////////////////////////////////////////////////////////////////////////
     static constexpr bool partial_quantification = false;
 
-    // bool has_sweep(typename quantify_policy::label_t) const;
+    // bool has_sweep(typename quantify_policy::label_type) const;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Run Sweep with given priority queue.
@@ -677,16 +677,16 @@ namespace adiar::internal
     /// \brief Create request
     //////////////////////////////////////////////////////////////////////////////
     inline request_t
-    request_from_node(const typename quantify_policy::node_t &n,
-                      const typename quantify_policy::ptr_t &parent) const
+    request_from_node(const typename quantify_policy::node_type &n,
+                      const typename quantify_policy::pointer_type &parent) const
     {
       // Shortcutting or Irrelevant terminal?
-      const typename quantify_policy::ptr_t result =
+      const typename quantify_policy::pointer_type result =
         quantify_policy::resolve_root(n, _op);
 
       typename request_t::target_t tgt = result != n.uid()
         // If able to shortcut, preserve result.
-        ? request_t::target_t{ result, quantify_policy::ptr_t::nil() }
+        ? request_t::target_t{ result, quantify_policy::pointer_type::nil() }
         // Otherwise, create product of children
         : request_t::target_t{ first(n.low(), n.high()), second(n.low(), n.high()) };
 
@@ -708,7 +708,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Predicate for whether a level should be swept on (or not).
     ////////////////////////////////////////////////////////////////////////////
-    using pred_t = predicate<typename quantify_policy::label_t>;
+    using pred_t = predicate<typename quantify_policy::label_type>;
 
   private:
     ////////////////////////////////////////////////////////////////////////////
@@ -730,7 +730,7 @@ namespace adiar::internal
 
     ////////////////////////////////////////////////////////////////////////////
     inline bool
-    should_quantify(typename quantify_policy::label_t level) const
+    should_quantify(typename quantify_policy::label_type level) const
     { return _pred(level) == quantify_policy::quantify_onset; }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -751,7 +751,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Predicate for whether a level should be swept on (or not).
     ////////////////////////////////////////////////////////////////////////////
-    using pred_t = predicate<typename quantify_policy::label_t>;
+    using pred_t = predicate<typename quantify_policy::label_type>;
 
   private:
     ////////////////////////////////////////////////////////////////////////////
@@ -769,7 +769,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the generator wants to sweep on the given level.
     ////////////////////////////////////////////////////////////////////////////
-    bool has_sweep(node::ptr_t::label_t l)
+    bool has_sweep(node::pointer_type::label_type l)
     {
       return _pred(l) == quantify_policy::quantify_onset;
     }
@@ -780,23 +780,23 @@ namespace adiar::internal
   //       - initial 'quantify__get_deepest' should not terminate early but
   //         determine whether any variable may "survive".
   template<typename quantify_policy>
-  inline typename quantify_policy::label_t
+  inline typename quantify_policy::label_type
   quantify__get_deepest(const typename quantify_policy::reduced_t &dd,
-                        const predicate<typename quantify_policy::label_t> &pred)
+                        const predicate<typename quantify_policy::label_type> &pred)
   {
     level_info_stream<true /* bottom-up */> lis(dd);
 
     while (lis.can_pull()) {
-      const typename quantify_policy::label_t l = lis.pull().label();
+      const typename quantify_policy::label_type l = lis.pull().label();
       if (pred(l) == quantify_policy::quantify_onset) { return l; }
     }
     return quantify_policy::max_label+1;
   }
 
   template<typename quantify_policy>
-  inline typename quantify_policy::label_t
+  inline typename quantify_policy::label_type
   quantify__count_above_widest(const typename quantify_policy::reduced_t &dd,
-                               const predicate<typename quantify_policy::label_t> &pred)
+                               const predicate<typename quantify_policy::label_type> &pred)
   {
     level_info_stream<true /* bottom-up */> lis(dd);
 
@@ -813,13 +813,13 @@ namespace adiar::internal
   template<typename quantify_policy>
   typename quantify_policy::unreduced_t
   quantify(typename quantify_policy::reduced_t dd,
-           const predicate<typename quantify_policy::label_t> &pred,
+           const predicate<typename quantify_policy::label_type> &pred,
            const bool_op &op)
   {
     using unreduced_t = typename quantify_policy::unreduced_t;
     // TODO: check for missing std::move(...)
 
-    typename quantify_policy::label_t label = quantify__get_deepest<quantify_policy>(dd, pred);
+    typename quantify_policy::label_type label = quantify__get_deepest<quantify_policy>(dd, pred);
 
     if (quantify_policy::max_label < label) {
 #ifdef ADIAR_STATS
@@ -879,7 +879,7 @@ namespace adiar::internal
         const size_t dd_size = dd.size();
 
         const size_t nodes_per_block =
-          get_block_size() / sizeof(typename quantify_policy::node_t);
+          get_block_size() / sizeof(typename quantify_policy::node_type);
 
         // Do Partial Quantification as long as...
         //   1. ... it stays smaller than 150% of the input size.
@@ -975,7 +975,7 @@ namespace adiar::internal
     /// \brief Generator of the levels to sweep on (or not to sweep on) in
     ///        descending order.
     ////////////////////////////////////////////////////////////////////////////
-    using generator_t = generator<typename quantify_policy::label_t>;
+    using generator_t = generator<typename quantify_policy::label_type>;
 
   private:
     ////////////////////////////////////////////////////////////////////////////
@@ -987,7 +987,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Buffer for to hold onto the generated next level.
     ////////////////////////////////////////////////////////////////////////////
-    typename quantify_policy::label_t _next_level;
+    typename quantify_policy::label_type _next_level;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -1001,7 +1001,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the generator wants to sweep on the given level.
     ////////////////////////////////////////////////////////////////////////////
-    bool has_sweep(const node::ptr_t::label_t l)
+    bool has_sweep(const node::pointer_type::label_type l)
     {
       return l == next_level(l)
         ? quantify_policy::quantify_onset
@@ -1013,8 +1013,8 @@ namespace adiar::internal
     has_next_level() const
     { return _next_level <= quantify_policy::max_label; }
 
-    const node::ptr_t::label_t&
-    next_level(const node::ptr_t::label_t l)
+    const node::pointer_type::label_type&
+    next_level(const node::pointer_type::label_type l)
     {
       while (has_next_level() && l < _next_level) {
         _next_level = _lvls();
@@ -1028,15 +1028,15 @@ namespace adiar::internal
   //       - initial 'quantify__get_deepest' should not terminate early but
   //         determine whether any variable may "survive".
   template<typename quantify_policy>
-  inline typename quantify_policy::label_t
+  inline typename quantify_policy::label_type
   quantify__get_deepest(const typename quantify_policy::reduced_t &dd,
-                        const typename quantify_policy::label_t bot_level,
-                        const typename quantify_policy::label_t top_level)
+                        const typename quantify_policy::label_type bot_level,
+                        const typename quantify_policy::label_type top_level)
   {
     level_info_stream<true /* bottom-up */> lis(dd);
 
     while (lis.can_pull()) {
-      const typename quantify_policy::label_t l = lis.pull().label();
+      const typename quantify_policy::label_type l = lis.pull().label();
       if ((top_level < l || quantify_policy::max_label < top_level) && l < bot_level) {
         return l;
       }
@@ -1060,12 +1060,12 @@ namespace adiar::internal
       { // -------------------------------------------------------------------
         // Case: Repeated single variable quantification
         // TODO: correctly handle quantify_policy::quantify_onset
-        typename quantify_policy::label_t on_level = lvls();
+        typename quantify_policy::label_type on_level = lvls();
 
         if (quantify_policy::quantify_onset) {
           if (quantify_policy::max_label < on_level) { return dd; }
 
-          typename quantify_policy::label_t next_on_level = lvls();
+          typename quantify_policy::label_type next_on_level = lvls();
           while (next_on_level <= quantify_policy::max_label) {
             dd = quantify<quantify_policy>(dd, on_level, op);
             if (dd_isterminal(dd)) { return dd; }
@@ -1082,7 +1082,7 @@ namespace adiar::internal
 
           // Quantify everything below 'label'
           for (;;) {
-            const typename quantify_policy::label_t off_level =
+            const typename quantify_policy::label_type off_level =
               quantify__get_deepest<quantify_policy>(dd, quantify_policy::max_label, on_level);
 
             if (quantify_policy::max_label < off_level) { break; }
@@ -1092,12 +1092,12 @@ namespace adiar::internal
           }
 
           // Quantify everything strictly in between 'bot_level' and 'top_level'
-          typename quantify_policy::label_t bot_level = on_level;
-          typename quantify_policy::label_t top_level = lvls();
+          typename quantify_policy::label_type bot_level = on_level;
+          typename quantify_policy::label_type top_level = lvls();
 
           while (bot_level <= quantify_policy::max_label) {
             for (;;) {
-              const typename quantify_policy::label_t off_level =
+              const typename quantify_policy::label_type off_level =
                 quantify__get_deepest<quantify_policy>(dd, bot_level, top_level);
 
               if (quantify_policy::max_label < off_level) { break; }
@@ -1123,12 +1123,12 @@ namespace adiar::internal
         //       bottom-most level to transpose the DAG.
         if constexpr (quantify_policy::quantify_onset) {
           // Obtain the bottom-most onset level that exists in the diagram.
-          typename quantify_policy::label_t transposition_level = lvls();
+          typename quantify_policy::label_type transposition_level = lvls();
           if (quantify_policy::max_label < transposition_level) { return dd; }
 
           {
             level_info_stream<true> in_meta(dd);
-            typename quantify_policy::label_t dd_level = in_meta.pull().level();
+            typename quantify_policy::label_type dd_level = in_meta.pull().level();
 
             for (;;) {
               // Go forward in the diagram's levels, until we are at or above

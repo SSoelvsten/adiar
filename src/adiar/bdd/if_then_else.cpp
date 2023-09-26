@@ -57,7 +57,7 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
-  internal::shared_levelized_file<bdd::node_t>
+  internal::shared_levelized_file<bdd::node_type>
   __ite_zip_bdds(const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else)
   {
     // TODO: What is the performance of '<<' rather than 'unsafe_push'? If there
@@ -68,10 +68,10 @@ namespace adiar
     // It can be approximated as:
     // max(bdd_if.max_1level_cut, bdd_then.max_1level_cut + bdd_else.max_1level_cut)
 
-    internal::node::ptr_t root_then = internal::node::ptr_t::nil();
-    internal::node::ptr_t root_else = internal::node::ptr_t::nil();
+    internal::node::pointer_type root_then = internal::node::pointer_type::nil();
+    internal::node::pointer_type root_else = internal::node::pointer_type::nil();
 
-    internal::shared_levelized_file<bdd::node_t> out_nodes;
+    internal::shared_levelized_file<bdd::node_type> out_nodes;
     internal::node_writer nw(out_nodes);
 
     // zip 'then' and 'else' cases
@@ -100,18 +100,18 @@ namespace adiar
     while (in_nodes_if.can_pull()) {
       const internal::node n = in_nodes_if.pull();
 
-      const internal::node::ptr_t low = n.low().is_terminal()
+      const internal::node::pointer_type low = n.low().is_terminal()
         ? (n.low().value() ? root_then : root_else)
         : n.low();
 
-      const internal::node::ptr_t high = n.high().is_terminal()
+      const internal::node::pointer_type high = n.high().is_terminal()
         ? (n.high().value() ? root_then : root_else)
         : n.high();
 
       nw << internal::node(n.uid(), low, high);
     }
 
-    for(size_t ct = 0u; ct < internal::CUT_TYPES; ct++) {
+    for(size_t ct = 0u; ct < internal::cut_types; ct++) {
       out_nodes->max_1level_cut[ct] =
         std::max(bdd_if->max_1level_cut[internal::cut_type::All],
                  bdd_then->max_1level_cut[ct] + bdd_else->max_1level_cut[ct]);
@@ -124,9 +124,9 @@ namespace adiar
   }
 
   inline bool ite_must_forward(internal::node v,
-                               internal::node::ptr_t t,
-                               internal::node::label_t out_label,
-                               internal::node::ptr_t t_seek)
+                               internal::node::pointer_type t,
+                               internal::node::label_type out_label,
+                               internal::node::pointer_type t_seek)
   {
     return
       // is it a node at this level?
@@ -139,9 +139,9 @@ namespace adiar
 
   inline void ite_init_request(internal::node_stream<> &in_nodes,
                                internal::node &v,
-                               const internal::node::label_t out_label,
-                               internal::node::ptr_t &low,
-                               internal::node::ptr_t &high)
+                               const internal::node::label_type out_label,
+                               internal::node::pointer_type &low,
+                               internal::node::pointer_type &high)
   {
     if (v.label() == out_label) {
       low = v.low();
@@ -156,10 +156,10 @@ namespace adiar
   template<typename pq_1_t>
   inline void __ite_resolve_request(pq_1_t &ite_pq_1,
                                     internal::arc_writer &aw,
-                                    const internal::node::ptr_t source,
-                                    internal::node::ptr_t r_if,
-                                    internal::node::ptr_t r_then,
-                                    internal::node::ptr_t r_else)
+                                    const internal::node::pointer_type source,
+                                    internal::node::pointer_type r_if,
+                                    internal::node::pointer_type r_then,
+                                    internal::node::pointer_type r_else)
   {
     // Early shortcut an ite, if the terminals of both cases have collapsed to the
     // same anyway
@@ -172,14 +172,14 @@ namespace adiar
 
     // Remove irrelevant parts of a request to prune requests similar to
     // shortcutting the operator in bdd_apply.
-    r_then = r_if.is_false() ? internal::node::ptr_t::nil() : r_then;
-    r_else = r_if.is_true()  ? internal::node::ptr_t::nil() : r_else;
+    r_then = r_if.is_false() ? internal::node::pointer_type::nil() : r_then;
+    r_else = r_if.is_true()  ? internal::node::pointer_type::nil() : r_else;
 
     if (r_if.is_terminal() && r_then.is_terminal()) {
-      // => ~internal::node::ptr_t::nil() => r_if is a terminal with the 'true' value
+      // => ~internal::node::pointer_type::nil() => r_if is a terminal with the 'true' value
       aw.push_terminal(internal::arc(source, r_then));
     } else if (r_if.is_terminal() && r_else.is_terminal()) {
-      // => ~internal::node::ptr_t::nil() => r_if is a terminal with the 'false' value
+      // => ~internal::node::pointer_type::nil() => r_if is a terminal with the 'false' value
       aw.push_terminal(internal::arc(source, r_else));
     } else {
       ite_pq_1.push({ {r_if, r_then, r_else}, {}, {source} });
@@ -227,16 +227,16 @@ namespace adiar
     pq_3_t ite_pq_3(pq_3_memory, max_pq_3_size);
 
     // Process root and create initial recursion requests
-    internal::node::label_t out_label = first(v_if.uid(), v_then.uid(), v_else.uid()).label();
-    internal::node::id_t out_id = 0;
+    internal::node::label_type out_label = first(v_if.uid(), v_then.uid(), v_else.uid()).label();
+    internal::node::id_type out_id = 0;
 
-    internal::node::ptr_t low_if, low_then, low_else, high_if, high_then, high_else;
+    internal::node::pointer_type low_if, low_then, low_else, high_if, high_then, high_else;
     ite_init_request(in_nodes_if, v_if, out_label, low_if, high_if);
     ite_init_request(in_nodes_then, v_then, out_label, low_then, high_then);
     ite_init_request(in_nodes_else, v_else, out_label, low_else, high_else);
 
     {
-      const internal::node::uid_t out_uid(out_label, out_id++);
+      const internal::node::uid_type out_uid(out_label, out_id++);
       __ite_resolve_request(ite_pq_1, aw, out_uid.with(false), low_if, low_then, low_else);
       __ite_resolve_request(ite_pq_1, aw, out_uid.with(true),  high_if, high_then, high_else);
     }
@@ -263,8 +263,8 @@ namespace adiar
           && (ite_pq_2.empty() || ite_pq_1.top().target.first() < ite_pq_2.top().target.second())
           && (ite_pq_3.empty() || ite_pq_1.top().target.first() < ite_pq_3.top().target.third())) {
         req = { ite_pq_1.top().target,
-                {{ { internal::node::ptr_t::nil(), internal::node::ptr_t::nil() },
-                   { internal::node::ptr_t::nil(), internal::node::ptr_t::nil() } }},
+                {{ { internal::node::pointer_type::nil(), internal::node::pointer_type::nil() },
+                   { internal::node::pointer_type::nil(), internal::node::pointer_type::nil() } }},
                 ite_pq_1.top().data };
 
         ite_pq_1.pop();
@@ -274,7 +274,7 @@ namespace adiar
 
         req = { ite_pq_2.top().target ,
                 { ite_pq_2.top().node_carry[0],
-                  { internal::node::ptr_t::nil(), internal::node::ptr_t::nil() } },
+                  { internal::node::pointer_type::nil(), internal::node::pointer_type::nil() } },
                 ite_pq_2.top().data };
 
         ite_pq_2.pop();
@@ -287,11 +287,11 @@ namespace adiar
       }
 
       // Seek request partially in stream
-      internal::node::ptr_t t_first = req.target.first();
-      internal::node::ptr_t t_second = req.target.second();
-      internal::node::ptr_t t_third = req.target.third();
+      internal::node::pointer_type t_first = req.target.first();
+      internal::node::pointer_type t_second = req.target.second();
+      internal::node::pointer_type t_third = req.target.third();
 
-      internal::node::ptr_t t_seek = with_data_2 ? t_third
+      internal::node::pointer_type t_seek = with_data_2 ? t_third
                                    : with_data_1 ? t_second
                                                  : t_first;
 
@@ -334,8 +334,8 @@ namespace adiar
           adiar_assert(!(with_data_1 && (number_of_elements_to_forward == 2)),
                        "cannot have forwarded an element, hold two unforwarded items, and still need to forward for something");
 
-          internal::node::children_t children_1;
-          internal::node::children_t children_2;
+          internal::node::children_type children_1;
+          internal::node::children_type children_2;
           if (with_data_1) {
             if (req.target[0] < t_seek || forward_else) {
               children_1 = req.node_carry[0];
@@ -367,7 +367,7 @@ namespace adiar
                             : forward_then ? v_then
                                            : v_else;
 
-          internal::node::children_t v1_children = v1.children();
+          internal::node::children_type v1_children = v1.children();
           ite_pq_2.push({ req.target, { v1_children }, req.data });
 
           while (ite_pq_1.can_pull() && ite_pq_1.top().target == req.target) {
@@ -417,13 +417,13 @@ namespace adiar
 
       // Resolve request
       adiar_assert(out_id < bdd::max_id, "Has run out of ids");
-      const internal::node::uid_t out_uid(out_label, out_id++);
+      const internal::node::uid_type out_uid(out_label, out_id++);
 
       __ite_resolve_request(ite_pq_1, aw, out_uid.with(false), low_if, low_then, low_else);
       __ite_resolve_request(ite_pq_1, aw, out_uid.with(true),  high_if, high_then, high_else);
 
       // Output ingoing arcs
-      internal::node::ptr_t source = req.data.source;
+      internal::node::pointer_type source = req.data.source;
       while (true) {
         internal::arc out_arc = { source, out_uid };
         aw.push_internal(out_arc);

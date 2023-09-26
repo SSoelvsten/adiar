@@ -75,7 +75,7 @@ namespace adiar::internal
   /// \brief Get the minimal occurring label in the decision diagram
   //////////////////////////////////////////////////////////////////////////////
   template <typename dd_t>
-  dd::label_t dd_minvar(const dd_t &dd)
+  dd::label_type dd_minvar(const dd_t &dd)
   {
     // TODO: Exception if terminal.
 
@@ -89,7 +89,7 @@ namespace adiar::internal
   /// \brief Get the maximal occurring label in the decision diagram
   //////////////////////////////////////////////////////////////////////////////
   template <typename dd_t>
-  dd::label_t dd_maxvar(const dd_t &dd)
+  dd::label_type dd_maxvar(const dd_t &dd)
   {
     // TODO: Exception if terminal.
 
@@ -110,7 +110,7 @@ namespace adiar::internal
   /// \brief Number of variables, i.e. levels, present in a decision diagram.
   ////////////////////////////////////////////////////////////////////////////
   template <typename dd_t>
-  typename dd_t::label_t dd_varcount(const dd_t &dd)
+  typename dd_t::label_type dd_varcount(const dd_t &dd)
   {
     return dd->levels();
   }
@@ -120,7 +120,7 @@ namespace adiar::internal
   ///        decision diagram.
   ////////////////////////////////////////////////////////////////////////////
   template <typename dd_t>
-  void dd_varprofile(const dd_t &dd, const consumer<typename dd_t::label_t> &cb)
+  void dd_varprofile(const dd_t &dd, const consumer<typename dd_t::label_type> &cb)
   {
     level_info_stream<> info_stream(dd);
     while(info_stream.can_pull()) { cb(info_stream.pull().label()); }

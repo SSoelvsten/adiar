@@ -56,15 +56,15 @@ namespace adiar::internal
   using prod_priority_queue_2_t =
     priority_queue<mem_mode, prod2_request<1>, request_data_second_lt<prod2_request<1>>>;
 
-  // TODO: turn into 'tuple<tuple<node::ptr_t>>'
+  // TODO: turn into 'tuple<tuple<node::pointer_type>>'
   struct prod2_rec_output {
-    tuple<dd::ptr_t> low;
-    tuple<dd::ptr_t> high;
+    tuple<dd::pointer_type> low;
+    tuple<dd::pointer_type> high;
   };
 
-  typedef tuple<dd::ptr_t> prod2_rec_skipto;
+  using prod2_rec_skipto = tuple<dd::pointer_type>;
 
-  typedef std::variant<prod2_rec_output, prod2_rec_skipto> prod2_rec;
+  using prod2_rec = std::variant<prod2_rec_output, prod2_rec_skipto>;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
@@ -132,8 +132,8 @@ namespace adiar::internal
   {
     template<typename pq_t>
     static inline void go(pq_t& /*prod_pq_1*/, arc_writer &aw,
-                          const node::uid_t &out_uid,
-                          const node::ptr_t &source)
+                          const node::uid_type &out_uid,
+                          const node::pointer_type &source)
     {
       if (!source.is_nil()) {
         aw.push_internal({ source, out_uid });
@@ -165,7 +165,7 @@ namespace adiar::internal
 
   template<typename dd_policy>
   inline shared_levelized_file<node>
-  __prod2_terminal(const tuple<dd::ptr_t> &rp, const bool_op &op)
+  __prod2_terminal(const tuple<dd::pointer_type> &rp, const bool_op &op)
   {
     // TODO: Abuse that op(tgt[0], tgt[1]) already is a pointer.
     return build_terminal<dd_policy>(op(rp[0], rp[1]).value());
@@ -177,16 +177,16 @@ namespace adiar::internal
   {
   public:
     template<typename request_t>
-    static tuple<typename dd_policy::children_t>
+    static tuple<typename dd_policy::children_type>
     merge(const request_t &r,
           const ptr_uint64 &t_seek,
           const node &v0,
           const node &v1)
     {
-      const typename dd_policy::children_t pair_0 =
+      const typename dd_policy::children_type pair_0 =
         r.target[0] < t_seek ? r.node_carry[0] : v0.children();
 
-      const typename dd_policy::children_t pair_1 =
+      const typename dd_policy::children_type pair_1 =
         r.target[1] < t_seek ? r.node_carry[0] : v1.children();
 
       return { pair_0, pair_1 };
@@ -198,11 +198,11 @@ namespace adiar::internal
   {
   public:
     template<typename request_t>
-    static tuple<typename dd_policy::children_t>
+    static tuple<typename dd_policy::children_type>
     merge(const request_t &r,
-          const typename dd_policy::ptr_t &t_seek,
-          const typename dd_policy::node_t &v0,
-          const typename dd_policy::node_t &v1)
+          const typename dd_policy::pointer_type &t_seek,
+          const typename dd_policy::node_type &v0,
+          const typename dd_policy::node_type &v1)
     {
       if (r.target[0].is_terminal() ||
           r.target[1].is_terminal() ||
@@ -212,13 +212,13 @@ namespace adiar::internal
                      "Cannot have mismatching levels and be equal");
 
         // t.target[0].label() < r.target[1].label() || r.target[1].is_terminal() ?
-        const typename dd_policy::children_t pair_0 =
+        const typename dd_policy::children_type pair_0 =
           r.target[0] < r.target[1]
             ? v0.children()
             : dd_policy::reduction_rule_inv(r.target[0]);
 
         // r.target[1].label() < r.target[0].label() || r.target[0].is_terminal() ?
-        const typename dd_policy::children_t pair_1 =
+        const typename dd_policy::children_type pair_1 =
           r.target[1] < r.target[0]
             ? v1.children()
             : dd_policy::reduction_rule_inv(r.target[1]);
@@ -261,8 +261,8 @@ namespace adiar::internal
 
       // Setup layer
       prod_pq.setup_next_level();
-      typename prod_policy::label_t out_label = prod_pq.current_level();
-      typename prod_policy::id_t out_id = 0;
+      typename prod_policy::label_type out_label = prod_pq.current_level();
+      typename prod_policy::id_type out_id = 0;
 
       in_nodes_0.setup_next_level(out_label);
 
@@ -279,21 +279,21 @@ namespace adiar::internal
                        "Must have found correct node in `in_1`");
         }
 
-        const typename prod_policy::children_t children_0 =
+        const typename prod_policy::children_type children_0 =
           req.target[0].on_level(out_label)
               ? in_nodes_0.at(req.target[0]).children()
               : prod_policy::reduction_rule_inv(req.target[0]);
 
-        const typename prod_policy::children_t children_1 =
+        const typename prod_policy::children_type children_1 =
           req.target[1].on_level(out_label)
               ? v1.children()
               : prod_policy::reduction_rule_inv(req.target[1]);
 
         // Create pairing of product children
-        const tuple<typename prod_policy::ptr_t> rec_pair_0 =
+        const tuple<typename prod_policy::pointer_type> rec_pair_0 =
           { children_0[false], children_1[false] };
 
-        const tuple<typename prod_policy::ptr_t> rec_pair_1 =
+        const tuple<typename prod_policy::pointer_type> rec_pair_1 =
           { children_0[true], children_1[true] };
 
         // Obtain new recursion targets
@@ -305,7 +305,7 @@ namespace adiar::internal
           const prod2_rec_output r = std::get<prod2_rec_output>(rec_res);
 
           adiar_assert(out_id < prod_policy::max_id, "Has run out of ids");
-          const node::uid_t out_uid(out_label, out_id++);
+          const node::uid_type out_uid(out_label, out_id++);
 
           __prod2_recurse_out(prod_pq, aw, op, out_uid.with(false), r.low);
           __prod2_recurse_out(prod_pq, aw, op, out_uid.with(true),  r.high);
@@ -375,8 +375,8 @@ namespace adiar::internal
     pq_2_t prod_pq_2(pq_2_memory, max_pq_2_size);
 
     // Process requests in topological order of both BDDs
-    typename prod_policy::label_t out_label = first(v0.uid(), v1.uid()).label();
-    typename prod_policy::id_t out_id = 0;
+    typename prod_policy::label_type out_label = first(v0.uid(), v1.uid()).label();
+    typename prod_policy::id_type out_id = 0;
 
     size_t max_1level_cut = 0;
 
@@ -400,7 +400,7 @@ namespace adiar::internal
       if (prod_pq_1.can_pull() && (prod_pq_2.empty() ||
                                    prod_pq_1.top().target.first() < prod_pq_2.top().target.second())) {
         req = { prod_pq_1.top().target,
-                {{ { node::ptr_t::nil(), node::ptr_t::nil() } }},
+                {{ { node::pointer_type::nil(), node::pointer_type::nil() } }},
                 { prod_pq_1.top().data } };
       } else {
         req = prod_pq_2.top();
@@ -412,7 +412,7 @@ namespace adiar::internal
                    "Request should never level-wise be behind current position");
 
       // Seek request partially in stream
-      const typename prod_policy::ptr_t t_seek =
+      const typename prod_policy::pointer_type t_seek =
         req.empty_carry() ? req.target.first() : req.target.second();
 
       while (v0.uid() < t_seek && in_nodes_0.can_pull()) {
@@ -427,7 +427,7 @@ namespace adiar::internal
           && req.target[0].is_node() && req.target[1].is_node()
           && req.target[0].label() == req.target[1].label()
           && (v0.uid() != req.target[0] || v1.uid() != req.target[1])) {
-        const typename prod_policy::children_t children =
+        const typename prod_policy::children_type children =
               (req.target[0] == v0.uid() ? v0 : v1).children();
 
         while (prod_pq_1.can_pull() && prod_pq_1.top().target == req.target) {
@@ -440,14 +440,14 @@ namespace adiar::internal
       }
 
       // Recreate children of nodes for req.target
-      const tuple<typename prod_policy::children_t> children =
+      const tuple<typename prod_policy::children_type> children =
         prod_policy::merge(req, t_seek, v0, v1);
 
       // Create pairing of product children
-      const tuple<typename prod_policy::ptr_t> rec_pair_0 =
+      const tuple<typename prod_policy::pointer_type> rec_pair_0 =
         { children[0][false], children[1][false] };
 
-      const tuple<typename prod_policy::ptr_t> rec_pair_1 =
+      const tuple<typename prod_policy::pointer_type> rec_pair_1 =
         { children[0][true], children[1][true] };
 
       // Obtain new recursion targets
@@ -459,7 +459,7 @@ namespace adiar::internal
         const prod2_rec_output r = std::get<prod2_rec_output>(rec_res);
 
         adiar_assert(out_id < prod_policy::max_id, "Has run out of ids");
-        const node::uid_t out_uid(out_label, out_id++);
+        const node::uid_type out_uid(out_label, out_id++);
 
         __prod2_recurse_out(prod_pq_1, aw, op, out_uid.with(false), r.low);
         __prod2_recurse_out(prod_pq_1, aw, op, out_uid.with(true),  r.high);
@@ -677,7 +677,7 @@ namespace adiar::internal
 
     // TODO: define this otherwise
     // 2 mega byte
-    constexpr size_t ra_thresshold = 2 * 1024 * 1024 / sizeof(typename prod_policy::node_t);
+    constexpr size_t ra_thresshold = 2 * 1024 * 1024 / sizeof(typename prod_policy::node_type);
 
     if (access_mode == access_mode_t::Random_Access
         || (access_mode == access_mode_t::Auto

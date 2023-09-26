@@ -19,20 +19,20 @@ namespace adiar::internal
   ///
   /// \param file_t      The type of the shared pointer to a file
   //////////////////////////////////////////////////////////////////////////////
-  template <typename elem_type, bool REVERSE = false>
+  template <typename value_t, bool REVERSE = false>
   class file_stream
   {
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the file's elements.
     ////////////////////////////////////////////////////////////////////////////
-    typedef elem_type elem_t;
+    using value_type = value_t;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     static size_t memory_usage()
     {
-      return tpie::file_stream<elem_t>::memory_usage();
+      return tpie::file_stream<value_type>::memory_usage();
     }
 
   private:
@@ -40,7 +40,7 @@ namespace adiar::internal
     /// \brief Buffer of a single element, since TPIE does not support a
     ///        `peek_back` function yet (TPIE Issue #187).
     ////////////////////////////////////////////////////////////////////////////
-    mutable elem_t _peeked;
+    mutable value_type _peeked;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether an \em unpulled element is stored in `_peeked`.
@@ -55,7 +55,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief TPIE's file stream object to read the file with.
     ////////////////////////////////////////////////////////////////////////////
-    mutable typename tpie::file_stream<elem_t> _stream;
+    mutable typename tpie::file_stream<value_type> _stream;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief If attached to a shared file then hook into the reference
@@ -71,20 +71,20 @@ namespace adiar::internal
     file_stream() { }
 
     ////////////////////////////////////////////////////////////////////////////
-    file_stream(const file_stream<elem_t, REVERSE> &) = delete;
-    file_stream(file_stream<elem_t, REVERSE> &&) = delete;
+    file_stream(const file_stream<value_type, REVERSE> &) = delete;
+    file_stream(file_stream<value_type, REVERSE> &&) = delete;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Construct attached to a given shared `file<elem_t>`.
+    /// \brief Construct attached to a given shared `file<value_type>`.
     ////////////////////////////////////////////////////////////////////////////
-    file_stream(const file<elem_t> &f,
+    file_stream(const file<value_type> &f,
                 bool negate = false)
     { attach(f, negate); }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Construct attached to a given shared `file<elem_t>`.
+    /// \brief Construct attached to a given shared `file<value_type>`.
     ////////////////////////////////////////////////////////////////////////////
-    file_stream(const adiar::shared_ptr<file<elem_t>> &f,
+    file_stream(const adiar::shared_ptr<file<value_type>> &f,
                 bool negate = false)
     { attach(f, negate); }
 
@@ -96,7 +96,7 @@ namespace adiar::internal
 
   protected:
     ////////////////////////////////////////////////////////////////////////////
-    void attach(const file<elem_t> &f,
+    void attach(const file<value_type> &f,
                 const adiar::shared_ptr<void> &shared_ptr,
                 bool negate)
     {
@@ -111,7 +111,7 @@ namespace adiar::internal
       f.__touch();
 
       // Open the stream to the file
-      _stream.open(f._tpie_file, file<elem_t>::read_access);
+      _stream.open(f._tpie_file, file<value_type>::read_access);
       reset();
 
       // Store negation flag.
@@ -129,7 +129,7 @@ namespace adiar::internal
     ///
     /// \pre No `file_writer` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
-    void attach(const file<elem_t> &f,
+    void attach(const file<value_type> &f,
                 bool negate = false)
     {
       attach(f, nullptr, negate);
@@ -140,7 +140,7 @@ namespace adiar::internal
     ///
     /// \pre No `file_writer` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
-    void attach(const adiar::shared_ptr<file<elem_t>> &f,
+    void attach(const adiar::shared_ptr<file<value_type>> &f,
                 bool negate = false)
     {
       attach(*f, f, negate);
@@ -196,15 +196,15 @@ namespace adiar::internal
 
   private:
     ////////////////////////////////////////////////////////////////////////////
-    const elem_t __read()
+    const value_type __read()
     {
-      elem_t e;
+      value_type v;
       if constexpr (REVERSE) {
-        e = _stream.read_back();
+        v = _stream.read_back();
       } else {
-        e = _stream.read();
+        v = _stream.read();
       }
-      return _negate ? ~e : e;
+      return _negate ? ~v : v;
     }
 
   public:
@@ -213,7 +213,7 @@ namespace adiar::internal
     ///
     /// \pre `can_pull() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    const elem_t pull()
+    const value_type pull()
     {
        adiar_assert(can_pull());
       if (_has_peeked) {
@@ -229,7 +229,7 @@ namespace adiar::internal
     ///
     /// \pre `can_pull() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    const elem_t peek()
+    const value_type peek()
     {
       adiar_assert(can_pull());
       if (!_has_peeked) {
@@ -248,8 +248,8 @@ namespace adiar::internal
     ///
     /// \pre     The content is in ascending order and `can_pull() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    template<typename seek_t = elem_t>
-    const elem_t seek(seek_t tgt)
+    template<typename seek_t = value_type>
+    const value_type seek(seek_t tgt)
     {
       // Notice, the peek() also changes the state of '_peeked' and
       // '_has_peeked'. This initializes the invariant for 'seek' that '_peeked'

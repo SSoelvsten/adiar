@@ -6,7 +6,7 @@ go_bandit([]() {
       ptr_uint64 terminal_T = ptr_uint64(true);
       ptr_uint64 terminal_F = ptr_uint64(false);
 
-      shared_levelized_file<bdd::node_t> bdd;
+      shared_levelized_file<bdd::node_type> bdd;
       /*
       //               1           ---- x0
       //              / \
@@ -30,7 +30,7 @@ go_bandit([]() {
         nw << n5 << n4 << n3 << n2 << n1;
       }
 
-      shared_levelized_file<bdd::node_t> skip_bdd;
+      shared_levelized_file<bdd::node_type> skip_bdd;
       /*
       //             1      ---- x0
       //            / \
@@ -55,7 +55,7 @@ go_bandit([]() {
         skip_nw << skip_n4 << skip_n3 << skip_n2 << skip_n1;
       }
 
-      shared_levelized_file<bdd::node_t> non_zero_bdd;
+      shared_levelized_file<bdd::node_type> non_zero_bdd;
       /*
       //                   ---- x0
       //
@@ -69,13 +69,13 @@ go_bandit([]() {
         nw << node(1,0, terminal_F, terminal_T);
       }
 
-      shared_levelized_file<bdd::node_t> bdd_F;
+      shared_levelized_file<bdd::node_type> bdd_F;
       { // Garbage collect writer to free write-lock
         node_writer nw(bdd_F);
         nw << node(false);
       }
 
-      shared_levelized_file<bdd::node_t> bdd_T;
+      shared_levelized_file<bdd::node_type> bdd_T;
       { // Garbage collect writer to free write-lock
         node_writer nw(bdd_T);
         nw << node(true);
@@ -83,222 +83,222 @@ go_bandit([]() {
 
       describe("bdd_eval(bdd, adiar::shared_file<...>)", [&]() {
         it("returns F on test BDD with assignment (F,F,F,T)", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
+          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
 
-            aw << map_pair<bdd::label_t, boolean>(0, false)
-               << map_pair<bdd::label_t, boolean>(1, false)
-               << map_pair<bdd::label_t, boolean>(2, false)
-               << map_pair<bdd::label_t, boolean>(3, true);
+            aw << map_pair<bdd::label_type, boolean>(0, false)
+               << map_pair<bdd::label_type, boolean>(1, false)
+               << map_pair<bdd::label_type, boolean>(2, false)
+               << map_pair<bdd::label_type, boolean>(3, true);
           }
 
           AssertThat(bdd_eval(bdd, ass), Is().False());
         });
 
         it("returns F on test BDD with assignment (F,_,F,T)", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
+          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
 
-            aw << map_pair<bdd::label_t, boolean>(0, false)
-               << map_pair<bdd::label_t, boolean>(2, false)
-               << map_pair<bdd::label_t, boolean>(3, true);
+            aw << map_pair<bdd::label_type, boolean>(0, false)
+               << map_pair<bdd::label_type, boolean>(2, false)
+               << map_pair<bdd::label_type, boolean>(3, true);
           }
 
           AssertThat(bdd_eval(bdd, ass), Is().False());
         });
 
         it("returns T on test BDD with assignment (F,T,T,T)", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
+          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
 
-            aw << map_pair<bdd::label_t, boolean>(0, false)
-               << map_pair<bdd::label_t, boolean>(1, true)
-               << map_pair<bdd::label_t, boolean>(2, true)
-               << map_pair<bdd::label_t, boolean>(3, true);
+            aw << map_pair<bdd::label_type, boolean>(0, false)
+               << map_pair<bdd::label_type, boolean>(1, true)
+               << map_pair<bdd::label_type, boolean>(2, true)
+               << map_pair<bdd::label_type, boolean>(3, true);
           }
 
           AssertThat(bdd_eval(bdd, ass), Is().True());
         });
 
         it("returns F on test BDD with assignment (T,F,F,T)", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
+          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
 
-            aw << map_pair<bdd::label_t, boolean>(0, true)
-               << map_pair<bdd::label_t, boolean>(1, false)
-               << map_pair<bdd::label_t, boolean>(2, false)
-               << map_pair<bdd::label_t, boolean>(3, true);
+            aw << map_pair<bdd::label_type, boolean>(0, true)
+               << map_pair<bdd::label_type, boolean>(1, false)
+               << map_pair<bdd::label_type, boolean>(2, false)
+               << map_pair<bdd::label_type, boolean>(3, true);
           }
 
           AssertThat(bdd_eval(bdd, ass), Is().False());
         });
 
         it("returns T on test BDD with assignment (T,F,T,F)", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
+          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
 
-            aw << map_pair<bdd::label_t, boolean>(0, true)
-               << map_pair<bdd::label_t, boolean>(1, false)
-               << map_pair<bdd::label_t, boolean>(2, true)
-               << map_pair<bdd::label_t, boolean>(3, false);
+            aw << map_pair<bdd::label_type, boolean>(0, true)
+               << map_pair<bdd::label_type, boolean>(1, false)
+               << map_pair<bdd::label_type, boolean>(2, true)
+               << map_pair<bdd::label_type, boolean>(3, false);
           }
 
           AssertThat(bdd_eval(bdd, ass), Is().True());
         });
 
         it("returns T on test BDD with assignment (T,T,F,T)", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
+          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
 
-            aw << map_pair<bdd::label_t, boolean>(0, true)
-               << map_pair<bdd::label_t, boolean>(1, true)
-               << map_pair<bdd::label_t, boolean>(2, false)
-               << map_pair<bdd::label_t, boolean>(3, true);
+            aw << map_pair<bdd::label_type, boolean>(0, true)
+               << map_pair<bdd::label_type, boolean>(1, true)
+               << map_pair<bdd::label_type, boolean>(2, false)
+               << map_pair<bdd::label_type, boolean>(3, true);
           }
 
           AssertThat(bdd_eval(bdd, ass), Is().True());
         });
 
         it("returns T on test BDD with assignment (T,T,T,F)", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
+          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
 
-            aw << map_pair<bdd::label_t, boolean>(0, true)
-               << map_pair<bdd::label_t, boolean>(1, true)
-               << map_pair<bdd::label_t, boolean>(2, true)
-               << map_pair<bdd::label_t, boolean>(3, false);
+            aw << map_pair<bdd::label_type, boolean>(0, true)
+               << map_pair<bdd::label_type, boolean>(1, true)
+               << map_pair<bdd::label_type, boolean>(2, true)
+               << map_pair<bdd::label_type, boolean>(3, false);
           }
 
           AssertThat(bdd_eval(bdd, ass), Is().False());
         });
 
         it("returns T on test BDD with assignment (T,T,T,T)", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
+          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
 
-            aw << map_pair<bdd::label_t, boolean>(0, true)
-               << map_pair<bdd::label_t, boolean>(1, true)
-               << map_pair<bdd::label_t, boolean>(2, true)
-               << map_pair<bdd::label_t, boolean>(3, true);
+            aw << map_pair<bdd::label_type, boolean>(0, true)
+               << map_pair<bdd::label_type, boolean>(1, true)
+               << map_pair<bdd::label_type, boolean>(2, true)
+               << map_pair<bdd::label_type, boolean>(3, true);
           }
 
           AssertThat(bdd_eval(bdd, ass), Is().True());
         });
 
         it("should be able to evaluate BDD that skips level [1]", [&skip_bdd]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
+          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
 
-            aw << map_pair<bdd::label_t, boolean>(0, false)
-               << map_pair<bdd::label_t, boolean>(1, true)
-               << map_pair<bdd::label_t, boolean>(2, false)
-               << map_pair<bdd::label_t, boolean>(3, true)
-               << map_pair<bdd::label_t, boolean>(4, true);
+            aw << map_pair<bdd::label_type, boolean>(0, false)
+               << map_pair<bdd::label_type, boolean>(1, true)
+               << map_pair<bdd::label_type, boolean>(2, false)
+               << map_pair<bdd::label_type, boolean>(3, true)
+               << map_pair<bdd::label_type, boolean>(4, true);
           }
 
           AssertThat(bdd_eval(skip_bdd, ass), Is().False());
         });
 
         it("should be able to evaluate BDD that skips level [2]", [&skip_bdd]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
+          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
 
-            aw << map_pair<bdd::label_t, boolean>(0, true)
-               << map_pair<bdd::label_t, boolean>(1, false)
-               << map_pair<bdd::label_t, boolean>(2, true)
-               << map_pair<bdd::label_t, boolean>(3, true)
-               << map_pair<bdd::label_t, boolean>(4, false);
+            aw << map_pair<bdd::label_type, boolean>(0, true)
+               << map_pair<bdd::label_type, boolean>(1, false)
+               << map_pair<bdd::label_type, boolean>(2, true)
+               << map_pair<bdd::label_type, boolean>(3, true)
+               << map_pair<bdd::label_type, boolean>(4, false);
           }
 
           AssertThat(bdd_eval(skip_bdd, ass), Is().False());
         });
 
         it("returns T on BDD with non-zero root with assignment (F,T)", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
+          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
 
-            aw << map_pair<bdd::label_t, boolean>(0, false)
-               << map_pair<bdd::label_t, boolean>(1, true);
+            aw << map_pair<bdd::label_type, boolean>(0, false)
+               << map_pair<bdd::label_type, boolean>(1, true);
           }
 
           AssertThat(bdd_eval(non_zero_bdd, ass), Is().True());
         });
 
         it("returns F on F terminal-only BDD", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
+          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
 
-            aw << map_pair<bdd::label_t, boolean>(0, true)
-               << map_pair<bdd::label_t, boolean>(1, false)
-               << map_pair<bdd::label_t, boolean>(2, false)
-               << map_pair<bdd::label_t, boolean>(3, true);
+            aw << map_pair<bdd::label_type, boolean>(0, true)
+               << map_pair<bdd::label_type, boolean>(1, false)
+               << map_pair<bdd::label_type, boolean>(2, false)
+               << map_pair<bdd::label_type, boolean>(3, true);
           }
 
           AssertThat(bdd_eval(bdd_F, ass), Is().False());
         });
 
         it("returns F on F terminal-only BDD with empty assignment", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
+          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
 
           AssertThat(bdd_eval(bdd_F, ass), Is().False());
         });
 
         it("returns T on T terminal-only BDD", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
+          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
 
-            aw << map_pair<bdd::label_t, boolean>(0, true)
-               << map_pair<bdd::label_t, boolean>(1, true)
-               << map_pair<bdd::label_t, boolean>(2, false)
-               << map_pair<bdd::label_t, boolean>(3, true);
+            aw << map_pair<bdd::label_type, boolean>(0, true)
+               << map_pair<bdd::label_type, boolean>(1, true)
+               << map_pair<bdd::label_type, boolean>(2, false)
+               << map_pair<bdd::label_type, boolean>(3, true);
           }
 
           AssertThat(bdd_eval(bdd_T, ass), Is().True());
         });
 
         it("returns T on T terminal-only BDD with empty assignment", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
+          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
 
           AssertThat(bdd_eval(bdd_T, ass), Is().True());
         });
 
         it("throws exception when given non-ascending list of assignments", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
+          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
 
-            aw << map_pair<bdd::label_t, boolean>(0, true)
-               << map_pair<bdd::label_t, boolean>(2, true)
-               << map_pair<bdd::label_t, boolean>(1, true)
-               << map_pair<bdd::label_t, boolean>(3, true)
-               << map_pair<bdd::label_t, boolean>(4, true)
+            aw << map_pair<bdd::label_type, boolean>(0, true)
+               << map_pair<bdd::label_type, boolean>(2, true)
+               << map_pair<bdd::label_type, boolean>(1, true)
+               << map_pair<bdd::label_type, boolean>(3, true)
+               << map_pair<bdd::label_type, boolean>(4, true)
               ;
           }
 
@@ -306,13 +306,13 @@ go_bandit([]() {
         });
 
         it("throws exception when running out of assignments", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
+          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
 
-            aw << map_pair<bdd::label_t, boolean>(0, true)
-               << map_pair<bdd::label_t, boolean>(1, true)
+            aw << map_pair<bdd::label_type, boolean>(0, true)
+               << map_pair<bdd::label_type, boolean>(1, true)
               ;
           }
 
@@ -320,15 +320,15 @@ go_bandit([]() {
         });
 
         it("throws exception when list is missing a needed assignment", [&]() {
-          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
+          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
 
-            aw << map_pair<bdd::label_t, boolean>(0, true)
-               << map_pair<bdd::label_t, boolean>(1, true)
-               << map_pair<bdd::label_t, boolean>(3, true)
-               << map_pair<bdd::label_t, boolean>(4, true)
+            aw << map_pair<bdd::label_type, boolean>(0, true)
+               << map_pair<bdd::label_type, boolean>(1, true)
+               << map_pair<bdd::label_type, boolean>(3, true)
+               << map_pair<bdd::label_type, boolean>(4, true)
               ;
           }
 
@@ -338,91 +338,91 @@ go_bandit([]() {
 
       describe("bdd_eval(bdd, predicate<...>)", [&]() {
         it("returns F on test BDD with assignment 'l -> l = 3'", [&]() {
-          auto af = [](const bdd::label_t l) {
+          auto af = [](const bdd::label_type l) {
             return l == 3;
           };
           AssertThat(bdd_eval(bdd, af), Is().False());
         });
 
         it("returns T on test BDD with assignment 'l -> l % 2 == 0'", [&]() {
-          auto af = [](const bdd::label_t l) {
+          auto af = [](const bdd::label_type l) {
             return (l & 1u) == 0;
           };
           AssertThat(bdd_eval(bdd, af), Is().True());
         });
 
         it("returns T on test BDD with assignment 'l -> l > 0'", [&]() {
-          auto af = [](const bdd::label_t l) {
+          auto af = [](const bdd::label_type l) {
             return l > 0;
           };
           AssertThat(bdd_eval(bdd, af), Is().True());
         });
 
         it("returns F on test BDD with assignment 'l -> l == 0 || l == 3'", [&]() {
-          auto af = [](const bdd::label_t l) {
+          auto af = [](const bdd::label_type l) {
             return l == 0 || l == 3;
           };
           AssertThat(bdd_eval(bdd, af), Is().False());
         });
 
         it("returns F on test BDD with assignment 'l -> l % 2 == 1'", [&]() {
-          auto af = [](const bdd::label_t l) {
+          auto af = [](const bdd::label_type l) {
             return (l & 1) == 1;
           };
           AssertThat(bdd_eval(bdd, af), Is().False());
         });
 
         it("returns T on test BDD with assignment 'l -> l != 2'", [&]() {
-          auto af = [](const bdd::label_t l) {
+          auto af = [](const bdd::label_type l) {
             return l != 2;
           };
           AssertThat(bdd_eval(bdd, af), Is().True());
         });
 
         it("returns F on test BDD with assignment 'l -> l < 3'", [&]() {
-          auto af = [](const bdd::label_t l) {
+          auto af = [](const bdd::label_type l) {
             return l < 3;
           };
           AssertThat(bdd_eval(bdd, af), Is().False());
         });
 
         it("returns T on test BDD with assignment '_ -> true'", [&]() {
-          auto af = [](const bdd::label_t) {
+          auto af = [](const bdd::label_type) {
             return true;
           };
           AssertThat(bdd_eval(bdd, af), Is().True());
         });
 
         it("returns F on BDD that skips with assignment 'l -> l == 1 || l > 2'", [&]() {
-          auto af = [](const bdd::label_t l) {
+          auto af = [](const bdd::label_type l) {
             return l == 1 || l > 2;
           };
           AssertThat(bdd_eval(skip_bdd, af), Is().False());
         });
 
         it("returns F on BDD that skips with assignment 'l -> l != 1 && l < 4'", [&]() {
-          auto af = [](const bdd::label_t l) {
+          auto af = [](const bdd::label_type l) {
             return l != 1 && l < 4;
           };
           AssertThat(bdd_eval(skip_bdd, af), Is().False());
         });
 
         it("returns T on BDD with non-zero root with assignment 'l -> l == 1'", [&]() {
-          auto af = [](const bdd::label_t l) {
+          auto af = [](const bdd::label_type l) {
             return l == 1;
           };
           AssertThat(bdd_eval(non_zero_bdd, af), Is().True());
         });
 
         it("returns F on F terminal-only BDD with assignment '_ -> true'", [&]() {
-          auto af = [](const bdd::label_t) {
+          auto af = [](const bdd::label_type) {
             return true;
           };
           AssertThat(bdd_eval(bdd_F, af), Is().False());
         });
 
         it("returns T on T terminal-only BDD with assignment '_ -> false'", [&]() {
-          auto af = [](const bdd::label_t) {
+          auto af = [](const bdd::label_type) {
             return false;
           };
           AssertThat(bdd_eval(bdd_T, af), Is().True());
@@ -434,19 +434,19 @@ go_bandit([]() {
       ptr_uint64 terminal_T = ptr_uint64(true);
       ptr_uint64 terminal_F = ptr_uint64(false);
 
-      shared_levelized_file<bdd::node_t> bdd_T;
+      shared_levelized_file<bdd::node_type> bdd_T;
       {
         node_writer nw(bdd_T);
         nw << node(true);
       }
 
-      shared_levelized_file<bdd::node_t> bdd_F;
+      shared_levelized_file<bdd::node_type> bdd_F;
       {
         node_writer nw(bdd_F);
         nw << node(false);
       }
 
-      shared_levelized_file<bdd::node_t> bdd_0;
+      shared_levelized_file<bdd::node_type> bdd_0;
       /*
       //              1      ---- x0
       //             / \
@@ -457,7 +457,7 @@ go_bandit([]() {
         nw << node(0,0, terminal_F, terminal_T);
       }
 
-      shared_levelized_file<bdd::node_t> bdd_1;
+      shared_levelized_file<bdd::node_type> bdd_1;
       /*
       //              1      ---- x0
       //             / \
@@ -481,7 +481,7 @@ go_bandit([]() {
         nw << n5 << n4 << n3 << n2 << n1;
       }
 
-      shared_levelized_file<bdd::node_t> bdd_2;
+      shared_levelized_file<bdd::node_type> bdd_2;
       /*
       //               1       ---- x0
       //              / \
@@ -508,7 +508,7 @@ go_bandit([]() {
         nw << n6 << n5 << n4 << n3 << n2 << n1;
       }
 
-      shared_levelized_file<bdd::node_t> bdd_3;
+      shared_levelized_file<bdd::node_type> bdd_3;
       /*
       //                1     ---- x1
       //               / \
@@ -590,16 +590,16 @@ go_bandit([]() {
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(3, bdd::max_id))));
+                                                         bdd::pointer_type(3, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::max_id,
-                                                         bdd::ptr_t(2, bdd::max_id),
+                                                         bdd::pointer_type(2, bdd::max_id),
                                                          terminal_F)));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::max_id,
-                                                         bdd::ptr_t(1, bdd::max_id),
+                                                         bdd::pointer_type(1, bdd::max_id),
                                                          terminal_F)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
@@ -647,17 +647,17 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id,
-                                                         bdd::ptr_t(3, bdd::max_id),
+                                                         bdd::pointer_type(3, bdd::max_id),
                                                          terminal_F)));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::max_id,
-                                                         bdd::ptr_t(2, bdd::max_id),
+                                                         bdd::pointer_type(2, bdd::max_id),
                                                          terminal_F)));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::max_id,
-                                                         bdd::ptr_t(1, bdd::max_id),
+                                                         bdd::pointer_type(1, bdd::max_id),
                                                          terminal_F)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
@@ -706,16 +706,16 @@ go_bandit([]() {
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(3, bdd::max_id))));
+                                                         bdd::pointer_type(3, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::max_id,
-                                                         bdd::ptr_t(2, bdd::max_id),
+                                                         bdd::pointer_type(2, bdd::max_id),
                                                          terminal_F)));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::max_id,
-                                                         bdd::ptr_t(1, bdd::max_id),
+                                                         bdd::pointer_type(1, bdd::max_id),
                                                          terminal_F)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
@@ -764,12 +764,12 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::max_id,
-                                                         bdd::ptr_t(5, bdd::max_id),
+                                                         bdd::pointer_type(5, bdd::max_id),
                                                          terminal_F)));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::max_id,
-                                                         bdd::ptr_t(3, bdd::max_id),
+                                                         bdd::pointer_type(3, bdd::max_id),
                                                          terminal_F)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
@@ -817,13 +817,13 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::max_id,
-                                                         bdd::ptr_t(2, bdd::max_id),
+                                                         bdd::pointer_type(2, bdd::max_id),
                                                          terminal_F)));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(1, bdd::max_id))));
+                                                         bdd::pointer_type(1, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -870,22 +870,22 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::max_id,
-                                                         bdd::ptr_t(4, bdd::max_id),
+                                                         bdd::pointer_type(4, bdd::max_id),
                                                          terminal_F)));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(3, bdd::max_id))));
+                                                         bdd::pointer_type(3, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::max_id,
-                                                         bdd::ptr_t(2, bdd::max_id),
+                                                         bdd::pointer_type(2, bdd::max_id),
                                                          terminal_F)));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::max_id,
-                                                         bdd::ptr_t(1, bdd::max_id),
+                                                         bdd::pointer_type(1, bdd::max_id),
                                                          terminal_F)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
@@ -931,7 +931,7 @@ go_bandit([]() {
 
         it("is never called for true terminal", [&]() {
           size_t calls = 0u;
-          const auto cb = [&calls](bdd::label_t, bool) { calls++; };
+          const auto cb = [&calls](bdd::label_type, bool) { calls++; };
 
           bdd_satmin(bdd_T, cb);
           AssertThat(calls, Is().EqualTo(0u));
@@ -939,7 +939,7 @@ go_bandit([]() {
 
         it("is never called for false terminal", [&]() {
           size_t calls = 0u;
-          const auto cb = [&calls](bdd::label_t, bool) { calls++; };
+          const auto cb = [&calls](bdd::label_type, bool) { calls++; };
 
           bdd_satmin(bdd_F, cb);
           AssertThat(calls, Is().EqualTo(0u));
@@ -947,7 +947,7 @@ go_bandit([]() {
 
         it("is called once for [0]", [&]() {
           size_t calls = 0u;
-          const auto cb = [&calls](bdd::label_t x, bool v) {
+          const auto cb = [&calls](bdd::label_type x, bool v) {
             AssertThat(calls, Is().EqualTo(0u));
             AssertThat(x, Is().EqualTo(0u));
             AssertThat(v, Is().EqualTo(true));
@@ -961,10 +961,10 @@ go_bandit([]() {
 
         it("is called with expected evaluation [1]", [&]() {
           size_t calls = 0;
-          std::vector<std::pair<bdd::label_t, bool>> expected =
+          std::vector<std::pair<bdd::label_type, bool>> expected =
             { {0, false}, {1, false}, {2, true}, {3, true} };
 
-          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
             AssertThat(calls, Is().LessThan(expected.size()));
             AssertThat(x, Is().EqualTo(expected.at(calls).first));
             AssertThat(v, Is().EqualTo(expected.at(calls).second));
@@ -977,10 +977,10 @@ go_bandit([]() {
 
         it("is called with expected evaluation [~1]", [&]() {
           size_t calls = 0;
-          std::vector<std::pair<bdd::label_t, bool>> expected =
+          std::vector<std::pair<bdd::label_type, bool>> expected =
             { {0, false}, {1, false}, {2, false}, {3, false} };
 
-          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
             AssertThat(calls, Is().LessThan(expected.size()));
             AssertThat(x, Is().EqualTo(expected.at(calls).first));
             AssertThat(v, Is().EqualTo(expected.at(calls).second));
@@ -993,10 +993,10 @@ go_bandit([]() {
 
         it("is called with expected evaluation [2]", [&]() {
           size_t calls = 0;
-          std::vector<std::pair<bdd::label_t, bool>> expected =
+          std::vector<std::pair<bdd::label_type, bool>> expected =
             { {0, false}, {1, false}, {2, true}, {3, false} };
 
-          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
             AssertThat(calls, Is().LessThan(expected.size()));
             AssertThat(x, Is().EqualTo(expected.at(calls).first));
             AssertThat(v, Is().EqualTo(expected.at(calls).second));
@@ -1010,10 +1010,10 @@ go_bandit([]() {
 
         it("is called with expected evaluation [3]", [&]() {
           size_t calls = 0;
-          std::vector<std::pair<bdd::label_t, bool>> expected =
+          std::vector<std::pair<bdd::label_type, bool>> expected =
             { {1, false}, {3, false}, {5, false} };
 
-          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
             AssertThat(calls, Is().LessThan(expected.size()));
             AssertThat(x, Is().EqualTo(expected.at(calls).first));
             AssertThat(v, Is().EqualTo(expected.at(calls).second));
@@ -1030,10 +1030,10 @@ go_bandit([]() {
           domain_set(2);
 
           size_t calls = 0;
-          std::vector<std::pair<bdd::label_t, bool>> expected =
+          std::vector<std::pair<bdd::label_type, bool>> expected =
             { {0, true}, {1, false} };
 
-          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
             AssertThat(calls, Is().LessThan(expected.size()));
             AssertThat(x, Is().EqualTo(expected.at(calls).first));
             AssertThat(v, Is().EqualTo(expected.at(calls).second));
@@ -1046,14 +1046,14 @@ go_bandit([]() {
         });
 
         it("is called with expected evaluation [2]", [&]() {
-          std::vector<bdd::label_t> dom = { 0,2,4 };
+          std::vector<bdd::label_type> dom = { 0,2,4 };
           domain_set(dom.begin(), dom.end());
 
           size_t calls = 0;
-          std::vector<std::pair<bdd::label_t, bool>> expected =
+          std::vector<std::pair<bdd::label_type, bool>> expected =
             { {0, false}, {1, false}, {2, true}, {3, false}, {4, false} };
 
-          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
             AssertThat(calls, Is().LessThan(expected.size()));
             AssertThat(x, Is().EqualTo(expected.at(calls).first));
             AssertThat(v, Is().EqualTo(expected.at(calls).second));
@@ -1092,18 +1092,18 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id,
-                                                         bdd::ptr_t(3, bdd::max_id),
+                                                         bdd::pointer_type(3, bdd::max_id),
                                                          terminal_F)));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(2, bdd::max_id))));
+                                                         bdd::pointer_type(2, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(1, bdd::max_id))));
+                                                         bdd::pointer_type(1, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1151,17 +1151,17 @@ go_bandit([]() {
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(3, bdd::max_id))));
+                                                         bdd::pointer_type(3, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(2, bdd::max_id))));
+                                                         bdd::pointer_type(2, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(1, bdd::max_id))));
+                                                         bdd::pointer_type(1, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1209,17 +1209,17 @@ go_bandit([]() {
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(3, bdd::max_id))));
+                                                         bdd::pointer_type(3, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(2, bdd::max_id))));
+                                                         bdd::pointer_type(2, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(1, bdd::max_id))));
+                                                         bdd::pointer_type(1, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1266,18 +1266,18 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id,
-                                                         bdd::ptr_t(3, bdd::max_id),
+                                                         bdd::pointer_type(3, bdd::max_id),
                                                          terminal_F)));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(2, bdd::max_id))));
+                                                         bdd::pointer_type(2, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(1, bdd::max_id))));
+                                                         bdd::pointer_type(1, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1325,12 +1325,12 @@ go_bandit([]() {
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(5, bdd::max_id))));
+                                                         bdd::pointer_type(5, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(3, bdd::max_id))));
+                                                         bdd::pointer_type(3, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1375,12 +1375,12 @@ go_bandit([]() {
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(5, bdd::max_id))));
+                                                         bdd::pointer_type(5, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(3, bdd::max_id))));
+                                                         bdd::pointer_type(3, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1428,27 +1428,27 @@ go_bandit([]() {
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(4, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(5, bdd::max_id))));
+                                                         bdd::pointer_type(5, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(4, bdd::max_id))));
+                                                         bdd::pointer_type(4, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id,
-                                                         bdd::ptr_t(3, bdd::max_id),
+                                                         bdd::pointer_type(3, bdd::max_id),
                                                          terminal_F)));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(2, bdd::max_id))));
+                                                         bdd::pointer_type(2, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(1, bdd::max_id))));
+                                                         bdd::pointer_type(1, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1504,22 +1504,22 @@ go_bandit([]() {
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(4, bdd::max_id))));
+                                                         bdd::pointer_type(4, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id,
-                                                         bdd::ptr_t(3, bdd::max_id),
+                                                         bdd::pointer_type(3, bdd::max_id),
                                                          terminal_F)));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(2, bdd::max_id))));
+                                                         bdd::pointer_type(2, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(1, bdd::max_id))));
+                                                         bdd::pointer_type(1, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1557,7 +1557,7 @@ go_bandit([]() {
         });
 
         it("should retrieve maximal evaluation [~2] in domain { 0, 2, 4 }", [&]() {
-          std::vector<bdd::label_t> dom = { 0,2,4 };
+          std::vector<bdd::label_type> dom = { 0,2,4 };
           domain_set(dom.begin(), dom.end());
 
           bdd out = bdd_satmax(bdd_not(bdd_2));
@@ -1574,17 +1574,17 @@ go_bandit([]() {
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(4, bdd::max_id))));
+                                                         bdd::pointer_type(4, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id,
-                                                         bdd::ptr_t(3, bdd::max_id),
+                                                         bdd::pointer_type(3, bdd::max_id),
                                                          terminal_F)));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::max_id,
                                                          terminal_F,
-                                                         bdd::ptr_t(2, bdd::max_id))));
+                                                         bdd::pointer_type(2, bdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1626,10 +1626,10 @@ go_bandit([]() {
 
         it("should retrieve maximal evaluation [1]", [&]() {
           size_t calls = 0;
-          std::vector<std::pair<bdd::label_t, bool>> expected =
+          std::vector<std::pair<bdd::label_type, bool>> expected =
             { {0, true}, {1, true}, {2, false}, {3, true} };
 
-          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
             AssertThat(calls, Is().LessThan(expected.size()));
             AssertThat(x, Is().EqualTo(expected.at(calls).first));
             AssertThat(v, Is().EqualTo(expected.at(calls).second));
@@ -1642,10 +1642,10 @@ go_bandit([]() {
 
         it("should retrieve maximal evaluation [~1]", [&]() {
           size_t calls = 0;
-          std::vector<std::pair<bdd::label_t, bool>> expected =
+          std::vector<std::pair<bdd::label_type, bool>> expected =
             { {0, true}, {1, true}, {2, true}, {3, true} };
 
-          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
             AssertThat(calls, Is().LessThan(expected.size()));
             AssertThat(x, Is().EqualTo(expected.at(calls).first));
             AssertThat(v, Is().EqualTo(expected.at(calls).second));
@@ -1658,10 +1658,10 @@ go_bandit([]() {
 
         it("should retrieve maximal evaluation [2]", [&]() {
           size_t calls = 0;
-          std::vector<std::pair<bdd::label_t, bool>> expected =
+          std::vector<std::pair<bdd::label_type, bool>> expected =
             { {0, true}, {1, true}, {2, true}, {3, true} };
 
-          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
             AssertThat(calls, Is().LessThan(expected.size()));
             AssertThat(x, Is().EqualTo(expected.at(calls).first));
             AssertThat(v, Is().EqualTo(expected.at(calls).second));
@@ -1674,10 +1674,10 @@ go_bandit([]() {
 
         it("should retrieve maximal evaluation [~2]", [&]() {
           size_t calls = 0;
-          std::vector<std::pair<bdd::label_t, bool>> expected =
+          std::vector<std::pair<bdd::label_type, bool>> expected =
             { {0, true}, {1, true}, {2, false}, {3, true} };
 
-          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
             AssertThat(calls, Is().LessThan(expected.size()));
             AssertThat(x, Is().EqualTo(expected.at(calls).first));
             AssertThat(v, Is().EqualTo(expected.at(calls).second));
@@ -1690,10 +1690,10 @@ go_bandit([]() {
 
         it("should retrieve maximal evaluation [3]", [&]() {
           size_t calls = 0;
-          std::vector<std::pair<bdd::label_t, bool>> expected =
+          std::vector<std::pair<bdd::label_type, bool>> expected =
             { {1, true}, {3, true}, {5, true} };
 
-          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
             AssertThat(calls, Is().LessThan(expected.size()));
             AssertThat(x, Is().EqualTo(expected.at(calls).first));
             AssertThat(v, Is().EqualTo(expected.at(calls).second));
@@ -1706,10 +1706,10 @@ go_bandit([]() {
 
         it("should retrieve maximal evaluation [~3]", [&]() {
           size_t calls = 0;
-          std::vector<std::pair<bdd::label_t, bool>> expected =
+          std::vector<std::pair<bdd::label_type, bool>> expected =
             { {1, true}, {3, true}, {5, false} };
 
-          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
             AssertThat(calls, Is().LessThan(expected.size()));
             AssertThat(x, Is().EqualTo(expected.at(calls).first));
             AssertThat(v, Is().EqualTo(expected.at(calls).second));
@@ -1726,10 +1726,10 @@ go_bandit([]() {
           domain_set(6);
 
           size_t calls = 0;
-          std::vector<std::pair<bdd::label_t, bool>> expected =
+          std::vector<std::pair<bdd::label_type, bool>> expected =
             { {0, true}, {1, true}, {2, false}, {3, true}, {4, true}, {5, true} };
 
-          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
             AssertThat(calls, Is().LessThan(expected.size()));
             AssertThat(x, Is().EqualTo(expected.at(calls).first));
             AssertThat(v, Is().EqualTo(expected.at(calls).second));
@@ -1744,10 +1744,10 @@ go_bandit([]() {
           domain_set(5);
 
           size_t calls = 0;
-          std::vector<std::pair<bdd::label_t, bool>> expected =
+          std::vector<std::pair<bdd::label_type, bool>> expected =
             { {0, true}, {1, true}, {2, false}, {3, true}, {4, true} };
 
-          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
             AssertThat(calls, Is().LessThan(expected.size()));
             AssertThat(x, Is().EqualTo(expected.at(calls).first));
             AssertThat(v, Is().EqualTo(expected.at(calls).second));
@@ -1759,16 +1759,16 @@ go_bandit([]() {
         });
 
         it("should retrieve maximal evaluation [~2] in domain { 0, 2, 4 }", [&]() {
-          std::vector<bdd::label_t> dom = { 0,2,4 };
+          std::vector<bdd::label_type> dom = { 0,2,4 };
           domain_set(dom.begin(), dom.end());
 
           bdd out = bdd_satmax(bdd_not(bdd_2));
 
           size_t calls = 0;
-          std::vector<std::pair<bdd::label_t, bool>> expected =
+          std::vector<std::pair<bdd::label_type, bool>> expected =
             { {0, true}, {2, false}, {3, true}, {4, true} };
 
-          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
             AssertThat(calls, Is().LessThan(expected.size()));
             AssertThat(x, Is().EqualTo(expected.at(calls).first));
             AssertThat(v, Is().EqualTo(expected.at(calls).second));

@@ -147,7 +147,7 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Push an arc to the relevant underlying file.
     ///
-    /// \param a An arc with `a.target() != a::ptr_t::nil`.
+    /// \param a An arc with `a.target() != a::pointer_type::nil`.
     ///
     /// \pre `attached() == true`.
     ///

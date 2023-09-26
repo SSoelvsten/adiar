@@ -21,11 +21,11 @@ namespace adiar
     : internal::__dd()
   { }
 
-  __bdd::__bdd(const internal::__dd::shared_nodes_t &f)
+  __bdd::__bdd(const internal::__dd::shared_node_file_type &f)
     : internal::__dd(f)
   { }
 
-  __bdd::__bdd(const internal::__dd::shared_arcs_t &f)
+  __bdd::__bdd(const internal::__dd::shared_arc_file_type &f)
     : internal::__dd(f)
   { }
 
@@ -35,45 +35,45 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // 'bdd' Constructors
-  bdd::bdd(const internal::dd::shared_nodes_t &f, bool negate)
-    : internal::dd(f, negate)
-  { }
-
-  bdd::bdd(const bdd &o)
-    : internal::dd(o)
-  { }
-
-  bdd::bdd(bdd &&o)
-    : internal::dd(o)
-  { }
-
-  bdd::bdd(__bdd &&o)
-    : internal::dd(internal::reduce<bdd_policy>(std::forward<__bdd>(o)))
-  { }
-
-  bdd::bdd(bool v)
-    : bdd(bdd_terminal(v))
+  bdd::bdd(bool t)
+    : bdd(bdd_terminal(t))
   { }
 
   bdd::bdd()
     : bdd(false)
   { }
 
+  bdd::bdd(const internal::dd::shared_node_file_type &f, bool negate)
+    : internal::dd(f, negate)
+  { }
+
+  bdd::bdd(const bdd &f)
+    : internal::dd(f)
+  { }
+
+  bdd::bdd(bdd &&f)
+    : internal::dd(f)
+  { }
+
+  bdd::bdd(__bdd &&f)
+    : internal::dd(internal::reduce<bdd_policy>(std::move(f)))
+  { }
+
   //////////////////////////////////////////////////////////////////////////////
   // Operators
-  bdd operator~ (__bdd &&in) { return ~bdd(std::forward<__bdd>(in)); }
+  bdd operator~ (__bdd &&in) { return ~bdd(std::move(in)); }
 
 #define __bdd_oper(out_t, op)                                              \
   out_t operator op (__bdd &&lhs, __bdd &&rhs) {                           \
-    return bdd(std::forward<__bdd>(lhs)) op bdd(std::forward<__bdd>(rhs)); \
+    return bdd(std::move(lhs)) op bdd(std::move(rhs));                     \
   }                                                                        \
                                                                            \
   out_t operator op (const bdd &lhs, __bdd &&rhs) {                        \
-    return lhs op bdd(std::forward<__bdd>(rhs));                           \
+    return lhs op bdd(std::move(rhs));                                     \
   }                                                                        \
                                                                            \
   out_t operator op (__bdd &&lhs, const bdd &rhs) {                        \
-    return bdd(std::forward<__bdd>(lhs)) op rhs;                           \
+    return bdd(std::move(lhs)) op rhs;                                     \
   }
 
   __bdd_oper(__bdd, &)
@@ -92,7 +92,7 @@ namespace adiar
   bdd& bdd::operator= (__bdd &&other)
   {
     deref();
-    return (*this = internal::reduce<bdd_policy>(std::forward<__bdd>(other)));
+    return (*this = internal::reduce<bdd_policy>(std::move(other)));
   }
 
   bdd& bdd::operator&= (const bdd &other)
@@ -156,24 +156,24 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Input variables
-  bdd::label_t bdd_minvar(const bdd &f)
+  bdd::label_type bdd_minvar(const bdd &f)
   {
     return internal::dd_minvar(f);
   }
 
-  bdd::label_t bdd_maxvar(const bdd &f)
+  bdd::label_type bdd_maxvar(const bdd &f)
   {
     return internal::dd_maxvar(f);
   }
 
-  void bdd_varprofile(const bdd &f, const consumer<bdd::label_t> &cb)
+  void bdd_varprofile(const bdd &f, const consumer<bdd::label_type> &cb)
   {
     return internal::dd_varprofile(f, cb);
   }
 
   //////////////////////////////////////////////////////////////////////////////
   // Conversion
-  __bdd bdd_from(const zdd &A, const generator<bdd::label_t> &dom)
+  __bdd bdd_from(const zdd &A, const generator<bdd::label_type> &dom)
   {
     return internal::intercut<internal::convert_dd_policy<bdd_policy, zdd_policy>>
       (A, dom);
@@ -181,7 +181,7 @@ namespace adiar
 
   __bdd bdd_from(const zdd &A)
   {
-    const shared_file<bdd::label_t> dom = domain_get();
+    const shared_file<bdd::label_type> dom = domain_get();
     internal::file_stream<domain_var> ds(dom);
 
     return internal::intercut<internal::convert_dd_policy<bdd_policy, zdd_policy>>
