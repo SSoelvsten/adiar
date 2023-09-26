@@ -190,6 +190,16 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Input variables
+  zdd::label_t zdd_minvar(const zdd &A)
+  {
+    return internal::dd_minvar(A);
+  }
+
+  zdd::label_t zdd_maxvar(const zdd &A)
+  {
+    return internal::dd_maxvar(A);
+  }
+
   void zdd_varprofile(const zdd &A, const consumer<zdd::label_t> &cb)
   {
     return internal::dd_varprofile(A, cb);

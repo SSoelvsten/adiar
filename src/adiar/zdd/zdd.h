@@ -3,8 +3,6 @@
 
 #include <string_view>
 
-#include <adiar/internal/io/file.h>
-#include <adiar/internal/cnl.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/dd.h>
 

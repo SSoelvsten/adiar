@@ -3,7 +3,6 @@
 
 #include <string_view>
 
-#include <adiar/internal/io/file.h>
 #include <adiar/internal/dd.h>
 
 namespace adiar

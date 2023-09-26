@@ -156,7 +156,15 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Input variables
+  bdd::label_t bdd_minvar(const bdd &f)
+  {
+    return internal::dd_minvar(f);
+  }
 
+  bdd::label_t bdd_maxvar(const bdd &f)
+  {
+    return internal::dd_maxvar(f);
+  }
 
   void bdd_varprofile(const bdd &f, const consumer<bdd::label_t> &cb)
   {

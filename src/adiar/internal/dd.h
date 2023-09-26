@@ -1,14 +1,13 @@
 #ifndef ADIAR_INTERNAL_DD_H
 #define ADIAR_INTERNAL_DD_H
 
+#include <variant>
+
 #include <adiar/internal/cut.h>
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/node.h>
-#include <adiar/internal/data_types/tuple.h>
 #include <adiar/internal/io/arc_file.h>
 #include <adiar/internal/io/node_file.h>
-
-#include <variant>
 
 namespace adiar::internal
 {

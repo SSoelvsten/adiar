@@ -18,14 +18,14 @@ namespace adiar
     return internal::build_terminal<bdd_policy>(value);
   }
 
-  bdd bdd_true()
-  {
-    return internal::build_terminal<bdd_policy>(true);
-  }
-
   bdd bdd_false()
   {
     return internal::build_terminal<bdd_policy>(false);
+  }
+
+  bdd bdd_true()
+  {
+    return internal::build_terminal<bdd_policy>(true);
   }
 
   //////////////////////////////////////////////////////////////////////////////
