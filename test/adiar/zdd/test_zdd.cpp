@@ -143,7 +143,7 @@ go_bandit([]() {
           lw << 0 << 1;
         }
 
-        adiar_set_domain(dom);
+        domain_set(dom);
 
         shared_levelized_file<zdd::node_t> expected;
         {
@@ -167,7 +167,7 @@ go_bandit([]() {
             lw << 0 << 1;
           }
 
-          adiar_set_domain(dom);
+          domain_set(dom);
 
           zdd out = ~(~(x0 | x1) - terminal_T);
           zdd expected = x0 | x1 | terminal_T;

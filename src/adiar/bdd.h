@@ -697,7 +697,7 @@ namespace adiar
   ///          the size of the global domain or the number of variables within
   ///          the given BDD.
   ///
-  /// \see adiar_set_domain bdd_varcount
+  /// \see domain_set bdd_varcount
   //////////////////////////////////////////////////////////////////////////////
   uint64_t bdd_satcount(const bdd &f);
 
@@ -727,7 +727,7 @@ namespace adiar
   ///          resulting assignment is lexicographically smallest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
   ///
-  /// \remark  If `adiar_has_domain() == true` then the assignment is to the
+  /// \remark  If `domain_isset() == true` then the assignment is to the
   ///          domain variables (and the visited bdd variables). If only the
   ///          variables that exist within `f` is of interest, please unset the
   ///          domain first.
@@ -740,7 +740,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically smallest x such that f(x) is true.
   ///
-  /// \remark  If `adiar_has_domain() == true` then the assignment is to the
+  /// \remark  If `domain_isset() == true` then the assignment is to the
   ///          domain variables (and the visited bdd variables). If only the
   ///          variables that exist within `f` is of interest, please unset the
   ///          domain first.
@@ -763,7 +763,7 @@ namespace adiar
   ///          resulting assignment is lexicographically largest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
   ///
-  /// \remark  If `adiar_has_domain() == true` then the assignment is to the
+  /// \remark  If `domain_isset() == true` then the assignment is to the
   ///          domain variables (and the visited bdd variables). If only the
   ///          variables that exist within `f` is of interest, please unset the
   ///          domain first.
@@ -776,7 +776,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically largest x such that f(x) is true.
   ///
-  /// \remark  If `adiar_has_domain() == true` then the assignment is to the
+  /// \remark  If `domain_isset() == true` then the assignment is to the
   ///          domain variables (and the visited bdd variables). If only the
   ///          variables that exist within `f` is of interest, please unset the
   ///          domain first.
@@ -899,7 +899,7 @@ namespace adiar
   /// \returns   BDD that is true for the exact same assignments to variables in
   ///            the global domain.
   ///
-  /// \see       adiar_set_domain adiar_has_domain
+  /// \see       domain_set domain_isset
   ///
   /// \pre       The global \ref module__domain is set to a set of variables
   ///            that is equals to or a superset of the variables in `A`.

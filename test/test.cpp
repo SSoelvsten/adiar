@@ -44,7 +44,7 @@ go_bandit([]() {
 go_bandit([]() {
   describe("adiar/domain.h", []() {
     it("initially as no domain", [&]() {
-      AssertThat(adiar_has_domain(), Is().False());
+      AssertThat(domain_isset(), Is().False());
     });
   });
  });
@@ -122,12 +122,12 @@ go_bandit([]() {
       AssertThat(adiar_initialized(), Is().True());
 
       // TODO: enforce being true independent of above unit tests
-      AssertThat(adiar_has_domain(), Is().True());
+      AssertThat(domain_isset(), Is().True());
 
       adiar_deinit();
 
       AssertThat(adiar_initialized(), Is().False());
-      AssertThat(adiar_has_domain(), Is().False());
+      AssertThat(domain_isset(), Is().False());
     });
 
     it("throws exception when reinitialized", [&]() {

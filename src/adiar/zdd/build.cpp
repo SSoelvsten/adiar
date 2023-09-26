@@ -65,8 +65,8 @@ namespace adiar
 
   zdd zdd_ithvar(const zdd::label_t var)
   {
-    const shared_file<domain_var_t> dom = adiar_get_domain();
-    internal::file_stream<domain_var_t, true> ds(dom);
+    const shared_file<domain_var> dom = domain_get();
+    internal::file_stream<domain_var, true> ds(dom);
 
     return zdd_ithvar(var, make_generator(ds));
   }
@@ -101,8 +101,8 @@ namespace adiar
 
   zdd zdd_nithvar(const zdd::label_t var)
   {
-    const shared_file<domain_var_t> dom = adiar_get_domain();
-    internal::file_stream<domain_var_t, true> ds(dom);
+    const shared_file<domain_var> dom = domain_get();
+    internal::file_stream<domain_var, true> ds(dom);
 
     return zdd_nithvar(var, make_generator(ds));
   }
@@ -152,12 +152,12 @@ namespace adiar
 
   zdd zdd_top()
   {
-    if (!adiar_has_domain()) {
+    if (!domain_isset()) {
       return zdd_null();
     }
 
-    const shared_file<domain_var_t> dom = adiar_get_domain();
-    internal::file_stream<domain_var_t, true> ds(dom);
+    const shared_file<domain_var> dom = domain_get();
+    internal::file_stream<domain_var, true> ds(dom);
 
     return zdd_powerset(make_generator(ds));
   }

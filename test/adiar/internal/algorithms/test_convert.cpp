@@ -923,7 +923,7 @@ go_bandit([]() {
 
     describe("bdd_from(const zdd&)", [&]() {
       it("returns check-false chain to T terminal on { Ø } with set dom = { 0,1,2 }", [&]() {
-        adiar_set_domain(dom_012.begin(), dom_012.end());
+        domain_set(dom_012.begin(), dom_012.end());
 
         __bdd out = bdd_from(zdd_T);
 
@@ -961,7 +961,7 @@ go_bandit([]() {
       });
 
       it("kills root and bridges over it on { Ø, { 2 } } with set dom = { 0,2,4 }", [&]() {
-        adiar_set_domain(dom_024.begin(), dom_024.end());
+        domain_set(dom_024.begin(), dom_024.end());
 
         __bdd out = bdd_from(zdd_x2_null);
 
@@ -1445,7 +1445,7 @@ go_bandit([]() {
 
     describe("zdd_from(const bdd&)", [&]() {
       it("returns pow(dom) on T terminal with set dom = { 0,1,2 }", [&]() {
-        adiar_set_domain(dom_012.begin(), dom_012.end());
+        domain_set(dom_012.begin(), dom_012.end());
 
         __zdd out = zdd_from(bdd_T);
 
@@ -1494,7 +1494,7 @@ go_bandit([]() {
         }
         bdd in(nf);
 
-        adiar_set_domain(dom_024.begin(), dom_024.end());
+        domain_set(dom_024.begin(), dom_024.end());
 
         __zdd out = zdd_from(in);
 

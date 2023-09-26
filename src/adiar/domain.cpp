@@ -9,43 +9,43 @@ namespace adiar
   // Use an explicit 'shared_ptr' rather than a 'shared_file' to allow using the
   // NULL value.
 
-  shared_ptr<internal::file<domain_var_t>> domain_ptr;
+  shared_ptr<internal::file<domain_var>> domain_ptr;
 
-  void adiar_set_domain(const domain_var_t varcount) {
-    shared_file<domain_var_t> dom;
+  void domain_set(const domain_var varcount) {
+    shared_file<domain_var> dom;
     { // Garbage collect writer to free write-lock
-      internal::file_writer<domain_var_t> lw(dom);
-      for (domain_var_t v = 0; v < varcount; v++) { lw << v; }
+      internal::file_writer<domain_var> lw(dom);
+      for (domain_var v = 0; v < varcount; v++) { lw << v; }
     }
-    adiar_set_domain(dom);
+    domain_set(dom);
   }
 
-  void adiar_set_domain(const generator<domain_var_t> &gen) {
-    shared_file<domain_var_t> dom;
+  void domain_set(const generator<domain_var> &gen) {
+    shared_file<domain_var> dom;
     { // Garbage collect writer to free write-lock
-      internal::file_writer<domain_var_t> lw(dom);
+      internal::file_writer<domain_var> lw(dom);
 
-      domain_var_t v;
-      while ((v = gen()) <= MAX_DOMAIN_VAR) { lw << v; }
+      domain_var v;
+      while ((v = gen()) <= domain_max) { lw << v; }
     }
 
-    adiar_set_domain(dom);
+    domain_set(dom);
   }
 
-  void adiar_set_domain(const shared_file<domain_var_t> &dom) {
+  void domain_set(const shared_file<domain_var> &dom) {
     domain_ptr = dom;
   }
 
-  void adiar_unset_domain() {
+  void domain_unset() {
     domain_ptr.reset();
   }
 
-  bool adiar_has_domain() {
+  bool domain_isset() {
     return domain_ptr ? true : false;
   }
 
-  shared_file<domain_var_t> adiar_get_domain() {
-    if(!adiar_has_domain()) {
+  shared_file<domain_var> domain_get() {
+    if(!domain_isset()) {
       throw domain_error("Domain must be set before it can be used");
     }
 

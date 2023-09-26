@@ -389,7 +389,7 @@ go_bandit([]() {
     describe("zdd_ithvar(i)", [&]() {
       {
         std::vector<int> dom = { 0, 1, 2, 3 };
-        adiar_set_domain(dom.begin(), dom.end());
+        domain_set(dom.begin(), dom.end());
       }
 
       it("constructs chain for i = 1 global dom = {0,1,2,3}", [&]() {
@@ -650,7 +650,7 @@ go_bandit([]() {
     describe("zdd_nithvar(i)", [&]() {
       {
         std::vector<int> dom = { 0, 1, 2, 3 };
-        adiar_set_domain(dom.begin(), dom.end());
+        domain_set(dom.begin(), dom.end());
       }
 
       it("constructs chain for i = 2 global dom = {0,1,2,3}", [&]() {
@@ -1293,8 +1293,8 @@ go_bandit([]() {
       });
 
       it("is Ø when there is no global domain", [&]() {
-        adiar_unset_domain();
-        AssertThat(adiar_has_domain(), Is().False());
+        domain_unset();
+        AssertThat(domain_isset(), Is().False());
 
         zdd res = zdd_bot();
         node_test_stream ns(res);
@@ -1325,8 +1325,8 @@ go_bandit([]() {
       });
 
       it("is Ø when there is a global domain", [&]() {
-        adiar_set_domain(3);
-        AssertThat(adiar_has_domain(), Is().True());
+        domain_set(3);
+        AssertThat(domain_isset(), Is().True());
 
         zdd res = zdd_bot();
         node_test_stream ns(res);
@@ -1522,8 +1522,8 @@ go_bandit([]() {
       });
 
       it("is { Ø } terminal when there is no global domain", [&]() {
-        adiar_unset_domain();
-        AssertThat(adiar_has_domain(), Is().False());
+        domain_unset();
+        AssertThat(domain_isset(), Is().False());
 
         zdd res = zdd_top();
         node_test_stream ns(res);
@@ -1554,8 +1554,8 @@ go_bandit([]() {
       });
 
       it("creates { Ø, {0}, {1}, {0,1}, {0,1} } from global domain", [&]() {
-        adiar_set_domain(2);
-        AssertThat(adiar_has_domain(), Is().True());
+        domain_set(2);
+        AssertThat(domain_isset(), Is().True());
 
         zdd res = zdd_top();
         node_test_stream ns(res);
