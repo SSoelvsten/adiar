@@ -21,11 +21,13 @@ namespace adiar::internal
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Template to hide how to extra the level from a certain data type.
   ////////////////////////////////////////////////////////////////////////////
+  // TODO: Move into level_merger
   template<typename T>
   inline ptr_uint64::label_t
   __level_of(const T& t)
   { return t.level(); }
 
+  // TODO: Move into level_merger
   template<>
   inline ptr_uint64::label_t
   __level_of(const ptr_uint64::label_t& l)
@@ -34,7 +36,7 @@ namespace adiar::internal
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Obtain whether the levels in two files are disjoint.
   ////////////////////////////////////////////////////////////////////////////
-  // TODO: Move to dd_func
+  // TODO: Move to dd_func?
   template<typename in1_t = dd, typename stream1_t = level_info_stream<>,
            typename in2_t = dd, typename stream2_t = level_info_stream<>>
   bool

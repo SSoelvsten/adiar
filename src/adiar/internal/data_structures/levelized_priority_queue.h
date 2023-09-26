@@ -79,29 +79,29 @@ namespace adiar::internal
   /// \tparam elem_comp_t  Sorting comparator to use in the inner queue buckets
   ///                      and for merging
   ///
-  /// \tparam file_t       Type of the files to obtain the relevant levels from
+  /// \tparam look_ahead   The number of levels (ahead of the current)
+  ///                      explicitly handle with a sorting algorithm
   ///
-  /// \tparam FILES        Number of files to obtain the levels from
+  /// \tparam level_file_t Type of the files to obtain the relevant levels from
+  ///
+  /// \tparam level_files  Number of files to obtain the levels from
   ///
   /// \tparam level_comp_t Comparator to be used for merging multiple levels
   ///                      from the files together (std::less = top-down, while
   ///                      std::greater = bottom-up)
   ///
-  /// \tparam INIT_LEVEL   The index for the first level one can push to. In
+  /// \tparam init_level   The index for the first level one can push to. In
   ///                      other words, the number of levels to 'skip'.
-  ///
-  /// \tparam look_ahead   The number of levels (ahead of the current)
-  ///                      explicitly handle with a sorting algorithm
   //////////////////////////////////////////////////////////////////////////////
   template <typename            element_t,
-            typename            element_comp_t = std::less<element_t>,
-            ptr_uint64::label_t look_ahead     = ADIAR_LPQ_LOOKAHEAD,
+            typename            element_comp_t = std::less<>,
+            size_t              look_ahead     = ADIAR_LPQ_LOOKAHEAD,
             memory_mode_t       memory_mode    = memory_mode_t::External,
-            typename            file_t         = shared_file_ptr<levelized_file<element_t>>,
-            size_t              FILES          = 1u,
-            typename            level_comp_t   = std::less<ptr_uint64::label_t>,
+            typename            level_file_t   = shared_file_ptr<levelized_file<element_t>>,
+            size_t              level_files    = 1u,
+            typename            level_comp_t   = std::less<>,
             bool                level_reverse  = false,
-            ptr_uint64::label_t INIT_LEVEL     = 1u
+            size_t              init_level     = 1u
             >
   class levelized_priority_queue
   {
@@ -138,7 +138,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the level merger.
     ////////////////////////////////////////////////////////////////////////////
-    using level_merger_t = level_merger<file_t, level_comp_t, FILES, level_reverse>;
+    using level_merger_t = level_merger<level_file_t, level_comp_t, level_files, level_reverse>;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -395,7 +395,7 @@ namespace adiar::internal
     ///
     /// \param memory_given Total amount of memory to use
     ////////////////////////////////////////////////////////////////////////////
-    levelized_priority_queue(const file_t (& files) [FILES],
+    levelized_priority_queue(const level_file_t (& files) [level_files],
                              tpie::memory_size_type memory_given,
                              size_t max_size,
                              stats_t::levelized_priority_queue_t &stats)
@@ -412,7 +412,7 @@ namespace adiar::internal
     ///
     /// \param memory_given Total amount of memory to use
     ////////////////////////////////////////////////////////////////////////////
-    levelized_priority_queue(const dd (& dds) [FILES],
+    levelized_priority_queue(const dd (& dds) [level_files],
                              tpie::memory_size_type memory_given,
                              size_t max_size,
                              stats_t::levelized_priority_queue_t &stats)
@@ -429,7 +429,7 @@ namespace adiar::internal
     ///
     /// \param memory_given Total amount of memory to use
     ////////////////////////////////////////////////////////////////////////////
-    levelized_priority_queue(const __dd (& dds) [FILES],
+    levelized_priority_queue(const __dd (& dds) [level_files],
                              tpie::memory_size_type memory_given,
                              size_t max_size,
                              stats_t::levelized_priority_queue_t &stats)
@@ -450,7 +450,7 @@ namespace adiar::internal
     void init_buckets()
     {
       // Initially skip the number of levels
-      for (ptr_uint64::label_t idx = 0; _level_merger.can_pull() && idx < INIT_LEVEL; idx++) {
+      for (ptr_uint64::label_t idx = 0; _level_merger.can_pull() && idx < init_level; idx++) {
         _level_merger.pull();
       }
 
@@ -976,17 +976,17 @@ namespace adiar::internal
   template <typename            element_t,
             typename            element_comp_t,
             memory_mode_t       memory_mode,
-            typename            file_t,
-            size_t              FILES,
+            typename            level_file_t,
+            size_t              level_files,
             typename            level_comp_t,
             bool                level_reverse,
-            ptr_uint64::label_t INIT_LEVEL
+            size_t              init_level
             >
   class levelized_priority_queue<element_t, element_comp_t,
                                  0u, // <--
                                  memory_mode,
-                                 file_t, FILES, level_comp_t, level_reverse,
-                                 INIT_LEVEL>
+                                 level_file_t, level_files, level_comp_t, level_reverse,
+                                 init_level>
   {
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -1100,7 +1100,7 @@ namespace adiar::internal
     ///
     /// \param memory_given Total amount of memory to use
     ////////////////////////////////////////////////////////////////////////////
-    levelized_priority_queue(const file_t (& /*files*/) [FILES],
+    levelized_priority_queue(const level_file_t (& /*files*/) [level_files],
                              tpie::memory_size_type memory_given,
                              size_t max_size,
                              stats_t::levelized_priority_queue_t &stats)
@@ -1114,7 +1114,7 @@ namespace adiar::internal
     ///
     /// \param memory_given Total amount of memory to use
     ////////////////////////////////////////////////////////////////////////////
-    levelized_priority_queue(const dd (& /*dds*/) [FILES],
+    levelized_priority_queue(const dd (& /*dds*/) [level_files],
                              tpie::memory_size_type memory_given,
                              size_t max_size,
                              stats_t::levelized_priority_queue_t &stats)
@@ -1128,7 +1128,7 @@ namespace adiar::internal
     ///
     /// \param memory_given Total amount of memory to use
     ////////////////////////////////////////////////////////////////////////////
-    levelized_priority_queue(const __dd (& /*dds*/) [FILES],
+    levelized_priority_queue(const __dd (& /*dds*/) [level_files],
                              tpie::memory_size_type memory_given,
                              size_t max_size,
                              stats_t::levelized_priority_queue_t &stats)
@@ -1363,16 +1363,16 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   template <typename      elem_t,
             typename      elem_comp_t = std::less<elem_t>,
-            node::label_t look_ahead  = ADIAR_LPQ_LOOKAHEAD,
+            size_t        look_ahead  = ADIAR_LPQ_LOOKAHEAD,
             memory_mode_t mem_mode    = memory_mode_t::External,
-            size_t        FILES       = 1u,
-            node::label_t INIT_LEVEL  = 1u>
+            size_t        level_files = 1u,
+            size_t        init_level  = 1u>
   using levelized_node_priority_queue =
     levelized_priority_queue<elem_t, elem_comp_t,
                              look_ahead,
                              mem_mode,
-                             shared_levelized_file<node>, FILES, std::less<node::label_t>, false,
-                             INIT_LEVEL>;
+                             shared_levelized_file<node>, level_files, std::less<node::label_t>, false,
+                             init_level>;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Levelized Priority Queue to be used with `levelized_file<arc>` and
@@ -1380,16 +1380,16 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   template <typename      elem_t,
             typename      elem_comp_t = std::less<elem_t>,
-            arc::label_t  look_ahead  = ADIAR_LPQ_LOOKAHEAD,
+            size_t        look_ahead  = ADIAR_LPQ_LOOKAHEAD,
             memory_mode_t mem_mode    = memory_mode_t::External,
-            size_t        FILES       = 1u,
-            arc::label_t  INIT_LEVEL  = 1u>
+            size_t        level_files = 1u,
+            size_t        init_level  = 1u>
   using levelized_arc_priority_queue =
     levelized_priority_queue<elem_t, elem_comp_t,
                              look_ahead,
                              mem_mode,
-                             shared_levelized_file<arc>, FILES, std::greater<arc::label_t>, false,
-                             INIT_LEVEL>;
+                             shared_levelized_file<arc>, level_files, std::greater<arc::label_t>, false,
+                             init_level>;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Levelized Priority Queue to be used with `levelized_file<arc>` and
@@ -1397,32 +1397,32 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   template <typename      elem_t,
             typename      elem_comp_t = std::less<elem_t>,
-            arc::label_t  look_ahead  = ADIAR_LPQ_LOOKAHEAD,
+            size_t        look_ahead  = ADIAR_LPQ_LOOKAHEAD,
             memory_mode_t mem_mode    = memory_mode_t::External,
-            size_t        FILES       = 1u,
-            arc::label_t  INIT_LEVEL  = 1u>
+            size_t        level_files = 1u,
+            size_t        init_level  = 1u>
   using levelized_node_arc_priority_queue =
     levelized_priority_queue<elem_t, elem_comp_t,
                              look_ahead,
                              mem_mode,
-                             shared_levelized_file<arc>, FILES, std::less<arc::label_t>, true,
-                             INIT_LEVEL>;
+                             shared_levelized_file<arc>, level_files, std::less<arc::label_t>, true,
+                             init_level>;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Levelized Priority Queue to be used with `shared_file<label_t>`.
   //////////////////////////////////////////////////////////////////////////////
   template <typename            elem_t,
             typename            elem_comp_t = std::less<elem_t>,
-            ptr_uint64::label_t look_ahead  = ADIAR_LPQ_LOOKAHEAD,
+            size_t              look_ahead  = ADIAR_LPQ_LOOKAHEAD,
             memory_mode_t       mem_mode    = memory_mode_t::External,
-            size_t              FILES       = 1u,
-            ptr_uint64::label_t INIT_LEVEL  = 1u>
+            size_t              level_files = 1u,
+            size_t              init_level  = 1u>
   using levelized_label_priority_queue =
     levelized_priority_queue<elem_t, elem_comp_t,
                              look_ahead,
                              mem_mode,
-                             shared_file<ptr_uint64::label_t>, FILES, std::less<ptr_uint64::label_t>, false,
-                             INIT_LEVEL>;
+                             shared_file<ptr_uint64::label_t>, level_files, std::less<ptr_uint64::label_t>, false,
+                             init_level>;
 }
 
 #endif // ADIAR_INTERNAL_DATA_STRUCTURES_LEVELIZED_PRIORITY_QUEUE_H

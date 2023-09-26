@@ -47,19 +47,19 @@ namespace adiar::internal
   ///
   /// \tparam comp_t Comparator with which to merge the levels.
   ///
-  /// \tparam FILES  Number of files to read from.
+  /// \tparam file_count  Number of files to read from.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename file_t, typename comp_t, size_t FILES, bool reverse = false>
+  template<typename file_t, typename comp_t, size_t file_count, bool reverse = false>
   class level_merger
   {
-    static_assert(0 < FILES, "At least one file should be merged");
+    static_assert(0 < file_count, "At least one file should be merged");
 
     using stream_t = typename level_stream_t<file_t>::template stream_t<reverse>;
 
   public:
     static size_t memory_usage()
     {
-      return FILES * stream_t::memory_usage();
+      return file_count * stream_t::memory_usage();
     }
 
     typedef ptr_uint64::label_t level_t;
@@ -67,33 +67,33 @@ namespace adiar::internal
   private:
     comp_t _comparator = comp_t();
 
-    unique_ptr<stream_t> _level_streams[FILES];
+    unique_ptr<stream_t> _level_streams[file_count];
 
   public:
-    void hook(const file_t (&fs) [FILES])
+    void hook(const file_t (&fs) [file_count])
     {
-      for (size_t idx = 0u; idx < FILES; idx++) {
+      for (size_t idx = 0u; idx < file_count; idx++) {
         _level_streams[idx] = adiar::make_unique<stream_t>(fs[idx]);
       }
     }
 
-    void hook(const dd (&dds) [FILES])
+    void hook(const dd (&dds) [file_count])
     {
-      for (size_t idx = 0u; idx < FILES; idx++) {
+      for (size_t idx = 0u; idx < file_count; idx++) {
         _level_streams[idx] = adiar::make_unique<stream_t>(dds[idx].file);
       }
     }
 
-    void hook(const __dd (&dds) [FILES])
+    void hook(const __dd (&dds) [file_count])
     {
-      for (size_t idx = 0u; idx < FILES; idx++) {
+      for (size_t idx = 0u; idx < file_count; idx++) {
         _level_streams[idx] = adiar::make_unique<stream_t>(dds[idx]);
       }
     }
 
     bool can_pull()
     {
-      for (size_t idx = 0u; idx < FILES; idx++) {
+      for (size_t idx = 0u; idx < file_count; idx++) {
         if (_level_streams[idx]->can_pull()) {
           return true;
         }
@@ -107,7 +107,7 @@ namespace adiar::internal
 
       bool has_min_level = false;
       level_t min_level = 0u;
-      for (size_t idx = 0u; idx < FILES; idx++) {
+      for (size_t idx = 0u; idx < file_count; idx++) {
         if (_level_streams[idx]->can_pull()
             && (!has_min_level || _comparator(__level_of<>(_level_streams[idx]->peek()), min_level))) {
           has_min_level = true;
