@@ -19,7 +19,7 @@ namespace adiar::internal
   /// 1. Nodes within a level are effectively sorted based on their children:
   ///    high first, then low.
   ///
-  /// 2. Identifiers are from \ref MAX_ID and down (when read bottom-up)
+  /// 2. Identifiers are from \ref max_id and down (when read bottom-up)
   ///
   /// If this is true, then equality checking can be done in a single cheap
   /// linear scan rather than with an *O(N log N)* time-forwarding algorithm.

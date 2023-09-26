@@ -150,13 +150,13 @@ go_bandit([]() {
 
       { // Garbage collect writers to free write-lock
         node_writer wa(x42_a);
-        wa << node(42, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
+        wa << node(42, node::max_id, ptr_uint64(false), ptr_uint64(true));
 
         node_writer wb(x42_b);
-        wb << node(42, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
+        wb << node(42, node::max_id, ptr_uint64(false), ptr_uint64(true));
 
         node_writer wn(not_x42);
-        wn << node(42, node::MAX_ID, ptr_uint64(true), ptr_uint64(false));
+        wn << node(42, node::max_id, ptr_uint64(true), ptr_uint64(false));
       }
 
       /*
@@ -168,10 +168,10 @@ go_bandit([]() {
 
       { // Garbage collect writers to free write-lock
         node_writer wT(x69_T);
-        wT << node(69, node::MAX_ID, ptr_uint64(true), ptr_uint64(true));
+        wT << node(69, node::max_id, ptr_uint64(true), ptr_uint64(true));
 
         node_writer wF(x69_F);
-        wF << node(69, node::MAX_ID, ptr_uint64(false), ptr_uint64(false));
+        wF << node(69, node::max_id, ptr_uint64(false), ptr_uint64(false));
       }
 
 
@@ -188,37 +188,37 @@ go_bandit([]() {
             F T
       */
       { node_writer w(bdd_1);
-        w << node(2, node::MAX_ID,   ptr_uint64(false),      ptr_uint64(true))
-          << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID),   ptr_uint64(false))
-          << node(1, node::MAX_ID-1, ptr_uint64(true),       ptr_uint64(2, ptr_uint64::MAX_ID))
-          << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID-1), ptr_uint64(1, ptr_uint64::MAX_ID));
+        w << node(2, node::max_id,   ptr_uint64(false),      ptr_uint64(true))
+          << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id),   ptr_uint64(false))
+          << node(1, node::max_id-1, ptr_uint64(true),       ptr_uint64(2, ptr_uint64::max_id))
+          << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id));
       }
 
       shared_levelized_file<node> bdd_1n;
       /* bdd_1 negated */
       { node_writer w(bdd_1n);
-        w << node(2, node::MAX_ID,   ptr_uint64(true),       ptr_uint64(false))
-          << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID),   ptr_uint64(true))
-          << node(1, node::MAX_ID-1, ptr_uint64(false),      ptr_uint64(2, ptr_uint64::MAX_ID))
-          << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID-1), ptr_uint64(1, ptr_uint64::MAX_ID));
+        w << node(2, node::max_id,   ptr_uint64(true),       ptr_uint64(false))
+          << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id),   ptr_uint64(true))
+          << node(1, node::max_id-1, ptr_uint64(false),      ptr_uint64(2, ptr_uint64::max_id))
+          << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id));
       }
 
       // bdd_1 with child of (2) and low child of (4) flipped in truth value
       shared_levelized_file<node> bdd_1_low_leaf;
       { node_writer w(bdd_1_low_leaf);
-        w << node(2, node::MAX_ID,   ptr_uint64(true),       ptr_uint64(true))
-          << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID),   ptr_uint64(false))
-          << node(1, node::MAX_ID-1, ptr_uint64(false),      ptr_uint64(2, ptr_uint64::MAX_ID))
-          << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID-1), ptr_uint64(1, ptr_uint64::MAX_ID));
+        w << node(2, node::max_id,   ptr_uint64(true),       ptr_uint64(true))
+          << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id),   ptr_uint64(false))
+          << node(1, node::max_id-1, ptr_uint64(false),      ptr_uint64(2, ptr_uint64::max_id))
+          << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id));
       }
 
       // bdd_1 with child of (3) and high child of (4) flipped in truth value
       shared_levelized_file<node> bdd_1_high_leaf;
       { node_writer w(bdd_1_high_leaf);
-        w << node(2, node::MAX_ID,   ptr_uint64(false),      ptr_uint64(false))
-          << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID),   ptr_uint64(true))
-          << node(1, node::MAX_ID-1, ptr_uint64(true),       ptr_uint64(2, ptr_uint64::MAX_ID))
-          << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID-1), ptr_uint64(1, ptr_uint64::MAX_ID));
+        w << node(2, node::max_id,   ptr_uint64(false),      ptr_uint64(false))
+          << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id),   ptr_uint64(true))
+          << node(1, node::max_id-1, ptr_uint64(true),       ptr_uint64(2, ptr_uint64::max_id))
+          << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id));
       }
 
       shared_levelized_file<node> bdd_2;
@@ -233,21 +233,21 @@ go_bandit([]() {
          T   F   T
       */
       { node_writer w(bdd_2);
-        w << node(2, node::MAX_ID,   ptr_uint64(false),      ptr_uint64(true))
-          << node(2, node::MAX_ID-1, ptr_uint64(true),       ptr_uint64(false))
-          << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(false))
-          << node(1, node::MAX_ID-1, ptr_uint64(false),      ptr_uint64(2, ptr_uint64::MAX_ID))
-          << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID-1), ptr_uint64(1, ptr_uint64::MAX_ID));
+        w << node(2, node::max_id,   ptr_uint64(false),      ptr_uint64(true))
+          << node(2, node::max_id-1, ptr_uint64(true),       ptr_uint64(false))
+          << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(false))
+          << node(1, node::max_id-1, ptr_uint64(false),      ptr_uint64(2, ptr_uint64::max_id))
+          << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id));
       }
 
       shared_levelized_file<node> bdd_2n;
       /* bdd_2 negated */
       { node_writer w(bdd_2n);
-        w << node(2, node::MAX_ID,   ptr_uint64(true),       ptr_uint64(false))
-          << node(2, node::MAX_ID-1, ptr_uint64(false),      ptr_uint64(true))
-          << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(true))
-          << node(1, node::MAX_ID-1, ptr_uint64(true),       ptr_uint64(2, ptr_uint64::MAX_ID))
-          << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID-1), ptr_uint64(1, ptr_uint64::MAX_ID));
+        w << node(2, node::max_id,   ptr_uint64(true),       ptr_uint64(false))
+          << node(2, node::max_id-1, ptr_uint64(false),      ptr_uint64(true))
+          << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(true))
+          << node(1, node::max_id-1, ptr_uint64(true),       ptr_uint64(2, ptr_uint64::max_id))
+          << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id));
       }
 
       shared_levelized_file<node> bdd_2_low_child;
@@ -263,11 +263,11 @@ go_bandit([]() {
           which in traversal look similar to bdd_2 until (3) on level x1
       */
       { node_writer w(bdd_2_low_child);
-        w << node(2, node::MAX_ID,   ptr_uint64(false),      ptr_uint64(true))
-          << node(2, node::MAX_ID-1, ptr_uint64(true),       ptr_uint64(false))
-          << node(1, node::MAX_ID,   ptr_uint64(true),       ptr_uint64(false))
-          << node(1, node::MAX_ID-1, ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(2, ptr_uint64::MAX_ID))
-          << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID-1), ptr_uint64(1, ptr_uint64::MAX_ID));
+        w << node(2, node::max_id,   ptr_uint64(false),      ptr_uint64(true))
+          << node(2, node::max_id-1, ptr_uint64(true),       ptr_uint64(false))
+          << node(1, node::max_id,   ptr_uint64(true),       ptr_uint64(false))
+          << node(1, node::max_id-1, ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(2, ptr_uint64::max_id))
+          << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id));
       }
 
       shared_levelized_file<node> bdd_2_high_child;
@@ -283,11 +283,11 @@ go_bandit([]() {
           which in traversal look similar to bdd_2 until (2) on level x1
       */
       { node_writer w(bdd_2_high_child);
-        w << node(2, node::MAX_ID,   ptr_uint64(false),      ptr_uint64(true))
-          << node(2, node::MAX_ID-1, ptr_uint64(true),       ptr_uint64(false))
-          << node(1, node::MAX_ID,   ptr_uint64(false),      ptr_uint64(true))
-          << node(1, node::MAX_ID-1, ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(2, ptr_uint64::MAX_ID))
-          << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID),   ptr_uint64(1, ptr_uint64::MAX_ID-1));
+        w << node(2, node::max_id,   ptr_uint64(false),      ptr_uint64(true))
+          << node(2, node::max_id-1, ptr_uint64(true),       ptr_uint64(false))
+          << node(1, node::max_id,   ptr_uint64(false),      ptr_uint64(true))
+          << node(1, node::max_id-1, ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(2, ptr_uint64::max_id))
+          << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id),   ptr_uint64(1, ptr_uint64::max_id-1));
       }
 
       shared_levelized_file<node> bdd_3;
@@ -303,10 +303,10 @@ go_bandit([]() {
            F T
       */
       { node_writer w(bdd_3);
-        w << node(3, node::MAX_ID, ptr_uint64(false),    ptr_uint64(true))
-          << node(2, node::MAX_ID, ptr_uint64(true),     ptr_uint64(3, ptr_uint64::MAX_ID))
-          << node(1, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), ptr_uint64(false))
-          << node(0, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), ptr_uint64(1, ptr_uint64::MAX_ID));
+        w << node(3, node::max_id, ptr_uint64(false),    ptr_uint64(true))
+          << node(2, node::max_id, ptr_uint64(true),     ptr_uint64(3, ptr_uint64::max_id))
+          << node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(false))
+          << node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id));
       }
 
       shared_levelized_file<node> bdd_4;
@@ -324,10 +324,10 @@ go_bandit([]() {
           The same as bdd_3 but mirrored horisontally
       */
       { node_writer w(bdd_4);
-        w << node(3, node::MAX_ID, ptr_uint64(true),     ptr_uint64(false))
-          << node(2, node::MAX_ID, ptr_uint64(3, ptr_uint64::MAX_ID), ptr_uint64(true))
-          << node(1, node::MAX_ID, ptr_uint64(false),    ptr_uint64(2, ptr_uint64::MAX_ID))
-          << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), ptr_uint64(2, ptr_uint64::MAX_ID));
+        w << node(3, node::max_id, ptr_uint64(true),     ptr_uint64(false))
+          << node(2, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))
+          << node(1, node::max_id, ptr_uint64(false),    ptr_uint64(2, ptr_uint64::max_id))
+          << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id));
       }
 
       shared_levelized_file<node> bdd_5;
@@ -345,10 +345,10 @@ go_bandit([]() {
           The same as bdd_4 but (2) goes to a terminal instead of (3)
       */
       { node_writer w(bdd_5);
-        w << node(3, node::MAX_ID, ptr_uint64(true),     ptr_uint64(false))
-          << node(2, node::MAX_ID, ptr_uint64(3, ptr_uint64::MAX_ID), ptr_uint64(true))
-          << node(1, node::MAX_ID, ptr_uint64(false),    ptr_uint64(true))
-          << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), ptr_uint64(2, ptr_uint64::MAX_ID));
+        w << node(3, node::max_id, ptr_uint64(true),     ptr_uint64(false))
+          << node(2, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))
+          << node(1, node::max_id, ptr_uint64(false),    ptr_uint64(true))
+          << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id));
       }
 
       shared_levelized_file<node> bdd_6;
@@ -366,10 +366,10 @@ go_bandit([]() {
           The same as bdd_5 but (3) goes to a false terminal instead of true
       */
       { node_writer w(bdd_5);
-        w << node(3, node::MAX_ID, ptr_uint64(true),     ptr_uint64(false))
-          << node(2, node::MAX_ID, ptr_uint64(3, ptr_uint64::MAX_ID), ptr_uint64(false))
-          << node(1, node::MAX_ID, ptr_uint64(false),    ptr_uint64(true))
-          << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), ptr_uint64(2, ptr_uint64::MAX_ID));
+        w << node(3, node::max_id, ptr_uint64(true),     ptr_uint64(false))
+          << node(2, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(false))
+          << node(1, node::max_id, ptr_uint64(false),    ptr_uint64(true))
+          << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id));
       }
 
       describe("Fast 2N/B check", [&]() {
@@ -436,10 +436,10 @@ go_bandit([]() {
           /* Same as bdd_3 but with (2) directly going to (4) on the low */
           { // Garbage collect writers to free write-lock
             node_writer w(bdd_3_b);
-            w << node(3, node::MAX_ID, ptr_uint64(false),    ptr_uint64(true))
-              << node(2, node::MAX_ID, ptr_uint64(true),     ptr_uint64(3, ptr_uint64::MAX_ID))
-              << node(1, node::MAX_ID, ptr_uint64(3, ptr_uint64::MAX_ID), ptr_uint64(false))
-              << node(0, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), ptr_uint64(1, ptr_uint64::MAX_ID));
+            w << node(3, node::max_id, ptr_uint64(false),    ptr_uint64(true))
+              << node(2, node::max_id, ptr_uint64(true),     ptr_uint64(3, ptr_uint64::max_id))
+              << node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(false))
+              << node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id));
           }
 
           AssertThat(is_isomorphic(bdd_3, bdd_3_b, false, false), Is().False());
@@ -460,10 +460,10 @@ go_bandit([]() {
           shared_levelized_file<node> bdd_4_b;
           /* Same as bdd_4 but with (2) directly going to (4) on the high */
           { node_writer w(bdd_4_b);
-            w << node(3, node::MAX_ID, ptr_uint64(true),     ptr_uint64(false))
-              << node(2, node::MAX_ID, ptr_uint64(3, ptr_uint64::MAX_ID), ptr_uint64(true))
-              << node(1, node::MAX_ID, ptr_uint64(false),    ptr_uint64(3, ptr_uint64::MAX_ID))
-              << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), ptr_uint64(2, ptr_uint64::MAX_ID));
+            w << node(3, node::max_id, ptr_uint64(true),     ptr_uint64(false))
+              << node(2, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))
+              << node(1, node::max_id, ptr_uint64(false),    ptr_uint64(3, ptr_uint64::max_id))
+              << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id));
           }
 
           AssertThat(is_isomorphic(bdd_4, bdd_4_b, false, false), Is().False());
@@ -527,10 +527,10 @@ go_bandit([]() {
           shared_levelized_file<node> bdd_1b;
           { // Garbage collect writers to free write-lock
             node_writer w(bdd_1b);
-            w << node(2, node::MAX_ID,   ptr_uint64(false),    ptr_uint64(true))
-              << node(1, node::MAX_ID,   ptr_uint64(true),     ptr_uint64(2, ptr_uint64::MAX_ID))
-              << node(1, node::MAX_ID-1, ptr_uint64(2, ptr_uint64::MAX_ID), ptr_uint64(false))
-              << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID), ptr_uint64(1, ptr_uint64::MAX_ID-1));
+            w << node(2, node::max_id,   ptr_uint64(false),    ptr_uint64(true))
+              << node(1, node::max_id,   ptr_uint64(true),     ptr_uint64(2, ptr_uint64::max_id))
+              << node(1, node::max_id-1, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(false))
+              << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id-1));
           }
 
           AssertThat(is_isomorphic(bdd_1, bdd_1b, false, false), Is().True());
@@ -544,11 +544,11 @@ go_bandit([]() {
           shared_levelized_file<node> bdd_2b;
           { // Garbage collect writers to free write-lock
             node_writer w(bdd_2b);
-            w << node(2, node::MAX_ID,   ptr_uint64(true),       ptr_uint64(false))
-              << node(2, node::MAX_ID-1, ptr_uint64(false),      ptr_uint64(true))
-              << node(1, node::MAX_ID,   ptr_uint64(false),      ptr_uint64(2, ptr_uint64::MAX_ID-1))
-              << node(1, node::MAX_ID-1, ptr_uint64(2, ptr_uint64::MAX_ID),   ptr_uint64(false))
-              << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID), ptr_uint64(1, ptr_uint64::MAX_ID-1));
+            w << node(2, node::max_id,   ptr_uint64(true),       ptr_uint64(false))
+              << node(2, node::max_id-1, ptr_uint64(false),      ptr_uint64(true))
+              << node(1, node::max_id,   ptr_uint64(false),      ptr_uint64(2, ptr_uint64::max_id-1))
+              << node(1, node::max_id-1, ptr_uint64(2, ptr_uint64::max_id),   ptr_uint64(false))
+              << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id-1));
           }
 
           AssertThat(is_isomorphic(bdd_2, bdd_2b, false, false), Is().True());
@@ -571,10 +571,10 @@ go_bandit([]() {
           shared_levelized_file<node> bdd_3_b;
           /* Same as bdd_3 negated but with (2) directly going to (4) on the low */
           { node_writer w(bdd_3_b);
-            w << node(3, node::MAX_ID, ptr_uint64(true),     ptr_uint64(false))
-              << node(2, node::MAX_ID, ptr_uint64(false),    ptr_uint64(3, ptr_uint64::MAX_ID))
-              << node(1, node::MAX_ID, ptr_uint64(3, ptr_uint64::MAX_ID), ptr_uint64(true))
-              << node(0, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), ptr_uint64(1, ptr_uint64::MAX_ID));
+            w << node(3, node::max_id, ptr_uint64(true),     ptr_uint64(false))
+              << node(2, node::max_id, ptr_uint64(false),    ptr_uint64(3, ptr_uint64::max_id))
+              << node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))
+              << node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id));
           }
 
           AssertThat(is_isomorphic(bdd_3, bdd_3_b, true, false), Is().False());
@@ -584,14 +584,14 @@ go_bandit([]() {
         it("rejects on low child mismatch on root", [&]() {
           shared_levelized_file<node> bdd_a;
           { node_writer w(bdd_a);
-            w << node(1, node::MAX_ID, ptr_uint64(false), ptr_uint64(true))
-              << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), ptr_uint64(false));
+            w << node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))
+              << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(false));
           }
 
           shared_levelized_file<node> bdd_b;
           { node_writer w(bdd_b);
-            w << node(1, node::MAX_ID, ptr_uint64(true), ptr_uint64(false))
-              << node(0, node::MAX_ID, ptr_uint64(true), ptr_uint64(1, ptr_uint64::MAX_ID));
+            w << node(1, node::max_id, ptr_uint64(true), ptr_uint64(false))
+              << node(0, node::max_id, ptr_uint64(true), ptr_uint64(1, ptr_uint64::max_id));
           }
 
           AssertThat(is_isomorphic(bdd_a, bdd_b, true, false), Is().False());
@@ -613,10 +613,10 @@ go_bandit([]() {
           /* Same as bdd_4 negated but with (2) directly going to (4) on
              the high */
           { node_writer w(bdd_4_b);
-            w << node(3, node::MAX_ID, ptr_uint64(false),    ptr_uint64(true))
-              << node(2, node::MAX_ID, ptr_uint64(3, ptr_uint64::MAX_ID), ptr_uint64(false))
-              << node(1, node::MAX_ID, ptr_uint64(true),     ptr_uint64(3, ptr_uint64::MAX_ID))
-              << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), ptr_uint64(2, ptr_uint64::MAX_ID));
+            w << node(3, node::max_id, ptr_uint64(false),    ptr_uint64(true))
+              << node(2, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(false))
+              << node(1, node::max_id, ptr_uint64(true),     ptr_uint64(3, ptr_uint64::max_id))
+              << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id));
           }
 
           AssertThat(is_isomorphic(bdd_4, bdd_4_b, true, false), Is().False());
@@ -626,16 +626,16 @@ go_bandit([]() {
         it("rejects on high child mismatch on root", [&]() {
           shared_levelized_file<node> bdd_a;
           { node_writer w(bdd_a);
-            w << node(2, node::MAX_ID, ptr_uint64(false),    ptr_uint64(true))
-              << node(1, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), ptr_uint64(false))
-              << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), ptr_uint64(true));
+            w << node(2, node::max_id, ptr_uint64(false),    ptr_uint64(true))
+              << node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(false))
+              << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(true));
           }
 
           shared_levelized_file<node> bdd_b;
           { node_writer w(bdd_b);
-            w << node(2, node::MAX_ID, ptr_uint64(true),     ptr_uint64(false))
-              << node(1, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), ptr_uint64(false))
-              << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), ptr_uint64(true));
+            w << node(2, node::max_id, ptr_uint64(true),     ptr_uint64(false))
+              << node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(false))
+              << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(true));
           }
 
           AssertThat(is_isomorphic(bdd_a, bdd_b, true, false), Is().False());
@@ -668,24 +668,24 @@ go_bandit([]() {
           shared_levelized_file<node> bdd_5_a;
           { // Garbage collect writers to free write-lock
             node_writer w(bdd_5_a);
-            w << node(3, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true))
-              << node(3, node::MAX_ID-1, ptr_uint64(true), ptr_uint64(false))
-              << node(2, node::MAX_ID,   ptr_uint64(3, ptr_uint64::MAX_ID-1), ptr_uint64(3, ptr_uint64::MAX_ID))
-              << node(2, node::MAX_ID-1, ptr_uint64(3, ptr_uint64::MAX_ID), ptr_uint64(3, ptr_uint64::MAX_ID-1))
-              << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(2, ptr_uint64::MAX_ID))
-              << node(0, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(1, ptr_uint64::MAX_ID));
+            w << node(3, node::max_id,   ptr_uint64(false), ptr_uint64(true))
+              << node(3, node::max_id-1, ptr_uint64(true), ptr_uint64(false))
+              << node(2, node::max_id,   ptr_uint64(3, ptr_uint64::max_id-1), ptr_uint64(3, ptr_uint64::max_id))
+              << node(2, node::max_id-1, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(3, ptr_uint64::max_id-1))
+              << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(2, ptr_uint64::max_id))
+              << node(0, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id));
           }
 
           shared_levelized_file<node> bdd_5_b;
           { // Garbage collect writers to free write-lock
             node_writer w(bdd_5_b);
-            w << node(3, node::MAX_ID,   ptr_uint64(false),      ptr_uint64(true))
-              << node(3, node::MAX_ID-1, ptr_uint64(true),       ptr_uint64(false))
-              << node(2, node::MAX_ID,   ptr_uint64(3, ptr_uint64::MAX_ID-1), ptr_uint64(3, ptr_uint64::MAX_ID))
-              << node(2, node::MAX_ID-1, ptr_uint64(3, ptr_uint64::MAX_ID),   ptr_uint64(3, ptr_uint64::MAX_ID-1))
+            w << node(3, node::max_id,   ptr_uint64(false),      ptr_uint64(true))
+              << node(3, node::max_id-1, ptr_uint64(true),       ptr_uint64(false))
+              << node(2, node::max_id,   ptr_uint64(3, ptr_uint64::max_id-1), ptr_uint64(3, ptr_uint64::max_id))
+              << node(2, node::max_id-1, ptr_uint64(3, ptr_uint64::max_id),   ptr_uint64(3, ptr_uint64::max_id-1))
               // This one has its children flipped
-              << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID),   ptr_uint64(2, ptr_uint64::MAX_ID-1))
-              << node(0, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(1, ptr_uint64::MAX_ID));
+              << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id),   ptr_uint64(2, ptr_uint64::max_id-1))
+              << node(0, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id));
           }
 
           AssertThat(is_isomorphic(bdd_5_a, bdd_5_b, true, false), Is().False());

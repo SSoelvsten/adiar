@@ -44,10 +44,10 @@ namespace adiar::internal
     { return target().label(); }
   };
 
-  template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
+  template<size_t look_ahead, memory_mode_t mem_mode>
   using substitute_priority_queue_t =
     levelized_node_priority_queue<substitute_arc, arc_target_lt,
-                                  LOOK_AHEAD,
+                                  look_ahead,
                                   mem_mode>;
 
   struct substitute_rec_output { node out; };
@@ -130,7 +130,7 @@ namespace adiar::internal
           return substitute_policy::terminal(rec_child.value(), amgr);
         }
 
-        substitute_pq.push(arc(ptr_uint64::NIL(), rec_child));
+        substitute_pq.push(arc(ptr_uint64::nil(), rec_child));
       }
     }
 

@@ -27,8 +27,8 @@ namespace adiar::internal
     {
       // Notice, this goes around any of the consistency checks of 'node'!
       return node(node::uid_t(0, 0),
-                            node::ptr_t::NIL(),
-                            node::ptr_t::NIL());
+                            node::ptr_t::nil(),
+                            node::ptr_t::nil());
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -60,7 +60,7 @@ namespace adiar::internal
     cut_size_t _max_1level_short_internal = 0u;
     cut_size_t _curr_1level_short_internal = 0u;
 
-    node::ptr_t _long_internal_ptr = node::ptr_t::NIL();
+    node::ptr_t _long_internal_ptr = node::ptr_t::nil();
     cut_size_t _number_of_long_internal_arcs = 0u;
 
   public:
@@ -111,7 +111,7 @@ namespace adiar::internal
       _max_1level_short_internal = 0u;
       _curr_1level_short_internal = 0u;
 
-      _long_internal_ptr = node::ptr_t::NIL();
+      _long_internal_ptr = node::ptr_t::nil();
       _number_of_long_internal_arcs = 0u;
     }
 
@@ -190,7 +190,7 @@ namespace adiar::internal
       }
 
       if (_latest_node == dummy()) { // First node pushed
-        _canonical = n.is_terminal() || n.id() == node::MAX_ID;
+        _canonical = n.is_terminal() || n.id() == node::max_id;
         if (n.is_terminal()) {
           _file_ptr->number_of_terminals[n.uid().value()]++;
         }
@@ -209,7 +209,7 @@ namespace adiar::internal
 
             _canonical = id_diff && children_ordered;
           } else {
-            const bool id_reset = n.id() == node::MAX_ID;
+            const bool id_reset = n.id() == node::max_id;
             _canonical = id_reset;
           }
         }
@@ -225,12 +225,12 @@ namespace adiar::internal
                                                 _curr_1level_short_internal);
 
           _curr_1level_short_internal = 0u;
-          _long_internal_ptr = node::uid_t(_latest_node.label(), node::MAX_ID);
+          _long_internal_ptr = node::uid_t(_latest_node.label(), node::max_id);
         }
       }
 
       // 1-level cut
-      const bool is_pushing_to_bottom = _long_internal_ptr == node::ptr_t::NIL();
+      const bool is_pushing_to_bottom = _long_internal_ptr == node::ptr_t::nil();
       if (is_pushing_to_bottom && !n.is_terminal()) {
         _terminals_at_bottom[n.low().value()]++;
         _terminals_at_bottom[n.high().value()]++;

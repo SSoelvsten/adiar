@@ -25,14 +25,14 @@ namespace adiar::internal
     }
 
   private:
-    static constexpr size_t IDX__INTERNAL =
-      file_traits<arc>::IDX__INTERNAL;
+    static constexpr size_t idx__internal =
+      file_traits<arc>::idx__internal;
 
-    static constexpr size_t IDX__TERMINALS__IN_ORDER =
-      file_traits<arc>::IDX__TERMINALS__IN_ORDER;
+    static constexpr size_t idx__terminals__in_order =
+      file_traits<arc>::idx__terminals__in_order;
 
-    static constexpr size_t IDX__TERMINALS__OUT_OF_ORDER =
-      file_traits<arc>::IDX__TERMINALS__OUT_OF_ORDER;
+    static constexpr size_t idx__terminals__out_of_order =
+      file_traits<arc>::idx__terminals__out_of_order;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Keep track of the number of unread terminals
@@ -101,19 +101,19 @@ namespace adiar::internal
     /// \brief Whether the stream contains more internal arcs.
     ////////////////////////////////////////////////////////////////////////////
     bool can_pull_internal() const
-    { return parent_t::template can_pull<IDX__INTERNAL>(); }
+    { return parent_t::template can_pull<idx__internal>(); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the next internal arc (and move the read head).
     ////////////////////////////////////////////////////////////////////////////
     const arc pull_internal()
-    { return parent_t::template pull<IDX__INTERNAL>(); }
+    { return parent_t::template pull<idx__internal>(); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the next internal arc (but do not move the read head).
     ////////////////////////////////////////////////////////////////////////////
     const arc peek_internal()
-    { return parent_t::template peek<IDX__INTERNAL>(); }
+    { return parent_t::template peek<idx__internal>(); }
 
   private:
     ////////////////////////////////////////////////////////////////////////////
@@ -123,20 +123,20 @@ namespace adiar::internal
     bool take_in_order_terminal()
     {
       const bool in_order_pullable =
-        parent_t::template can_pull<IDX__TERMINALS__IN_ORDER>();
+        parent_t::template can_pull<idx__terminals__in_order>();
 
       const bool out_of_order_pullable =
-        parent_t::template can_pull<IDX__TERMINALS__OUT_OF_ORDER>();
+        parent_t::template can_pull<idx__terminals__out_of_order>();
 
       if (in_order_pullable != out_of_order_pullable) {
         return in_order_pullable;
       }
 
       const arc::ptr_t in_order_source =
-        parent_t::template peek<IDX__TERMINALS__IN_ORDER>().source();
+        parent_t::template peek<idx__terminals__in_order>().source();
 
       const arc::ptr_t out_of_order_source =
-        parent_t::template peek<IDX__TERMINALS__OUT_OF_ORDER>().source();
+        parent_t::template peek<idx__terminals__out_of_order>().source();
 
       if constexpr (reverse) {
         return in_order_source < out_of_order_source;
@@ -172,8 +172,8 @@ namespace adiar::internal
     const arc pull_terminal()
     {
       const arc a = take_in_order_terminal()
-        ? parent_t::template pull<IDX__TERMINALS__IN_ORDER>()
-        : parent_t::template pull<IDX__TERMINALS__OUT_OF_ORDER>();
+        ? parent_t::template pull<idx__terminals__in_order>()
+        : parent_t::template pull<idx__terminals__out_of_order>();
 
       adiar_assert(_unread_terminals[a.target().value()] > 0,
                    "Terminal counter should not be zero");
@@ -188,8 +188,8 @@ namespace adiar::internal
     const arc peek_terminal()
     {
       return take_in_order_terminal()
-        ? parent_t::template peek<IDX__TERMINALS__IN_ORDER>()
-        : parent_t::template peek<IDX__TERMINALS__OUT_OF_ORDER>();
+        ? parent_t::template peek<idx__terminals__in_order>()
+        : parent_t::template peek<idx__terminals__out_of_order>();
     }
   };
 }

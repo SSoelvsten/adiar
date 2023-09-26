@@ -36,12 +36,12 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     file_writer<level_info> _level_writer;
 
-    static constexpr size_t ELEM_WRITERS = file_traits<elem_t>::files;
+    static constexpr size_t elem_writers = file_traits<elem_t>::files;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Writers for each of the files with 'elem_t'.
     ////////////////////////////////////////////////////////////////////////////
-    file_writer<elem_t> _elem_writers [ELEM_WRITERS];
+    file_writer<elem_t> _elem_writers [elem_writers];
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -114,7 +114,7 @@ namespace adiar::internal
     {
       const bool res = _level_writer.attached();
 #ifndef NDEBUG
-      for (size_t s_idx = 0; s_idx < ELEM_WRITERS; s_idx++) {
+      for (size_t s_idx = 0; s_idx < elem_writers; s_idx++) {
         adiar_assert(_elem_writers[s_idx].attached() == res,
                      "Attachment ought to be synchronised.");
       }
@@ -128,7 +128,7 @@ namespace adiar::internal
     void detach()
     {
       _level_writer.detach();
-      for (size_t s_idx = 0; s_idx < ELEM_WRITERS; s_idx++)
+      for (size_t s_idx = 0; s_idx < elem_writers; s_idx++)
         _elem_writers[s_idx].detach();
       _file_ptr.reset();
     }
@@ -167,8 +167,8 @@ namespace adiar::internal
     template<size_t s_idx>
     void push(const elem_t &e)
     {
-      static_assert(s_idx < ELEM_WRITERS,
-                    "Sub-stream index must be within [0; ELEM_WRITERS).");
+      static_assert(s_idx < elem_writers,
+                    "Sub-stream index must be within [0; elem_writers).");
 
       _elem_writers[s_idx].push(e);
     }
@@ -179,8 +179,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     size_t size(const size_t s_idx) const
     {
-      adiar_assert(s_idx < ELEM_WRITERS,
-                   "Sub-stream index must be within [0; ELEM_WRITERS).");
+      adiar_assert(s_idx < elem_writers,
+                   "Sub-stream index must be within [0; elem_writers).");
       return _elem_writers[s_idx].size();
     }
 
@@ -191,7 +191,7 @@ namespace adiar::internal
     size_t size() const
     {
       size_t acc = 0u;
-      for (size_t s_idx = 0; s_idx < ELEM_WRITERS; s_idx++) {
+      for (size_t s_idx = 0; s_idx < elem_writers; s_idx++) {
         acc += size(s_idx);
       }
       return acc;
@@ -208,7 +208,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     bool has_pushed() const
     {
-      for (size_t s_idx = 0; s_idx < ELEM_WRITERS; s_idx++) {
+      for (size_t s_idx = 0; s_idx < elem_writers; s_idx++) {
         if (size(s_idx) > 0) { return true; }
       }
       return levels() > 0;

@@ -181,7 +181,7 @@ namespace adiar::internal
   /// requires, that the shared_levelized_file<node> is 'canonical' in the
   /// following sense:
   ///
-  /// - For each level, the ids are decreasing from MAX_ID in increments of one.
+  /// - For each level, the ids are decreasing from max_id in increments of one.
   /// - There are no duplicate nodes.
   /// - Nodes within each level are sorted by the children (e.g. ordered first on
   ///   'high', secondly on 'low').

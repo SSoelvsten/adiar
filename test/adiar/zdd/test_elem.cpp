@@ -29,9 +29,9 @@ go_bandit([]() {
     */
 
     {
-      const node n3 = node(2, node::MAX_ID, terminal_T, terminal_T);
-      const node n2 = node(1, node::MAX_ID, terminal_F, n3.uid());
-      const node n1 = node(0, node::MAX_ID, n2.uid(), n3.uid());
+      const node n3 = node(2, node::max_id, terminal_T, terminal_T);
+      const node n2 = node(1, node::max_id, terminal_F, n3.uid());
+      const node n1 = node(0, node::max_id, n2.uid(), n3.uid());
 
       node_writer nw(zdd_1);
       nw << n3 << n2 << n1;
@@ -50,9 +50,9 @@ go_bandit([]() {
      */
 
     {
-      const node n3 = node(3, node::MAX_ID, terminal_T, terminal_T);
-      const node n2 = node(2, node::MAX_ID, terminal_T, n3.uid());
-      const node n1 = node(1, node::MAX_ID, n2.uid(), terminal_T);
+      const node n3 = node(3, node::max_id, terminal_T, terminal_T);
+      const node n2 = node(2, node::max_id, terminal_T, n3.uid());
+      const node n1 = node(1, node::max_id, n2.uid(), terminal_T);
 
       node_writer nw(zdd_2);
       nw << n3 << n2 << n1;
@@ -70,10 +70,10 @@ go_bandit([]() {
     //      F T
     */
     {
-      const node n4 = node(4, node::MAX_ID,   terminal_F, terminal_T);
-      const node n3 = node(2, node::MAX_ID,   n4.uid(), terminal_T);
-      const node n2 = node(2, node::MAX_ID-1, terminal_F, n4.uid());
-      const node n1 = node(1, node::MAX_ID,   n2.uid(), n3.uid());
+      const node n4 = node(4, node::max_id,   terminal_F, terminal_T);
+      const node n3 = node(2, node::max_id,   n4.uid(), terminal_T);
+      const node n2 = node(2, node::max_id-1, terminal_F, n4.uid());
+      const node n1 = node(1, node::max_id,   n2.uid(), n3.uid());
 
       node_writer nw(zdd_3);
       nw << n4 << n3 << n2 << n1;
@@ -89,8 +89,8 @@ go_bandit([]() {
     //     F T
     */
     {
-      const node n2 = node(1, node::MAX_ID, terminal_F, terminal_T);
-      const node n1 = node(0, node::MAX_ID, n2.uid(), n2.uid());
+      const node n2 = node(1, node::max_id, terminal_F, terminal_T);
+      const node n1 = node(0, node::max_id, n2.uid(), n2.uid());
 
       node_writer nw(zdd_4);
       nw << n2 << n1;
@@ -162,7 +162,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(1, zdd::MAX_ID, terminal_F, terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(1, zdd::max_id, terminal_F, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -223,13 +223,13 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(4, zdd::MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(4, zdd::max_id,
                                                               terminal_F,
                                                               terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(2, zdd::MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(2, zdd::max_id,
                                                               terminal_F,
-                                                              zdd::ptr_t(4, zdd::MAX_ID))));
+                                                              zdd::ptr_t(4, zdd::max_id))));
 
 
         AssertThat(out_nodes.can_pull(), Is().False());
@@ -265,7 +265,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(1, zdd::MAX_ID, terminal_F, terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(1, zdd::max_id, terminal_F, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -418,13 +418,13 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(2, zdd::MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(2, zdd::max_id,
                                                               terminal_F,
                                                               terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(0, zdd::MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(0, zdd::max_id,
                                                               terminal_F,
-                                                              zdd::ptr_t(2, zdd::MAX_ID))));
+                                                              zdd::ptr_t(2, zdd::max_id))));
 
 
         AssertThat(out_nodes.can_pull(), Is().False());
@@ -460,7 +460,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(1, zdd::MAX_ID, terminal_F, terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(1, zdd::max_id, terminal_F, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -492,13 +492,13 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(1, zdd::MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(1, zdd::max_id,
                                                               terminal_F,
                                                               terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(0, zdd::MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_t(0, zdd::max_id,
                                                               terminal_F,
-                                                              zdd::ptr_t(1, zdd::MAX_ID))));
+                                                              zdd::ptr_t(1, zdd::max_id))));
 
 
         AssertThat(out_nodes.can_pull(), Is().False());

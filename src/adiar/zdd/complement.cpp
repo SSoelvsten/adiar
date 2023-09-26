@@ -35,9 +35,9 @@ namespace adiar
       {
         if (r.is_terminal()) {
           adiar_assert(r.value() == false, "Root should be Ø");
-          return zdd::node_t(l, zdd::MAX_ID, r, zdd_policy::ptr_t(true));
+          return zdd::node_t(l, zdd::max_id, r, zdd_policy::ptr_t(true));
         } else {
-          return zdd::node_t(l, zdd::MAX_ID, r, r);
+          return zdd::node_t(l, zdd::max_id, r, r);
         }
       }
 

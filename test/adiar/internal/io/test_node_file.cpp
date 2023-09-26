@@ -42,7 +42,7 @@ go_bandit([]() {
       levelized_file<node> nf_42;
       {
         node_writer nw(nf_42);
-        nw << node(42, node::MAX_ID, node::ptr_t(false), node::ptr_t(true));
+        nw << node(42, node::max_id, node::ptr_t(false), node::ptr_t(true));
       }
 
       /*
@@ -53,7 +53,7 @@ go_bandit([]() {
       levelized_file<node> nf_not42;
       {
         node_writer nw(nf_not42);
-        nw << node(42, node::MAX_ID, node::ptr_t(false), node::ptr_t(true));
+        nw << node(42, node::max_id, node::ptr_t(false), node::ptr_t(true));
       }
 
       /*
@@ -64,7 +64,7 @@ go_bandit([]() {
       levelized_file<node> nf_42andnot42;
       {
         node_writer nw(nf_42andnot42);
-        nw << node(42, node::MAX_ID, node::ptr_t(true), node::ptr_t(true));
+        nw << node(42, node::max_id, node::ptr_t(true), node::ptr_t(true));
       }
 
 
@@ -78,8 +78,8 @@ go_bandit([]() {
       levelized_file<node> nf_0and1;
       {
         node_writer nw(nf_0and1);
-        nw << node(1, node::MAX_ID, node::ptr_t(false), node::ptr_t(true))
-           << node(0, node::MAX_ID, node::ptr_t(false), node::ptr_t(1, node::ptr_t::MAX_ID));
+        nw << node(1, node::max_id, node::ptr_t(false), node::ptr_t(true))
+           << node(0, node::max_id, node::ptr_t(false), node::ptr_t(1, node::ptr_t::max_id));
       }
 
       /*
@@ -94,9 +94,9 @@ go_bandit([]() {
       levelized_file<node> nf_0and1and2;
       {
         node_writer nw(nf_0and1and2);
-        nw << node(2, node::MAX_ID, node::ptr_t(false), node::ptr_t(true))
-           << node(1, node::MAX_ID, node::ptr_t(false), node::ptr_t(2, node::ptr_t::MAX_ID))
-           << node(0, node::MAX_ID, node::ptr_t(false), node::ptr_t(1, node::ptr_t::MAX_ID));
+        nw << node(2, node::max_id, node::ptr_t(false), node::ptr_t(true))
+           << node(1, node::max_id, node::ptr_t(false), node::ptr_t(2, node::ptr_t::max_id))
+           << node(0, node::max_id, node::ptr_t(false), node::ptr_t(1, node::ptr_t::max_id));
       }
 
       /*
@@ -111,9 +111,9 @@ go_bandit([]() {
       levelized_file<node> nf_0and1_or_2;
       {
         node_writer nw(nf_0and1_or_2);
-        nw << node(2, node::MAX_ID, node::ptr_t(false), node::ptr_t(true))
-           << node(1, node::MAX_ID, node::ptr_t(2, node::ptr_t::MAX_ID), node::ptr_t(true))
-           << node(0, node::MAX_ID, node::ptr_t(2, node::ptr_t::MAX_ID), node::ptr_t(1, node::ptr_t::MAX_ID));
+        nw << node(2, node::max_id, node::ptr_t(false), node::ptr_t(true))
+           << node(1, node::max_id, node::ptr_t(2, node::ptr_t::max_id), node::ptr_t(true))
+           << node(0, node::max_id, node::ptr_t(2, node::ptr_t::max_id), node::ptr_t(1, node::ptr_t::max_id));
       }
 
       /*
@@ -126,9 +126,9 @@ go_bandit([]() {
       levelized_file<node> nf_21xor42;
       {
         node_writer nw(nf_21xor42);
-        nw << node(42, node::MAX_ID, node::ptr_t(false), node::ptr_t(true))
-           << node(42, node::MAX_ID-1, node::ptr_t(true), node::ptr_t(false))
-           << node(21, node::MAX_ID, node::ptr_t(42, node::ptr_t::MAX_ID), node::ptr_t(42, node::ptr_t::MAX_ID-1));
+        nw << node(42, node::max_id, node::ptr_t(false), node::ptr_t(true))
+           << node(42, node::max_id-1, node::ptr_t(true), node::ptr_t(false))
+           << node(21, node::max_id, node::ptr_t(42, node::ptr_t::max_id), node::ptr_t(42, node::ptr_t::max_id-1));
       }
 
       /*
@@ -143,10 +143,10 @@ go_bandit([]() {
       levelized_file<node> nf_0xnor1_or_2;
       {
         node_writer nw(nf_0xnor1_or_2);
-        nw << node(2, node::MAX_ID, node::ptr_t(false), node::ptr_t(true))
-           << node(1, node::MAX_ID, node::ptr_t(2, node::ptr_t::MAX_ID), node::ptr_t(true))
-           << node(1, node::MAX_ID-1, node::ptr_t(true), node::ptr_t(2, node::ptr_t::MAX_ID))
-           << node(0, node::MAX_ID, node::ptr_t(1, node::ptr_t::MAX_ID-1), node::ptr_t(1, node::ptr_t::MAX_ID));
+        nw << node(2, node::max_id, node::ptr_t(false), node::ptr_t(true))
+           << node(1, node::max_id, node::ptr_t(2, node::ptr_t::max_id), node::ptr_t(true))
+           << node(1, node::max_id-1, node::ptr_t(true), node::ptr_t(2, node::ptr_t::max_id))
+           << node(0, node::max_id, node::ptr_t(1, node::ptr_t::max_id-1), node::ptr_t(1, node::ptr_t::max_id));
       }
 
       /*
@@ -161,10 +161,10 @@ go_bandit([]() {
       levelized_file<node> nf_0xor1_or_2;
       {
         node_writer nw(nf_0xor1_or_2);
-        nw << node(2, node::MAX_ID, node::ptr_t(false), node::ptr_t(true))
-           << node(1, node::MAX_ID, node::ptr_t(2, node::ptr_t::MAX_ID), node::ptr_t(true))
-           << node(1, node::MAX_ID-1, node::ptr_t(true), node::ptr_t(2, node::ptr_t::MAX_ID))
-           << node(0, node::MAX_ID, node::ptr_t(1, node::ptr_t::MAX_ID), node::ptr_t(1, node::ptr_t::MAX_ID-1));
+        nw << node(2, node::max_id, node::ptr_t(false), node::ptr_t(true))
+           << node(1, node::max_id, node::ptr_t(2, node::ptr_t::max_id), node::ptr_t(true))
+           << node(1, node::max_id-1, node::ptr_t(true), node::ptr_t(2, node::ptr_t::max_id))
+           << node(0, node::max_id, node::ptr_t(1, node::ptr_t::max_id), node::ptr_t(1, node::ptr_t::max_id-1));
       }
 
       /*
@@ -185,15 +185,15 @@ go_bandit([]() {
         // In comments, we provide the sum (mod 2) before adding the
         // respective variable.
         node_writer nw(nf_sum01234_mod2);
-        nw << node(4, node::MAX_ID,   node::ptr_t(false), node::ptr_t(true))                                            // 0
-           << node(4, node::MAX_ID-1, node::ptr_t(true), node::ptr_t(false))                                            // 1
-           << node(3, node::MAX_ID,   node::ptr_t(4, node::ptr_t::MAX_ID-1), node::ptr_t(4, node::ptr_t::MAX_ID))    // 1
-           << node(3, node::MAX_ID-1, node::ptr_t(4, node::ptr_t::MAX_ID),   node::ptr_t(4, node::ptr_t::MAX_ID-1))  // 0
-           << node(2, node::MAX_ID,   node::ptr_t(3, node::ptr_t::MAX_ID-1), node::ptr_t(3, node::ptr_t::MAX_ID))    // 0
-           << node(2, node::MAX_ID-1, node::ptr_t(3, node::ptr_t::MAX_ID),   node::ptr_t(3, node::ptr_t::MAX_ID-1))  // 1
-           << node(1, node::MAX_ID,   node::ptr_t(2, node::ptr_t::MAX_ID-1), node::ptr_t(2, node::ptr_t::MAX_ID))    // 1
-           << node(1, node::MAX_ID-1, node::ptr_t(2, node::ptr_t::MAX_ID),   node::ptr_t(2, node::ptr_t::MAX_ID-1))  // 0
-           << node(0, node::MAX_ID,   node::ptr_t(1, node::ptr_t::MAX_ID-1), node::ptr_t(1, node::ptr_t::MAX_ID));   // 0
+        nw << node(4, node::max_id,   node::ptr_t(false), node::ptr_t(true))                                            // 0
+           << node(4, node::max_id-1, node::ptr_t(true), node::ptr_t(false))                                            // 1
+           << node(3, node::max_id,   node::ptr_t(4, node::ptr_t::max_id-1), node::ptr_t(4, node::ptr_t::max_id))    // 1
+           << node(3, node::max_id-1, node::ptr_t(4, node::ptr_t::max_id),   node::ptr_t(4, node::ptr_t::max_id-1))  // 0
+           << node(2, node::max_id,   node::ptr_t(3, node::ptr_t::max_id-1), node::ptr_t(3, node::ptr_t::max_id))    // 0
+           << node(2, node::max_id-1, node::ptr_t(3, node::ptr_t::max_id),   node::ptr_t(3, node::ptr_t::max_id-1))  // 1
+           << node(1, node::max_id,   node::ptr_t(2, node::ptr_t::max_id-1), node::ptr_t(2, node::ptr_t::max_id))    // 1
+           << node(1, node::max_id-1, node::ptr_t(2, node::ptr_t::max_id),   node::ptr_t(2, node::ptr_t::max_id-1))  // 0
+           << node(0, node::max_id,   node::ptr_t(1, node::ptr_t::max_id-1), node::ptr_t(1, node::ptr_t::max_id));   // 0
       }
 
       // -------------------------------------------------------------------
@@ -218,13 +218,13 @@ go_bandit([]() {
       levelized_file<node> nf_larger_2level_cut_A;
       {
         node_writer nw(nf_larger_2level_cut_A);
-        nw << node(3, node::MAX_ID,   node::ptr_t(false), node::ptr_t(true))
-           << node(3, node::MAX_ID-1, node::ptr_t(true), node::ptr_t(false))
-           << node(2, node::MAX_ID,   node::ptr_t(3, node::ptr_t::MAX_ID),   node::ptr_t(true))
-           << node(2, node::MAX_ID-1, node::ptr_t(3, node::ptr_t::MAX_ID-1), node::ptr_t(3, node::ptr_t::MAX_ID))
-           << node(1, node::MAX_ID,   node::ptr_t(2, node::ptr_t::MAX_ID-1), node::ptr_t(true))
-           << node(1, node::MAX_ID-1, node::ptr_t(2, node::ptr_t::MAX_ID-1), node::ptr_t(2, node::ptr_t::MAX_ID))
-           << node(0, node::MAX_ID,   node::ptr_t(1, node::ptr_t::MAX_ID-1), node::ptr_t(1, node::ptr_t::MAX_ID));
+        nw << node(3, node::max_id,   node::ptr_t(false), node::ptr_t(true))
+           << node(3, node::max_id-1, node::ptr_t(true), node::ptr_t(false))
+           << node(2, node::max_id,   node::ptr_t(3, node::ptr_t::max_id),   node::ptr_t(true))
+           << node(2, node::max_id-1, node::ptr_t(3, node::ptr_t::max_id-1), node::ptr_t(3, node::ptr_t::max_id))
+           << node(1, node::max_id,   node::ptr_t(2, node::ptr_t::max_id-1), node::ptr_t(true))
+           << node(1, node::max_id-1, node::ptr_t(2, node::ptr_t::max_id-1), node::ptr_t(2, node::ptr_t::max_id))
+           << node(0, node::max_id,   node::ptr_t(1, node::ptr_t::max_id-1), node::ptr_t(1, node::ptr_t::max_id));
       }
 
       /*
@@ -245,11 +245,11 @@ go_bandit([]() {
       levelized_file<node> nf_larger_2level_cut_B;
       {
         node_writer nw(nf_larger_2level_cut_B);
-        nw << node(3, node::MAX_ID,   node::ptr_t(false), node::ptr_t(true))
-           << node(2, node::MAX_ID,   node::ptr_t(false), node::ptr_t(true))
-           << node(2, node::MAX_ID-1, node::ptr_t(3, node::ptr_t::MAX_ID), node::ptr_t(3, node::ptr_t::MAX_ID))
-           << node(1, node::MAX_ID,   node::ptr_t(2, node::ptr_t::MAX_ID), node::ptr_t(2, node::ptr_t::MAX_ID-1))
-           << node(0, node::MAX_ID,   node::ptr_t(1, node::ptr_t::MAX_ID), node::ptr_t(3, node::ptr_t::MAX_ID));
+        nw << node(3, node::max_id,   node::ptr_t(false), node::ptr_t(true))
+           << node(2, node::max_id,   node::ptr_t(false), node::ptr_t(true))
+           << node(2, node::max_id-1, node::ptr_t(3, node::ptr_t::max_id), node::ptr_t(3, node::ptr_t::max_id))
+           << node(1, node::max_id,   node::ptr_t(2, node::ptr_t::max_id), node::ptr_t(2, node::ptr_t::max_id-1))
+           << node(0, node::max_id,   node::ptr_t(1, node::ptr_t::max_id), node::ptr_t(3, node::ptr_t::max_id));
       }
 
       describe("canonicity", [&]() {
@@ -287,9 +287,9 @@ go_bandit([]() {
           levelized_file<node> nf;
           {
             node_writer nw(nf);
-            nw << node(42, node::MAX_ID, node::ptr_t(true), node::ptr_t(false))
-               << node(42, node::MAX_ID-1, node::ptr_t(false), node::ptr_t(true))
-               << node(21, node::MAX_ID, node::ptr_t(42, node::ptr_t::MAX_ID), node::ptr_t(42, node::ptr_t::MAX_ID-1));
+            nw << node(42, node::max_id, node::ptr_t(true), node::ptr_t(false))
+               << node(42, node::max_id-1, node::ptr_t(false), node::ptr_t(true))
+               << node(21, node::max_id, node::ptr_t(42, node::ptr_t::max_id), node::ptr_t(42, node::ptr_t::max_id-1));
           }
 
           AssertThat(nf.canonical, Is().False());
@@ -299,9 +299,9 @@ go_bandit([]() {
           levelized_file<node> nf;
           {
             node_writer nw(nf);
-            nw << node(42, node::MAX_ID, node::ptr_t(false), node::ptr_t(true))
-               << node(42, node::MAX_ID-1, node::ptr_t(true), node::ptr_t(false))
-               << node(21, node::MAX_ID-2, node::ptr_t(42, node::ptr_t::MAX_ID), node::ptr_t(42, node::ptr_t::MAX_ID-1));
+            nw << node(42, node::max_id, node::ptr_t(false), node::ptr_t(true))
+               << node(42, node::max_id-1, node::ptr_t(true), node::ptr_t(false))
+               << node(21, node::max_id-2, node::ptr_t(42, node::ptr_t::max_id), node::ptr_t(42, node::ptr_t::max_id-1));
           }
 
           AssertThat(nf.canonical, Is().False());
@@ -311,9 +311,9 @@ go_bandit([]() {
           levelized_file<node> nf;
           {
             node_writer nw(nf);
-            nw << node(42, node::MAX_ID, node::ptr_t(false), node::ptr_t(true))
-               << node(42, node::MAX_ID-2, node::ptr_t(true), node::ptr_t(false))
-               << node(21, node::MAX_ID, node::ptr_t(42, node::ptr_t::MAX_ID), node::ptr_t(42, node::ptr_t::MAX_ID-2));
+            nw << node(42, node::max_id, node::ptr_t(false), node::ptr_t(true))
+               << node(42, node::max_id-2, node::ptr_t(true), node::ptr_t(false))
+               << node(21, node::max_id, node::ptr_t(42, node::ptr_t::max_id), node::ptr_t(42, node::ptr_t::max_id-2));
           }
 
           AssertThat(nf.canonical, Is().False());
@@ -331,10 +331,10 @@ go_bandit([]() {
           levelized_file<node> nf;
           {
             node_writer nw(nf);
-            nw << node(2, node::MAX_ID, node::ptr_t(false), node::ptr_t(true))
-               << node(1, node::MAX_ID, node::ptr_t(true), node::ptr_t(2, node::ptr_t::MAX_ID))
-               << node(1, node::MAX_ID-1, node::ptr_t(2, node::ptr_t::MAX_ID), node::ptr_t(false))
-               << node(0, node::MAX_ID, node::ptr_t(1, node::ptr_t::MAX_ID), node::ptr_t(1, node::ptr_t::MAX_ID-1));
+            nw << node(2, node::max_id, node::ptr_t(false), node::ptr_t(true))
+               << node(1, node::max_id, node::ptr_t(true), node::ptr_t(2, node::ptr_t::max_id))
+               << node(1, node::max_id-1, node::ptr_t(2, node::ptr_t::max_id), node::ptr_t(false))
+               << node(0, node::max_id, node::ptr_t(1, node::ptr_t::max_id), node::ptr_t(1, node::ptr_t::max_id-1));
           }
 
           AssertThat(nf.canonical, Is().False());
@@ -344,12 +344,12 @@ go_bandit([]() {
           levelized_file<node> nf;
           {
             node_writer nw(nf);
-            nw << node(3, node::MAX_ID,   node::ptr_t(false), node::ptr_t(true))
-               << node(2, node::MAX_ID,   node::ptr_t(false), node::ptr_t(true))
-               << node(2, node::MAX_ID-1, node::ptr_t(true), node::ptr_t(3, node::ptr_t::MAX_ID))
-               << node(1, node::MAX_ID,   node::ptr_t(2, node::ptr_t::MAX_ID-1), node::ptr_t(2, node::ptr_t::MAX_ID))
-               << node(1, node::MAX_ID-1, node::ptr_t(2, node::ptr_t::MAX_ID),   node::ptr_t(2, node::ptr_t::MAX_ID))
-               << node(0, node::MAX_ID,   node::ptr_t(1, node::ptr_t::MAX_ID),   node::ptr_t(1, node::ptr_t::MAX_ID-1));
+            nw << node(3, node::max_id,   node::ptr_t(false), node::ptr_t(true))
+               << node(2, node::max_id,   node::ptr_t(false), node::ptr_t(true))
+               << node(2, node::max_id-1, node::ptr_t(true), node::ptr_t(3, node::ptr_t::max_id))
+               << node(1, node::max_id,   node::ptr_t(2, node::ptr_t::max_id-1), node::ptr_t(2, node::ptr_t::max_id))
+               << node(1, node::max_id-1, node::ptr_t(2, node::ptr_t::max_id),   node::ptr_t(2, node::ptr_t::max_id))
+               << node(0, node::max_id,   node::ptr_t(1, node::ptr_t::max_id),   node::ptr_t(1, node::ptr_t::max_id-1));
           }
 
           AssertThat(nf.canonical, Is().False());
@@ -359,12 +359,12 @@ go_bandit([]() {
           levelized_file<node> nf;
           {
             node_writer nw(nf);
-            nw << node(3, node::MAX_ID,   node::ptr_t(false), node::ptr_t(true))
-               << node(2, node::MAX_ID,   node::ptr_t(false), node::ptr_t(true))
-               << node(2, node::MAX_ID-1, node::ptr_t(true), node::ptr_t(3, node::ptr_t::MAX_ID))
-               << node(1, node::MAX_ID,   node::ptr_t(2, node::ptr_t::MAX_ID-1), node::ptr_t(2, node::ptr_t::MAX_ID-1))
-               << node(1, node::MAX_ID-1, node::ptr_t(2, node::ptr_t::MAX_ID-1), node::ptr_t(2, node::ptr_t::MAX_ID))
-               << node(0, node::MAX_ID,   node::ptr_t(1, node::ptr_t::MAX_ID),   node::ptr_t(1, node::ptr_t::MAX_ID-1));
+            nw << node(3, node::max_id,   node::ptr_t(false), node::ptr_t(true))
+               << node(2, node::max_id,   node::ptr_t(false), node::ptr_t(true))
+               << node(2, node::max_id-1, node::ptr_t(true), node::ptr_t(3, node::ptr_t::max_id))
+               << node(1, node::max_id,   node::ptr_t(2, node::ptr_t::max_id-1), node::ptr_t(2, node::ptr_t::max_id-1))
+               << node(1, node::max_id-1, node::ptr_t(2, node::ptr_t::max_id-1), node::ptr_t(2, node::ptr_t::max_id))
+               << node(0, node::max_id,   node::ptr_t(1, node::ptr_t::max_id),   node::ptr_t(1, node::ptr_t::max_id-1));
           }
 
           AssertThat(nf.canonical, Is().False());
@@ -419,12 +419,12 @@ go_bandit([]() {
           levelized_file<node> nf;
           {
             node_writer nw(nf);
-            nw << node(3, node::MAX_ID,   node::ptr_t(false), node::ptr_t(true))  // n6
-               << node(2, node::MAX_ID,   node::ptr_t(true),  node::ptr_t(false)) // n5 (non-canonical)
-               << node(2, node::MAX_ID-1, node::ptr_t(false), node::ptr_t(true))  // n4 (non-canonical)
-               << node(2, node::MAX_ID-2, node::ptr_t(false), node::ptr_t(3, node::MAX_ID)) // n3
-               << node(1, node::MAX_ID,   node::ptr_t(2, node::MAX_ID-2), node::ptr_t(2, node::MAX_ID-1)) // n2
-               << node(0, node::MAX_ID,   node::ptr_t(1, node::MAX_ID),   node::ptr_t(2, node::MAX_ID));  // n1
+            nw << node(3, node::max_id,   node::ptr_t(false), node::ptr_t(true))  // n6
+               << node(2, node::max_id,   node::ptr_t(true),  node::ptr_t(false)) // n5 (non-canonical)
+               << node(2, node::max_id-1, node::ptr_t(false), node::ptr_t(true))  // n4 (non-canonical)
+               << node(2, node::max_id-2, node::ptr_t(false), node::ptr_t(3, node::max_id)) // n3
+               << node(1, node::max_id,   node::ptr_t(2, node::max_id-2), node::ptr_t(2, node::max_id-1)) // n2
+               << node(0, node::max_id,   node::ptr_t(1, node::max_id),   node::ptr_t(2, node::max_id));  // n1
           }
 
           AssertThat(nf.width, Is().EqualTo(3u));
@@ -722,7 +722,7 @@ go_bandit([]() {
           AssertThat(ns.seek(node::uid_t(0,0)), Is().EqualTo(node(false)));
           AssertThat(ns.seek(node::uid_t(1,0)), Is().EqualTo(node(false)));
           AssertThat(ns.seek(node::uid_t(1,1)), Is().EqualTo(node(false)));
-          AssertThat(ns.seek(node::uid_t(node::MAX_LABEL, node::MAX_ID)), Is().EqualTo(node(false)));
+          AssertThat(ns.seek(node::uid_t(node::max_label, node::max_id)), Is().EqualTo(node(false)));
         });
 
         it("can seek in True sink", [&]() {
@@ -737,7 +737,7 @@ go_bandit([]() {
           AssertThat(ns.seek(node::uid_t(0,0)), Is().EqualTo(node(true)));
           AssertThat(ns.seek(node::uid_t(1,0)), Is().EqualTo(node(true)));
           AssertThat(ns.seek(node::uid_t(1,1)), Is().EqualTo(node(true)));
-          AssertThat(ns.seek(node::uid_t(node::MAX_LABEL, node::MAX_ID)), Is().EqualTo(node(true)));
+          AssertThat(ns.seek(node::uid_t(node::max_label, node::max_id)), Is().EqualTo(node(true)));
         });
 
         it("can seek existing elements", [&]() {
@@ -787,7 +787,7 @@ go_bandit([]() {
 
           node_stream<> ns(nf);
 
-          AssertThat(ns.seek(node::uid_t(node::MAX_LABEL, node::MAX_ID)),
+          AssertThat(ns.seek(node::uid_t(node::max_label, node::max_id)),
                      Is().EqualTo(node(1,1, node::ptr_t(false), node::ptr_t(true))));
         });
 
@@ -817,7 +817,7 @@ go_bandit([]() {
         //             / \
         //             F T
         */
-        const node A_n1 = node(1, node::MAX_ID, node::ptr_t(false), node::ptr_t(true));
+        const node A_n1 = node(1, node::max_id, node::ptr_t(false), node::ptr_t(true));
 
         levelized_file<node> nf_A;
         {
@@ -836,13 +836,13 @@ go_bandit([]() {
         //      / \ / \
         //      T F F T
          */
-        const node B_n7 = node(4, node::MAX_ID,   node::ptr_t(false), node::ptr_t(true));
-        const node B_n6 = node(4, node::MAX_ID-1, node::ptr_t(true),  node::ptr_t(false));
-        const node B_n5 = node(2, node::MAX_ID,   B_n7.uid(),         node::ptr_t(true));
-        const node B_n4 = node(2, node::MAX_ID-1, B_n6.uid(),         B_n7.uid());
-        const node B_n3 = node(2, node::MAX_ID-2, node::ptr_t(false), B_n6.uid());
-        const node B_n2 = node(1, node::MAX_ID,   B_n3.uid(),         B_n4.uid());
-        const node B_n1 = node(0, node::MAX_ID,   B_n2.uid(),         B_n5.uid());
+        const node B_n7 = node(4, node::max_id,   node::ptr_t(false), node::ptr_t(true));
+        const node B_n6 = node(4, node::max_id-1, node::ptr_t(true),  node::ptr_t(false));
+        const node B_n5 = node(2, node::max_id,   B_n7.uid(),         node::ptr_t(true));
+        const node B_n4 = node(2, node::max_id-1, B_n6.uid(),         B_n7.uid());
+        const node B_n3 = node(2, node::max_id-2, node::ptr_t(false), B_n6.uid());
+        const node B_n2 = node(1, node::max_id,   B_n3.uid(),         B_n4.uid());
+        const node B_n1 = node(0, node::max_id,   B_n2.uid(),         B_n5.uid());
 
         levelized_file<node> nf_B;
         {

@@ -36,14 +36,14 @@ namespace adiar::internal
     using node_t = typename dd_policy::node_t;
     using ptr_t = typename node_t::ptr_t;
 
-    if (node_t::MAX_LABEL < label) {
+    if (node_t::max_label < label) {
       throw invalid_argument("Cannot represent that large a label");
     }
 
     shared_levelized_file<node_t> nf;
     {
       node_writer nw(nf);
-      nw.unsafe_push(node(label, ptr_t::MAX_ID, ptr_t(false), ptr_t(true)));
+      nw.unsafe_push(node(label, ptr_t::max_id, ptr_t(false), ptr_t(true)));
       nw.unsafe_push(level_info(label,1u));
       nw.unsafe_set_canonical(true);
     }
@@ -65,7 +65,7 @@ namespace adiar::internal
     make_node(const typename dd_policy::label_t &l,
               const typename dd_policy::ptr_t &r) const
     {
-      return typename dd_policy::node_t(l, dd_policy::MAX_ID,
+      return typename dd_policy::node_t(l, dd_policy::max_id,
                                         r,
                                         typename dd_policy::ptr_t(HIGH_VAL));
     }
@@ -85,7 +85,7 @@ namespace adiar::internal
     make_node(const typename dd_policy::label_t &l,
               const typename dd_policy::ptr_t &r) const
     {
-      return typename dd_policy::node_t(l, dd_policy::MAX_ID,
+      return typename dd_policy::node_t(l, dd_policy::max_id,
                                         typename dd_policy::ptr_t(LOW_VAL),
                                         r);
     }
@@ -105,7 +105,7 @@ namespace adiar::internal
     make_node(const typename dd_policy::label_t &l,
               const typename dd_policy::ptr_t &r) const
     {
-      return typename dd_policy::node_t(l, dd_policy::MAX_ID, r, r);
+      return typename dd_policy::node_t(l, dd_policy::max_id, r, r);
     }
   };
 
@@ -116,7 +116,7 @@ namespace adiar::internal
   {
     typename chain_policy::label_t next_label = vars();
 
-    if (chain_policy::MAX_LABEL < next_label) {
+    if (chain_policy::max_label < next_label) {
       return build_terminal<chain_policy>(chain_policy::init_terminal);
     }
 
@@ -131,7 +131,7 @@ namespace adiar::internal
 
     node::ptr_t root = node::ptr_t(chain_policy::init_terminal);
 
-    while(next_label <= chain_policy::MAX_LABEL) {
+    while(next_label <= chain_policy::max_label) {
       // Fail if generator is increasing.
       if (!root.is_terminal() && root.label() < next_label) {
         throw invalid_argument("Labels not given in decreasing order");
@@ -153,7 +153,7 @@ namespace adiar::internal
       const node n = policy.make_node(next_label, root);
 
       adiar_assert(n.label() == next_label, "Policy ought to make a node for this level node");
-      adiar_assert(n.id() == node::MAX_ID,  "Policy ought to make a canonical node");
+      adiar_assert(n.id() == node::max_id,  "Policy ought to make a canonical node");
 
       max_internal_cut = std::max<size_t>(max_internal_cut,
                                           n.low().is_node() + n.high().is_node());

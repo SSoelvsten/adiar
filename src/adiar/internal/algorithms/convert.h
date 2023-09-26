@@ -31,8 +31,8 @@ namespace adiar::internal
     typedef typename to_policy::label_t label_t;
     typedef typename to_policy::id_t id_t;
 
-    static constexpr typename to_policy::label_t MAX_LABEL = to_policy::MAX_LABEL;
-    static constexpr typename to_policy::id_t MAX_ID = to_policy::MAX_ID;
+    static constexpr typename to_policy::label_t max_label = to_policy::max_label;
+    static constexpr typename to_policy::id_t max_id = to_policy::max_id;
 
   public:
     static constexpr bool may_skip = true;
@@ -69,7 +69,7 @@ namespace adiar::internal
         const typename to_policy::label_t next_label = ls.pull();
 
         const tuple children = from_policy::reduction_rule_inv(prior_node);
-        const node next_node = node(next_label, to_policy::MAX_ID, children[0], children[1]);
+        const node next_node = node(next_label, to_policy::max_id, children[0], children[1]);
         const typename to_policy::ptr_t reduction_result = to_policy::reduction_rule(next_node);
 
         if (reduction_result == next_node.uid()) { // Output

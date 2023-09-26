@@ -34,19 +34,19 @@ namespace adiar::internal
   using prod2_request = request_data<2, with_parent, nodes_carried>;
 
   // TODO: move this definition down to __prod2_ra, as it is only used here?
-  template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
+  template<size_t look_ahead, memory_mode_t mem_mode>
   using prod_priority_queue_t =
     levelized_node_priority_queue<prod2_request<0>, request_data_lt<1, prod2_request<0>>,
-                                  LOOK_AHEAD,
+                                  look_ahead,
                                   mem_mode,
                                   2,
                                   0>;
 
   // TODO: move this definition down to __prod2_pq, as it is only used here?
-  template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
+  template<size_t look_ahead, memory_mode_t mem_mode>
   using prod_priority_queue_1_t =
     levelized_node_priority_queue<prod2_request<0>, request_data_first_lt<prod2_request<0>>,
-                                  LOOK_AHEAD,
+                                  look_ahead,
                                   mem_mode,
                                   2,
                                   0>;
@@ -251,7 +251,7 @@ namespace adiar::internal
 
     // Set up cross-level priority queue
     pq_1_t prod_pq({in_0, in_1}, pq_memory, max_pq_size, stats_prod2.lpq);
-    prod_pq.push({ { in_nodes_0.root(), v1.uid() }, {}, { ptr_uint64::NIL() } });
+    prod_pq.push({ { in_nodes_0.root(), v1.uid() }, {}, { ptr_uint64::nil() } });
 
     size_t max_1level_cut = 0;
 
@@ -303,7 +303,7 @@ namespace adiar::internal
         if (prod_policy::no_skip || std::holds_alternative<prod2_rec_output>(rec_res)) {
           const prod2_rec_output r = std::get<prod2_rec_output>(rec_res);
 
-          adiar_assert(out_id < prod_policy::MAX_ID, "Has run out of ids");
+          adiar_assert(out_id < prod_policy::max_id, "Has run out of ids");
           const node::uid_t out_uid(out_label, out_id++);
 
           __prod2_recurse_out(prod_pq, aw, op, out_uid.with(false), r.low);
@@ -336,7 +336,7 @@ namespace adiar::internal
       max_1level_cut = std::max(max_1level_cut, prod_pq.size());
     }
 
-    // Ensure the edge case, where the in-going edge from NIL to the root pair
+    // Ensure the edge case, where the in-going edge from nil to the root pair
     // does not dominate the max_1level_cut
     max_1level_cut = std::min(aw.size() - out_arcs->number_of_terminals[false]
                                         - out_arcs->number_of_terminals[true],
@@ -368,7 +368,7 @@ namespace adiar::internal
 
     // Set up cross-level priority queue
     pq_1_t prod_pq_1({in_0, in_1}, pq_1_memory, max_pq_1_size, stats_prod2.lpq);
-    prod_pq_1.push({ { v0.uid(), v1.uid() }, {}, { ptr_uint64::NIL() } });
+    prod_pq_1.push({ { v0.uid(), v1.uid() }, {}, { ptr_uint64::nil() } });
 
     // Set up per-level priority queue
     pq_2_t prod_pq_2(pq_2_memory, max_pq_2_size);
@@ -399,7 +399,7 @@ namespace adiar::internal
       if (prod_pq_1.can_pull() && (prod_pq_2.empty() ||
                                    prod_pq_1.top().target.first() < prod_pq_2.top().target.second())) {
         req = { prod_pq_1.top().target,
-                {{ { node::ptr_t::NIL(), node::ptr_t::NIL() } }},
+                {{ { node::ptr_t::nil(), node::ptr_t::nil() } }},
                 { prod_pq_1.top().data } };
       } else {
         req = prod_pq_2.top();
@@ -457,7 +457,7 @@ namespace adiar::internal
       if (prod_policy::no_skip || std::holds_alternative<prod2_rec_output>(rec_res)) {
         const prod2_rec_output r = std::get<prod2_rec_output>(rec_res);
 
-        adiar_assert(out_id < prod_policy::MAX_ID, "Has run out of ids");
+        adiar_assert(out_id < prod_policy::max_id, "Has run out of ids");
         const node::uid_t out_uid(out_label, out_id++);
 
         __prod2_recurse_out(prod_pq_1, aw, op, out_uid.with(false), r.low);
@@ -487,7 +487,7 @@ namespace adiar::internal
       aw.push(level_info(out_label, out_id));
     }
 
-    // Ensure the edge case, where the in-going edge from NIL to the root pair
+    // Ensure the edge case, where the in-going edge from nil to the root pair
     // does not dominate the max_1level_cut
     max_1level_cut = std::min(aw.size() - out_arcs->number_of_terminals[false]
                                         - out_arcs->number_of_terminals[true],
@@ -763,10 +763,10 @@ namespace adiar::internal
       - arc_writer::memory_usage();
 
     constexpr size_t data_structures_in_pq_1 =
-      prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::DATA_STRUCTURES;
+      prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::data_structures;
 
     constexpr size_t data_structures_in_pq_2 =
-      prod_priority_queue_2_t<memory_mode_t::Internal>::DATA_STRUCTURES;
+      prod_priority_queue_2_t<memory_mode_t::Internal>::data_structures;
 
     const size_t pq_1_internal_memory =
       (aux_available_memory / (data_structures_in_pq_1 + data_structures_in_pq_2)) * data_structures_in_pq_1;

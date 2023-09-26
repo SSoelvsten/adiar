@@ -83,7 +83,7 @@ go_bandit([]() {
       it("should take up 8 bytes of memory", [&]() {
         AssertThat(sizeof(uid_uint64(0,0)),               Is().EqualTo(8u));
         AssertThat(sizeof(uid_uint64(42,21)),             Is().EqualTo(8u));
-        AssertThat(sizeof(uid_uint64(uid_uint64::MAX_LABEL, uid_uint64::MAX_ID)), Is().EqualTo(8u));
+        AssertThat(sizeof(uid_uint64(uid_uint64::max_label, uid_uint64::max_id)), Is().EqualTo(8u));
       });
 
       describe("is_node", []() {

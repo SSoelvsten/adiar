@@ -75,8 +75,8 @@ go_bandit([]() {
       });
 
       describe(".targets()", []() {
-        it("is 0 for NIL target", []() {
-          const request<1> req(request<1>::ptr_t::NIL(), {});
+        it("is 0 for nil target", []() {
+          const request<1> req(request<1>::ptr_t::nil(), {});
           AssertThat(req.targets(), Is().EqualTo(0));
         });
 
@@ -86,7 +86,7 @@ go_bandit([]() {
         });
 
         it("is 1 for (MAX,MAX) target", []() {
-          const request<1> req(request<1>::ptr_t(request<1>::ptr_t::MAX_LABEL,request<1>::ptr_t::MAX_ID), {});
+          const request<1> req(request<1>::ptr_t(request<1>::ptr_t::max_label,request<1>::ptr_t::max_id), {});
           AssertThat(req.targets(), Is().EqualTo(1));
         });
 
@@ -142,7 +142,7 @@ go_bandit([]() {
         AssertThat(node_carry_size, Is().EqualTo(1u));
 
         const request<2,1> rec({ request<2>::ptr_t(0,0), request<2>::ptr_t(0,0) },
-                               {{ {request<2>::ptr_t::NIL()} }});
+                               {{ {request<2>::ptr_t::nil()} }});
         AssertThat(sizeof(rec), Is().EqualTo(2u * 8u + 1u * 2u * 8u));
       });
 
@@ -174,9 +174,9 @@ go_bandit([]() {
           AssertThat(req.nodes_carried(), Is().EqualTo(0u));
         });
 
-        it("has no nodes when node_carry_size is 1 with manually added NIL()", []() {
+        it("has no nodes when node_carry_size is 1 with manually added nil()", []() {
           const request<2,1> req({request<2>::ptr_t(1u,1u), request<2>::ptr_t(1u,0u)},
-                                 {{ request<2>::ptr_t::NIL() }});
+                                 {{ request<2>::ptr_t::nil() }});
           AssertThat(req.nodes_carried(), Is().EqualTo(0u));
         });
 
@@ -186,7 +186,7 @@ go_bandit([]() {
           AssertThat(req.nodes_carried(), Is().EqualTo(0u));
         });
 
-        it("has one nodes when node_carry_size is 1 with non-NIL content", []() {
+        it("has one nodes when node_carry_size is 1 with non-nil content", []() {
           const request<2,1> req({request<2>::ptr_t(1u,1u), request<2>::ptr_t(1u,0u)},
                                  {{ {request<2>::ptr_t(2u,1u), request<2>::ptr_t(2u,0u)} }});
           AssertThat(req.nodes_carried(), Is().EqualTo(1u));
@@ -199,9 +199,9 @@ go_bandit([]() {
           AssertThat(req.empty_carry(), Is().True());
         });
 
-        it("is true when node_carry_size is 1 with manually added NIL()", []() {
+        it("is true when node_carry_size is 1 with manually added nil()", []() {
           const request<2,1> req({request<2>::ptr_t(1u,1u), request<2>::ptr_t(1u,0u)},
-                                 {{ request<2>::ptr_t::NIL() }});
+                                 {{ request<2>::ptr_t::nil() }});
           AssertThat(req.empty_carry(), Is().True());
         });
 
@@ -211,7 +211,7 @@ go_bandit([]() {
           AssertThat(req.empty_carry(), Is().True());
         });
 
-        it("is false when node_carry_size is 1 with non-NIL content", []() {
+        it("is false when node_carry_size is 1 with non-nil content", []() {
           const request<2,1> req({request<2>::ptr_t(1u,1u), request<2>::ptr_t(1u,0u)},
                                  {{ {request<2>::ptr_t(2u,1u), request<2>::ptr_t(2u,0u)} }});
           AssertThat(req.empty_carry(), Is().False());
@@ -219,38 +219,38 @@ go_bandit([]() {
       });
 
       describe(".targets()", []() {
-        it("is 0 for {NIL, NIL} target [unsorted]", []() {
-          const request<2>req({request<2>::ptr_t::NIL(), request<2>::ptr_t::NIL()}, {});
+        it("is 0 for {nil, nil} target [unsorted]", []() {
+          const request<2>req({request<2>::ptr_t::nil(), request<2>::ptr_t::nil()}, {});
           AssertThat(req.targets(), Is().EqualTo(0));
         });
 
-        it("is 0 for {NIL, NIL} target [sorted]", []() {
-          const request<2,0,1> req({request<2>::ptr_t::NIL(), request<2>::ptr_t::NIL()}, {});
+        it("is 0 for {nil, nil} target [sorted]", []() {
+          const request<2,0,1> req({request<2>::ptr_t::nil(), request<2>::ptr_t::nil()}, {});
           AssertThat(req.targets(), Is().EqualTo(0));
         });
 
-        it("is 1 for {(0,0), NIL} target [unsorted]", []() {
-          const request<2> req({request<2>::ptr_t(0,0), request<2>::ptr_t::NIL()}, {});
+        it("is 1 for {(0,0), nil} target [unsorted]", []() {
+          const request<2> req({request<2>::ptr_t(0,0), request<2>::ptr_t::nil()}, {});
           AssertThat(req.targets(), Is().EqualTo(1));
         });
 
-        it("is 1 for {NIL, (0,0)} target [unsorted]", []() {
-          const request<2> req({request<2>::ptr_t(0,0), request<2>::ptr_t::NIL()}, {});
+        it("is 1 for {nil, (0,0)} target [unsorted]", []() {
+          const request<2> req({request<2>::ptr_t(0,0), request<2>::ptr_t::nil()}, {});
           AssertThat(req.targets(), Is().EqualTo(1));
         });
 
-        it("is 1 for {(0,0), NIL} target [sorted]", []() {
-          const request<2,0,1> req({request<2>::ptr_t(0,0), request<2>::ptr_t::NIL()}, {});
+        it("is 1 for {(0,0), nil} target [sorted]", []() {
+          const request<2,0,1> req({request<2>::ptr_t(0,0), request<2>::ptr_t::nil()}, {});
           AssertThat(req.targets(), Is().EqualTo(1));
         });
 
-        it("is 1 for {F, NIL} target [unsorted]", []() {
-          const request<2> req({request<2>::ptr_t(false), request<2>::ptr_t::NIL()}, {});
+        it("is 1 for {F, nil} target [unsorted]", []() {
+          const request<2> req({request<2>::ptr_t(false), request<2>::ptr_t::nil()}, {});
           AssertThat(req.targets(), Is().EqualTo(1));
         });
 
-        it("is 1 for {T, NIL} target [sorted]", []() {
-          const request<2,0,1> req({request<2>::ptr_t(true), request<2>::ptr_t::NIL()}, {});
+        it("is 1 for {T, nil} target [sorted]", []() {
+          const request<2,0,1> req({request<2>::ptr_t(true), request<2>::ptr_t::nil()}, {});
           AssertThat(req.targets(), Is().EqualTo(1));
         });
 
@@ -312,7 +312,7 @@ go_bandit([]() {
         AssertThat(node_carry_size, Is().EqualTo(1u));
 
         const request<3,1> rec({ request<3>::ptr_t(0,0), request<3>::ptr_t(0,0), request<3>::ptr_t(0,0) },
-                               {{ {request<3>::ptr_t::NIL()} }});
+                               {{ {request<3>::ptr_t::nil()} }});
         AssertThat(sizeof(rec), Is().EqualTo(3u * 8u + 1u * 2u * 8u));
       });
 
@@ -321,8 +321,8 @@ go_bandit([]() {
         AssertThat(node_carry_size, Is().EqualTo(2u));
 
         const request<3,2> rec({ request<3>::ptr_t(0,0), request<3>::ptr_t(0,0), request<3>::ptr_t(0,0) },
-                               {{ {request<3>::ptr_t::NIL()},
-                                  {request<3>::ptr_t::NIL()} }});
+                               {{ {request<3>::ptr_t::nil()},
+                                  {request<3>::ptr_t::nil()} }});
         AssertThat(sizeof(rec), Is().EqualTo(3u * 8u + 2u * 2u * 8u));
       });
 
@@ -361,16 +361,16 @@ go_bandit([]() {
           AssertThat(req.nodes_carried(), Is().EqualTo(0u));
         });
 
-        it("has no nodes when node_carry_size is 1 with manually added NIL()", []() {
+        it("has no nodes when node_carry_size is 1 with manually added nil()", []() {
           const request<3,1> req({request<3>::ptr_t(1u,1u), request<3>::ptr_t(1u,0u), request<3>::ptr_t(1u,2u)},
-                                 {{ {request<3>::ptr_t::NIL()} }});
+                                 {{ {request<3>::ptr_t::nil()} }});
           AssertThat(req.nodes_carried(), Is().EqualTo(0u));
         });
 
-        it("has no nodes when node_carry_size is 2 with manually added NIL()", []() {
+        it("has no nodes when node_carry_size is 2 with manually added nil()", []() {
           const request<3,2> req({request<3>::ptr_t(1u,1u), request<3>::ptr_t(1u,0u), request<3>::ptr_t(1u,2u)},
-                                 {{ {request<3>::ptr_t::NIL()},
-                                    {request<3>::ptr_t::NIL()} }});
+                                 {{ {request<3>::ptr_t::nil()},
+                                    {request<3>::ptr_t::nil()} }});
           AssertThat(req.nodes_carried(), Is().EqualTo(0u));
         });
 
@@ -386,20 +386,20 @@ go_bandit([]() {
           AssertThat(req.nodes_carried(), Is().EqualTo(0u));
         });
 
-        it("has one nodes when node_carry_size is 1 with non-NIL content", []() {
+        it("has one nodes when node_carry_size is 1 with non-nil content", []() {
           const request<3,1> req({request<3>::ptr_t(1u,1u), request<3>::ptr_t(1u,0u), request<3>::ptr_t(1u,2u)},
                                  {{ {request<3>::ptr_t(2u,1u), request<3>::ptr_t(2u,0u)} }});
           AssertThat(req.nodes_carried(), Is().EqualTo(1u));
         });
 
-        it("has one nodes when node_carry_size is 2 with non-NIL and NIL content", []() {
+        it("has one nodes when node_carry_size is 2 with non-nil and nil content", []() {
           const request<3,2> req({request<3>::ptr_t(1u,1u), request<3>::ptr_t(1u,0u), request<3>::ptr_t(1u,2u)},
                                  {{ {request<3>::ptr_t(2u,1u), request<3>::ptr_t(2u,0u)},
                                     request<3>::NO_CHILDREN() }});
           AssertThat(req.nodes_carried(), Is().EqualTo(1u));
         });
 
-        it("has two nodes when node_carry_size is 2 with non-NIL content", []() {
+        it("has two nodes when node_carry_size is 2 with non-nil content", []() {
           const request<3,2> req({request<3>::ptr_t(1u,1u), request<3>::ptr_t(1u,0u), request<3>::ptr_t(1u,2u)},
                                  {{ {request<3>::ptr_t(2u,1u), request<3>::ptr_t(2u,0u)},
                                     {request<3>::ptr_t(2u,1u), request<3>::ptr_t(2u,0u)} }});
@@ -427,20 +427,20 @@ go_bandit([]() {
           AssertThat(req.empty_carry(), Is().True());
         });
 
-        it("is false nodes when node_carry_size is 1 with non-NIL content", []() {
+        it("is false nodes when node_carry_size is 1 with non-nil content", []() {
           const request<3,1> req({request<3>::ptr_t(1u,1u), request<3>::ptr_t(1u,0u), request<3>::ptr_t(1u,2u)},
                                  {{ {request<3>::ptr_t(2u,1u), request<3>::ptr_t(2u,0u)} }});
           AssertThat(req.empty_carry(), Is().False());
         });
 
-        it("is false nodes when node_carry_size is 2 with non-NIL and NIL content", []() {
+        it("is false nodes when node_carry_size is 2 with non-nil and nil content", []() {
           const request<3,2> req({request<3>::ptr_t(1u,1u), request<3>::ptr_t(1u,0u), request<3>::ptr_t(1u,2u)},
                                  {{ {request<3>::ptr_t(2u,1u), request<3>::ptr_t(2u,0u)},
                                     request<3>::NO_CHILDREN() }});
           AssertThat(req.empty_carry(), Is().False());
         });
 
-        it("is false nodes when node_carry_size is 2 with non-NIL content", []() {
+        it("is false nodes when node_carry_size is 2 with non-nil content", []() {
           const request<3,2> req({request<3>::ptr_t(1u,1u), request<3>::ptr_t(1u,0u), request<3>::ptr_t(1u,2u)},
                                  {{ {request<3>::ptr_t(2u,1u), request<3>::ptr_t(2u,0u)},
                                     {request<3>::ptr_t(2u,1u), request<3>::ptr_t(2u,0u)} }});
@@ -449,53 +449,53 @@ go_bandit([]() {
       });
 
       describe(".targets()", []() {
-        it("is 0 for {NIL, NIL, NIL} target [unsorted]", []() {
-          const request<3>req({request<3>::ptr_t::NIL(), request<3>::ptr_t::NIL(), request<3>::ptr_t::NIL()}, {});
+        it("is 0 for {nil, nil, nil} target [unsorted]", []() {
+          const request<3>req({request<3>::ptr_t::nil(), request<3>::ptr_t::nil(), request<3>::ptr_t::nil()}, {});
           AssertThat(req.targets(), Is().EqualTo(0));
         });
 
-        it("is 0 for {NIL, NIL, NIL} target [sorted]", []() {
-          const request<3,0,1> req({request<3>::ptr_t::NIL(), request<3>::ptr_t::NIL(), request<3>::ptr_t::NIL()}, {});
+        it("is 0 for {nil, nil, nil} target [sorted]", []() {
+          const request<3,0,1> req({request<3>::ptr_t::nil(), request<3>::ptr_t::nil(), request<3>::ptr_t::nil()}, {});
           AssertThat(req.targets(), Is().EqualTo(0));
         });
 
-        it("is 1 for {NIL, T, NIL} target [unsorted]", []() {
-          const request<3> req({request<3>::ptr_t::NIL(), request<3>::ptr_t(true), request<3>::ptr_t::NIL()}, {});
+        it("is 1 for {nil, T, nil} target [unsorted]", []() {
+          const request<3> req({request<3>::ptr_t::nil(), request<3>::ptr_t(true), request<3>::ptr_t::nil()}, {});
           AssertThat(req.targets(), Is().EqualTo(1));
         });
 
-        it("is 1 for {(1,0), NIL, NIL} target [unsorted]", []() {
-          const request<3> req({request<3>::ptr_t(1,0), request<3>::ptr_t::NIL(), request<3>::ptr_t::NIL()}, {});
+        it("is 1 for {(1,0), nil, nil} target [unsorted]", []() {
+          const request<3> req({request<3>::ptr_t(1,0), request<3>::ptr_t::nil(), request<3>::ptr_t::nil()}, {});
           AssertThat(req.targets(), Is().EqualTo(1));
         });
 
-        it("is 1 for {NIL, NIL, (0,0)} target [unsorted]", []() {
-          const request<3> req({request<3>::ptr_t::NIL(), request<3>::ptr_t::NIL(), request<3>::ptr_t(0,0)}, {});
+        it("is 1 for {nil, nil, (0,0)} target [unsorted]", []() {
+          const request<3> req({request<3>::ptr_t::nil(), request<3>::ptr_t::nil(), request<3>::ptr_t(0,0)}, {});
           AssertThat(req.targets(), Is().EqualTo(1));
         });
 
-        it("is 1 for {T, NIL, NIL} target [sorted]", []() {
-          const request<3,0,1> req({request<3>::ptr_t(true), request<3>::ptr_t::NIL(), request<3>::ptr_t::NIL()}, {});
+        it("is 1 for {T, nil, nil} target [sorted]", []() {
+          const request<3,0,1> req({request<3>::ptr_t(true), request<3>::ptr_t::nil(), request<3>::ptr_t::nil()}, {});
           AssertThat(req.targets(), Is().EqualTo(1));
         });
 
-        it("is 2 for {T, NIL, (0,0)} target [unsorted]", []() {
-          const request<3> req({request<3>::ptr_t(true), request<3>::ptr_t::NIL(), request<3>::ptr_t(0,0)}, {});
+        it("is 2 for {T, nil, (0,0)} target [unsorted]", []() {
+          const request<3> req({request<3>::ptr_t(true), request<3>::ptr_t::nil(), request<3>::ptr_t(0,0)}, {});
           AssertThat(req.targets(), Is().EqualTo(2));
         });
 
-        it("is 2 for {NIL, (42,0), (0,0)} target [unsorted]", []() {
-          const request<3> req({request<3>::ptr_t::NIL(), request<3>::ptr_t(42,0), request<3>::ptr_t(0,0)}, {});
+        it("is 2 for {nil, (42,0), (0,0)} target [unsorted]", []() {
+          const request<3> req({request<3>::ptr_t::nil(), request<3>::ptr_t(42,0), request<3>::ptr_t(0,0)}, {});
           AssertThat(req.targets(), Is().EqualTo(2));
         });
 
-        it("is 2 for {(42,0), (0,0), NIL} target [unsorted]", []() {
-          const request<3> req({request<3>::ptr_t(42,0), request<3>::ptr_t(0,0), request<3>::ptr_t::NIL()}, {});
+        it("is 2 for {(42,0), (0,0), nil} target [unsorted]", []() {
+          const request<3> req({request<3>::ptr_t(42,0), request<3>::ptr_t(0,0), request<3>::ptr_t::nil()}, {});
           AssertThat(req.targets(), Is().EqualTo(2));
         });
 
-        it("is 2 for {(2,8), F, NIL} target [sorted]", []() {
-          const request<3,0,1> req({request<3>::ptr_t(2,8), request<3>::ptr_t(false), request<3>::ptr_t::NIL()}, {});
+        it("is 2 for {(2,8), F, nil} target [sorted]", []() {
+          const request<3,0,1> req({request<3>::ptr_t(2,8), request<3>::ptr_t(false), request<3>::ptr_t::nil()}, {});
           AssertThat(req.targets(), Is().EqualTo(2));
         });
 

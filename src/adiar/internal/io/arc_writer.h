@@ -20,14 +20,14 @@ namespace adiar::internal
     arc __latest_terminal;
 
   private:
-    static constexpr size_t IDX__INTERNAL =
-      file_traits<arc>::IDX__INTERNAL;
+    static constexpr size_t idx__internal =
+      file_traits<arc>::idx__internal;
 
-    static constexpr size_t IDX__TERMINALS__IN_ORDER =
-      file_traits<arc>::IDX__TERMINALS__IN_ORDER;
+    static constexpr size_t idx__terminals__in_order =
+      file_traits<arc>::idx__terminals__in_order;
 
-    static constexpr size_t IDX__TERMINALS__OUT_OF_ORDER =
-      file_traits<arc>::IDX__TERMINALS__OUT_OF_ORDER;
+    static constexpr size_t idx__terminals__out_of_order =
+      file_traits<arc>::idx__terminals__out_of_order;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -107,11 +107,11 @@ namespace adiar::internal
       if (!attached()) return;
 
 #ifdef ADIAR_STATS
-      if (_elem_writers[IDX__TERMINALS__OUT_OF_ORDER].size() != 0u) {
+      if (_elem_writers[idx__terminals__out_of_order].size() != 0u) {
         stats_arc_file.sort_out_of_order += 1;
       }
 #endif
-      _elem_writers[IDX__TERMINALS__OUT_OF_ORDER].sort<arc_source_lt>();
+      _elem_writers[idx__terminals__out_of_order].sort<arc_source_lt>();
       levelized_file_writer::detach();
     }
 
@@ -146,7 +146,7 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Push an arc to the relevant underlying file.
     ///
-    /// \param a An arc with `a.target() != a::ptr_t::NIL`.
+    /// \param a An arc with `a.target() != a::ptr_t::nil`.
     ///
     /// \pre `attached() == true`.
     ///
@@ -154,7 +154,7 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////
     void push(const arc &a)
     {
-      adiar_assert(!a.target().is_nil(), "Should not push an arc to NIL.");
+      adiar_assert(!a.target().is_nil(), "Should not push an arc to nil.");
       if (a.target().is_node()) {
         push_internal(a);
       } else { // a.target().is_terminal()
@@ -186,7 +186,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
       stats_arc_file.push_internal += 1;
 #endif
-      levelized_file_writer::template push<IDX__INTERNAL>(a);
+      levelized_file_writer::template push<idx__internal>(a);
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -207,13 +207,13 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
         stats_arc_file.push_in_order += 1;
 #endif
-        levelized_file_writer::template push<IDX__TERMINALS__IN_ORDER>(a);
+        levelized_file_writer::template push<idx__terminals__in_order>(a);
       } else {
         // Given arc is 'out-of-order' compared to latest 'in-order' pushed
 #ifdef ADIAR_STATS
         stats_arc_file.push_out_of_order += 1;
 #endif
-        levelized_file_writer::template push<IDX__TERMINALS__OUT_OF_ORDER>(a);
+        levelized_file_writer::template push<idx__terminals__out_of_order>(a);
       }
 
       _file_ptr->number_of_terminals[a.target().value()]++;

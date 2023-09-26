@@ -47,9 +47,9 @@ namespace adiar
     make_node(const zdd_policy::label_t &l, const zdd_policy::ptr_t &r) const
     {
       if (l == var) {
-        return zdd_policy::node_t(l, zdd_policy::MAX_ID, zdd_policy::ptr_t(false), r);
+        return zdd_policy::node_t(l, zdd_policy::max_id, zdd_policy::ptr_t(false), r);
       }
-      return zdd_policy::node_t(l, zdd_policy::MAX_ID, r, r);
+      return zdd_policy::node_t(l, zdd_policy::max_id, r, r);
     }
   };
 
@@ -90,7 +90,7 @@ namespace adiar
 
     inline zdd_policy::node_t
     make_node(const zdd_policy::label_t &l, const zdd_policy::ptr_t &r) const
-    { return zdd_policy::node_t(l, zdd_policy::MAX_ID, r, r); }
+    { return zdd_policy::node_t(l, zdd_policy::max_id, r, r); }
   };
 
   zdd zdd_nithvar(const zdd::label_t var, const generator<zdd::label_t> &dom)

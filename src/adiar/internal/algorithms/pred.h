@@ -56,10 +56,10 @@ namespace adiar::internal
   template<uint8_t nodes_carried>
   using pred_request = request<2, nodes_carried>;
 
-  template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
+  template<size_t look_ahead, memory_mode_t mem_mode>
   using comparison_priority_queue_1_t =
     levelized_node_priority_queue<pred_request<0>, request_first_lt<pred_request<0>>,
-                                  LOOK_AHEAD,
+                                  look_ahead,
                                   mem_mode,
                                   2u,
                                   0u>;
@@ -120,7 +120,7 @@ namespace adiar::internal
       if (comparison_pq_1.can_pull() && (comparison_pq_2.empty() ||
                                          comparison_pq_1.top().target.first() < comparison_pq_2.top().target.second())) {
         req = { comparison_pq_1.top().target,
-                { {{ node::ptr_t::NIL(), node::ptr_t::NIL() }} } };
+                { {{ node::ptr_t::nil(), node::ptr_t::nil() }} } };
         comparison_pq_1.pop();
       } else {
         req = comparison_pq_2.top();
@@ -223,10 +223,10 @@ namespace adiar::internal
       - comp_policy::level_check_t::memory_usage();
 
     constexpr size_t data_structures_in_pq_1 =
-      comparison_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::DATA_STRUCTURES;
+      comparison_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::data_structures;
 
     constexpr size_t data_structures_in_pq_2 =
-      comparison_priority_queue_2_t<memory_mode_t::Internal>::DATA_STRUCTURES;
+      comparison_priority_queue_2_t<memory_mode_t::Internal>::data_structures;
 
     const size_t pq_1_internal_memory =
       (aux_available_memory / (data_structures_in_pq_1 + data_structures_in_pq_2)) * data_structures_in_pq_1;

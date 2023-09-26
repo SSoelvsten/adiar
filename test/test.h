@@ -75,7 +75,7 @@ namespace snowhouse
   {
     std::stringstream stream;
     if (p.is_nil()) {
-      stream << "NIL";
+      stream << "nil";
     } else if (p.is_terminal()) {
       stream << p.value();
     } else { // p.is_node()

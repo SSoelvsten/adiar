@@ -13,8 +13,8 @@ namespace adiar::internal
   /// \remark A node contains a unique identifier for said node in `uid`
   ///         together with pointers to its children in `low` and `high`.
   ///
-  /// \remark If a node is a terminal, then `low` and `high` are NIL. Otherwise,
-  ///         they are always \em not NIL.
+  /// \remark If a node is a terminal, then `low` and `high` are nil. Otherwise,
+  ///         they are always \em not nil.
   //////////////////////////////////////////////////////////////////////////////
   class node
   {
@@ -31,7 +31,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Number of children of this node type.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr size_t OUTDEGREE = 2u;
+    static constexpr size_t outdegree = 2u;
 
     // TODO (ADD (64-bit)):
     //   template with 'uid_t' reexpose it (and its related 'ptr') with typedefs.
@@ -59,7 +59,7 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////
     /// \brief The maximal possible value for a unique identifier's label.
     //////////////////////////////////////////////////////////////////////////////
-    static constexpr label_t MAX_LABEL = ptr_t::MAX_LABEL;
+    static constexpr label_t max_label = ptr_t::max_label;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of this node's level identifier.
@@ -69,12 +69,12 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////
     /// \brief The maximal possible value for this nodes level identifier.
     //////////////////////////////////////////////////////////////////////////////
-    static constexpr id_t MAX_ID = ptr_t::MAX_ID;
+    static constexpr id_t max_id = ptr_t::max_id;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the children tuple.
     ////////////////////////////////////////////////////////////////////////////
-    typedef tuple<ptr_t, OUTDEGREE> children_t;
+    typedef tuple<ptr_t, outdegree> children_t;
 
   private:
     // TODO (Attributed Edges):
@@ -101,10 +101,10 @@ namespace adiar::internal
     // Provide 'non-default' constructors to make it easy to use outside of TPIE.
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Construct *terminal* node `(value, NIL, NIL)`.
+    /// \brief Construct *terminal* node `(value, nil, nil)`.
     ////////////////////////////////////////////////////////////////////////////
     node(const value_t value)
-      : _uid(ptr_t(value)), _children(ptr_uint64::NIL())
+      : _uid(ptr_t(value)), _children(ptr_uint64::nil())
     { }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -161,11 +161,11 @@ namespace adiar::internal
     node(const label_t label, const id_t id, const ptr_t &l, const ptr_t &h)
       : _uid(label, id), _children{l, h}
     {
-      adiar_assert(!l.is_nil(), "Cannot create a node with NIL child");
+      adiar_assert(!l.is_nil(), "Cannot create a node with nil child");
       adiar_assert(l.is_terminal() || label < l.label(),
                    "Node is not prior to given low child");
 
-      adiar_assert(!h.is_nil(), "Cannot create a node with NIL child");
+      adiar_assert(!h.is_nil(), "Cannot create a node with nil child");
       adiar_assert(h.is_terminal() || label < h.label(),
                    "Node is not prior to given high child");
     }
@@ -176,7 +176,7 @@ namespace adiar::internal
     node(const label_t label, const id_t id, const node &l, const ptr_t &h)
       : node(label, id, l.uid(), h)
     {
-      adiar_assert(OUTDEGREE == 2, "Constructor is for binary node only.");
+      adiar_assert(outdegree == 2, "Constructor is for binary node only.");
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -185,7 +185,7 @@ namespace adiar::internal
     node(const label_t label, const id_t id, const ptr_t &l, const node &h)
       : node(label, id, l, h.uid())
     {
-      adiar_assert(OUTDEGREE == 2, "Constructor is for binary node only.");
+      adiar_assert(outdegree == 2, "Constructor is for binary node only.");
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -194,7 +194,7 @@ namespace adiar::internal
     node(const label_t label, const id_t id, const node &l, const node &h)
       : node(label, id, l.uid(), h.uid())
     {
-      adiar_assert(OUTDEGREE == 2, "Constructor is for binary node only.");
+      adiar_assert(outdegree == 2, "Constructor is for binary node only.");
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -239,7 +239,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     inline ptr_t child(const size_t i) const
     {
-      adiar_assert(i < OUTDEGREE, "'i' must be a valid children index.");
+      adiar_assert(i < outdegree, "'i' must be a valid children index.");
       return _children[i];
     }
 
@@ -253,7 +253,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     inline ptr_t low() const
     {
-      adiar_assert(OUTDEGREE == 2,
+      adiar_assert(outdegree == 2,
                    "Semantics of 'low' is only defined for binary nodes.");
 
       return child(false);
@@ -269,7 +269,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     inline ptr_t high() const
     {
-      adiar_assert(OUTDEGREE == 2,
+      adiar_assert(outdegree == 2,
                    "Semantics of 'high' is only defined for binary node.");
 
       return child(true);
@@ -312,7 +312,7 @@ namespace adiar::internal
     node operator~ () const
     {
       if (this->is_terminal()) {
-        return node(~this->_uid, ptr_t::NIL(), ptr_t::NIL());
+        return node(~this->_uid, ptr_t::nil(), ptr_t::nil());
       }
 
       const ptr_t low  = this->_children[0].is_terminal()

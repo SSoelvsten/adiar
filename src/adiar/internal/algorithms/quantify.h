@@ -39,20 +39,20 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   // Priority queue functions
 
-  template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
+  template<size_t look_ahead, memory_mode_t mem_mode>
   using quantify_priority_queue_1_node_t =
     levelized_node_priority_queue<quantify_request<0>,
                                   request_data_first_lt<quantify_request<0>>,
-                                  LOOK_AHEAD,
+                                  look_ahead,
                                   mem_mode,
                                   1,
                                   0>;
 
-  template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
+  template<size_t look_ahead, memory_mode_t mem_mode>
   using quantify_priority_queue_1_arc_t =
     levelized_node_arc_priority_queue<quantify_request<0>,
                                       request_data_first_lt<quantify_request<0>>,
-                                      LOOK_AHEAD,
+                                      look_ahead,
                                       mem_mode,
                                       1,
                                       0>;
@@ -70,7 +70,7 @@ namespace adiar::internal
                                          const quantify_request<0>::target_t &target)
   {
     adiar_assert(!target.first().is_nil(),
-                 "ptr_t::NIL() should only ever end up being placed in target[1]");
+                 "ptr_t::nil() should only ever end up being placed in target[1]");
 
     if (target.first().is_terminal()) {
       adiar_assert(target.second().is_nil(),
@@ -117,8 +117,8 @@ namespace adiar::internal
     for (size_t i = ts_max_idx+1; i < ts.size(); ++i) {
       adiar_assert(ts_max_idx < i, "i is always ahead of 'ts_max_idx'");
 
-      // Stop early at maximum value of 'NIL'
-      if (ts[i] == quantify_policy::ptr_t::NIL()) { break; }
+      // Stop early at maximum value of 'nil'
+      if (ts[i] == quantify_policy::ptr_t::nil()) { break; }
 
       // Move new unique element at next spot for 'ts_max_idx'
       if (ts[ts_max_idx] != ts[i] &&
@@ -127,7 +127,7 @@ namespace adiar::internal
       }
     }
     for (size_t i = ts_max_idx+1; i < ts.size(); ++i) {
-      ts[i] = quantify_policy::ptr_t::NIL();
+      ts[i] = quantify_policy::ptr_t::nil();
     }
 
     // Is the final element a collapsing terminal?
@@ -144,7 +144,7 @@ namespace adiar::internal
       adiar_assert(!ts[1].is_nil(), "Cannot be nil at i <= ts_max_elem");
       ts[0] = max_shortcuts ? ts[ts_max_idx] : op(ts[0], ts[1]);
       for (size_t i = 1u; i <= ts_max_idx; ++i) {
-        ts[i] = quantify_policy::ptr_t::NIL();
+        ts[i] = quantify_policy::ptr_t::nil();
       }
     }
 
@@ -196,7 +196,7 @@ namespace adiar::internal
         if (quantify_pq_1.can_pull()
             && (quantify_pq_2.empty() || quantify_pq_1.top().target.first() < quantify_pq_2.top().target.second())) {
           req = { quantify_pq_1.top().target,
-                  {{ { node::ptr_t::NIL(), node::ptr_t::NIL() } }},
+                  {{ { node::ptr_t::nil(), node::ptr_t::nil() } }},
                   quantify_pq_1.top().data };
           quantify_pq_1.pop();
         } else {
@@ -256,7 +256,7 @@ namespace adiar::internal
           ? v.children()
           : quantify_policy::reduction_rule_inv(req.target.second());
 
-        adiar_assert(out_id < quantify_policy::MAX_ID, "Has run out of ids");
+        adiar_assert(out_id < quantify_policy::max_id, "Has run out of ids");
 
         // ---------------------------------------------------------------------
         // CASE: Partial Quantification of Tuple (f,g).
@@ -266,10 +266,10 @@ namespace adiar::internal
               __quantify_resolve_request<quantify_policy, 4>(op, {children0[false], children0[true],
                                                                   children1[false], children1[true]});
 
-            if (rec_all[2] == quantify_policy::ptr_t::NIL()) {
+            if (rec_all[2] == quantify_policy::ptr_t::nil()) {
               // Collapsed to a terminal?
               if (req.data.source.is_nil() && rec_all[0].is_terminal()) {
-                adiar_assert(rec_all[1] == quantify_policy::ptr_t::NIL(),
+                adiar_assert(rec_all[1] == quantify_policy::ptr_t::nil(),
                              "Operator should already be applied");
 
                 return typename quantify_policy::reduced_t(rec_all[0].value());
@@ -346,7 +346,7 @@ namespace adiar::internal
       out_arcs->max_1level_cut = std::max(out_arcs->max_1level_cut, quantify_pq_1.size());
     }
 
-    // Ensure the edge case, where the in-going edge from NIL to the root pair
+    // Ensure the edge case, where the in-going edge from nil to the root pair
     // does not dominate the max_1level_cut
     out_arcs->max_1level_cut = std::min(aw.size() - out_arcs->number_of_terminals[false]
                                                   - out_arcs->number_of_terminals[true],
@@ -412,7 +412,7 @@ namespace adiar::internal
 
     // Set up cross-level priority queue
     pq_1_t quantify_pq_1({in}, pq_1_memory, max_pq_1_size, stats_quantify.lpq);
-    quantify_pq_1.push({ { root.uid(), ptr_uint64::NIL() }, {}, {ptr_uint64::NIL()} });
+    quantify_pq_1.push({ { root.uid(), ptr_uint64::nil() }, {}, {ptr_uint64::nil()} });
 
     // Set up per-level priority queue
     pq_2_t quantify_pq_2(pq_2_memory, max_pq_2_size);
@@ -445,10 +445,10 @@ namespace adiar::internal
       - arc_writer::memory_usage();
 
     constexpr size_t data_structures_in_pq_1 =
-      pq_1_template<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::DATA_STRUCTURES;
+      pq_1_template<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::data_structures;
 
     constexpr size_t data_structures_in_pq_2 =
-      quantify_priority_queue_2_t<memory_mode_t::Internal>::DATA_STRUCTURES;
+      quantify_priority_queue_2_t<memory_mode_t::Internal>::data_structures;
 
     const size_t pq_1_internal_memory =
       (aux_available_memory / (data_structures_in_pq_1 + data_structures_in_pq_2)) * data_structures_in_pq_1;
@@ -576,8 +576,8 @@ namespace adiar::internal
     using request_t = quantify_request<0>;
     using request_pred_t = request_data_first_lt<request_t>;
 
-    template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
-    using pq_t = quantify_priority_queue_1_node_t<LOOK_AHEAD, mem_mode>;
+    template<size_t look_ahead, memory_mode_t mem_mode>
+    using pq_t = quantify_priority_queue_1_node_t<look_ahead, mem_mode>;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -588,10 +588,10 @@ namespace adiar::internal
     static size_t pq_memory(const size_t inner_memory)
     {
       constexpr size_t data_structures_in_pq_1 =
-        quantify_priority_queue_1_node_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::DATA_STRUCTURES;
+        quantify_priority_queue_1_node_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::data_structures;
 
       constexpr size_t data_structures_in_pq_2 =
-        quantify_priority_queue_2_t<memory_mode_t::Internal>::DATA_STRUCTURES;
+        quantify_priority_queue_2_t<memory_mode_t::Internal>::data_structures;
 
       return  (inner_memory / (data_structures_in_pq_1 + data_structures_in_pq_2)) * data_structures_in_pq_1;
     }
@@ -686,7 +686,7 @@ namespace adiar::internal
 
       typename request_t::target_t tgt = result != n.uid()
         // If able to shortcut, preserve result.
-        ? request_t::target_t{ result, quantify_policy::ptr_t::NIL() }
+        ? request_t::target_t{ result, quantify_policy::ptr_t::nil() }
         // Otherwise, create product of children
         : request_t::target_t{ first(n.low(), n.high()), second(n.low(), n.high()) };
 
@@ -790,7 +790,7 @@ namespace adiar::internal
       const typename quantify_policy::label_t l = lis.pull().label();
       if (pred(l) == quantify_policy::quantify_onset) { return l; }
     }
-    return quantify_policy::MAX_LABEL+1;
+    return quantify_policy::max_label+1;
   }
 
   template<typename quantify_policy>
@@ -821,7 +821,7 @@ namespace adiar::internal
 
     typename quantify_policy::label_t label = quantify__get_deepest<quantify_policy>(dd, pred);
 
-    if (quantify_policy::MAX_LABEL < label) {
+    if (quantify_policy::max_label < label) {
 #ifdef ADIAR_STATS
       // TODO
 #endif
@@ -854,7 +854,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
         // TODO
 #endif
-        while (label <= quantify_policy::MAX_LABEL) {
+        while (label <= quantify_policy::max_label) {
           dd = quantify<quantify_policy>(dd, label, op);
           if (dd_isterminal(dd)) { return std::move(dd); }
 
@@ -1011,7 +1011,7 @@ namespace adiar::internal
   private:
     bool
     has_next_level() const
-    { return _next_level <= quantify_policy::MAX_LABEL; }
+    { return _next_level <= quantify_policy::max_label; }
 
     const node::ptr_t::label_t&
     next_level(const node::ptr_t::label_t l)
@@ -1037,11 +1037,11 @@ namespace adiar::internal
 
     while (lis.can_pull()) {
       const typename quantify_policy::label_t l = lis.pull().label();
-      if ((top_level < l || quantify_policy::MAX_LABEL < top_level) && l < bot_level) {
+      if ((top_level < l || quantify_policy::max_label < top_level) && l < bot_level) {
         return l;
       }
     }
-    return quantify_policy::MAX_LABEL+1;
+    return quantify_policy::max_label+1;
   }
 
   template<typename quantify_policy>
@@ -1063,10 +1063,10 @@ namespace adiar::internal
         typename quantify_policy::label_t on_level = lvls();
 
         if (quantify_policy::quantify_onset) {
-          if (quantify_policy::MAX_LABEL < on_level) { return dd; }
+          if (quantify_policy::max_label < on_level) { return dd; }
 
           typename quantify_policy::label_t next_on_level = lvls();
-          while (next_on_level <= quantify_policy::MAX_LABEL) {
+          while (next_on_level <= quantify_policy::max_label) {
             dd = quantify<quantify_policy>(dd, on_level, op);
             if (dd_isterminal(dd)) { return dd; }
 
@@ -1076,16 +1076,16 @@ namespace adiar::internal
           return quantify<quantify_policy>(dd, on_level, op);
         } else { // !quantify_policy::quantify_onset
           // TODO: only designed for 'OR' at this point in time
-          if (quantify_policy::MAX_LABEL < on_level) {
+          if (quantify_policy::max_label < on_level) {
             return typename quantify_policy::reduced_t(dd->number_of_terminals[true] > 0);
           }
 
           // Quantify everything below 'label'
           for (;;) {
             const typename quantify_policy::label_t off_level =
-              quantify__get_deepest<quantify_policy>(dd, quantify_policy::MAX_LABEL, on_level);
+              quantify__get_deepest<quantify_policy>(dd, quantify_policy::max_label, on_level);
 
-            if (quantify_policy::MAX_LABEL < off_level) { break; }
+            if (quantify_policy::max_label < off_level) { break; }
 
             dd = quantify<quantify_policy>(dd, off_level, op);
             if (dd_isterminal(dd)) { return dd; }
@@ -1095,12 +1095,12 @@ namespace adiar::internal
           typename quantify_policy::label_t bot_level = on_level;
           typename quantify_policy::label_t top_level = lvls();
 
-          while (bot_level <= quantify_policy::MAX_LABEL) {
+          while (bot_level <= quantify_policy::max_label) {
             for (;;) {
               const typename quantify_policy::label_t off_level =
                 quantify__get_deepest<quantify_policy>(dd, bot_level, top_level);
 
-              if (quantify_policy::MAX_LABEL < off_level) { break; }
+              if (quantify_policy::max_label < off_level) { break; }
 
               dd = quantify<quantify_policy>(dd, off_level, op);
               if (dd_isterminal(dd)) { return dd; }
@@ -1124,7 +1124,7 @@ namespace adiar::internal
         if constexpr (quantify_policy::quantify_onset) {
           // Obtain the bottom-most onset level that exists in the diagram.
           typename quantify_policy::label_t transposition_level = lvls();
-          if (quantify_policy::MAX_LABEL < transposition_level) { return dd; }
+          if (quantify_policy::max_label < transposition_level) { return dd; }
 
           {
             level_info_stream<true> in_meta(dd);
@@ -1152,7 +1152,7 @@ namespace adiar::internal
                 transposition_level = lvls();
 
                 // Did we run out of 'onset' levels?
-                if (quantify_policy::MAX_LABEL < transposition_level) {
+                if (quantify_policy::max_label < transposition_level) {
                   return dd;
                 }
               }

@@ -25,16 +25,16 @@ go_bandit([]() {
 
     { // Garbage collect writers early
       node_writer nw_x0(bdd_x0);
-      nw_x0 << node(0, node::MAX_ID, terminal_F, terminal_T);
+      nw_x0 << node(0, node::max_id, terminal_F, terminal_T);
 
       node_writer nw_not_x0(bdd_not_x0);
-      nw_not_x0 << node(0, node::MAX_ID, terminal_T, terminal_F);
+      nw_not_x0 << node(0, node::max_id, terminal_T, terminal_F);
 
       node_writer nw_x1(bdd_x1);
-      nw_x1 << node(1, node::MAX_ID, terminal_F, terminal_T);
+      nw_x1 << node(1, node::max_id, terminal_F, terminal_T);
 
       node_writer nw_x2(bdd_x2);
-      nw_x2 << node(2, node::MAX_ID, terminal_F, terminal_T);
+      nw_x2 << node(2, node::max_id, terminal_F, terminal_T);
     }
 
     shared_levelized_file<bdd::node_t> bdd_1;
@@ -50,11 +50,11 @@ go_bandit([]() {
     //           F T
     */
 
-    node n1_5 = node(3, node::MAX_ID, terminal_F, terminal_T);
-    node n1_4 = node(2, node::MAX_ID, terminal_T, n1_5.uid());
-    node n1_3 = node(2, node::MAX_ID-1, terminal_F, terminal_T);
-    node n1_2 = node(1, node::MAX_ID, n1_3.uid(), n1_4.uid());
-    node n1_1 = node(0, node::MAX_ID, n1_3.uid(), n1_2.uid());
+    node n1_5 = node(3, node::max_id, terminal_F, terminal_T);
+    node n1_4 = node(2, node::max_id, terminal_T, n1_5.uid());
+    node n1_3 = node(2, node::max_id-1, terminal_F, terminal_T);
+    node n1_2 = node(1, node::max_id, n1_3.uid(), n1_4.uid());
+    node n1_1 = node(0, node::max_id, n1_3.uid(), n1_2.uid());
 
     { // Garbage collect early and free write-lock
       node_writer nw_1(bdd_1);
@@ -74,8 +74,8 @@ go_bandit([]() {
     //       T F
     */
 
-    node n2_2 = node(3, node::MAX_ID, terminal_T, terminal_F);
-    node n2_1 = node(1, node::MAX_ID, n2_2.uid(), terminal_T);
+    node n2_2 = node(3, node::max_id, terminal_T, terminal_F);
+    node n2_1 = node(1, node::max_id, n2_2.uid(), terminal_T);
 
     { // Garbage collect early and free write-lock
       node_writer nw_2(bdd_2);
@@ -98,14 +98,14 @@ go_bandit([]() {
     //          F T
     */
 
-    node n3_8 = node(3, node::MAX_ID, terminal_F, terminal_T);
-    node n3_7 = node(2, node::MAX_ID, terminal_T, terminal_F);
-    node n3_6 = node(2, node::MAX_ID - 1, n3_8.uid(), terminal_T);
-    node n3_5 = node(2, node::MAX_ID - 2, terminal_T, n3_8.uid());
-    node n3_4 = node(2, node::MAX_ID - 3, terminal_F, terminal_T);
-    node n3_3 = node(1, node::MAX_ID, n3_4.uid(), n3_6.uid());
-    node n3_2 = node(1, node::MAX_ID - 1, n3_5.uid(), n3_7.uid());
-    node n3_1 = node(0, node::MAX_ID, n3_2.uid(), n3_3.uid());
+    node n3_8 = node(3, node::max_id, terminal_F, terminal_T);
+    node n3_7 = node(2, node::max_id, terminal_T, terminal_F);
+    node n3_6 = node(2, node::max_id - 1, n3_8.uid(), terminal_T);
+    node n3_5 = node(2, node::max_id - 2, terminal_T, n3_8.uid());
+    node n3_4 = node(2, node::max_id - 3, terminal_F, terminal_T);
+    node n3_3 = node(1, node::max_id, n3_4.uid(), n3_6.uid());
+    node n3_2 = node(1, node::max_id - 1, n3_5.uid(), n3_7.uid());
+    node n3_1 = node(0, node::max_id, n3_2.uid(), n3_3.uid());
 
     { // Garbage collect early and free write-lock
       node_writer nw_3(bdd_3);
@@ -124,9 +124,9 @@ go_bandit([]() {
     //        T F F T
     */
 
-    node nx_3 = node(2, node::MAX_ID, terminal_F, terminal_T);
-    node nx_2 = node(2, node::MAX_ID - 1, terminal_T, terminal_F);
-    node nx_1 = node(0, node::MAX_ID, nx_2, nx_3);
+    node nx_3 = node(2, node::max_id, terminal_F, terminal_T);
+    node nx_2 = node(2, node::max_id - 1, terminal_T, terminal_F);
+    node nx_1 = node(0, node::max_id, nx_2, nx_3);
 
     { // Garbage collect early and free write-lock
       node_writer nw_x(bdd_0xnor2);
@@ -147,11 +147,11 @@ go_bandit([]() {
     //              T F    F T
     */
 
-    node nt_5 = node(2, node::MAX_ID, terminal_F, terminal_T);
-    node nt_4 = node(2, node::MAX_ID - 1, terminal_T, terminal_F);
-    node nt_3 = node(1, node::MAX_ID, nt_4, nt_5);
-    node nt_2 = node(1, node::MAX_ID - 1, nt_5, nt_4);
-    node nt_1 = node(0, node::MAX_ID, nt_2, nt_3);
+    node nt_5 = node(2, node::max_id, terminal_F, terminal_T);
+    node nt_4 = node(2, node::max_id - 1, terminal_T, terminal_F);
+    node nt_3 = node(1, node::max_id, nt_4, nt_5);
+    node nt_2 = node(1, node::max_id - 1, nt_5, nt_4);
+    node nt_1 = node(0, node::max_id, nt_2, nt_3);
 
     { // Garbage collect early and free write-lock
       node_writer nw_t(bdd_thin);
@@ -175,13 +175,13 @@ go_bandit([]() {
     //            F T
     */
 
-    node nw_7 = node(3, node::MAX_ID, terminal_F, terminal_T);
-    node nw_6 = node(2, node::MAX_ID, terminal_F, terminal_T);
-    node nw_5 = node(2, node::MAX_ID - 1, terminal_T, terminal_F);
-    node nw_4 = node(2, node::MAX_ID - 2, terminal_F, nw_7);
-    node nw_3 = node(1, node::MAX_ID, nw_6, nw_5);
-    node nw_2 = node(1, node::MAX_ID - 1, nw_5, nw_4);
-    node nw_1 = node(0, node::MAX_ID, nw_2, nw_3);
+    node nw_7 = node(3, node::max_id, terminal_F, terminal_T);
+    node nw_6 = node(2, node::max_id, terminal_F, terminal_T);
+    node nw_5 = node(2, node::max_id - 1, terminal_T, terminal_F);
+    node nw_4 = node(2, node::max_id - 2, terminal_F, nw_7);
+    node nw_3 = node(1, node::max_id, nw_6, nw_5);
+    node nw_2 = node(1, node::max_id - 1, nw_5, nw_4);
+    node nw_1 = node(0, node::max_id, nw_2, nw_3);
 
     { // Garbage collect early and free write-lock
       node_writer nw_w(bdd_wide);
@@ -205,15 +205,15 @@ go_bandit([]() {
     //         T F  F T
     */
 
-    node nc_9 = node(3, node::MAX_ID, terminal_F, terminal_T);
-    node nc_8 = node(3, node::MAX_ID - 1, terminal_T, terminal_F);
-    node nc_7 = node(2, node::MAX_ID, terminal_F, terminal_T);
-    node nc_6 = node(2, node::MAX_ID - 1, terminal_T, terminal_F);
-    node nc_5 = node(2, node::MAX_ID - 2, terminal_F, nc_9);
-    node nc_4 = node(2, node::MAX_ID - 3, terminal_F, nc_8);
-    node nc_3 = node(1, node::MAX_ID, nc_5, nc_7);
-    node nc_2 = node(1, node::MAX_ID - 1, nc_4, nc_6);
-    node nc_1 = node(0, node::MAX_ID, nc_2, nc_3);
+    node nc_9 = node(3, node::max_id, terminal_F, terminal_T);
+    node nc_8 = node(3, node::max_id - 1, terminal_T, terminal_F);
+    node nc_7 = node(2, node::max_id, terminal_F, terminal_T);
+    node nc_6 = node(2, node::max_id - 1, terminal_T, terminal_F);
+    node nc_5 = node(2, node::max_id - 2, terminal_F, nc_9);
+    node nc_4 = node(2, node::max_id - 3, terminal_F, nc_8);
+    node nc_3 = node(1, node::max_id, nc_5, nc_7);
+    node nc_2 = node(1, node::max_id - 1, nc_4, nc_6);
+    node nc_1 = node(0, node::max_id, nc_2, nc_3);
 
     { // Garbage collect early and free write-lock
       node_writer nw_c(bdd_canon);
@@ -237,13 +237,13 @@ go_bandit([]() {
     //               T F
     */
 
-    node nn_7 = node(3, node::MAX_ID, terminal_T, terminal_F);
-    node nn_6 = node(2, node::MAX_ID, terminal_F, terminal_T);
-    node nn_5 = node(2, node::MAX_ID - 1, nn_7, terminal_F);
-    node nn_4 = node(2, node::MAX_ID - 2, terminal_T, terminal_F);
-    node nn_3 = node(1, node::MAX_ID, nn_6, nn_4);
-    node nn_2 = node(1, node::MAX_ID - 1, nn_4, nn_5);
-    node nn_1 = node(0, node::MAX_ID, nn_2, nn_3);
+    node nn_7 = node(3, node::max_id, terminal_T, terminal_F);
+    node nn_6 = node(2, node::max_id, terminal_F, terminal_T);
+    node nn_5 = node(2, node::max_id - 1, nn_7, terminal_F);
+    node nn_4 = node(2, node::max_id - 2, terminal_T, terminal_F);
+    node nn_3 = node(1, node::max_id, nn_6, nn_4);
+    node nn_2 = node(1, node::max_id - 1, nn_4, nn_5);
+    node nn_1 = node(0, node::max_id, nn_2, nn_3);
 
     { // Garbage collect early and free write-lock
       node_writer nw_n(bdd_non_canon);
@@ -1871,9 +1871,9 @@ go_bandit([]() {
           //          F T
           */
 
-          node nra_3 = node(2, node::MAX_ID, terminal_F, terminal_T);
-          node nra_2 = node(1, node::MAX_ID, terminal_F, nra_3);
-          node nra_1 = node(0, node::MAX_ID, terminal_F, nra_2);
+          node nra_3 = node(2, node::max_id, terminal_F, terminal_T);
+          node nra_2 = node(1, node::max_id, terminal_F, nra_3);
+          node nra_1 = node(0, node::max_id, terminal_F, nra_2);
 
           { // Garbage collect early and free write-lock
             node_writer nw_ra(bdd_ra);
@@ -1972,13 +1972,13 @@ go_bandit([]() {
             //        F T
             */
 
-            node nw_7 = node(3, node::MAX_ID, terminal_F, terminal_T);
-            node nw_6 = node(2, node::MAX_ID, terminal_F, terminal_T);
-            node nw_5 = node(2, node::MAX_ID - 1, terminal_T, terminal_F);
-            node nw_4 = node(2, node::MAX_ID - 2, terminal_F, nw_7);
-            node nw_3 = node(1, node::MAX_ID, nw_4, nw_6);
-            node nw_2 = node(1, node::MAX_ID - 1, nw_4, nw_5);
-            node nw_1 = node(0, node::MAX_ID, nw_2, nw_3);
+            node nw_7 = node(3, node::max_id, terminal_F, terminal_T);
+            node nw_6 = node(2, node::max_id, terminal_F, terminal_T);
+            node nw_5 = node(2, node::max_id - 1, terminal_T, terminal_F);
+            node nw_4 = node(2, node::max_id - 2, terminal_F, nw_7);
+            node nw_3 = node(1, node::max_id, nw_4, nw_6);
+            node nw_2 = node(1, node::max_id - 1, nw_4, nw_5);
+            node nw_1 = node(0, node::max_id, nw_2, nw_3);
 
             { // Garbage collect early and free write-lock
               node_writer nw_w(bdd_wide2);

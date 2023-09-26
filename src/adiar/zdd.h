@@ -189,7 +189,7 @@ namespace adiar
   ///
   /// \details   Creates a ZDD of a single node with label `var` and the
   ///            children false and true. The given label must be smaller than
-  ///            `zdd::MAX_LABEL`.
+  ///            `zdd::max_label`.
   ///
   /// \param var The label of the desired variable to include
   ///
@@ -599,7 +599,7 @@ namespace adiar
   ///
   /// \param gen Generator function, that produces the variables of the domain in
   ///            *descending* order. When none are left to-be quantified, it
-  ///            returns a value larger than `bdd::MAX_LABEL`, e.g. -1.
+  ///            returns a value larger than `bdd::max_label`, e.g. -1.
   ///
   /// \returns
   /// \f$ \prod_{\mathit{dom}}(A) = \{ a \setminus \mathit{dom}^c \mid a \in A \} \f$

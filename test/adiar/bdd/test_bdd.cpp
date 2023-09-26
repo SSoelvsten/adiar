@@ -6,7 +6,7 @@ go_bandit([]() {
 
     {
       node_writer nw_0(x0_nf);
-      nw_0 << node(0, node::MAX_ID,
+      nw_0 << node(0, node::max_id,
                           ptr_uint64(false),
                           ptr_uint64(true));
     }
@@ -17,7 +17,7 @@ go_bandit([]() {
 
     {
       node_writer nw_1(x1_nf);
-      nw_1 << node(1, node::MAX_ID,
+      nw_1 << node(1, node::max_id,
                           ptr_uint64(false),
                           ptr_uint64(true));
     }
@@ -29,13 +29,13 @@ go_bandit([]() {
     {
       node_writer nw_01(x0_and_x1_nf);
 
-      nw_01 << node(1, node::MAX_ID,
+      nw_01 << node(1, node::max_id,
                            ptr_uint64(false),
                            ptr_uint64(true));
 
-      nw_01 << node(0, node::MAX_ID,
+      nw_01 << node(0, node::max_id,
                            ptr_uint64(false),
-                           ptr_uint64(1, ptr_uint64::MAX_ID));
+                           ptr_uint64(1, ptr_uint64::max_id));
     }
 
     bdd x0_and_x1(x0_and_x1_nf);
@@ -156,13 +156,13 @@ go_bandit([]() {
       {
         node_writer nw_01(x0_and_x1_nf2);
 
-        nw_01 << node(1, node::MAX_ID,
+        nw_01 << node(1, node::max_id,
                              ptr_uint64(false),
                              ptr_uint64(true));
 
-        nw_01 << node(0, node::MAX_ID,
+        nw_01 << node(0, node::max_id,
                              ptr_uint64(false),
-                             ptr_uint64(1, ptr_uint64::MAX_ID));
+                             ptr_uint64(1, ptr_uint64::max_id));
       }
 
       it("should check (x0 & x1) == (x0 & x1)", [&]() {

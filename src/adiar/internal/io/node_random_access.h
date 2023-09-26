@@ -40,10 +40,10 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Value to mark there is no current level.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr label_t NO_LEVEL = -1;
+    static constexpr label_t no_level = -1;
 
-    static_assert(uid_t::MAX_LABEL < NO_LEVEL,
-                  "'NO_LEVEL' should be an invalid label value");
+    static_assert(uid_t::max_label < no_level,
+                  "'no_level' should be an invalid label value");
 
   private:
     ////////////////////////////////////////////////////////////////////////////
@@ -65,7 +65,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Buffer with all elements of the current level.
     ////////////////////////////////////////////////////////////////////////////
-    label_t _curr_level = NO_LEVEL;
+    label_t _curr_level = no_level;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Width of the current level.
@@ -200,7 +200,7 @@ namespace adiar::internal
     /// \brief Whether there is any current level to access elements from.
     ////////////////////////////////////////////////////////////////////////////
     bool has_current_level() const
-    { return _curr_level != NO_LEVEL; }
+    { return _curr_level != no_level; }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The label of the current level.
@@ -241,7 +241,7 @@ namespace adiar::internal
       adiar_assert(u.label() == current_level());
 
       // adiar_assert(... < current_width()); is in 'return at(...)'
-      return at(current_width() - ((uid_t::MAX_ID + 1u) - u.id()));
+      return at(current_width() - ((uid_t::max_id + 1u) - u.id()));
     }
   };
 }
