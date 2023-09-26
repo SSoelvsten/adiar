@@ -4,6 +4,7 @@
 #include <adiar/zdd/zdd_policy.h>
 
 #include <adiar/internal/assert.h>
+#include <adiar/internal/dd_func.h>
 #include <adiar/internal/algorithms/prod2.h>
 #include <adiar/internal/data_types/tuple.h>
 
@@ -66,17 +67,17 @@ namespace adiar
                                        const zdd& zdd_2,
                                        const bool_op &op)
     {
-      adiar_assert(is_terminal(zdd_1) || is_terminal(zdd_2));
+      adiar_assert(zdd_isterminal(zdd_1) || zdd_isterminal(zdd_2));
 
       const zdd::ptr_t terminal_F = zdd::ptr_t(false);
 
-      if (is_terminal(zdd_1) && is_terminal(zdd_2)) {
-        const zdd::ptr_t p1 = value_of(zdd_1);
-        const zdd::ptr_t p2 = value_of(zdd_2);
+      if (zdd_isterminal(zdd_1) && zdd_isterminal(zdd_2)) {
+        const zdd::ptr_t p1 = dd_valueof(zdd_1);
+        const zdd::ptr_t p2 = dd_valueof(zdd_2);
 
         return zdd_terminal(op(p1, p2).value());
-      } else if (is_terminal(zdd_1)) {
-        const zdd::ptr_t p1 = value_of(zdd_1);
+      } else if (zdd_isterminal(zdd_1)) {
+        const zdd::ptr_t p1 = dd_valueof(zdd_1);
 
         if (can_left_shortcut_zdd(op, p1))  {
           // Shortcuts the left-most path to {Ø} and all others to Ø
@@ -86,7 +87,7 @@ namespace adiar
           return zdd_2;
         }
       } else { // if (is_terminal(zdd_2)) {
-        const zdd::ptr_t p2 = value_of(zdd_2);
+        const zdd::ptr_t p2 = dd_valueof(zdd_2);
 
         if (can_right_shortcut_zdd(op, p2)) {
           // Shortcuts the left-most path to {Ø} and all others to Ø

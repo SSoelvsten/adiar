@@ -60,7 +60,7 @@ namespace adiar
     zdd_ithvar_policy p(var);
     const zdd res = internal::build_chain<>(p, dom);
 
-    return is_true(res) ? zdd_empty() : res;
+    return zdd_istrue(res) ? zdd_empty() : res;
   }
 
   zdd zdd_ithvar(const zdd::label_t var)

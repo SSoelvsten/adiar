@@ -219,7 +219,7 @@ namespace adiar
 
   bdd bdd_satmin(const bdd &f)
   {
-    if (is_terminal(f)) { return f; }
+    if (bdd_isterminal(f)) { return f; }
 
     bdd_sat_bdd_callback _cb;
     __bdd_satX<internal::traverse_satmin_visitor>(f, _cb);
@@ -234,7 +234,7 @@ namespace adiar
 
   bdd bdd_satmax(const bdd &f)
   {
-    if (is_terminal(f)) { return f; }
+    if (bdd_isterminal(f)) { return f; }
 
     bdd_sat_bdd_callback _cb;
     __bdd_satX<internal::traverse_satmax_visitor>(f, _cb);

@@ -216,11 +216,11 @@ namespace adiar
   // Debug
   void zdd_printdot(const zdd &A, std::ostream &out)
   {
-    internal::output_dot<zdd>(A, out);
+    internal::print_dot<zdd>(A, out);
   }
 
   void zdd_printdot(const zdd &A, const std::string &file_name)
   {
-    internal::output_dot<zdd>(A, file_name);
+    internal::print_dot<zdd>(A, file_name);
   }
 }

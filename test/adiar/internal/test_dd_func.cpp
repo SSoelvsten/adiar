@@ -146,160 +146,184 @@ go_bandit([]() {
       });
     });
 
-    describe("terminal predicates", [&]() {
-      describe("is_terminal", [&]() {
+    describe("canonicity, i.e. sorted & indexable", [&]() {
+      // TODO
+    });
+
+    describe("terminal predicates [dd_...]", [&]() {
+      describe("dd::is_terminal()", [&]() {
+        // TODO
+      });
+
+      describe("dd_isterminal(...)", [&]() {
         it("rejects x0 as a BDD terminal file", [&]() {
-          AssertThat(is_terminal(bdd(x0)), Is().False());
+          AssertThat(bdd_isterminal(x0), Is().False());
         });
 
         it("rejects x0 as a ZDD terminal file", [&]() {
-          AssertThat(is_terminal(zdd(x0)), Is().False());
+          AssertThat(zdd_isterminal(x0), Is().False());
         });
 
         it("rejects larger BDD as being a terminal", [&]() {
-          AssertThat(is_terminal(bdd(bdd_file)), Is().False());
+          AssertThat(bdd_isterminal(bdd_file), Is().False());
         });
 
         it("rejects larger ZDD as being a terminal", [&]() {
-          AssertThat(is_terminal(zdd(zdd_file)), Is().False());
+          AssertThat(zdd_isterminal(zdd_file), Is().False());
         });
 
         it("accepts a BDD true terminal", [&]() {
-          AssertThat(is_terminal(bdd(terminal_T)), Is().True());
+          AssertThat(bdd_isterminal(terminal_T), Is().True());
         });
 
         it("accepts a ZDD true terminal", [&]() {
-          AssertThat(is_terminal(zdd(terminal_T)), Is().True());
+          AssertThat(zdd_isterminal(terminal_T), Is().True());
         });
 
         it("accepts a BDD false terminal", [&]() {
-          AssertThat(is_terminal(bdd(terminal_F)), Is().True());
+          AssertThat(bdd_isterminal(terminal_F), Is().True());
         });
 
         it("accepts a ZDD false terminal", [&]() {
-          AssertThat(is_terminal(zdd(terminal_F)), Is().True());
+          AssertThat(zdd_isterminal(terminal_F), Is().True());
         });
       });
 
-      describe("value_of", [&]() {
+      describe("dd::value()", [&]() {
+        // TODO
+      });
+
+      describe("dd_valueof(...)", [&]() {
         it("extracts from a true BDD terminal", [&]() {
-          AssertThat(value_of(bdd(terminal_T)), Is().True());
+          AssertThat(dd_valueof(bdd(terminal_T)), Is().True());
         });
 
         it("extracts from a negation of a true BDD terminal", [&]() {
-          AssertThat(value_of(~ bdd(terminal_T)), Is().False());
+          AssertThat(dd_valueof(~ bdd(terminal_T)), Is().False());
         });
 
         it("extracts from a true ZDD terminal", [&]() {
-          AssertThat(value_of(zdd(terminal_T)), Is().True());
+          AssertThat(dd_valueof(zdd(terminal_T)), Is().True());
         });
 
         it("extracts from a false BDD terminal", [&]() {
-          AssertThat(value_of(bdd(terminal_F)), Is().False());
+          AssertThat(dd_valueof(bdd(terminal_F)), Is().False());
         });
 
         it("extracts from a negation of a false BDD terminal", [&]() {
-          AssertThat(value_of(~ bdd(terminal_F)), Is().True());
+          AssertThat(dd_valueof(~ bdd(terminal_F)), Is().True());
         });
 
         it("extracts from a false ZDD terminal", [&]() {
-          AssertThat(value_of(zdd(terminal_F)), Is().False());
+          AssertThat(dd_valueof(zdd(terminal_F)), Is().False());
         });
       });
 
-      describe("is_false / is_empty", [&]() {
+      describe("dd::is_false()", [&]() {
+        // TODO
+      });
+
+      describe("bdd_isfalse / zdd_isfalse / zdd_isempty", [&]() {
         it("rejects x0 [BDD]", [&]() {
-          AssertThat(is_false(bdd(x0)), Is().False());
+          AssertThat(bdd_isfalse(x0), Is().False());
         });
 
         it("rejects x0 [ZDD]", [&]() {
-          AssertThat(is_false(zdd(x0)), Is().False());
-          AssertThat(is_empty(zdd(x0)), Is().False());
+          AssertThat(zdd_isfalse(x0), Is().False());
+          AssertThat(zdd_isempty(x0), Is().False());
         });
 
         it("rejects x42 [BDD]", [&]() {
-          AssertThat(is_false(bdd(x42)), Is().False());
+          AssertThat(bdd_isfalse(x42), Is().False());
         });
 
         it("rejects x42 [ZDD]", [&]() {
-          AssertThat(is_false(zdd(x42)), Is().False());
-          AssertThat(is_empty(zdd(x42)), Is().False());
+          AssertThat(zdd_isfalse(x42), Is().False());
+          AssertThat(zdd_isempty(x42), Is().False());
         });
 
         it("rejects larger decision diagram [BDD]", [&]() {
-          AssertThat(is_false(bdd(bdd_file)), Is().False());
+          AssertThat(bdd_isfalse(bdd_file), Is().False());
         });
 
         it("rejects larger decision diagram [ZDD]", [&]() {
-          AssertThat(is_false(zdd(zdd_file)), Is().False());
-          AssertThat(is_empty(zdd(zdd_file)), Is().False());
+          AssertThat(zdd_isfalse(zdd_file), Is().False());
+          AssertThat(zdd_isempty(zdd_file), Is().False());
         });
 
         it("rejects true terminal [BDD]", [&]() {
-          AssertThat(is_false(bdd(terminal_T)), Is().False());
+          AssertThat(bdd_isfalse(terminal_T), Is().False());
         });
 
         it("rejects true terminal [ZDD]", [&]() {
-          AssertThat(is_false(zdd(terminal_T)), Is().False());
-          AssertThat(is_empty(zdd(terminal_T)), Is().False());
+          AssertThat(zdd_isfalse(terminal_T), Is().False());
+          AssertThat(zdd_isempty(terminal_T), Is().False());
         });
 
         it("accepts false terminal [BDD]", [&]() {
-          AssertThat(is_false(bdd(terminal_F)), Is().True());
+          AssertThat(bdd_isfalse(terminal_F), Is().True());
         });
 
         it("accepts false terminal [ZDD]", [&]() {
-          AssertThat(is_false(zdd(terminal_F)), Is().True());
-          AssertThat(is_empty(zdd(terminal_F)), Is().True());
+          AssertThat(zdd_isfalse(terminal_F), Is().True());
+          AssertThat(zdd_isempty(terminal_F), Is().True());
         });
       });
 
-      describe("is_true / is_null", [&]() {
+      describe("dd::is_true()", [&]() {
+        // TODO
+      });
+
+      describe("bdd_istrue / zdd_istrue / zdd_isnull", [&]() {
         it("rejects x0 [BDD]", [&]() {
-          AssertThat(is_true(bdd(x0)), Is().False());
+          AssertThat(bdd_istrue(x0), Is().False());
         });
 
         it("rejects x0 [ZDD]", [&]() {
-          AssertThat(is_true(zdd(x0)), Is().False());
-          AssertThat(is_null(zdd(x0)), Is().False());
+          AssertThat(zdd_istrue(x0), Is().False());
+          AssertThat(zdd_isnull(x0), Is().False());
         });
 
         it("rejects x42 [BDD]", [&]() {
-          AssertThat(is_true(bdd(x42)), Is().False());
+          AssertThat(bdd_istrue(x42), Is().False());
         });
 
         it("rejects x42 [ZDD]", [&]() {
-          AssertThat(is_true(zdd(x42)), Is().False());
-          AssertThat(is_null(zdd(x42)), Is().False());
+          AssertThat(zdd_istrue(x42), Is().False());
+          AssertThat(zdd_isnull(x42), Is().False());
         });
 
         it("rejects larger decision diagram [BDD]", [&]() {
-          AssertThat(is_true(bdd(bdd_file)), Is().False());
+          AssertThat(bdd_istrue(bdd_file), Is().False());
         });
 
         it("rejects larger decision diagram [ZDD]", [&]() {
-          AssertThat(is_true(zdd(zdd_file)), Is().False());
-          AssertThat(is_null(zdd(zdd_file)), Is().False());
+          AssertThat(zdd_istrue(zdd_file), Is().False());
+          AssertThat(zdd_isnull(zdd_file), Is().False());
         });
 
         it("rejects false terminal [BDD]", [&]() {
-          AssertThat(is_true(bdd(terminal_F)), Is().False());
+          AssertThat(bdd_istrue(terminal_F), Is().False());
         });
 
         it("rejects false terminal [ZDD]", [&]() {
-          AssertThat(is_true(zdd(terminal_F)), Is().False());
-          AssertThat(is_null(zdd(terminal_F)), Is().False());
+          AssertThat(zdd_istrue(terminal_F), Is().False());
+          AssertThat(zdd_isnull(terminal_F), Is().False());
         });
 
         it("accepts a true terminal [BDD]", [&]() {
-          AssertThat(is_true(bdd(terminal_T)), Is().True());
+          AssertThat(bdd_istrue(terminal_T), Is().True());
         });
 
         it("accepts a true terminal [ZDD]", [&]() {
-          AssertThat(is_true(zdd(terminal_T)), Is().True());
-          AssertThat(is_null(zdd(terminal_T)), Is().True());
+          AssertThat(zdd_istrue(terminal_T), Is().True());
+          AssertThat(zdd_isnull(terminal_T), Is().True());
         });
       });
+    });
+
+    describe("top and bottom-most variables", [&]() {
+      // TODO
     });
   });
 });

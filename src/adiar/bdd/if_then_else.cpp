@@ -5,6 +5,7 @@
 #include <adiar/internal/assert.h>
 #include <adiar/internal/cnl.h>
 #include <adiar/internal/cut.h>
+#include <adiar/internal/dd_func.h>
 #include <adiar/internal/util.h>
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
 #include <adiar/internal/data_types/level_info.h>
@@ -210,8 +211,8 @@ namespace adiar
     // If the levels of 'then' and 'else' are disjoint and the 'if' BDD is above
     // the two others, then we can merely zip the 'then' and 'else' BDDs. This
     // is only O((N1+N2+N3)/B) I/Os!
-    if (max_var(bdd_if) < v_then.label() &&
-        max_var(bdd_if) < v_else.label() &&
+    if (bdd_maxvar(bdd_if) < v_then.label() &&
+        bdd_maxvar(bdd_if) < v_else.label() &&
         internal::disjoint_levels(bdd_then, bdd_else)) {
       return __ite_zip_bdds(bdd_if,bdd_then,bdd_else);
     }
@@ -531,14 +532,14 @@ namespace adiar
     }
 
     // Resolve being given a terminal in one of the cases
-    if (is_terminal(bdd_then)) {
-      return bdd_apply(value_of(bdd_then) ? bdd_if : bdd_not(bdd_if),
+    if (bdd_isterminal(bdd_then)) {
+      return bdd_apply(dd_valueof(bdd_then) ? bdd_if : bdd_not(bdd_if),
                        bdd_else,
-                       value_of(bdd_then) ? or_op : and_op);
-    } else if (is_terminal(bdd_else))  {
+                       dd_valueof(bdd_then) ? or_op : and_op);
+    } else if (bdd_isterminal(bdd_else))  {
       return bdd_apply(bdd_if,
                        bdd_then,
-                       value_of(bdd_else) ? imp_op : and_op);
+                       dd_valueof(bdd_else) ? imp_op : and_op);
     }
 
     // Compute amount of memory available for auxiliary data structures after

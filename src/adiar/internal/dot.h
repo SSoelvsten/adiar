@@ -12,14 +12,17 @@
 
 namespace adiar::internal
 {
-  template <typename file_t>
-  void output_dot(const file_t& nodes, std::ostream &out)
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Output a container of nodes to a given output stream.
+  //////////////////////////////////////////////////////////////////////////////
+  template <typename nodes_t>
+  inline void __print_dot(const nodes_t& nodes, std::ostream &out)
   {
-    out << "digraph BDD {" << std::endl;
+    out << "digraph DD {" << std::endl;
 
     node_stream<> ns(nodes);
 
-    if (is_terminal(nodes)) {
+    if (nodes->is_terminal()) {
       out << "\t"
           << ns.pull().value()
           << " [shape=box];" << std::endl;
@@ -40,9 +43,9 @@ namespace adiar::internal
       }
 
       out << "\tn" << ptr_uint64(false)._raw
-          << " [label=\"" << file_t::false_print << "\"];" << std::endl;
+          << " [label=\"" << nodes_t::false_print << "\"];" << std::endl;
       out << "\tn" << ptr_uint64(true)._raw
-          << " [label=\"" << file_t::true_print << "\"];" << std::endl;
+          << " [label=\"" << nodes_t::true_print << "\"];" << std::endl;
 
       out <<  std::endl << "\t// Arcs" << std::endl;
 
@@ -79,18 +82,44 @@ namespace adiar::internal
     out << "}" << std::endl;
   }
 
-  template <typename file_t>
-  void output_dot(const file_t& nodes, const std::string &filename)
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Output a container of nodes to a given file name
+  //////////////////////////////////////////////////////////////////////////////
+  template <typename dd_t>
+  inline void __print_dot(const dd_t& dd, const std::string& filename)
   {
+    // Create output stream for file
     std::ofstream out;
     out.open(filename);
 
-    output_dot(nodes, out);
+    // Print to output
+    __print_dot(dd, out);
+
+    // Close
     out.close();
   }
 
-  inline void output_dot(const shared_levelized_file<arc>& arcs,
-                         const std::string &filename)
+  // TODO: print_dot(const shared_levelized_file<node>& nodes, ...)
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Output a decision diagram to a given output stream.
+  //////////////////////////////////////////////////////////////////////////////
+  template <typename dd_t>
+  void print_dot(const dd_t& dd, std::ostream &out)
+  { __print_dot(dd, out); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Output a decision diagram to a given file
+  //////////////////////////////////////////////////////////////////////////////
+  template <typename dd_t>
+  void print_dot(const dd_t& dd, const std::string &filename)
+  { __print_dot(dd, filename); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Print dot file of an intermediate output of arcs.
+  //////////////////////////////////////////////////////////////////////////////
+  inline void print_dot(const shared_levelized_file<arc>& arcs,
+                        const std::string &filename)
   {
     std::ofstream out;
     out.open(filename);
@@ -128,6 +157,8 @@ namespace adiar::internal
     out << "\t{ rank=min; s0 s1 }" << std::endl << "}" << std::endl;
     out.close();
   }
+
+  // TODO: generalize for non-sharing arc files and std::ostream
 }
 
 #endif // ADIAR_INTERNAL_DOT_H

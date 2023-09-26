@@ -6,6 +6,7 @@
 #include <adiar/domain.h>
 #include <adiar/exception.h>
 #include <adiar/internal/assert.h>
+#include <adiar/internal/dd_func.h>
 #include <adiar/internal/algorithms/count.h>
 
 namespace adiar
@@ -75,34 +76,34 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  size_t bdd_nodecount(const bdd &bdd)
+  size_t bdd_nodecount(const bdd &f)
   {
-    return is_terminal(bdd) ? 0u : bdd->size();
+    return internal::dd_nodecount(f);
   }
 
-  bdd::label_t bdd_varcount(const bdd &bdd)
+  bdd::label_t bdd_varcount(const bdd &f)
   {
-    return bdd->levels();
+    return internal::dd_varcount(f);
   }
 
-  uint64_t bdd_pathcount(const bdd &bdd)
+  uint64_t bdd_pathcount(const bdd &f)
   {
-    return is_terminal(bdd)
+    return bdd_isterminal(f)
       ? 0
-      : internal::count<internal::path_count_policy<bdd_policy>>(bdd, bdd_varcount(bdd));
+      : internal::count<internal::path_count_policy<bdd_policy>>(f, bdd_varcount(f));
   }
 
-  uint64_t bdd_satcount(const bdd& bdd, bdd::label_t varcount)
+  uint64_t bdd_satcount(const bdd& f, bdd::label_t varcount)
   {
-    if (varcount < bdd_varcount(bdd)) {
+    if (varcount < bdd_varcount(f)) {
       throw invalid_argument("'varcount' ought to be at least the number of levels in the BDD");
     }
 
-    if (is_terminal(bdd)) {
-      return value_of(bdd) ? std::min(1u, varcount) << varcount : 0u;
+    if (bdd_isterminal(f)) {
+      return dd_valueof(f) ? std::min(1u, varcount) << varcount : 0u;
     }
 
-    return internal::count<sat_count_policy>(bdd, varcount);
+    return internal::count<sat_count_policy>(f, varcount);
   }
 
   uint64_t bdd_satcount(const bdd &f)

@@ -1,28 +1,20 @@
 #ifndef ADIAR_INTERNAL_DD_FUNC_H
 #define ADIAR_INTERNAL_DD_FUNC_H
 
-#include <adiar/internal/dd.h>
+#include <adiar/functional.h>
+
 #include <adiar/internal/io/levelized_file_stream.h>
-#include <adiar/internal/io/file.h>
-#include <adiar/internal/io/file_writer.h>
 
 namespace adiar::internal
 {
-  ////////////////////////////////////////////////////////////////////////////
-  /// \brief Obtain the level_info stream projected onto the labels.
-  ////////////////////////////////////////////////////////////////////////////
-  template <typename dd_t>
-  void dd_varprofile(const dd_t &dd, const consumer<typename dd_t::label_t> &cb)
-  {
-    level_info_stream<> info_stream(dd);
-    while(info_stream.can_pull()) { cb(info_stream.pull().label()); }
-  }
-
-  // TODO: move into 'dd' class?
+  //////////////////////////////////////////////////////////////////////////////
+  // Collection of simple functions common to all types of decision diagrams.
 
   //////////////////////////////////////////////////////////////////////////////
-  /// Check whether a given decision diagram is canonical, i.e. has the
-  /// following stronger guarantees than the total ordering of nodes.
+  /// \brief  Check whether a given decision diagram is canonical.
+  ///
+  /// \details In Adiar, the word *canonical* refers to the following two
+  /// stronger guarantees on the total ordering of nodes.
   ///
   /// 1. Nodes within a level are effectively sorted based on their children:
   ///    high first, then low.
@@ -32,57 +24,106 @@ namespace adiar::internal
   /// If this is true, then equality checking can be done in a single cheap
   /// linear scan rather than with an *O(N log N)* time-forwarding algorithm.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool is_canonical(const dd &dd)
+  template <typename dd_t>
+  bool dd_iscanonical(const dd_t &dd)
   {
+    // TODO: Move into 'dd' class...
     return dd->canonical;
   }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether a given decision diagram represents a terminal.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool is_terminal(const dd &dd)
+  template <typename dd_t>
+  bool dd_isterminal(const dd_t &dd)
   {
+    // TODO: Move into 'dd' class...
     return dd->is_terminal();
   }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Obtain the terminal's value (if 'is_terminal' is true).
   //////////////////////////////////////////////////////////////////////////////
-  inline bool value_of(const dd &dd)
+  template <typename dd_t>
+  bool dd_valueof(const dd_t &dd)
   {
+    // TODO: Move into 'dd' class...
     return dd.negate ^ dd->value();
   }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether a given decision diagram represents the false terminal.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool is_false(const dd &dd)
+  template <typename dd_t>
+  bool dd_isfalse(const dd_t &dd)
   {
-    return is_terminal(dd) && !value_of(dd);
+    // TODO: Move into 'dd' class...
+    return dd_isterminal(dd) && !dd_valueof(dd);
   }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether a given decision diagram represents the true terminal.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool is_true(const dd &dd)
+  template <typename dd_t>
+  bool dd_istrue(const dd_t &dd)
   {
-    return is_terminal(dd) && value_of(dd);
+    // TODO: Move into 'dd' class...
+    return dd_isterminal(dd) && dd_valueof(dd);
   }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Get the minimal occurring label in the decision diagram
   //////////////////////////////////////////////////////////////////////////////
-  inline dd::label_t min_var(const dd &dd)
+  template <typename dd_t>
+  dd::label_t dd_minvar(const dd_t &dd)
   {
+    // TODO: Exception if terminal.
+
+    // TODO: Move into 'dd' class...
     return dd->first_level();
   }
+
+  // TODO: dd_topvar(dd&) := dd_minvar(dd&)
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Get the maximal occurring label in the decision diagram
   //////////////////////////////////////////////////////////////////////////////
-  inline dd::label_t max_var(const dd &dd)
+  template <typename dd_t>
+  dd::label_t dd_maxvar(const dd_t &dd)
   {
+    // TODO: Exception if terminal.
+
+    // TODO: Move into 'dd' class...
     return dd->last_level();
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Number of nodes in a decision diagram.
+  ////////////////////////////////////////////////////////////////////////////
+  template <typename dd_t>
+  size_t dd_nodecount(const dd_t &dd)
+  {
+    return dd_isterminal(dd) ? 0u : dd->size();
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Number of variables, i.e. levels, present in a decision diagram.
+  ////////////////////////////////////////////////////////////////////////////
+  template <typename dd_t>
+  typename dd_t::label_t dd_varcount(const dd_t &dd)
+  {
+    return dd->levels();
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief The variable labels (in order of their level) that are present in a
+  ///        decision diagram.
+  ////////////////////////////////////////////////////////////////////////////
+  template <typename dd_t>
+  void dd_varprofile(const dd_t &dd, const consumer<typename dd_t::label_t> &cb)
+  {
+    level_info_stream<> info_stream(dd);
+    while(info_stream.can_pull()) { cb(info_stream.pull().label()); }
   }
 }
 

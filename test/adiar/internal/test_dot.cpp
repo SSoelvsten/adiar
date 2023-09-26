@@ -103,7 +103,7 @@ go_bandit([]() {
         uw.push_internal({ flag(ptr_uint64(1,1)), ptr_uint64(2,0) });
       }
 
-      output_dot(unreduced_bdd, "dot_test_unreduced.dot");
+      print_dot(unreduced_bdd, "dot_test_unreduced.dot");
       int exit_value = system("dot -O -Tpng dot_test_unreduced.dot");
       AssertThat(exit_value, Is().EqualTo(0));
     });

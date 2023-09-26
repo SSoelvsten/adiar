@@ -17,7 +17,7 @@ go_bandit([]() {
         level_info_test_stream ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(adiar::is_canonical(res), Is().True());
+        AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->width, Is().EqualTo(0u));
 
@@ -58,7 +58,7 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(adiar::is_canonical(res), Is().True());
+        AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
@@ -87,7 +87,7 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(adiar::is_canonical(res), Is().True());
+        AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
@@ -116,7 +116,7 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(adiar::is_canonical(res), Is().True());
+        AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
@@ -145,7 +145,7 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(adiar::is_canonical(res), Is().True());
+        AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
@@ -174,7 +174,7 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(adiar::is_canonical(res), Is().True());
+        AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
@@ -208,7 +208,7 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
-        AssertThat(adiar::is_canonical(res), Is().True());
+        AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
@@ -240,7 +240,7 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
-        AssertThat(adiar::is_canonical(res), Is().True());
+        AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
@@ -278,7 +278,7 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
-        AssertThat(adiar::is_canonical(res), Is().True());
+        AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
@@ -310,7 +310,7 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
-        AssertThat(adiar::is_canonical(res), Is().True());
+        AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
@@ -374,7 +374,7 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
 
-        AssertThat(adiar::is_canonical(res), Is().True());
+        AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(3u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
@@ -405,7 +405,7 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(adiar::is_canonical(res), Is().True());
+        AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
@@ -459,7 +459,7 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
 
-        AssertThat(adiar::is_canonical(res), Is().True());
+        AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(3u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
@@ -525,7 +525,7 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(3u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
 
-        AssertThat(adiar::is_canonical(res), Is().True());
+        AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(3u));
@@ -551,7 +551,7 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(adiar::is_canonical(res), Is().True());
+        AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
@@ -605,7 +605,7 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(3u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
 
-        AssertThat(adiar::is_canonical(res), Is().True());
+        AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(3u));

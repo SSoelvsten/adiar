@@ -3,6 +3,7 @@
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/cut.h>
+#include <adiar/internal/dd_func.h>
 #include <adiar/internal/unreachable.h>
 #include <adiar/internal/algorithms/prod2.h>
 #include <adiar/internal/data_types/tuple.h>
@@ -37,15 +38,15 @@ namespace adiar
                                        const bdd& bdd_2,
                                        const bool_op &op)
     {
-      adiar_assert(is_terminal(bdd_1) || is_terminal(bdd_2));
+      adiar_assert(bdd_isterminal(bdd_1) || bdd_isterminal(bdd_2));
 
-      if (is_terminal(bdd_1) && is_terminal(bdd_2)) {
-        const bdd::ptr_t p1 = bdd::ptr_t(value_of(bdd_1));
-        const bdd::ptr_t p2 = bdd::ptr_t(value_of(bdd_2));
+      if (bdd_isterminal(bdd_1) && bdd_isterminal(bdd_2)) {
+        const bdd::ptr_t p1 = bdd::ptr_t(dd_valueof(bdd_1));
+        const bdd::ptr_t p2 = bdd::ptr_t(dd_valueof(bdd_2));
 
         return bdd_terminal(op(p1, p2).value());
-      } else if (is_terminal(bdd_1)) {
-        const bdd::ptr_t p1 = bdd::ptr_t(value_of(bdd_1));
+      } else if (bdd_isterminal(bdd_1)) {
+        const bdd::ptr_t p1 = bdd::ptr_t(dd_valueof(bdd_1));
 
         if (can_left_shortcut(op, p1)) {
           return bdd_terminal(op(p1, bdd::ptr_t(false)).value());
@@ -55,8 +56,8 @@ namespace adiar
         }
         // if (is_left_negating(op, p1))
         return bdd_not(bdd_2);
-      } else { // if (is_terminal(bdd_2)) {
-        const bdd::ptr_t p2 = bdd::ptr_t(value_of(bdd_2));
+      } else { // if (bdd_isterminal(bdd_2)) {
+        const bdd::ptr_t p2 = bdd::ptr_t(dd_valueof(bdd_2));
 
         if (can_right_shortcut(op, p2)) {
           return bdd_terminal(op(bdd::ptr_t(false), p2).value());

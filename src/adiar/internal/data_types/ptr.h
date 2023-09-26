@@ -89,8 +89,8 @@ namespace adiar::internal
 
     // --------------------------------------------------
     // befriend other functions that need access to 'raw'
-    template <typename T>
-    friend void output_dot(const T& nodes, std::ostream &out);
+    template <typename dd_t>
+    friend void __print_dot(const dd_t&, std::ostream &);
 
   public:
     // Provide 'default' constructors to ensure it being a 'POD' inside of TPIE.
