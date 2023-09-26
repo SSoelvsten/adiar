@@ -109,9 +109,9 @@ namespace adiar::internal
       level_t min_level = 0u;
       for (size_t idx = 0u; idx < file_count; idx++) {
         if (_level_streams[idx]->can_pull()
-            && (!has_min_level || _comparator(__level_of<>(_level_streams[idx]->peek()), min_level))) {
+            && (!has_min_level || _comparator(level_of(_level_streams[idx]->peek()), min_level))) {
           has_min_level = true;
-          min_level = __level_of<>(_level_streams[idx]->peek());
+          min_level = level_of(_level_streams[idx]->peek());
         }
       }
 
@@ -126,7 +126,7 @@ namespace adiar::internal
 
       // pull from all with min_level
       for (const unique_ptr<stream_t> &level_info_stream : _level_streams) {
-        if (level_info_stream->can_pull() && __level_of<>(level_info_stream->peek()) == min_level) {
+        if (level_info_stream->can_pull() && level_of(level_info_stream->peek()) == min_level) {
           level_info_stream->pull();
         }
       }

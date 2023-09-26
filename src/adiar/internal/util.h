@@ -1,6 +1,8 @@
 #ifndef ADIAR_INTERNAL_UTIL_H
 #define ADIAR_INTERNAL_UTIL_H
 
+#include <type_traits>
+
 #include <adiar/functional.h>
 
 #include <adiar/internal/assert.h>
@@ -19,19 +21,18 @@
 namespace adiar::internal
 {
   ////////////////////////////////////////////////////////////////////////////
-  /// \brief Template to hide how to extra the level from a certain data type.
+  /// \brief Template to hide how to obtain the level from a data type.
   ////////////////////////////////////////////////////////////////////////////
-  // TODO: Move into level_merger
   template<typename T>
   inline ptr_uint64::label_t
-  __level_of(const T& t)
-  { return t.level(); }
-
-  // TODO: Move into level_merger
-  template<>
-  inline ptr_uint64::label_t
-  __level_of(const ptr_uint64::label_t& l)
-  { return l; }
+  level_of(const T& t)
+  {
+    if constexpr (std::is_integral<T>::value) {
+      return t;
+    } else {
+      return t.level();
+    }
+  }
 
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Obtain whether the levels in two files are disjoint.
@@ -46,9 +47,9 @@ namespace adiar::internal
     stream2_t s2(in2);
 
     while(s1.can_pull() && s2.can_pull()) {
-      if (__level_of<>(s1.peek()) == __level_of<>(s2.peek())) {
+      if (level_of(s1.peek()) == level_of(s2.peek())) {
         return false;
-      } else if (__level_of<>(s1.peek()) < __level_of<>(s2.peek())) {
+      } else if (level_of(s1.peek()) < level_of(s2.peek())) {
         s1.pull();
       } else {
         s2.pull();
