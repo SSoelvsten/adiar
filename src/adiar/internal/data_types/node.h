@@ -1,6 +1,7 @@
 #ifndef ADIAR_INTERNAL_DATA_TYPES_NODE_H
 #define ADIAR_INTERNAL_DATA_TYPES_NODE_H
 
+#include <adiar/internal/assert.h>
 #include <adiar/internal/data_types/ptr.h>
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/data_types/tuple.h>

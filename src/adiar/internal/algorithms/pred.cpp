@@ -1,8 +1,10 @@
 #include "pred.h"
 
-#include <adiar/internal/io/levelized_file_stream.h>
+#include <adiar/internal/assert.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/dd.h>
+#include <adiar/internal/io/levelized_file_stream.h>
+
 
 namespace adiar::internal
 {

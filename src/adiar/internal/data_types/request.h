@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <array>
 
+#include <adiar/internal/assert.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/tuple.h>
 

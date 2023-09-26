@@ -1,6 +1,7 @@
 #ifndef ADIAR_INTERNAL_ALGORITHMS_TRAVERSE_H
 #define ADIAR_INTERNAL_ALGORITHMS_TRAVERSE_H
 
+#include <adiar/internal/assert.h>
 #include <adiar/internal/dd.h>
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/data_types/node.h>

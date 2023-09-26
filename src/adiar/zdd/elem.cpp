@@ -2,6 +2,7 @@
 
 #include <adiar/functional.h>
 
+#include <adiar/internal/assert.h>
 #include <adiar/internal/algorithms/traverse.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/uid.h>

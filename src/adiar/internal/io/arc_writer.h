@@ -1,6 +1,7 @@
 #ifndef ADIAR_INTERNAL_IO_ARC_WRITER_H
 #define ADIAR_INTERNAL_IO_ARC_WRITER_H
 
+#include <adiar/internal/assert.h>
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/level_info.h>
 #include <adiar/internal/io/levelized_file_writer.h>

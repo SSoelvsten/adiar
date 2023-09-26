@@ -4,6 +4,7 @@
 #include <tpie/tpie.h>
 #include <tpie/sort.h>
 
+#include <adiar/internal/assert.h>
 #include <adiar/internal/memory.h>
 #include <adiar/internal/io/file.h>
 

@@ -1,6 +1,7 @@
 #ifndef ADIAR_INTERNAL_IO_LEVELIZED_FILE_WRITER_H
 #define ADIAR_INTERNAL_IO_LEVELIZED_FILE_WRITER_H
 
+#include <adiar/internal/assert.h>
 #include <adiar/internal/memory.h>
 #include <adiar/internal/io/file.h>
 #include <adiar/internal/io/file_writer.h>
