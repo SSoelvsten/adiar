@@ -260,8 +260,7 @@ namespace adiar
   ///
   /// \see zdd_empty
   //////////////////////////////////////////////////////////////////////////////
-  inline zdd zdd_bot(const generator<zdd::label_t> &/*dom*/)
-  { return zdd_empty(); }
+  zdd zdd_bot(const generator<zdd::label_t> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       Bottom of the powerset lattice.
@@ -273,16 +272,15 @@ namespace adiar
   /// \see zdd_empty
   //////////////////////////////////////////////////////////////////////////////
   template<typename IT>
-  inline zdd zdd_bot(IT /*begin*/, IT /*end*/)
-  { return zdd_empty(); }
+  inline zdd zdd_bot(IT begin, IT end)
+  { return zdd_bot(make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Bottom of the powerset lattice.
   ///
   /// \see zdd_empty
   //////////////////////////////////////////////////////////////////////////////
-  inline zdd zdd_bot()
-  { return zdd_empty(); }
+  zdd zdd_bot();
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Top of the powerset lattice.
@@ -291,8 +289,7 @@ namespace adiar
   ///
   /// \see zdd_powerset, zdd_null
   //////////////////////////////////////////////////////////////////////////////
-  inline zdd zdd_top(const generator<zdd::label_t> &dom)
-  { return zdd_powerset(dom); }
+  zdd zdd_top(const generator<zdd::label_t> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       Top of the powerset lattice.
@@ -305,7 +302,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   template<typename IT>
   inline zdd zdd_top(IT begin, IT end)
-  { return zdd_powerset(begin, end); }
+  { return zdd_top(make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Top of the powerset lattice.
