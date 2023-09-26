@@ -91,9 +91,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   template<typename IT>
   zdd zdd_ithvar(zdd::label_t var, IT begin, IT end)
-  {
-    return zdd_ithvar(var, make_generator(begin, end));
-  }
+  { return zdd_ithvar(var, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The set of bitvectors over the globally set domain where *var*
@@ -141,9 +139,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   template<typename IT>
   zdd zdd_nithvar(zdd::label_t var, IT begin, IT end)
-  {
-    return zdd_nithvar(var, make_generator(begin, end));
-  }
+  { return zdd_nithvar(var, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The set of bitvectors over the globally set domain where *var*
@@ -180,9 +176,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   template<typename IT>
   zdd zdd_vars(IT begin, IT end)
-  {
-    return zdd_vars(make_generator(begin, end));
-  }
+  { return zdd_vars(make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The family { {i} } .
@@ -221,9 +215,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   template<typename IT>
   zdd zdd_singletons(IT begin, IT end)
-  {
-    return zdd_singletons(make_generator(begin, end));
-  }
+  { return zdd_singletons(make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The powerset of all given variables.
@@ -249,9 +241,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   template<typename IT>
   zdd zdd_powerset(IT begin, IT end)
-  {
-    return zdd_powerset(make_generator(begin, end));
-  }
+  { return zdd_powerset(make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Bottom of the powerset lattice.
@@ -423,9 +413,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   template<typename IT>
   __zdd zdd_change(const zdd &A, IT begin, IT end)
-  {
-    return zdd_change(A, make_generator(begin, end));
-  }
+  { return zdd_change(A, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Complement of A within the given domain.
