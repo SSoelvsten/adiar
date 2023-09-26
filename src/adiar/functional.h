@@ -2,7 +2,8 @@
 #define ADIAR_FUNCTIONAL_H
 
 #include <functional>
-#include <stdexcept>
+
+#include <adiar/exception.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \defgroup module__functional Function Objects
@@ -70,7 +71,7 @@ namespace adiar
   {
     return [&begin, &end](const typename iterator_t::value_type x) {
       if (begin == end) {
-        throw std::out_of_range("Iterator range unable to contain all generated values");
+        throw out_of_range("Iterator range unable to contain all generated values");
       }
       *(begin++) = x;
     };
