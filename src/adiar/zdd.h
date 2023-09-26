@@ -66,7 +66,9 @@ namespace adiar
   ///
   /// \param var The variable to be forced to true.
   ///
-  /// \param dom Generator function of the domain in *descending* order.
+  /// \param dom Generator function of the domain in *descending* order. When
+  ///            none are left, it must return a value greater than
+  ///            `zdd::max_label`.
   ///
   /// \pre       The variable `var` should occur in `dom`.
   ///
@@ -114,7 +116,9 @@ namespace adiar
   ///
   /// \param var The variable to be forced to false.
   ///
-  /// \param dom Generator function of the domain in *descending* order.
+  /// \param dom Generator function of the domain in *descending* order. When
+  ///            none are left, it must return a value greater than
+  ///            `zdd::max_label`.
   ///
   /// \pre       The variable `var` should occur in `dom`.
   ///
@@ -159,6 +163,8 @@ namespace adiar
   ///            true child, and false otherwise.
   ///
   /// \param vars Generator function of the variables in *descending* order.
+  ///             When none are left, it must return a value greater than
+  ///             `zdd::max_label`.
   ///
   /// \throws invalid_argument If `vars` are not in *descending* order.
   //////////////////////////////////////////////////////////////////////////////
@@ -198,6 +204,8 @@ namespace adiar
   ///            true child, and false otherwise.
   ///
   /// \param vars Generator function of the variables in *descending* order.
+  ///             When none are left, it must return a value greater than
+  ///             `zdd::max_label`.
   ///
   /// \throws invalid_argument If `vars` are not in *descending* order.
   //////////////////////////////////////////////////////////////////////////////
@@ -224,6 +232,8 @@ namespace adiar
   ///            child.
   ///
   /// \param vars Generator function of the variables in *descending* order.
+  ///             When none are left, it must return a value greater than
+  ///             `zdd::max_label`.
   ///
   /// \throws invalid_argument If `vars` are not in *ascending* order.
   //////////////////////////////////////////////////////////////////////////////
@@ -247,6 +257,8 @@ namespace adiar
   /// \brief      Bottom of the powerset lattice.
   ///
   /// \param vars Generator function of the variables in *descending* order.
+  ///             When none are left, it must return a value greater than
+  ///             `zdd::max_label`.
   ///
   /// \see zdd_empty
   //////////////////////////////////////////////////////////////////////////////
@@ -392,6 +404,8 @@ namespace adiar
   /// \param A    ZDD to apply with the other.
   ///
   /// \param vars Generator function of labels to flip in *ascending* order.
+  ///             When none are left, it must return a value greater than
+  ///             `zdd::max_label`.
   ///
   /// \returns
   /// \f$ \{ \mathit{vars} \Delta a \mid a \in A \} \f$
@@ -473,8 +487,9 @@ namespace adiar
   ///
   /// \param A    Family of set to expand
   ///
-  /// \param vars Generator function of labels to expand with (in ascending
-  ///             order). This set of labels may \em not occur in A
+  /// \param vars Generator function of labels to expand with in *ascending*
+  ///             order. When none are left, it must return a value greater than
+  ///             `zdd::max_label`. This set of labels may \em not occur in A.
   ///
   /// \returns
   /// \f$ \bigcup_{a \in A, i \in 2^{vars}} (a \cup i) \f$
@@ -507,7 +522,8 @@ namespace adiar
   /// \param A    Family of set
   ///
   /// \param vars Generator function of the variable labels to filter on in
-  ///             *ascending* order.
+  ///             *ascending* order. When none are left, it must return a value
+  ///             greater than `zdd::max_label`.
   ///
   /// \returns
   /// \f$ \{ a \in A \mid \forall i \in \mathit{vars} : i \not\in a \} \f$
@@ -536,7 +552,8 @@ namespace adiar
   /// \param A    Family of set
   ///
   /// \param vars Generator function of the variable labels to filter on in
-  ///             *ascending* order.
+  ///             *ascending* order. When none are left, it must return a value
+  ///             greater than `zdd::max_label`.
   ///
   /// \returns
   /// \f$ \{ a \in A \mid \forall i \in \mathit{vars} : i \in a \} \f$
@@ -584,7 +601,7 @@ namespace adiar
   ///
   /// \param gen Generator function, that produces the variables of the domain in
   ///            *descending* order. When none are left to-be quantified, it
-  ///            returns a value larger than `bdd::max_label`, e.g. -1.
+  ///            returns a value larger than `zdd::max_label`, e.g. -1.
   ///
   /// \returns
   /// \f$ \prod_{\mathit{dom}}(A) = \{ a \setminus \mathit{dom}^c \mid a \in A \} \f$
@@ -797,7 +814,8 @@ namespace adiar
   ///
   /// \param A Set of interest
   ///
-  /// \param a Generator of a bit-vector in *ascending* order.
+  /// \param a Generator of a bit-vector in *ascending* order. When none are left,
+  ///          it must return a value greater than `zdd::max_label`.
   ///
   /// \returns Whether \f$ a \in A \f$
   //////////////////////////////////////////////////////////////////////////////
@@ -912,7 +930,8 @@ namespace adiar
   ///
   /// \param f   Boolean function with the given domain
   ///
-  /// \param dom Domain of all variables in *ascending* order.
+  /// \param dom Domain of all variables in *ascending* order. When none are
+  ///            left it must return a value greater than `zdd::max_label`.
   ///
   /// \returns   ZDD that is true for the exact same assignments to variables in
   ///            the given domain.
