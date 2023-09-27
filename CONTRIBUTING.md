@@ -191,11 +191,18 @@ of writing might be easier to read.
     in *nocase*, e.g. `bdd_istrue(f)`.
 
 - Type variables exposed from a class have their names suffixed with `_type`.
-  Global types and template type parameters are suffixed with `_t`. This aligns
-  with *std* and prevents shadowing between the two.
+  Template type parameters are suffixed with `_t`. Global types are *not*
+  suffixed with anything (except if there is a good reason to do it).
+
+  This aligns with *std* and prevents shadowing between the two.
 
 - Private class member variables are prefixed with a single `_`; non-static
   public ones may also be prefixed as such.
+
+The entire public API, i.e. everything in the *adiar* namespace, should adhere
+to the above. Yet, the internal logic in *adiar::internal* may still . Please
+fix these when you see them. But, do those changes in an independent commit of
+one changing/adding logic.
 
 ### §4 No Almost Always Auto!
 
