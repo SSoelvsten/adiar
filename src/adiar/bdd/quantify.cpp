@@ -3,8 +3,8 @@
 
 #include <utility>
 
-#include <adiar/bool_op.h>
 #include <adiar/internal/assert.h>
+#include <adiar/internal/bool_op.h>
 #include <adiar/internal/algorithms/quantify.h>
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/node.h>
