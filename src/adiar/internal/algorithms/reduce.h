@@ -184,10 +184,10 @@ namespace adiar::internal
     shared_levelized_file<typename dd_policy::node_type> out_file;
     out_file->canonical = true;
 
-    out_file->max_1level_cut[cut_type::Internal]       = 0u;
-    out_file->max_1level_cut[cut_type::Internal_False] = 0u;
-    out_file->max_1level_cut[cut_type::Internal_True]  = 0u;
-    out_file->max_1level_cut[cut_type::All]            = 0u;
+    out_file->max_1level_cut[cut::Internal]       = 0u;
+    out_file->max_1level_cut[cut::Internal_False] = 0u;
+    out_file->max_1level_cut[cut::Internal_True]  = 0u;
+    out_file->max_1level_cut[cut::All]            = 0u;
 
     return out_file;
   }
@@ -211,22 +211,22 @@ namespace adiar::internal
   /// \brief Update a cut size with some number of arcs.
   //////////////////////////////////////////////////////////////////////////////
   inline void __reduce_cut_add(cuts_t &cut,
-                               const cut_size_t internal_arcs,
-                               const cut_size_t false_arcs,
-                               const cut_size_t true_arcs)
+                               const cut::size_type internal_arcs,
+                               const cut::size_type false_arcs,
+                               const cut::size_type true_arcs)
   {
-    cut[cut_type::Internal]       += internal_arcs;
-    cut[cut_type::Internal_False] += internal_arcs + false_arcs;
-    cut[cut_type::Internal_True]  += internal_arcs + true_arcs;
-    cut[cut_type::All]            += internal_arcs + false_arcs + true_arcs;
+    cut[cut::Internal]       += internal_arcs;
+    cut[cut::Internal_False] += internal_arcs + false_arcs;
+    cut[cut::Internal_True]  += internal_arcs + true_arcs;
+    cut[cut::All]            += internal_arcs + false_arcs + true_arcs;
   }
 
   inline void __reduce_cut_add(cuts_t &cut, const ptr_uint64 target)
   {
-    cut[cut_type::Internal]       += target.is_node();
-    cut[cut_type::Internal_False] += target.is_node() + target.is_false();
-    cut[cut_type::Internal_True]  += target.is_node() + target.is_true();
-    cut[cut_type::All]            += 1u;
+    cut[cut::Internal]       += target.is_node();
+    cut[cut::Internal_False] += target.is_node() + target.is_false();
+    cut[cut::Internal_True]  += target.is_node() + target.is_true();
+    cut[cut::All]            += 1u;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -524,19 +524,19 @@ namespace adiar::internal
 
         out_writer.unsafe_push(level_info(label,1u));
 
-        out_file->max_1level_cut[cut_type::Internal]       = 1u;
+        out_file->max_1level_cut[cut::Internal]       = 1u;
 
-        out_file->max_1level_cut[cut_type::Internal_False] =
+        out_file->max_1level_cut[cut::Internal_False] =
           std::max(!e_low.target().value() + !e_high.target().value(), 1);
 
-        out_file->max_1level_cut[cut_type::Internal_True]  =
+        out_file->max_1level_cut[cut::Internal_True]  =
           std::max(e_low.target().value() + e_high.target().value(), 1);
 
-        out_file->max_1level_cut[cut_type::All]            = 2u;
+        out_file->max_1level_cut[cut::All]            = 2u;
       }
 
       // Copy over 1-level cut to 2-level cut.
-      for(size_t ct = 0u; ct < cut_types; ct++) {
+      for(size_t ct = 0u; ct < cut::size; ct++) {
         out_file->max_2level_cut[ct] = out_file->max_1level_cut[ct];
       }
 

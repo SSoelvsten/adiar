@@ -213,7 +213,7 @@ namespace adiar::internal
   template<typename substitute_policy>
   size_t __substitute_2level_upper_bound(const typename substitute_policy::reduced_t &dd)
   {
-    const safe_size_t max_2level_cut = dd.max_2level_cut(cut_type::Internal);
+    const safe_size_t max_2level_cut = dd.max_2level_cut(cut::Internal);
     return to_size(max_2level_cut + 2u);
   }
 

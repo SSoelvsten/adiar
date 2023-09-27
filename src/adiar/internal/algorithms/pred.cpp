@@ -31,15 +31,15 @@ namespace adiar::internal
     static size_t pq1_upper_bound(const shared_levelized_file<node> &in_1,
                                   const shared_levelized_file<node> &in_2)
     {
-      return std::max(in_1->max_2level_cut[cut_type::Internal],
-                      in_2->max_2level_cut[cut_type::Internal]);
+      return std::max(in_1->max_2level_cut[cut::Internal],
+                      in_2->max_2level_cut[cut::Internal]);
     }
 
     static size_t pq2_upper_bound(const shared_levelized_file<node> &in_1,
                                   const shared_levelized_file<node> &in_2)
     {
-      return std::max(in_1->max_1level_cut[cut_type::Internal],
-                      in_2->max_1level_cut[cut_type::Internal]);
+      return std::max(in_1->max_1level_cut[cut::Internal],
+                      in_2->max_1level_cut[cut::Internal]);
     }
 
     static constexpr size_t memory_usage()

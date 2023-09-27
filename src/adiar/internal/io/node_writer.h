@@ -58,11 +58,11 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     size_t _terminals_at_bottom[2] = { 0u, 0u };
 
-    cut_size_t _max_1level_short_internal = 0u;
-    cut_size_t _curr_1level_short_internal = 0u;
+    cut::size_type _max_1level_short_internal = 0u;
+    cut::size_type _curr_1level_short_internal = 0u;
 
     node::pointer_type _long_internal_ptr = node::pointer_type::nil();
-    cut_size_t _number_of_long_internal_arcs = 0u;
+    cut::size_type _number_of_long_internal_arcs = 0u;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -144,25 +144,25 @@ namespace adiar::internal
         _max_1level_short_internal = std::max(_max_1level_short_internal,
                                               _curr_1level_short_internal);
 
-        const cut_size_t max_1level_internal_cut =
+        const cut::size_type max_1level_internal_cut =
           _max_1level_short_internal + _number_of_long_internal_arcs;
 
-        _file_ptr->max_1level_cut[cut_type::Internal] = max_1level_internal_cut;
+        _file_ptr->max_1level_cut[cut::Internal] = max_1level_internal_cut;
 
         const size_t terminals_above_bottom[2] = {
           _file_ptr->number_of_terminals[false] - _terminals_at_bottom[false],
           _file_ptr->number_of_terminals[true]  - _terminals_at_bottom[true]
         };
 
-        _file_ptr->max_1level_cut[cut_type::Internal_False] =
+        _file_ptr->max_1level_cut[cut::Internal_False] =
           std::max(max_1level_internal_cut + terminals_above_bottom[false],
                    _file_ptr->number_of_terminals[false]);
 
-        _file_ptr->max_1level_cut[cut_type::Internal_True] =
+        _file_ptr->max_1level_cut[cut::Internal_True] =
           std::max(max_1level_internal_cut + terminals_above_bottom[true],
                    _file_ptr->number_of_terminals[true]);
 
-        _file_ptr->max_1level_cut[cut_type::All] =
+        _file_ptr->max_1level_cut[cut::All] =
           std::max(max_1level_internal_cut + terminals_above_bottom[false] + terminals_above_bottom[true],
                    _file_ptr->number_of_terminals[false] + _file_ptr->number_of_terminals[true]);
       }
@@ -346,21 +346,21 @@ namespace adiar::internal
 
       // -----------------------------------------------------------------------
       // Upper bound for any directed cut based on number of internal nodes.
-      const cut_size_t max_cut = number_of_nodes < adiar::internal::max_cut // overflow?
+      const cut::size_type max_cut = number_of_nodes < cut::max // overflow?
         ? number_of_nodes + 1
-        : adiar::internal::max_cut;
+        : cut::max;
 
       // -----------------------------------------------------------------------
       // Upper bound on just 'all arcs'. This is better than 'max_cut' above, if
       // there are 'number_of_nodes' or more arcs to terminals.
-      const bool noa_overflow_safe = number_of_nodes <= adiar::internal::max_cut / 2u;
+      const bool noa_overflow_safe = number_of_nodes <= cut::max / 2u;
       const size_t number_of_arcs = 2u * number_of_nodes;
 
       const cuts_t all_arcs_cut = {{
-          noa_overflow_safe ? number_of_arcs - number_of_false - number_of_true : adiar::internal::max_cut,
-          noa_overflow_safe ? number_of_arcs - number_of_true                   : adiar::internal::max_cut,
-          noa_overflow_safe ? number_of_arcs - number_of_false                  : adiar::internal::max_cut,
-          noa_overflow_safe ? number_of_arcs                                    : adiar::internal::max_cut
+          noa_overflow_safe ? number_of_arcs - number_of_false - number_of_true : cut::max,
+          noa_overflow_safe ? number_of_arcs - number_of_true                   : cut::max,
+          noa_overflow_safe ? number_of_arcs - number_of_false                  : cut::max,
+          noa_overflow_safe ? number_of_arcs                                    : cut::max
         }};
 
       // -----------------------------------------------------------------------
@@ -368,15 +368,15 @@ namespace adiar::internal
       const bool is_terminal = number_of_false + number_of_true == 1;
 
       if (is_terminal) {
-        _file_ptr->max_1level_cut[cut_type::Internal]       = 0u;
-        _file_ptr->max_1level_cut[cut_type::Internal_False] = number_of_false;
-        _file_ptr->max_1level_cut[cut_type::Internal_True]  = number_of_true;
-        _file_ptr->max_1level_cut[cut_type::All]            = 1u;
+        _file_ptr->max_1level_cut[cut::Internal]       = 0u;
+        _file_ptr->max_1level_cut[cut::Internal_False] = number_of_false;
+        _file_ptr->max_1level_cut[cut::Internal_True]  = number_of_true;
+        _file_ptr->max_1level_cut[cut::All]            = 1u;
       } else {
-        for(size_t ct = 0u; ct < cut_types; ct++) {
+        for(size_t ct = 0u; ct < cut::size; ct++) {
           // Use smallest sound upper bound. Since it is not a terminal, then there
           // must be at least one in-going arc to the root.
-          _file_ptr->max_1level_cut[ct] = std::max<cut_size_t>(1lu, std::min<cut_size_t>({
+          _file_ptr->max_1level_cut[ct] = std::max<cut::size_type>(1lu, std::min<cut::size_type>({
                 _file_ptr->max_1level_cut[ct],
                 max_cut,
                 all_arcs_cut[ct]
@@ -389,17 +389,17 @@ namespace adiar::internal
       const size_t number_of_levels = levelized_file_writer::levels();
 
       if (is_terminal || number_of_nodes == number_of_levels) {
-        for(size_t ct = 0u; ct < cut_types; ct++) {
+        for(size_t ct = 0u; ct < cut::size; ct++) {
           _file_ptr->max_2level_cut[ct] = _file_ptr->max_1level_cut[ct];
         }
       } else { // General case
-        for(size_t ct = 0u; ct < cut_types; ct++) {
+        for(size_t ct = 0u; ct < cut::size; ct++) {
           // Upper bound based on 1-level cut
-          const cut_size_t ub_from_1level_cut =
-            _file_ptr->max_1level_cut[ct] < adiar::internal::max_cut / 3u
-            ? ((_file_ptr->max_1level_cut[cut_type::Internal] * 3u) / 2u
-               + (_file_ptr->max_1level_cut[ct] - _file_ptr->max_1level_cut[cut_type::Internal]))
-            : adiar::internal::max_cut;
+          const cut::size_type ub_from_1level_cut =
+            _file_ptr->max_1level_cut[ct] < cut::max / 3u
+            ? ((_file_ptr->max_1level_cut[cut::Internal] * 3u) / 2u
+               + (_file_ptr->max_1level_cut[ct] - _file_ptr->max_1level_cut[cut::Internal]))
+            : cut::max;
 
           // Use smallest sound upper bound.
           _file_ptr->max_2level_cut[ct] = std::min({
@@ -414,14 +414,14 @@ namespace adiar::internal
 
     void max_cut(cuts_t &c, const cuts_t &o)
     {
-      for(size_t ct = 0u; ct < cut_types; ct++) {
+      for(size_t ct = 0u; ct < cut::size; ct++) {
         c[ct] = std::max(c[ct], o[ct]);
       }
     }
 
     void inc_cut(cuts_t &c, const cuts_t &o)
     {
-      for(size_t ct = 0u; ct < cut_types; ct++) {
+      for(size_t ct = 0u; ct < cut::size; ct++) {
         c[ct] += o[ct];
       }
     }

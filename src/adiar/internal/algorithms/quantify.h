@@ -364,8 +364,8 @@ namespace adiar::internal
   size_t __quantify_ilevel_upper_bound(const in_t &in,
                                        const bool_op &op)
   {
-    const cut_type ct_internal  = cut_type::Internal;
-    const cut_type ct_terminals = quantify_policy::cut_with_terminals(op);
+    const typename cut::type ct_internal  = cut::type::Internal;
+    const typename cut::type ct_terminals = quantify_policy::cut_with_terminals(op);
 
     const safe_size_t max_cut_internal  = cut::get(in, ct_internal);
     const safe_size_t max_cut_terminals = cut::get(in, ct_terminals);

@@ -1887,15 +1887,15 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut_type::Internal], Is().GreaterThanOrEqualTo(2u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut_type::Internal_False], Is().GreaterThanOrEqualTo(3u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut_type::Internal_True], Is().GreaterThanOrEqualTo(2u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut_type::All], Is().GreaterThanOrEqualTo(5u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(3u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(5u));
 
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_2level_cut[cut_type::Internal], Is().GreaterThanOrEqualTo(2u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_2level_cut[cut_type::Internal_False], Is().GreaterThanOrEqualTo(3u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_2level_cut[cut_type::Internal_True], Is().GreaterThanOrEqualTo(2u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_2level_cut[cut_type::All], Is().GreaterThanOrEqualTo(5u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_2level_cut[cut::Internal], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_2level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(3u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_2level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_2level_cut[cut::All], Is().GreaterThanOrEqualTo(5u));
 
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false], Is().EqualTo(3u));
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(2u));
@@ -2037,15 +2037,15 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut_type::Internal], Is().GreaterThanOrEqualTo(4u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut_type::Internal_False], Is().GreaterThanOrEqualTo(4u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut_type::Internal_True], Is().GreaterThanOrEqualTo(7u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut_type::All], Is().GreaterThanOrEqualTo(11u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(4u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(4u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(7u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(11u));
 
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_2level_cut[cut_type::Internal], Is().GreaterThanOrEqualTo(4u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_2level_cut[cut_type::Internal_False], Is().GreaterThanOrEqualTo(4u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_2level_cut[cut_type::Internal_True], Is().GreaterThanOrEqualTo(7u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_2level_cut[cut_type::All], Is().GreaterThanOrEqualTo(11u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_2level_cut[cut::Internal], Is().GreaterThanOrEqualTo(4u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_2level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(4u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_2level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(7u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_2level_cut[cut::All], Is().GreaterThanOrEqualTo(11u));
 
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false], Is().EqualTo(4u));
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(7u));

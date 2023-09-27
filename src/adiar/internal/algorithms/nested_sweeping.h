@@ -47,10 +47,10 @@ namespace adiar::internal
     __reduce_decrement_cut(cuts_t &c, const pointer_type& p)
     {
       if (p.is_terminal()) {
-        c[cut_type::All]--;
-        c[cut_type_with(!p.value(), p.value())]--;
+        c[cut::All]--;
+        c[cut(!p.value(), p.value())]--;
       } else {
-        for(size_t ct = 0u; ct < cut_types; ct++) {
+        for(size_t ct = 0u; ct < cut::size; ct++) {
           c[ct]--;
         }
       }

@@ -48,7 +48,7 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  template<internal::cut_type ct_1, internal::cut_type ct_2>
+  template<internal::cut::type ct_1, internal::cut::type ct_2>
   class ignore_levels
   {
   public:
@@ -94,7 +94,7 @@ namespace adiar
     , public internal::prod2_mixed_level_merger<zdd_policy>
   {
   public:
-    using level_check_t = ignore_levels<internal::cut_type::Internal_True, internal::cut_type::Internal_True>;
+    using level_check_t = ignore_levels<internal::cut::Internal_True, internal::cut::Internal_True>;
 
   public:
     static constexpr size_t lookahead_bound()
@@ -177,7 +177,7 @@ namespace adiar
     , public internal::prod2_mixed_level_merger<zdd_policy>
   {
   public:
-    using level_check_t = ignore_levels<internal::cut_type::All, internal::cut_type::All>;
+    using level_check_t = ignore_levels<internal::cut::All, internal::cut::All>;
 
   public:
     static constexpr size_t lookahead_bound()

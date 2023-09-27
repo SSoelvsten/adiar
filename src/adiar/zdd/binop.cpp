@@ -101,20 +101,20 @@ namespace adiar
     }
 
   public:
-    static internal::cut_type left_cut(const bool_op &op)
+    static internal::cut left_cut(const bool_op &op)
     {
       const bool incl_false = !can_left_shortcut_zdd(op, zdd::pointer_type(false));
       const bool incl_true = !can_left_shortcut_zdd(op, zdd::pointer_type(true));
 
-      return internal::cut_type_with(incl_false, incl_true);
+      return internal::cut(incl_false, incl_true);
     }
 
-    static internal::cut_type right_cut(const bool_op &op)
+    static internal::cut right_cut(const bool_op &op)
     {
       const bool incl_false = !can_right_shortcut_zdd(op, zdd::pointer_type(false));
       const bool incl_true = !can_right_shortcut_zdd(op, zdd::pointer_type(true));
 
-      return internal::cut_type_with(incl_false, incl_true);
+      return internal::cut(incl_false, incl_true);
     }
 
   private:

@@ -58,22 +58,22 @@ namespace adiar::internal
       //////////////////////////////////////////////////////////////////////////
       /// \brief An upper bound for the maximum 1-level cut of the DAG (with or
       ///        without arcs to each respective terminal). Use
-      ///        <tt>cut_type</tt> to index the desired variant of the type.
+      ///        <tt>cut</tt> to index the desired variant of the type.
       ///
-      /// \sa    cut_type
+      /// \sa    cut
       //////////////////////////////////////////////////////////////////////////
       cuts_t max_1level_cut =
-        { max_cut, max_cut, max_cut, max_cut };
+        { cut::max, cut::max, cut::max, cut::max };
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief An upper bound for the maximum 2-level cut of the DAG (with or
       ///        without arcs to each respective terminal). Use
-      ///        <tt>cut_type</tt> to index the desired variant of the type.
+      ///        <tt>cut</tt> to index the desired variant of the type.
       ///
-      /// \sa    cut_type
+      /// \sa    cut
       //////////////////////////////////////////////////////////////////////////
       cuts_t max_2level_cut =
-        { max_cut, max_cut, max_cut, max_cut };
+        { cut::max, cut::max, cut::max, cut::max };
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief The number of false and true terminals in the file. Index 0

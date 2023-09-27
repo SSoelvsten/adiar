@@ -19,7 +19,7 @@ go_bandit([]() {
 
         // AssertThat(af.semi_transposed, Is().True());
 
-        AssertThat(af.max_1level_cut, Is().EqualTo(max_cut));
+        AssertThat(af.max_1level_cut, Is().EqualTo(cut::max));
 
         AssertThat(af.number_of_terminals[false], Is().EqualTo(0u));
         AssertThat(af.number_of_terminals[true],  Is().EqualTo(0u));
@@ -43,7 +43,7 @@ go_bandit([]() {
 
         // AssertThat(af.semi_transposed, Is().True());
 
-        AssertThat(af.max_1level_cut, Is().EqualTo(max_cut));
+        AssertThat(af.max_1level_cut, Is().EqualTo(cut::max));
 
         AssertThat(af.number_of_terminals[false], Is().EqualTo(0u));
         AssertThat(af.number_of_terminals[true],  Is().EqualTo(0u));

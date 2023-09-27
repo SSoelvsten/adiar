@@ -135,7 +135,7 @@ namespace adiar
     ///
     /// \param ct The type of the cut to obtain
     ////////////////////////////////////////////////////////////////////////////
-    internal::cut_size_t max_1level_cut(const internal::cut_type ct) const
+    internal::cut::size_type max_1level_cut(const internal::cut ct) const
     {
       return add_false_cofactor(ct, file->max_1level_cut);
     }
@@ -146,7 +146,7 @@ namespace adiar
     ///
     /// \param ct The type of the cut to obtain
     ////////////////////////////////////////////////////////////////////////////
-    internal::cut_size_t max_2level_cut(const internal::cut_type ct) const
+    internal::cut::size_type max_2level_cut(const internal::cut ct) const
     {
       return add_false_cofactor(ct, file->max_2level_cut);
     }
@@ -157,14 +157,14 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Accounts for the false arc added due to using a co-factor.
     ////////////////////////////////////////////////////////////////////////////
-    internal::cut_size_t add_false_cofactor(const internal::cut_type ct, const internal::cuts_t &ilevel_cuts) const
+    internal::cut::size_type add_false_cofactor(const internal::cut ct, const internal::cuts_t &ilevel_cuts) const
     {
       const safe_size_t cut_size = ilevel_cuts[ct];
 
       // Bit-mask (allowing implicit conversion to size_t with bit-operators) to
       // get the cut-type WITHOUT the false arcs.
-      constexpr size_t bit_mask = internal::cut_type::Internal_True;
-      const internal::cut_type ct_excl_false = static_cast<internal::cut_type>(ct & bit_mask);
+      constexpr size_t bit_mask = internal::cut::Internal_True;
+      const internal::cut ct_excl_false = static_cast<internal::cut>(ct & bit_mask);
 
       // In product construction algorithms we need to take into account the
       // (single) suppressed false arc, which may suddenly become visible (e.g.
@@ -177,10 +177,10 @@ namespace adiar
       //
       // - If the requested cut does not include false arcs.
       //
-      // - If the cut size is strictly larger than the corresponding cut_type
+      // - If the cut size is strictly larger than the corresponding cut
       //   excluding false. In this case, we already have a false arc to pair
       //   with.
-      const size_t add_suppressed = !includes_terminal(ct, false) && cut_size == ilevel_cuts[ct_excl_false];
+      const size_t add_suppressed = !ct.includes(false) && cut_size == ilevel_cuts[ct_excl_false];
 
       return to_size(cut_size + add_suppressed);
     }
