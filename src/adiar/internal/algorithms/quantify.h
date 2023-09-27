@@ -4,10 +4,11 @@
 #include <algorithm>
 #include <variant>
 
-#include <adiar/bool_op.h>
 #include <adiar/functional.h>
 #include <adiar/quantify_mode.h>
+
 #include <adiar/internal/assert.h>
+#include <adiar/internal/bool_op.h>
 #include <adiar/internal/block_size.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/cnl.h>

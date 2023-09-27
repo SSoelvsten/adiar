@@ -33,6 +33,7 @@ set(HEADERS
 
   # adiar/internal
   internal/assert.h
+  internal/bool_op.h
   internal/block_size.h
   internal/cnl.h
   internal/cut.h
