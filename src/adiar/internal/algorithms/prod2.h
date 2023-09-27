@@ -509,15 +509,15 @@ namespace adiar::internal
                                     const bool_op &op)
   {
     // Cuts for left-hand side
-    const safe_size_t left_cut_internal = cut::get(in_0, cut_type::Internal);
+    const safe_size_t left_cut_internal = cut::get(in_0, cut::type::Internal);
 
-    const cut_type left_ct = prod_policy::left_cut(op);
+    const typename cut::type left_ct = prod_policy::left_cut(op);
     const safe_size_t left_cut_terminals = cut::get(in_0, left_ct) - left_cut_internal;
 
     // Cuts for right-hand side
-    const safe_size_t right_cut_internal = cut::get(in_1, cut_type::Internal);
+    const safe_size_t right_cut_internal = cut::get(in_1, cut::type::Internal);
 
-    const cut_type right_ct = prod_policy::right_cut(op);
+    const typename cut::type right_ct = prod_policy::right_cut(op);
     const safe_size_t right_cut_terminals = cut::get(in_1, right_ct) - right_cut_internal;
 
     // Compute cut, where we make sure not to pair terminals with terminals.
@@ -537,20 +537,20 @@ namespace adiar::internal
                                     const bool_op &op)
   {
     // Left-hand side
-    const safe_size_t left_2level_cut = in_0.max_2level_cut(cut_type::Internal);
-    const safe_size_t left_1level_cut = in_0.max_1level_cut(cut_type::Internal);
+    const safe_size_t left_2level_cut = in_0.max_2level_cut(cut::Internal);
+    const safe_size_t left_1level_cut = in_0.max_1level_cut(cut::Internal);
 
-    const cut_type left_ct = prod_policy::left_cut(op);
-    const safe_size_t left_terminal_vals = number_of_terminals(left_ct);
+    const cut left_ct = prod_policy::left_cut(op);
+    const safe_size_t left_terminal_vals = left_ct.number_of_terminals();
 
     const safe_size_t left_terminal_arcs =  in_0.max_1level_cut(left_ct) - left_1level_cut;
 
     // Right-hand side
-    const safe_size_t right_2level_cut = in_1.max_2level_cut(cut_type::Internal);
-    const safe_size_t right_1level_cut = in_1.max_1level_cut(cut_type::Internal);
+    const safe_size_t right_2level_cut = in_1.max_2level_cut(cut::Internal);
+    const safe_size_t right_1level_cut = in_1.max_1level_cut(cut::Internal);
 
-    const cut_type right_ct = prod_policy::right_cut(op);
-    const safe_size_t right_terminal_vals = number_of_terminals(right_ct);
+    const cut right_ct = prod_policy::right_cut(op);
+    const safe_size_t right_terminal_vals = right_ct.number_of_terminals();
 
     const safe_size_t right_terminal_arcs = in_1.max_1level_cut(right_ct) - right_1level_cut;
 
@@ -571,12 +571,12 @@ namespace adiar::internal
                                    const typename prod_policy::reduced_t &in_1,
                                    const bool_op &op)
   {
-    const cut_type left_ct = prod_policy::left_cut(op);
-    const safe_size_t left_terminal_vals = number_of_terminals(left_ct);
+    const cut left_ct = prod_policy::left_cut(op);
+    const safe_size_t left_terminal_vals = left_ct.number_of_terminals();
     const safe_size_t left_size = in_0->size();
 
-    const cut_type right_ct = prod_policy::right_cut(op);
-    const safe_size_t right_terminal_vals = number_of_terminals(right_ct);
+    const cut right_ct = prod_policy::right_cut(op);
+    const safe_size_t right_terminal_vals = right_ct.number_of_terminals();
     const safe_size_t right_size = in_1->size();
 
     return to_size((left_size + left_terminal_vals) * (right_size + right_terminal_vals) + 1u + 2u);

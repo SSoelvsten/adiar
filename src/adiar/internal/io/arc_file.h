@@ -73,7 +73,7 @@ namespace adiar::internal
       ///        counting any arcs to terminals).
       //////////////////////////////////////////////////////////////////////////
       // TODO: use array of size 1?
-      cut_size_t max_1level_cut = max_cut;
+      cut::size_type max_1level_cut = cut::max;
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief The number of false and true terminals in the file. Index 0

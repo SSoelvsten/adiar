@@ -68,7 +68,7 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out->max_1level_cut, Is().EqualTo(in->max_1level_cut[cut_type::Internal]));
+        AssertThat(out->max_1level_cut, Is().EqualTo(in->max_1level_cut[cut::Internal]));
         AssertThat(out->number_of_terminals[false], Is().EqualTo(in->number_of_terminals[false]));
         AssertThat(out->number_of_terminals[true],  Is().EqualTo(in->number_of_terminals[true]));
       });
@@ -153,7 +153,7 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out->max_1level_cut, Is().EqualTo(in->max_1level_cut[cut_type::Internal]));
+        AssertThat(out->max_1level_cut, Is().EqualTo(in->max_1level_cut[cut::Internal]));
         AssertThat(out->number_of_terminals[false], Is().EqualTo(in->number_of_terminals[false]));
         AssertThat(out->number_of_terminals[true],  Is().EqualTo(in->number_of_terminals[true]));
       });
@@ -236,7 +236,7 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out->max_1level_cut, Is().EqualTo(in->max_1level_cut[cut_type::Internal]));
+        AssertThat(out->max_1level_cut, Is().EqualTo(in->max_1level_cut[cut::Internal]));
         AssertThat(out->number_of_terminals[false], Is().EqualTo(in->number_of_terminals[false]));
         AssertThat(out->number_of_terminals[true],  Is().EqualTo(in->number_of_terminals[true]));
       });

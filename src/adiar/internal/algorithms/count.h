@@ -148,7 +148,7 @@ namespace adiar::internal
     const bool internal_only = memory_mode == memory_mode_t::Internal;
     const bool external_only = memory_mode == memory_mode_t::External;
 
-    const size_t pq_bound = dd.max_2level_cut(cut_type::Internal);
+    const size_t pq_bound = dd.max_2level_cut(cut::Internal);
 
     const size_t max_pq_size = internal_only ? std::min(pq_memory_fits, pq_bound) : pq_bound;
 

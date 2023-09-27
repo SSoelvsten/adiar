@@ -111,12 +111,12 @@ namespace adiar
       nw << internal::node(n.uid(), low, high);
     }
 
-    for(size_t ct = 0u; ct < internal::cut_types; ct++) {
+    for(size_t ct = 0u; ct < internal::cut::size; ct++) {
       out_nodes->max_1level_cut[ct] =
-        std::max(bdd_if->max_1level_cut[internal::cut_type::All],
+        std::max(bdd_if->max_1level_cut[internal::cut::All],
                  bdd_then->max_1level_cut[ct] + bdd_else->max_1level_cut[ct]);
       out_nodes->max_2level_cut[ct] =
-        std::max(bdd_if->max_2level_cut[internal::cut_type::All],
+        std::max(bdd_if->max_2level_cut[internal::cut::All],
                  bdd_then->max_2level_cut[ct] + bdd_else->max_2level_cut[ct]);
     }
 
@@ -459,21 +459,21 @@ namespace adiar
                                   const internal::dd &in_else)
   {
     // 2-level cuts for 'if', where we split the false and true arcs away.
-    const safe_size_t if_cut_internal = cut::get(in_if, internal::cut_type::Internal);
-    const safe_size_t if_cut_falses   = cut::get(in_if, internal::cut_type::Internal_False) - if_cut_internal;
-    const safe_size_t if_cut_trues    = cut::get(in_if, internal::cut_type::Internal_True)  - if_cut_internal;
+    const safe_size_t if_cut_internal = cut::get(in_if, internal::cut::Internal);
+    const safe_size_t if_cut_falses   = cut::get(in_if, internal::cut::Internal_False) - if_cut_internal;
+    const safe_size_t if_cut_trues    = cut::get(in_if, internal::cut::Internal_True)  - if_cut_internal;
 
     // 2-level cuts for 'then'
-    const safe_size_t then_cut_internal = cut::get(in_then, internal::cut_type::Internal);
-    const safe_size_t then_cut_falses   = cut::get(in_then, internal::cut_type::Internal_False) - then_cut_internal;
-    const safe_size_t then_cut_trues    = cut::get(in_then, internal::cut_type::Internal_True)  - then_cut_internal;
-    const safe_size_t then_cut_all      = cut::get(in_then, internal::cut_type::All);
+    const safe_size_t then_cut_internal = cut::get(in_then, internal::cut::Internal);
+    const safe_size_t then_cut_falses   = cut::get(in_then, internal::cut::Internal_False) - then_cut_internal;
+    const safe_size_t then_cut_trues    = cut::get(in_then, internal::cut::Internal_True)  - then_cut_internal;
+    const safe_size_t then_cut_all      = cut::get(in_then, internal::cut::All);
 
     // 2-level cuts for 'else'
-    const safe_size_t else_cut_internal = cut::get(in_else, internal::cut_type::Internal);
-    const safe_size_t else_cut_falses   = cut::get(in_else, internal::cut_type::Internal_False) - else_cut_internal;
-    const safe_size_t else_cut_trues    = cut::get(in_else, internal::cut_type::Internal_True)  - else_cut_internal;
-    const safe_size_t else_cut_all      = cut::get(in_else, internal::cut_type::All);
+    const safe_size_t else_cut_internal = cut::get(in_else, internal::cut::Internal);
+    const safe_size_t else_cut_falses   = cut::get(in_else, internal::cut::Internal_False) - else_cut_internal;
+    const safe_size_t else_cut_trues    = cut::get(in_else, internal::cut::Internal_True)  - else_cut_internal;
+    const safe_size_t else_cut_all      = cut::get(in_else, internal::cut::All);
 
     // Compute 2-level cut where irrelevant pairs of terminals are not paired
     return to_size((if_cut_internal * (then_cut_all * else_cut_internal + then_cut_internal * else_cut_all

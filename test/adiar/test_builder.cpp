@@ -77,15 +77,15 @@ go_bandit([]() {
 
       AssertThat(out->width, Is().EqualTo(0u));
 
-      AssertThat(out->max_1level_cut[cut_type::Internal], Is().EqualTo(0u));
-      AssertThat(out->max_1level_cut[cut_type::Internal_False], Is().EqualTo(1u));
-      AssertThat(out->max_1level_cut[cut_type::Internal_True], Is().EqualTo(0u));
-      AssertThat(out->max_1level_cut[cut_type::All], Is().EqualTo(1u));
+      AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+      AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+      AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+      AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
 
-      AssertThat(out->max_2level_cut[cut_type::Internal], Is().EqualTo(0u));
-      AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().EqualTo(1u));
-      AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().EqualTo(0u));
-      AssertThat(out->max_2level_cut[cut_type::All], Is().EqualTo(1u));
+      AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+      AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+      AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+      AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
 
       AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
       AssertThat(out->number_of_terminals[true],  Is().EqualTo(0u));
@@ -110,15 +110,15 @@ go_bandit([]() {
 
       AssertThat(out_meta.can_pull(), Is().False());
 
-      AssertThat(out->max_1level_cut[cut_type::Internal], Is().EqualTo(0u));
-      AssertThat(out->max_1level_cut[cut_type::Internal_False], Is().EqualTo(0u));
-      AssertThat(out->max_1level_cut[cut_type::Internal_True], Is().EqualTo(1u));
-      AssertThat(out->max_1level_cut[cut_type::All], Is().EqualTo(1u));
+      AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+      AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
+      AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+      AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
 
-      AssertThat(out->max_2level_cut[cut_type::Internal], Is().EqualTo(0u));
-      AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().EqualTo(0u));
-      AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().EqualTo(1u));
-      AssertThat(out->max_2level_cut[cut_type::All], Is().EqualTo(1u));
+      AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+      AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(0u));
+      AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+      AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
 
       AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
       AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
@@ -147,15 +147,15 @@ go_bandit([]() {
 
       AssertThat(out->width, Is().EqualTo(0u));
 
-      AssertThat(out->max_1level_cut[cut_type::Internal], Is().EqualTo(0u));
-      AssertThat(out->max_1level_cut[cut_type::Internal_False], Is().EqualTo(1u));
-      AssertThat(out->max_1level_cut[cut_type::Internal_True], Is().EqualTo(0u));
-      AssertThat(out->max_1level_cut[cut_type::All], Is().EqualTo(1u));
+      AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+      AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+      AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+      AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
 
-      AssertThat(out->max_2level_cut[cut_type::Internal], Is().EqualTo(0u));
-      AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().EqualTo(1u));
-      AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().EqualTo(0u));
-      AssertThat(out->max_2level_cut[cut_type::All], Is().EqualTo(1u));
+      AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+      AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+      AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+      AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
 
       AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
       AssertThat(out->number_of_terminals[true],  Is().EqualTo(0u));
@@ -208,19 +208,19 @@ go_bandit([]() {
 
       AssertThat(out->width, Is().EqualTo(1u));
 
-      AssertThat(out->max_1level_cut[cut_type::Internal], Is().EqualTo(1u));
-      AssertThat(out->max_1level_cut[cut_type::Internal_False], Is().EqualTo(1u));
-      AssertThat(out->max_1level_cut[cut_type::Internal_True], Is().EqualTo(1u));
-      AssertThat(out->max_1level_cut[cut_type::All], Is().EqualTo(2u));
+      AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+      AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+      AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+      AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(2u));
 
-      AssertThat(out->max_2level_cut[cut_type::Internal], Is().GreaterThanOrEqualTo(1u));
-      AssertThat(out->max_2level_cut[cut_type::Internal], Is().LessThanOrEqualTo(2u));
-      AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().GreaterThanOrEqualTo(1u));
-      AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().LessThanOrEqualTo(2u));
-      AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().GreaterThanOrEqualTo(1u));
-      AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().LessThanOrEqualTo(2u));
-      AssertThat(out->max_2level_cut[cut_type::All], Is().GreaterThanOrEqualTo(2u));
-      AssertThat(out->max_2level_cut[cut_type::All], Is().LessThanOrEqualTo(3u));
+      AssertThat(out->max_2level_cut[cut::Internal], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out->max_2level_cut[cut::Internal], Is().LessThanOrEqualTo(2u));
+      AssertThat(out->max_2level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out->max_2level_cut[cut::Internal_False], Is().LessThanOrEqualTo(2u));
+      AssertThat(out->max_2level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out->max_2level_cut[cut::Internal_True], Is().LessThanOrEqualTo(2u));
+      AssertThat(out->max_2level_cut[cut::All], Is().GreaterThanOrEqualTo(2u));
+      AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(3u));
 
       AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
       AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
@@ -365,19 +365,19 @@ go_bandit([]() {
 
       AssertThat(out->width, Is().EqualTo(1u));
 
-      AssertThat(out->max_1level_cut[cut_type::Internal], Is().EqualTo(2u));
-      AssertThat(out->max_1level_cut[cut_type::Internal_False], Is().EqualTo(2u));
-      AssertThat(out->max_1level_cut[cut_type::Internal_True], Is().EqualTo(3u));
-      AssertThat(out->max_1level_cut[cut_type::All], Is().EqualTo(3u));
+      AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(2u));
+      AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(2u));
+      AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(3u));
+      AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(3u));
 
-      AssertThat(out->max_2level_cut[cut_type::Internal], Is().GreaterThanOrEqualTo(2u));
-      AssertThat(out->max_2level_cut[cut_type::Internal], Is().LessThanOrEqualTo(3u));
-      AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().GreaterThanOrEqualTo(2u));
-      AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().LessThanOrEqualTo(3u));
-      AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().GreaterThanOrEqualTo(3u));
-      AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().LessThanOrEqualTo(5u));
-      AssertThat(out->max_2level_cut[cut_type::All], Is().GreaterThanOrEqualTo(3u));
-      AssertThat(out->max_2level_cut[cut_type::All], Is().LessThanOrEqualTo(5u));
+      AssertThat(out->max_2level_cut[cut::Internal], Is().GreaterThanOrEqualTo(2u));
+      AssertThat(out->max_2level_cut[cut::Internal], Is().LessThanOrEqualTo(3u));
+      AssertThat(out->max_2level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(2u));
+      AssertThat(out->max_2level_cut[cut::Internal_False], Is().LessThanOrEqualTo(3u));
+      AssertThat(out->max_2level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(3u));
+      AssertThat(out->max_2level_cut[cut::Internal_True], Is().LessThanOrEqualTo(5u));
+      AssertThat(out->max_2level_cut[cut::All], Is().GreaterThanOrEqualTo(3u));
+      AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(5u));
 
       AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
       AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
@@ -451,19 +451,19 @@ go_bandit([]() {
 
       AssertThat(out->width, Is().EqualTo(2u));
 
-      AssertThat(out->max_1level_cut[cut_type::Internal], Is().EqualTo(3u));
-      AssertThat(out->max_1level_cut[cut_type::Internal_False], Is().EqualTo(3u));
-      AssertThat(out->max_1level_cut[cut_type::Internal_True], Is().EqualTo(4u));
-      AssertThat(out->max_1level_cut[cut_type::All], Is().EqualTo(5u));
+      AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(3u));
+      AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(3u));
+      AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(4u));
+      AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(5u));
 
-      AssertThat(out->max_2level_cut[cut_type::Internal], Is().GreaterThanOrEqualTo(3u));
-      AssertThat(out->max_2level_cut[cut_type::Internal], Is().LessThanOrEqualTo(5u));
-      AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().GreaterThanOrEqualTo(3u));
-      AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().LessThanOrEqualTo(5u));
-      AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().GreaterThanOrEqualTo(4u));
-      AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().LessThanOrEqualTo(6u));
-      AssertThat(out->max_2level_cut[cut_type::All], Is().GreaterThanOrEqualTo(5u));
-      AssertThat(out->max_2level_cut[cut_type::All], Is().LessThanOrEqualTo(8u));
+      AssertThat(out->max_2level_cut[cut::Internal], Is().GreaterThanOrEqualTo(3u));
+      AssertThat(out->max_2level_cut[cut::Internal], Is().LessThanOrEqualTo(5u));
+      AssertThat(out->max_2level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(3u));
+      AssertThat(out->max_2level_cut[cut::Internal_False], Is().LessThanOrEqualTo(5u));
+      AssertThat(out->max_2level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(4u));
+      AssertThat(out->max_2level_cut[cut::Internal_True], Is().LessThanOrEqualTo(6u));
+      AssertThat(out->max_2level_cut[cut::All], Is().GreaterThanOrEqualTo(5u));
+      AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(8u));
 
       AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
       AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
@@ -499,19 +499,19 @@ go_bandit([]() {
 
       AssertThat(out->width, Is().EqualTo(1u));
 
-      AssertThat(out->max_1level_cut[cut_type::Internal], Is().EqualTo(1u));
-      AssertThat(out->max_1level_cut[cut_type::Internal_False], Is().EqualTo(1u));
-      AssertThat(out->max_1level_cut[cut_type::Internal_True], Is().EqualTo(1u));
-      AssertThat(out->max_1level_cut[cut_type::All], Is().EqualTo(2u));
+      AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+      AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+      AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+      AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(2u));
 
-      AssertThat(out->max_2level_cut[cut_type::Internal], Is().GreaterThanOrEqualTo(1u));
-      AssertThat(out->max_2level_cut[cut_type::Internal], Is().LessThanOrEqualTo(2u));
-      AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().GreaterThanOrEqualTo(1u));
-      AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().LessThanOrEqualTo(2u));
-      AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().GreaterThanOrEqualTo(1u));
-      AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().LessThanOrEqualTo(2u));
-      AssertThat(out->max_2level_cut[cut_type::All], Is().GreaterThanOrEqualTo(2u));
-      AssertThat(out->max_2level_cut[cut_type::All], Is().LessThanOrEqualTo(3u));
+      AssertThat(out->max_2level_cut[cut::Internal], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out->max_2level_cut[cut::Internal], Is().LessThanOrEqualTo(2u));
+      AssertThat(out->max_2level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out->max_2level_cut[cut::Internal_False], Is().LessThanOrEqualTo(2u));
+      AssertThat(out->max_2level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out->max_2level_cut[cut::Internal_True], Is().LessThanOrEqualTo(2u));
+      AssertThat(out->max_2level_cut[cut::All], Is().GreaterThanOrEqualTo(2u));
+      AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(3u));
 
       AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
       AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
@@ -553,19 +553,19 @@ go_bandit([]() {
 
         AssertThat(out->width, Is().EqualTo(1u));
 
-        AssertThat(out->max_1level_cut[cut_type::Internal], Is().EqualTo(1u));
-        AssertThat(out->max_1level_cut[cut_type::Internal_False], Is().EqualTo(1u));
-        AssertThat(out->max_1level_cut[cut_type::Internal_True], Is().EqualTo(1u));
-        AssertThat(out->max_1level_cut[cut_type::All], Is().EqualTo(2u));
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(2u));
 
-        AssertThat(out->max_2level_cut[cut_type::Internal], Is().GreaterThanOrEqualTo(1u));
-        AssertThat(out->max_2level_cut[cut_type::Internal], Is().LessThanOrEqualTo(2u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().GreaterThanOrEqualTo(1u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().LessThanOrEqualTo(2u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().GreaterThanOrEqualTo(1u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().LessThanOrEqualTo(2u));
-        AssertThat(out->max_2level_cut[cut_type::All], Is().GreaterThanOrEqualTo(2u));
-        AssertThat(out->max_2level_cut[cut_type::All], Is().LessThanOrEqualTo(3u));
+        AssertThat(out->max_2level_cut[cut::Internal], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal], Is().LessThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().LessThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().LessThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::All], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(3u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
@@ -595,19 +595,19 @@ go_bandit([]() {
 
         AssertThat(out->width, Is().EqualTo(1u));
 
-        AssertThat(out->max_1level_cut[cut_type::Internal], Is().EqualTo(1u));
-        AssertThat(out->max_1level_cut[cut_type::Internal_False], Is().EqualTo(1u));
-        AssertThat(out->max_1level_cut[cut_type::Internal_True], Is().EqualTo(1u));
-        AssertThat(out->max_1level_cut[cut_type::All], Is().EqualTo(2u));
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(2u));
 
-        AssertThat(out->max_2level_cut[cut_type::Internal], Is().GreaterThanOrEqualTo(1u));
-        AssertThat(out->max_2level_cut[cut_type::Internal], Is().LessThanOrEqualTo(2u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().GreaterThanOrEqualTo(1u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().LessThanOrEqualTo(2u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().GreaterThanOrEqualTo(1u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().LessThanOrEqualTo(2u));
-        AssertThat(out->max_2level_cut[cut_type::All], Is().GreaterThanOrEqualTo(2u));
-        AssertThat(out->max_2level_cut[cut_type::All], Is().LessThanOrEqualTo(3u));
+        AssertThat(out->max_2level_cut[cut::Internal], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal], Is().LessThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().LessThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().LessThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::All], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(3u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
@@ -705,19 +705,19 @@ go_bandit([]() {
 
       AssertThat(out_meta.can_pull(), Is().False());
 
-      AssertThat(out->max_1level_cut[cut_type::Internal], Is().EqualTo(2u));
-      AssertThat(out->max_1level_cut[cut_type::Internal_False], Is().EqualTo(3u));
-      AssertThat(out->max_1level_cut[cut_type::Internal_True], Is().EqualTo(4u));
-      AssertThat(out->max_1level_cut[cut_type::All], Is().EqualTo(5u));
+      AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(2u));
+      AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(3u));
+      AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(4u));
+      AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(5u));
 
-      AssertThat(out->max_2level_cut[cut_type::Internal], Is().GreaterThanOrEqualTo(2u));
-      AssertThat(out->max_2level_cut[cut_type::Internal], Is().LessThanOrEqualTo(3u));
-      AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().GreaterThanOrEqualTo(3u));
-      AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().LessThanOrEqualTo(5u));
-      AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().GreaterThanOrEqualTo(4u));
-      AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().LessThanOrEqualTo(6u));
-      AssertThat(out->max_2level_cut[cut_type::All], Is().GreaterThanOrEqualTo(5u));
-      AssertThat(out->max_2level_cut[cut_type::All], Is().LessThanOrEqualTo(8u));
+      AssertThat(out->max_2level_cut[cut::Internal], Is().GreaterThanOrEqualTo(2u));
+      AssertThat(out->max_2level_cut[cut::Internal], Is().LessThanOrEqualTo(3u));
+      AssertThat(out->max_2level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(3u));
+      AssertThat(out->max_2level_cut[cut::Internal_False], Is().LessThanOrEqualTo(5u));
+      AssertThat(out->max_2level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(4u));
+      AssertThat(out->max_2level_cut[cut::Internal_True], Is().LessThanOrEqualTo(6u));
+      AssertThat(out->max_2level_cut[cut::All], Is().GreaterThanOrEqualTo(5u));
+      AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(8u));
 
       AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
       AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
@@ -752,19 +752,19 @@ go_bandit([]() {
 
         AssertThat(out->width, Is().EqualTo(1u));
 
-        AssertThat(out->max_1level_cut[cut_type::Internal], Is().EqualTo(1u));
-        AssertThat(out->max_1level_cut[cut_type::Internal_False], Is().EqualTo(1u));
-        AssertThat(out->max_1level_cut[cut_type::Internal_True], Is().EqualTo(1u));
-        AssertThat(out->max_1level_cut[cut_type::All], Is().EqualTo(2u));
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(2u));
 
-        AssertThat(out->max_2level_cut[cut_type::Internal], Is().GreaterThanOrEqualTo(1u));
-        AssertThat(out->max_2level_cut[cut_type::Internal], Is().LessThanOrEqualTo(2u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().GreaterThanOrEqualTo(1u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().LessThanOrEqualTo(2u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().GreaterThanOrEqualTo(1u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().LessThanOrEqualTo(2u));
-        AssertThat(out->max_2level_cut[cut_type::All], Is().GreaterThanOrEqualTo(2u));
-        AssertThat(out->max_2level_cut[cut_type::All], Is().LessThanOrEqualTo(3u));
+        AssertThat(out->max_2level_cut[cut::Internal], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal], Is().LessThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().LessThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().LessThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::All], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(3u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
@@ -792,15 +792,15 @@ go_bandit([]() {
 
         AssertThat(out->width, Is().EqualTo(0u));
 
-        AssertThat(out->max_1level_cut[cut_type::Internal], Is().EqualTo(0u));
-        AssertThat(out->max_1level_cut[cut_type::Internal_False], Is().EqualTo(1u));
-        AssertThat(out->max_1level_cut[cut_type::Internal_True], Is().EqualTo(0u));
-        AssertThat(out->max_1level_cut[cut_type::All], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
 
-        AssertThat(out->max_2level_cut[cut_type::Internal], Is().EqualTo(0u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().EqualTo(1u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().EqualTo(0u));
-        AssertThat(out->max_2level_cut[cut_type::All], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(out->number_of_terminals[true],  Is().EqualTo(0u));
@@ -828,15 +828,15 @@ go_bandit([]() {
 
         AssertThat(out->width, Is().EqualTo(0u));
 
-        AssertThat(out->max_1level_cut[cut_type::Internal], Is().EqualTo(0u));
-        AssertThat(out->max_1level_cut[cut_type::Internal_False], Is().EqualTo(0u));
-        AssertThat(out->max_1level_cut[cut_type::Internal_True], Is().EqualTo(1u));
-        AssertThat(out->max_1level_cut[cut_type::All], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
 
-        AssertThat(out->max_2level_cut[cut_type::Internal], Is().EqualTo(0u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().EqualTo(0u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().EqualTo(1u));
-        AssertThat(out->max_2level_cut[cut_type::All], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
         AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
@@ -864,15 +864,15 @@ go_bandit([]() {
 
         AssertThat(out->width, Is().EqualTo(0u));
 
-        AssertThat(out->max_1level_cut[cut_type::Internal], Is().EqualTo(0u));
-        AssertThat(out->max_1level_cut[cut_type::Internal_False], Is().EqualTo(0u));
-        AssertThat(out->max_1level_cut[cut_type::Internal_True], Is().EqualTo(1u));
-        AssertThat(out->max_1level_cut[cut_type::All], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
 
-        AssertThat(out->max_2level_cut[cut_type::Internal], Is().EqualTo(0u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().EqualTo(0u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().EqualTo(1u));
-        AssertThat(out->max_2level_cut[cut_type::All], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
         AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
@@ -935,19 +935,19 @@ go_bandit([]() {
 
         AssertThat(out->width, Is().EqualTo(1u));
 
-        AssertThat(out->max_1level_cut[cut_type::Internal], Is().EqualTo(2u));
-        AssertThat(out->max_1level_cut[cut_type::Internal_False], Is().GreaterThanOrEqualTo(2u));
-        AssertThat(out->max_1level_cut[cut_type::Internal_False], Is().LessThanOrEqualTo(3u));
-        AssertThat(out->max_1level_cut[cut_type::Internal_True], Is().EqualTo(2u));
-        AssertThat(out->max_1level_cut[cut_type::All], Is().EqualTo(3u));
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(2u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().LessThanOrEqualTo(3u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(2u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(3u));
 
-        AssertThat(out->max_2level_cut[cut_type::Internal], Is().GreaterThanOrEqualTo(2u));
-        AssertThat(out->max_2level_cut[cut_type::Internal], Is().LessThanOrEqualTo(3u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().GreaterThanOrEqualTo(2u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().LessThanOrEqualTo(3u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().EqualTo(2u));
-        AssertThat(out->max_2level_cut[cut_type::All], Is().GreaterThanOrEqualTo(3u));
-        AssertThat(out->max_2level_cut[cut_type::All], Is().LessThanOrEqualTo(4u));
+        AssertThat(out->max_2level_cut[cut::Internal], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::Internal], Is().LessThanOrEqualTo(3u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().LessThanOrEqualTo(3u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::All], Is().GreaterThanOrEqualTo(3u));
+        AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(4u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
         AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
@@ -982,19 +982,19 @@ go_bandit([]() {
 
         AssertThat(out->width, Is().EqualTo(1u));
 
-        AssertThat(out->max_1level_cut[cut_type::Internal], Is().EqualTo(1u));
-        AssertThat(out->max_1level_cut[cut_type::Internal_False], Is().EqualTo(1u));
-        AssertThat(out->max_1level_cut[cut_type::Internal_True], Is().EqualTo(1u));
-        AssertThat(out->max_1level_cut[cut_type::All], Is().EqualTo(2u));
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(2u));
 
-        AssertThat(out->max_2level_cut[cut_type::Internal], Is().GreaterThanOrEqualTo(1u));
-        AssertThat(out->max_2level_cut[cut_type::Internal], Is().LessThanOrEqualTo(2u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().GreaterThanOrEqualTo(1u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().LessThanOrEqualTo(2u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().GreaterThanOrEqualTo(1u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().LessThanOrEqualTo(2u));
-        AssertThat(out->max_2level_cut[cut_type::All], Is().GreaterThanOrEqualTo(2u));
-        AssertThat(out->max_2level_cut[cut_type::All], Is().LessThanOrEqualTo(3u));
+        AssertThat(out->max_2level_cut[cut::Internal], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal], Is().LessThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().LessThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().LessThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::All], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(3u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
@@ -1042,19 +1042,19 @@ go_bandit([]() {
 
         AssertThat(out->width, Is().EqualTo(1u));
 
-        AssertThat(out->max_1level_cut[cut_type::Internal], Is().EqualTo(1u));
-        AssertThat(out->max_1level_cut[cut_type::Internal_False], Is().EqualTo(1u));
-        AssertThat(out->max_1level_cut[cut_type::Internal_True], Is().EqualTo(1u));
-        AssertThat(out->max_1level_cut[cut_type::All], Is().EqualTo(2u));
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(2u));
 
-        AssertThat(out->max_2level_cut[cut_type::Internal], Is().GreaterThanOrEqualTo(1u));
-        AssertThat(out->max_2level_cut[cut_type::Internal], Is().LessThanOrEqualTo(2u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().GreaterThanOrEqualTo(1u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().LessThanOrEqualTo(2u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().GreaterThanOrEqualTo(1u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().LessThanOrEqualTo(2u));
-        AssertThat(out->max_2level_cut[cut_type::All], Is().GreaterThanOrEqualTo(2u));
-        AssertThat(out->max_2level_cut[cut_type::All], Is().LessThanOrEqualTo(3u));
+        AssertThat(out->max_2level_cut[cut::Internal], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal], Is().LessThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().LessThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().LessThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::All], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(3u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
@@ -1082,15 +1082,15 @@ go_bandit([]() {
 
         AssertThat(out->width, Is().EqualTo(0u));
 
-        AssertThat(out->max_1level_cut[cut_type::Internal], Is().EqualTo(0u));
-        AssertThat(out->max_1level_cut[cut_type::Internal_False], Is().EqualTo(1u));
-        AssertThat(out->max_1level_cut[cut_type::Internal_True], Is().EqualTo(0u));
-        AssertThat(out->max_1level_cut[cut_type::All], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
 
-        AssertThat(out->max_2level_cut[cut_type::Internal], Is().EqualTo(0u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().EqualTo(1u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().EqualTo(0u));
-        AssertThat(out->max_2level_cut[cut_type::All], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(out->number_of_terminals[true],  Is().EqualTo(0u));
@@ -1118,15 +1118,15 @@ go_bandit([]() {
 
         AssertThat(out->width, Is().EqualTo(0u));
 
-        AssertThat(out->max_1level_cut[cut_type::Internal], Is().EqualTo(0u));
-        AssertThat(out->max_1level_cut[cut_type::Internal_False], Is().EqualTo(0u));
-        AssertThat(out->max_1level_cut[cut_type::Internal_True], Is().EqualTo(1u));
-        AssertThat(out->max_1level_cut[cut_type::All], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
 
-        AssertThat(out->max_2level_cut[cut_type::Internal], Is().EqualTo(0u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().EqualTo(0u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().EqualTo(1u));
-        AssertThat(out->max_2level_cut[cut_type::All], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
         AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
@@ -1189,19 +1189,19 @@ go_bandit([]() {
 
         AssertThat(out->width, Is().EqualTo(1u));
 
-        AssertThat(out->max_1level_cut[cut_type::Internal], Is().EqualTo(3u));
-        AssertThat(out->max_1level_cut[cut_type::Internal_False], Is().EqualTo(3u));
-        AssertThat(out->max_1level_cut[cut_type::Internal_True], Is().EqualTo(3u));
-        AssertThat(out->max_1level_cut[cut_type::All], Is().EqualTo(3u));
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(3u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(3u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(3u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(3u));
 
-        AssertThat(out->max_2level_cut[cut_type::Internal], Is().GreaterThanOrEqualTo(3u));
-        AssertThat(out->max_2level_cut[cut_type::Internal], Is().LessThanOrEqualTo(4u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().GreaterThanOrEqualTo(3u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_False], Is().LessThanOrEqualTo(4u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().GreaterThanOrEqualTo(3u));
-        AssertThat(out->max_2level_cut[cut_type::Internal_True], Is().LessThanOrEqualTo(4u));
-        AssertThat(out->max_2level_cut[cut_type::All], Is().GreaterThanOrEqualTo(3u));
-        AssertThat(out->max_2level_cut[cut_type::All], Is().LessThanOrEqualTo(4u));
+        AssertThat(out->max_2level_cut[cut::Internal], Is().GreaterThanOrEqualTo(3u));
+        AssertThat(out->max_2level_cut[cut::Internal], Is().LessThanOrEqualTo(4u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(3u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().LessThanOrEqualTo(4u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(3u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().LessThanOrEqualTo(4u));
+        AssertThat(out->max_2level_cut[cut::All], Is().GreaterThanOrEqualTo(3u));
+        AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(4u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));

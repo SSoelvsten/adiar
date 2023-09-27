@@ -133,10 +133,10 @@ namespace adiar
         latest = n.uid();
       }
 
-      nf->max_1level_cut[internal::cut_type::Internal]       = 1u;
-      nf->max_1level_cut[internal::cut_type::Internal_False] = nf->number_of_terminals[false];
-      nf->max_1level_cut[internal::cut_type::Internal_True]  = 1u; // == nf->number_of_terminals[true]
-      nf->max_1level_cut[internal::cut_type::All]            = nf->number_of_terminals[false] + 1u;
+      nf->max_1level_cut[internal::cut::Internal]       = 1u;
+      nf->max_1level_cut[internal::cut::Internal_False] = nf->number_of_terminals[false];
+      nf->max_1level_cut[internal::cut::Internal_True]  = 1u; // == nf->number_of_terminals[true]
+      nf->max_1level_cut[internal::cut::All]            = nf->number_of_terminals[false] + 1u;
 
       return nf;
     }

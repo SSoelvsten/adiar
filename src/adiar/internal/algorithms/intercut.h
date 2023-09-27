@@ -307,7 +307,7 @@ namespace adiar::internal
   template<typename intercut_policy>
   size_t __intercut_2level_upper_bound(const typename intercut_policy::reduced_t &dd)
   {
-    const cut_type ct = cut_type_with(intercut_policy::cut_false_terminal,
+    const cut ct = cut(intercut_policy::cut_false_terminal,
                                       intercut_policy::cut_true_terminal);
     const safe_size_t max_1level_cut = dd.max_1level_cut(ct);
 

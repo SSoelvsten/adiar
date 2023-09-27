@@ -133,13 +133,13 @@ namespace adiar::internal
     ///
     /// \param ct The type of the cut to obtain
     ////////////////////////////////////////////////////////////////////////////
-    cut_size_t max_1level_cut(const cut_type ct) const
+    cut::size_type max_1level_cut(const cut ct) const
     {
       if (has<shared_arc_file_type>()) {
         const shared_arc_file_type &af = get<shared_arc_file_type>();
         return af->max_1level_cut
-          + (includes_terminal(ct, false) ? af->number_of_terminals[false] : 0u)
-          + (includes_terminal(ct, true)  ? af->number_of_terminals[true]  : 0u);
+          + (ct.includes(false) ? af->number_of_terminals[false] : 0u)
+          + (ct.includes(true)  ? af->number_of_terminals[true]  : 0u);
       }
       if (has<shared_node_file_type>()) {
         return get<shared_node_file_type>()->max_1level_cut[ct];
@@ -153,14 +153,14 @@ namespace adiar::internal
     ///
     /// \param ct The type of the cut to obtain
     ////////////////////////////////////////////////////////////////////////////
-    cut_size_t max_2level_cut(const cut_type ct) const
+    cut::size_type max_2level_cut(const cut ct) const
     {
       if (has<shared_arc_file_type>()) {
         const shared_arc_file_type &af = get<shared_arc_file_type>();
         return std::min(// 3/2 times the 1-level cut
                         (3 * af->max_1level_cut) / 2
-                        + (includes_terminal(ct, false) ? af->number_of_terminals[false] : 0u)
-                        + (includes_terminal(ct, true)  ? af->number_of_terminals[true]  : 0u),
+                        + (ct.includes(false) ? af->number_of_terminals[false] : 0u)
+                        + (ct.includes(true)  ? af->number_of_terminals[true]  : 0u),
                         // At most the number of nodes + 1
                         (af->size() / 2u) + 1);
       }
@@ -350,7 +350,7 @@ namespace adiar::internal
     ///
     /// \param ct The type of the cut to obtain
     ////////////////////////////////////////////////////////////////////////////
-    cut_size_t max_1level_cut(const cut_type ct) const
+    cut::size_type max_1level_cut(const cut ct) const
     {
       return file->max_1level_cut[negate_cut_type(ct)];
     }
@@ -361,7 +361,7 @@ namespace adiar::internal
     ///
     /// \param ct The type of the cut to obtain
     ////////////////////////////////////////////////////////////////////////////
-    cut_size_t max_2level_cut(const cut_type ct) const
+    cut::size_type max_2level_cut(const cut ct) const
     {
       return file->max_2level_cut[negate_cut_type(ct)];
     }
@@ -392,15 +392,15 @@ namespace adiar::internal
     }
 
   private:
-    cut_type negate_cut_type(const cut_type ct) const
+    cut negate_cut_type(const cut ct) const
     {
       if (!negate) { return ct; }
 
       switch (ct) {
-      case cut_type::Internal_False:
-        return cut_type::Internal_True;
-      case cut_type::Internal_True:
-        return cut_type::Internal_False;
+      case cut::Internal_False:
+        return cut::Internal_True;
+      case cut::Internal_True:
+        return cut::Internal_False;
       default:
         return ct;
       }

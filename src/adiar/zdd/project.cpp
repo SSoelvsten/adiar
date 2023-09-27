@@ -52,10 +52,10 @@ namespace adiar
     }
 
   public:
-    static inline internal::cut_type
+    static inline internal::cut
     cut_with_terminals(const bool_op &/*op*/)
     {
-      return internal::cut_type::All;
+      return internal::cut::All;
     }
 
   public:

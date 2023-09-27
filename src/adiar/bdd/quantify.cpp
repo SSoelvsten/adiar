@@ -59,13 +59,13 @@ namespace adiar
     }
 
   public:
-    static inline internal::cut_type
+    static inline internal::cut
     cut_with_terminals(const bool_op &op)
     {
       const bool incl_false = !can_right_shortcut(op, bdd::pointer_type(false));
       const bool incl_true  = !can_right_shortcut(op, bdd::pointer_type(true));
 
-      return internal::cut_type_with(incl_false, incl_true);
+      return internal::cut(incl_false, incl_true);
     }
 
   public:
