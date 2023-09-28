@@ -22,18 +22,18 @@ namespace adiar::internal
   class priority_queue<memory_mode_t::Internal, T, Comp>
   {
   private:
-    using pq_t = tpie::internal_priority_queue<T, Comp>;
-    pq_t pq;
+    using pq_type = tpie::internal_priority_queue<T, Comp>;
+    pq_type pq;
 
   public:
     static tpie::memory_size_type memory_usage(tpie::memory_size_type no_elements)
     {
-      return pq_t::memory_usage(no_elements);
+      return pq_type::memory_usage(no_elements);
     }
 
     static tpie::memory_size_type memory_fits(tpie::memory_size_type memory_bytes)
     {
-      const tpie::memory_size_type ret = pq_t::memory_fits(memory_bytes);
+      const tpie::memory_size_type ret = pq_type::memory_fits(memory_bytes);
 
       adiar_assert(memory_usage(ret) <= memory_bytes,
                    "memory_fits and memory_usage should agree.");
@@ -90,8 +90,8 @@ namespace adiar::internal
     using value_type = T;
 
   private:
-    using pq_t = tpie::priority_queue<value_type, Comp>;
-    pq_t pq;
+    using pq_type = tpie::priority_queue<value_type, Comp>;
+    pq_type pq;
 
   public:
     priority_queue(size_t memory_bytes, size_t /*max_size*/) 
