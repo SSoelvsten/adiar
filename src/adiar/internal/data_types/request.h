@@ -19,44 +19,49 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Request struct for the top-down sweep time-forwarding algorithms.
   ///
-  /// \tparam cardinality   The cardinality of the algorithm, e.g. it is 1 for
+  /// \tparam Cardinality   The cardinality of the algorithm, e.g. it is 1 for
   ///                       `bdd_restrict`, 2 for `bdd_apply` and 3 for
   ///                       `bdd_ite`.
   ///
-  /// \tparam nodes_carried Number of children being forwarded with the request.
+  /// \tparam NodeCarrySize Number of children being forwarded with the request.
   ///                       This is used when `cardinality` is greater than 1
   ///                       and a per-level priority queue forwards the children
   ///                       of `target.first()` to `target.second()` and so on.
+  ///
+  /// \tparam Inputs        The number of inputs to the algorithm. This value
+  ///                       differs from `Cardinality` (default) in algorithms
+  ///                       such as `bdd_exists` and `bdd_compose` where the
+  ///                       request includes pairs of nodes from the same input.
   //////////////////////////////////////////////////////////////////////////////
-  template<uint8_t CARDINALITY,
-           uint8_t NODE_CARRY_SIZE = 0u,
-           uint8_t INPUTS = CARDINALITY>
+  template<uint8_t Cardinality,
+           uint8_t NodeCarrySize = 0u,
+           uint8_t Inputs = Cardinality>
   class request;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \details Common details for requests with and without a node carry.
   //////////////////////////////////////////////////////////////////////////////
-  template<uint8_t CARDINALITY, uint8_t INPUTS>
-  class request<CARDINALITY, 0, INPUTS>
+  template<uint8_t Cardinality, uint8_t Inputs>
+  class request<Cardinality, 0, Inputs>
   {
   public:
     ////////////////////////////////////////////////////////////////////////////
-    static_assert(0 < CARDINALITY,
+    static_assert(0 < Cardinality,
                   "Request type is not designed for 0-ary targets, i.e. without at least one node in either diagram.");
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Cardinality of the request target.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr uint8_t cardinality = CARDINALITY;
+    static constexpr uint8_t cardinality = Cardinality;
 
     ////////////////////////////////////////////////////////////////////////////
-    static_assert(INPUTS > 0,
+    static_assert(Inputs > 0,
                   "Request type is not designed for a 0-ary operation, i.e. an algorithm taking no diagrams as input.");
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Number of input files.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr uint8_t inputs = INPUTS;
+    static constexpr uint8_t inputs = Inputs;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the target tuple ought to be sorted.
@@ -163,21 +168,21 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \details Implementation of `request` template with a non-empty node carry.
   //////////////////////////////////////////////////////////////////////////////
-  template<uint8_t CARDINALITY, uint8_t NODE_CARRY_SIZE, uint8_t INPUTS>
-  class request : public request<CARDINALITY, 0, INPUTS>
+  template<uint8_t Cardinality, uint8_t NodeCarrySize, uint8_t Inputs>
+  class request : public request<Cardinality, 0, Inputs>
   {
-    using base = request<CARDINALITY, 0, INPUTS>;
+    using base = request<Cardinality, 0, Inputs>;
 
     /* ============================= NODE CARRY ============================= */
   public:
     ////////////////////////////////////////////////////////////////////////////
-    static_assert(NODE_CARRY_SIZE < base::cardinality,
-                  "'node_carry_size' ought not to hold more than the 'cardinality' of the algorithm");
+    static_assert(NodeCarrySize < base::cardinality,
+                  "'NodeCarrySize' ought not to hold more than the 'cardinality' of the algorithm");
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Size of the node forwarding array.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr uint8_t node_carry_size = NODE_CARRY_SIZE;
+    static constexpr uint8_t node_carry_size = NodeCarrySize;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Set of nodes of prior visited nodes in `target`.
@@ -240,15 +245,15 @@ namespace adiar::internal
   // Priority queue functions
 
   // TODO: turn it into only having the cardinality
-  template<size_t idx, class request_t>
+  template<size_t idx, typename Request>
   struct request_lt
   {
-    inline bool operator()(const request_t &a, const request_t &b)
+    inline bool operator()(const Request &a, const Request &b)
     {
-      const typename request_t::label_type label_a = a.target.first().label();
-      const typename request_t::label_type label_b = b.target.first().label();
+      const typename Request::label_type label_a = a.target.first().label();
+      const typename Request::label_type label_b = b.target.first().label();
       
-      if constexpr (request_t::cardinality == 2) {
+      if constexpr (Request::cardinality == 2) {
         constexpr size_t o_idx = 1u - idx;
 
         return label_a < label_b
@@ -262,30 +267,30 @@ namespace adiar::internal
     }
   };
 
-  template<class request_t>
+  template<typename Request>
   struct request_first_lt
   {
-    inline bool operator()(const request_t &a, const request_t &b)
+    inline bool operator()(const Request &a, const Request &b)
     {
-      return tuple_first_lt<typename request_t::target_t>()(a.target, b.target);
+      return tuple_first_lt<typename Request::target_t>()(a.target, b.target);
     }
   };
 
-  template<class request_t>
+  template<typename Request>
   struct request_second_lt
   {
-    inline bool operator()(const request_t &a, const request_t &b)
+    inline bool operator()(const Request &a, const Request &b)
     {
-      return tuple_second_lt<typename request_t::target_t>()(a.target, b.target);
+      return tuple_second_lt<typename Request::target_t>()(a.target, b.target);
     }
   };
 
-  template<class request_t>
+  template<typename Request>
   struct request_third_lt
   {
-    inline bool operator()(const request_t &a, const request_t &b)
+    inline bool operator()(const Request &a, const Request &b)
     {
-      return tuple_third_lt<typename request_t::target_t>()(a.target, b.target);
+      return tuple_third_lt<typename Request::target_t>()(a.target, b.target);
     }
   };
 
@@ -295,21 +300,22 @@ namespace adiar::internal
   ///
   /// \sa request
   //////////////////////////////////////////////////////////////////////////////
-  template<uint8_t cardinality,
-           typename data_t,
-           uint8_t node_carry_size = 0u,
-           uint8_t inputs = cardinality>
-  class request_data : public request<cardinality, node_carry_size, inputs>
+  template<uint8_t Cardinality,
+           typename Data,
+           uint8_t NodeCarrySize = 0u,
+           uint8_t Inputs = Cardinality>
+  class request_data 
+    : public request<Cardinality, NodeCarrySize, Inputs>
   {
   private:
-    using request_t = request<cardinality, node_carry_size, inputs>;
+    using Request = request<Cardinality, NodeCarrySize, Inputs>;
 
     /* ================================ DATA ================================ */
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the extra data carried with this recursion request.
     ////////////////////////////////////////////////////////////////////////////
-    using data_type = data_t;
+    using data_type = Data;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Extra data related to this recursion request tuple.
@@ -325,60 +331,60 @@ namespace adiar::internal
 
   public:
     // Provide 'non-default' constructors to make it easy to use outside of TPIE.
-    request_data(const typename request_t::target_t &t,
-                 const std::array<typename request_t::children_type, node_carry_size> &nc,
+    request_data(const typename Request::target_t &t,
+                 const std::array<typename Request::children_type, NodeCarrySize> &nc,
                  const data_type &d)
-      : request_t(t, nc), data(d)
+      : Request(t, nc), data(d)
     { }
   };
 
   //////////////////////////////////////////////////////////////////////////////
   // Priority queue functions
-  template<size_t idx, class request_t>
+  template<size_t idx, typename Request>
   struct request_data_lt
   {
-    inline bool operator()(const request_t &a, const request_t &b)
+    inline bool operator()(const Request &a, const Request &b)
     {
-      if (request_t::data_type::sort_on_tiebreak && a.target == b.target) {
+      if (Request::data_type::sort_on_tiebreak && a.target == b.target) {
         return a.data < b.data;
       }
-      return request_lt<idx, request_t>()(a, b);
+      return request_lt<idx, Request>()(a, b);
     }
   };
 
-  template<class request_t>
+  template<typename Request>
   struct request_data_first_lt
   {
-    inline bool operator()(const request_t &a, const request_t &b)
+    inline bool operator()(const Request &a, const Request &b)
     {
-      if (request_t::data_type::sort_on_tiebreak && a.target == b.target) {
+      if (Request::data_type::sort_on_tiebreak && a.target == b.target) {
         return a.data < b.data;
       }
-      return request_first_lt<request_t>()(a, b);
+      return request_first_lt<Request>()(a, b);
     }
   };
 
-  template<class request_t>
+  template<typename Request>
   struct request_data_second_lt
   {
-    inline bool operator()(const request_t &a, const request_t &b)
+    inline bool operator()(const Request &a, const Request &b)
     {
-      if (request_t::data_type::sort_on_tiebreak && a.target == b.target) {
+      if (Request::data_type::sort_on_tiebreak && a.target == b.target) {
         return a.data < b.data;
       }
-      return request_second_lt<request_t>()(a, b);
+      return request_second_lt<Request>()(a, b);
     }
   };
 
-  template<class request_t>
+  template<typename Request>
   struct request_data_third_lt
   {
-    inline bool operator()(const request_t &a, const request_t &b)
+    inline bool operator()(const Request &a, const Request &b)
     {
-      if (request_t::data_type::sort_on_tiebreak && a.target == b.target) {
+      if (Request::data_type::sort_on_tiebreak && a.target == b.target) {
         return a.data < b.data;
       }
-      return request_third_lt<request_t>()(a, b);
+      return request_third_lt<Request>()(a, b);
     }
   };
 
