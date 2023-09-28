@@ -14,7 +14,8 @@ namespace adiar::internal
   ///
   /// \sa shared_levelized_file<arc>
   //////////////////////////////////////////////////////////////////////////////
-  class arc_writer: public levelized_file_writer<arc>
+  class arc_writer
+    : public levelized_file_writer<arc>
   {
   private:
     bool __has_latest_terminal = false;

@@ -22,11 +22,11 @@ namespace adiar::internal
   ///          come after something else. In all our current use-cases, the
   ///          check induces a total ordering.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename value_t>
+  template <typename T>
   class file_writer
   {
   public:
-    using value_type = value_t;
+    using value_type = T;
 
   public:
     static size_t memory_usage()

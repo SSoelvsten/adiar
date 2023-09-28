@@ -18,12 +18,12 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief File representing a (levelized) DAG.
   ///
-  /// \param elem_type       Type of the file's content.
+  /// \param T       Type of the file's content.
   ///
-  /// \param split_on_levels Whether each file type should be split in a file
-  ///                        per level. Doing so provides support for even
-  ///                        larger decision diagrams and a variable swapping
-  ///                        operation.
+  /// \param SplitOnLevels Whether each file type should be split in a file
+  ///                      per level. Doing so provides support for even
+  ///                      larger decision diagrams and a variable swapping
+  ///                      operation.
   ///
   /// \details The entities of Adiar that represents DAGs are represented by one
   ///          or more files of type `elem_type`. To optimise several
@@ -31,22 +31,23 @@ namespace adiar::internal
   ///          This information is stored in the variables and in a levelized
   ///          fashion depending on the granularity of the information.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename elem_type, bool split_on_levels = false>
+  template <typename T, bool SplitOnLevels = false>
   class levelized_file;
 
   ////////////////////////////////////////////////////////////////////////////
-  /// \brief Files that combined represent a DAG.
+  /// \brief   Files that combined represent a DAG.
   ///
-  /// \param elem_type       Type of the file's content.
+  /// \param T Type of the file's content.
   ////////////////////////////////////////////////////////////////////////////
-  template <typename value_t>
-  class levelized_file<value_t, false> : public file_traits<value_t>::stats
+  template <typename T>
+  class levelized_file<T, /*SplitOnLevels=*/false>
+    : public file_traits<T>::stats
   {
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the file's elements.
     ////////////////////////////////////////////////////////////////////////////
-    using value_type = value_t;
+    using value_type = T;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Number of files to collectively represent a DAG.
@@ -457,11 +458,12 @@ namespace adiar::internal
   ///
   /// \param elem_type       Type of the file's content.
   ////////////////////////////////////////////////////////////////////////////
-  //template <typename elem_type>
-  //class levelized_file<elem_type, true> : public file_traits<elem_type>::stats
-  //{
-  //  TODO
-  //}
+  // template <typename elem_type>
+  // class levelized_file<elem_type, /*SplitOnLevels=*/true> 
+  //   : public file_traits<elem_type>::stats
+  // {
+  //   TODO
+  // };
 }
 
 #endif // ADIAR_INTERNAL_IO_LEVELIZED_FILE_H

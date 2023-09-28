@@ -22,16 +22,17 @@ namespace adiar::internal
   ///          - If `const` then not only can the pointer not be moved, but the
   ///            object underneath is `const` too, i.e. read-only.
   ///
-  /// \param file_type The type of the underlying file
+  /// \tparam File Type of the underlying file
   //////////////////////////////////////////////////////////////////////////////
-  template <typename file_t>
-  class shared_file_ptr : public shared_ptr<file_t>
+  template <typename File>
+  class shared_file_ptr
+    : public shared_ptr<File>
   {
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the file object.
     ////////////////////////////////////////////////////////////////////////////
-    using file_type = file_t;
+    using file_type = File;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the file's elements.
@@ -53,7 +54,7 @@ namespace adiar::internal
     /// \sa make_shared_file make_shared_levelized_file
     ////////////////////////////////////////////////////////////////////////////
     shared_file_ptr()
-      : shared_ptr<file_t>(adiar::make_shared<file_t>())
+      : shared_ptr<File>(adiar::make_shared<File>())
     { }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -62,67 +63,67 @@ namespace adiar::internal
     /// \sa make_shared_file make_shared_levelized_file
     ////////////////////////////////////////////////////////////////////////////
     shared_file_ptr(const std::string p)
-      : shared_ptr<file_t>(adiar::make_shared<file_t>(p))
+      : shared_ptr<File>(adiar::make_shared<File>(p))
     { }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Conversion-constructor from raw `shared_ptr<file_t>`.
+    /// \brief Conversion-constructor from raw `shared_ptr<File>`.
     ////////////////////////////////////////////////////////////////////////////
-    shared_file_ptr(const shared_ptr<file_t> &other) : shared_ptr<file_t>(other)
+    shared_file_ptr(const shared_ptr<File> &other) : shared_ptr<File>(other)
     { }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Copy-constructor.
     ////////////////////////////////////////////////////////////////////////////
-    shared_file_ptr(const shared_file_ptr<file_t> &other) = default;
+    shared_file_ptr(const shared_file_ptr<File> &other) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Move-constructor.
     ////////////////////////////////////////////////////////////////////////////
-    shared_file_ptr(shared_file_ptr<file_t> &&other) = default;
+    shared_file_ptr(shared_file_ptr<File> &&other) = default;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
-    shared_file_ptr<file_t>& operator= (const shared_file_ptr<file_t> &o) = default;
+    shared_file_ptr<File>& operator= (const shared_file_ptr<File> &o) = default;
 
     ////////////////////////////////////////////////////////////////////////////
-    shared_file_ptr<file_t>& operator= (shared_file_ptr<file_t> &&o) = default;
+    shared_file_ptr<File>& operator= (shared_file_ptr<File> &&o) = default;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the raw pointer (read-only).
     ////////////////////////////////////////////////////////////////////////////
-    const file_t* get() const
-    { return shared_ptr<file_t>::get(); }
+    const File* get() const
+    { return shared_ptr<File>::get(); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the raw pointer.
     ////////////////////////////////////////////////////////////////////////////
-    file_t* get()
-    { return shared_ptr<file_t>::get(); }
+    File* get()
+    { return shared_ptr<File>::get(); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Dereference the pointer to obtain the file (read-only).
     ////////////////////////////////////////////////////////////////////////////
-    const file_t& operator*() const
+    const File& operator*() const
     { return *get(); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Dereference the pointer to obtain the file.
     ////////////////////////////////////////////////////////////////////////////
-    file_t& operator*()
+    File& operator*()
     { return *get(); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Member access (read-only) to the file.
     ////////////////////////////////////////////////////////////////////////////
-    const file_t* operator->() const
+    const File* operator->() const
     { return get(); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Member access for the underlying file.
     ////////////////////////////////////////////////////////////////////////////
-    file_t* operator->()
+    File* operator->()
     { return get(); }
 
   public:
@@ -132,9 +133,9 @@ namespace adiar::internal
     /// \remark This new file is a temporary file and must be marked persisted
     ///         to be kept existing beyond the last reference to it is gone.
     ////////////////////////////////////////////////////////////////////////////
-    static shared_file_ptr<file_t> copy(const shared_file_ptr<file_t> &f)
+    static shared_file_ptr<File> copy(const shared_file_ptr<File> &f)
     {
-      return make_shared<file_t>(file_t::copy(*f));
+      return make_shared<File>(File::copy(*f));
     }
   };
 

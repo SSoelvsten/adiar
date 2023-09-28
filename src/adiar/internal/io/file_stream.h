@@ -13,20 +13,18 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Stream to a file with a one-way reading direction.
   ///
-  /// \param elem_type   The type of the file's elements
+  /// \tparam T       The type of the file's elements
   ///
-  /// \param REVERSE     Whether the reading direction should be reversed
-  ///
-  /// \param file_t      The type of the shared pointer to a file
+  /// \tparam Reverse Whether the reading direction should be reversed
   //////////////////////////////////////////////////////////////////////////////
-  template <typename value_t, bool REVERSE = false>
+  template <typename T, bool Reverse = false>
   class file_stream
   {
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the file's elements.
     ////////////////////////////////////////////////////////////////////////////
-    using value_type = value_t;
+    using value_type = T;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -71,8 +69,8 @@ namespace adiar::internal
     file_stream() { }
 
     ////////////////////////////////////////////////////////////////////////////
-    file_stream(const file_stream<value_type, REVERSE> &) = delete;
-    file_stream(file_stream<value_type, REVERSE> &&) = delete;
+    file_stream(const file_stream<value_type, Reverse> &) = delete;
+    file_stream(file_stream<value_type, Reverse> &&) = delete;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a given shared `file<value_type>`.
@@ -120,7 +118,7 @@ namespace adiar::internal
 
     ////////////////////////////////////////////////////////////////////////////
     // Befriend the few places that need direct access to the above 'attach'.
-    template <typename tparam__elem_t, bool tparam__REVERSE>
+    template <typename tparam__elem_t, bool tparam__Reverse>
     friend class levelized_file_stream;
 
   public:
@@ -169,7 +167,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     void reset()
     {
-      if constexpr (REVERSE) {
+      if constexpr (Reverse) {
         _stream.seek(0, tpie::file_stream_base::end);
       } else {
         _stream.seek(0);
@@ -180,7 +178,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     bool __can_read() const
     {
-      if constexpr (REVERSE) {
+      if constexpr (Reverse) {
         return _stream.can_read_back();
       } else {
         return _stream.can_read();
@@ -199,7 +197,7 @@ namespace adiar::internal
     const value_type __read()
     {
       value_type v;
-      if constexpr (REVERSE) {
+      if constexpr (Reverse) {
         v = _stream.read_back();
       } else {
         v = _stream.read();

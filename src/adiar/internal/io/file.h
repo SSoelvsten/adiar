@@ -17,40 +17,42 @@
 namespace adiar::internal
 {
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Provides compile-time known settings and meta information variables
-  ///        used in `file<elem_type>` and `levelized_file<elem_type>`.
+  /// \brief   Provides compile-time known settings and meta information 
+  ///          variables used in `file<elem_type>` and
+  ///          `levelized_file<elem_type>`.
   ///
   /// \details Files also contain various pieces of meta information. Instead of
   ///          creating a larger object-oriented hierarchy, we provide this
   ///          `file_traits` template to provide at compile-time the settings
   ///          and meta information to include.
   ///
-  /// \param elem_type Element type in the file.
+  /// \param T Element type in the file.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename elem_type>
+  template <typename T>
   struct file_traits;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief   A file on disk.
+  /// \brief     A file on disk.
   ///
-  /// \details A shallow wrapper TPIE's <tt>temp_file</tt> class to ensure the
-  ///          file's content is part of the type and to provide auxiliary
-  ///          functions.
+  /// \details   A shallow wrapper TPIE's <tt>temp_file</tt> class to ensure the
+  ///            file's content is part of the type and to provide auxiliary
+  ///            functions.
   ///
-  /// \tparam  value_t Type of the file's content.
+  /// \tparam  T Type of the file's content.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename value_t> // <-- header_t
-  class file // : public file_traits<elem_type>::stats
+  template <typename T> // <-- Header
+  class file 
+  // : public file_traits<T>::stats
   {
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the file's elements.
     ////////////////////////////////////////////////////////////////////////////
-    using value_type = value_t;
+    using value_type = T;
 
     static_assert(std::is_pod<value_type>::value, "File content must be a POD");
 
-  public:
+  private:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Access flags to be used privately within reader's and writers.
     ////////////////////////////////////////////////////////////////////////////
@@ -61,7 +63,7 @@ namespace adiar::internal
 
   private:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief The underlying TPIE file
+    /// \brief  The underlying TPIE file
     ///
     /// \remark This variable is made 'mutable' to allow it to be used with
     //          'non-const' operations (opening a read-only stream) in a 'const'

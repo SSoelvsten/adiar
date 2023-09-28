@@ -19,31 +19,31 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief         File stream of levelized files.
   ///
-  /// \param value_t The type of the file(s)'s elements
+  /// \param T       The type of the file(s)'s elements
   ///
-  /// \param reverse Whether the reading direction should be reversed
+  /// \param Reverse Whether the reading direction should be reversed
   ///
-  /// \remark Since the content of all levelized files are generated in reverse
+  /// \remark Since the content of all levelized files are generated in Reverse
   ///         of the desired reading order, then 'reversing' the reversed input
   ///         is equivalent to not reversing the underlying stream. Hence, we do
-  ///         hide a negation of the \em reverse parameter.
+  ///         hide a negation of the \em Reverse parameter.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename value_t, bool reverse = false>
+  template <typename T, bool Reverse = false>
   class levelized_file_stream
   {
   public:
-    using value_type = value_t;
+    using value_type = T;
 
     static constexpr size_t streams = file_traits<value_type>::files;
     static_assert(0 < streams, "There must be at least a single file to attach to.");
 
     static size_t memory_usage()
     {
-      return streams * file_stream<value_type, reverse>::memory_usage();
+      return streams * file_stream<value_type, Reverse>::memory_usage();
     }
 
   protected:
-    file_stream<value_type, reverse> _streams[streams];
+    file_stream<value_type, Reverse> _streams[streams];
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -53,8 +53,8 @@ namespace adiar::internal
     { }
 
     ////////////////////////////////////////////////////////////////////////////
-    levelized_file_stream(const levelized_file_stream<value_type, reverse> &) = delete;
-    levelized_file_stream(levelized_file_stream<value_type, reverse> &&) = delete;
+    levelized_file_stream(const levelized_file_stream<value_type, Reverse> &) = delete;
+    levelized_file_stream(levelized_file_stream<value_type, Reverse> &&) = delete;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a levelized file.

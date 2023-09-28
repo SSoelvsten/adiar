@@ -171,6 +171,8 @@ of writing might be easier to read.
 
   - Preprocessing variables (and only these) use *SNAKE_CASE*.
 
+  - Template arguments are written in `CamelCase`.
+
   - We cannot use *snake_case* or *SNAKE_CASE* for enum values since that may
     clash with keywords or preprocessing variables. Hence, we have settled on
     `Snake_Case`.

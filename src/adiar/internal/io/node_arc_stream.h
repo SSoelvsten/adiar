@@ -13,16 +13,17 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Stream nodes from an arc file (skipping any of Reduce algorithm).
   ///
-  /// \param reverse Whether the reading direction should be reversed
+  /// \param Reverse Whether the reading direction should be reversed
   ///                (relatively to the ordering of nodes within the file).
   ///
   /// \sa shared_levelized_file<arc>
   //////////////////////////////////////////////////////////////////////////////
-  template<bool reverse = false>
-  class node_arc_stream : protected arc_stream<!reverse>
+  template<bool Reverse = false>
+  class node_arc_stream 
+    : protected arc_stream<!Reverse>
   {
   private:
-    using parent_t = arc_stream<!reverse>;
+    using parent_t = arc_stream<!Reverse>;
 
   public:
     static size_t memory_usage()
@@ -47,8 +48,8 @@ namespace adiar::internal
     node_arc_stream() = default;
 
     ////////////////////////////////////////////////////////////////////////////
-    node_arc_stream(const node_stream<reverse> &) = delete;
-    node_arc_stream(node_stream<reverse> &&) = delete;
+    node_arc_stream(const node_stream<Reverse> &) = delete;
+    node_arc_stream(node_stream<Reverse> &&) = delete;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to an arc file.
@@ -132,7 +133,7 @@ namespace adiar::internal
         take_internal() ? parent_t::pull_internal() : parent_t::pull_terminal();
 
       // Merge into a node (providing low arc first)
-      if constexpr (reverse) {
+      if constexpr (Reverse) {
         return node_of(a_second, a_first);
       } else {
         return node_of(a_first, a_second);
@@ -152,7 +153,7 @@ namespace adiar::internal
         take_internal() ? parent_t::peek_internal() : parent_t::peek_terminal();
 
       // Merge into a node (providing low arc first)
-      if constexpr (reverse) {
+      if constexpr (Reverse) {
         return node_of(a_second, a_first);
       } else {
         return node_of(a_first, a_second);
@@ -172,7 +173,7 @@ namespace adiar::internal
   private:
     bool take_internal()
     {
-      if constexpr (reverse) {
+      if constexpr (Reverse) {
         if (!parent_t::can_pull_terminal()) { return true;  }
         if (!parent_t::can_pull_internal()) { return false; }
       } else {
@@ -185,7 +186,7 @@ namespace adiar::internal
       const arc::pointer_type internal_source = parent_t::peek_internal().source();
       const arc::pointer_type terminal_source = parent_t::peek_terminal().source();
 
-      if constexpr (reverse) {
+      if constexpr (Reverse) {
         return internal_source > terminal_source;
       } else {
         return internal_source < terminal_source;
