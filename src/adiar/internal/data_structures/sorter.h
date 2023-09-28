@@ -15,22 +15,22 @@
 
 namespace adiar::internal
 {
-  template <memory_mode_t mem_mode, typename value_t, typename comp_t = std::less<value_t>>
+  template <memory_mode_t mem_mode, typename T, typename Comp = std::less<T>>
   class sorter;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Wrapper for TPIE's internal vector with standard quick-sort.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename value_t, typename comp_t>
-  class sorter<memory_mode_t::Internal, value_t, comp_t>
+  template <typename T, typename Comp>
+  class sorter<memory_mode_t::Internal, T, Comp>
   {
   public:
-    using value_type = value_t;
+    using value_type = T;
 
   private:
-    using array_t = tpie::array<value_t>;
-    array_t _array;
-    comp_t _pred;
+    using array_type = tpie::array<T>;
+    array_type _array;
+    Comp _pred;
     size_t _size;
     size_t _front_idx;
 
@@ -38,13 +38,13 @@ namespace adiar::internal
     static tpie::memory_size_type
     memory_usage(tpie::memory_size_type no_elements)
     {
-      return array_t::memory_usage(no_elements);
+      return array_type::memory_usage(no_elements);
     }
 
     static tpie::memory_size_type
     memory_fits(tpie::memory_size_type memory_bytes)
     {
-      const tpie::memory_size_type ret = array_t::memory_fits(memory_bytes);
+      const tpie::memory_size_type ret = array_type::memory_fits(memory_bytes);
 
       adiar_assert(memory_usage(ret) <= memory_bytes,
                    "memory_fits and memory_usage should agree.");
@@ -53,22 +53,22 @@ namespace adiar::internal
 
     static constexpr size_t data_structures = 1u;
 
-    static unique_ptr<sorter<memory_mode_t::Internal, value_type, comp_t>>
+    static unique_ptr<sorter<memory_mode_t::Internal, value_type, Comp>>
     make_unique(size_t memory_bytes,
                 size_t no_elements,
                 size_t no_sorters = 1,
-                comp_t comp = comp_t())
+                Comp comp = Comp())
     {
-      return adiar::make_unique<sorter<memory_mode_t::Internal, value_type, comp_t>>
+      return adiar::make_unique<sorter<memory_mode_t::Internal, value_type, Comp>>
         (memory_bytes, no_elements, no_sorters, comp);
     }
 
     static void
-    reset_unique(unique_ptr<sorter<memory_mode_t::Internal, value_type, comp_t>> &u_ptr,
+    reset_unique(unique_ptr<sorter<memory_mode_t::Internal, value_type, Comp>> &u_ptr,
                  size_t /*memory_bytes*/,
                  size_t /*no_elements*/,
                  size_t /*no_sorters*/ = 1,
-                 comp_t /*comp*/ = comp_t())
+                 Comp /*comp*/ = Comp())
     {
       u_ptr->reset();
     }
@@ -77,7 +77,7 @@ namespace adiar::internal
     sorter([[maybe_unused]] size_t memory_bytes,
            size_t no_elements,
            [[maybe_unused]] size_t no_sorters = 1,
-           comp_t comp = comp_t())
+           Comp comp = Comp())
       : _array(no_elements), _pred(comp), _size(0), _front_idx(0)
     {
       adiar_assert(no_elements <= memory_fits(memory_bytes / no_sorters),
@@ -141,8 +141,8 @@ namespace adiar::internal
   /// \brief Type alias for sorter for partial type application of the
   ///        'internal' memory type.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename value_t, typename comp_t = std::less<value_t>>
-  using internal_sorter = sorter<memory_mode_t::Internal, value_t, comp_t>;
+  template <typename T, typename Comp = std::less<T>>
+  using internal_sorter = sorter<memory_mode_t::Internal, T, Comp>;
 
   // LCOV_EXCL_START
   // TODO: Unit test external memory variants?
@@ -154,14 +154,14 @@ namespace adiar::internal
   /// computations involved in deriving how much memory should be used and how
   /// it should be.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename value_t, typename comp_t>
-  class sorter<memory_mode_t::External, value_t, comp_t>
+  template <typename T, typename Comp>
+  class sorter<memory_mode_t::External, T, Comp>
   {
   public:
-    using value_type = value_t;
+    using value_type = T;
 
   private:
-    tpie::merge_sorter<value_type, false, comp_t> _sorter;
+    tpie::merge_sorter<value_type, false, Comp> _sorter;
 
     bool       _has_peeked = false;
     value_type _peeked;
@@ -171,21 +171,21 @@ namespace adiar::internal
   public:
     static constexpr size_t data_structures = 1u;
 
-    static unique_ptr<sorter<memory_mode_t::External, value_type, comp_t>>
+    static unique_ptr<sorter<memory_mode_t::External, value_type, Comp>>
     make_unique(size_t memory_bytes,
                 size_t no_elements,
                 size_t no_sorters = 1,
-                comp_t comp = comp_t())
+                Comp comp = Comp())
     {
-      return adiar::make_unique<sorter<memory_mode_t::External, value_type, comp_t>>
+      return adiar::make_unique<sorter<memory_mode_t::External, value_type, Comp>>
         (memory_bytes, no_elements, no_sorters, comp);
     }
 
-    static void reset_unique(unique_ptr<sorter<memory_mode_t::External, value_type, comp_t>> &u_ptr,
+    static void reset_unique(unique_ptr<sorter<memory_mode_t::External, value_type, Comp>> &u_ptr,
                              size_t memory_bytes,
                              size_t no_elements,
                              size_t no_sorters = 1,
-                             comp_t comp = comp_t())
+                             Comp comp = Comp())
     {
       u_ptr = make_unique(memory_bytes, no_elements, no_sorters, comp);
     }
@@ -194,7 +194,7 @@ namespace adiar::internal
     sorter(size_t memory_bytes,
            size_t no_elements,
            size_t number_of_sorters,
-           comp_t comp = comp_t())
+           Comp comp = Comp())
       : _sorter(comp)
     {
       // =======================================================================
@@ -205,7 +205,7 @@ namespace adiar::internal
       // necessary to sort these elements in internal memory. We don't need to
       // allocate more than a constant of this for the external memory case.
       const tpie::memory_size_type no_elements_memory =
-        2 * sorter<memory_mode_t::Internal, value_type, comp_t>::memory_usage(no_elements);
+        2 * sorter<memory_mode_t::Internal, value_type, Comp>::memory_usage(no_elements);
 
       // =======================================================================
       // Case 1: A single sorter.
@@ -359,8 +359,8 @@ namespace adiar::internal
   /// \brief Type alias for sorter for partial type application of the
   ///        'external' memory type.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename value_t, typename comp_t = std::less<value_t>>
-  using external_sorter = sorter<memory_mode_t::External, value_t, comp_t>;
+  template <typename T, typename Comp = std::less<T>>
+  using external_sorter = sorter<memory_mode_t::External, T, Comp>;
 
   // LCOV_EXCL_STOP
 }
