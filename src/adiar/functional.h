@@ -36,40 +36,39 @@ namespace adiar
   using function = std::function<type_signature>;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Predicate function given value(s) of the `arg_types`.
+  /// \brief Predicate function given value(s) of the `Args`.
   ///
-  /// \tparam arg_types List of the argument's type in the order, they are
-  ///                   supposed to be given. This list may be empty.
+  /// \tparam Args List of the argument's type in the order, they are supposed
+  ///              to be given. This list may be empty.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename... arg_types>
-  using predicate = function<bool (arg_types...)>;
+  template<typename... Args>
+  using predicate = function<bool (Args...)>;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Consumer function of value(s) of the `arg_types`.
+  /// \brief Consumer function of value(s) of the `Args`.
   ///
   /// \remark Most functions that provide values to a consumer will do so in a
   ///         specific order; you may abuse this to improve the performance of
   ///         your code.
   ///
-  /// \tparam arg_types List of the argument's type in the order, they are
-  ///                   supposed to be given.
+  /// \tparam Args List of the argument's type in the order, they are supposed
+  ///              to be given.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename... arg_types>
-  using consumer = function<void (arg_types...)>;
+  template<typename... Args>
+  using consumer = function<void (Args...)>;
 
-  ////////////////////////////////////////////////////////////////////////////
-  /// \brief Wrap a `begin` and `end` iterator pair into a consumer function.
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief  Wrap a `begin` and `end` iterator pair into a consumer function.
   ///
-  /// \remark The resulting *consumer* function will throw a `std::out_of_range`
-  ///                      if `end` is reached but more values are to be added,
-  ///                      i.e. if there the given range is not large enough for
-  ///                      all values to consume.
-  ////////////////////////////////////////////////////////////////////////////
-  template<typename iterator_t>
-  inline consumer<typename iterator_t::value_type>
-  make_consumer(iterator_t &begin, iterator_t &end)
+  /// \remark The resulting *consumer* function will throw an `out_of_range`
+  ///         if `end` is reached but more values are to be added, i.e. if
+  ///         the given range is not large enough for all values to be consumed.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename ForwardIt>
+  inline consumer<typename ForwardIt::value_type>
+  make_consumer(ForwardIt &begin, ForwardIt &end)
   {
-    return [&begin, &end](const typename iterator_t::value_type x) {
+    return [&begin, &end](const typename ForwardIt::value_type x) {
       if (begin == end) {
         throw out_of_range("Iterator range unable to contain all generated values");
       }
@@ -77,9 +76,12 @@ namespace adiar
     };
   }
 
+  // TODO: Use template specialization to simplify the use of an end value, i.e.
+  //       `generator<ret_type>::end` or `generator_end<ret_type>::value`.
+
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Generator function that *produces* a new value of `ret_type` for
-  ///        each call.
+  /// \brief  Generator function that *produces* a new value of `ret_type` for
+  ///         each call.
   ///
   /// \remark Most functions that take a generator as the input expect it (1) to
   ///         produce values in a specific order and (2) to provide a certain
@@ -93,14 +95,14 @@ namespace adiar
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Wrap a `begin` and `end` iterator pair into a generator function.
   ////////////////////////////////////////////////////////////////////////////
-  template<typename iterator_t>
-  inline generator<typename iterator_t::value_type>
-  make_generator(iterator_t &begin, iterator_t &end)
+  template<typename ForwardIt>
+  inline generator<typename ForwardIt::value_type>
+  make_generator(ForwardIt &begin, ForwardIt &end)
   {
     return [&begin, &end]() {
       if (begin == end) {
         // TODO (DD Iterators): change return value depending on `value_type`.
-        return static_cast<typename iterator_t::value_type>(-1);
+        return static_cast<typename ForwardIt::value_type>(-1);
       }
       return *(begin++);
     };
@@ -109,13 +111,13 @@ namespace adiar
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Wrap an `adiar::internal::file_stream` into a generator function.
   ////////////////////////////////////////////////////////////////////////////
-  template<typename stream_t>
-  inline generator<typename stream_t::value_type>
-  make_generator(stream_t &s)
+  template<typename Stream>
+  inline generator<typename Stream::value_type>
+  make_generator(Stream &s)
   {
     return [&s]() {
       if (!s.can_pull()) {
-        return static_cast<typename stream_t::value_type>(-1);
+        return static_cast<typename Stream::value_type>(-1);
       }
       return s.pull();
     };
