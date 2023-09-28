@@ -15,11 +15,12 @@ namespace adiar::internal
   ///          it is \em never nil, and without any associated information,
   ///          e.g. \em without a flag.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ptr_type>
-  class __uid : public ptr_type
+  template<typename Ptr>
+  class __uid
+    : public Ptr
   {
   public:
-    using pointer_type = ptr_type;
+    using pointer_type = Ptr;
 
   public:
     // Provide 'default' constructors to ensure it being a 'POD' inside of TPIE.

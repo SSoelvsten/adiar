@@ -18,59 +18,59 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////
   // Ordered access to two elements.
-  template<typename value_type>
-  inline const value_type& 
-  first(const value_type &t1, const value_type &t2)
+  template<typename T>
+  inline const T& 
+  first(const T &t1, const T &t2)
   { return std::min(t1, t2); }
 
-  template<typename value_type>
-  inline const value_type& 
-  second(const value_type &t1, const value_type &t2)
+  template<typename T>
+  inline const T& 
+  second(const T &t1, const T &t2)
   { return std::max(t1, t2); }
 
   //////////////////////////////////////////////////////////////////////////////
   // Ordered access to three elements.
-  template<typename value_type>
-  inline const value_type& 
-  first(const value_type &t1, const value_type &t2, const value_type &t3)
+  template<typename T>
+  inline const T& 
+  first(const T &t1, const T &t2, const T &t3)
   { return std::min(t1, std::min(t2, t3)); }
 
-  template<typename value_type>
-  inline const value_type& 
-  second(const value_type &t1, const value_type &t2, const value_type &t3)
+  template<typename T>
+  inline const T& 
+  second(const T &t1, const T &t2, const T &t3)
   { return std::max(std::min(t1, t2), std::min(std::max(t1,t2),t3)); }
 
-  template<typename value_type>
-  inline const value_type& 
-  third(const value_type &t1, const value_type &t2, const value_type &t3)
+  template<typename T>
+  inline const T& 
+  third(const T &t1, const T &t2, const T &t3)
   { return std::max(t1, std::max(t2, t3)); }
 
   //////////////////////////////////////////////////////////////////////////////
   // Ordered access to four elements.
-  template<typename value_type>
-  inline const value_type& 
-  first(const value_type &t1, const value_type &t2, const value_type &t3, const value_type &t4)
+  template<typename T>
+  inline const T& 
+  first(const T &t1, const T &t2, const T &t3, const T &t4)
   { return std::min(std::min(t1, t2), std::min(t3, t4)); }
 
-  template<typename value_type>
-  inline const value_type& 
-  second(const value_type &t1, const value_type &t2, const value_type &t3, const value_type &t4)
+  template<typename T>
+  inline const T& 
+  second(const T &t1, const T &t2, const T &t3, const T &t4)
   {
     return std::min(std::min(std::max(t1,t2), std::max(t3,t4)),
                     std::max(std::min(t1,t2), std::min(t3,t4)));
   }
 
-  template<typename value_type>
-  inline const value_type& 
-  third(const value_type &t1, const value_type &t2, const value_type &t3, const value_type &t4)
+  template<typename T>
+  inline const T& 
+  third(const T &t1, const T &t2, const T &t3, const T &t4)
   {
     return std::max(std::min(std::max(t1,t2), std::max(t3,t4)),
                     std::max(std::min(t1,t2), std::min(t3,t4)));
   }
 
-  template<typename value_type>
-  inline const value_type& 
-  fourth(const value_type &t1, const value_type &t2, const value_type &t3, const value_type &t4)
+  template<typename T>
+  inline const T& 
+  fourth(const T &t1, const T &t2, const T &t3, const T &t4)
   { return std::max(std::max(t1, t2), std::max(t3, t4)); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -89,7 +89,7 @@ namespace adiar::internal
   /// \tparam is_sorted   Whether elements are given in sorted order
   ///                     (default: `false`).
   //////////////////////////////////////////////////////////////////////////////
-  template<typename value_t, uint8_t CARDINALITY = 2, bool IS_SORTED = false>
+  template<typename T, uint8_t Cardinality = 2, bool IsSorted = false>
   class tuple
   {
     /* ============================== CONSTANTS ============================= */
@@ -97,20 +97,20 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the elements in the tuple.
     ////////////////////////////////////////////////////////////////////////////
-    using value_type = value_t;
+    using value_type = T;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Number of elements stored in the tuple.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr uint8_t cardinality = CARDINALITY;
+    static constexpr uint8_t cardinality = Cardinality;
 
-    static_assert(CARDINALITY > 0, "A tuple cannot be 'unit' type.");
-    static_assert(CARDINALITY <= 4, "No support (yet) for tuples of that cardinality.");
+    static_assert(Cardinality > 0, "A tuple cannot be 'unit' type.");
+    static_assert(Cardinality <= 4, "No support (yet) for tuples of that cardinality.");
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether elements are supposed to be in sorted order.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr bool is_sorted = cardinality == 1 || IS_SORTED;
+    static constexpr bool is_sorted = cardinality == 1 || IsSorted;
 
     /* ============================== ELEMENTS ============================== */
   private:
@@ -352,14 +352,14 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////
   // Non-lexicographical comparators
-  template<class tuple_t>
+  template<typename Tuple>
   struct tuple_first_lt
   {
-    inline bool operator()(const tuple_t &a, const tuple_t &b)
+    inline bool operator()(const Tuple &a, const Tuple &b)
     {
       // Sort primarily by the element to be encountered first.
       // If non-singleton, sort secondly lexicographically.
-      if constexpr (tuple_t::cardinality == 1) {
+      if constexpr (Tuple::cardinality == 1) {
         return a.first() < b.first();
       } else {
         return a.first() < b.first() || (a.first() == b.first() && a < b);
@@ -367,10 +367,10 @@ namespace adiar::internal
     }
   };
 
-  template<class tuple_t>
+  template<typename Tuple>
   struct tuple_second_lt
   {
-    inline bool operator()(const tuple_t &a, const tuple_t &b)
+    inline bool operator()(const Tuple &a, const Tuple &b)
     {
       // Sort primarily by the element to be encountered second
       return a.second() < b.second() ||
@@ -379,10 +379,10 @@ namespace adiar::internal
     }
   };
 
-  template<class tuple_t>
+  template<typename Tuple>
   struct tuple_third_lt
   {
-    inline bool operator()(const tuple_t &a, const tuple_t &b)
+    inline bool operator()(const Tuple &a, const Tuple &b)
     {
       // Sort primarily by the element to be encountered third
       return a.third() < b.third() ||
@@ -391,10 +391,10 @@ namespace adiar::internal
     }
   };
 
-  template<class tuple_t>
+  template<typename Tuple>
   struct tuple_fourth_lt
   {
-    inline bool operator()(const tuple_t &a, const tuple_t &b)
+    inline bool operator()(const Tuple &a, const Tuple &b)
     {
       // Sort primarily by the element to be encountered fourth
       return a.fourth() < b.fourth() ||
