@@ -14,26 +14,28 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Random-access to the contents of a levelized file of node.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename node_type = node, bool reverse = false>
+  template<typename T = node, bool Reverse = false>
   class node_random_access
   {
-    static_assert(!reverse, "Reversed logic is not implemented.");
+    using value_type = T;
 
-    using uid_type   = typename node_type::uid_type;
-    using label_type = typename node_type::label_type;
-    using id_type    = typename node_type::id_type;
+    static_assert(!Reverse, "Reversed logic is not implemented.");
+
+    using uid_type   = typename value_type::uid_type;
+    using label_type = typename value_type::label_type;
+    using id_type    = typename value_type::id_type;
 
   public:
     static size_t memory_usage(tpie::memory_size_type max_width)
     {
-      return node_stream<reverse>::memory_usage()
-           + tpie::array<node_type>::memory_usage(max_width);
+      return node_stream<Reverse>::memory_usage()
+           + tpie::array<value_type>::memory_usage(max_width);
     }
 
     static size_t memory_usage(const dd &diagram)
     {
-      return node_stream<reverse>::memory_usage()
-        + tpie::array<node_type>::memory_usage(diagram->width);
+      return node_stream<Reverse>::memory_usage()
+        + tpie::array<value_type>::memory_usage(diagram->width);
     }
 
   public:
@@ -49,7 +51,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief File stream to obtain the contents of each level
     ////////////////////////////////////////////////////////////////////////////
-    node_stream<reverse> _ns;
+    node_stream<Reverse> _ns;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Maximum width of the contents of 'lfs'. This is the maximum
@@ -60,7 +62,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Buffer with all elements of the current level.
     ////////////////////////////////////////////////////////////////////////////
-    tpie::array<node_type> _level_buffer;
+    tpie::array<value_type> _level_buffer;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Buffer with all elements of the current level.
@@ -92,7 +94,7 @@ namespace adiar::internal
     ///
     /// \pre The given levelized file is canonical.
     ////////////////////////////////////////////////////////////////////////////
-    node_random_access(const levelized_file<node_type> &f,
+    node_random_access(const levelized_file<value_type> &f,
                        const bool negate = false)
       : _ns(f, negate), _max_width(f.width), _level_buffer(f.width)
     {
@@ -105,7 +107,7 @@ namespace adiar::internal
     ///
     /// \pre The given shared levelized file is canonical.
     ////////////////////////////////////////////////////////////////////////////
-    node_random_access(const shared_ptr<levelized_file<node_type>> &f,
+    node_random_access(const shared_ptr<levelized_file<value_type>> &f,
                        const bool negate = false)
       : _ns(f, negate), _max_width(f->width), _level_buffer(f->width)
     {
@@ -227,7 +229,7 @@ namespace adiar::internal
     ///
     /// \pre `idx < current_width()`
     ////////////////////////////////////////////////////////////////////////////
-    const node_type& at(id_type idx) const
+    const value_type& at(id_type idx) const
     {
       adiar_assert(idx < current_width());
       return _level_buffer[idx];
@@ -236,7 +238,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the node with the given uid.
     ////////////////////////////////////////////////////////////////////////////
-    const node_type& at(uid_type u) const
+    const value_type& at(uid_type u) const
     {
       adiar_assert(u.label() == current_level());
 

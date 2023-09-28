@@ -16,11 +16,11 @@ namespace adiar::internal
   ///
   /// \sa node_writer arc_writer
   //////////////////////////////////////////////////////////////////////////////
-  template <typename value_t>
+  template <typename T>
   class levelized_file_writer
   {
   public:
-    using value_type = value_t;
+    using value_type = T;
 
     static size_t memory_usage()
     {

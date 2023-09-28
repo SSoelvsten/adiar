@@ -11,15 +11,16 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief         Stream of nodes from a node file.
   ///
-  /// \param reverse Whether the reading direction should be reversed
+  /// \param Reverse Whether the reading direction should be Reversed
   ///                (relatively to the ordering of nodes within the file).
   ///
   /// \sa shared_levelized_file<node>
   //////////////////////////////////////////////////////////////////////////////
-  template<bool reverse = false>
-  class node_stream : public levelized_file_stream<node, !reverse>
+  template<bool Reverse = false>
+  class node_stream 
+    : public levelized_file_stream<node, !Reverse>
   {
-    using parent_t = levelized_file_stream<node, !reverse>;
+    using parent_t = levelized_file_stream<node, !Reverse>;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -28,8 +29,8 @@ namespace adiar::internal
     node_stream() = default;
 
     ////////////////////////////////////////////////////////////////////////////
-    node_stream(const node_stream<reverse> &) = delete;
-    node_stream(node_stream<reverse> &&) = delete;
+    node_stream(const node_stream<Reverse> &) = delete;
+    node_stream(node_stream<Reverse> &&) = delete;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a node file.

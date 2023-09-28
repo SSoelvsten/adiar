@@ -13,11 +13,12 @@ namespace adiar::internal
   ///
   /// \sa shared_levelized_file<arc>
   //////////////////////////////////////////////////////////////////////////////
-  template<bool reverse = false>
-  class arc_stream : public levelized_file_stream<arc, !reverse>
+  template<bool Reverse = false>
+  class arc_stream
+    : public levelized_file_stream<arc, !Reverse>
   {
   private:
-    using parent_t = levelized_file_stream<arc, !reverse>;
+    using parent_t = levelized_file_stream<arc, !Reverse>;
 
   public:
     static size_t memory_usage()
@@ -47,8 +48,8 @@ namespace adiar::internal
     arc_stream() = default;
 
     ////////////////////////////////////////////////////////////////////////////
-    arc_stream(const arc_stream<reverse> &) = delete;
-    arc_stream(arc_stream<reverse> &&) = delete;
+    arc_stream(const arc_stream<Reverse> &) = delete;
+    arc_stream(arc_stream<Reverse> &&) = delete;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct a stream attached to an arc file.
@@ -139,7 +140,7 @@ namespace adiar::internal
       const arc::pointer_type out_of_order_source =
         parent_t::template peek<idx__terminals__out_of_order>().source();
 
-      if constexpr (reverse) {
+      if constexpr (Reverse) {
         return in_order_source < out_of_order_source;
       } else {
         return in_order_source > out_of_order_source;
