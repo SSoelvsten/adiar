@@ -169,7 +169,7 @@ of writing might be easier to read.
 - For *namespaces*, *classes*, *variables*, and *functions* use `snake_case`.
   The only other exceptions are *enum* values and the public API (see below).
 
-  - Preprocessing variables use *SNAKE_CASE*.
+  - Preprocessing variables (and only these) use *SNAKE_CASE*.
 
   - We cannot use *snake_case* or *SNAKE_CASE* for enum values since that may
     clash with keywords or preprocessing variables. Hence, we have settled on
@@ -191,18 +191,20 @@ of writing might be easier to read.
     in *nocase*, e.g. `bdd_istrue(f)`.
 
 - Type variables exposed from a class have their names suffixed with `_type`.
-  Template type parameters are suffixed with `_t`. Global types are *not*
-  suffixed with anything (except if there is a good reason to do it).
+  Template type parameters are written in `CamelCase` whereas global types, e.g.
+  classes, are written in `snake_case` with *no* suffix (except if there is a
+  good reason to do it).
 
-  This aligns with *std* and prevents shadowing between the two.
+  This aligns with *std* and prevents shadowing between the three "kinds" (types
+  of types).
 
 - Private class member variables are prefixed with a single `_`; non-static
   public ones may also be prefixed as such.
 
 The entire public API, i.e. everything in the *adiar* namespace, should adhere
-to the above. Yet, the internal logic in *adiar::internal* may still . Please
-fix these when you see them. But, do those changes in an independent commit of
-one changing/adding logic.
+to the above. Yet, the internal logic in *adiar::internal* may still at this
+point not be up to date. Please fix these when you see them. But, do those
+changes in an independent commit of one changing/adding logic.
 
 ### §4 No Almost Always Auto!
 
