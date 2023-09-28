@@ -37,7 +37,7 @@ namespace adiar::internal
   /// \brief Defines at compile time the type of the file stream to use for
   ///        reading the levels from some file(s).
   //////////////////////////////////////////////////////////////////////////////
-  template<typename file_t>
+  template<typename File>
   struct level_stream_t
   {
     template<bool reverse = false>
@@ -62,23 +62,23 @@ namespace adiar::internal
   /// \brief Obtain whether the levels in two files are disjoint.
   ////////////////////////////////////////////////////////////////////////////
   // TODO: Move to dd_func?
-  template<typename in1_t, typename in2_t>
+  template<typename A, typename B>
   bool
-  disjoint_levels(const in1_t &in1, const in2_t &in2)
+  disjoint_levels(const A &a, const B &b)
   {
-    using stream1_t = typename level_stream_t<in1_t>::template stream_t<false>;
-    stream1_t s1(in1);
+    using stream1_t = typename level_stream_t<A>::template stream_t<false>;
+    stream1_t sa(a);
 
-    using stream2_t = typename level_stream_t<in2_t>::template stream_t<false>;
-    stream2_t s2(in2);
+    using stream2_t = typename level_stream_t<B>::template stream_t<false>;
+    stream2_t sb(b);
 
-    while(s1.can_pull() && s2.can_pull()) {
-      if (level_of(s1.peek()) == level_of(s2.peek())) {
+    while(sa.can_pull() && sb.can_pull()) {
+      if (level_of(sa.peek()) == level_of(sb.peek())) {
         return false;
-      } else if (level_of(s1.peek()) < level_of(s2.peek())) {
-        s1.pull();
+      } else if (level_of(sa.peek()) < level_of(sb.peek())) {
+        sa.pull();
       } else {
-        s2.pull();
+        sb.pull();
       }
     }
     return true;
@@ -88,19 +88,19 @@ namespace adiar::internal
   /// \brief Whether a certain level exists in a file.
   ////////////////////////////////////////////////////////////////////////////
   // TODO: Move to dd_func?
-  template<typename dd_t>
+  template<typename DD>
   bool
-  has_level(const dd_t &in, const typename dd_t::label_type l)
+  has_level(const DD &d, const typename DD::label_type x)
   {
-    level_info_stream<> in_meta(in);
+    level_info_stream<> in_meta(d);
     while(in_meta.can_pull()) {
       level_info m = in_meta.pull();
 
       // Are we already past where it should be?
-      if (l < m.label())  { return false; }
+      if (x < m.label())  { return false; }
 
       // Did we find it?
-      if (m.label() == l) { return true; }
+      if (m.label() == x) { return true; }
     }
     return false;
   }
@@ -118,20 +118,20 @@ namespace adiar::internal
   ///
   /// \see reduce
   ////////////////////////////////////////////////////////////////////////////
-  template <typename dd_t>
+  template <typename DD>
   shared_levelized_file<arc>
-  transpose(const dd_t &dd)
+  transpose(const DD &d)
   {
-    adiar_assert(!dd->is_terminal());
+    adiar_assert(!d->is_terminal());
 
     shared_levelized_file<arc> af;
 
     // Create the contents of 'af'
     { arc_writer aw(af);
       { // Split every node into their arcs.
-        node_stream ns(dd);
+        node_stream ns(d);
         while (ns.can_pull()) {
-          const typename dd_t::node_type n = ns.pull();
+          const typename DD::node_type n = ns.pull();
 
           // TODO (non-binary nodes):
           aw << low_arc_of(n);
@@ -139,9 +139,9 @@ namespace adiar::internal
         }
       }
       { // Copy over meta information
-        af->max_1level_cut = dd->max_1level_cut[cut::Internal];
+        af->max_1level_cut = d->max_1level_cut[cut::Internal];
 
-        level_info_stream<> lis(dd);
+        level_info_stream<> lis(d);
         while (lis.can_pull()) {
           aw << lis.pull();
         }
