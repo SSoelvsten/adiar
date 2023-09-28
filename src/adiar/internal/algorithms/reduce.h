@@ -580,14 +580,14 @@ namespace adiar::internal
   /// \return The reduced decision diagram in a node-based representation
   //////////////////////////////////////////////////////////////////////////////
   template<typename dd_policy>
-  typename dd_policy::reduced_t
-  reduce(const typename dd_policy::unreduced_t &input)
+  typename dd_policy::dd_type
+  reduce(const typename dd_policy::__dd_type &input)
   {
     adiar_assert(!input.empty(), "Input for Reduce should always be non-empty");
 
     // Is it already reduced?
     if (input.template has<typename dd_policy::shared_node_file_type>()) {
-      return typename dd_policy::reduced_t(input.template get<typename dd_policy::shared_node_file_type>(),
+      return typename dd_policy::dd_type(input.template get<typename dd_policy::shared_node_file_type>(),
                                            input.negate);
     }
 

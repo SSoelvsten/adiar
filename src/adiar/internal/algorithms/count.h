@@ -81,7 +81,7 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////
   template<typename count_policy, typename count_pq_t>
-  uint64_t __count(const typename count_policy::reduced_t &dd,
+  uint64_t __count(const typename count_policy::dd_type &dd,
                    const typename count_policy::label_type varcount,
                    const size_t pq_max_memory,
                    const size_t pq_max_size)
@@ -127,7 +127,7 @@ namespace adiar::internal
   }
 
   template<typename count_policy>
-  uint64_t count(const typename count_policy::reduced_t &dd,
+  uint64_t count(const typename count_policy::dd_type &dd,
                  const typename count_policy::label_type varcount)
   {
     adiar_assert(!dd_isterminal(dd),

@@ -111,9 +111,9 @@ namespace adiar::internal
   };
 
   template<typename chain_policy>
-  inline typename chain_policy::reduced_t
+  inline typename chain_policy::dd_type
   build_chain(const chain_policy &policy,
-              const generator<typename chain_policy::reduced_t::label_type> &vars)
+              const generator<typename chain_policy::dd_type::label_type> &vars)
   {
     typename chain_policy::label_type next_label = vars();
 

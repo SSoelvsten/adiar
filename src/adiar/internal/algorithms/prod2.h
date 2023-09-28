@@ -235,9 +235,9 @@ namespace adiar::internal
   /// \pre `in_0` is the input to random access
   //////////////////////////////////////////////////////////////////////////////
   template<typename prod_policy, typename pq_1_t>
-  typename prod_policy::unreduced_t
-  __prod2_ra(const typename prod_policy::reduced_t &in_0,
-             const typename prod_policy::reduced_t &in_1,
+  typename prod_policy::__dd_type
+  __prod2_ra(const typename prod_policy::dd_type &in_0,
+             const typename prod_policy::dd_type &in_1,
              const bool_op &op,
              const size_t pq_memory, const size_t max_pq_size)
   {
@@ -350,9 +350,9 @@ namespace adiar::internal
   }
 
   template<typename prod_policy, typename pq_1_t, typename pq_2_t>
-  typename prod_policy::unreduced_t
-  __prod2_pq(const typename prod_policy::reduced_t &in_0,
-             const typename prod_policy::reduced_t &in_1,
+  typename prod_policy::__dd_type
+  __prod2_pq(const typename prod_policy::dd_type &in_0,
+             const typename prod_policy::dd_type &in_1,
              const bool_op &op,
              const size_t pq_1_memory, const size_t max_pq_1_size,
              const size_t pq_2_memory, const size_t max_pq_2_size)
@@ -505,8 +505,8 @@ namespace adiar::internal
   /// product of the maximum i-level cut of both inputs.
   //////////////////////////////////////////////////////////////////////////////
   template<typename prod_policy, typename cut, size_t const_size_inc>
-  size_t __prod2_ilevel_upper_bound(const typename prod_policy::reduced_t &in_0,
-                                    const typename prod_policy::reduced_t &in_1,
+  size_t __prod2_ilevel_upper_bound(const typename prod_policy::dd_type &in_0,
+                                    const typename prod_policy::dd_type &in_1,
                                     const bool_op &op)
   {
     // Cuts for left-hand side
@@ -533,8 +533,8 @@ namespace adiar::internal
   /// using the max 1 and 2-level cuts and the number of relevant terminals.
   //////////////////////////////////////////////////////////////////////////////
   template<typename prod_policy>
-  size_t __prod2_2level_upper_bound(const typename prod_policy::reduced_t &in_0,
-                                    const typename prod_policy::reduced_t &in_1,
+  size_t __prod2_2level_upper_bound(const typename prod_policy::dd_type &in_0,
+                                    const typename prod_policy::dd_type &in_1,
                                     const bool_op &op)
   {
     // Left-hand side
@@ -568,8 +568,8 @@ namespace adiar::internal
   /// in the output.
   //////////////////////////////////////////////////////////////////////////////
   template<typename prod_policy>
-  size_t __prod2_ilevel_upper_bound(const typename prod_policy::reduced_t &in_0,
-                                   const typename prod_policy::reduced_t &in_1,
+  size_t __prod2_ilevel_upper_bound(const typename prod_policy::dd_type &in_0,
+                                   const typename prod_policy::dd_type &in_1,
                                    const bool_op &op)
   {
     const cut left_ct = prod_policy::left_cut(op);
@@ -629,9 +629,9 @@ namespace adiar::internal
   ///              the product of the two given DAGs.
   //////////////////////////////////////////////////////////////////////////////
   template<typename prod_policy>
-  typename prod_policy::unreduced_t
-  prod2(const typename prod_policy::reduced_t &in_0,
-        const typename prod_policy::reduced_t &in_1,
+  typename prod_policy::__dd_type
+  prod2(const typename prod_policy::dd_type &in_0,
+        const typename prod_policy::dd_type &in_1,
         const bool_op &op)
   {
     // -------------------------------------------------------------------------
@@ -646,7 +646,7 @@ namespace adiar::internal
     // -------------------------------------------------------------------------
     // Case: At least one terminal.
     if (dd_isterminal(in_0) || dd_isterminal(in_1)) {
-      typename prod_policy::unreduced_t maybe_resolved =
+      typename prod_policy::__dd_type maybe_resolved =
         prod_policy::resolve_terminal_root(in_0, in_1, op);
 
       if (!(maybe_resolved.template has<no_file>())) {
@@ -696,8 +696,8 @@ namespace adiar::internal
       // Determine if to flip the inputs
       // TODO: is the smallest or widest the best to random access on?
       const bool ra_0 = in_0->canonical && (!in_1->canonical || in_0->width <= in_1->width);
-      const typename prod_policy::reduced_t& ra_in_0 = ra_0 ? in_0 : in_1;
-      const typename prod_policy::reduced_t& ra_in_1 = ra_0 ? in_1 : in_0;
+      const typename prod_policy::dd_type& ra_in_0 = ra_0 ? in_0 : in_1;
+      const typename prod_policy::dd_type& ra_in_1 = ra_0 ? in_1 : in_0;
       const bool_op& ra_op = ra_0 ? op : flip(op);
 
 #ifdef ADIAR_STATS

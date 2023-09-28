@@ -378,7 +378,7 @@ namespace adiar
     ///          `builder_ptr` created by this object will be invalidated and
     ///          cannot be used anymore.
     /////////////////////////////////////////////////////////////////////////////
-    typename dd_policy::reduced_t build()
+    typename dd_policy::dd_type build()
     {
       attach_if_needed();
 
@@ -395,7 +395,7 @@ namespace adiar
         throw domain_error("Decision diagram has more than one root");
       }
 
-      const typename dd_policy::reduced_t res(nf);
+      const typename dd_policy::dd_type res(nf);
       detach();
       return res;
     }
