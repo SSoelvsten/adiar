@@ -120,63 +120,63 @@ Collaboration diagram for adiar::internal::__uid&lt; ptr_type &gt;:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:ac3138a91bb73723b5ea51852f28596bd"><td class="memItemLeft" align="right" valign="top"><a id="ac3138a91bb73723b5ea51852f28596bd"></a>
-typedef ptr_type&#160;</td><td class="memItemRight" valign="bottom"><b>ptr_t</b></td></tr>
-<tr class="separator:ac3138a91bb73723b5ea51852f28596bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf6a2d88ba026e97cfe75a964a989c00"><td class="memItemLeft" align="right" valign="top"><a id="adf6a2d88ba026e97cfe75a964a989c00"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>pointer_type</b> = ptr_type</td></tr>
+<tr class="separator:adf6a2d88ba026e97cfe75a964a989c00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8ec28b3f27d5c7feedc193ae7269ca99"><td class="memItemLeft" align="right" valign="top"><a id="a8ec28b3f27d5c7feedc193ae7269ca99"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>__uid</b> (const <a class="el" href="classadiar_1_1internal_1_1____uid.html">__uid</a>&lt; ptr_t &gt; &amp;p)=default</td></tr>
-<tr class="separator:a8ec28b3f27d5c7feedc193ae7269ca99"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7ad22ddb3b05572526d5fd4247f9ba57"><td class="memItemLeft" align="right" valign="top"><a id="a7ad22ddb3b05572526d5fd4247f9ba57"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1____uid.html#a7ad22ddb3b05572526d5fd4247f9ba57">__uid</a> (const ptr_t &amp;p)</td></tr>
-<tr class="memdesc:a7ad22ddb3b05572526d5fd4247f9ba57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for a uid of an internal node (label, id). <br /></td></tr>
-<tr class="separator:a7ad22ddb3b05572526d5fd4247f9ba57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b0e3a4c420395056e2effd827220415"><td class="memItemLeft" align="right" valign="top"><a id="a2b0e3a4c420395056e2effd827220415"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>__uid</b> (const <a class="el" href="classadiar_1_1internal_1_1____uid.html">__uid</a>&lt; pointer_type &gt; &amp;p)=default</td></tr>
+<tr class="separator:a2b0e3a4c420395056e2effd827220415"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac40c2a39681d04667bcd5217b7216b53"><td class="memItemLeft" align="right" valign="top"><a id="ac40c2a39681d04667bcd5217b7216b53"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1____uid.html#ac40c2a39681d04667bcd5217b7216b53">__uid</a> (const pointer_type &amp;p)</td></tr>
+<tr class="memdesc:ac40c2a39681d04667bcd5217b7216b53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for a uid of an internal node (label, id). <br /></td></tr>
+<tr class="separator:ac40c2a39681d04667bcd5217b7216b53"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af4a784fa34dfa7ad801216a15ca40260"><td class="memItemLeft" align="right" valign="top"><a id="af4a784fa34dfa7ad801216a15ca40260"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_flagged</b> ()=delete</td></tr>
 <tr class="separator:af4a784fa34dfa7ad801216a15ca40260"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add1f33ef6a64a4834b03376fb8f73b37"><td class="memItemLeft" align="right" valign="top"><a id="add1f33ef6a64a4834b03376fb8f73b37"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_nil</b> ()=delete</td></tr>
 <tr class="separator:add1f33ef6a64a4834b03376fb8f73b37"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad80c7a31d66ed30b465dbfb23d8a077a"><td class="memItemLeft" align="right" valign="top"><a id="ad80c7a31d66ed30b465dbfb23d8a077a"></a>
-ptr_t::out_idx_t&#160;</td><td class="memItemRight" valign="bottom"><b>out_idx</b> ()=delete</td></tr>
-<tr class="separator:ad80c7a31d66ed30b465dbfb23d8a077a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae735cb3bb6f09b8028317e15095dff1c"><td class="memItemLeft" align="right" valign="top"><a id="ae735cb3bb6f09b8028317e15095dff1c"></a>
-ptr_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1____uid.html#ae735cb3bb6f09b8028317e15095dff1c">with</a> (const typename ptr_t::out_idx_t out_idx) const</td></tr>
-<tr class="memdesc:ae735cb3bb6f09b8028317e15095dff1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Obtain the <code>ptr</code> for this node uid with the given <code>out_idx</code>. <br /></td></tr>
-<tr class="separator:ae735cb3bb6f09b8028317e15095dff1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad006f2c3d2fc9a786d16e3dbf03e2ace"><td class="memItemLeft" align="right" valign="top"><a id="ad006f2c3d2fc9a786d16e3dbf03e2ace"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1____uid.html#ad006f2c3d2fc9a786d16e3dbf03e2ace">__uid</a> (const typename ptr_t::label_t label, const typename ptr_t::id_t id)</td></tr>
-<tr class="memdesc:ad006f2c3d2fc9a786d16e3dbf03e2ace"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for a pointer to an internal node (label, id). <br /></td></tr>
-<tr class="separator:ad006f2c3d2fc9a786d16e3dbf03e2ace"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a62a5bf33e07dc07ae948718b976eb2bf"><td class="memItemLeft" align="right" valign="top"><a id="a62a5bf33e07dc07ae948718b976eb2bf"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1____uid.html#a62a5bf33e07dc07ae948718b976eb2bf">__uid</a> (typename ptr_t::value_t v)</td></tr>
-<tr class="memdesc:a62a5bf33e07dc07ae948718b976eb2bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for a uid of a terminal node (v). <br /></td></tr>
-<tr class="separator:a62a5bf33e07dc07ae948718b976eb2bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac401b32ed6e651482641cb1067b3c873"><td class="memItemLeft" align="right" valign="top"><a id="ac401b32ed6e651482641cb1067b3c873"></a>
+pointer_type::out_idx_type&#160;</td><td class="memItemRight" valign="bottom"><b>out_idx</b> ()=delete</td></tr>
+<tr class="separator:ac401b32ed6e651482641cb1067b3c873"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c00f8fba256bc707e3b0b2305006f86"><td class="memItemLeft" align="right" valign="top"><a id="a9c00f8fba256bc707e3b0b2305006f86"></a>
+pointer_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1____uid.html#a9c00f8fba256bc707e3b0b2305006f86">with</a> (const typename pointer_type::out_idx_type out_idx) const</td></tr>
+<tr class="memdesc:a9c00f8fba256bc707e3b0b2305006f86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Obtain the <code>ptr</code> for this node uid with the given <code>out_idx</code>. <br /></td></tr>
+<tr class="separator:a9c00f8fba256bc707e3b0b2305006f86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a511b7ce82b1282586ad1071d557861cb"><td class="memItemLeft" align="right" valign="top"><a id="a511b7ce82b1282586ad1071d557861cb"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1____uid.html#a511b7ce82b1282586ad1071d557861cb">__uid</a> (const typename pointer_type::label_type label, const typename pointer_type::id_type id)</td></tr>
+<tr class="memdesc:a511b7ce82b1282586ad1071d557861cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for a pointer to an internal node (label, id). <br /></td></tr>
+<tr class="separator:a511b7ce82b1282586ad1071d557861cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70403cdeda4810e791eef55d30b67bc3"><td class="memItemLeft" align="right" valign="top"><a id="a70403cdeda4810e791eef55d30b67bc3"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1____uid.html#a70403cdeda4810e791eef55d30b67bc3">__uid</a> (typename pointer_type::terminal_type v)</td></tr>
+<tr class="memdesc:a70403cdeda4810e791eef55d30b67bc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for a uid of a terminal node (v). <br /></td></tr>
+<tr class="separator:a70403cdeda4810e791eef55d30b67bc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f69cf866bc5026161f0a924f764b5af"><td class="memItemLeft" align="right" valign="top"><a id="a7f69cf866bc5026161f0a924f764b5af"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1____uid.html#a7f69cf866bc5026161f0a924f764b5af">is_terminal</a> () const</td></tr>
 <tr class="memdesc:a7f69cf866bc5026161f0a924f764b5af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this uid identifies a terminal node. <br /></td></tr>
 <tr class="separator:a7f69cf866bc5026161f0a924f764b5af"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a78bf7b452bda837c4fdde75e73bb3860"><td class="memItemLeft" align="right" valign="top"><a id="a78bf7b452bda837c4fdde75e73bb3860"></a>
-<a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html">ptr_uint64</a>&#160;</td><td class="memItemRight" valign="bottom"><b>with</b> (const <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#ab12f58460a4fa3ebab4db869d6b7d1f9">ptr_uint64::out_idx_t</a> out_idx) const</td></tr>
-<tr class="separator:a78bf7b452bda837c4fdde75e73bb3860"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a320a4b2cca91908b75b5de429bed8ed8"><td class="memItemLeft" align="right" valign="top"><a id="a320a4b2cca91908b75b5de429bed8ed8"></a>
+<a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html">ptr_uint64</a>&#160;</td><td class="memItemRight" valign="bottom"><b>with</b> (const <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#abdc8b8afad1b407498a11332b6aaece1">ptr_uint64::out_idx_type</a> out_idx) const</td></tr>
+<tr class="separator:a320a4b2cca91908b75b5de429bed8ed8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa2a8745d64f5e2141f2a48e7239d7d3d"><td class="memItemLeft" align="right" valign="top"><a id="aa2a8745d64f5e2141f2a48e7239d7d3d"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_terminal</b> () const</td></tr>
 <tr class="separator:aa2a8745d64f5e2141f2a48e7239d7d3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a0d292d60224741846c11f64efd9c476f"><td class="memItemLeft" align="right" valign="top"><a id="a0d292d60224741846c11f64efd9c476f"></a>
-static constexpr ptr_t&#160;</td><td class="memItemRight" valign="bottom"><b>NIL</b> ()=delete</td></tr>
-<tr class="separator:a0d292d60224741846c11f64efd9c476f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7dd0342ddc9ef599564716518531bb5"><td class="memItemLeft" align="right" valign="top"><a id="ae7dd0342ddc9ef599564716518531bb5"></a>
+static constexpr pointer_type&#160;</td><td class="memItemRight" valign="bottom"><b>nil</b> ()=delete</td></tr>
+<tr class="separator:ae7dd0342ddc9ef599564716518531bb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;typename ptr_type&gt;<br />
 class adiar::internal::__uid&lt; ptr_type &gt;</h3>
 
 <p>A unique identifier a decision diagram node. </p>
-<p>This essentially is a <em>ptr</em> guaranteed to point to a node, i.e. it is <em>never</em> NIL, and without any associated information, e.g. <em>without</em> a flag. </p>
+<p>This essentially is a <em>ptr</em> guaranteed to point to a node, i.e. it is <em>never</em> nil, and without any associated information, e.g. <em>without</em> a flag. </p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
 <li>/home/runner/work/adiar/adiar/src/adiar/internal/data_types/<a class="el" href="uid_8h_source.html">uid.h</a></li>
 </ul>

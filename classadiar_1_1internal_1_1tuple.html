@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Adiar: adiar::internal::tuple&lt; elem_type, CARDINALITY, IS_SORTED &gt; Class Template Reference</title>
+<title>Adiar: adiar::internal::tuple&lt; value_t, CARDINALITY, IS_SORTED &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -97,7 +97,7 @@ $(document).ready(function(){initNavTree('classadiar_1_1internal_1_1tuple.html',
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="classadiar_1_1internal_1_1tuple-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">adiar::internal::tuple&lt; elem_type, CARDINALITY, IS_SORTED &gt; Class Template Reference</div>  </div>
+<div class="title">adiar::internal::tuple&lt; value_t, CARDINALITY, IS_SORTED &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -108,108 +108,108 @@ $(document).ready(function(){initNavTree('classadiar_1_1internal_1_1tuple.html',
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:af25d8e8cff0837d75c2507cce0e9dc87"><td class="memItemLeft" align="right" valign="top"><a id="af25d8e8cff0837d75c2507cce0e9dc87"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#af25d8e8cff0837d75c2507cce0e9dc87">elem_t</a> = elem_type</td></tr>
-<tr class="memdesc:af25d8e8cff0837d75c2507cce0e9dc87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of the elements in the tuple. <br /></td></tr>
-<tr class="separator:af25d8e8cff0837d75c2507cce0e9dc87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d3f62c9762a90a10f105f18b118e94d"><td class="memItemLeft" align="right" valign="top"><a id="a2d3f62c9762a90a10f105f18b118e94d"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a2d3f62c9762a90a10f105f18b118e94d">value_type</a> = value_t</td></tr>
+<tr class="memdesc:a2d3f62c9762a90a10f105f18b118e94d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of the elements in the tuple. <br /></td></tr>
+<tr class="separator:a2d3f62c9762a90a10f105f18b118e94d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a1a5f8d89adc6baaf47ffe094adb70466"><td class="memItemLeft" align="right" valign="top"><a id="a1a5f8d89adc6baaf47ffe094adb70466"></a>
-const <a class="el" href="classadiar_1_1internal_1_1tuple.html#af25d8e8cff0837d75c2507cce0e9dc87">elem_t</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a1a5f8d89adc6baaf47ffe094adb70466">at</a> (const size_t idx) const</td></tr>
-<tr class="memdesc:a1a5f8d89adc6baaf47ffe094adb70466"><td class="mdescLeft">&#160;</td><td class="mdescRight">Direct access to tuple elements in the order they were given. <br /></td></tr>
-<tr class="separator:a1a5f8d89adc6baaf47ffe094adb70466"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a57e19fe682349f02eb7bc335d515392e"><td class="memItemLeft" align="right" valign="top"><a id="a57e19fe682349f02eb7bc335d515392e"></a>
-const <a class="el" href="classadiar_1_1internal_1_1tuple.html#af25d8e8cff0837d75c2507cce0e9dc87">elem_t</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a57e19fe682349f02eb7bc335d515392e">operator[]</a> (const size_t idx) const</td></tr>
-<tr class="memdesc:a57e19fe682349f02eb7bc335d515392e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Direct access to tuple elements in the order they were given. <br /></td></tr>
-<tr class="separator:a57e19fe682349f02eb7bc335d515392e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ddb43e55175e27cab84b4ab09a71361"><td class="memItemLeft" align="right" valign="top"><a id="a4ddb43e55175e27cab84b4ab09a71361"></a>
-const std::array&lt; <a class="el" href="classadiar_1_1internal_1_1tuple.html#af25d8e8cff0837d75c2507cce0e9dc87">elem_t</a>, <a class="el" href="classadiar_1_1internal_1_1tuple.html#a85f8c36e2eec24e4ea023fd63fcc9cc5">cardinality</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a4ddb43e55175e27cab84b4ab09a71361">data</a> () const</td></tr>
-<tr class="memdesc:a4ddb43e55175e27cab84b4ab09a71361"><td class="mdescLeft">&#160;</td><td class="mdescRight">direct (read-only) access to the underlying array. <br /></td></tr>
-<tr class="separator:a4ddb43e55175e27cab84b4ab09a71361"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad4f651f13b4440c88b8d3b468d3e06f6"><td class="memItemLeft" align="right" valign="top"><a id="ad4f651f13b4440c88b8d3b468d3e06f6"></a>
-const <a class="el" href="classadiar_1_1internal_1_1tuple.html#af25d8e8cff0837d75c2507cce0e9dc87">elem_t</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#ad4f651f13b4440c88b8d3b468d3e06f6">first</a> () const</td></tr>
-<tr class="memdesc:ad4f651f13b4440c88b8d3b468d3e06f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Access to the first element wrt. the elements ordering. <br /></td></tr>
-<tr class="separator:ad4f651f13b4440c88b8d3b468d3e06f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a755c8c0c5ed8aeaae01ec470db859f2b"><td class="memItemLeft" align="right" valign="top"><a id="a755c8c0c5ed8aeaae01ec470db859f2b"></a>
-const <a class="el" href="classadiar_1_1internal_1_1tuple.html#af25d8e8cff0837d75c2507cce0e9dc87">elem_t</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a755c8c0c5ed8aeaae01ec470db859f2b">second</a> () const</td></tr>
-<tr class="memdesc:a755c8c0c5ed8aeaae01ec470db859f2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Access to the second element wrt. the elements ordering. <br /></td></tr>
-<tr class="separator:a755c8c0c5ed8aeaae01ec470db859f2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6d31d9aeba9e878cc1cc2ed187b8021c"><td class="memItemLeft" align="right" valign="top"><a id="a6d31d9aeba9e878cc1cc2ed187b8021c"></a>
-const <a class="el" href="classadiar_1_1internal_1_1tuple.html#af25d8e8cff0837d75c2507cce0e9dc87">elem_t</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a6d31d9aeba9e878cc1cc2ed187b8021c">third</a> () const</td></tr>
-<tr class="memdesc:a6d31d9aeba9e878cc1cc2ed187b8021c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Access to the second element wrt. the elements ordering. <br /></td></tr>
-<tr class="separator:a6d31d9aeba9e878cc1cc2ed187b8021c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8c66acca03f5e919561a25e4b614a86b"><td class="memItemLeft" align="right" valign="top"><a id="a8c66acca03f5e919561a25e4b614a86b"></a>
-const <a class="el" href="classadiar_1_1internal_1_1tuple.html#af25d8e8cff0837d75c2507cce0e9dc87">elem_t</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a8c66acca03f5e919561a25e4b614a86b">fourth</a> () const</td></tr>
-<tr class="memdesc:a8c66acca03f5e919561a25e4b614a86b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Access to the second element wrt. the elements ordering. <br /></td></tr>
-<tr class="separator:a8c66acca03f5e919561a25e4b614a86b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a2de8ffa9f9ffa3f052631b7213f20e"><td class="memItemLeft" align="right" valign="top"><a id="a6a2de8ffa9f9ffa3f052631b7213f20e"></a>
+<tr class="memitem:a5b70d457753724d501b986e37a6da6ee"><td class="memItemLeft" align="right" valign="top"><a id="a5b70d457753724d501b986e37a6da6ee"></a>
+const <a class="el" href="classadiar_1_1internal_1_1tuple.html#a2d3f62c9762a90a10f105f18b118e94d">value_type</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a5b70d457753724d501b986e37a6da6ee">at</a> (const size_t idx) const</td></tr>
+<tr class="memdesc:a5b70d457753724d501b986e37a6da6ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Direct access to tuple elements in the order they were given. <br /></td></tr>
+<tr class="separator:a5b70d457753724d501b986e37a6da6ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c1d3105f2206d9c61f9df41642316f2"><td class="memItemLeft" align="right" valign="top"><a id="a6c1d3105f2206d9c61f9df41642316f2"></a>
+const <a class="el" href="classadiar_1_1internal_1_1tuple.html#a2d3f62c9762a90a10f105f18b118e94d">value_type</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a6c1d3105f2206d9c61f9df41642316f2">operator[]</a> (const size_t idx) const</td></tr>
+<tr class="memdesc:a6c1d3105f2206d9c61f9df41642316f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Direct access to tuple elements in the order they were given. <br /></td></tr>
+<tr class="separator:a6c1d3105f2206d9c61f9df41642316f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ee2d5f6c2d99ac4913a96263b5afb48"><td class="memItemLeft" align="right" valign="top"><a id="a3ee2d5f6c2d99ac4913a96263b5afb48"></a>
+const std::array&lt; <a class="el" href="classadiar_1_1internal_1_1tuple.html#a2d3f62c9762a90a10f105f18b118e94d">value_type</a>, <a class="el" href="classadiar_1_1internal_1_1tuple.html#aa1bb6e8a3630bf713b160c922e19cd8c">cardinality</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a3ee2d5f6c2d99ac4913a96263b5afb48">data</a> () const</td></tr>
+<tr class="memdesc:a3ee2d5f6c2d99ac4913a96263b5afb48"><td class="mdescLeft">&#160;</td><td class="mdescRight">direct (read-only) access to the underlying array. <br /></td></tr>
+<tr class="separator:a3ee2d5f6c2d99ac4913a96263b5afb48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50842bb609097b9216e0007a74f6dd51"><td class="memItemLeft" align="right" valign="top"><a id="a50842bb609097b9216e0007a74f6dd51"></a>
+const <a class="el" href="classadiar_1_1internal_1_1tuple.html#a2d3f62c9762a90a10f105f18b118e94d">value_type</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a50842bb609097b9216e0007a74f6dd51">first</a> () const</td></tr>
+<tr class="memdesc:a50842bb609097b9216e0007a74f6dd51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Access to the first element wrt. the elements ordering. <br /></td></tr>
+<tr class="separator:a50842bb609097b9216e0007a74f6dd51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a133b1b869bfdca666f825304ddc6b429"><td class="memItemLeft" align="right" valign="top"><a id="a133b1b869bfdca666f825304ddc6b429"></a>
+const <a class="el" href="classadiar_1_1internal_1_1tuple.html#a2d3f62c9762a90a10f105f18b118e94d">value_type</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a133b1b869bfdca666f825304ddc6b429">second</a> () const</td></tr>
+<tr class="memdesc:a133b1b869bfdca666f825304ddc6b429"><td class="mdescLeft">&#160;</td><td class="mdescRight">Access to the second element wrt. the elements ordering. <br /></td></tr>
+<tr class="separator:a133b1b869bfdca666f825304ddc6b429"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65fbdf1ae5ee3f3c3926d9ba7756bb55"><td class="memItemLeft" align="right" valign="top"><a id="a65fbdf1ae5ee3f3c3926d9ba7756bb55"></a>
+const <a class="el" href="classadiar_1_1internal_1_1tuple.html#a2d3f62c9762a90a10f105f18b118e94d">value_type</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a65fbdf1ae5ee3f3c3926d9ba7756bb55">third</a> () const</td></tr>
+<tr class="memdesc:a65fbdf1ae5ee3f3c3926d9ba7756bb55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Access to the second element wrt. the elements ordering. <br /></td></tr>
+<tr class="separator:a65fbdf1ae5ee3f3c3926d9ba7756bb55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44c88b3cec7cf91b27d7bbad16a41ca9"><td class="memItemLeft" align="right" valign="top"><a id="a44c88b3cec7cf91b27d7bbad16a41ca9"></a>
+const <a class="el" href="classadiar_1_1internal_1_1tuple.html#a2d3f62c9762a90a10f105f18b118e94d">value_type</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a44c88b3cec7cf91b27d7bbad16a41ca9">fourth</a> () const</td></tr>
+<tr class="memdesc:a44c88b3cec7cf91b27d7bbad16a41ca9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Access to the second element wrt. the elements ordering. <br /></td></tr>
+<tr class="separator:a44c88b3cec7cf91b27d7bbad16a41ca9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a406882d5528690bdde8658bdd393904d"><td class="memItemLeft" align="right" valign="top"><a id="a406882d5528690bdde8658bdd393904d"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>tuple</b> (const <a class="el" href="classadiar_1_1internal_1_1tuple.html">tuple</a> &amp;p)=default</td></tr>
-<tr class="separator:a6a2de8ffa9f9ffa3f052631b7213f20e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ea3fbd5e5f07003a339b85013f8ef03"><td class="memItemLeft" align="right" valign="top"><a id="a4ea3fbd5e5f07003a339b85013f8ef03"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a4ea3fbd5e5f07003a339b85013f8ef03">tuple</a> (const <a class="el" href="classadiar_1_1internal_1_1tuple.html#af25d8e8cff0837d75c2507cce0e9dc87">elem_t</a> &amp;elem)</td></tr>
-<tr class="memdesc:a4ea3fbd5e5f07003a339b85013f8ef03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize a tuple with all elements being the given one. <br /></td></tr>
-<tr class="separator:a4ea3fbd5e5f07003a339b85013f8ef03"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a45cc1f84f4fb6a42d827159dd9d86950"><td class="memItemLeft" align="right" valign="top"><a id="a45cc1f84f4fb6a42d827159dd9d86950"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a45cc1f84f4fb6a42d827159dd9d86950">tuple</a> (const <a class="el" href="classadiar_1_1internal_1_1tuple.html#af25d8e8cff0837d75c2507cce0e9dc87">elem_t</a> &amp;elem1, const <a class="el" href="classadiar_1_1internal_1_1tuple.html#af25d8e8cff0837d75c2507cce0e9dc87">elem_t</a> &amp;elem2)</td></tr>
-<tr class="memdesc:a45cc1f84f4fb6a42d827159dd9d86950"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a 2-ary tuple with the two given elements. <br /></td></tr>
-<tr class="separator:a45cc1f84f4fb6a42d827159dd9d86950"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f101952d0740ef6b39068293f682e45"><td class="memItemLeft" align="right" valign="top"><a id="a8f101952d0740ef6b39068293f682e45"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a8f101952d0740ef6b39068293f682e45">tuple</a> (const <a class="el" href="classadiar_1_1internal_1_1tuple.html#af25d8e8cff0837d75c2507cce0e9dc87">elem_t</a> &amp;elem1, const <a class="el" href="classadiar_1_1internal_1_1tuple.html#af25d8e8cff0837d75c2507cce0e9dc87">elem_t</a> &amp;elem2, const <a class="el" href="classadiar_1_1internal_1_1tuple.html#af25d8e8cff0837d75c2507cce0e9dc87">elem_t</a> &amp;elem3)</td></tr>
-<tr class="memdesc:a8f101952d0740ef6b39068293f682e45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a 3-ary tuple with the three given elements. <br /></td></tr>
-<tr class="separator:a8f101952d0740ef6b39068293f682e45"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6f1ce01ff2e4488e36b259113344ce55"><td class="memItemLeft" align="right" valign="top"><a id="a6f1ce01ff2e4488e36b259113344ce55"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a6f1ce01ff2e4488e36b259113344ce55">tuple</a> (const <a class="el" href="classadiar_1_1internal_1_1tuple.html#af25d8e8cff0837d75c2507cce0e9dc87">elem_t</a> &amp;elem1, const <a class="el" href="classadiar_1_1internal_1_1tuple.html#af25d8e8cff0837d75c2507cce0e9dc87">elem_t</a> &amp;elem2, const <a class="el" href="classadiar_1_1internal_1_1tuple.html#af25d8e8cff0837d75c2507cce0e9dc87">elem_t</a> &amp;elem3, const <a class="el" href="classadiar_1_1internal_1_1tuple.html#af25d8e8cff0837d75c2507cce0e9dc87">elem_t</a> &amp;elem4)</td></tr>
-<tr class="memdesc:a6f1ce01ff2e4488e36b259113344ce55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a 4-ary tuple with the four given elements. <br /></td></tr>
-<tr class="separator:a6f1ce01ff2e4488e36b259113344ce55"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab621947c8e8880e2270b0a4e170afcad"><td class="memItemLeft" align="right" valign="top"><a id="ab621947c8e8880e2270b0a4e170afcad"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#ab621947c8e8880e2270b0a4e170afcad">tuple</a> (const std::array&lt; <a class="el" href="classadiar_1_1internal_1_1tuple.html#af25d8e8cff0837d75c2507cce0e9dc87">elem_t</a>, <a class="el" href="classadiar_1_1internal_1_1tuple.html#a85f8c36e2eec24e4ea023fd63fcc9cc5">cardinality</a> &gt; &amp;elems)</td></tr>
-<tr class="memdesc:ab621947c8e8880e2270b0a4e170afcad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a tuple from a <code>std::array</code> of the same cardinality. <br /></td></tr>
-<tr class="separator:ab621947c8e8880e2270b0a4e170afcad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a76de821a19ae685c7599381d492b78eb"><td class="memItemLeft" align="right" valign="top"><a id="a76de821a19ae685c7599381d492b78eb"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a76de821a19ae685c7599381d492b78eb">operator&lt;</a> (const <a class="el" href="classadiar_1_1internal_1_1tuple.html">tuple</a> &amp;o) const</td></tr>
-<tr class="memdesc:a76de821a19ae685c7599381d492b78eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lexicographical Less-Than. <br /></td></tr>
-<tr class="separator:a76de821a19ae685c7599381d492b78eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a515616a98d5b359710990dd3e6bf9ec8"><td class="memItemLeft" align="right" valign="top"><a id="a515616a98d5b359710990dd3e6bf9ec8"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a515616a98d5b359710990dd3e6bf9ec8">operator&gt;</a> (const <a class="el" href="classadiar_1_1internal_1_1tuple.html">tuple</a> &amp;o) const</td></tr>
-<tr class="memdesc:a515616a98d5b359710990dd3e6bf9ec8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lexicographical Greater-Than. <br /></td></tr>
-<tr class="separator:a515616a98d5b359710990dd3e6bf9ec8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af785341f94a8753dea93eaad82893b38"><td class="memItemLeft" align="right" valign="top"><a id="af785341f94a8753dea93eaad82893b38"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#af785341f94a8753dea93eaad82893b38">operator==</a> (const <a class="el" href="classadiar_1_1internal_1_1tuple.html">tuple</a> &amp;o) const</td></tr>
-<tr class="memdesc:af785341f94a8753dea93eaad82893b38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Point-wise Equality. <br /></td></tr>
-<tr class="separator:af785341f94a8753dea93eaad82893b38"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a404c7e2933ad86cd4d3bc62ac70a2bc2"><td class="memItemLeft" align="right" valign="top"><a id="a404c7e2933ad86cd4d3bc62ac70a2bc2"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a404c7e2933ad86cd4d3bc62ac70a2bc2">operator!=</a> (const <a class="el" href="classadiar_1_1internal_1_1tuple.html">tuple</a> &amp;o) const</td></tr>
-<tr class="memdesc:a404c7e2933ad86cd4d3bc62ac70a2bc2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Point-wise Inequality. <br /></td></tr>
-<tr class="separator:a404c7e2933ad86cd4d3bc62ac70a2bc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a24affcc86ef67c136c9f74444be9ca9f"><td class="memItemLeft" align="right" valign="top"><a id="a24affcc86ef67c136c9f74444be9ca9f"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a24affcc86ef67c136c9f74444be9ca9f">operator&lt;=</a> (const <a class="el" href="classadiar_1_1internal_1_1tuple.html">tuple</a> &amp;o) const</td></tr>
-<tr class="memdesc:a24affcc86ef67c136c9f74444be9ca9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lexicographical Less-Than and Equality. <br /></td></tr>
-<tr class="separator:a24affcc86ef67c136c9f74444be9ca9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8515a49e095dd356b4473f51af1f0970"><td class="memItemLeft" align="right" valign="top"><a id="a8515a49e095dd356b4473f51af1f0970"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a8515a49e095dd356b4473f51af1f0970">operator&gt;=</a> (const <a class="el" href="classadiar_1_1internal_1_1tuple.html">tuple</a> &amp;o) const</td></tr>
-<tr class="memdesc:a8515a49e095dd356b4473f51af1f0970"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lexicographical Greater-Than and Equality. <br /></td></tr>
-<tr class="separator:a8515a49e095dd356b4473f51af1f0970"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a406882d5528690bdde8658bdd393904d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab973cd6731eeab73b5da6820f077d1af"><td class="memItemLeft" align="right" valign="top"><a id="ab973cd6731eeab73b5da6820f077d1af"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#ab973cd6731eeab73b5da6820f077d1af">tuple</a> (const <a class="el" href="classadiar_1_1internal_1_1tuple.html#a2d3f62c9762a90a10f105f18b118e94d">value_type</a> &amp;elem)</td></tr>
+<tr class="memdesc:ab973cd6731eeab73b5da6820f077d1af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize a tuple with all elements being the given one. <br /></td></tr>
+<tr class="separator:ab973cd6731eeab73b5da6820f077d1af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a661996b47a652bf34e80b6eb28c06c33"><td class="memItemLeft" align="right" valign="top"><a id="a661996b47a652bf34e80b6eb28c06c33"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a661996b47a652bf34e80b6eb28c06c33">tuple</a> (const <a class="el" href="classadiar_1_1internal_1_1tuple.html#a2d3f62c9762a90a10f105f18b118e94d">value_type</a> &amp;elem1, const <a class="el" href="classadiar_1_1internal_1_1tuple.html#a2d3f62c9762a90a10f105f18b118e94d">value_type</a> &amp;elem2)</td></tr>
+<tr class="memdesc:a661996b47a652bf34e80b6eb28c06c33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a 2-ary tuple with the two given elements. <br /></td></tr>
+<tr class="separator:a661996b47a652bf34e80b6eb28c06c33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7396570f4df1848200f1d37f7e595a8"><td class="memItemLeft" align="right" valign="top"><a id="ad7396570f4df1848200f1d37f7e595a8"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#ad7396570f4df1848200f1d37f7e595a8">tuple</a> (const <a class="el" href="classadiar_1_1internal_1_1tuple.html#a2d3f62c9762a90a10f105f18b118e94d">value_type</a> &amp;elem1, const <a class="el" href="classadiar_1_1internal_1_1tuple.html#a2d3f62c9762a90a10f105f18b118e94d">value_type</a> &amp;elem2, const <a class="el" href="classadiar_1_1internal_1_1tuple.html#a2d3f62c9762a90a10f105f18b118e94d">value_type</a> &amp;elem3)</td></tr>
+<tr class="memdesc:ad7396570f4df1848200f1d37f7e595a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a 3-ary tuple with the three given elements. <br /></td></tr>
+<tr class="separator:ad7396570f4df1848200f1d37f7e595a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9da2d2664f0f14af9843896010c60c28"><td class="memItemLeft" align="right" valign="top"><a id="a9da2d2664f0f14af9843896010c60c28"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a9da2d2664f0f14af9843896010c60c28">tuple</a> (const <a class="el" href="classadiar_1_1internal_1_1tuple.html#a2d3f62c9762a90a10f105f18b118e94d">value_type</a> &amp;elem1, const <a class="el" href="classadiar_1_1internal_1_1tuple.html#a2d3f62c9762a90a10f105f18b118e94d">value_type</a> &amp;elem2, const <a class="el" href="classadiar_1_1internal_1_1tuple.html#a2d3f62c9762a90a10f105f18b118e94d">value_type</a> &amp;elem3, const <a class="el" href="classadiar_1_1internal_1_1tuple.html#a2d3f62c9762a90a10f105f18b118e94d">value_type</a> &amp;elem4)</td></tr>
+<tr class="memdesc:a9da2d2664f0f14af9843896010c60c28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a 4-ary tuple with the four given elements. <br /></td></tr>
+<tr class="separator:a9da2d2664f0f14af9843896010c60c28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a731a21969aec4d34fa9de96bba0797a0"><td class="memItemLeft" align="right" valign="top"><a id="a731a21969aec4d34fa9de96bba0797a0"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a731a21969aec4d34fa9de96bba0797a0">tuple</a> (const std::array&lt; <a class="el" href="classadiar_1_1internal_1_1tuple.html#a2d3f62c9762a90a10f105f18b118e94d">value_type</a>, <a class="el" href="classadiar_1_1internal_1_1tuple.html#aa1bb6e8a3630bf713b160c922e19cd8c">cardinality</a> &gt; &amp;elems)</td></tr>
+<tr class="memdesc:a731a21969aec4d34fa9de96bba0797a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a tuple from a <code>std::array</code> of the same cardinality. <br /></td></tr>
+<tr class="separator:a731a21969aec4d34fa9de96bba0797a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf08fec68bcba0f9f6fc37b31c2ba162"><td class="memItemLeft" align="right" valign="top"><a id="adf08fec68bcba0f9f6fc37b31c2ba162"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#adf08fec68bcba0f9f6fc37b31c2ba162">operator&lt;</a> (const <a class="el" href="classadiar_1_1internal_1_1tuple.html">tuple</a> &amp;o) const</td></tr>
+<tr class="memdesc:adf08fec68bcba0f9f6fc37b31c2ba162"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lexicographical Less-Than. <br /></td></tr>
+<tr class="separator:adf08fec68bcba0f9f6fc37b31c2ba162"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86674ae6d65a56ab610620772bf245a2"><td class="memItemLeft" align="right" valign="top"><a id="a86674ae6d65a56ab610620772bf245a2"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a86674ae6d65a56ab610620772bf245a2">operator&gt;</a> (const <a class="el" href="classadiar_1_1internal_1_1tuple.html">tuple</a> &amp;o) const</td></tr>
+<tr class="memdesc:a86674ae6d65a56ab610620772bf245a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lexicographical Greater-Than. <br /></td></tr>
+<tr class="separator:a86674ae6d65a56ab610620772bf245a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acee4d52b4533244e1b2ac7954d9261e2"><td class="memItemLeft" align="right" valign="top"><a id="acee4d52b4533244e1b2ac7954d9261e2"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#acee4d52b4533244e1b2ac7954d9261e2">operator==</a> (const <a class="el" href="classadiar_1_1internal_1_1tuple.html">tuple</a> &amp;o) const</td></tr>
+<tr class="memdesc:acee4d52b4533244e1b2ac7954d9261e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Point-wise Equality. <br /></td></tr>
+<tr class="separator:acee4d52b4533244e1b2ac7954d9261e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b409bc953d133536d2e97edb37eadf5"><td class="memItemLeft" align="right" valign="top"><a id="a6b409bc953d133536d2e97edb37eadf5"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a6b409bc953d133536d2e97edb37eadf5">operator!=</a> (const <a class="el" href="classadiar_1_1internal_1_1tuple.html">tuple</a> &amp;o) const</td></tr>
+<tr class="memdesc:a6b409bc953d133536d2e97edb37eadf5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Point-wise Inequality. <br /></td></tr>
+<tr class="separator:a6b409bc953d133536d2e97edb37eadf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba11f8055c7f3bd6add1c65e12834d41"><td class="memItemLeft" align="right" valign="top"><a id="aba11f8055c7f3bd6add1c65e12834d41"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#aba11f8055c7f3bd6add1c65e12834d41">operator&lt;=</a> (const <a class="el" href="classadiar_1_1internal_1_1tuple.html">tuple</a> &amp;o) const</td></tr>
+<tr class="memdesc:aba11f8055c7f3bd6add1c65e12834d41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lexicographical Less-Than and Equality. <br /></td></tr>
+<tr class="separator:aba11f8055c7f3bd6add1c65e12834d41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad677855fade999e7d0c1e69ab58b5d77"><td class="memItemLeft" align="right" valign="top"><a id="ad677855fade999e7d0c1e69ab58b5d77"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#ad677855fade999e7d0c1e69ab58b5d77">operator&gt;=</a> (const <a class="el" href="classadiar_1_1internal_1_1tuple.html">tuple</a> &amp;o) const</td></tr>
+<tr class="memdesc:ad677855fade999e7d0c1e69ab58b5d77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lexicographical Greater-Than and Equality. <br /></td></tr>
+<tr class="separator:ad677855fade999e7d0c1e69ab58b5d77"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a85f8c36e2eec24e4ea023fd63fcc9cc5"><td class="memItemLeft" align="right" valign="top"><a id="a85f8c36e2eec24e4ea023fd63fcc9cc5"></a>
-static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a85f8c36e2eec24e4ea023fd63fcc9cc5">cardinality</a> = CARDINALITY</td></tr>
-<tr class="memdesc:a85f8c36e2eec24e4ea023fd63fcc9cc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of elements stored in the tuple. <br /></td></tr>
-<tr class="separator:a85f8c36e2eec24e4ea023fd63fcc9cc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5d22ffae4f233987c019a9dd4c4e3f4d"><td class="memItemLeft" align="right" valign="top"><a id="a5d22ffae4f233987c019a9dd4c4e3f4d"></a>
-static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a5d22ffae4f233987c019a9dd4c4e3f4d">is_sorted</a> = <a class="el" href="classadiar_1_1internal_1_1tuple.html#a85f8c36e2eec24e4ea023fd63fcc9cc5">cardinality</a> == 1 || IS_SORTED</td></tr>
-<tr class="memdesc:a5d22ffae4f233987c019a9dd4c4e3f4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether elements are supposed to be in sorted order. <br /></td></tr>
-<tr class="separator:a5d22ffae4f233987c019a9dd4c4e3f4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1bb6e8a3630bf713b160c922e19cd8c"><td class="memItemLeft" align="right" valign="top"><a id="aa1bb6e8a3630bf713b160c922e19cd8c"></a>
+static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#aa1bb6e8a3630bf713b160c922e19cd8c">cardinality</a> = CARDINALITY</td></tr>
+<tr class="memdesc:aa1bb6e8a3630bf713b160c922e19cd8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of elements stored in the tuple. <br /></td></tr>
+<tr class="separator:aa1bb6e8a3630bf713b160c922e19cd8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e36ffe4b3845893c412b8865662d0b9"><td class="memItemLeft" align="right" valign="top"><a id="a7e36ffe4b3845893c412b8865662d0b9"></a>
+static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1tuple.html#a7e36ffe4b3845893c412b8865662d0b9">is_sorted</a> = <a class="el" href="classadiar_1_1internal_1_1tuple.html#aa1bb6e8a3630bf713b160c922e19cd8c">cardinality</a> == 1 || IS_SORTED</td></tr>
+<tr class="memdesc:a7e36ffe4b3845893c412b8865662d0b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether elements are supposed to be in sorted order. <br /></td></tr>
+<tr class="separator:a7e36ffe4b3845893c412b8865662d0b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;typename elem_type, uint8_t CARDINALITY = 2, bool IS_SORTED = false&gt;<br />
-class adiar::internal::tuple&lt; elem_type, CARDINALITY, IS_SORTED &gt;</h3>
+<div class="textblock"><h3>template&lt;typename value_t, uint8_t CARDINALITY = 2, bool IS_SORTED = false&gt;<br />
+class adiar::internal::tuple&lt; value_t, CARDINALITY, IS_SORTED &gt;</h3>
 
 <p>Tuple holding elements and providing an ordered access. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">elem_type</td><td>The type of elements within the tuple. This part should have a partial ordering '&lt;'.</td></tr>
+    <tr><td class="paramname">value_t</td><td>The type of elements within the tuple. This part should have a partial ordering '&lt;'.</td></tr>
     <tr><td class="paramname">cardinality</td><td>The number of elements in the tuple (default: <code>2</code>)</td></tr>
     <tr><td class="paramname">is_sorted</td><td>Whether elements are given in sorted order (default: <code>false</code>). </td></tr>
   </table>

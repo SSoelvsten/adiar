@@ -1,8 +1,0 @@
-<map id="adiar::stats_t::prod2_t" name="adiar::stats_t::prod2_t">
-<area shape="rect" id="node1" title="2&#45;ary Product Construction algorithm statistics." alt="" coords="708,71,872,98"/>
-<area shape="rect" id="node2" href="$structadiar_1_1stats__t_1_1____alg__base.html" title="Common statistics for all algorithms." alt="" coords="452,13,639,39"/>
-<area shape="rect" id="node3" href="$structadiar_1_1stats__t_1_1____alg__base_1_1____lpq.html" title="Type and usage of this algorithm&#39;s levelized priority queue." alt="" coords="229,5,379,47"/>
-<area shape="rect" id="node4" href="$structadiar_1_1stats__t_1_1levelized__priority__queue__t.html" title="Levelized Priority Queue statistics." alt="" coords="5,5,180,47"/>
-<area shape="rect" id="node5" href="$structadiar_1_1stats__t_1_1prod2__t_1_1ra__t.html" title="Statistics for the double priority queue implementation." alt="" coords="469,64,621,105"/>
-<area shape="rect" id="node6" href="$structadiar_1_1stats__t_1_1prod2__t_1_1pq__t.html" title="Statistics for the double priority queue implementation." alt="" coords="469,129,621,171"/>
-</map>

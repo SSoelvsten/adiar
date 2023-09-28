@@ -1,15 +1,15 @@
 var searchData=
 [
-  ['equality_616',['equality',['../structadiar_1_1stats__t.html#af3845b53561e4530e77a0d77a9bc5a94',1,'adiar::stats_t']]],
-  ['equiv_5fop_617',['equiv_op',['../namespaceadiar.html#a736231266b6423d09df81277a6ea32fd',1,'adiar']]],
-  ['exit_5fon_5fchildren_618',['exit_on_children',['../structadiar_1_1stats__t_1_1equality__t_1_1slow__t.html#a8e8689b62da8cb9eafb0ee7c57e9b7b0',1,'adiar::stats_t::equality_t::slow_t']]],
-  ['exit_5fon_5flevels_5fmismatch_619',['exit_on_levels_mismatch',['../structadiar_1_1stats__t_1_1equality__t.html#a5655d197c5274e09a512cb5398187fbf',1,'adiar::stats_t::equality_t']]],
-  ['exit_5fon_5fmismatch_620',['exit_on_mismatch',['../structadiar_1_1stats__t_1_1equality__t_1_1fast__t.html#ae83ec2ee092adb5f653b3ece6d984a7d',1,'adiar::stats_t::equality_t::fast_t']]],
-  ['exit_5fon_5fnodecount_621',['exit_on_nodecount',['../structadiar_1_1stats__t_1_1equality__t.html#a0dcba22e05e2efe09014b6ea750f8830',1,'adiar::stats_t::equality_t']]],
-  ['exit_5fon_5fprocessed_5fon_5flevel_622',['exit_on_processed_on_level',['../structadiar_1_1stats__t_1_1equality__t_1_1slow__t.html#af371840f1e21a94e418c9e3bdd846c5b',1,'adiar::stats_t::equality_t::slow_t']]],
-  ['exit_5fon_5froot_623',['exit_on_root',['../structadiar_1_1stats__t_1_1equality__t_1_1slow__t.html#abe733d1f192781dfce534acd4d02f0c1',1,'adiar::stats_t::equality_t::slow_t']]],
-  ['exit_5fon_5fsame_5ffile_624',['exit_on_same_file',['../structadiar_1_1stats__t_1_1equality__t.html#a9e1a1cad7797977de9086fe54444d8c5',1,'adiar::stats_t::equality_t']]],
-  ['exit_5fon_5fterminalcount_625',['exit_on_terminalcount',['../structadiar_1_1stats__t_1_1equality__t.html#abde90daa83948a41a7179484ae513abf',1,'adiar::stats_t::equality_t']]],
-  ['exit_5fon_5fvarcount_626',['exit_on_varcount',['../structadiar_1_1stats__t_1_1equality__t.html#abdeca0008e42097968e32180b72ed30d',1,'adiar::stats_t::equality_t']]],
-  ['external_627',['external',['../structadiar_1_1stats__t_1_1____alg__base_1_1____lpq.html#a5c3485b2ecd14d82bcdb0fb0d22fd42a',1,'adiar::stats_t::__alg_base::__lpq']]]
+  ['equality_624',['equality',['../structadiar_1_1statistics.html#a2d3fc151b42e4d98343cdc57b7ec3132',1,'adiar::statistics']]],
+  ['equiv_5fop_625',['equiv_op',['../namespaceadiar.html#a736231266b6423d09df81277a6ea32fd',1,'adiar']]],
+  ['exit_5fon_5fchildren_626',['exit_on_children',['../structadiar_1_1statistics_1_1equality__t_1_1slow__t.html#ae1d545c0736a2c754b846b2c6539dc39',1,'adiar::statistics::equality_t::slow_t']]],
+  ['exit_5fon_5flevels_5fmismatch_627',['exit_on_levels_mismatch',['../structadiar_1_1statistics_1_1equality__t.html#a81924b6fbcee264742f16a972dea4156',1,'adiar::statistics::equality_t']]],
+  ['exit_5fon_5fmismatch_628',['exit_on_mismatch',['../structadiar_1_1statistics_1_1equality__t_1_1fast__t.html#aad6699bcbd192d65f7f8091a88d0d89d',1,'adiar::statistics::equality_t::fast_t']]],
+  ['exit_5fon_5fnodecount_629',['exit_on_nodecount',['../structadiar_1_1statistics_1_1equality__t.html#a9937c6761039236560cc147f965e36d1',1,'adiar::statistics::equality_t']]],
+  ['exit_5fon_5fprocessed_5fon_5flevel_630',['exit_on_processed_on_level',['../structadiar_1_1statistics_1_1equality__t_1_1slow__t.html#a090cb29f16e216ad616ed3c4c6f9a859',1,'adiar::statistics::equality_t::slow_t']]],
+  ['exit_5fon_5froot_631',['exit_on_root',['../structadiar_1_1statistics_1_1equality__t_1_1slow__t.html#a9d47a8578f78fd586ea71da7ca4467d1',1,'adiar::statistics::equality_t::slow_t']]],
+  ['exit_5fon_5fsame_5ffile_632',['exit_on_same_file',['../structadiar_1_1statistics_1_1equality__t.html#a1fd408a2168e679abe05bd0437ce7b16',1,'adiar::statistics::equality_t']]],
+  ['exit_5fon_5fterminalcount_633',['exit_on_terminalcount',['../structadiar_1_1statistics_1_1equality__t.html#acd79935a65951a8305382e7a7485f97e',1,'adiar::statistics::equality_t']]],
+  ['exit_5fon_5fvarcount_634',['exit_on_varcount',['../structadiar_1_1statistics_1_1equality__t.html#a067cac5cb3a7828ab578086f29ae0655',1,'adiar::statistics::equality_t']]],
+  ['external_635',['external',['../structadiar_1_1statistics_1_1____alg__base_1_1____lpq.html#a218dc6c2deae0aa7bc737c5c3d9f1847',1,'adiar::statistics::__alg_base::__lpq']]]
 ];

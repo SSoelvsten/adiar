@@ -11,7 +11,7 @@
 <!-- Node0 -->
 <g id="node1" class="node">
 <title>Node0</title>
-<g id="a_node1"><a xlink:href="classadiar_1_1internal_1_1ptr__uint64.html" target="_top" xlink:title="A (possibly flagged) unique identifier of a terminal, an internal node, or nothing (NIL).">
+<g id="a_node1"><a xlink:href="classadiar_1_1internal_1_1ptr__uint64.html" target="_top" xlink:title="A (possibly flagged) unique identifier of a terminal, an internal node, or nothing (nil).">
 <polygon fill="none" stroke="black" points="0,-0.5 0,-30.5 104,-30.5 104,-0.5 0,-0.5"/>
 <text text-anchor="start" x="8" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">adiar::internal::ptr</text>
 <text text-anchor="middle" x="52" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">_uint64</text>

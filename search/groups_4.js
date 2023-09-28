@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['zero_2dsuppressed_20decision_20diagrams_758',['Zero-suppressed Decision Diagrams',['../group__module____zdd.html',1,'']]]
+  ['variable_20domain_766',['Variable Domain',['../group__module____domain.html',1,'']]]
 ];

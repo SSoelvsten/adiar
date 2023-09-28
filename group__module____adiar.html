@@ -102,84 +102,50 @@ $(document).ready(function(){initNavTree('group__module____adiar.html',''); init
 <tr class="heading"><td colspan="2"><h2 class="groupheader">Access Mode</h2></td></tr>
 <tr><td class="ititle" colspan="2"><p><a class="anchor" id="amgrpd947aa43211217130e006fb4a28a524c"></a>Adiar’s Algorithms delay recursion through use of auxiliary data structures. These auxiliary data structures are redundant when the width of one or more inputs fits in the internal memory. In these cases it is much faster to use random access. </p>
 </td></tr>
-<tr class="memitem:gaf478550fd9fee97c8357934d10e69ada"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#gaf478550fd9fee97c8357934d10e69ada">adiar::access_mode_t</a> { <b>AUTO</b>
-, <b>RA</b>
-, <b>PQ</b>
+<tr class="memitem:gaf478550fd9fee97c8357934d10e69ada"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#gaf478550fd9fee97c8357934d10e69ada">adiar::access_mode_t</a> { <b>Auto</b>
+, <b>Random_Access</b>
+, <b>Priority_Queue</b>
  }</td></tr>
-<tr class="memdesc:gaf478550fd9fee97c8357934d10e69ada"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether Adiar should exclusively use random access (RA) or priority queues (PQ) or automatically pick either way based on size of input.  <a href="group__module____adiar.html#gaf478550fd9fee97c8357934d10e69ada">More...</a><br /></td></tr>
+<tr class="memdesc:gaf478550fd9fee97c8357934d10e69ada"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether Adiar should exclusively use random access (<code>Random_Access</code>) or priority queues (<code>Priority_Queue</code>) or automatically pick either way based on the width of inputs.  <a href="group__module____adiar.html#gaf478550fd9fee97c8357934d10e69ada">More...</a><br /></td></tr>
 <tr class="separator:gaf478550fd9fee97c8357934d10e69ada"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga7d6776af40156e16b1dc9e4ca2b74b36"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__module____adiar.html#gaf478550fd9fee97c8357934d10e69ada">access_mode_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#ga7d6776af40156e16b1dc9e4ca2b74b36">adiar::access_mode</a></td></tr>
-<tr class="memdesc:ga7d6776af40156e16b1dc9e4ca2b74b36"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current access mode (default: <code>AUTO</code>).  <a href="group__module____adiar.html#ga7d6776af40156e16b1dc9e4ca2b74b36">More...</a><br /></td></tr>
+<tr class="memdesc:ga7d6776af40156e16b1dc9e4ca2b74b36"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current access mode (default: <code>Auto</code>).  <a href="group__module____adiar.html#ga7d6776af40156e16b1dc9e4ca2b74b36">More...</a><br /></td></tr>
 <tr class="separator:ga7d6776af40156e16b1dc9e4ca2b74b36"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader">Memory Mode</h2></td></tr>
 <tr><td class="ititle" colspan="2"><p><a class="anchor" id="amgrp3c1c296fde4719d90775fefc9c935bd2"></a>Adiar’s Algorithms delay recursion through use of auxiliary data structures. These auxiliary data structures can be optimised for internal memory, and so have a high performance on very small instances, or they can be designed for external memory such that they can handle decision diagrams much larger than the available memory. </p>
 </td></tr>
-<tr class="memitem:gaa457265c627a4561a55df8b29ed1375c"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#gaa457265c627a4561a55df8b29ed1375c">adiar::memory_mode_t</a> { <b>AUTO</b>
-, <b>INTERNAL</b>
-, <b>EXTERNAL</b>
+<tr class="memitem:gaa457265c627a4561a55df8b29ed1375c"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#gaa457265c627a4561a55df8b29ed1375c">adiar::memory_mode_t</a> { <b>Auto</b>
+, <b>Internal</b>
+, <b>External</b>
  }</td></tr>
 <tr class="memdesc:gaa457265c627a4561a55df8b29ed1375c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether Adiar should exclusively use internal or external memory or automatically pick either type based on size of input.  <a href="group__module____adiar.html#gaa457265c627a4561a55df8b29ed1375c">More...</a><br /></td></tr>
 <tr class="separator:gaa457265c627a4561a55df8b29ed1375c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa7f0e02f27b1884ce06f69040fb8ff89"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__module____adiar.html#gaa457265c627a4561a55df8b29ed1375c">memory_mode_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89">adiar::memory_mode</a></td></tr>
-<tr class="memdesc:gaa7f0e02f27b1884ce06f69040fb8ff89"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current memory mode (default: <code>AUTO</code>).  <a href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89">More...</a><br /></td></tr>
+<tr class="memdesc:gaa7f0e02f27b1884ce06f69040fb8ff89"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current memory mode (default: <code>Auto</code>).  <a href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89">More...</a><br /></td></tr>
 <tr class="separator:gaa7f0e02f27b1884ce06f69040fb8ff89"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader">Quantify Mode</h2></td></tr>
 <tr><td class="ititle" colspan="2"><p><a class="anchor" id="amgrpddea1c93324accc7be265035a4a04eb8"></a>Adiar’s supports multiple approaches to compute the quantification of multiple variables. </p>
 </td></tr>
-<tr class="memitem:gaf196668596378a31f3752af9d3059e87"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#gaf196668596378a31f3752af9d3059e87">adiar::quantify_mode_t</a> { <b>AUTO</b>
-, <b>NESTED</b>
-, <b>PARTIAL</b>
-, <b>SINGLETON</b>
+<tr class="memitem:gaf196668596378a31f3752af9d3059e87"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#gaf196668596378a31f3752af9d3059e87">adiar::quantify_mode_t</a> { <b>Auto</b>
+, <b>Nested</b>
+, <b>Partial</b>
+, <b>Singleton</b>
  }</td></tr>
 <tr class="memdesc:gaf196668596378a31f3752af9d3059e87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Which strategy Adiar should use to quantify/project variables.  <a href="group__module____adiar.html#gaf196668596378a31f3752af9d3059e87">More...</a><br /></td></tr>
 <tr class="separator:gaf196668596378a31f3752af9d3059e87"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga99e435daedf83de1caaa609be49e9e99"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__module____adiar.html#gaf196668596378a31f3752af9d3059e87">quantify_mode_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#ga99e435daedf83de1caaa609be49e9e99">adiar::quantify_mode</a></td></tr>
-<tr class="memdesc:ga99e435daedf83de1caaa609be49e9e99"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current quantification mode (default: <code>AUTO</code>).  <a href="group__module____adiar.html#ga99e435daedf83de1caaa609be49e9e99">More...</a><br /></td></tr>
+<tr class="memdesc:ga99e435daedf83de1caaa609be49e9e99"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current quantification mode (default: <code>Auto</code>).  <a href="group__module____adiar.html#ga99e435daedf83de1caaa609be49e9e99">More...</a><br /></td></tr>
 <tr class="separator:ga99e435daedf83de1caaa609be49e9e99"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader">Function Objects</h2></td></tr>
-<tr><td class="ititle" colspan="2"><p><a class="anchor" id="amgrp3bc1a0f1fb050d095430ca9906c4d525"></a>To bridge the gap between your algorithms and their data structures and the algorithms of Adiar, we use the abstract notion of <em>predicate</em>, <em>consumer</em>, and <em>generator</em> functions. </p>
-</td></tr>
-<tr class="memitem:ga9e6cd3304af27467f193e619c723c5f8"><td class="memTemplParams" colspan="2">template&lt;typename type_signature &gt; </td></tr>
-<tr class="memitem:ga9e6cd3304af27467f193e619c723c5f8"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#ga9e6cd3304af27467f193e619c723c5f8">adiar::function</a> = std::function&lt; type_signature &gt;</td></tr>
-<tr class="memdesc:ga9e6cd3304af27467f193e619c723c5f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">General-purpose polymorphic function wrapper.  <a href="group__module____adiar.html#ga9e6cd3304af27467f193e619c723c5f8">More...</a><br /></td></tr>
-<tr class="separator:ga9e6cd3304af27467f193e619c723c5f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga4feb6d7e72cdf56bbcd8fee14bd041db"><td class="memTemplParams" colspan="2">template&lt;typename... arg_types&gt; </td></tr>
-<tr class="memitem:ga4feb6d7e72cdf56bbcd8fee14bd041db"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#ga4feb6d7e72cdf56bbcd8fee14bd041db">adiar::predicate</a> = <a class="el" href="group__module____adiar.html#ga9e6cd3304af27467f193e619c723c5f8">function</a>&lt; bool(arg_types...)&gt;</td></tr>
-<tr class="memdesc:ga4feb6d7e72cdf56bbcd8fee14bd041db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Predicate function given value(s) of the <code>arg_types</code>.  <a href="group__module____adiar.html#ga4feb6d7e72cdf56bbcd8fee14bd041db">More...</a><br /></td></tr>
-<tr class="separator:ga4feb6d7e72cdf56bbcd8fee14bd041db"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaafe5cd654f645ab158a795ccb7fa4373"><td class="memTemplParams" colspan="2">template&lt;typename... arg_types&gt; </td></tr>
-<tr class="memitem:gaafe5cd654f645ab158a795ccb7fa4373"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#gaafe5cd654f645ab158a795ccb7fa4373">adiar::consumer</a> = <a class="el" href="group__module____adiar.html#ga9e6cd3304af27467f193e619c723c5f8">function</a>&lt; void(arg_types...)&gt;</td></tr>
-<tr class="memdesc:gaafe5cd654f645ab158a795ccb7fa4373"><td class="mdescLeft">&#160;</td><td class="mdescRight">Consumer function of value(s) of the <code>arg_types</code>.  <a href="group__module____adiar.html#gaafe5cd654f645ab158a795ccb7fa4373">More...</a><br /></td></tr>
-<tr class="separator:gaafe5cd654f645ab158a795ccb7fa4373"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga702012d1897ef7f3b33e07b134fd0d5f"><td class="memTemplParams" colspan="2">template&lt;typename ret_type &gt; </td></tr>
-<tr class="memitem:ga702012d1897ef7f3b33e07b134fd0d5f"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#ga702012d1897ef7f3b33e07b134fd0d5f">adiar::generator</a> = <a class="el" href="group__module____adiar.html#ga9e6cd3304af27467f193e619c723c5f8">function</a>&lt; ret_type()&gt;</td></tr>
-<tr class="memdesc:ga702012d1897ef7f3b33e07b134fd0d5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generator function that <em>produces</em> a new value of <code>ret_type</code> for each call.  <a href="group__module____adiar.html#ga702012d1897ef7f3b33e07b134fd0d5f">More...</a><br /></td></tr>
-<tr class="separator:ga702012d1897ef7f3b33e07b134fd0d5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga2f6e931303a5aba680ccc95a61f84d98"><td class="memTemplParams" colspan="2">template&lt;typename iterator_t &gt; </td></tr>
-<tr class="memitem:ga2f6e931303a5aba680ccc95a61f84d98"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="group__module____adiar.html#gaafe5cd654f645ab158a795ccb7fa4373">consumer</a>&lt; typename iterator_t::value_type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#ga2f6e931303a5aba680ccc95a61f84d98">adiar::make_consumer</a> (iterator_t &amp;begin, iterator_t &amp;end)</td></tr>
-<tr class="memdesc:ga2f6e931303a5aba680ccc95a61f84d98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrap a <code>begin</code> and <code>end</code> iterator pair into a consumer function.  <a href="group__module____adiar.html#ga2f6e931303a5aba680ccc95a61f84d98">More...</a><br /></td></tr>
-<tr class="separator:ga2f6e931303a5aba680ccc95a61f84d98"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa7419b40a68c34f0b4590ba8c0de9875"><td class="memTemplParams" colspan="2"><a id="gaa7419b40a68c34f0b4590ba8c0de9875"></a>
-template&lt;typename iterator_t &gt; </td></tr>
-<tr class="memitem:gaa7419b40a68c34f0b4590ba8c0de9875"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="group__module____adiar.html#ga702012d1897ef7f3b33e07b134fd0d5f">generator</a>&lt; typename iterator_t::value_type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#gaa7419b40a68c34f0b4590ba8c0de9875">adiar::make_generator</a> (iterator_t &amp;begin, iterator_t &amp;end)</td></tr>
-<tr class="memdesc:gaa7419b40a68c34f0b4590ba8c0de9875"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrap a <code>begin</code> and <code>end</code> iterator pair into a generator function. <br /></td></tr>
-<tr class="separator:gaa7419b40a68c34f0b4590ba8c0de9875"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga527c9fae16fd4f54059c87e2a70e7dcb"><td class="memTemplParams" colspan="2"><a id="ga527c9fae16fd4f54059c87e2a70e7dcb"></a>
-template&lt;typename stream_t &gt; </td></tr>
-<tr class="memitem:ga527c9fae16fd4f54059c87e2a70e7dcb"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="group__module____adiar.html#ga702012d1897ef7f3b33e07b134fd0d5f">generator</a>&lt; typename stream_t::elem_t &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#ga527c9fae16fd4f54059c87e2a70e7dcb">adiar::make_generator</a> (stream_t &amp;s)</td></tr>
-<tr class="memdesc:ga527c9fae16fd4f54059c87e2a70e7dcb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrap an <code>adiar::internal::file_stream</code> into a generator function. <br /></td></tr>
-<tr class="separator:ga527c9fae16fd4f54059c87e2a70e7dcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader">Package Initialisation</h2></td></tr>
 <tr><td class="ititle" colspan="2"><p><a class="anchor" id="amgrp414c34eac6873267e452317bc52a184a"></a>After having linked the C++ source file with Adiar, one needs to include the <code>&lt;<a class="el" href="adiar_8h_source.html">adiar/adiar.h</a>&gt;</code> header, initialise the library before using any of its data structures, and finally remember to deinitialise the library again before the program terminates. </p>
 </td></tr>
-<tr class="memitem:gac42aa5de8f685a5231903c443eb7c480"><td class="memItemLeft" align="right" valign="top"><a id="gac42aa5de8f685a5231903c443eb7c480"></a>
-constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#gac42aa5de8f685a5231903c443eb7c480">adiar::MINIMUM_MEMORY</a> = 128 * 1024 * 1024</td></tr>
-<tr class="memdesc:gac42aa5de8f685a5231903c443eb7c480"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum value of 128 MiB for the memory limit. <br /></td></tr>
-<tr class="separator:gac42aa5de8f685a5231903c443eb7c480"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3135db1bb2a7b25635cfd5abd5421f6b"><td class="memItemLeft" align="right" valign="top"><a id="ga3135db1bb2a7b25635cfd5abd5421f6b"></a>
+constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#ga3135db1bb2a7b25635cfd5abd5421f6b">adiar::minimum_memory</a> = 128 * 1024 * 1024</td></tr>
+<tr class="memdesc:ga3135db1bb2a7b25635cfd5abd5421f6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum value of 128 MiB for the memory limit. <br /></td></tr>
+<tr class="separator:ga3135db1bb2a7b25635cfd5abd5421f6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga4f0460393f1bb6651306587b11d64660"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#ga4f0460393f1bb6651306587b11d64660">adiar::adiar_init</a> (size_t memory_limit_bytes, std::string temp_dir=&quot;&quot;)</td></tr>
 <tr class="memdesc:ga4f0460393f1bb6651306587b11d64660"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initiates Adiar with the given amount of memory (given in bytes)  <a href="group__module____adiar.html#ga4f0460393f1bb6651306587b11d64660">More...</a><br /></td></tr>
 <tr class="separator:ga4f0460393f1bb6651306587b11d64660"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -193,105 +159,6 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Set up of Adiar and its core settings. </p>
-<h2 class="groupheader">Typedef Documentation</h2>
-<a id="gaafe5cd654f645ab158a795ccb7fa4373"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaafe5cd654f645ab158a795ccb7fa4373">&#9670;&nbsp;</a></span>consumer</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename... arg_types&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="group__module____adiar.html#gaafe5cd654f645ab158a795ccb7fa4373">adiar::consumer</a> = typedef <a class="el" href="group__module____adiar.html#ga9e6cd3304af27467f193e619c723c5f8">function</a>&lt;void (arg_types...)&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Consumer function of value(s) of the <code>arg_types</code>. </p>
-<dl class="section remark"><dt>Remarks</dt><dd>Most functions that provide values to a consumer will do so in a specific order; you may abuse this to improve the performance of your code.</dd></dl>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">arg_types</td><td>List of the argument's type in the order, they are supposed to be given. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga9e6cd3304af27467f193e619c723c5f8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga9e6cd3304af27467f193e619c723c5f8">&#9670;&nbsp;</a></span>function</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename type_signature &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="group__module____adiar.html#ga9e6cd3304af27467f193e619c723c5f8">adiar::function</a> = typedef std::function&lt;type_signature&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>General-purpose polymorphic function wrapper. </p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">ret_type</td><td>The type signature of the form <code>ret_t (args_t...)</code>. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga702012d1897ef7f3b33e07b134fd0d5f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga702012d1897ef7f3b33e07b134fd0d5f">&#9670;&nbsp;</a></span>generator</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename ret_type &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="group__module____adiar.html#ga702012d1897ef7f3b33e07b134fd0d5f">adiar::generator</a> = typedef <a class="el" href="group__module____adiar.html#ga9e6cd3304af27467f193e619c723c5f8">function</a>&lt;ret_type ()&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Generator function that <em>produces</em> a new value of <code>ret_type</code> for each call. </p>
-<dl class="section remark"><dt>Remarks</dt><dd>Most functions that take a generator as the input expect it (1) to produce values in a specific order and (2) to provide a certain type of value to mark having reached <em>the end</em>.</dd></dl>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">ret_type</td><td>Type of each yielded value from the generator. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga4feb6d7e72cdf56bbcd8fee14bd041db"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga4feb6d7e72cdf56bbcd8fee14bd041db">&#9670;&nbsp;</a></span>predicate</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename... arg_types&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="group__module____adiar.html#ga4feb6d7e72cdf56bbcd8fee14bd041db">adiar::predicate</a> = typedef <a class="el" href="group__module____adiar.html#ga9e6cd3304af27467f193e619c723c5f8">function</a>&lt;bool (arg_types...)&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Predicate function given value(s) of the <code>arg_types</code>. </p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">arg_types</td><td>List of the argument's type in the order, they are supposed to be given. This list may be empty. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
 <a id="gaf478550fd9fee97c8357934d10e69ada"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gaf478550fd9fee97c8357934d10e69ada">&#9670;&nbsp;</a></span>access_mode_t</h2>
@@ -313,16 +180,16 @@ template&lt;typename... arg_types&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Whether Adiar should exclusively use random access (RA) or priority queues (PQ) or automatically pick either way based on size of input. </p>
+<p>Whether Adiar should exclusively use random access (<code>Random_Access</code>) or priority queues (<code>Priority_Queue</code>) or automatically pick either way based on the width of inputs. </p>
 <table class="markdownTable">
 <tr class="markdownTableHead">
 <th class="markdownTableHeadNone">Enum Value   </th><th class="markdownTableHeadNone">Effect    </th></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone"><code>AUTO</code>   </td><td class="markdownTableBodyNone">Automatically decide on type of access to use.    </td></tr>
+<td class="markdownTableBodyNone"><code>Auto</code>   </td><td class="markdownTableBodyNone">Automatically decide on type of access to use.    </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone"><code>RA</code>   </td><td class="markdownTableBodyNone">Always use <em>random access</em>.    </td></tr>
+<td class="markdownTableBodyNone"><code>Random_Access</code>   </td><td class="markdownTableBodyNone">Always use <em>random access</em>.    </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone"><code>PQ</code>   </td><td class="markdownTableBodyNone">Always use <em>priority queues</em>.   </td></tr>
+<td class="markdownTableBodyNone"><code>Priority_Queue</code>   </td><td class="markdownTableBodyNone">Always use <em>priority queues</em>.   </td></tr>
 </table>
 
 </div>
@@ -352,11 +219,11 @@ template&lt;typename... arg_types&gt; </div>
 <tr class="markdownTableHead">
 <th class="markdownTableHeadNone">Enum Value   </th><th class="markdownTableHeadNone">Effect    </th></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone"><code>AUTO</code>   </td><td class="markdownTableBodyNone">Automatically decide on type of memory to use.    </td></tr>
+<td class="markdownTableBodyNone"><code>Auto</code>   </td><td class="markdownTableBodyNone">Automatically decide on type of memory to use.    </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone"><code>INTERNAL</code>   </td><td class="markdownTableBodyNone">Always use <em>internal</em> memory.    </td></tr>
+<td class="markdownTableBodyNone"><code>Internal</code>   </td><td class="markdownTableBodyNone">Always use <em>internal</em> memory.    </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone"><code>EXTERNAL</code>   </td><td class="markdownTableBodyNone">Always use <em>external</em> memory.   </td></tr>
+<td class="markdownTableBodyNone"><code>External</code>   </td><td class="markdownTableBodyNone">Always use <em>external</em> memory.   </td></tr>
 </table>
 
 </div>
@@ -386,15 +253,15 @@ template&lt;typename... arg_types&gt; </div>
 <tr class="markdownTableHead">
 <th class="markdownTableHeadNone">Enum Value   </th><th class="markdownTableHeadNone">Effect    </th></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone"><code>AUTO</code>   </td><td class="markdownTableBodyNone">Automatically decide on the approach to use.    </td></tr>
+<td class="markdownTableBodyNone"><code>Auto</code>   </td><td class="markdownTableBodyNone">Automatically decide on the approach to use.    </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone"><code>NESTED</code>   </td><td class="markdownTableBodyNone">Use the <em>nested sweeping</em> framework.    </td></tr>
+<td class="markdownTableBodyNone"><code>Nested</code>   </td><td class="markdownTableBodyNone">Use the <em>nested sweeping</em> framework.    </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone"><code>PARTIAL</code>   </td><td class="markdownTableBodyNone">Use repeated <em>partial quantification</em>.    </td></tr>
+<td class="markdownTableBodyNone"><code>Partial</code>   </td><td class="markdownTableBodyNone">Use repeated <em>partial quantification</em>.    </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone"><code>SINGLETON</code>   </td><td class="markdownTableBodyNone">Quantify each variable <em>independently</em> one at a time.   </td></tr>
+<td class="markdownTableBodyNone"><code>Singleton</code>   </td><td class="markdownTableBodyNone">Quantify each variable <em>independently</em> one at a time.   </td></tr>
 </table>
-<dl class="section remark"><dt>Remarks</dt><dd>Not all approaches can apply to each algorithm. If the desired approach does not apply, then an approach that is <em>less</em> than it is used instead, e.g. if <code>PARTIAL</code> is picked but not possible then <code>INDIVIDUAL</code> is used. </dd></dl>
+<dl class="section remark"><dt>Remarks</dt><dd>Not all approaches can apply to each algorithm. If the desired approach does not apply, then an approach that is <em>less</em> than it is used instead, e.g. if <code>Partial</code> is picked but not possible then <code>INDIVIDUAL</code> is used. </dd></dl>
 
 </div>
 </div>
@@ -415,7 +282,7 @@ template&lt;typename... arg_types&gt; </div>
 </div><div class="memdoc">
 
 <p>Closes and cleans up everything by Adiar. </p>
-<dl class="section warning"><dt>Warning</dt><dd>All of Adiar's file objects must be destructed <b>before</b> this functions i called. That is, any <a class="el" href="classadiar_1_1bdd.html">bdd</a> <a class="el" href="group__module____builder.html#gacad7fc21ff3b724b2c485f4d9da5dc2f">bdd_builder</a>, <a class="el" href="classadiar_1_1zdd.html">zdd</a> <a class="el" href="group__module____builder.html#ga592e87250f7f8446244b8de707a0c5ec">zdd_builder</a> or any <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a> objects you may be using.</dd></dl>
+<dl class="section warning"><dt>Warning</dt><dd>All of Adiar's file objects must be destructed <b>before</b> this functions i called. That is, any <a class="el" href="classadiar_1_1bdd.html">bdd</a> <a class="el" href="group__module____builder.html#gacd91e76ef56facef01409c952e0ec8ef">bdd_builder</a>, <a class="el" href="classadiar_1_1zdd.html">zdd</a> <a class="el" href="group__module____builder.html#ga0b9034da68843a3fff87b408e2c2b4fe">zdd_builder</a> or any <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a> objects you may be using.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname">runtime_error</td><td>If compiled with <em>debug</em> and one of Adiar's objects have <em>not</em> been destructed. </td></tr>
@@ -454,59 +321,18 @@ template&lt;typename... arg_types&gt; </div>
 <p>Initiates Adiar with the given amount of memory (given in bytes) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">memory_limit_bytes</td><td>The amount of internal memory (in bytes) that Adiar is allowed to use. This has to be at least MINIMUM_BYTES.</td></tr>
+    <tr><td class="paramname">memory_limit_bytes</td><td>The amount of internal memory (in bytes) that Adiar is allowed to use. This has to be at least minimum_memory.</td></tr>
     <tr><td class="paramname">temp_dir</td><td>The directory in which to place all temporary files. Default on Linux is the <em>&zwj;/tmp</em> library.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">invalid_argument</td><td>If <code>memory_limit_bytes</code> is set to a value less than the <code>MINIMUM_MEMORY</code> required.</td></tr>
+    <tr><td class="paramname">invalid_argument</td><td>If <code>memory_limit_bytes</code> is set to a value less than the <code>minimum_memory</code> required.</td></tr>
     <tr><td class="paramname">runtime_error</td><td>If <code><a class="el" href="group__module____adiar.html#ga4f0460393f1bb6651306587b11d64660" title="Initiates Adiar with the given amount of memory (given in bytes)">adiar_init()</a></code> and then <code><a class="el" href="group__module____adiar.html#ga9501bb9e871253964682b7ac1942f911" title="Closes and cleans up everything by Adiar.">adiar_deinit()</a></code> have been called previously. </td></tr>
   </table>
   </dd>
 </dl>
-
-</div>
-</div>
-<a id="ga2f6e931303a5aba680ccc95a61f84d98"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga2f6e931303a5aba680ccc95a61f84d98">&#9670;&nbsp;</a></span>make_consumer()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename iterator_t &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group__module____adiar.html#gaafe5cd654f645ab158a795ccb7fa4373">consumer</a>&lt;typename iterator_t::value_type&gt; adiar::make_consumer </td>
-          <td>(</td>
-          <td class="paramtype">iterator_t &amp;&#160;</td>
-          <td class="paramname"><em>begin</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">iterator_t &amp;&#160;</td>
-          <td class="paramname"><em>end</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Wrap a <code>begin</code> and <code>end</code> iterator pair into a consumer function. </p>
-<dl class="section remark"><dt>Remarks</dt><dd>The resulting <em>consumer</em> function will throw a <code>std::out_of_range</code> if <code>end</code> is reached but more values are to be added, i.e. if there the given range is not large enough for all values to consume. </dd></dl>
 
 </div>
 </div>
@@ -531,10 +357,10 @@ template&lt;typename iterator_t &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>The current access mode (default: <code>AUTO</code>). </p>
-<p>If you want to force <em>Adiar</em> to a specific access mode then you should set the global variable <code><a class="el" href="group__module____adiar.html#ga7d6776af40156e16b1dc9e4ca2b74b36" title="The current access mode (default: AUTO).">adiar::access_mode</a></code> to one of the above three values. For example, one can force <em>Adiar</em> always use random access with the following piece of code. </p><div class="fragment"><div class="line"><a class="code" href="group__module____adiar.html#ga7d6776af40156e16b1dc9e4ca2b74b36">adiar::access_mode</a> = adiar::access_mode_t::RA</div>
-<div class="ttc" id="agroup__module____adiar_html_ga7d6776af40156e16b1dc9e4ca2b74b36"><div class="ttname"><a href="group__module____adiar.html#ga7d6776af40156e16b1dc9e4ca2b74b36">adiar::access_mode</a></div><div class="ttdeci">access_mode_t access_mode</div><div class="ttdoc">The current access mode (default: AUTO).</div></div>
-</div><!-- fragment --><dl class="section warning"><dt>Warning</dt><dd>Using <code>RA</code> may lead to crashes if all inputs are too wide or input to random access is not canonical! </dd></dl>
+<p>The current access mode (default: <code>Auto</code>). </p>
+<p>If you want to force <em>Adiar</em> to a specific access mode then you should set the global variable <code><a class="el" href="group__module____adiar.html#ga7d6776af40156e16b1dc9e4ca2b74b36" title="The current access mode (default: Auto).">adiar::access_mode</a></code> to one of the above three values. For example, one can force <em>Adiar</em> always use random access with the following piece of code. </p><div class="fragment"><div class="line"><a class="code" href="group__module____adiar.html#ga7d6776af40156e16b1dc9e4ca2b74b36">adiar::access_mode</a> = adiar::access_mode_t::Random_Access</div>
+<div class="ttc" id="agroup__module____adiar_html_ga7d6776af40156e16b1dc9e4ca2b74b36"><div class="ttname"><a href="group__module____adiar.html#ga7d6776af40156e16b1dc9e4ca2b74b36">adiar::access_mode</a></div><div class="ttdeci">access_mode_t access_mode</div><div class="ttdoc">The current access mode (default: Auto).</div></div>
+</div><!-- fragment --><dl class="section warning"><dt>Warning</dt><dd>Using <code>Random_Access</code> may lead to crashes if all inputs are too wide or input to random access is not canonical! </dd></dl>
 
 </div>
 </div>
@@ -558,10 +384,10 @@ template&lt;typename iterator_t &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>The current memory mode (default: <code>AUTO</code>). </p>
-<p>If you want to force <em>Adiar</em> to a specific memory mode then you should set the global variable <code><a class="el" href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89" title="The current memory mode (default: AUTO).">adiar::memory_mode</a></code> to one of the above three values. For example, one can force <em>Adiar</em> always use internal memory with the following piece of code. </p><div class="fragment"><div class="line"><a class="code" href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89">adiar::memory_mode</a> = adiar::memory_mode_t::INTERNAL</div>
-<div class="ttc" id="agroup__module____adiar_html_gaa7f0e02f27b1884ce06f69040fb8ff89"><div class="ttname"><a href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89">adiar::memory_mode</a></div><div class="ttdeci">memory_mode_t memory_mode</div><div class="ttdoc">The current memory mode (default: AUTO).</div></div>
-</div><!-- fragment --><dl class="section warning"><dt>Warning</dt><dd>Using <code>INTERNAL</code> may lead to crashes if an input or output is too large! </dd></dl>
+<p>The current memory mode (default: <code>Auto</code>). </p>
+<p>If you want to force <em>Adiar</em> to a specific memory mode then you should set the global variable <code><a class="el" href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89" title="The current memory mode (default: Auto).">adiar::memory_mode</a></code> to one of the above three values. For example, one can force <em>Adiar</em> always use internal memory with the following piece of code. </p><div class="fragment"><div class="line"><a class="code" href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89">adiar::memory_mode</a> = adiar::memory_mode_t::Internal</div>
+<div class="ttc" id="agroup__module____adiar_html_gaa7f0e02f27b1884ce06f69040fb8ff89"><div class="ttname"><a href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89">adiar::memory_mode</a></div><div class="ttdeci">memory_mode_t memory_mode</div><div class="ttdoc">The current memory mode (default: Auto).</div></div>
+</div><!-- fragment --><dl class="section warning"><dt>Warning</dt><dd>Using <code>Internal</code> may lead to crashes if an input or output is too large! </dd></dl>
 
 </div>
 </div>
@@ -585,9 +411,9 @@ template&lt;typename iterator_t &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>The current quantification mode (default: <code>AUTO</code>). </p>
-<p>If you want to force <em>Adiar</em> to a specific quantify approach then you should set the global variable <code><a class="el" href="group__module____adiar.html#ga99e435daedf83de1caaa609be49e9e99" title="The current quantification mode (default: AUTO).">adiar::quantify_mode</a></code> to one of the above four values. For example, one can force <em>Adiar</em> always use nested sweeping with the following piece of code. </p><div class="fragment"><div class="line"><a class="code" href="group__module____adiar.html#ga99e435daedf83de1caaa609be49e9e99">adiar::quantify_mode</a> = adiar::quantify_mode_t::NESTED</div>
-<div class="ttc" id="agroup__module____adiar_html_ga99e435daedf83de1caaa609be49e9e99"><div class="ttname"><a href="group__module____adiar.html#ga99e435daedf83de1caaa609be49e9e99">adiar::quantify_mode</a></div><div class="ttdeci">quantify_mode_t quantify_mode</div><div class="ttdoc">The current quantification mode (default: AUTO).</div></div>
+<p>The current quantification mode (default: <code>Auto</code>). </p>
+<p>If you want to force <em>Adiar</em> to a specific quantify approach then you should set the global variable <code><a class="el" href="group__module____adiar.html#ga99e435daedf83de1caaa609be49e9e99" title="The current quantification mode (default: Auto).">adiar::quantify_mode</a></code> to one of the above four values. For example, one can force <em>Adiar</em> always use nested sweeping with the following piece of code. </p><div class="fragment"><div class="line"><a class="code" href="group__module____adiar.html#ga99e435daedf83de1caaa609be49e9e99">adiar::quantify_mode</a> = adiar::quantify_mode_t::Nested</div>
+<div class="ttc" id="agroup__module____adiar_html_ga99e435daedf83de1caaa609be49e9e99"><div class="ttname"><a href="group__module____adiar.html#ga99e435daedf83de1caaa609be49e9e99">adiar::quantify_mode</a></div><div class="ttdeci">quantify_mode_t quantify_mode</div><div class="ttdoc">The current quantification mode (default: Auto).</div></div>
 </div><!-- fragment --> 
 </div>
 </div>

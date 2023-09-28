@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['variable_20domain_757',['Variable Domain',['../group__module____domain.html',1,'']]]
+  ['statistics_765',['Statistics',['../group__module____statistics.html',1,'']]]
 ];

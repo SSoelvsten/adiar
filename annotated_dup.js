@@ -36,6 +36,6 @@ var annotated_dup =
       [ "builder", "classadiar_1_1builder.html", "classadiar_1_1builder" ],
       [ "builder_ptr", "classadiar_1_1builder__ptr.html", "classadiar_1_1builder__ptr" ],
       [ "map_pair", "classadiar_1_1map__pair.html", "classadiar_1_1map__pair" ],
-      [ "stats_t", "structadiar_1_1stats__t.html", "structadiar_1_1stats__t" ]
+      [ "statistics", "structadiar_1_1statistics.html", "structadiar_1_1statistics" ]
     ] ]
 ];

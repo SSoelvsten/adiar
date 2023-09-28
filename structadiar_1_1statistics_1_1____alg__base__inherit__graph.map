@@ -1,0 +1,13 @@
+<map id="adiar::statistics::__alg_base" name="adiar::statistics::__alg_base">
+<area shape="rect" id="node1" title="Common statistics for all algorithms." alt="" coords="5,327,136,368"/>
+<area shape="rect" id="node2" href="$structadiar_1_1statistics_1_1count__t.html" title="Counting algorithm statistics." alt="" coords="213,5,343,47"/>
+<area shape="rect" id="node3" href="$structadiar_1_1statistics_1_1equality__t.html" title="Equality Checking algorithm statistics." alt="" coords="213,71,343,112"/>
+<area shape="rect" id="node4" href="$structadiar_1_1statistics_1_1intercut__t.html" title="Intercut algorithm statistics." alt="" coords="213,136,343,177"/>
+<area shape="rect" id="node5" href="$structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t_1_1down__t.html" title="Inner Down Sweep." alt="" coords="184,202,372,258"/>
+<area shape="rect" id="node6" href="$structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t_1_1up__t.html" title="Inner Up Sweep." alt="" coords="184,282,372,338"/>
+<area shape="rect" id="node7" href="$structadiar_1_1statistics_1_1prod2__t.html" title="2&#45;ary Product Construction algorithm statistics." alt="" coords="213,363,343,404"/>
+<area shape="rect" id="node8" href="$structadiar_1_1statistics_1_1prod3__t.html" title="3&#45;ary Product Construction algorithm statistics." alt="" coords="213,428,343,469"/>
+<area shape="rect" id="node9" href="$structadiar_1_1statistics_1_1quantify__t.html" title="Quantification algorithm statistics." alt="" coords="213,493,343,535"/>
+<area shape="rect" id="node10" href="$structadiar_1_1statistics_1_1reduce__t.html" title="Reduce algorithm statistics." alt="" coords="213,559,343,600"/>
+<area shape="rect" id="node11" href="$structadiar_1_1statistics_1_1substitute__t.html" title="Substitution algorithm statistics." alt="" coords="213,624,343,665"/>
+</map>

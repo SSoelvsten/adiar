@@ -113,11 +113,10 @@ $(document).ready(function(){initNavTree('knights_tour.html',''); initResizable(
 <hr  />
 <h1><a class="anchor" id="autotoc_md8"></a>
 Manual Construction of Constraints</h1>
-<p>Our encoding is based off of the solution by Randal Bryant <a href="https://github.com/rebryant/Cloud-BDD/blob/conjunction_streamlined/hamiltonian/hpath.py">here</a>. To get around the entire board, the Knight will need to use N<sup>2</sup> time-steps. Our variable ordering will represent every <em>time-slice</em> together, where the board of each slice is similar to the <a class="el" href="queens.html">Queens</a> example. </p><div class="fragment"><div class="line"><span class="keyword">inline</span> <span class="keyword">typename</span> <a class="code" href="classadiar_1_1internal_1_1dd.html#a2442a4edc93ba57f00ecb249dc766a34">adiar::zdd::label_t</a> int_of_position(<span class="keywordtype">int</span> N, <span class="keywordtype">int</span> r, <span class="keywordtype">int</span> c, <span class="keywordtype">int</span> t = 0)</div>
+<p>Our encoding is based off of the solution by Randal Bryant <a href="https://github.com/rebryant/Cloud-BDD/blob/conjunction_streamlined/hamiltonian/hpath.py">here</a>. To get around the entire board, the Knight will need to use N<sup>2</sup> time-steps. Our variable ordering will represent every <em>time-slice</em> together, where the board of each slice is similar to the <a class="el" href="queens.html">Queens</a> example. </p><div class="fragment"><div class="line"><span class="keyword">inline</span> <span class="keyword">typename</span> adiar::zdd::label_t int_of_position(<span class="keywordtype">int</span> N, <span class="keywordtype">int</span> r, <span class="keywordtype">int</span> c, <span class="keywordtype">int</span> t = 0)</div>
 <div class="line">{</div>
 <div class="line">  <span class="keywordflow">return</span> (N * N * t) + (N * r) + c;</div>
 <div class="line">}</div>
-<div class="ttc" id="aclassadiar_1_1internal_1_1dd_html_a2442a4edc93ba57f00ecb249dc766a34"><div class="ttname"><a href="classadiar_1_1internal_1_1dd.html#a2442a4edc93ba57f00ecb249dc766a34">adiar::internal::dd::label_t</a></div><div class="ttdeci">node_t::label_t label_t</div><div class="ttdoc">Type of this node's variable label.</div><div class="ttdef"><b>Definition:</b> dd.h:227</div></div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md9"></a>
 Closed Tour</h2>
 <p>To only consider closed tours, i.e. hamiltonian cycles, we merely fix it to start in the top-left corner. Since we are counting <em>unoriented</em> paths, i.e. where the going backwards is not counted as another path, then we can also fix the next square at time step \( t=1 \) and the last one at \( t=N^2-1 \). The following code recognises whether a coordinate <em>i</em> and <em>j</em> is one of these squares.</p>
@@ -132,7 +131,7 @@ Closed Tour</h2>
 </div><!-- fragment --><p>To encode the closed tours, we may force the Knight to start in the top-left corner and take one of the two solutions. By multiplying with a constant factor, we can then take the mirrored path and all possible starting positions into account.</p>
 <p>So we need to encode that the Knight at time step \( t=0 \) is at position (0,0), at \( t=1 \) at (1,2), and at time step \( t=N^2-1 \) at (2,1). This is easy in ZDDs, since this is equivalent to skipping variables at these three time steps, such that only the "desired" positions are present and forced to true.</p>
 <p>All remaining time steps remains one long "don't care" chain in between. Yet, inside of this chain we can encode the hamiltonian constraint for these three cells on the board by skipping them within the chain.</p>
-<p>Hence, we can create the ZDD by hand using the <code><a class="el" href="group__module____builder.html#ga592e87250f7f8446244b8de707a0c5ec" title="Builder for ZDDs.">adiar::zdd_builder</a></code> as follows.</p>
+<p>Hence, we can create the ZDD by hand using the <code><a class="el" href="group__module____builder.html#ga0b9034da68843a3fff87b408e2c2b4fe" title="Builder for ZDDs.">adiar::zdd_builder</a></code> as follows.</p>
 <div class="fragment"><div class="line"><a class="code" href="classadiar_1_1zdd.html">adiar::zdd</a> constraint_closed(<span class="keywordtype">int</span> N)</div>
 <div class="line">{</div>
 <div class="line">  <a class="code" href="classadiar_1_1builder.html">adiar::zdd_builder</a> builder;</div>
@@ -145,7 +144,7 @@ Closed Tour</h2>
 <div class="line">                                               closed_squares[2][1],</div>
 <div class="line">                                               max_time);</div>
 <div class="line"> </div>
-<div class="line">  <span class="keyword">typename</span> <a class="code" href="classadiar_1_1builder__ptr.html">adiar::zdd_ptr</a> root = builder.<a class="code" href="classadiar_1_1builder.html#ab6a82eebf191476fa81afd686c2888cd">add_node</a>(stepMax_position, <span class="keyword">false</span>, <span class="keyword">true</span>);</div>
+<div class="line">  <span class="keyword">typename</span> <a class="code" href="classadiar_1_1builder__ptr.html">adiar::zdd_ptr</a> root = builder.<a class="code" href="classadiar_1_1builder.html#ad6102d3f6030e715c248ef80c14eec3d">add_node</a>(stepMax_position, <span class="keyword">false</span>, <span class="keyword">true</span>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">// All in between is as-is but take the hamiltonian constraint into account.</span></div>
 <div class="line">  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> t = max_time - 1; t &gt; 1; t--) {</div>
@@ -153,7 +152,7 @@ Closed Tour</h2>
 <div class="line">      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> c = N-1; c &gt;= 0; c--) {</div>
 <div class="line">        <span class="keywordflow">if</span> (is_closed_square(r,c)) { <span class="keywordflow">continue</span>; }</div>
 <div class="line"> </div>
-<div class="line">        root = builder.<a class="code" href="classadiar_1_1builder.html#ab6a82eebf191476fa81afd686c2888cd">add_node</a>(int_of_position(N,r,c,t), root, root);</div>
+<div class="line">        root = builder.<a class="code" href="classadiar_1_1builder.html#ad6102d3f6030e715c248ef80c14eec3d">add_node</a>(int_of_position(N,r,c,t), root, root);</div>
 <div class="line">      }</div>
 <div class="line">    }</div>
 <div class="line">  }</div>
@@ -163,23 +162,23 @@ Closed Tour</h2>
 <div class="line">                                             closed_squares[1][0],</div>
 <div class="line">                                             closed_squares[1][1],</div>
 <div class="line">                                             1);</div>
-<div class="line">  root = builder.<a class="code" href="classadiar_1_1builder.html#ab6a82eebf191476fa81afd686c2888cd">add_node</a>(step1_position, <span class="keyword">false</span>, root);</div>
+<div class="line">  root = builder.<a class="code" href="classadiar_1_1builder.html#ad6102d3f6030e715c248ef80c14eec3d">add_node</a>(step1_position, <span class="keyword">false</span>, root);</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">// Fix t = 0 to be (0,0)</span></div>
 <div class="line">  <span class="keyword">const</span> <span class="keywordtype">int</span> step0_position = int_of_position(N,</div>
 <div class="line">                                             closed_squares[0][0],</div>
 <div class="line">                                             closed_squares[0][1],</div>
 <div class="line">                                             0);</div>
-<div class="line">  root = builder.<a class="code" href="classadiar_1_1builder.html#ab6a82eebf191476fa81afd686c2888cd">add_node</a>(step0_position, <span class="keyword">false</span>, root);</div>
+<div class="line">  root = builder.<a class="code" href="classadiar_1_1builder.html#ad6102d3f6030e715c248ef80c14eec3d">add_node</a>(step0_position, <span class="keyword">false</span>, root);</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">// Finalize</span></div>
 <div class="line">  <span class="keywordflow">return</span> builder.<a class="code" href="classadiar_1_1builder.html#ab01d6031368c51291ce565b03c049775">build</a>();</div>
 <div class="line">}</div>
-<div class="ttc" id="aclassadiar_1_1builder__ptr_html"><div class="ttname"><a href="classadiar_1_1builder__ptr.html">adiar::builder_ptr</a></div><div class="ttdoc">The pointer type that builders use to identify the nodes they have constructed in a decision diagram.</div><div class="ttdef"><b>Definition:</b> builder.h:54</div></div>
+<div class="ttc" id="aclassadiar_1_1builder__ptr_html"><div class="ttname"><a href="classadiar_1_1builder__ptr.html">adiar::builder_ptr</a></div><div class="ttdoc">The pointer type that builders use to identify the nodes they have constructed in a decision diagram.</div><div class="ttdef"><b>Definition:</b> builder.h:55</div></div>
 <div class="ttc" id="aclassadiar_1_1builder_html"><div class="ttname"><a href="classadiar_1_1builder.html">adiar::builder</a></div><div class="ttdoc">A builder for decision diagrams.</div><div class="ttdef"><b>Definition:</b> builder.h:113</div></div>
 <div class="ttc" id="aclassadiar_1_1builder_html_ab01d6031368c51291ce565b03c049775"><div class="ttname"><a href="classadiar_1_1builder.html#ab01d6031368c51291ce565b03c049775">adiar::builder::build</a></div><div class="ttdeci">dd_policy::reduced_t build()</div><div class="ttdoc">Builds the decision diagram with the added nodes. This also clears the builder.</div><div class="ttdef"><b>Definition:</b> builder.h:381</div></div>
-<div class="ttc" id="aclassadiar_1_1builder_html_ab6a82eebf191476fa81afd686c2888cd"><div class="ttname"><a href="classadiar_1_1builder.html#ab6a82eebf191476fa81afd686c2888cd">adiar::builder::add_node</a></div><div class="ttdeci">builder_ptr&lt; dd_policy &gt; add_node(typename dd_policy::label_t label, const builder_ptr&lt; dd_policy &gt; &amp;low, const builder_ptr&lt; dd_policy &gt; &amp;high)</div><div class="ttdoc">Add an internal node with a given label and its two children.</div><div class="ttdef"><b>Definition:</b> builder.h:201</div></div>
-<div class="ttc" id="aclassadiar_1_1zdd_html"><div class="ttname"><a href="classadiar_1_1zdd.html">adiar::zdd</a></div><div class="ttdoc">Reduced Ordered Zero-suppressed Decision Diagram.</div><div class="ttdef"><b>Definition:</b> zdd.h:55</div></div>
+<div class="ttc" id="aclassadiar_1_1builder_html_ad6102d3f6030e715c248ef80c14eec3d"><div class="ttname"><a href="classadiar_1_1builder.html#ad6102d3f6030e715c248ef80c14eec3d">adiar::builder::add_node</a></div><div class="ttdeci">builder_ptr&lt; dd_policy &gt; add_node(typename dd_policy::label_type label, const builder_ptr&lt; dd_policy &gt; &amp;low, const builder_ptr&lt; dd_policy &gt; &amp;high)</div><div class="ttdoc">Add an internal node with a given label and its two children.</div><div class="ttdef"><b>Definition:</b> builder.h:201</div></div>
+<div class="ttc" id="aclassadiar_1_1zdd_html"><div class="ttname"><a href="classadiar_1_1zdd.html">adiar::zdd</a></div><div class="ttdoc">Reduced Ordered Zero-suppressed Decision Diagram.</div><div class="ttdef"><b>Definition:</b> zdd.h:53</div></div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md10"></a>
 Transition Function</h2>
 <p>Before tackling the construction of the ZDD for the transition function, let us first look at a single move. Since the main bottleneck is computing the ZDD operations, then the following computations will not necessarily be heavily optimised.</p>
@@ -225,7 +224,7 @@ Transition Function</h2>
 <div class="line">  <span class="keyword">const</span> <span class="keywordtype">int</span> max_cell = N-1;</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">// Time steps t&#39; &gt; t+1:</span></div>
-<div class="line">  <a class="code" href="classadiar_1_1builder__ptr.html">adiar::zdd_ptr</a> post_chain_root = builder.<a class="code" href="classadiar_1_1builder.html#ab6a82eebf191476fa81afd686c2888cd">add_node</a>(<span class="keyword">true</span>);</div>
+<div class="line">  <a class="code" href="classadiar_1_1builder__ptr.html">adiar::zdd_ptr</a> post_chain_root = builder.<a class="code" href="classadiar_1_1builder.html#ad6102d3f6030e715c248ef80c14eec3d">add_node</a>(<span class="keyword">true</span>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keyword">const</span> <span class="keywordtype">int</span> max_time = N*N-1;</div>
 <div class="line"> </div>
@@ -235,7 +234,7 @@ Transition Function</h2>
 <div class="line">        <span class="keywordflow">if</span> (!is_reachable(N, row, col)) { <span class="keywordflow">continue</span>; }</div>
 <div class="line"> </div>
 <div class="line">        <span class="keyword">const</span> <span class="keywordtype">int</span> this_label = int_of_position(N, row, col, time);</div>
-<div class="line">        post_chain_root = builder.<a class="code" href="classadiar_1_1builder.html#ab6a82eebf191476fa81afd686c2888cd">add_node</a>(this_label,</div>
+<div class="line">        post_chain_root = builder.<a class="code" href="classadiar_1_1builder.html#ad6102d3f6030e715c248ef80c14eec3d">add_node</a>(this_label,</div>
 <div class="line">                                           post_chain_root,</div>
 <div class="line">                                           post_chain_root);</div>
 <div class="line">      }</div>
@@ -244,7 +243,7 @@ Transition Function</h2>
 <div class="line"> </div>
 <div class="line">  <span class="comment">// Time step t+1:</span></div>
 <div class="line">  <span class="comment">//   Chain with each possible position reachable from some position at time &#39;t&#39;.</span></div>
-<div class="line">  std::vector&lt;adiar::zdd_ptr&gt; to_chains(N*N, builder.<a class="code" href="classadiar_1_1builder.html#ab6a82eebf191476fa81afd686c2888cd">add_node</a>(<span class="keyword">false</span>));</div>
+<div class="line">  std::vector&lt;adiar::zdd_ptr&gt; to_chains(N*N, builder.<a class="code" href="classadiar_1_1builder.html#ad6102d3f6030e715c248ef80c14eec3d">add_node</a>(<span class="keyword">false</span>));</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> row = max_cell; row &gt;= 0; row--) {</div>
 <div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> col = max_cell; col &gt;= 0; col--) {</div>
@@ -257,7 +256,7 @@ Transition Function</h2>
 <div class="line"> </div>
 <div class="line">          <span class="keyword">const</span> <span class="keywordtype">int</span> vector_idx = int_of_position(N, row_t, col_t);</div>
 <div class="line"> </div>
-<div class="line">          to_chains.at(vector_idx) = builder.<a class="code" href="classadiar_1_1builder.html#ab6a82eebf191476fa81afd686c2888cd">add_node</a>(this_label,</div>
+<div class="line">          to_chains.at(vector_idx) = builder.<a class="code" href="classadiar_1_1builder.html#ad6102d3f6030e715c248ef80c14eec3d">add_node</a>(this_label,</div>
 <div class="line">                                                      to_chains.at(vector_idx),</div>
 <div class="line">                                                      post_chain_root);</div>
 <div class="line">        }</div>
@@ -268,7 +267,7 @@ Transition Function</h2>
 <div class="line">  <span class="comment">// Time step t:</span></div>
 <div class="line">  <span class="comment">//   For each position at time step &#39;t&#39;, check whether we are &quot;here&quot; and go to</span></div>
 <div class="line">  <span class="comment">//   the chain checking &quot;where we go to&quot; at &#39;t+1&#39;.</span></div>
-<div class="line">  <span class="keyword">typename</span> <a class="code" href="classadiar_1_1builder__ptr.html">adiar::zdd_ptr</a> root = builder.<a class="code" href="classadiar_1_1builder.html#ab6a82eebf191476fa81afd686c2888cd">add_node</a>(<span class="keyword">false</span>);</div>
+<div class="line">  <span class="keyword">typename</span> <a class="code" href="classadiar_1_1builder__ptr.html">adiar::zdd_ptr</a> root = builder.<a class="code" href="classadiar_1_1builder.html#ad6102d3f6030e715c248ef80c14eec3d">add_node</a>(<span class="keyword">false</span>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> row = max_cell; row &gt;= 0; row--) {</div>
 <div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> col = max_cell; col &gt;= 0; col--) {</div>
@@ -276,14 +275,14 @@ Transition Function</h2>
 <div class="line"> </div>
 <div class="line">      <span class="keyword">const</span> <span class="keywordtype">int</span> this_label = int_of_position(N, row, col, t);</div>
 <div class="line">      <span class="keyword">const</span> <span class="keywordtype">int</span> to_chain_idx = int_of_position(N, row, col);</div>
-<div class="line">      root = builder.<a class="code" href="classadiar_1_1builder.html#ab6a82eebf191476fa81afd686c2888cd">add_node</a>(this_label, root, to_chains.at(to_chain_idx));</div>
+<div class="line">      root = builder.<a class="code" href="classadiar_1_1builder.html#ad6102d3f6030e715c248ef80c14eec3d">add_node</a>(this_label, root, to_chains.at(to_chain_idx));</div>
 <div class="line">    }</div>
 <div class="line">  }</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">// Time-step t&#39; &lt; t:</span></div>
 <div class="line">  <span class="comment">//   Just allow everything, i.e. add no constraints</span></div>
 <div class="line">  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> pos = int_of_position(N, max_cell, max_cell, t-1); pos &gt;= 0; pos--) {</div>
-<div class="line">    root = builder.<a class="code" href="classadiar_1_1builder.html#ab6a82eebf191476fa81afd686c2888cd">add_node</a>(pos, root, root);</div>
+<div class="line">    root = builder.<a class="code" href="classadiar_1_1builder.html#ad6102d3f6030e715c248ef80c14eec3d">add_node</a>(pos, root, root);</div>
 <div class="line">  }</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">// Finalize</span></div>
@@ -296,8 +295,8 @@ Hamiltonian Constraint</h2>
 <div class="line">{</div>
 <div class="line">  <a class="code" href="classadiar_1_1builder.html">adiar::zdd_builder</a> builder;</div>
 <div class="line"> </div>
-<div class="line">  <a class="code" href="classadiar_1_1builder__ptr.html">adiar::zdd_ptr</a> out_never = builder.<a class="code" href="classadiar_1_1builder.html#ab6a82eebf191476fa81afd686c2888cd">add_node</a>(<span class="keyword">false</span>);</div>
-<div class="line">  <a class="code" href="classadiar_1_1builder__ptr.html">adiar::zdd_ptr</a> out_once = builder.<a class="code" href="classadiar_1_1builder.html#ab6a82eebf191476fa81afd686c2888cd">add_node</a>(<span class="keyword">true</span>);</div>
+<div class="line">  <a class="code" href="classadiar_1_1builder__ptr.html">adiar::zdd_ptr</a> out_never = builder.<a class="code" href="classadiar_1_1builder.html#ad6102d3f6030e715c248ef80c14eec3d">add_node</a>(<span class="keyword">false</span>);</div>
+<div class="line">  <a class="code" href="classadiar_1_1builder__ptr.html">adiar::zdd_ptr</a> out_once = builder.<a class="code" href="classadiar_1_1builder.html#ad6102d3f6030e715c248ef80c14eec3d">add_node</a>(<span class="keyword">true</span>);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keyword">const</span> <span class="keywordtype">int</span> max_time = N*N-1;</div>
 <div class="line">  <span class="keyword">const</span> <span class="keywordtype">int</span> max_cell = N-1;</div>
@@ -309,10 +308,10 @@ Hamiltonian Constraint</h2>
 <div class="line">        <span class="keyword">const</span> <span class="keywordtype">bool</span> is_rc = r == this_r &amp;&amp; c == this_c;</div>
 <div class="line"> </div>
 <div class="line">        <span class="keywordflow">if</span> (!is_rc &amp;&amp; (this_t &gt; 0 || this_r &gt; r)) {</div>
-<div class="line">          out_once = builder.<a class="code" href="classadiar_1_1builder.html#ab6a82eebf191476fa81afd686c2888cd">add_node</a>(this_label, out_once, out_once);</div>
+<div class="line">          out_once = builder.<a class="code" href="classadiar_1_1builder.html#ad6102d3f6030e715c248ef80c14eec3d">add_node</a>(this_label, out_once, out_once);</div>
 <div class="line">        }</div>
 <div class="line"> </div>
-<div class="line">        out_never = builder.<a class="code" href="classadiar_1_1builder.html#ab6a82eebf191476fa81afd686c2888cd">add_node</a>(this_label,</div>
+<div class="line">        out_never = builder.<a class="code" href="classadiar_1_1builder.html#ad6102d3f6030e715c248ef80c14eec3d">add_node</a>(this_label,</div>
 <div class="line">                                     out_never,</div>
 <div class="line">                                     is_rc ? out_once : out_never);</div>
 <div class="line">      }</div>
@@ -330,7 +329,7 @@ Combining Constraints</h1>
 <div class="line">  <a class="code" href="classadiar_1_1zdd.html">adiar::zdd</a> paths;</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (N == 1) {</div>
-<div class="line">    paths = <a class="code" href="group__module____zdd.html#ga45d1923228d2714f11ff3dc3b0d6f4d1">adiar::zdd_singleton</a>(0);</div>
+<div class="line">    paths = <a class="code" href="group__module____zdd.html#gabe4de8babd55b4e737563d2317e8ac0e">adiar::zdd_singleton</a>(0);</div>
 <div class="line">  } <span class="keywordflow">else</span> {</div>
 <div class="line">    paths = only_closed ? constraint_closed(N) : constraint_transition(N,0);</div>
 <div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> t = 1; t &lt; N*N-1; t++) {</div>
@@ -348,7 +347,7 @@ Combining Constraints</h1>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">return</span> paths;</div>
 <div class="line">}</div>
-<div class="ttc" id="agroup__module____zdd_html_ga45d1923228d2714f11ff3dc3b0d6f4d1"><div class="ttname"><a href="group__module____zdd.html#ga45d1923228d2714f11ff3dc3b0d6f4d1">adiar::zdd_singleton</a></div><div class="ttdeci">zdd zdd_singleton(zdd::label_t var)</div><div class="ttdoc">The family { {i} } .</div></div>
+<div class="ttc" id="agroup__module____zdd_html_gabe4de8babd55b4e737563d2317e8ac0e"><div class="ttname"><a href="group__module____zdd.html#gabe4de8babd55b4e737563d2317e8ac0e">adiar::zdd_singleton</a></div><div class="ttdeci">zdd zdd_singleton(zdd::label_type var)</div><div class="ttdoc">The family { {i} } .</div></div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md13"></a>
 Counting the Number of Paths</h1>
 <p>Since every element of the final ZDD represents a unique path through the board, then the number of solutions is exactly the size of the set.</p>

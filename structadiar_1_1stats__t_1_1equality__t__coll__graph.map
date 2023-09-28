@@ -1,8 +1,0 @@
-<map id="adiar::stats_t::equality_t" name="adiar::stats_t::equality_t">
-<area shape="rect" id="node1" title="Equality Checking algorithm statistics." alt="" coords="767,71,947,98"/>
-<area shape="rect" id="node2" href="$structadiar_1_1stats__t_1_1____alg__base.html" title="Common statistics for all algorithms." alt="" coords="452,13,639,39"/>
-<area shape="rect" id="node3" href="$structadiar_1_1stats__t_1_1____alg__base_1_1____lpq.html" title="Type and usage of this algorithm&#39;s levelized priority queue." alt="" coords="229,5,379,47"/>
-<area shape="rect" id="node4" href="$structadiar_1_1stats__t_1_1levelized__priority__queue__t.html" title="Levelized Priority Queue statistics." alt="" coords="5,5,180,47"/>
-<area shape="rect" id="node5" href="$structadiar_1_1stats__t_1_1equality__t_1_1slow__t.html" title="Statistics from O(N log N) time&#45;forward processing equality checking algorithm." alt="" coords="461,64,629,105"/>
-<area shape="rect" id="node6" href="$structadiar_1_1stats__t_1_1equality__t_1_1fast__t.html" title="Statistics from O(N) linear&#45;scan equality checking algorithm." alt="" coords="461,129,629,171"/>
-</map>

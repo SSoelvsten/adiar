@@ -1,6 +1,0 @@
-<map id="adiar::stats_t::nested_sweeping_t::inner_t::up_t" name="adiar::stats_t::nested_sweeping_t::inner_t::up_t">
-<area shape="rect" id="node1" title="Inner Up Sweep." alt="" coords="5,276,197,317"/>
-<area shape="rect" id="node2" href="$structadiar_1_1stats__t_1_1____alg__base.html" title="Common statistics for all algorithms." alt="" coords="8,200,195,227"/>
-<area shape="rect" id="node3" href="$structadiar_1_1stats__t_1_1____alg__base_1_1____lpq.html" title="Type and usage of this algorithm&#39;s levelized priority queue." alt="" coords="27,96,176,137"/>
-<area shape="rect" id="node4" href="$structadiar_1_1stats__t_1_1levelized__priority__queue__t.html" title="Levelized Priority Queue statistics." alt="" coords="14,5,189,47"/>
-</map>
