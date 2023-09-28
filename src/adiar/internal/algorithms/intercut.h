@@ -158,7 +158,7 @@ namespace adiar::internal
   }
 
   template<typename intercut_policy, typename pq_t>
-  typename intercut_policy::unreduced_t __intercut (const typename intercut_policy::reduced_t &dd,
+  typename intercut_policy::__dd_type __intercut (const typename intercut_policy::dd_type &dd,
                                                     const generator<typename intercut_policy::label_type> &xs,
                                                     const size_t pq_memory,
                                                     const size_t max_pq_size)
@@ -305,7 +305,7 @@ namespace adiar::internal
   }
 
   template<typename intercut_policy>
-  size_t __intercut_2level_upper_bound(const typename intercut_policy::reduced_t &dd)
+  size_t __intercut_2level_upper_bound(const typename intercut_policy::dd_type &dd)
   {
     const cut ct = cut(intercut_policy::cut_false_terminal,
                                       intercut_policy::cut_true_terminal);
@@ -315,7 +315,7 @@ namespace adiar::internal
   }
 
   template<typename intercut_policy>
-  typename intercut_policy::unreduced_t intercut(const typename intercut_policy::reduced_t &dd,
+  typename intercut_policy::__dd_type intercut(const typename intercut_policy::dd_type &dd,
                                                  const generator<typename intercut_policy::label_type> &xs)
   {
     // Compute amount of memory available for auxiliary data structures after

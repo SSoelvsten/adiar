@@ -17,17 +17,17 @@ namespace adiar::internal
   template<typename to_policy, typename from_policy>
   class convert_dd_policy
   {
-    static_assert(std::is_base_of<dd,   typename from_policy::reduced_t>::value);
-    static_assert(std::is_base_of<__dd, typename from_policy::unreduced_t>::value);
-    static_assert(std::is_base_of<dd,   typename to_policy::reduced_t>::value);
-    static_assert(std::is_base_of<__dd, typename to_policy::unreduced_t>::value);
+    static_assert(std::is_base_of<dd,   typename from_policy::dd_type>::value);
+    static_assert(std::is_base_of<__dd, typename from_policy::__dd_type>::value);
+    static_assert(std::is_base_of<dd,   typename to_policy::dd_type>::value);
+    static_assert(std::is_base_of<__dd, typename to_policy::__dd_type>::value);
 
   public:
-    using reduced_t    = typename from_policy::reduced_t;
+    using dd_type      = typename from_policy::dd_type;
     using pointer_type = typename from_policy::pointer_type;
     using node_type    = typename from_policy::node_type;
 
-    using unreduced_t  = typename to_policy::unreduced_t;
+    using __dd_type    = typename to_policy::__dd_type;
     using label_type   = typename to_policy::label_type;
     using id_type      = typename to_policy::id_type;
 
@@ -44,15 +44,15 @@ namespace adiar::internal
     static constexpr size_t mult_factor = 2u;
 
   public:
-    static typename to_policy::reduced_t
-    on_empty_labels(const typename from_policy::reduced_t& dd)
+    static typename to_policy::dd_type
+    on_empty_labels(const typename from_policy::dd_type& dd)
     {
-      return typename to_policy::reduced_t(dd.file, dd.negate);
+      return typename to_policy::dd_type(dd.file, dd.negate);
     }
 
-    static typename to_policy::reduced_t
+    static typename to_policy::dd_type
     on_terminal_input(const bool terminal_value,
-                      const typename from_policy::reduced_t& /*dd*/,
+                      const typename from_policy::dd_type& /*dd*/,
                       const shared_file<typename from_policy::label_type> &dom)
     {
       adiar_assert(dom->size() > 0, "Emptiness check is before terminal check");
@@ -92,7 +92,7 @@ namespace adiar::internal
       return nf;
     }
 
-    static typename to_policy::reduced_t
+    static typename to_policy::dd_type
     terminal(const bool terminal_value)
     {
       // Notice, that both bdd_t and zdd_t have bool constructors

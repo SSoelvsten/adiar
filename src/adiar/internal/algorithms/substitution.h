@@ -87,7 +87,7 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////
   template<typename substitute_policy, typename substitute_assignment_mgr, typename pq_t>
-  typename substitute_policy::unreduced_t __substitute(const typename substitute_policy::reduced_t &dd,
+  typename substitute_policy::__dd_type __substitute(const typename substitute_policy::dd_type &dd,
                                                        substitute_assignment_mgr &amgr,
                                                        const size_t pq_memory,
                                                        const size_t pq_max_size)
@@ -211,14 +211,14 @@ namespace adiar::internal
   }
 
   template<typename substitute_policy>
-  size_t __substitute_2level_upper_bound(const typename substitute_policy::reduced_t &dd)
+  size_t __substitute_2level_upper_bound(const typename substitute_policy::dd_type &dd)
   {
     const safe_size_t max_2level_cut = dd.max_2level_cut(cut::Internal);
     return to_size(max_2level_cut + 2u);
   }
 
   template<typename substitute_policy, typename substitute_assignment_mgr>
-  typename substitute_policy::unreduced_t substitute(const typename substitute_policy::reduced_t &dd,
+  typename substitute_policy::__dd_type substitute(const typename substitute_policy::dd_type &dd,
                                                      substitute_assignment_mgr &amgr)
   {
     // Compute amount of memory available for auxiliary data structures after

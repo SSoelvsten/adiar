@@ -809,7 +809,7 @@ namespace adiar::internal
       /// Sorts and resets the given `outer_roots` sorter.
       //////////////////////////////////////////////////////////////////////////
       template<typename nesting_policy, typename outer_roots_t>
-      typename nesting_policy::unreduced_t
+      typename nesting_policy::__dd_type
       down(nesting_policy &policy_impl,
            const typename nesting_policy::shared_node_file_type &outer_file,
            outer_roots_t &outer_roots,
@@ -827,7 +827,7 @@ namespace adiar::internal
         //
         // To avoid having to do the boiler-plate yourself, use
         // `down__sweep_switch` below (assuming your algorithm fits).
-        const typename nesting_policy::unreduced_t res =
+        const typename nesting_policy::__dd_type res =
           policy_impl.sweep(outer_file, outer_roots, inner_memory);
 
         outer_roots.reset();
@@ -840,7 +840,7 @@ namespace adiar::internal
       ///        priority queue and the `roots_sorter`.
       //////////////////////////////////////////////////////////////////////////
       template<typename nesting_policy, typename outer_roots_t>
-      inline typename nesting_policy::unreduced_t
+      inline typename nesting_policy::__dd_type
       down__sweep_switch(nesting_policy &policy_impl,
                          const typename nesting_policy::shared_node_file_type &outer_file,
                          outer_roots_t &outer_roots,
@@ -891,7 +891,7 @@ namespace adiar::internal
                       "'no_lookahead' implies it should (in practice) satisfy the '<='");
 
           using inner_pq_t = typename nesting_policy::template pq_t<0, memory_mode_t::Internal>;
-          inner_pq_t inner_pq({typename nesting_policy::reduced_t(outer_file)},
+          inner_pq_t inner_pq({typename nesting_policy::dd_type(outer_file)},
                               inner_pq_memory, inner_pq_max_size,
                               stats.inner.down.lpq);
 
@@ -904,7 +904,7 @@ namespace adiar::internal
           stats.inner.down.lpq.internal += 1u;
 #endif
           using inner_pq_t = typename nesting_policy::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>;
-          inner_pq_t inner_pq({typename nesting_policy::reduced_t(outer_file)},
+          inner_pq_t inner_pq({typename nesting_policy::dd_type(outer_file)},
                               inner_pq_memory, inner_pq_max_size,
                               stats.inner.down.lpq);
 
@@ -917,7 +917,7 @@ namespace adiar::internal
           stats.inner.down.lpq.external += 1u;
 #endif
           using inner_pq_t = typename nesting_policy::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::External>;
-          inner_pq_t inner_pq({typename nesting_policy::reduced_t(outer_file)},
+          inner_pq_t inner_pq({typename nesting_policy::dd_type(outer_file)},
                               inner_pq_memory, inner_pq_max_size,
                               stats.inner.down.lpq);
 
@@ -1353,7 +1353,7 @@ namespace adiar::internal
   template<typename nesting_policy,
            size_t outer_look_ahead,
            memory_mode_t outer_mem_mode>
-  typename nesting_policy::reduced_t
+  typename nesting_policy::dd_type
   __nested_sweep(const typename nesting_policy::shared_arc_file_type &dag,
                  nesting_policy &policy_impl,
                  const size_t outer_pq_memory,
@@ -1362,8 +1362,8 @@ namespace adiar::internal
                  const size_t inner_memory)
   {
     using level_type        = typename nesting_policy::label_type;
-    using reduced_t      = typename nesting_policy::reduced_t;
-    using unreduced_t    = typename nesting_policy::unreduced_t;
+    using reduced_t      = typename nesting_policy::dd_type;
+    using unreduced_t    = typename nesting_policy::__dd_type;
     using request_t      = typename nesting_policy::request_t;
     using request_pred_t = typename nesting_policy::request_pred_t;
     using shared_arc_file_type  = typename nesting_policy::shared_arc_file_type;
@@ -1768,11 +1768,11 @@ namespace adiar::internal
   ///                        that determines when to start the nested sweep.
   //////////////////////////////////////////////////////////////////////////////
   template<typename nesting_policy>
-  typename nesting_policy::reduced_t
-  nested_sweep(const typename nesting_policy::unreduced_t &input,
+  typename nesting_policy::dd_type
+  nested_sweep(const typename nesting_policy::__dd_type &input,
                nesting_policy &policy_impl)
   {
-    using reduced_t      = typename nesting_policy::reduced_t;
+    using reduced_t      = typename nesting_policy::dd_type;
     using request_t      = typename nesting_policy::request_t;
     using request_pred_t = typename nesting_policy::request_pred_t;
     using shared_arc_file_type  = typename nesting_policy::shared_arc_file_type;
