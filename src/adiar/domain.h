@@ -45,7 +45,7 @@ namespace adiar
   ///        produced by the given generator function.
   ///
   /// \param dom Generator that produces variables to be quantified in
-  ///            *ascending* order. When none are left, it must return a value
+  ///            \em ascending order. When none are left, it must return a value
   ///            greater than `domain_max`.
   //////////////////////////////////////////////////////////////////////////////
   void domain_set(const generator<domain_var> &dom);
@@ -54,13 +54,13 @@ namespace adiar
   /// \brief Set the domain globally for all of Adiar to be the variables
   ///        in the given range of iterators.
   ///
-  /// \param begin Iterator that provides variables to be quantified in
-  ///              *ascending* order.
+  /// \param begin Single-pass forward iterator that provides the domain
+  ///               variables in \em ascending order.
   ///
-  /// \param end   Iterator that marks the end for `begin`.
+  /// \param end   Marks the end for `begin`.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename IT>
-  void domain_set(IT begin, IT end)
+  template<typename ForwardIt>
+  void domain_set(ForwardIt begin, ForwardIt end)
   { return domain_set(make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////

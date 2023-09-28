@@ -2581,7 +2581,7 @@ go_bandit([]() {
       });
     });
 
-    describe("zdd_project(const zdd&, IT, IT)", [&]() {
+    describe("zdd_project(const zdd&, ForwardIt, ForwardIt)", [&]() {
       // Since this is merely a wrapper on the generator function, we will just
       // double-check with a few tests.
 

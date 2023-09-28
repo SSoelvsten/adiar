@@ -99,7 +99,7 @@ namespace adiar
   /// \brief       The BDD representing the logical 'and' of all the given
   ///              variables, i.e. a *term* of variables.
   ///
-  /// \param vars Generator of labels of variables in *descending* order. When
+  /// \param vars Generator of labels of variables in \em descending order. When
   ///             none are left it must return a value greater than
   ///             `bdd::max_label`.
   ///
@@ -113,17 +113,18 @@ namespace adiar
   /// \brief       The BDD representing the logical 'and' of all the given
   ///              variables, i.e. a *term* of variables.
   ///
-  /// \param begin Iterator that provides the variables in *descending* order.
+  /// \param begin Single-pass forward iterator that provides the variables in
+  ///              \em descending order.
   ///
-  /// \param end   Iterator that marks the end for `begin`.
+  /// \param end   Marks the end for `begin`.
   ///
   /// \returns    \f$ \bigwedge_{x \in \mathit{begin} \dots \mathit{end}} x \f$
   ///
   /// \throws invalid_argument If the iterator does not provide values in
   ///                          descending order.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename IT>
-  bdd bdd_and(IT begin, IT end)
+  template<typename ForwardIt>
+  bdd bdd_and(ForwardIt begin, ForwardIt end)
   { return bdd_and(make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -133,7 +134,7 @@ namespace adiar
   /// \details    Creates a BDD with a chain of nodes on the 'low' arc to the
   ///             true child, and false otherwise.
   ///
-  /// \param vars Generator of labels of variables in *descending* order. When
+  /// \param vars Generator of labels of variables in \em descending order. When
   ///             none are left it must return a value greater than
   ///             `bdd::max_label`.
   ///
@@ -147,17 +148,18 @@ namespace adiar
   /// \brief      The BDD representing the logical 'or' of all the given
   ///             variables, i.e. a *clause* of variables.
   ///
-  /// \param begin Iterator that provides the variables in *descending* order.
+  /// \param begin Single-pass forward iterator that provides the variables in
+  ///              \em descending order.
   ///
-  /// \param end   Iterator that marks the end for `begin`.
+  /// \param end   Marks the end for `begin`.
   ///
   /// \returns    \f$ \bigwedge_{x \in \mathit{begin} \dots \mathit{end}} x \f$
   ///
   /// \throws invalid_argument If the iterator does not provide values in
   ///                          descending order.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename IT>
-  bdd bdd_or(IT begin, IT end)
+  template<typename ForwardIt>
+  bdd bdd_or(ForwardIt begin, ForwardIt end)
   { return bdd_or(make_generator(begin, end)); }
 
   /// \}
@@ -220,9 +222,9 @@ namespace adiar
   ///
   /// \see bdd_and
   ///
-  /// \remark Since `bdd_and<IT>(begin, end)` has precedence over the implicit
-  ///         conversion from `bdd::shared_node_file_type` to `bdd`, we have to do it
-  ///         explicitly ourselves.
+  /// \remark Since `bdd_and<ForwardIt>(begin, end)` has precedence over the
+  ///         implicit conversion from `bdd::shared_node_file_type` to `bdd`, we
+  ///         have to do it explicitly ourselves.
   inline __bdd bdd_and(const bdd::shared_node_file_type &f, const bdd::shared_node_file_type &g)
   { return bdd_apply(bdd(f), bdd(g), and_op); }
   /// \endcond
@@ -262,9 +264,9 @@ namespace adiar
   ///
   /// \see bdd_or
   ///
-  /// \remark Since `bdd_or<IT>(begin, end)` has precedence over the implicit
-  ///         conversion from `bdd::shared_node_file_type` to `bdd`, we have to do it
-  ///         explicitly ourselves.
+  /// \remark Since `bdd_or<ForwardIt>(begin, end)` has precedence over the
+  ///         implicit conversion from `bdd::shared_node_file_type` to `bdd`, we
+  ///         have to do it explicitly ourselves.
   inline __bdd bdd_or(const bdd::shared_node_file_type &f, const bdd::shared_node_file_type &g)
   { return bdd_apply(bdd(f), bdd(g), or_op); }
   /// \endcond
@@ -461,7 +463,7 @@ namespace adiar
   /// \param f   BDD to be quantified.
   ///
   /// \param gen Generator function, that produces variables to be quantified in
-  ///            *descending* order. When none are left to-be quantified, it
+  ///            \em descending order. When none are left to-be quantified, it
   ///            returns a value larger than `bdd::max_label`.
   ///
   /// \returns   \f$ \exists x_i \in \texttt{gen()} : f \f$
@@ -480,20 +482,20 @@ namespace adiar
   ///
   /// \param f     BDD to be quantified.
   ///
-  /// \param begin Iterator that provides variables to be quantified in
-  ///              *descending* order.
+  /// \param begin Single-pass forward iterator that provides the to-be
+  ///              quantified variables in \em descending order.
   ///
-  /// \param end   Iterator that marks the end for `begin`.
+  /// \param end   Marks the end for `begin`.
   ///
   /// \returns     \f$ \exists x_i \in \texttt{begin} ... \texttt{end} : f \f$
   //////////////////////////////////////////////////////////////////////////////
-  template<typename IT>
-  __bdd bdd_exists(const bdd &f, IT begin, IT end)
+  template<typename ForwardIt>
+  __bdd bdd_exists(const bdd &f, ForwardIt begin, ForwardIt end)
   { return bdd_exists(f, make_generator(begin, end)); }
 
   /// \cond
-  template<typename IT>
-  __bdd bdd_exists(bdd &&f, IT begin, IT end)
+  template<typename ForwardIt>
+  __bdd bdd_exists(bdd &&f, ForwardIt begin, ForwardIt end)
   { return bdd_exists(std::forward<bdd>(f), make_generator(begin, end)); }
   /// \endcond
 
@@ -547,7 +549,7 @@ namespace adiar
   /// \param f   BDD to be quantified.
   ///
   /// \param gen Generator function, that produces variables to be quantified in
-  ///            *descending* order. When none are left to-be quantified, it
+  ///            \em descending order. When none are left to-be quantified, it
   ///            returns a value larger than `bdd::max_label`, e.g. -1.
   ///
   /// \returns   \f$ \forall x_i \in \texttt{gen()} : f \f$
@@ -566,20 +568,20 @@ namespace adiar
   ///
   /// \param f     BDD to be quantified.
   ///
-  /// \param begin Iterator that provides variables to be quantified in
-  ///              *descending* order.
+  /// \param begin Single-pass forward iterator that provides the to-be
+  ///              quantified variables in \em descending order.
   ///
-  /// \param end   Iterator that marks the end for `begin`.
+  /// \param end   Marks the end for `begin`.
   ///
   /// \returns     \f$ \forall x_i \in \texttt{begin} ... \texttt{end} : f \f$
   //////////////////////////////////////////////////////////////////////////////
-  template<typename IT>
-  __bdd bdd_forall(const bdd &f, IT begin, IT end)
+  template<typename ForwardIt>
+  __bdd bdd_forall(const bdd &f, ForwardIt begin, ForwardIt end)
   { return bdd_forall(f, make_generator(begin, end)); }
 
   /// \cond
-  template<typename IT>
-  __bdd bdd_forall(bdd &&f, IT begin, IT end)
+  template<typename ForwardIt>
+  __bdd bdd_forall(bdd &&f, ForwardIt begin, ForwardIt end)
   { return bdd_forall(std::forward<bdd>(f), make_generator(begin, end)); }
   /// \endcond
 
@@ -753,8 +755,8 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   // TODO: Iterator-based output
   //
-  // template<typename IT>
-  // bdd_satmin(const bdd &f, IT begin, IT end)
+  // template<typename ForwardIt>
+  // bdd_satmin(const bdd &f, ForwardIt begin, ForwardIt end)
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically largest x such that f(x) is true.
@@ -789,8 +791,8 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   // TODO: Iterator-based output
   //
-  // template<typename IT>
-  // bdd_satmax(const bdd &f, IT begin, IT end)
+  // template<typename ForwardIt>
+  // bdd_satmax(const bdd &f, ForwardIt begin, ForwardIt end)
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Evaluate a BDD according to an assignment to its variables.
@@ -837,17 +839,17 @@ namespace adiar
   ///
   /// \param f     BDD of interest.
   ///
-  /// \param begin Iterator for the beginning to place the output.
+  /// \param begin Single-pass forward iterator for where to place the output.
   ///
-  /// \param end   Iterator that marks the end for `begin`.
+  /// \param end   Marks the end for `begin`.
   ///
   /// \returns     An iterator to the first entry that still is left empty.
   ///
   /// \throws out_of_range If the distance between `begin` and `end` is not big
   ///                      enough to contain all variables in `f`.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename IT>
-  IT bdd_varprofile(const bdd &f, IT begin, IT end)
+  template<typename ForwardIt>
+  ForwardIt bdd_varprofile(const bdd &f, ForwardIt begin, ForwardIt end)
   {
     bdd_varprofile(f, make_consumer(begin, end));
     return begin;
@@ -867,7 +869,7 @@ namespace adiar
   ///
   /// \param A   Family of a set (within the given domain)
   ///
-  /// \param dom Generator function of domain variables in *ascending* order.
+  /// \param dom Generator function of domain variables in \em ascending order.
   ///            When none are left it must return a value greater than
   ///            `bdd::max_label`.
   ///
@@ -877,22 +879,26 @@ namespace adiar
   __bdd bdd_from(const zdd &A, const generator<bdd::label_type> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief     Obtains the BDD that represents the same function/set as the
-  ///            given ZDD within the given domain.
+  /// \brief       Obtains the BDD that represents the same function/set as the
+  ///              given ZDD within the given domain.
   ///
-  /// \param A   Family of a set (within the given domain)
+  /// \param A     amily of a set (within the given domain)
   ///
-  /// \param dom Iterator over the domain in ascending order
+  /// \param begin Single-pass forward iterator that provides the domain's
+  ///              variables in \em ascending order.
   ///
-  /// \returns   BDD that is true for the exact same assignments to variables in
-  ///            the given domain.
+  /// \param end   Marks the end for `begin`.
+  ///
+  /// \returns     BDD that is true for the exact same assignments to variables
+  ///              in the given domain.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename IT>
-  __bdd bdd_from(const zdd &A, IT begin, IT end)
+  template<typename ForwardIt>
+  __bdd bdd_from(const zdd &A, ForwardIt begin, ForwardIt end)
   { return bdd_from(A, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \copybrief bdd_from
+  /// \brief     Obtains the BDD that represents the same function/set as the
+  ///            given ZDD within the global domain.
   ///
   /// \param A   Family of a set (within the given global \ref module__domain)
   ///

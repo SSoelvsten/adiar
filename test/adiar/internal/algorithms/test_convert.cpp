@@ -93,7 +93,7 @@ go_bandit([]() {
       // TODO
     });
 
-    describe("bdd_from(const zdd&, IT, IT)", [&]() {
+    describe("bdd_from(const zdd&, ForwardIt, ForwardIt)", [&]() {
       it("returns F terminal on Ø with dom = Ø", [&]() {
         __bdd out = bdd_from(zdd_F, dom_empty.begin(), dom_empty.end());
 
@@ -999,7 +999,7 @@ go_bandit([]() {
       // TODO
     });
 
-    describe("zdd_from(const bdd&, IT, IT)", [&]() {
+    describe("zdd_from(const bdd&, ForwardIt, ForwardIt)", [&]() {
       it("returns Ø on F terminal with dom = Ø", [&]() {
         __zdd out = zdd_from(bdd_F, dom_empty.begin(), dom_empty.end());
 
