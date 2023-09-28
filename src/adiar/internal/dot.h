@@ -13,10 +13,12 @@
 namespace adiar::internal
 {
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Output a container of nodes to a given output stream.
+  /// \brief       Output a container of nodes to a given output stream.
+  ///
+  /// \tparam File Type of the node container.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename nodes_t>
-  inline void __print_dot(const nodes_t& nodes, std::ostream &out)
+  template <typename File>
+  inline void __print_dot(const File& nodes, std::ostream &out)
   {
     out << "digraph DD {" << std::endl;
 
@@ -43,9 +45,9 @@ namespace adiar::internal
       }
 
       out << "\tn" << ptr_uint64(false)._raw
-          << " [label=\"" << nodes_t::false_print << "\"];" << std::endl;
+          << " [label=\"" << File::false_print << "\"];" << std::endl;
       out << "\tn" << ptr_uint64(true)._raw
-          << " [label=\"" << nodes_t::true_print << "\"];" << std::endl;
+          << " [label=\"" << File::true_print << "\"];" << std::endl;
 
       out <<  std::endl << "\t// Arcs" << std::endl;
 
