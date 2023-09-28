@@ -60,39 +60,40 @@ namespace adiar
   /// \brief     The set of bitvectors over a given domain where *var* is set to
   ///            true.
   ///
-  /// \details This function is (given the same domain of variables)
-  ///          semantically equivalent to `bdd_ithvar` even though the ZDD DAG
-  ///          does not at all look like the BDD DAG.
+  /// \details   This function is (given the same domain of variables)
+  ///            semantically equivalent to `bdd_ithvar` even though the ZDD DAG
+  ///            does not at all look like the BDD DAG.
   ///
   /// \param var The variable to be forced to true.
   ///
-  /// \param dom Generator function of the domain in *descending* order. When
+  /// \param dom Generator function of the domain in \em descending order. When
   ///            none are left, it must return a value greater than
   ///            `zdd::max_label`.
   ///
   /// \pre       The variable `var` should occur in `dom`.
   ///
-  /// \throws invalid_argument If `dom` is not in *descending* order.
+  /// \throws invalid_argument If `dom` is not in \em descending order.
   //////////////////////////////////////////////////////////////////////////////
   zdd zdd_ithvar(zdd::label_type var, const generator<zdd::label_type> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief     The set of bitvectors over a given domain where *var* is set to
-  ///            true.
+  /// \brief       The set of bitvectors over a given domain where *var* is set
+  ///              to true.
   ///
-  /// \param var The variable to be forced to true.
+  /// \param var   The variable to be forced to true.
   ///
-  /// \param begin Iterator that provides the domain in *descending* order.
+  /// \param begin Single-pass forward iterator that provides the domain's
+  ///              variables in \em descending order.
   ///
-  /// \param end   Iterator that marks the end for `begin`.
+  /// \param end   Marks the end for `begin`.
   ///
-  /// \pre       The variable `var` should occur in `dom`.
+  /// \pre         The variable `var` should occur in `dom`.
   ///
   /// \throws invalid_argument If the iterator does not provide values in
-  ///                          *descending* order.
+  ///                          \em descending order.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename IT>
-  zdd zdd_ithvar(zdd::label_type var, IT begin, IT end)
+  template<typename ForwardIt>
+  zdd zdd_ithvar(zdd::label_type var, ForwardIt begin, ForwardIt end)
   { return zdd_ithvar(var, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -116,13 +117,13 @@ namespace adiar
   ///
   /// \param var The variable to be forced to false.
   ///
-  /// \param dom Generator function of the domain in *descending* order. When
+  /// \param dom Generator function of the domain in \em descending order. When
   ///            none are left, it must return a value greater than
   ///            `zdd::max_label`.
   ///
   /// \pre       The variable `var` should occur in `dom`.
   ///
-  /// \throws invalid_argument If `dom` is not in *descending* order.
+  /// \throws invalid_argument If `dom` is not in \em descending order.
   //////////////////////////////////////////////////////////////////////////////
   zdd zdd_nithvar(zdd::label_type var, const generator<zdd::label_type> &dom);
 
@@ -132,17 +133,18 @@ namespace adiar
   ///
   /// \param var   The variable to be forced to false.
   ///
-  /// \param begin Iterator that provides the domain in *descending* order.
+  /// \param begin Single-pass forward iterator that provides the domain's
+  ///              variables in \em descending order.
   ///
-  /// \param end   Iterator that marks the end for `begin`.
+  /// \param end   Marks the end for `begin`.
   ///
   /// \pre         The variable `var` should occur in `dom`.
   ///
   /// \throws invalid_argument If the iterator does not provide values in
-  ///                          *descending* order.
+  ///                          \em descending order.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename IT>
-  zdd zdd_nithvar(zdd::label_type var, IT begin, IT end)
+  template<typename ForwardIt>
+  zdd zdd_nithvar(zdd::label_type var, ForwardIt begin, ForwardIt end)
   { return zdd_nithvar(var, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -162,26 +164,27 @@ namespace adiar
   /// \details   Creates a ZDD with a chain of nodes on the 'high' arc to the
   ///            true child, and false otherwise.
   ///
-  /// \param vars Generator function of the variables in *descending* order.
+  /// \param vars Generator function of the variables in \em descending order.
   ///             When none are left, it must return a value greater than
   ///             `zdd::max_label`.
   ///
-  /// \throws invalid_argument If `vars` are not in *descending* order.
+  /// \throws invalid_argument If `vars` are not in \em descending order.
   //////////////////////////////////////////////////////////////////////////////
   zdd zdd_vars(const generator<zdd::label_type> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The family { { 1, 2, ..., k } }.
   ///
-  /// \param begin Iterator that provides the variables in *descending* order.
+  /// \param begin Single-pass forward iterator that provides the variables
+  ///              in \em descending order.
   ///
-  /// \param end   Iterator that marks the end for `begin`.
+  /// \param end   Marks the end for `begin`.
   ///
   /// \throws invalid_argument If the iterator does not provide values in
-  ///                          *descending* order.
+  ///                          \em descending order.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename IT>
-  zdd zdd_vars(IT begin, IT end)
+  template<typename ForwardIt>
+  zdd zdd_vars(ForwardIt begin, ForwardIt end)
   { return zdd_vars(make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -203,26 +206,27 @@ namespace adiar
   /// \details   Creates a ZDD with a chain of nodes on the 'low' arc to the
   ///            true child, and false otherwise.
   ///
-  /// \param vars Generator function of the variables in *descending* order.
+  /// \param vars Generator function of the variables in \em descending order.
   ///             When none are left, it must return a value greater than
   ///             `zdd::max_label`.
   ///
-  /// \throws invalid_argument If `vars` are not in *descending* order.
+  /// \throws invalid_argument If `vars` are not in \em descending order.
   //////////////////////////////////////////////////////////////////////////////
   zdd zdd_singletons(const generator<zdd::label_type> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The family { {1}, {2}, ..., {k} }.
   ///
-  /// \param begin Iterator that provides the variables in *descending* order.
+  /// \param begin Single-pass forward iterator that provides the variables
+  ///              in \em descending order.
   ///
-  /// \param end   Iterator that marks the end for `begin`.
+  /// \param end   Marks the end for `begin`.
   ///
   /// \throws invalid_argument If the iterator does not provide values in
-  ///                          *descending* order.
+  ///                          \em descending order.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename IT>
-  zdd zdd_singletons(IT begin, IT end)
+  template<typename ForwardIt>
+  zdd zdd_singletons(ForwardIt begin, ForwardIt end)
   { return zdd_singletons(make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -231,32 +235,33 @@ namespace adiar
   /// \details   Creates a ZDD with a don't care chain of nodes to the true
   ///            child.
   ///
-  /// \param vars Generator function of the variables in *descending* order.
+  /// \param vars Generator function of the variables in \em descending order.
   ///             When none are left, it must return a value greater than
   ///             `zdd::max_label`.
   ///
-  /// \throws invalid_argument If `vars` are not in *ascending* order.
+  /// \throws invalid_argument If `vars` are not in \em ascending order.
   //////////////////////////////////////////////////////////////////////////////
   zdd zdd_powerset(const generator<zdd::label_type> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The powerset of all given variables.
   ///
-  /// \param begin Iterator that provides the variables in *descending* order.
+  /// \param begin Single-pass forward iterator that provides the variables
+  ///              in \em descending order.
   ///
-  /// \param end   Iterator that marks the end for `begin`.
+  /// \param end   Marks the end for `begin`.
   ///
   /// \throws invalid_argument If the iterator does not provide values in
-  ///                          *descending* order.
+  ///                          \em descending order.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename IT>
-  zdd zdd_powerset(IT begin, IT end)
+  template<typename ForwardIt>
+  zdd zdd_powerset(ForwardIt begin, ForwardIt end)
   { return zdd_powerset(make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Bottom of the powerset lattice.
   ///
-  /// \param vars Generator function of the variables in *descending* order.
+  /// \param vars Generator function of the variables in \em descending order.
   ///             When none are left, it must return a value greater than
   ///             `zdd::max_label`.
   ///
@@ -267,14 +272,15 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       Bottom of the powerset lattice.
   ///
-  /// \param begin Iterator that provides the variables in *descending* order.
+  /// \param begin Single-pass forward iterator that provides the domain's
+  ///              variables in \em descending order.
   ///
-  /// \param end   Iterator that marks the end for `begin`.
+  /// \param end   Marks the end for `begin`.
   ///
   /// \see zdd_empty
   //////////////////////////////////////////////////////////////////////////////
-  template<typename IT>
-  inline zdd zdd_bot(IT begin, IT end)
+  template<typename ForwardIt>
+  inline zdd zdd_bot(ForwardIt begin, ForwardIt end)
   { return zdd_bot(make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -287,7 +293,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Top of the powerset lattice.
   ///
-  /// \param vars Generator function of the variables in *descending* order.
+  /// \param vars Generator function of the variables in \em descending order.
   ///
   /// \see zdd_powerset, zdd_null
   //////////////////////////////////////////////////////////////////////////////
@@ -296,14 +302,15 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       Top of the powerset lattice.
   ///
-  /// \param begin Iterator that provides the variables in *descending* order.
+  /// \param begin Single-pass forward iterator that provides the domain's
+  ///              variables in \em descending order.
   ///
-  /// \param end   Iterator that marks the end for `begin`.
+  /// \param end   Marks the end for `begin`.
   ///
   /// \see zdd_empty
   //////////////////////////////////////////////////////////////////////////////
-  template<typename IT>
-  inline zdd zdd_top(IT begin, IT end)
+  template<typename ForwardIt>
+  inline zdd zdd_top(ForwardIt begin, ForwardIt end)
   { return zdd_top(make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -403,7 +410,7 @@ namespace adiar
   ///
   /// \param A    ZDD to apply with the other.
   ///
-  /// \param vars Generator function of labels to flip in *ascending* order.
+  /// \param vars Generator function of labels to flip in \em ascending order.
   ///             When none are left, it must return a value greater than
   ///             `zdd::max_label`.
   ///
@@ -418,15 +425,16 @@ namespace adiar
   ///
   /// \param A    ZDD to apply with the other.
   ///
-  /// \param begin Iterator with variables to flip in *ascending* order.
+  /// \param begin Single-pass forward iterator that provides the to-be
+  ///              flipped variables in \em ascending order.
   ///
-  /// \param end   Iterator that marks the end for `begin`.
+  /// \param end   Marks the end for `begin`.
   ///
   /// \returns
   /// \f$ \{ \mathit{vars} \Delta a \mid a \in A \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  template<typename IT>
-  __zdd zdd_change(const zdd &A, IT begin, IT end)
+  template<typename ForwardIt>
+  __zdd zdd_change(const zdd &A, ForwardIt begin, ForwardIt end)
   { return zdd_change(A, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -434,25 +442,26 @@ namespace adiar
   ///
   /// \param A   family of sets to complement
   ///
-  /// \param dom Labels of the domain in *ascending* order
+  /// \param dom Labels of the domain in \em ascending order
   ///
   /// \returns    \f$ 2^{\mathit{dom}} \setminus A \f$
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_complement(const zdd &A, const generator<zdd::label_type> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief     Complement of A within the given domain.
+  /// \brief       Complement of A within the given domain.
   ///
-  /// \param A   family of sets to complement
+  /// \param A     family of sets to complement
   ///
-  /// \param begin Iterator that provides the domain in *ascending* order.
+  /// \param begin Single-pass forward iterator that provides the domain's
+  ///              variables in \em ascending order.
   ///
-  /// \param end   Iterator that marks the end for `begin`.
+  /// \param end   Marks the end for `begin`.
   ///
-  /// \returns    \f$ 2^{\mathit{dom}} \setminus A \f$
+  /// \returns     \f$ 2^{\mathit{dom}} \setminus A \f$
   //////////////////////////////////////////////////////////////////////////////
-  template<typename IT>
-  __zdd zdd_complement(const zdd &A, IT begin, IT end)
+  template<typename ForwardIt>
+  __zdd zdd_complement(const zdd &A, ForwardIt begin, ForwardIt end)
   { return zdd_complement(A, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -482,14 +491,16 @@ namespace adiar
   /// \brief      Expands the domain of the given ZDD to also include the given
   ///             set of labels.
   ///
-  /// \details    Adds don't care nodes on each levels in `vars`. The variables
-  ///             in `vars` may \em not be present in `A`.
+  /// \details    Adds don't care nodes on each levels in `vars`. That is, this
+  ///             essentially is the inverse of the `zdd_project` and lifts the
+  ///             set of sets unprojects to a larger domain.
   ///
-  /// \param A    Family of set to expand
+  /// \param A    Family of set to expand.
   ///
-  /// \param vars Generator function of labels to expand with in *ascending*
-  ///             order. When none are left, it must return a value greater than
-  ///             `zdd::max_label`. This set of labels may \em not occur in A.
+  /// \param vars Generator function of labels to unproject in \em ascending
+  ///             order. No variables it generates may already exist in `A`.
+  ///             When no more variables are left, it must return a value
+  ///             greater than `zdd::max_label`.
   ///
   /// \returns
   /// \f$ \bigcup_{a \in A, i \in 2^{vars}} (a \cup i) \f$
@@ -497,23 +508,26 @@ namespace adiar
   __zdd zdd_expand(const zdd &A, const generator<zdd::label_type> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief      Expands the domain of the given ZDD to also include the given
-  ///             set of labels.
+  /// \brief       Expands the domain of the given ZDD to also include the given
+  ///              set of labels.
   ///
-  /// \details    Adds don't care nodes on each levels in `vars`. The variables
-  ///             in `vars` may \em not be present in `A`.
+  /// \copydetails
   ///
-  /// \param A    Family of set to expand
+  /// \param A     Family of set to expand.
   ///
-  /// \param begin Iterator that provides the variables in *ascending* order.
+  /// \param begin Single-pass forward iterator that provides the to-be
+  ///              unprojected variables in \em ascending order. These may \em not
+  ///              be present in `A`.
   ///
-  /// \param end   Iterator that marks the end for `begin`.
+  /// \param end   Marks the end for `begin`.
   ///
   /// \returns
   /// \f$ \bigcup_{a \in A, i \in 2^{vars}} (a \cup i) \f$
+  ///
+  /// \see zdd_project 
   //////////////////////////////////////////////////////////////////////////////
-  template<typename IT>
-  __zdd zdd_expand(const zdd &A, IT begin, IT end)
+  template<typename ForwardIt>
+  __zdd zdd_expand(const zdd &A, ForwardIt begin, ForwardIt end)
   { return zdd_expand(A, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -522,7 +536,7 @@ namespace adiar
   /// \param A    Family of set
   ///
   /// \param vars Generator function of the variable labels to filter on in
-  ///             *ascending* order. When none are left, it must return a value
+  ///             \em ascending order. When none are left, it must return a value
   ///             greater than `zdd::max_label`.
   ///
   /// \returns
@@ -535,15 +549,16 @@ namespace adiar
   ///
   /// \param A    Family of set
   ///
-  /// \param begin Iterator with variables to filter on in *ascending* order.
+  /// \param begin Single-pass forward iterator that provides the variables to
+  ///              filter out in \em ascending order.
   ///
-  /// \param end   Iterator that marks the end for `begin`.
+  /// \param end   Marks the end for `begin`.
   ///
   /// \returns
   /// \f$ \{ a \in A \mid \forall i \in \mathit{vars} : i \not\in a \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  template<typename IT>
-  __zdd zdd_offset(const zdd &A, IT begin, IT end)
+  template<typename ForwardIt>
+  __zdd zdd_offset(const zdd &A, ForwardIt begin, ForwardIt end)
   { return zdd_offset(A, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -552,7 +567,7 @@ namespace adiar
   /// \param A    Family of set
   ///
   /// \param vars Generator function of the variable labels to filter on in
-  ///             *ascending* order. When none are left, it must return a value
+  ///             \em ascending order. When none are left, it must return a value
   ///             greater than `zdd::max_label`.
   ///
   /// \returns
@@ -565,15 +580,16 @@ namespace adiar
   ///
   /// \param A    Family of set
   ///
-  /// \param begin Iterator with variables to filter on in *ascending* order.
+  /// \param begin Single-pass forward iterator that provides the variables to
+  ///              filter out in \em ascending order.
   ///
-  /// \param end   Iterator that marks the end for `begin`.
+  /// \param end   Marks the end for `begin`.
   ///
   /// \returns
   /// \f$ \{ a \in A \mid \forall i \in \mathit{vars} : i \in a \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  template<typename IT>
-  __zdd zdd_onset(const zdd &A, IT begin, IT end)
+  template<typename ForwardIt>
+  __zdd zdd_onset(const zdd &A, ForwardIt begin, ForwardIt end)
   { return zdd_onset(A, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -586,6 +602,8 @@ namespace adiar
   ///
   /// \returns
   /// \f$ \prod_{\mathit{dom}}(A) = \{ a \setminus \mathit{dom}^c \mid a \in A \} \f$
+  ///
+  /// \see zdd_expand
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_project(const zdd &A, const predicate<zdd::label_type> &dom);
 
@@ -600,11 +618,13 @@ namespace adiar
   /// \param A   Family of sets to project
   ///
   /// \param gen Generator function, that produces the variables of the domain in
-  ///            *descending* order. When none are left to-be quantified, it
+  ///            \em descending order. When none are left to-be quantified, it
   ///            returns a value larger than `zdd::max_label`, e.g. -1.
   ///
   /// \returns
   /// \f$ \prod_{\mathit{dom}}(A) = \{ a \setminus \mathit{dom}^c \mid a \in A \} \f$
+  ///
+  /// \see zdd_expand
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_project(const zdd &A, const generator<zdd::label_type> &dom);
 
@@ -613,25 +633,28 @@ namespace adiar
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief     Project family of sets onto a domain, i.e. remove from every
-  ///            set all variables not within the domain.
+  /// \brief       Project family of sets onto a domain, i.e. remove from every
+  ///              set all variables not within the domain.
   ///
-  /// \param A   Family of sets to project
+  /// \param A     Family of sets to project
   ///
-  /// \param begin Iterator that provides the domain in *descending* order.
+  /// \param begin Single-pass forward iterator that provides the domain in
+  ///              \em descending order.
   ///
-  /// \param end   Iterator that marks the end for `begin`.
+  /// \param end   Marks the end for `begin`.
   ///
   /// \returns
   /// \f$ \prod_{\mathit{dom}}(A) = \{ a \setminus \mathit{dom}^c \mid a \in A \} \f$
+  ///
+  /// \see zdd_expand
   //////////////////////////////////////////////////////////////////////////////
-  template<typename IT>
-  __zdd zdd_project(const zdd &A, IT begin, IT end)
+  template<typename ForwardIt>
+  __zdd zdd_project(const zdd &A, ForwardIt begin, ForwardIt end)
   { return zdd_project(A, make_generator(begin, end)); }
 
   /// \cond
-  template<typename IT>
-  __zdd zdd_project(zdd &&A, IT begin, IT end)
+  template<typename ForwardIt>
+  __zdd zdd_project(zdd &&A, ForwardIt begin, ForwardIt end)
   { return zdd_project(std::forward<zdd>(A), make_generator(begin, end)); }
   /// \endcond
 
@@ -810,30 +833,31 @@ namespace adiar
   zdd::label_type zdd_maxvar(const zdd &A);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief   Whether the family includes the given set of labels
+  /// \brief   Whether the family includes the given set of labels.
   ///
   /// \param A Set of interest
   ///
-  /// \param a Generator of a bit-vector in *ascending* order. When none are left,
-  ///          it must return a value greater than `zdd::max_label`.
+  /// \param a Generator of a bit-vector in \em ascending order. When none are
+  ///          left, it must return a value greater than `zdd::max_label`.
   ///
   /// \returns Whether \f$ a \in A \f$
   //////////////////////////////////////////////////////////////////////////////
   bool zdd_contains(const zdd &A, const generator<zdd::label_type> &a);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief       Whether the family includes the given set of labels
+  /// \brief       Whether the family includes the given set of labels.
   ///
   /// \param A     Set of interest
   ///
-  /// \param begin Iterator that provides the variables in *ascending* order.
+  /// \param begin Single-pass forward iterator of the set of labels in
+  ///              \em ascending order.
   ///
-  /// \param end   Iterator that marks the end for `begin`.
+  /// \param end   Marks the end for `begin`.
   ///
   /// \returns Whether \f$ \{\mathit{begin}, \dots, \mathit{end}\} \in A \f$
   //////////////////////////////////////////////////////////////////////////////
-  template<typename IT>
-  bool zdd_contains(const zdd &A, IT begin, IT end)
+  template<typename ForwardIt>
+  bool zdd_contains(const zdd &A, ForwardIt begin, ForwardIt end)
   { return zdd_contains(A, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -846,10 +870,10 @@ namespace adiar
   zdd zdd_minelem(const zdd &A);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief   Retrieves the lexicographically smallest set a in A.
+  /// \brief    Retrieves the lexicographically smallest set a in A.
   ///
-  /// \param cb Callback function that is called in *ascending* order of the zdd's
-  ///           levels with the variable in the smallest set.
+  /// \param cb Callback function that is called with the variables of the
+  ///           smallest set in \em ascending order of the  levels of `A`.
   ///
   /// \pre `A != zdd_empty()`
   //////////////////////////////////////////////////////////////////////////////
@@ -858,8 +882,8 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   // TODO: Iterator-based output
   //
-  // template<typename IT>
-  // zdd_minelem(const zdd &A, IT begin, IT end)
+  // template<typename ForwardIt>
+  // zdd_minelem(const zdd &A, ForwardIt begin, ForwardIt end)
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Retrieves the lexicographically largest set a in A.
@@ -871,10 +895,10 @@ namespace adiar
   zdd zdd_maxelem(const zdd &A);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief   Retrieves the lexicographically largest set a in A.
+  /// \brief    Retrieves the lexicographically largest set a in A.
   ///
-  /// \param cb Callback function that is called in *ascending* order of the zdd's
-  ///           levels with the variable in the largest set.
+  /// \param cb Callback function that is called with the variables of the
+  ///           largest set in \em ascending order of the  levels of `A`.
   ///
   /// \pre `A != zdd_empty()`
   //////////////////////////////////////////////////////////////////////////////
@@ -883,15 +907,15 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   // TODO: Iterator-based output
   //
-  // template<typename IT>
-  // zdd_maxelem(const zdd &A, IT begin, IT end)
+  // template<typename ForwardIt>
+  // zdd_maxelem(const zdd &A, ForwardIt begin, ForwardIt end)
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Get the labels of the levels of the ZDD.
+  /// \brief    Get the labels of the levels of the ZDD.
   ///
   /// \param A  ZDD of interest.
   ///
-  /// \param cb Callback function that consumes the levels in *ascending* order.
+  /// \param cb Callback function that consumes the levels in \em ascending order.
   //////////////////////////////////////////////////////////////////////////////
   void zdd_varprofile(const zdd &A, const consumer<zdd::label_type> &cb);
 
@@ -900,17 +924,17 @@ namespace adiar
   ///
   /// \param A     ZDD of interest.
   ///
-  /// \param begin Iterator for the beginning to place the output.
+  /// \param begin Single-pass forward iterator for where to place the output.
   ///
-  /// \param end   Iterator that marks the end for `begin`.
+  /// \param end   Marks the end for `begin`.
   ///
   /// \returns     An iterator to the first entry that still is left empty.
   ///
   /// \throws out_of_range If the distance between `begin` and `end` is not big
   ///                      enough to contain all variables in `f`.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename IT>
-  IT zdd_varprofile(const zdd &A, IT begin, IT end)
+  template<typename ForwardIt>
+  ForwardIt zdd_varprofile(const zdd &A, ForwardIt begin, ForwardIt end)
   {
     zdd_varprofile(A, make_consumer(begin, end));
     return begin;
@@ -930,7 +954,7 @@ namespace adiar
   ///
   /// \param f   Boolean function with the given domain
   ///
-  /// \param dom Domain of all variables in *ascending* order. When none are
+  /// \param dom Domain of all variables in \em ascending order. When none are
   ///            left it must return a value greater than `zdd::max_label`.
   ///
   /// \returns   ZDD that is true for the exact same assignments to variables in
@@ -939,18 +963,21 @@ namespace adiar
   __zdd zdd_from(const bdd &f, const generator<zdd::label_type> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief     Obtains the ZDD that represents the same function/set as the
-  ///            given BDD within the given domain.
+  /// \brief       Obtains the ZDD that represents the same function/set as the
+  ///              given BDD within the given domain.
   ///
-  /// \param f   Boolean function with the given domain
+  /// \param f     Boolean function with the given domain
   ///
-  /// \param dom Iterator over the domain in *ascending* order
+  /// \param begin Single-pass forward iterator that provides the domain's
+  ///              variables in \em ascending order.
   ///
-  /// \returns   BDD that is true for the exact same assignments to variables in
-  ///            the given domain.
+  /// \param end   Marks the end for `begin`.
+  ///
+  /// \returns     ZDD that is true for the exact same assignments to variables
+  ///              in the given domain.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename IT>
-  __zdd zdd_from(const bdd &f, IT begin, IT end)
+  template<typename ForwardIt>
+  __zdd zdd_from(const bdd &f, ForwardIt begin, ForwardIt end)
   { return zdd_from(f, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////

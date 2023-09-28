@@ -4067,7 +4067,7 @@ go_bandit([]() {
       });
     });
 
-    describe("bdd_exists(const bdd&, IT begin, IT end)", [&]() {
+    describe("bdd_exists(const bdd&, ForwardIt begin, ForwardIt end)", [&]() {
       it("returns original file for [].begin() in BDD 1 [&]", [&]() {
         const std::vector<bdd::label_type> vars = { };
         const bdd out = bdd_exists(bdd_1, vars.begin(), vars.end());
@@ -4916,7 +4916,7 @@ go_bandit([]() {
       });
     });
 
-    describe("bdd_forall(const bdd&, IT begin, IT end)", [&]() {
+    describe("bdd_forall(const bdd&, ForwardIt begin, ForwardIt end)", [&]() {
       it("quantifies [0].rbegin() in BDD 1 [const &]", [&]() {
         const bdd in = bdd_1;
         const std::vector<bdd::label_type> vars = { 0 };
