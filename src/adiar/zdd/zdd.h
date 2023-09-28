@@ -159,7 +159,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     internal::cut::size_type add_false_cofactor(const internal::cut ct, const internal::cuts_t &ilevel_cuts) const
     {
-      const safe_size_t cut_size = ilevel_cuts[ct];
+      const internal::safe_size_t cut_size = ilevel_cuts[ct];
 
       // Bit-mask (allowing implicit conversion to size_t with bit-operators) to
       // get the cut-type WITHOUT the false arcs.
@@ -182,7 +182,7 @@ namespace adiar
       //   with.
       const size_t add_suppressed = !ct.includes(false) && cut_size == ilevel_cuts[ct_excl_false];
 
-      return to_size(cut_size + add_suppressed);
+      return internal::to_size(cut_size + add_suppressed);
     }
     /// \endcond
 

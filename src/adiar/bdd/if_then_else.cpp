@@ -459,29 +459,29 @@ namespace adiar
                                   const internal::dd &in_else)
   {
     // 2-level cuts for 'if', where we split the false and true arcs away.
-    const safe_size_t if_cut_internal = cut::get(in_if, internal::cut::Internal);
-    const safe_size_t if_cut_falses   = cut::get(in_if, internal::cut::Internal_False) - if_cut_internal;
-    const safe_size_t if_cut_trues    = cut::get(in_if, internal::cut::Internal_True)  - if_cut_internal;
+    const internal::safe_size_t if_cut_internal = cut::get(in_if, internal::cut::Internal);
+    const internal::safe_size_t if_cut_falses   = cut::get(in_if, internal::cut::Internal_False) - if_cut_internal;
+    const internal::safe_size_t if_cut_trues    = cut::get(in_if, internal::cut::Internal_True)  - if_cut_internal;
 
     // 2-level cuts for 'then'
-    const safe_size_t then_cut_internal = cut::get(in_then, internal::cut::Internal);
-    const safe_size_t then_cut_falses   = cut::get(in_then, internal::cut::Internal_False) - then_cut_internal;
-    const safe_size_t then_cut_trues    = cut::get(in_then, internal::cut::Internal_True)  - then_cut_internal;
-    const safe_size_t then_cut_all      = cut::get(in_then, internal::cut::All);
+    const internal::safe_size_t then_cut_internal = cut::get(in_then, internal::cut::Internal);
+    const internal::safe_size_t then_cut_falses   = cut::get(in_then, internal::cut::Internal_False) - then_cut_internal;
+    const internal::safe_size_t then_cut_trues    = cut::get(in_then, internal::cut::Internal_True)  - then_cut_internal;
+    const internal::safe_size_t then_cut_all      = cut::get(in_then, internal::cut::All);
 
     // 2-level cuts for 'else'
-    const safe_size_t else_cut_internal = cut::get(in_else, internal::cut::Internal);
-    const safe_size_t else_cut_falses   = cut::get(in_else, internal::cut::Internal_False) - else_cut_internal;
-    const safe_size_t else_cut_trues    = cut::get(in_else, internal::cut::Internal_True)  - else_cut_internal;
-    const safe_size_t else_cut_all      = cut::get(in_else, internal::cut::All);
+    const internal::safe_size_t else_cut_internal = cut::get(in_else, internal::cut::Internal);
+    const internal::safe_size_t else_cut_falses   = cut::get(in_else, internal::cut::Internal_False) - else_cut_internal;
+    const internal::safe_size_t else_cut_trues    = cut::get(in_else, internal::cut::Internal_True)  - else_cut_internal;
+    const internal::safe_size_t else_cut_all      = cut::get(in_else, internal::cut::All);
 
     // Compute 2-level cut where irrelevant pairs of terminals are not paired
-    return to_size((if_cut_internal * (then_cut_all * else_cut_internal + then_cut_internal * else_cut_all
-                                       + then_cut_falses * else_cut_trues
-                                       + then_cut_trues * else_cut_falses))
-                   + if_cut_trues  * then_cut_internal
-                   + if_cut_falses * else_cut_internal
-                   + const_size_inc);
+    return internal::to_size((if_cut_internal * (then_cut_all * else_cut_internal + then_cut_internal * else_cut_all
+                                                 + then_cut_falses * else_cut_trues
+                                                 + then_cut_trues * else_cut_falses))
+                             + if_cut_trues  * then_cut_internal
+                             + if_cut_falses * else_cut_internal
+                             + const_size_inc);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -491,15 +491,15 @@ namespace adiar
                                   const internal::dd &in_then,
                                   const internal::dd &in_else)
   {
-    const safe_size_t if_size = in_if->size();
-    const safe_size_t then_size = in_then->size();
-    const safe_size_t else_size = in_else->size();
+    const internal::safe_size_t if_size = in_if->size();
+    const internal::safe_size_t then_size = in_then->size();
+    const internal::safe_size_t else_size = in_else->size();
 
     // Compute the number of triples (t_if, t_then, t_else) where t_if is an
     // internal node and t_then and t_else are nodes or (mismatching) terminals.
     // Then also count the copies of in_then and in_else for when in_if hits a
     // terminal early.
-    return to_size(if_size * ((then_size + 2u) * (else_size + 2u) - 2u) + then_size + else_size + 1u + 2u);
+    return internal::to_size(if_size * ((then_size + 2u) * (else_size + 2u) - 2u) + then_size + else_size + 1u + 2u);
   }
 
   //////////////////////////////////////////////////////////////////////////////
