@@ -100,12 +100,17 @@ namespace adiar
   { return os << std::endl; }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Convert a wide integer to a string and push to an output stream.
+  /// \brief Convert a wide integer to a string and push it to an output stream.
+  ///
+  /// \details This should be moved to `adiar::internal` in
+  ///          `<adiar/internal/cnl.h>` but doing so creates an ambiguity for
+  ///          the `ptr_uint64` class. Hence, we have to keep this an function
+  ///          of only this file until we have added `to_string()` functions to
+  ///          all basic data types.
   //////////////////////////////////////////////////////////////////////////////
-  // TODO: move into 'adiar/internal/cnl.h'
-  inline std::ostream& operator<< (std::ostream& os, const uintwide_t &s)
+  inline std::ostream& operator<< (std::ostream& os, const uintwide &s)
   {
-    return os << to_string(s);
+    return os << internal::to_string(s);
   }
 
   void __printstat_arc_file(std::ostream &o)
@@ -114,7 +119,7 @@ namespace adiar
 
     indent_level++;
 
-    uintwide_t total_pushes = internal::stats_arc_file.push_internal
+    uintwide total_pushes = internal::stats_arc_file.push_internal
       + internal::stats_arc_file.push_in_order
       + internal::stats_arc_file.push_out_of_order;
 
@@ -128,11 +133,11 @@ namespace adiar
 
     indent_level++;
     o << indent << label << "internal" << internal::stats_arc_file.push_internal
-      << " = " << percent_frac(internal::stats_arc_file.push_internal, total_pushes) << percent << endl;
+      << " = " << internal::percent_frac(internal::stats_arc_file.push_internal, total_pushes) << percent << endl;
     o << indent << label << "terminals (in-order)" << internal::stats_arc_file.push_in_order
-      << " = " << percent_frac(internal::stats_arc_file.push_in_order, total_pushes) << percent << endl;
+      << " = " << internal::percent_frac(internal::stats_arc_file.push_in_order, total_pushes) << percent << endl;
     o << indent << label << "terminals (out-of-order)" << internal::stats_arc_file.push_out_of_order
-      << " = " << percent_frac(internal::stats_arc_file.push_out_of_order, total_pushes) << percent << endl;
+      << " = " << internal::percent_frac(internal::stats_arc_file.push_out_of_order, total_pushes) << percent << endl;
     indent_level--;
 
     o << indent << bold_on << label << "push(level_info ...)" << bold_off << internal::stats_arc_file.push_level << endl;
@@ -178,15 +183,15 @@ namespace adiar
       return;
     }
 
-    uintwide_t total_pushes = stats.push_bucket + stats.push_overflow;
+    uintwide total_pushes = stats.push_bucket + stats.push_overflow;
     o << indent << bold_on << label << "push(...)" << bold_off << total_pushes << endl;
 
     indent_level++;
     o << indent << label << "hit bucket" << stats.push_bucket
-      << " = " << percent_frac(stats.push_bucket, total_pushes) << percent
+      << " = " << internal::percent_frac(stats.push_bucket, total_pushes) << percent
       << endl;
     o << indent << label << "hit overflow" << stats.push_overflow
-      << " = " << percent_frac(stats.push_overflow, total_pushes) << percent << endl;
+      << " = " << internal::percent_frac(stats.push_overflow, total_pushes) << percent << endl;
     indent_level--;
 
     o << indent << endl;
@@ -201,7 +206,7 @@ namespace adiar
 
     o << indent << label << "weighted"
       << stats.sum_actual_max_size << " / " << stats.sum_predicted_max_size
-      << " = " << percent_frac(stats.sum_actual_max_size, stats.sum_predicted_max_size) << percent
+      << " = " << internal::percent_frac(stats.sum_actual_max_size, stats.sum_predicted_max_size) << percent
       << endl;
     indent_level -= 2;
   }
@@ -211,19 +216,19 @@ namespace adiar
   {
     o << indent << bold_on << "levelized priority queue" << bold_off << endl;
 
-    const uintwide_t total_lpqs = stats.lpq.total();
-    const uintwide_t total_internal_lpqs = stats.lpq.unbucketed + stats.lpq.internal;
+    const uintwide total_lpqs = stats.lpq.total();
+    const uintwide total_internal_lpqs = stats.lpq.unbucketed + stats.lpq.internal;
 
     indent_level++;
 
     o << indent << label << "external memory"
-      << stats.lpq.external << " = " << percent_frac(stats.lpq.external, total_lpqs) << percent << endl;
+      << stats.lpq.external << " = " << internal::percent_frac(stats.lpq.external, total_lpqs) << percent << endl;
 
     o << indent << label << "internal memory"
-      << total_internal_lpqs << " = " << percent_frac(total_internal_lpqs, total_lpqs) << percent << endl;
+      << total_internal_lpqs << " = " << internal::percent_frac(total_internal_lpqs, total_lpqs) << percent << endl;
 
     o << indent << label << "  unbucketed"
-      << stats.lpq.unbucketed << " = " << percent_frac(stats.lpq.unbucketed, total_internal_lpqs) << percent << endl;
+      << stats.lpq.unbucketed << " = " << internal::percent_frac(stats.lpq.unbucketed, total_internal_lpqs) << percent << endl;
 
     indent_level--;
 
@@ -235,7 +240,7 @@ namespace adiar
 
   void __printstat_count(std::ostream &o)
   {
-    uintwide_t total_runs = internal::stats_count.lpq.total();
+    uintwide total_runs = internal::stats_count.lpq.total();
     o << indent << bold_on << label << "Count" << bold_off << total_runs << endl;
 
     indent_level++;
@@ -252,7 +257,7 @@ namespace adiar
 
   void __printstat_comparison_check(std::ostream &o)
   {
-    uintwide_t total_runs = internal::stats_equality.lpq.total();
+    uintwide total_runs = internal::stats_equality.lpq.total();
     o << indent << bold_on << label << "Comparison Check" << bold_off << total_runs << endl;
 
     indent_level++;
@@ -269,7 +274,7 @@ namespace adiar
 
   void __printstat_intercut(std::ostream &o)
   {
-    uintwide_t total_runs = internal::stats_intercut.lpq.total();
+    uintwide total_runs = internal::stats_intercut.lpq.total();
     o << indent << bold_on << label << "Intercut" << bold_off << total_runs << endl;
 
     indent_level++;
@@ -286,7 +291,7 @@ namespace adiar
 
   void __printstat_isomorphism(std::ostream &o)
   {
-    const uintwide_t total_runs = internal::stats_equality.exit_on_same_file
+    const uintwide total_runs = internal::stats_equality.exit_on_same_file
                                 + internal::stats_equality.exit_on_nodecount
                                 + internal::stats_equality.exit_on_varcount
                                 + internal::stats_equality.exit_on_terminalcount
@@ -361,7 +366,7 @@ namespace adiar
 
   void __printstat_prod2(std::ostream &o)
   {
-    uintwide_t total_runs = internal::stats_prod2.trivial_file
+    uintwide total_runs = internal::stats_prod2.trivial_file
                           + internal::stats_prod2.trivial_terminal
                           + internal::stats_prod2.ra.runs
                           + internal::stats_prod2.pq.runs;
@@ -377,27 +382,27 @@ namespace adiar
 
     o << indent << bold_on << label << "case [same file]" << bold_off
       << internal::stats_prod2.trivial_file
-      << " = " << percent_frac(internal::stats_prod2.trivial_file, total_runs) << percent
+      << " = " << internal::percent_frac(internal::stats_prod2.trivial_file, total_runs) << percent
       << endl;
 
     o << indent << endl;
 
     o << indent << bold_on << label << "case [terminal]" << bold_off
       << internal::stats_prod2.trivial_terminal
-      << " = " << percent_frac(internal::stats_prod2.trivial_terminal, total_runs) << percent
+      << " = " << internal::percent_frac(internal::stats_prod2.trivial_terminal, total_runs) << percent
       << endl;
 
     o << indent << endl;
 
     o << indent << bold_on << label << "case [random access]" << bold_off
       << internal::stats_prod2.ra.runs
-      << " = " << percent_frac(internal::stats_prod2.ra.runs, total_runs) << percent
+      << " = " << internal::percent_frac(internal::stats_prod2.ra.runs, total_runs) << percent
       << endl;
     if (internal::stats_prod2.ra.runs > 0u) {
       indent_level++;
       o << indent << label << "used narrowest:"
         << internal::stats_prod2.ra.used_narrowest
-        << " = " << percent_frac(internal::stats_prod2.ra.used_narrowest, internal::stats_prod2.ra.runs) << percent
+        << " = " << internal::percent_frac(internal::stats_prod2.ra.used_narrowest, internal::stats_prod2.ra.runs) << percent
         << endl;
 
       o << indent << endl;
@@ -415,7 +420,7 @@ namespace adiar
 
       o << indent << label << "accumulated:"
         << internal::stats_prod2.ra.acc_width
-        << " (avg = " << frac(internal::stats_prod2.ra.acc_width, internal::stats_prod2.ra.runs) << ")"
+        << " (avg = " << internal::frac(internal::stats_prod2.ra.acc_width, internal::stats_prod2.ra.runs) << ")"
         << endl;
 
       indent_level -= 2;
@@ -425,7 +430,7 @@ namespace adiar
 
     o << indent << bold_on << label << "case [priority queue]" << bold_off
       << internal::stats_prod2.pq.runs
-      << " = " << percent_frac(internal::stats_prod2.pq.runs, total_runs) << percent
+      << " = " << internal::percent_frac(internal::stats_prod2.pq.runs, total_runs) << percent
       << endl;
     if (internal::stats_prod2.pq.runs > 0u) {
       indent_level++;
@@ -445,7 +450,7 @@ namespace adiar
 
   void __printstat_prod3(std::ostream &o)
   {
-    uintwide_t total_runs = stats_prod3.lpq.total();
+    uintwide total_runs = stats_prod3.lpq.total();
     o << indent << bold_on << label << "Product Construction (3-ary)" << bold_off << total_runs << endl;
 
     indent_level++;
@@ -462,7 +467,7 @@ namespace adiar
 
   void __printstat_reduce(std::ostream &o)
   {
-    uintwide_t total_runs = internal::stats_reduce.lpq.total();
+    uintwide total_runs = internal::stats_reduce.lpq.total();
     o << indent << bold_on << label << "Reduce" << bold_off << total_runs << endl;
 
     indent_level++;
@@ -473,36 +478,36 @@ namespace adiar
       return;
     }
 
-    uintwide_t total_arcs = internal::stats_reduce.sum_node_arcs + internal::stats_reduce.sum_terminal_arcs;
+    uintwide total_arcs = internal::stats_reduce.sum_node_arcs + internal::stats_reduce.sum_terminal_arcs;
     o << indent << bold_on << label << "inputs size" << bold_off
       << total_arcs << " arcs = " << total_arcs / 2 << " nodes" << endl;
 
     indent_level++;
     o << indent << label << "node arcs:"
       << internal::stats_reduce.sum_node_arcs
-      << " = " << percent_frac(internal::stats_reduce.sum_node_arcs, total_arcs) << percent
+      << " = " << internal::percent_frac(internal::stats_reduce.sum_node_arcs, total_arcs) << percent
       << endl;
 
     o << indent << label << "terminal arcs:"
       << internal::stats_reduce.sum_terminal_arcs
-      << " = " << percent_frac(internal::stats_reduce.sum_terminal_arcs, total_arcs) << percent
+      << " = " << internal::percent_frac(internal::stats_reduce.sum_terminal_arcs, total_arcs) << percent
       << endl;
     indent_level--;
 
     o << indent << endl;
-    uintwide_t total_removed = internal::stats_reduce.removed_by_rule_1 + internal::stats_reduce.removed_by_rule_2;
+    uintwide total_removed = internal::stats_reduce.removed_by_rule_1 + internal::stats_reduce.removed_by_rule_2;
     o << indent << bold_on << label << "nodes removed" << bold_off;
     if (total_removed > 0u) {
-      o << total_removed << " = " << percent_frac(total_removed, total_arcs) << percent << endl;
+      o << total_removed << " = " << internal::percent_frac(total_removed, total_arcs) << percent << endl;
       indent_level++;
       o << indent << label << "rule 1:"
         << internal::stats_reduce.removed_by_rule_1
-        << " = " << percent_frac(internal::stats_reduce.removed_by_rule_1, total_removed) << percent
+        << " = " << internal::percent_frac(internal::stats_reduce.removed_by_rule_1, total_removed) << percent
         << endl;
 
       o << indent << label <<  "rule 2:"
         << internal::stats_reduce.removed_by_rule_2
-        << " = " << percent_frac(internal::stats_reduce.removed_by_rule_2, total_removed) << percent
+        << " = " << internal::percent_frac(internal::stats_reduce.removed_by_rule_2, total_removed) << percent
         << endl;
       indent_level--;
     } else {
@@ -518,7 +523,7 @@ namespace adiar
 
   void __printstat_quantify(std::ostream &o)
   {
-    uintwide_t total_runs = internal::stats_quantify.lpq.total();
+    uintwide total_runs = internal::stats_quantify.lpq.total();
     o << indent << bold_on << label << "Quantification" << bold_off << total_runs << endl;
 
     indent_level++;
@@ -535,7 +540,7 @@ namespace adiar
 
   void __printstat_substitute(std::ostream &o)
   {
-    uintwide_t total_runs = internal::stats_substitute.lpq.total();
+    uintwide total_runs = internal::stats_substitute.lpq.total();
     o << indent << bold_on << label << "Substitution" << bold_off << total_runs << endl;
 
     indent_level++;
