@@ -60,8 +60,8 @@ namespace adiar
     friend size_t zdd_nodecount(const zdd&);
     friend zdd::label_type zdd_varcount(const zdd&);
 
-    friend bool zdd_subseteq(const zdd&, const zdd&);
-    friend bool zdd_disjoint(const zdd &, const zdd &);
+    friend bool zdd_subseteq(const exec_policy &ep, const zdd&, const zdd&);
+    friend bool zdd_disjoint(const exec_policy &ep, const zdd &, const zdd &);
 
   public:
     /// \cond

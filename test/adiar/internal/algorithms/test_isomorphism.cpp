@@ -38,55 +38,55 @@ go_bandit([]() {
         }
 
         it("accepts same file with same negation flag", [&]() {
-          AssertThat(is_isomorphic(terminal_F, terminal_F, false, false), Is().True());
-          AssertThat(is_isomorphic(terminal_F, terminal_F, true, true), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), terminal_F, terminal_F, false, false), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), terminal_F, terminal_F, true, true), Is().True());
         });
 
         it("rejects same file with differing negation falgs", [&]() {
-          AssertThat(is_isomorphic(terminal_F, terminal_F, false, true), Is().False());
-          AssertThat(is_isomorphic(terminal_F, terminal_F, true, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), terminal_F, terminal_F, false, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), terminal_F, terminal_F, true, false), Is().False());
         });
 
         it("rejects on different number of nodes [1]", [&]() {
-          AssertThat(is_isomorphic(x21, x21_and_x42, false, false), Is().False());
-          AssertThat(is_isomorphic(x21, x21_and_x42, false, true), Is().False());
-          AssertThat(is_isomorphic(x21_and_x42, x21, true, false), Is().False());
-          AssertThat(is_isomorphic(x21_and_x42, x21, true, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x21, x21_and_x42, false, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x21, x21_and_x42, false, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x21_and_x42, x21, true, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x21_and_x42, x21, true, true), Is().False());
         });
 
         it("rejects on different number of nodes [2]", [&]() {
-          AssertThat(is_isomorphic(x21_xor_x42, x21_and_x42, false, false), Is().False());
-          AssertThat(is_isomorphic(x21_xor_x42, x21_and_x42, false, true), Is().False());
-          AssertThat(is_isomorphic(x21_and_x42, x21_xor_x42, true, false), Is().False());
-          AssertThat(is_isomorphic(x21_and_x42, x21_xor_x42, true, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x21_xor_x42, x21_and_x42, false, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x21_xor_x42, x21_and_x42, false, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x21_and_x42, x21_xor_x42, true, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x21_and_x42, x21_xor_x42, true, true), Is().False());
         });
 
         it("rejects on different number of levels [1]", [&]() {
-          AssertThat(is_isomorphic(terminal_F, x42, false, false), Is().False());
-          AssertThat(is_isomorphic(terminal_F, x42, false, true), Is().False());
-          AssertThat(is_isomorphic(x42, terminal_F, true, false), Is().False());
-          AssertThat(is_isomorphic(x42, terminal_F, true, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), terminal_F, x42, false, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), terminal_F, x42, false, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x42, terminal_F, true, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x42, terminal_F, true, true), Is().False());
         });
 
         it("rejects on different number of levels [2]", [&]() {
-          AssertThat(is_isomorphic(x21_and_x22_and_x42, x21_and_x22, false, false), Is().False());
-          AssertThat(is_isomorphic(x21_and_x22_and_x42, x21_and_x22, false, true), Is().False());
-          AssertThat(is_isomorphic(x21_and_x22, x21_and_x22_and_x42, true, false), Is().False());
-          AssertThat(is_isomorphic(x21_and_x22, x21_and_x22_and_x42, true, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x21_and_x22_and_x42, x21_and_x22, false, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x21_and_x22_and_x42, x21_and_x22, false, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x21_and_x22, x21_and_x22_and_x42, true, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x21_and_x22, x21_and_x22_and_x42, true, true), Is().False());
         });
 
         it("rejects on different labels in level [1]", [&]() {
-          AssertThat(is_isomorphic(x21, x42, false, false), Is().False());
-          AssertThat(is_isomorphic(x21, x42, false, true), Is().False());
-          AssertThat(is_isomorphic(x42, x21, true, false), Is().False());
-          AssertThat(is_isomorphic(x42, x21, true, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x21, x42, false, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x21, x42, false, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x42, x21, true, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x42, x21, true, true), Is().False());
         });
 
         it("rejects on different labels in level [2]", [&]() {
-          AssertThat(is_isomorphic(x21_and_x42, x21_and_x22, false, false), Is().False());
-          AssertThat(is_isomorphic(x21_and_x42, x21_and_x22, false, true), Is().False());
-          AssertThat(is_isomorphic(x21_and_x22, x21_and_x42, true, false), Is().False());
-          AssertThat(is_isomorphic(x21_and_x22, x21_and_x42, true, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x21_and_x42, x21_and_x22, false, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x21_and_x42, x21_and_x22, false, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x21_and_x22, x21_and_x42, true, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x21_and_x22, x21_and_x42, true, true), Is().False());
         });
 
         it("rejects on different size of level", [&]() {
@@ -116,10 +116,10 @@ go_bandit([]() {
                       << node(0,0, ptr_uint64(1,0), ptr_uint64(1,1));
           }
 
-          AssertThat(is_isomorphic(seven_a, seven_b, false, false), Is().False());
-          AssertThat(is_isomorphic(seven_a, seven_b, false, true), Is().False());
-          AssertThat(is_isomorphic(seven_b, seven_a, true, false), Is().False());
-          AssertThat(is_isomorphic(seven_b, seven_a, true, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), seven_a, seven_b, false, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), seven_a, seven_b, false, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), seven_b, seven_a, true, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), seven_b, seven_a, true, true), Is().False());
         });
       });
 
@@ -379,56 +379,56 @@ go_bandit([]() {
         //////////////////////
         // Sink-only cases
         it("accepts two different F terminals ", [&]() {
-          AssertThat(is_isomorphic(F_a, F_b), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), F_a, F_b), Is().True());
         });
 
         it("rejects an F and a T terminal ", [&]() {
-          AssertThat(is_isomorphic(T_a, F_a), Is().False());
-          AssertThat(is_isomorphic(F_b, T_a), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), T_a, F_a), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), F_b, T_a), Is().False());
         });
 
         it("rejects an F with a T terminal, where both are negated", [&]() {
-          AssertThat(is_isomorphic(T_a, F_a, true, true), Is().False());
-          AssertThat(is_isomorphic(T_a, F_a, true, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), T_a, F_a, true, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), T_a, F_a, true, true), Is().False());
         });
 
         //////////////////////
         // One-node cases
         it("accepts two different x42", [&]() {
-          AssertThat(is_isomorphic(x42_a, x42_b, false, false), Is().True());
-          AssertThat(is_isomorphic(x42_a, x42_b, true, true), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), x42_a, x42_b, false, false), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), x42_a, x42_b, true, true), Is().True());
         });
 
         it("rejects x42 and ~x42", [&]() {
-          AssertThat(is_isomorphic(x42_a, not_x42, false, false), Is().False());
-          AssertThat(is_isomorphic(x42_a, not_x42, true, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x42_a, not_x42, false, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x42_a, not_x42, true, true), Is().False());
         });
 
         it("rejects x69_T and x69_F", [&]() {
-          AssertThat(is_isomorphic(x69_T, x69_F, false, false), Is().False());
-          AssertThat(is_isomorphic(x69_T, x69_F, true, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x69_T, x69_F, false, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x69_T, x69_F, true, true), Is().False());
         });
 
         //////////////////////
         // Traversal cases
         it("rejects its negation [1]", [&]() {
-          AssertThat(is_isomorphic(bdd_1, bdd_1n, false, false), Is().False());
-          AssertThat(is_isomorphic(bdd_1, bdd_1n, true, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_1, bdd_1n, false, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_1, bdd_1n, true, true), Is().False());
         });
 
         it("rejects its negation [2]", [&]() {
-          AssertThat(is_isomorphic(bdd_2, bdd_2n, false, false), Is().False());
-          AssertThat(is_isomorphic(bdd_2, bdd_2n, true, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_2, bdd_2n, false, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_2, bdd_2n, true, true), Is().False());
         });
 
         it("rejects on low child mismatch (leaf value) [1]", [&]() {
-          AssertThat(is_isomorphic(bdd_1, bdd_1_low_leaf, false, false), Is().False());
-          AssertThat(is_isomorphic(bdd_1, bdd_1_low_leaf, true, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_1, bdd_1_low_leaf, false, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_1, bdd_1_low_leaf, true, true), Is().False());
         });
 
         it("rejects on low child mismatch (internal node vs. leaf) [2]", [&]() {
-          AssertThat(is_isomorphic(bdd_2, bdd_2_low_child, false, false), Is().False());
-          AssertThat(is_isomorphic(bdd_2, bdd_2_low_child, true, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_2, bdd_2_low_child, false, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_2, bdd_2_low_child, true, true), Is().False());
         });
 
         it("rejects on low child mismatch (internal node labels) [3]", [&]() {
@@ -442,18 +442,18 @@ go_bandit([]() {
               << node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id));
           }
 
-          AssertThat(is_isomorphic(bdd_3, bdd_3_b, false, false), Is().False());
-          AssertThat(is_isomorphic(bdd_3, bdd_3_b, true, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_3, bdd_3_b, false, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_3, bdd_3_b, true, true), Is().False());
         });
 
         it("rejects on high child mismatch (leaf value) [1]", [&]() {
-          AssertThat(is_isomorphic(bdd_1, bdd_1_high_leaf, false, false), Is().False());
-          AssertThat(is_isomorphic(bdd_1, bdd_1_high_leaf, true, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_1, bdd_1_high_leaf, false, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_1, bdd_1_high_leaf, true, true), Is().False());
         });
 
         it("rejects on high child mismatch (internal node vs. leaf) [2]", [&]() {
-          AssertThat(is_isomorphic(bdd_2, bdd_2_high_child, false, false), Is().False());
-          AssertThat(is_isomorphic(bdd_2, bdd_2_high_child, true, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_2, bdd_2_high_child, false, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_2, bdd_2_high_child, true, true), Is().False());
         });
 
         it("rejects on high child mismatch (internal node labels) [4]", [&]() {
@@ -466,20 +466,20 @@ go_bandit([]() {
               << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id));
           }
 
-          AssertThat(is_isomorphic(bdd_4, bdd_4_b, false, false), Is().False());
-          AssertThat(is_isomorphic(bdd_4, bdd_4_b, true, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_4, bdd_4_b, false, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_4, bdd_4_b, true, true), Is().False());
         });
 
         it("rejects on mismatch of total number of terminals", [&]() {
-          AssertThat(is_isomorphic(bdd_4, bdd_5, false, false), Is().False());
-          AssertThat(is_isomorphic(bdd_4, bdd_5, true, true), Is().False());
-          AssertThat(is_isomorphic(bdd_4, bdd_5, false, true), Is().False());
-          AssertThat(is_isomorphic(bdd_4, bdd_5, true, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_4, bdd_5, false, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_4, bdd_5, true, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_4, bdd_5, false, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_4, bdd_5, true, false), Is().False());
         });
 
         it("rejects on mismatch of number of one type of terminal", [&]() {
-          AssertThat(is_isomorphic(bdd_5, bdd_6, false, false), Is().False());
-          AssertThat(is_isomorphic(bdd_5, bdd_6, true, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_5, bdd_6, false, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_5, bdd_6, true, true), Is().False());
         });
       });
 
@@ -487,39 +487,39 @@ go_bandit([]() {
         //////////////////////
         // Sink-only cases
         it("rejects two F terminals, where one is negated", [&]() {
-          AssertThat(is_isomorphic(F_a, F_b, true, false), Is().False());
-          AssertThat(is_isomorphic(F_a, F_b, false, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), F_a, F_b, true, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), F_a, F_b, false, true), Is().False());
         });
 
         it("accepts an F with a T terminal, where one is negated", [&]() {
-          AssertThat(is_isomorphic(T_a, F_a, true, false), Is().True());
-          AssertThat(is_isomorphic(T_a, F_a, false, true), Is().True());
-          AssertThat(is_isomorphic(F_b, T_a, true, false), Is().True());
-          AssertThat(is_isomorphic(F_b, T_a, false, true), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), T_a, F_a, true, false), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), T_a, F_a, false, true), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), F_b, T_a, true, false), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), F_b, T_a, false, true), Is().True());
         });
 
         //////////////////////
         // One-node cases
         it("rejects two x42, where one is negated", [&]() {
-          AssertThat(is_isomorphic(x42_a, x42_b, false, true), Is().False());
-          AssertThat(is_isomorphic(x42_a, x42_b, true, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x42_a, x42_b, false, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), x42_a, x42_b, true, false), Is().False());
         });
 
         it("accepts x42 with negated ~x42", [&]() {
-          AssertThat(is_isomorphic(x42_a, not_x42, false, true), Is().True());
-          AssertThat(is_isomorphic(x42_a, not_x42, true, false), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), x42_a, not_x42, false, true), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), x42_a, not_x42, true, false), Is().True());
         });
 
         //////////////////////
         // Traversal cases
         it("accepts with negation of negated [1]", [&]() {
-          AssertThat(is_isomorphic(bdd_1, bdd_1n, false, true), Is().True());
-          AssertThat(is_isomorphic(bdd_1, bdd_1n, true, false), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), bdd_1, bdd_1n, false, true), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), bdd_1, bdd_1n, true, false), Is().True());
         });
 
         it("accepts with negation of negated [2]", [&]() {
-          AssertThat(is_isomorphic(bdd_2, bdd_2n, false, true), Is().True());
-          AssertThat(is_isomorphic(bdd_2, bdd_2n, true, false), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), bdd_2, bdd_2n, false, true), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), bdd_2, bdd_2n, true, false), Is().True());
         });
 
         it("accepts with nodes swapped [1]", [&]() {
@@ -533,10 +533,10 @@ go_bandit([]() {
               << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id-1));
           }
 
-          AssertThat(is_isomorphic(bdd_1, bdd_1b, false, false), Is().True());
-          AssertThat(is_isomorphic(bdd_1n, bdd_1b, true, false), Is().True());
-          AssertThat(is_isomorphic(bdd_1n, bdd_1b, false, true), Is().True());
-          AssertThat(is_isomorphic(bdd_1, bdd_1b, true, true), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), bdd_1, bdd_1b, false, false), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), bdd_1n, bdd_1b, true, false), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), bdd_1n, bdd_1b, false, true), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), bdd_1, bdd_1b, true, true), Is().True());
         });
 
         it("accepts with nodes swapped [2]", [&]() {
@@ -551,20 +551,20 @@ go_bandit([]() {
               << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id-1));
           }
 
-          AssertThat(is_isomorphic(bdd_2, bdd_2b, false, false), Is().True());
-          AssertThat(is_isomorphic(bdd_2n, bdd_2b, true, false), Is().True());
-          AssertThat(is_isomorphic(bdd_2n, bdd_2b, false, true), Is().True());
-          AssertThat(is_isomorphic(bdd_2, bdd_2b, true, true), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), bdd_2, bdd_2b, false, false), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), bdd_2n, bdd_2b, true, false), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), bdd_2n, bdd_2b, false, true), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), bdd_2, bdd_2b, true, true), Is().True());
         });
 
         it("rejects on low child mismatch (leaf value) [1]", [&]() {
-          AssertThat(is_isomorphic(bdd_1n, bdd_1_low_leaf, true, false), Is().False());
-          AssertThat(is_isomorphic(bdd_1n, bdd_1_low_leaf, false, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_1n, bdd_1_low_leaf, true, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_1n, bdd_1_low_leaf, false, true), Is().False());
         });
 
         it("rejects on low child mismatch (internal node vs. leaf) [2]", [&]() {
-          AssertThat(is_isomorphic(bdd_2n, bdd_2_low_child, true, false), Is().False());
-          AssertThat(is_isomorphic(bdd_2n, bdd_2_low_child, false, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_2n, bdd_2_low_child, true, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_2n, bdd_2_low_child, false, true), Is().False());
         });
 
         it("rejects on low child mismatch (internal node labels) [3]", [&]() {
@@ -577,8 +577,8 @@ go_bandit([]() {
               << node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id));
           }
 
-          AssertThat(is_isomorphic(bdd_3, bdd_3_b, true, false), Is().False());
-          AssertThat(is_isomorphic(bdd_3, bdd_3_b, false, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_3, bdd_3_b, true, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_3, bdd_3_b, false, true), Is().False());
         });
 
         it("rejects on low child mismatch on root", [&]() {
@@ -594,18 +594,18 @@ go_bandit([]() {
               << node(0, node::max_id, ptr_uint64(true), ptr_uint64(1, ptr_uint64::max_id));
           }
 
-          AssertThat(is_isomorphic(bdd_a, bdd_b, true, false), Is().False());
-          AssertThat(is_isomorphic(bdd_a, bdd_b, false, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_a, bdd_b, true, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_a, bdd_b, false, true), Is().False());
         });
 
         it("rejects on high child mismatch (leaf value) [1]", [&]() {
-          AssertThat(is_isomorphic(bdd_1n, bdd_1_high_leaf, false, true), Is().False());
-          AssertThat(is_isomorphic(bdd_1n, bdd_1_high_leaf, true, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_1n, bdd_1_high_leaf, false, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_1n, bdd_1_high_leaf, true, false), Is().False());
         });
 
         it("rejects on high child mismatch (internal node vs. leaf) [2]", [&]() {
-          AssertThat(is_isomorphic(bdd_2n, bdd_2_high_child, true, false), Is().False());
-          AssertThat(is_isomorphic(bdd_2n, bdd_2_high_child, false, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_2n, bdd_2_high_child, true, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_2n, bdd_2_high_child, false, true), Is().False());
         });
 
         it("rejects on high child mismatch (internal node labels) [4]", [&]() {
@@ -619,8 +619,8 @@ go_bandit([]() {
               << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id));
           }
 
-          AssertThat(is_isomorphic(bdd_4, bdd_4_b, true, false), Is().False());
-          AssertThat(is_isomorphic(bdd_4, bdd_4_b, false, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_4, bdd_4_b, true, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_4, bdd_4_b, false, true), Is().False());
         });
 
         it("rejects on high child mismatch on root", [&]() {
@@ -638,8 +638,8 @@ go_bandit([]() {
               << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(true));
           }
 
-          AssertThat(is_isomorphic(bdd_a, bdd_b, true, false), Is().False());
-          AssertThat(is_isomorphic(bdd_a, bdd_b, false, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_a, bdd_b, true, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_a, bdd_b, false, true), Is().False());
         });
 
         it("rejects when resolving more requests on a level than nodes in original BDDs", [&]() {
@@ -688,8 +688,8 @@ go_bandit([]() {
               << node(0, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id));
           }
 
-          AssertThat(is_isomorphic(bdd_5_a, bdd_5_b, true, false), Is().False());
-          AssertThat(is_isomorphic(bdd_5_b, bdd_5_a, false, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_5_a, bdd_5_b, true, false), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), bdd_5_b, bdd_5_a, false, true), Is().False());
         });
       });
     });
