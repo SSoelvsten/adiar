@@ -19,6 +19,7 @@
 
 #include <adiar/assignment.h>
 #include <adiar/bool_op.h>
+#include <adiar/exec_policy.h>
 #include <adiar/file.h> // <-- TODO: Remove
 #include <adiar/functional.h>
 
@@ -677,6 +678,12 @@ namespace adiar
   uint64_t bdd_pathcount(const bdd &f);
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief Count all unique (but not necessarily disjoint) paths to the true
+  ///        terminal.
+  //////////////////////////////////////////////////////////////////////////////
+  uint64_t bdd_pathcount(const exec_policy &ep, const bdd &f);
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief          Count the number of assignments x that make f(x) true.
   ///
   /// \param f        BDD to count within.
@@ -694,14 +701,26 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Count the number of assignments x that make f(x) true.
+  //////////////////////////////////////////////////////////////////////////////
+  uint64_t bdd_satcount(const exec_policy &ep,
+                        const bdd &f,
+                        bdd::label_type varcount);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief   Count the number of assignments x that make f(x) true.
   ///
-  /// \details Same as `bdd_satcount(bdd, varcount)`, with varcount set to be
-  ///          the size of the global domain or the number of variables within
-  ///          the given BDD.
+  /// \details Same as `bdd_satcount(f, varcount)`, with varcount set to be the
+  ///          size of the global domain or the number of variables within the
+  ///          given BDD.
   ///
   /// \see domain_set bdd_varcount
   //////////////////////////////////////////////////////////////////////////////
   uint64_t bdd_satcount(const bdd &f);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief   Count the number of assignments x that make f(x) true.
+  //////////////////////////////////////////////////////////////////////////////
+  uint64_t bdd_satcount(const exec_policy &ep, const bdd &f);
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////

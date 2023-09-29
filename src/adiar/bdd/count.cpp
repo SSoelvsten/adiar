@@ -86,14 +86,17 @@ namespace adiar
     return internal::dd_varcount(f);
   }
 
-  uint64_t bdd_pathcount(const bdd &f)
+  uint64_t bdd_pathcount(const exec_policy &ep, const bdd &f)
   {
     return bdd_isterminal(f)
       ? 0
-      : internal::count<internal::path_count_policy<bdd_policy>>(f, bdd_varcount(f));
+      : internal::count<internal::path_count_policy<bdd_policy>>(ep, f, bdd_varcount(f));
   }
 
-  uint64_t bdd_satcount(const bdd& f, bdd::label_type varcount)
+  uint64_t bdd_pathcount(const bdd &f)
+  { return bdd_pathcount(exec_policy(), f); }
+
+  uint64_t bdd_satcount(const exec_policy &ep, const bdd& f, bdd::label_type varcount)
   {
     if (varcount < bdd_varcount(f)) {
       throw invalid_argument("'varcount' ought to be at least the number of levels in the BDD");
@@ -103,13 +106,19 @@ namespace adiar
       return dd_valueof(f) ? std::min(1u, varcount) << varcount : 0u;
     }
 
-    return internal::count<sat_count_policy>(f, varcount);
+    return internal::count<sat_count_policy>(ep, f, varcount);
   }
 
-  uint64_t bdd_satcount(const bdd &f)
+  uint64_t bdd_satcount(const bdd& f, bdd::label_type varcount)
+  { return bdd_satcount(exec_policy(), f, varcount); }
+
+  uint64_t bdd_satcount(const exec_policy &ep, const bdd &f)
   {
     const bdd::label_type domain_size = domain_isset() ? domain_get()->size() : 0;
     const bdd::label_type varcount = bdd_varcount(f);
-    return bdd_satcount(f, std::max(domain_size, varcount));
+    return bdd_satcount(ep, f, std::max(domain_size, varcount));
   };
+
+  uint64_t bdd_satcount(const bdd &f)
+  { return bdd_satcount(exec_policy(), f); };
 }

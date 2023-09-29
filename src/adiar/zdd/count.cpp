@@ -17,10 +17,13 @@ namespace adiar
     return internal::dd_varcount(A);
   }
 
-  uint64_t zdd_size(const zdd &A)
+  uint64_t zdd_size(const exec_policy &ep, const zdd &A)
   {
     return zdd_isterminal(A)
       ? internal::dd_valueof(A)
-      : internal::count<internal::path_count_policy<zdd_policy>>(A, zdd_varcount(A));
+      : internal::count<internal::path_count_policy<zdd_policy>>(ep, A, zdd_varcount(A));
   }
+
+  uint64_t zdd_size(const zdd &A)
+  { return zdd_size(exec_policy(), A); }
 }
