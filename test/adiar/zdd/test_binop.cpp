@@ -320,8 +320,7 @@ go_bandit([]() {
     });
 
     describe("access mode: priority queues", [&]() {
-      // Set access mode to priority queues for this batch of tests
-      access_mode = access_mode_t::Priority_Queue;
+      const exec_policy ep = exec_policy::access::Priority_Queue;
 
       describe("zdd_union", [&]() {
         it("computes { {0} } U { Ø }", [&]() {
@@ -331,7 +330,7 @@ go_bandit([]() {
           //          T T
           */
 
-          __zdd out = zdd_union(zdd_x0, zdd_T);
+          __zdd out = zdd_union(ep, zdd_x0, zdd_T);
 
           arc_test_stream arcs(out);
           AssertThat(arcs.can_pull_internal(), Is().False());
@@ -366,7 +365,7 @@ go_bandit([]() {
           //           F T
           */
 
-          __zdd out = zdd_union(zdd_x0, zdd_x1);
+          __zdd out = zdd_union(ep, zdd_x0, zdd_x1);
 
           arc_test_stream arcs(out);
 
@@ -420,17 +419,17 @@ go_bandit([]() {
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
             nw_a << node(3, node::max_id, terminal_F, terminal_T)
-                << node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), terminal_T)
-                << node(0, node::max_id, terminal_F, ptr_uint64(1, ptr_uint64::max_id))
+                 << node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), terminal_T)
+                 << node(0, node::max_id, terminal_F, ptr_uint64(1, ptr_uint64::max_id))
               ;
 
             node_writer nw_b(zdd_b);
             nw_b << node(2, node::max_id, terminal_F, terminal_T)
-                << node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id))
+                 << node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id))
               ;
           }
 
-          __zdd out = zdd_union(zdd_a, zdd_b);
+          __zdd out = zdd_union(ep, zdd_a, zdd_b);
 
           arc_test_stream arcs(out);
 
@@ -506,16 +505,16 @@ go_bandit([]() {
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
             nw_a << node(1, node::max_id, terminal_F, terminal_T)
-                << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id))
+                 << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id))
               ;
 
             node_writer nw_b(zdd_b);
             nw_b << node(2, node::max_id, terminal_F, terminal_T)
-                << node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id))
+                 << node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id))
               ;
           }
 
-          __zdd out = zdd_union(zdd_a, zdd_b);
+          __zdd out = zdd_union(ep, zdd_a, zdd_b);
 
           arc_test_stream arcs(out);
 
@@ -581,18 +580,18 @@ go_bandit([]() {
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
             nw_a << node(3, node::max_id, terminal_F, terminal_T)
-                << node(2, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(3, ptr_uint64::max_id))
-                << node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(3, ptr_uint64::max_id))
-                << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), terminal_T)
+                 << node(2, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(3, ptr_uint64::max_id))
+                 << node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(3, ptr_uint64::max_id))
+                 << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), terminal_T)
               ;
 
             node_writer nw_b(zdd_b);
             nw_b << node(3, node::max_id, terminal_F, terminal_T)
-                << node(0, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(3, ptr_uint64::max_id))
+                 << node(0, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(3, ptr_uint64::max_id))
               ;
           }
 
-          __zdd out = zdd_union(zdd_a, zdd_b);
+          __zdd out = zdd_union(ep, zdd_a, zdd_b);
 
           arc_test_stream arcs(out);
 
@@ -664,7 +663,7 @@ go_bandit([]() {
           //          F T
           */
 
-          __zdd out = zdd_intsec(zdd_x0, zdd_T);
+          __zdd out = zdd_intsec(ep, zdd_x0, zdd_T);
 
           node_test_stream out_nodes(out);
 
@@ -697,7 +696,7 @@ go_bandit([]() {
             nw_a << node(0, node::max_id, terminal_T, terminal_T);
           }
 
-          __zdd out = zdd_intsec(zdd_a, zdd_T);
+          __zdd out = zdd_intsec(ep, zdd_a, zdd_T);
 
           node_test_stream out_nodes(out);
 
@@ -731,11 +730,11 @@ go_bandit([]() {
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
             nw_a << node(1, node::max_id, terminal_F, terminal_T)
-                << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), terminal_T)
+                 << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), terminal_T)
               ;
           }
 
-          __zdd out = zdd_intsec(zdd_a, zdd_T);
+          __zdd out = zdd_intsec(ep, zdd_a, zdd_T);
 
           node_test_stream out_nodes(out);
 
@@ -770,17 +769,17 @@ go_bandit([]() {
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
             nw_a << node(1, node::max_id, terminal_F, terminal_T)
-                << node(1, node::max_id-1, terminal_T, terminal_T)
-                << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id))
+                 << node(1, node::max_id-1, terminal_T, terminal_T)
+                 << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id))
               ;
 
             node_writer nw_b(zdd_b);
             nw_b << node(1, node::max_id, terminal_F, terminal_T)
-                << node(0, node::max_id, terminal_F, ptr_uint64(1, ptr_uint64::max_id))
+                 << node(0, node::max_id, terminal_F, ptr_uint64(1, ptr_uint64::max_id))
               ;
           }
 
-          __zdd out = zdd_intsec(zdd_a, zdd_b);
+          __zdd out = zdd_intsec(ep, zdd_a, zdd_b);
 
           arc_test_stream arcs(out);
 
@@ -830,11 +829,11 @@ go_bandit([]() {
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
             nw_a << node(1, node::max_id, terminal_F, terminal_T)
-                << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id))
+                 << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id))
               ;
           }
 
-          __zdd out = zdd_intsec(zdd_a, zdd_T);
+          __zdd out = zdd_intsec(ep, zdd_a, zdd_T);
 
           node_test_stream out_nodes(out);
 
@@ -875,8 +874,8 @@ go_bandit([]() {
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
             nw_a << node(2, node::max_id, terminal_T, terminal_T)
-                << node(2, node::max_id-1, terminal_F, terminal_T)
-                << node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(2, ptr_uint64::max_id))
+                 << node(2, node::max_id-1, terminal_F, terminal_T)
+                 << node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(2, ptr_uint64::max_id))
               ;
           }
 
@@ -885,12 +884,12 @@ go_bandit([]() {
           { // Garbage collect writers early
             node_writer nw_b(zdd_b);
             nw_b << node(2, node::max_id, terminal_T, terminal_F)
-                << node(2, node::max_id-1, terminal_F, terminal_T)
-                << node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id-1))
+                 << node(2, node::max_id-1, terminal_F, terminal_T)
+                 << node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id-1))
               ;
           }
 
-          __zdd out = zdd_intsec(zdd_a, zdd_b);
+          __zdd out = zdd_intsec(ep, zdd_a, zdd_b);
 
           node_test_stream out_nodes(out);
 
@@ -931,9 +930,9 @@ go_bandit([]() {
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
             nw_a << node(2, node::max_id, terminal_T, terminal_T)
-                << node(2, node::max_id-1, terminal_F, terminal_T)
-                << node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id-1))
-                << node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id))
+                 << node(2, node::max_id-1, terminal_F, terminal_T)
+                 << node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id-1))
+                 << node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id))
               ;
           }
 
@@ -942,13 +941,13 @@ go_bandit([]() {
           { // Garbage collect writers early
             node_writer nw_b(zdd_b);
             nw_b << node(2, node::max_id, terminal_T, terminal_T)
-                << node(2, node::max_id-1, terminal_F, terminal_T)
-                << node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id-1), terminal_T)
-                << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id))
+                 << node(2, node::max_id-1, terminal_F, terminal_T)
+                 << node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id-1), terminal_T)
+                 << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id))
               ;
           }
 
-          __zdd out = zdd_intsec(zdd_a, zdd_b);
+          __zdd out = zdd_intsec(ep, zdd_a, zdd_b);
 
           arc_test_stream arcs(out);
 
@@ -1003,16 +1002,16 @@ go_bandit([]() {
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
             nw_a << node(1, node::max_id, terminal_F, terminal_T)
-                << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), terminal_T)
+                 << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), terminal_T)
               ;
 
             node_writer nw_b(zdd_b);
             nw_b << node(1, node::max_id, terminal_F, terminal_T)
-                << node(0, node::max_id, terminal_F, ptr_uint64(1, ptr_uint64::max_id))
+                 << node(0, node::max_id, terminal_F, ptr_uint64(1, ptr_uint64::max_id))
               ;
           }
 
-          __zdd out = zdd_intsec(zdd_a, zdd_b);
+          __zdd out = zdd_intsec(ep, zdd_a, zdd_b);
 
           arc_test_stream arcs(out);
 
@@ -1057,20 +1056,20 @@ go_bandit([]() {
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
             nw_a << node(2, node::max_id,   terminal_T, terminal_T)
-                << node(2, node::max_id-1, terminal_F, terminal_T)
-                << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(2, ptr_uint64::max_id))
-                << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id),   ptr_uint64(2, ptr_uint64::max_id))
+                 << node(2, node::max_id-1, terminal_F, terminal_T)
+                 << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(2, ptr_uint64::max_id))
+                 << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id),   ptr_uint64(2, ptr_uint64::max_id))
               ;
 
             node_writer nw_b(zdd_b);
             nw_b << node(2, node::max_id,   terminal_T, terminal_T)
-                << node(2, node::max_id-1, terminal_F, terminal_T)
-                << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(2, ptr_uint64::max_id))
-                << node(0, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id))
+                 << node(2, node::max_id-1, terminal_F, terminal_T)
+                 << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(2, ptr_uint64::max_id))
+                 << node(0, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id))
               ;
           }
 
-          __zdd out = zdd_intsec(zdd_a, zdd_b);
+          __zdd out = zdd_intsec(ep, zdd_a, zdd_b);
 
           arc_test_stream arcs(out);
 
@@ -1127,17 +1126,17 @@ go_bandit([]() {
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
             nw_a << node(1, node::max_id, terminal_F, terminal_T)
-                << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), terminal_T)
+                 << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), terminal_T)
               ;
 
             node_writer nw_b(zdd_b);
             nw_b << node(2, node::max_id, terminal_F, terminal_T)
-                << node(1, node::max_id, terminal_F, terminal_T)
-                << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id))
+                 << node(1, node::max_id, terminal_F, terminal_T)
+                 << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id))
               ;
           }
 
-          __zdd out = zdd_intsec(zdd_a, zdd_b);
+          __zdd out = zdd_intsec(ep, zdd_a, zdd_b);
 
           arc_test_stream arcs(out);
 
@@ -1192,17 +1191,17 @@ go_bandit([]() {
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
             nw_a << node(2, node::max_id, terminal_F, terminal_T)
-                << node(1, node::max_id, terminal_T, ptr_uint64(2, ptr_uint64::max_id))
-                << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id))
+                 << node(1, node::max_id, terminal_T, ptr_uint64(2, ptr_uint64::max_id))
+                 << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id))
               ;
 
             node_writer nw_b(zdd_b);
             nw_b << node(1, node::max_id, terminal_T, terminal_T)
-                << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), terminal_T)
+                 << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), terminal_T)
               ;
           }
 
-          __zdd out = zdd_intsec(zdd_a, zdd_b);
+          __zdd out = zdd_intsec(ep, zdd_a, zdd_b);
 
           arc_test_stream arcs(out);
 
@@ -1257,17 +1256,17 @@ go_bandit([]() {
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
             nw_a << node(2, node::max_id, terminal_F, terminal_T)
-                << node(1, node::max_id, terminal_T, ptr_uint64(2, ptr_uint64::max_id))
-                << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id))
+                 << node(1, node::max_id, terminal_T, ptr_uint64(2, ptr_uint64::max_id))
+                 << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id))
               ;
 
             node_writer nw_b(zdd_b);
             nw_b << node(2, node::max_id, terminal_T, terminal_T)
-                << node(0, node::max_id, terminal_F, ptr_uint64(2, ptr_uint64::max_id))
+                 << node(0, node::max_id, terminal_F, ptr_uint64(2, ptr_uint64::max_id))
               ;
           }
 
-          __zdd out = zdd_intsec(zdd_a, zdd_b);
+          __zdd out = zdd_intsec(ep, zdd_a, zdd_b);
 
           arc_test_stream arcs(out);
 
@@ -1305,7 +1304,7 @@ go_bandit([]() {
 
       describe("zdd_diff", [&]() {
         it("computes { {Ø} } \\ { {0} }", [&]() {
-          __zdd out = zdd_diff(zdd_T, zdd_x0);
+          __zdd out = zdd_diff(ep, zdd_T, zdd_x0);
 
           node_test_stream out_nodes(out);
 
@@ -1331,7 +1330,7 @@ go_bandit([]() {
           //          / \          ==>    / \
           //          F T                 F T
           */
-          __zdd out = zdd_diff(zdd_x0, zdd_T);
+          __zdd out = zdd_diff(ep, zdd_x0, zdd_T);
 
           arc_test_stream arcs(out);
 
@@ -1370,7 +1369,7 @@ go_bandit([]() {
             nw_a << node(0, node::max_id, terminal_T, terminal_T);
           }
 
-          __zdd out = zdd_diff(zdd_a, zdd_T);
+          __zdd out = zdd_diff(ep, zdd_a, zdd_T);
 
           arc_test_stream arcs(out);
 
@@ -1417,7 +1416,7 @@ go_bandit([]() {
             nw_b << node(1, node::max_id, terminal_T, terminal_T);
           }
 
-          __zdd out = zdd_diff(zdd_a, zdd_b);
+          __zdd out = zdd_diff(ep, zdd_a, zdd_b);
 
           arc_test_stream arcs(out);
 
@@ -1477,7 +1476,7 @@ go_bandit([]() {
             nw_b << node(1, node::max_id, terminal_T, terminal_T);
           }
 
-          __zdd out = zdd_diff(zdd_a, zdd_b);
+          __zdd out = zdd_diff(ep, zdd_a, zdd_b);
 
           arc_test_stream arcs(out);
 
@@ -1526,64 +1525,60 @@ go_bandit([]() {
           AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
         });
       });
-
-      // Reset access mode
-      access_mode = access_mode_t::Auto;
     });
 
     describe("access mode: random access", [&]() {
-      // Set access mode to random access for this batch of tests
-      access_mode = access_mode_t::Random_Access;
+      const exec_policy ep = exec_policy::access::Random_Access;
 
       describe("zdd_union", [&]() {
         it("computes { {0} } U { Ø, {0} } (same level)", [&]() {
-            shared_levelized_file<zdd::node_type> zdd_maybe_x0;
-            /*
-            //      { Ø, {0} }
-            //
-            //          1          ---- x0
-            //          ||
-            //          T
-            */
+          shared_levelized_file<zdd::node_type> zdd_maybe_x0;
+          /*
+          //      { Ø, {0} }
+          //
+          //          1          ---- x0
+          //          ||
+          //          T
+          */
 
-            { // Garbage collect early and free write-lock
-              node_writer nw_m(zdd_maybe_x0);
-              nw_m << node(0, node::max_id, terminal_T, terminal_T);
-            }
+          { // Garbage collect early and free write-lock
+            node_writer nw_m(zdd_maybe_x0);
+            nw_m << node(0, node::max_id, terminal_T, terminal_T);
+          }
 
-            /*
-            // Result of { {0} } U { Ø, {0} }
-            //
-            //                      (1,1)                   ---- x0
-            //                      /   \
-            //                  (F,T)   (T,T)
-            */
+          /*
+          // Result of { {0} } U { Ø, {0} }
+          //
+          //                      (1,1)                   ---- x0
+          //                      /   \
+          //                  (F,T)   (T,T)
+          */
 
-            __zdd out = zdd_union(zdd_x0, zdd_maybe_x0);
+          __zdd out = zdd_union(ep, zdd_x0, zdd_maybe_x0);
 
-            arc_test_stream arcs(out);
+          arc_test_stream arcs(out);
 
-            AssertThat(arcs.can_pull_internal(), Is().False());
+          AssertThat(arcs.can_pull_internal(), Is().False());
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), false, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), false, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().False());
+          AssertThat(arcs.can_pull_terminal(), Is().False());
 
-            level_info_test_stream levels(out);
+          level_info_test_stream levels(out);
 
-            AssertThat(levels.can_pull(), Is().True());
-            AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-            AssertThat(levels.can_pull(), Is().False());
+          AssertThat(levels.can_pull(), Is().False());
 
-            AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(0u));
+          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(0u));
 
-            AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false], Is().EqualTo(0u));
-            AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],  Is().EqualTo(2u));
+          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false], Is().EqualTo(0u));
+          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],  Is().EqualTo(2u));
         });
 
         it("computes { {0} } U { {1} } (different levels, random access for first level)", [&]() {
@@ -1595,7 +1590,7 @@ go_bandit([]() {
           //           F T
           */
 
-          __zdd out = zdd_union(zdd_x0, zdd_x1);
+          __zdd out = zdd_union(ep, zdd_x0, zdd_x1);
 
           arc_test_stream arcs(out);
 
@@ -1640,7 +1635,7 @@ go_bandit([]() {
           //           F T
           */
 
-          __zdd out = zdd_union(zdd_x1, zdd_x0);
+          __zdd out = zdd_union(ep, zdd_x1, zdd_x0);
 
           arc_test_stream arcs(out);
 
@@ -1753,149 +1748,149 @@ go_bandit([]() {
         */
 
         it("should random access on the thinnest ([thin] U [wide])", [&]() {
-            __zdd out = zdd_union(zdd_thin, zdd_wide);
+          __zdd out = zdd_union(ep, zdd_thin, zdd_wide);
 
-            arc_test_stream arcs(out);
+          arc_test_stream arcs(out);
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true, ptr_uint64(1,1) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true, ptr_uint64(1,1) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true, ptr_uint64(2,0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true, ptr_uint64(2,0) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,1) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,1) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), true, ptr_uint64(2,1) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), true, ptr_uint64(2,1) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), false, ptr_uint64(2,2) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), false, ptr_uint64(2,2) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), true, ptr_uint64(3,0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), true, ptr_uint64(3,0) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().False());
+          AssertThat(arcs.can_pull_internal(), Is().False());
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), false, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), false, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), true, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), true, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,2), false, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,2), false, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,2), true, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,2), true, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), false, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), false, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), true, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), true, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().False());
+          AssertThat(arcs.can_pull_terminal(), Is().False());
 
-            level_info_test_stream levels(out);
+          level_info_test_stream levels(out);
 
-            AssertThat(levels.can_pull(), Is().True());
-            AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-            AssertThat(levels.can_pull(), Is().True());
-            AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
 
-            AssertThat(levels.can_pull(), Is().True());
-            AssertThat(levels.pull(), Is().EqualTo(level_info(2,3u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2,3u)));
 
-            AssertThat(levels.can_pull(), Is().True());
-            AssertThat(levels.pull(), Is().EqualTo(level_info(3,1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(3,1u)));
 
-            AssertThat(levels.can_pull(), Is().False());
+          AssertThat(levels.can_pull(), Is().False());
 
-            AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
+          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
 
-            AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false], Is().EqualTo(1u));
-            AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],  Is().EqualTo(6u));
+          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false], Is().EqualTo(1u));
+          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],  Is().EqualTo(6u));
         });
 
         it("should random access on the thinnest ([wide] U [thin])", [&]() {
-            __zdd out = zdd_union(zdd_thin, zdd_wide);
+          __zdd out = zdd_union(ep, zdd_thin, zdd_wide);
 
-            arc_test_stream arcs(out);
+          arc_test_stream arcs(out);
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true, ptr_uint64(1,1) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true, ptr_uint64(1,1) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true, ptr_uint64(2,0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true, ptr_uint64(2,0) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,1) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,1) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), true, ptr_uint64(2,1) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), true, ptr_uint64(2,1) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), false, ptr_uint64(2,2) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), false, ptr_uint64(2,2) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), true, ptr_uint64(3,0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), true, ptr_uint64(3,0) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().False());
+          AssertThat(arcs.can_pull_internal(), Is().False());
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), false, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), false, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), true, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), true, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,2), false, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,2), false, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,2), true, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,2), true, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), false, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), false, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), true, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), true, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().False());
+          AssertThat(arcs.can_pull_terminal(), Is().False());
 
-            level_info_test_stream levels(out);
+          level_info_test_stream levels(out);
 
-            AssertThat(levels.can_pull(), Is().True());
-            AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-            AssertThat(levels.can_pull(), Is().True());
-            AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
 
-            AssertThat(levels.can_pull(), Is().True());
-            AssertThat(levels.pull(), Is().EqualTo(level_info(2,3u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2,3u)));
 
-            AssertThat(levels.can_pull(), Is().True());
-            AssertThat(levels.pull(), Is().EqualTo(level_info(3,1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(3,1u)));
 
-            AssertThat(levels.can_pull(), Is().False());
+          AssertThat(levels.can_pull(), Is().False());
 
-            AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
+          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
 
-            AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false], Is().EqualTo(1u));
-            AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],  Is().EqualTo(6u));
+          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false], Is().EqualTo(1u));
+          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],  Is().EqualTo(6u));
         });
 
         shared_levelized_file<zdd::node_type> zdd_canon;
@@ -1982,411 +1977,411 @@ go_bandit([]() {
         */
 
         it("should random access on canonical ([canon] U [non_canon])", [&]() {
-            __zdd out = zdd_union(zdd_canon, zdd_non_canon);
+          __zdd out = zdd_union(ep, zdd_canon, zdd_non_canon);
 
-            arc_test_stream arcs(out);
+          arc_test_stream arcs(out);
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true, ptr_uint64(1,1) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true, ptr_uint64(1,1) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,0) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), true, ptr_uint64(2,1) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), true, ptr_uint64(2,1) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true, ptr_uint64(2,2) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true, ptr_uint64(2,2) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), false, ptr_uint64(2,3) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), false, ptr_uint64(2,3) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,2), false, ptr_uint64(3,0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,2), false, ptr_uint64(3,0) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), true, ptr_uint64(3,1) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), true, ptr_uint64(3,1) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,3), true, ptr_uint64(3,2) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,3), true, ptr_uint64(3,2) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().False());
+          AssertThat(arcs.can_pull_internal(), Is().False());
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), false, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), false, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), true, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), true, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,2), true, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,2), true, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,3), false, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,3), false, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), false, terminal_F }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), false, terminal_F }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), true, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), true, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), false, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), false, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), true, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), true, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,2), false, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,2), false, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,2), true, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,2), true, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().False());
+          AssertThat(arcs.can_pull_terminal(), Is().False());
 
-            level_info_test_stream levels(out);
+          level_info_test_stream levels(out);
 
-            AssertThat(levels.can_pull(), Is().True());
-            AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-            AssertThat(levels.can_pull(), Is().True());
-            AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
 
-            AssertThat(levels.can_pull(), Is().True());
-            AssertThat(levels.pull(), Is().EqualTo(level_info(2,4u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2,4u)));
 
-            AssertThat(levels.can_pull(), Is().True());
-            AssertThat(levels.pull(), Is().EqualTo(level_info(3,3u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(3,3u)));
 
-            AssertThat(levels.can_pull(), Is().False());
+          AssertThat(levels.can_pull(), Is().False());
 
-            AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
+          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
 
-            AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false], Is().EqualTo(2u));
-            AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],  Is().EqualTo(9u));
+          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false], Is().EqualTo(2u));
+          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],  Is().EqualTo(9u));
         });
 
         it("should random access on canonical ([non_canon] U [canon])", [&]() {
-            __zdd out = zdd_union(zdd_canon, zdd_non_canon);
+          __zdd out = zdd_union(ep, zdd_canon, zdd_non_canon);
 
-            arc_test_stream arcs(out);
+          arc_test_stream arcs(out);
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true, ptr_uint64(1,1) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true, ptr_uint64(1,1) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,0) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), true, ptr_uint64(2,1) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), true, ptr_uint64(2,1) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true, ptr_uint64(2,2) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true, ptr_uint64(2,2) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), false, ptr_uint64(2,3) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), false, ptr_uint64(2,3) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,2), false, ptr_uint64(3,0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,2), false, ptr_uint64(3,0) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), true, ptr_uint64(3,1) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), true, ptr_uint64(3,1) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,3), true, ptr_uint64(3,2) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,3), true, ptr_uint64(3,2) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().False());
+          AssertThat(arcs.can_pull_internal(), Is().False());
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), false, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), false, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), true, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), true, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,2), true, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,2), true, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,3), false, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,3), false, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), false, terminal_F }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), false, terminal_F }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), true, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), true, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), false, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), false, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), true, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), true, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,2), false, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,2), false, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,2), true, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,2), true, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().False());
+          AssertThat(arcs.can_pull_terminal(), Is().False());
 
-            level_info_test_stream levels(out);
+          level_info_test_stream levels(out);
 
-            AssertThat(levels.can_pull(), Is().True());
-            AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-            AssertThat(levels.can_pull(), Is().True());
-            AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
 
-            AssertThat(levels.can_pull(), Is().True());
-            AssertThat(levels.pull(), Is().EqualTo(level_info(2,4u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2,4u)));
 
-            AssertThat(levels.can_pull(), Is().True());
-            AssertThat(levels.pull(), Is().EqualTo(level_info(3,3u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(3,3u)));
 
-            AssertThat(levels.can_pull(), Is().False());
+          AssertThat(levels.can_pull(), Is().False());
 
-            AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
+          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
 
-            AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false], Is().EqualTo(2u));
-            AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],  Is().EqualTo(9u));
+          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false], Is().EqualTo(2u));
+          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],  Is().EqualTo(9u));
         });
 
         it("computes { {0}, {1,3}, {2,3}, {1} } U { {0,3}, {3} } in different order", [&]() {
-            /*
-            //                1        1                        (1,1)        ---- x0
-            //               / \      / \                       /   \
-            //               2 T      | |                    (2,2)   \       ---- x1
-            //              / \       | |                    /   \    |
-            //              3  \      | |     ==>         (3,2)   \   |      ---- x2
-            //              || |      | |                 /   \____\ /
-            //              \\ /      \ /                /          X
-            //                4        2              (4,2)    (T,2) (4,F)   ---- x3
-            //               / \      / \              / \      / \   / \
-            //               F T      F T              F T      T T   T T
-            //
-            //           The high arc on (2) and (3) on the left is shortcutting the
-            //           second ZDD, to compensate for the omitted nodes.
-            */
+          /*
+          //                1        1                        (1,1)        ---- x0
+          //               / \      / \                       /   \
+          //               2 T      | |                    (2,2)   \       ---- x1
+          //              / \       | |                    /   \    |
+          //              3  \      | |     ==>         (3,2)   \   |      ---- x2
+          //              || |      | |                 /   \____\ /
+          //              \\ /      \ /                /          X
+          //                4        2              (4,2)    (T,2) (4,F)   ---- x3
+          //               / \      / \              / \      / \   / \
+          //               F T      F T              F T      T T   T T
+          //
+          //           The high arc on (2) and (3) on the left is shortcutting the
+          //           second ZDD, to compensate for the omitted nodes.
+          */
 
 
 
-            shared_levelized_file<zdd::node_type> zdd_a;
-            shared_levelized_file<zdd::node_type> zdd_b;
+          shared_levelized_file<zdd::node_type> zdd_a;
+          shared_levelized_file<zdd::node_type> zdd_b;
 
-            { // Garbage collect writers early
-              node_writer nw_a(zdd_a);
-              nw_a << node(3, node::max_id, terminal_F, terminal_T)
-                  << node(2, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(3, ptr_uint64::max_id))
-                  << node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(3, ptr_uint64::max_id))
-                  << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), terminal_T)
-                ;
+          { // Garbage collect writers early
+            node_writer nw_a(zdd_a);
+            nw_a << node(3, node::max_id, terminal_F, terminal_T)
+                 << node(2, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(3, ptr_uint64::max_id))
+                 << node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(3, ptr_uint64::max_id))
+                 << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), terminal_T)
+              ;
 
-              node_writer nw_b(zdd_b);
-              nw_b << node(3, node::max_id, terminal_F, terminal_T)
-                  << node(0, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(3, ptr_uint64::max_id))
-                ;
-            }
+            node_writer nw_b(zdd_b);
+            nw_b << node(3, node::max_id, terminal_F, terminal_T)
+                 << node(0, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(3, ptr_uint64::max_id))
+              ;
+          }
 
-            // zdd_a->width == 1u
-            // zdd_a->canonical == true
+          // zdd_a->width == 1u
+          // zdd_a->canonical == true
 
-            // zdd_b->width == 1u
-            // zdd_b->canonical == true
+          // zdd_b->width == 1u
+          // zdd_b->canonical == true
 
-            __zdd out = zdd_union(zdd_a, zdd_b);
+          __zdd out = zdd_union(ep, zdd_a, zdd_b);
 
-            arc_test_stream arcs(out);
+          arc_test_stream arcs(out);
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,0) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), false, ptr_uint64(3,0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), false, ptr_uint64(3,0) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(3,1) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(3,1) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(3,2) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(3,2) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  ptr_uint64(3,2) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  ptr_uint64(3,2) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().False());
+          AssertThat(arcs.can_pull_internal(), Is().False());
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), false, terminal_F }));
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), true,  terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), false, terminal_F }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), true,  terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), false, terminal_T }));
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), true,  terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), false, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), true,  terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,2), false, terminal_F }));
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,2), true,  terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,2), false, terminal_F }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,2), true,  terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().False());
+          AssertThat(arcs.can_pull_terminal(), Is().False());
 
-            level_info_test_stream levels(out);
+          level_info_test_stream levels(out);
 
-            AssertThat(levels.can_pull(), Is().True());
-            AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-            AssertThat(levels.can_pull(), Is().True());
-            AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
 
-            AssertThat(levels.can_pull(), Is().True());
-            AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
 
-            AssertThat(levels.can_pull(), Is().True());
-            AssertThat(levels.pull(), Is().EqualTo(level_info(3,3u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(3,3u)));
 
-            AssertThat(levels.can_pull(), Is().False());
+          AssertThat(levels.can_pull(), Is().False());
 
-            AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(4u));
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(4u));
 
-            AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(2u));
-            AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(4u));
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(2u));
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(4u));
         });
 
         it("should correctly generate missing nodes (bottom layers)", [&]() {
-            shared_levelized_file<zdd::node_type> zdd_a;
-            /*
-            //      { {0}, {1} }
-            //
-            //           1             ---- x0
-            //          / \
-            //         2   T           ---- x1
-            //        / \
-            //       F   T
-            */
+          shared_levelized_file<zdd::node_type> zdd_a;
+          /*
+          //      { {0}, {1} }
+          //
+          //           1             ---- x0
+          //          / \
+          //         2   T           ---- x1
+          //        / \
+          //       F   T
+          */
 
-            node na_2 = node(1, node::max_id, terminal_F, terminal_T);
-            node na_1 = node(0, node::max_id, na_2, terminal_T);
+          node na_2 = node(1, node::max_id, terminal_F, terminal_T);
+          node na_1 = node(0, node::max_id, na_2, terminal_T);
 
-            { // Garbage collect writers early
-              node_writer nw_a(zdd_a);
-              nw_a << na_2 << na_1;
-            }
+          { // Garbage collect writers early
+            node_writer nw_a(zdd_a);
+            nw_a << na_2 << na_1;
+          }
 
-            // zdd_a->width == 1u
-            // zdd_a->canonical == true
+          // zdd_a->width == 1u
+          // zdd_a->canonical == true
 
-            shared_levelized_file<zdd::node_type> zdd_b;
-            /*
-            //    { {0}, {1}, {0, 1} }
-            //
-            //           1             ---- x0
-            //          / \
-            //         2   3           ---- x1
-            //        / \ / \
-            //       F   T   T
-            */
+          shared_levelized_file<zdd::node_type> zdd_b;
+          /*
+          //    { {0}, {1}, {0, 1} }
+          //
+          //           1             ---- x0
+          //          / \
+          //         2   3           ---- x1
+          //        / \ / \
+          //       F   T   T
+          */
 
-            node nb_3 = node(1, node::max_id, terminal_T, terminal_T);
-            node nb_2 = node(1, node::max_id - 1, terminal_F, terminal_T);
-            node nb_1 = node(0, node::max_id, nb_2, nb_3);
+          node nb_3 = node(1, node::max_id, terminal_T, terminal_T);
+          node nb_2 = node(1, node::max_id - 1, terminal_F, terminal_T);
+          node nb_1 = node(0, node::max_id, nb_2, nb_3);
 
-            { // Garbage collect writers early
-              node_writer nw_b(zdd_b);
-              nw_b << nb_3 << nb_2 << nb_1;
-            }
+          { // Garbage collect writers early
+            node_writer nw_b(zdd_b);
+            nw_b << nb_3 << nb_2 << nb_1;
+          }
 
-            // zdd_b->width == 2u
-            // zdd_b->canonical == true
+          // zdd_b->width == 2u
+          // zdd_b->canonical == true
 
-            /*
-            //    { {0}, {1} } U { {0}, {1}, {0, 1} }
-            //
-            //                 (1,1)              ---- x0
-            //                 /   \
-            //             (2,2)    (T,3)         ---- x1
-            //             /   \    /   \
-            //         (F,F)    (T,T)   (F,T)
-            */
+          /*
+          //    { {0}, {1} } U { {0}, {1}, {0, 1} }
+          //
+          //                 (1,1)              ---- x0
+          //                 /   \
+          //             (2,2)    (T,3)         ---- x1
+          //             /   \    /   \
+          //         (F,F)    (T,T)   (F,T)
+          */
 
-            __zdd out = zdd_union(zdd_a, zdd_b);
+          __zdd out = zdd_union(ep, zdd_a, zdd_b);
 
-            arc_test_stream arcs(out);
+          arc_test_stream arcs(out);
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().True());
-            AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true, ptr_uint64(1,1) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true, ptr_uint64(1,1) }));
 
-            AssertThat(arcs.can_pull_internal(), Is().False());
+          AssertThat(arcs.can_pull_internal(), Is().False());
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), false, terminal_F }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), false, terminal_F }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,1), false, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,1), false, terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,1), true,  terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,1), true,  terminal_T }));
 
-            AssertThat(arcs.can_pull_terminal(), Is().False());
+          AssertThat(arcs.can_pull_terminal(), Is().False());
 
-            level_info_test_stream levels(out);
+          level_info_test_stream levels(out);
 
-            AssertThat(levels.can_pull(), Is().True());
-            AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-            AssertThat(levels.can_pull(), Is().True());
-            AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
 
-            AssertThat(levels.can_pull(), Is().False());
+          AssertThat(levels.can_pull(), Is().False());
 
-            AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(2u));
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(2u));
 
-            AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
-            AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(3u));
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(3u));
         });
 
         it("should correctly generate missing nodes (intermediate layers)", [&]() {
-            shared_levelized_file<zdd::node_type> zdd_a;
-            /*
-            //      { {0}, {1}, {0, 3} }
-            //
-            //           1             ---- x0
-            //          / \
-            //         2   \           ---- x1
-            //        / \   \
-            //       F   T   3         ---- x2
-            //              / \
-            //             T   T
-            */
+          shared_levelized_file<zdd::node_type> zdd_a;
+          /*
+          //      { {0}, {1}, {0, 3} }
+          //
+          //           1             ---- x0
+          //          / \
+          //         2   \           ---- x1
+          //        / \   \
+          //       F   T   3         ---- x2
+          //              / \
+          //             T   T
+          */
 
-            node na_3 = node(2, node::max_id, terminal_T, terminal_T);
-            node na_2 = node(1, node::max_id, terminal_F, terminal_T);
-            node na_1 = node(0, node::max_id, na_2, na_3);
+          node na_3 = node(2, node::max_id, terminal_T, terminal_T);
+          node na_2 = node(1, node::max_id, terminal_F, terminal_T);
+          node na_1 = node(0, node::max_id, na_2, na_3);
 
-            { // Garbage collect writers early
-              node_writer nw_a(zdd_a);
-              nw_a << na_3 << na_2 << na_1;
+          { // Garbage collect writers early
+            node_writer nw_a(zdd_a);
+nw_a << na_3 << na_2 << na_1;
             }
 
             // zdd_a->width == 1u
@@ -2428,7 +2423,7 @@ go_bandit([]() {
             //                     (T,T)
             */
 
-            __zdd out = zdd_union(zdd_a, zdd_b);
+            __zdd out = zdd_union(ep, zdd_a, zdd_b);
 
             arc_test_stream arcs(out);
 
@@ -2547,7 +2542,7 @@ go_bandit([]() {
             // Shorts on (F,2) and (3,F)
             */
 
-            __zdd out = zdd_intsec(zdd_a, zdd_b);
+            __zdd out = zdd_intsec(ep, zdd_a, zdd_b);
 
             arc_test_stream arcs(out);
 
@@ -2650,7 +2645,7 @@ go_bandit([]() {
             //             (F,T)     (T,T)
             */
 
-            __zdd out = zdd_intsec(zdd_a, zdd_b);
+            __zdd out = zdd_intsec(ep, zdd_a, zdd_b);
 
             arc_test_stream arcs(out);
 
@@ -2747,7 +2742,7 @@ go_bandit([]() {
             //                  (T,F)   (F,T)
             */
 
-            __zdd out = zdd_diff(zdd_a, zdd_b);
+            __zdd out = zdd_diff(ep, zdd_a, zdd_b);
 
             arc_test_stream arcs(out);
 
@@ -2774,9 +2769,6 @@ go_bandit([]() {
             AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],  Is().EqualTo(1u));
         });
       });
-
-      // Reset access mode
-      access_mode = access_mode_t::Auto;
     });
   });
 });
