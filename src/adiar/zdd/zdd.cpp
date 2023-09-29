@@ -210,19 +210,30 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Conversion
-  __zdd zdd_from(const bdd &f, const generator<zdd::label_type> &dom)
+  __zdd zdd_from(const exec_policy &ep,
+                 const bdd &f,
+                 const generator<zdd::label_type> &dom)
   {
     return internal::intercut<internal::convert_dd_policy<zdd_policy, bdd_policy>>
-      (f, dom);
+      (ep, f, dom);
   }
 
-  __zdd zdd_from(const bdd &f)
+  __zdd zdd_from(const bdd &f, const generator<zdd::label_type> &dom)
+  {
+    return zdd_from(exec_policy(), f, dom);
+  }
+
+  __zdd zdd_from(const exec_policy &ep, const bdd &f)
   {
     const shared_file<zdd::label_type> dom = domain_get();
     internal::file_stream<domain_var> ds(dom);
 
-    return internal::intercut<internal::convert_dd_policy<zdd_policy, bdd_policy>>
-      (f, make_generator(ds));
+    return zdd_from(ep, f, make_generator(ds));
+  }
+
+  __zdd zdd_from(const bdd &f)
+  {
+    return zdd_from(exec_policy(), f);
   }
 
   //////////////////////////////////////////////////////////////////////////////

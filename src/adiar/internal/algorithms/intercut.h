@@ -1,6 +1,8 @@
 #ifndef ADIAR_INTERNAL_ALGORITHMS_INTERCUT_H
 #define ADIAR_INTERNAL_ALGORITHMS_INTERCUT_H
 
+#include <adiar/exec_policy.h>
+
 #include <adiar/internal/assert.h>
 #include <adiar/internal/cnl.h>
 #include <adiar/internal/cut.h>
@@ -315,8 +317,9 @@ namespace adiar::internal
   }
 
   template<typename intercut_policy>
-  typename intercut_policy::__dd_type intercut(const typename intercut_policy::dd_type &dd,
-                                                 const generator<typename intercut_policy::label_type> &xs)
+  typename intercut_policy::__dd_type intercut(const exec_policy &ep,
+                                               const typename intercut_policy::dd_type &dd,
+                                               const generator<typename intercut_policy::label_type> &xs)
   {
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.
@@ -335,8 +338,8 @@ namespace adiar::internal
     const size_t pq_memory_fits =
       intercut_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::memory_fits(pq_memory);
 
-    const bool internal_only = memory_mode == memory_mode_t::Internal;
-    const bool external_only = memory_mode == memory_mode_t::External;
+    const bool internal_only = ep.memory_mode() == exec_policy::memory::Internal;
+    const bool external_only = ep.memory_mode() == exec_policy::memory::External;
 
     const size_t pq_bound = __intercut_2level_upper_bound<intercut_policy>(dd);
 
