@@ -718,6 +718,54 @@ namespace adiar
   { return zdd_project(std::forward<zdd>(A), make_generator(begin, end)); }
   /// \endcond
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief       Project family of sets onto a domain, i.e. remove from every
+  ///              set all variables not within the domain.
+  //////////////////////////////////////////////////////////////////////////////
+  __zdd zdd_project(const exec_policy &ep,
+                    const zdd &A,
+                    const predicate<zdd::label_type> &dom);
+
+  /// \cond
+  __zdd zdd_project(const exec_policy &ep,
+                    zdd &&A,
+                    const predicate<zdd::label_type> &dom);
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief       Project family of sets onto a domain, i.e. remove from every
+  ///              set all variables not within the domain.
+  //////////////////////////////////////////////////////////////////////////////
+  __zdd zdd_project(const exec_policy &ep,
+                    const zdd &A,
+                    const generator<zdd::label_type> &dom);
+
+  /// \cond
+  __zdd zdd_project(const exec_policy &ep,
+                    zdd &&A,
+                    const generator<zdd::label_type> &dom);
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief       Project family of sets onto a domain, i.e. remove from every
+  ///              set all variables not within the domain.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename ForwardIt>
+  __zdd zdd_project(const exec_policy &ep,
+                    const zdd &A,
+                    ForwardIt begin,
+                    ForwardIt end)
+  { return zdd_project(ep, A, make_generator(begin, end)); }
+
+  /// \cond
+  template<typename ForwardIt>
+  __zdd zdd_project(const exec_policy &ep,
+                    zdd &&A,
+                    ForwardIt begin,
+                    ForwardIt end)
+  { return zdd_project(ep, std::forward<zdd>(A), make_generator(begin, end)); }
+  /// \endcond
+
   /// \}
   //////////////////////////////////////////////////////////////////////////////
 

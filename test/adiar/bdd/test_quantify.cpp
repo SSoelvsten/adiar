@@ -1416,18 +1416,22 @@ go_bandit([]() {
     });
 
     describe("bdd_exists(const bdd&, const predicate<bdd::label_type>&)", [&]() {
-      it("returns input on always-false predicate BDD 1 [&&]", [&]() {
-        __bdd out = bdd_exists(bdd_1, [](const bdd::label_type) -> bool {
-          return false;
-        });
+      it("returns input on always-false predicate BDD 1 [const &]", [&]() {
+        bdd in = bdd_1;
+        __bdd out = bdd_exists(in, [](const bdd::label_type) -> bool { return false; });
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
       });
 
-      describe("quantify_mode == Singleton", [&]() {
-        quantify_mode = quantify_mode_t::Singleton;
+      it("returns input on always-false predicate BDD 1 [&&]", [&]() {
+        __bdd out = bdd_exists(bdd_1, [](const bdd::label_type) -> bool { return false; });
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
+      });
+
+      describe("quantify_alg == Singleton", [&]() {
+        const exec_policy ep = exec_policy::quantify::Singleton;
 
         it("quantifies odd variables in BDD 4 [&&]", [&]() {
-          bdd out = bdd_exists(bdd_4, [](const bdd::label_type x) -> bool {
+          bdd out = bdd_exists(ep, bdd_4, [](const bdd::label_type x) -> bool {
             return x % 2;
           });
 
@@ -1459,7 +1463,7 @@ go_bandit([]() {
         });
 
         it("quantifies 1, 2 in BDD 4 [&&]", [&]() {
-          bdd out = bdd_exists(bdd_4, [](const bdd::label_type x) -> bool {
+          bdd out = bdd_exists(ep, bdd_4, [](const bdd::label_type x) -> bool {
             return x == 1 || x == 2;
           });
 
@@ -1492,7 +1496,7 @@ go_bandit([]() {
 
         it("quantifies even variables in BDD 4 [const &]", [&]() {
           const bdd in = bdd_4;
-          const bdd out = bdd_exists(in, [](const bdd::label_type x) -> bool {
+          const bdd out = bdd_exists(ep, in, [](const bdd::label_type x) -> bool {
             return !(x % 2);
           });
 
@@ -1524,7 +1528,7 @@ go_bandit([]() {
         });
 
         it("quantifies odd variables in BDD 1 [&&]", [&]() {
-          bdd out = bdd_exists(bdd_1, [](const bdd::label_type x) -> bool {
+          bdd out = bdd_exists(ep, bdd_1, [](const bdd::label_type x) -> bool {
             return x % 2;
           });
 
@@ -1545,7 +1549,7 @@ go_bandit([]() {
           // TODO: top-down dependant?
           int calls = 0;
 
-          const bdd out = bdd_exists(bdd_1, [&calls](const bdd::label_type) -> bool {
+          const bdd out = bdd_exists(ep, bdd_1, [&calls](const bdd::label_type) -> bool {
             calls++;
             return true;
           });
@@ -1566,7 +1570,7 @@ go_bandit([]() {
         });
 
         it("quantifies with always-true predicate in BDD 4 [&&]", [&]() {
-          bdd out = bdd_exists(bdd_4, [](const bdd::label_type) -> bool {
+          bdd out = bdd_exists(ep, bdd_4, [](const bdd::label_type) -> bool {
             return true;
           });
 
@@ -1581,16 +1585,14 @@ go_bandit([]() {
 
           // TODO: meta variables...
         });
-
-        quantify_mode = quantify_mode_t::Auto;
       });
 
-      describe("quantify_mode == Partial", [&]() {
-        quantify_mode = quantify_mode_t::Partial;
+      describe("quantify_alg == Partial", [&]() {
+        const exec_policy ep = exec_policy::quantify::Partial;
 
         it("collapses during initial transposition of all variables in BDD 4 [&&]", [&]() {
           std::vector<bdd::label_type> call_history;
-          bdd out = bdd_exists(bdd_4, [&call_history](const bdd::label_type x) -> bool {
+          bdd out = bdd_exists(ep, bdd_4, [&call_history](const bdd::label_type x) -> bool {
             call_history.push_back(x);
             return true;
           });
@@ -1630,7 +1632,7 @@ go_bandit([]() {
           std::vector<bdd::label_type> call_history;
 
           const bdd in = bdd_4;
-          const bdd out = bdd_exists(in, [&call_history](const bdd::label_type x) -> bool {
+          const bdd out = bdd_exists(ep, in, [&call_history](const bdd::label_type x) -> bool {
             call_history.push_back(x);
             return !(x % 2);
           });
@@ -1684,7 +1686,7 @@ go_bandit([]() {
 
         it("collapses during repeated transposition with variables 1 2 variables in BDD 11a [&&]", [&]() {
           std::vector<bdd::label_type> call_history;
-          bdd out = bdd_exists(bdd_12a, [&call_history](const bdd::label_type x) -> bool {
+          bdd out = bdd_exists(ep, bdd_12a, [&call_history](const bdd::label_type x) -> bool {
             call_history.push_back(x);
             return 0 < x && x < 3;
           });
@@ -1733,7 +1735,7 @@ go_bandit([]() {
 
         it("finishes during repeated transposition with variables 1 and 2 in BDD 11b [&&]", [&]() {
           std::vector<bdd::label_type> call_history;
-          bdd out = bdd_exists(bdd_12b, [&call_history](const bdd::label_type x) -> bool {
+          bdd out = bdd_exists(ep, bdd_12b, [&call_history](const bdd::label_type x) -> bool {
             call_history.push_back(x);
             return 0 < x && x < 3;
           });
@@ -1835,7 +1837,7 @@ go_bandit([]() {
 
         it("finishes during repeated transposition with variables 1 and 2 in BDD 12 [&&]", [&]() {
           std::vector<bdd::label_type> call_history;
-          bdd out = bdd_exists(bdd_13, [&call_history](const bdd::label_type x) -> bool {
+          bdd out = bdd_exists(ep, bdd_13, [&call_history](const bdd::label_type x) -> bool {
             call_history.push_back(x);
             return x < 2;
           });
@@ -2002,7 +2004,7 @@ go_bandit([]() {
 
         it("quantifies exploding BDD 15", [&]() {
           std::vector<bdd::label_type> call_history;
-          bdd out = bdd_exists(bdd_15, [&call_history](const bdd::label_type x) -> bool {
+          bdd out = bdd_exists(ep, bdd_15, [&call_history](const bdd::label_type x) -> bool {
             call_history.push_back(x);
             return x < 2;
           });
@@ -2265,17 +2267,15 @@ go_bandit([]() {
           AssertThat(call_history.at(40), Is().EqualTo(12u));
           AssertThat(call_history.at(41), Is().EqualTo(13u));
         });
-
-        quantify_mode = quantify_mode_t::Auto;
       });
 
-      describe("quantify_mode == Nested", [&]() {
-        quantify_mode = quantify_mode_t::Nested;
+      describe("quantify_alg == Nested", [&]() {
+        const exec_policy ep = exec_policy::quantify::Nested;
 
         it("quantifies odd variables in BDD 4", [&]() {
           std::vector<bdd::label_type> call_history;
 
-          bdd out = bdd_exists(bdd_4, [&call_history](const bdd::label_type x) -> bool {
+          bdd out = bdd_exists(ep, bdd_4, [&call_history](const bdd::label_type x) -> bool {
             call_history.push_back(x);
             return x % 2;
           });
@@ -2324,7 +2324,7 @@ go_bandit([]() {
         });
 
         it("quantifies odd variables in BDD 1", [&]() {
-          bdd out = bdd_exists(bdd_1, [](const bdd::label_type x) -> bool {
+          bdd out = bdd_exists(ep, bdd_1, [](const bdd::label_type x) -> bool {
             return x % 2;
           });
 
@@ -2343,7 +2343,7 @@ go_bandit([]() {
         });
 
         it("quantifies with always-true predicate in BDD 4 [&&]", [&]() {
-          bdd out = bdd_exists(bdd_4, [](const bdd::label_type) -> bool {
+          bdd out = bdd_exists(ep, bdd_4, [](const bdd::label_type) -> bool {
             return true;
           });
 
@@ -2359,8 +2359,8 @@ go_bandit([]() {
           // TODO: meta variables...
         });
 
-        it("bails out on a level that only shortcuts", [&bdd_9T]() {
-          bdd out = bdd_exists(bdd_9T, [](const bdd::label_type x) -> bool {
+        it("bails out on a level that only shortcuts", [&]() {
+          bdd out = bdd_exists(ep, bdd_9T, [](const bdd::label_type x) -> bool {
             return !(x % 2);
           });
 
@@ -2399,8 +2399,8 @@ go_bandit([]() {
           // TODO: meta variables
         });
 
-        it("bails out on a level that only is irrelevant", [&bdd_9F]() {
-          bdd out = bdd_exists(bdd_9F, [](const bdd::label_type x) -> bool {
+        it("bails out on a level that only is irrelevant", [&]() {
+          bdd out = bdd_exists(ep, bdd_9F, [](const bdd::label_type x) -> bool {
             return !(x % 2);
           });
 
@@ -2431,8 +2431,8 @@ go_bandit([]() {
           // TODO: meta variables
         });
 
-        it("bails out on a level that both shortcuts and is irrelevant", [&bdd_6_x4T]() {
-          bdd out = bdd_exists(bdd_6_x4T, [](const bdd::label_type x) -> bool {
+        it("bails out on a level that both shortcuts and is irrelevant", [&]() {
+          bdd out = bdd_exists(ep, bdd_6_x4T, [](const bdd::label_type x) -> bool {
             return x == 4 || x == 2 || x == 1;
           });
 
@@ -2451,9 +2451,9 @@ go_bandit([]() {
           // TODO: meta variables
         });
 
-        it("kills intermediate dead partial solution", [&bdd_10]() {
+        it("kills intermediate dead partial solution", [&]() {
           std::vector<bdd::label_type> call_history;
-          bdd out = bdd_exists(bdd_10, [&call_history](const bdd::label_type x) -> bool {
+          bdd out = bdd_exists(ep, bdd_10, [&call_history](const bdd::label_type x) -> bool {
             call_history.push_back(x);
             return x == 3 || x == 2;
           });
@@ -2511,7 +2511,7 @@ go_bandit([]() {
           //        |
           //        T
           */
-          bdd out = bdd_exists(bdd_6, [&var]() -> bdd::label_type {
+          bdd out = bdd_exists(ep, bdd_6, [&var]() -> bdd::label_type {
             const bdd::label_type ret = var;
             var -= 2;
             return ret;
@@ -2532,7 +2532,7 @@ go_bandit([]() {
         });
 
         it("quantifies exploding BDD 15", [&]() {
-          bdd out = bdd_exists(bdd_15, [](const bdd::label_type x) -> bool { return x < 2; });
+          bdd out = bdd_exists(ep, bdd_15, [](const bdd::label_type x) -> bool { return x < 2; });
 
           node_test_stream out_nodes(out);
 
@@ -2735,16 +2735,14 @@ go_bandit([]() {
 
           // TODO: meta variables...
         });
-
-        quantify_mode = quantify_mode_t::Auto;
       });
 
-      describe("quantify_mode == Auto", [&]() {
-        quantify_mode = quantify_mode_t::Auto;
+      describe("quantify_alg == Auto", [&]() {
+        const exec_policy ep = exec_policy::quantify::Auto;
 
         it("collapses during initial transposition of all variables in BDD 4 [&&]", [&]() {
           std::vector<bdd::label_type> call_history;
-          bdd out = bdd_exists(bdd_4, [&call_history](const bdd::label_type x) -> bool {
+          bdd out = bdd_exists(ep, bdd_4, [&call_history](const bdd::label_type x) -> bool {
             call_history.push_back(x);
             return true;
           });
@@ -2788,7 +2786,7 @@ go_bandit([]() {
           std::vector<bdd::label_type> call_history;
 
           const bdd in = bdd_4;
-          const bdd out = bdd_exists(in, [&call_history](const bdd::label_type x) -> bool {
+          const bdd out = bdd_exists(ep, in, [&call_history](const bdd::label_type x) -> bool {
             call_history.push_back(x);
             return !(x % 2);
           });
@@ -2847,7 +2845,7 @@ go_bandit([]() {
 
         it("collapses during repeated transposition with variables 1 2 variables in BDD 11a [&&]", [&]() {
           std::vector<bdd::label_type> call_history;
-          bdd out = bdd_exists(bdd_12a, [&call_history](const bdd::label_type x) -> bool {
+          bdd out = bdd_exists(ep, bdd_12a, [&call_history](const bdd::label_type x) -> bool {
             call_history.push_back(x);
             return 0 < x && x < 3;
           });
@@ -2902,7 +2900,7 @@ go_bandit([]() {
 
         it("finishes during repeated transposition with variables 1 and 2 in BDD 11b [&&]", [&]() {
           std::vector<bdd::label_type> call_history;
-          bdd out = bdd_exists(bdd_12b, [&call_history](const bdd::label_type x) -> bool {
+          bdd out = bdd_exists(ep, bdd_12b, [&call_history](const bdd::label_type x) -> bool {
             call_history.push_back(x);
             return 0 < x && x < 3;
           });
@@ -3011,7 +3009,7 @@ go_bandit([]() {
 
         it("finishes during repeated transposition with variables 1 and 2 in BDD 12 [&&]", [&]() {
           std::vector<bdd::label_type> call_history;
-          bdd out = bdd_exists(bdd_13, [&call_history](const bdd::label_type x) -> bool {
+          bdd out = bdd_exists(ep, bdd_13, [&call_history](const bdd::label_type x) -> bool {
             call_history.push_back(x);
             return x < 2;
           });
@@ -3185,7 +3183,7 @@ go_bandit([]() {
 
         it("finishes early during repeated transposition [&&]", [&]() {
           std::vector<bdd::label_type> call_history;
-          bdd out = bdd_exists(bdd_10, [&call_history](const bdd::label_type x) -> bool {
+          bdd out = bdd_exists(ep, bdd_10, [&call_history](const bdd::label_type x) -> bool {
             call_history.push_back(x);
             return 1 < x;
           });
@@ -3239,7 +3237,7 @@ go_bandit([]() {
 
         it("switches to nested sweeping when the transposition explodes with BDD 15 [&&]", [&]() {
           std::vector<bdd::label_type> call_history;
-          bdd out = bdd_exists(bdd_15, [&call_history](const bdd::label_type x) -> bool {
+          bdd out = bdd_exists(ep, bdd_15, [&call_history](const bdd::label_type x) -> bool {
             call_history.push_back(x);
             return x < 2;
           });
@@ -3518,7 +3516,7 @@ go_bandit([]() {
 
         it("transposes with a single partial quantification if all variables are deep [&&]", [&]() {
           std::vector<bdd::label_type> call_history;
-          bdd out = bdd_exists(bdd_14a, [&call_history](const bdd::label_type x) -> bool {
+          bdd out = bdd_exists(ep, bdd_14a, [&call_history](const bdd::label_type x) -> bool {
             call_history.push_back(x);
             return x == 5 || x == 6;
           });
@@ -3607,7 +3605,7 @@ go_bandit([]() {
 
         it("switches to nested sweeping if the only variables left are deep [&&]", [&]() {
           std::vector<bdd::label_type> call_history;
-          bdd out = bdd_exists(bdd_14b, [&call_history](const bdd::label_type x) -> bool {
+          bdd out = bdd_exists(ep, bdd_14b, [&call_history](const bdd::label_type x) -> bool {
             call_history.push_back(x);
             return x == 1 || x == 5 || x == 6;
           });
@@ -3706,8 +3704,6 @@ go_bandit([]() {
           AssertThat(call_history.at(23), Is().EqualTo(2u));
           AssertThat(call_history.at(24), Is().EqualTo(0u));
         });
-
-        quantify_mode = quantify_mode_t::Auto;
       });
     });
 
@@ -3717,13 +3713,13 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
       });
 
-      describe("quantify_mode == Singleton", [&]() {
-        quantify_mode = quantify_mode_t::Singleton;
+      describe("quantify_alg == Singleton", [&]() {
+        const exec_policy ep = exec_policy::quantify::Singleton;
 
         it("quantifies 3, 1, -1 in BDD 4 [&&]", [&]() {
           bdd::label_type var = 3;
 
-          bdd out = bdd_exists(bdd_4, [&var]() -> bdd::label_type {
+          bdd out = bdd_exists(ep, bdd_4, [&var]() -> bdd::label_type {
             const bdd::label_type ret = var;
             var -= 2;
             return ret;
@@ -3759,7 +3755,7 @@ go_bandit([]() {
 
           bdd::label_type var = 2;
 
-          bdd out = bdd_exists(in, [&var]() -> bdd::label_type {
+          bdd out = bdd_exists(ep, in, [&var]() -> bdd::label_type {
             const bdd::label_type ret = var;
             var -= 2;
             return ret;
@@ -3793,7 +3789,7 @@ go_bandit([]() {
         it("quantifies 1, -1 variables in BDD 1 [&&]", [&]() {
           bdd::label_type var = 1;
 
-          bdd out = bdd_exists(bdd_1, [&var]() -> bdd::label_type {
+          bdd out = bdd_exists(ep, bdd_1, [&var]() -> bdd::label_type {
             const bdd::label_type ret = var;
             var -= 2;
             return ret;
@@ -3814,7 +3810,7 @@ go_bandit([]() {
         it("terminates early when quantifying to a terminal in BDD 3 [&&]", [&]() {
           int calls = 0;
 
-          const bdd out = bdd_exists(bdd_3, [&calls]() -> bdd::label_type {
+          const bdd out = bdd_exists(ep, bdd_3, [&calls]() -> bdd::label_type {
             return 2 - 2*(calls++);
           });
 
@@ -3832,17 +3828,15 @@ go_bandit([]() {
 
           AssertThat(out_meta.can_pull(), Is().False());
         });
-
-        quantify_mode = quantify_mode_t::Auto;
       });
 
-      describe("quantify_mode == Nested", [&]() {
-        quantify_mode = quantify_mode_t::Nested;
+      describe("quantify_alg == Nested", [&]() {
+        const exec_policy ep = exec_policy::quantify::Nested;
 
         it("quantifies 3, 1, -1 in BDD 4 [&&]", [&]() {
           bdd::label_type var = 3;
 
-          bdd out = bdd_exists(bdd_4, [&var]() -> bdd::label_type {
+          bdd out = bdd_exists(ep, bdd_4, [&var]() -> bdd::label_type {
             const bdd::label_type ret = var;
             var -= 2;
             return ret;
@@ -3876,7 +3870,7 @@ go_bandit([]() {
         it("quantifies 1, -1 variables in BDD 1 [&&]", [&]() {
           bdd::label_type var = 1;
 
-          bdd out = bdd_exists(bdd_1, [&var]() -> bdd::label_type {
+          bdd out = bdd_exists(ep, bdd_1, [&var]() -> bdd::label_type {
             const bdd::label_type ret = var;
             var -= 2;
             return ret;
@@ -3894,9 +3888,9 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
-        it("bails out on a level that only shortcuts", [&bdd_9T]() {
+        it("bails out on a level that only shortcuts", [&]() {
           bdd::label_type var = 6;
-          bdd out = bdd_exists(bdd_9T, [&var]() -> bdd::label_type {
+          bdd out = bdd_exists(ep, bdd_9T, [&var]() -> bdd::label_type {
             const bdd::label_type res = var;
             var -= 2;
             return res;
@@ -3937,9 +3931,9 @@ go_bandit([]() {
           // TODO: meta variables
         });
 
-        it("bails out on a level that only is irrelevant", [&bdd_9F]() {
+        it("bails out on a level that only is irrelevant", [&]() {
           bdd::label_type var = 6;
-          bdd out = bdd_exists(bdd_9F, [&var]() -> bdd::label_type {
+          bdd out = bdd_exists(ep, bdd_9F, [&var]() -> bdd::label_type {
             const bdd::label_type res = var;
             var -= 2;
             return res;
@@ -3972,9 +3966,9 @@ go_bandit([]() {
           // TODO: meta variables
         });
 
-        it("bails out on a level that both shortcuts and is irrelevant", [&bdd_6_x4T]() {
+        it("bails out on a level that both shortcuts and is irrelevant", [&]() {
           bdd::label_type var = 4;
-          bdd out = bdd_exists(bdd_6_x4T, [&var]() -> bdd::label_type {
+          bdd out = bdd_exists(ep, bdd_6_x4T, [&var]() -> bdd::label_type {
             const bdd::label_type res = var;
             switch (var) {
             case 4:  { var = 2;  break; } // <-- 4: transposing
@@ -3999,9 +3993,9 @@ go_bandit([]() {
           // TODO: meta variables
         });
 
-        it("kills intermediate dead partial solution", [&bdd_10]() {
+        it("kills intermediate dead partial solution", [&]() {
           bdd::label_type var = 3;
-          bdd out = bdd_exists(bdd_10, [&var]() -> bdd::label_type {
+          bdd out = bdd_exists(ep, bdd_10, [&var]() -> bdd::label_type {
             const bdd::label_type res = var;
             if (2 < var) { var -= 1; }
             else         { var = -1; }
@@ -4043,7 +4037,7 @@ go_bandit([]() {
           //        |
           //        T
           */
-          bdd out = bdd_exists(bdd_6, [&var]() -> bdd::label_type {
+          bdd out = bdd_exists(ep, bdd_6, [&var]() -> bdd::label_type {
             const bdd::label_type ret = var;
             var -= 2;
             return ret;
@@ -4062,8 +4056,6 @@ go_bandit([]() {
 
           // TODO: meta variables
         });
-
-        quantify_mode = quantify_mode_t::Auto;
       });
     });
 
@@ -4151,10 +4143,11 @@ go_bandit([]() {
       });
 
       it("quantifies [4, 2, 0].begin() in BDD 4 [const &]", [&]() {
+        const exec_policy ep;
         const bdd in = bdd_4;
         const std::vector<bdd::label_type> vars = { 4, 2, 0 };
 
-        bdd out = bdd_exists(in, vars.begin(), vars.end());
+        bdd out = bdd_exists(ep, in, vars.begin(), vars.end());
 
         node_test_stream out_nodes(out);
 
@@ -4449,20 +4442,23 @@ go_bandit([]() {
     });
 
     describe("bdd_forall(const bdd&, const predicate<bdd::label_type>&)", [&]() {
-      it("returns input on always-false predicate BDD 1 [&&]", [&]() {
-        __bdd out = bdd_forall(bdd_1, [](const bdd::label_type) -> bool {
-          return false;
-        });
-
+      it("returns input on always-false predicate BDD 1 [const &]", [&]() {
+        bdd in = bdd_1;
+        __bdd out = bdd_forall(in, [](const bdd::label_type) -> bool { return false; });
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
       });
 
-      describe("quantify_mode == Singleton", [&]() {
-        quantify_mode = quantify_mode_t::Singleton;
+      it("returns input on always-false predicate BDD 1 [&&]", [&]() {
+        __bdd out = bdd_forall(bdd_1, [](const bdd::label_type) -> bool { return false; });
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
+      });
+
+      describe("quantify_alg == Singleton", [&]() {
+        const exec_policy ep = exec_policy::quantify::Singleton;
 
         it("quantifies even variables in BDD 1 [const &]", [&]() {
           const bdd in = bdd_1;
-          const bdd out = bdd_forall(in, [](const bdd::label_type x) -> bool {
+          const bdd out = bdd_forall(ep, in, [](const bdd::label_type x) -> bool {
             return !(x % 2);
           });
 
@@ -4486,7 +4482,7 @@ go_bandit([]() {
         });
 
         it("quantifies odd variables in BDD 1 [&&]", [&]() {
-          const bdd out = bdd_forall(bdd_1, [](const bdd::label_type x) -> bool {
+          const bdd out = bdd_forall(ep, bdd_1, [](const bdd::label_type x) -> bool {
             return x % 2;
           });
 
@@ -4510,7 +4506,7 @@ go_bandit([]() {
         });
 
         it("quantifies <= 2 variables in BDD 4 [&&]", [&]() {
-          const bdd out = bdd_forall(bdd_4, [](const bdd::label_type x) -> bool {
+          const bdd out = bdd_forall(ep, bdd_4, [](const bdd::label_type x) -> bool {
             return x <= 2;
           });
 
@@ -4531,7 +4527,7 @@ go_bandit([]() {
           // TODO: top-down dependant?
           int calls = 0;
 
-          const bdd out = bdd_forall(bdd_5, [&calls](const bdd::label_type) -> bool {
+          const bdd out = bdd_forall(ep, bdd_5, [&calls](const bdd::label_type) -> bool {
             calls++;
             return true;
           });
@@ -4550,23 +4546,19 @@ go_bandit([]() {
 
           // TODO: meta variables...
         });
-
-        quantify_mode = quantify_mode_t::Auto;
       });
 
-      describe("quantify_mode == Partial", [&]() {
-        quantify_mode = quantify_mode_t::Partial;
+      describe("quantify_alg == Partial", [&]() {
+        //const exec_policy ep = exec_policy::quantify::Partial;
 
         // TODO
-
-        quantify_mode = quantify_mode_t::Auto;
       });
 
-      describe("quantify_mode == Nested", [&]() {
-        quantify_mode = quantify_mode_t::Nested;
+      describe("quantify_alg == Nested", [&]() {
+        const exec_policy ep = exec_policy::quantify::Nested;
 
         it("quantifies even variables in BDD 1", [&]() {
-          const bdd out = bdd_forall(bdd_1, [](const bdd::label_type x) -> bool {
+          const bdd out = bdd_forall(ep, bdd_1, [](const bdd::label_type x) -> bool {
             return !(x % 2);
           });
 
@@ -4587,8 +4579,8 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
-        it("bails out on a level that only shortcuts", [&bdd_9T]() {
-          bdd out = bdd_forall(bdd_not(bdd_9T), [](const bdd::label_type x) -> bool {
+        it("bails out on a level that only shortcuts", [&]() {
+          bdd out = bdd_forall(ep, bdd_not(bdd_9T), [](const bdd::label_type x) -> bool {
             return !(x % 2);
           });
 
@@ -4627,8 +4619,8 @@ go_bandit([]() {
           // TODO: meta variables
         });
 
-        it("bails out on a level that only is irrelevant", [&bdd_9F]() {
-          bdd out = bdd_forall(bdd_not(bdd_9F), [](const bdd::label_type x) -> bool {
+        it("bails out on a level that only is irrelevant", [&]() {
+          bdd out = bdd_forall(ep, bdd_not(bdd_9F), [](const bdd::label_type x) -> bool {
             return !(x % 2);
           });
 
@@ -4658,15 +4650,13 @@ go_bandit([]() {
 
           // TODO: meta variables
         });
-
-        quantify_mode = quantify_mode_t::Auto;
       });
 
-      describe("quantify_mode == Auto", [&]() {
-        quantify_mode = quantify_mode_t::Auto;
+      describe("quantify_alg == Auto", [&]() {
+        const exec_policy ep = exec_policy::quantify::Auto;
 
         it("quantifies odd variables in BDD 1", [&]() {
-          const bdd out = bdd_forall(bdd_1, [](const bdd::label_type x) -> bool {
+          const bdd out = bdd_forall(ep, bdd_1, [](const bdd::label_type x) -> bool {
             return x % 2;
           });
 
@@ -4686,8 +4676,6 @@ go_bandit([]() {
 
           AssertThat(out_meta.can_pull(), Is().False());
         });
-
-        quantify_mode = quantify_mode_t::Auto;
       });
     });
 
@@ -4697,15 +4685,15 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
       });
 
-      describe("quantify_mode == Singleton", [&]() {
-        quantify_mode = quantify_mode_t::Singleton;
+      describe("quantify_alg == Singleton", [&]() {
+        const exec_policy ep = exec_policy::quantify::Singleton;
 
         it("quantifies 0, -2 in BDD 1 [const &]", [&]() {
           const bdd in = bdd_1;
 
           bdd::label_type var = 0;
 
-          const bdd out = bdd_forall(in, [&var]() -> bdd::label_type {
+          const bdd out = bdd_forall(ep, in, [&var]() -> bdd::label_type {
             const bdd::label_type ret = var;
             var -= 2;
             return ret;
@@ -4731,7 +4719,7 @@ go_bandit([]() {
         it("quantifies 1, -1 in BDD 1 [&&]", [&]() {
           bdd::label_type var = 1;
 
-          const bdd out = bdd_forall(bdd_1, [&var]() -> bdd::label_type {
+          const bdd out = bdd_forall(ep, bdd_1, [&var]() -> bdd::label_type {
             const bdd::label_type ret = var;
             var -= 2;
             return ret;
@@ -4757,7 +4745,7 @@ go_bandit([]() {
         it("terminates early when quantifying to a terminal in BDD 3 [&&]", [&]() {
           int calls = 0;
 
-          const bdd out = bdd_forall(bdd_3, [&calls]() -> bdd::label_type {
+          const bdd out = bdd_forall(ep, bdd_3, [&calls]() -> bdd::label_type {
             return 2 - 2*(calls++);
           });
 
@@ -4775,17 +4763,15 @@ go_bandit([]() {
 
           AssertThat(out_meta.can_pull(), Is().False());
         });
-
-        quantify_mode = quantify_mode_t::Auto;
       });
 
-      describe("quantify_mode == Nested", [&]() {
-        quantify_mode = quantify_mode_t::Nested;
+      describe("quantify_alg == Nested", [&]() {
+        const exec_policy ep = exec_policy::quantify::Nested;
 
         it("quantifies 0, -2 in BDD 1", [&]() {
           bdd::label_type var = 0;
 
-          const bdd out = bdd_forall(bdd_1, [&var]() -> bdd::label_type {
+          const bdd out = bdd_forall(ep, bdd_1, [&var]() -> bdd::label_type {
             const bdd::label_type ret = var;
             var -= 2;
             return ret;
@@ -4811,7 +4797,7 @@ go_bandit([]() {
         it("quantifies 1, -1 in BDD 1", [&]() {
           bdd::label_type var = 1;
 
-          const bdd out = bdd_forall(bdd_1, [&var]() -> bdd::label_type {
+          const bdd out = bdd_forall(ep, bdd_1, [&var]() -> bdd::label_type {
             const bdd::label_type ret = var;
             var -= 2;
             return ret;
@@ -4834,9 +4820,9 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
-        it("bails out on a level that only shortcuts", [&bdd_9T]() {
+        it("bails out on a level that only shortcuts", [&]() {
           bdd::label_type var = 6;
-          bdd out = bdd_forall(bdd_not(bdd_9T), [&var]() -> bdd::label_type {
+          bdd out = bdd_forall(ep, bdd_not(bdd_9T), [&var]() -> bdd::label_type {
             const bdd::label_type res = var;
             var -= 2;
             return res;
@@ -4877,9 +4863,9 @@ go_bandit([]() {
           // TODO: meta variables
         });
 
-        it("bails out on a level that only is irrelevant", [&bdd_9F]() {
+        it("bails out on a level that only is irrelevant", [&]() {
           bdd::label_type var = 6;
-          bdd out = bdd_forall(bdd_not(bdd_9F), [&var]() -> bdd::label_type {
+          bdd out = bdd_forall(ep, bdd_not(bdd_9F), [&var]() -> bdd::label_type {
             const bdd::label_type res = var;
             var -= 2;
             return res;
@@ -4911,8 +4897,6 @@ go_bandit([]() {
 
           // TODO: meta variables
         });
-
-        quantify_mode = quantify_mode_t::Auto;
       });
     });
 
@@ -4941,8 +4925,10 @@ go_bandit([]() {
       });
 
       it("quantifies [1].begin() in BDD 1 [&&]", [&]() {
+        const exec_policy ep = exec_policy::quantify::Auto;
+
         const std::vector<bdd::label_type> vars = { 1 };
-        const bdd out = bdd_forall(bdd_1, vars.begin(), vars.end());
+        const bdd out = bdd_forall(ep, bdd_1, vars.begin(), vars.end());
 
         node_test_stream out_nodes(out);
 
