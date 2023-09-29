@@ -65,8 +65,15 @@ namespace adiar
     }
   };
 
-  __zdd zdd_expand(const zdd &dd, const generator<zdd::label_type> &vars)
+  __zdd zdd_expand(const exec_policy &ep,
+                   const zdd &A,
+                   const generator<zdd::label_type> &vars)
   {
-    return internal::intercut<zdd_expand_policy>(dd, vars);
+    return internal::intercut<zdd_expand_policy>(ep, A, vars);
+  }
+
+  __zdd zdd_expand(const zdd &A, const generator<zdd::label_type> &vars)
+  {
+    return zdd_expand(exec_policy(), A, vars);
   }
 }

@@ -173,19 +173,30 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Conversion
-  __bdd bdd_from(const zdd &A, const generator<bdd::label_type> &dom)
+  __bdd bdd_from(const exec_policy &ep,
+                 const zdd &A,
+                 const generator<bdd::label_type> &dom)
   {
     return internal::intercut<internal::convert_dd_policy<bdd_policy, zdd_policy>>
-      (A, dom);
+      (ep, A, dom);
   }
 
-  __bdd bdd_from(const zdd &A)
+  __bdd bdd_from(const zdd &A, const generator<bdd::label_type> &dom)
+  {
+    return bdd_from(exec_policy(), A, dom);
+  }
+
+  __bdd bdd_from(const exec_policy &ep, const zdd &A)
   {
     const shared_file<bdd::label_type> dom = domain_get();
     internal::file_stream<domain_var> ds(dom);
 
-    return internal::intercut<internal::convert_dd_policy<bdd_policy, zdd_policy>>
-      (A, make_generator(ds));
+    return bdd_from(ep, A, make_generator(ds));
+  }
+
+  __bdd bdd_from(const zdd &A)
+  {
+    return bdd_from(exec_policy(), A);
   }
 
   //////////////////////////////////////////////////////////////////////////////

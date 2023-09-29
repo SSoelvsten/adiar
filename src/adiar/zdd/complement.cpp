@@ -104,17 +104,28 @@ namespace adiar
     // LCOV_EXCL_STOP
   };
 
-  __zdd zdd_complement(const zdd &dd, const generator<zdd::label_type> &dom)
+  __zdd zdd_complement(const exec_policy &ep,
+                       const zdd &A,
+                       const generator<zdd::label_type> &dom)
   {
-    return internal::intercut<zdd_complement_policy>(dd, dom);
+    return internal::intercut<zdd_complement_policy>(ep, A, dom);
   }
 
-  __zdd zdd_complement(const zdd &dd)
+  __zdd zdd_complement(const zdd &A, const generator<zdd::label_type> &dom)
+  {
+    return zdd_complement(exec_policy(), A, dom);
+  }
+
+  __zdd zdd_complement(const exec_policy &ep, const zdd &A)
   {
     const shared_file<zdd::label_type> dom = domain_get();
     internal::file_stream<domain_var> ds(dom);
 
-    return internal::intercut<zdd_complement_policy>
-      (dd, make_generator(ds));
+    return zdd_complement(ep, A, make_generator(ds));
+  }
+
+  __zdd zdd_complement(const zdd &A)
+  {
+    return zdd_complement(exec_policy(), A);
   }
 }
