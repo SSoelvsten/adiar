@@ -63,23 +63,51 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
+  __zdd zdd_project(const exec_policy &ep,
+                    const zdd &A,
+                    const predicate<zdd::label_type> &dom)
+  {
+    return internal::quantify<zdd_project_policy>(ep, A, dom, or_op);
+  }
+
   __zdd zdd_project(const zdd &A, const predicate<zdd::label_type> &dom)
   {
-    return internal::quantify<zdd_project_policy>(A, dom, or_op);
+    return zdd_project(exec_policy(), A, dom);
+  }
+
+  __zdd zdd_project(const exec_policy &ep,
+                    zdd &&A,
+                    const predicate<zdd::label_type> &dom)
+  {
+    return internal::quantify<zdd_project_policy>(ep, std::move(A), dom, or_op);
   }
 
   __zdd zdd_project(zdd &&A, const predicate<zdd::label_type> &dom)
   {
-    return internal::quantify<zdd_project_policy>(std::forward<zdd>(A), dom, or_op);
+    return zdd_project(exec_policy(), std::move(A), dom);
+  }
+
+  __zdd zdd_project(const exec_policy &ep,
+                    const zdd &A,
+                    const generator<zdd::label_type> &dom)
+  {
+    return internal::quantify<zdd_project_policy>(ep, A, dom, or_op);
   }
 
   __zdd zdd_project(const zdd &A, const generator<zdd::label_type> &dom)
   {
-    return internal::quantify<zdd_project_policy>(A, dom, or_op);
+    return zdd_project(exec_policy(), A, dom);
+  }
+
+  __zdd zdd_project(const exec_policy &ep,
+                    zdd &&A,
+                    const generator<zdd::label_type> &dom)
+  {
+    return internal::quantify<zdd_project_policy>(ep, std::move(A), dom, or_op);
   }
 
   __zdd zdd_project(zdd &&A, const generator<zdd::label_type> &dom)
   {
-    return internal::quantify<zdd_project_policy>(A, dom, or_op);
+    return zdd_project(exec_policy(), std::move(A), dom);
   }
 }

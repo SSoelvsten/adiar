@@ -254,14 +254,14 @@ go_bandit([]() {
         AssertThat(out.file_ptr(), Is().EqualTo(zdd_null));
       });
 
-      describe("quantify_mode == Singleton", [&]() {
-        quantify_mode = quantify_mode_t::Singleton;
+      describe("quantify_alg == Singleton", [&]() {
+        const exec_policy &ep = exec_policy::quantify::Singleton;
 
         it("computes with dom = Ø to be { Ø } for non-empty input [zdd_1] [const &]", [&](){
           adiar::shared_file<zdd::label_type> dom;
 
           const zdd in = zdd_1;
-          zdd out = zdd_project(in, [](zdd::label_type) { return false; });
+          zdd out = zdd_project(ep, in, [](zdd::label_type) { return false; });
 
           node_test_stream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
@@ -284,7 +284,7 @@ go_bandit([]() {
         it("computes with dom = Ø to be { Ø } for non-empty input [zdd_2] [&&]", [&](){
           adiar::shared_file<zdd::label_type> dom;
 
-          zdd out = zdd_project(zdd(zdd_2), [](zdd::label_type) { return false; });
+          zdd out = zdd_project(ep, zdd(zdd_2), [](zdd::label_type) { return false; });
 
           node_test_stream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
@@ -305,7 +305,7 @@ go_bandit([]() {
         });
 
         it("computes with disjoint dom = { x | x > 2 } to be { Ø } [zdd_3] [&&]", [&](){
-          zdd out = zdd_project(zdd(zdd_3), [](zdd::label_type x) { return x > 2; });
+          zdd out = zdd_project(ep, zdd(zdd_3), [](zdd::label_type x) { return x > 2; });
 
           node_test_stream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
@@ -337,7 +337,7 @@ go_bandit([]() {
           //                          T T
           */
 
-          zdd out = zdd_project(zdd_3, [](zdd::label_type x) { return !(x % 2); });
+          zdd out = zdd_project(ep, zdd_3, [](zdd::label_type x) { return !(x % 2); });
 
           node_test_stream out_nodes(out);
 
@@ -371,12 +371,10 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
           AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
         });
-
-        quantify_mode = quantify_mode_t::Auto;
       });
 
-      describe("quantify_mode == Partial", [&]() {
-        quantify_mode = quantify_mode_t::Partial;
+      describe("quantify_alg == Partial", [&]() {
+        const exec_policy ep = exec_policy::quantify::Partial;
 
         it("computes zdd_3 in a single sweep with dom = { x | x % 2 == 0 }", [&](){
           /* Expected: { {0}, {2}, {0,2} }
@@ -391,7 +389,7 @@ go_bandit([]() {
           */
 
           std::vector<zdd::label_type> call_history;
-          zdd out = zdd_project(zdd_3, [&call_history](zdd::label_type x) {
+          zdd out = zdd_project(ep, zdd_3, [&call_history](zdd::label_type x) {
             call_history.push_back(x);
             return (x % 2) == 0;
           });
@@ -450,7 +448,7 @@ go_bandit([]() {
 
         it("quantifies exploding ZDD 5", [&]() {
           std::vector<zdd::label_type> call_history;
-          zdd out = zdd_project(zdd_5, [&call_history](const zdd::label_type x) -> bool {
+          zdd out = zdd_project(ep, zdd_5, [&call_history](const zdd::label_type x) -> bool {
             call_history.push_back(x);
             return 1 < x;
           });
@@ -790,18 +788,16 @@ go_bandit([]() {
           AssertThat(call_history.at(40), Is().EqualTo(12u));
           AssertThat(call_history.at(41), Is().EqualTo(13u));
         });
-
-        quantify_mode = quantify_mode_t::Auto;
       });
 
-      describe("quantify_mode == Nested", [&]() {
-        quantify_mode = quantify_mode_t::Nested;
+      describe("quantify_alg == Nested", [&]() {
+        const exec_policy ep = exec_policy::quantify::Nested;
 
         it("computes with dom = Ø to be { Ø } for non-empty input [zdd_1]", [&](){
           adiar::shared_file<zdd::label_type> dom;
 
           const zdd in = zdd_1;
-          zdd out = zdd_project(in, [](zdd::label_type) { return false; });
+          zdd out = zdd_project(ep, in, [](zdd::label_type) { return false; });
 
           node_test_stream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
@@ -822,7 +818,7 @@ go_bandit([]() {
         });
 
         it("computes with disjoint dom = { x | x > 2 } to be { Ø } [zdd_3]", [&](){
-          zdd out = zdd_project(zdd(zdd_3), [](zdd::label_type x) { return x > 2; });
+          zdd out = zdd_project(ep, zdd(zdd_3), [](zdd::label_type x) { return x > 2; });
 
           node_test_stream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
@@ -854,7 +850,7 @@ go_bandit([]() {
           //                          T T
           */
 
-          zdd out = zdd_project(zdd_3, [](zdd::label_type x) { return !(x % 2); });
+          zdd out = zdd_project(ep, zdd_3, [](zdd::label_type x) { return !(x % 2); });
 
           node_test_stream out_nodes(out);
 
@@ -902,7 +898,7 @@ go_bandit([]() {
           //      / \
           //      T T
           */
-          zdd out = zdd_project(in, [](const zdd::label_type x) { return x % 2 == 0; });
+          zdd out = zdd_project(ep, in, [](const zdd::label_type x) { return x % 2 == 0; });
 
           node_test_stream out_nodes(out);
 
@@ -944,17 +940,15 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
           AssertThat(out->number_of_terminals[true],  Is().EqualTo(4u));
         });
-
-        quantify_mode = quantify_mode_t::Auto;
       });
 
-      describe("quantify_mode == Auto", [&]() {
-        quantify_mode = quantify_mode_t::Auto;
+      describe("quantify_alg == Auto", [&]() {
+        const exec_policy ep = exec_policy::quantify::Auto;
 
         it("computes with dom = Ø to be { Ø } for non-empty input [zdd_2]", [&](){
           adiar::shared_file<zdd::label_type> dom;
 
-          zdd out = zdd_project(zdd(zdd_2), [](zdd::label_type) { return false; });
+          zdd out = zdd_project(ep, zdd(zdd_2), [](zdd::label_type) { return false; });
 
           node_test_stream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
@@ -975,7 +969,7 @@ go_bandit([]() {
         });
 
         it("computes with disjoint dom = { x | x > 2 } to be { Ø } [zdd_3]", [&](){
-          zdd out = zdd_project(zdd(zdd_3), [](zdd::label_type x) { return x > 2; });
+          zdd out = zdd_project(ep, zdd(zdd_3), [](zdd::label_type x) { return x > 2; });
 
           node_test_stream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
@@ -1007,7 +1001,7 @@ go_bandit([]() {
           //                   T T
           */
 
-          zdd out = zdd_project(zdd_1, [](zdd::label_type x) { return x % 2 == 1; });
+          zdd out = zdd_project(ep, zdd_1, [](zdd::label_type x) { return x % 2 == 1; });
 
           node_test_stream out_nodes(out);
 
@@ -1056,7 +1050,7 @@ go_bandit([]() {
           //                    T T
           */
 
-          zdd out = zdd_project(zdd_1, [](zdd::label_type x) { return x != 0 && x != 2; });
+          zdd out = zdd_project(ep, zdd_1, [](zdd::label_type x) { return x != 0 && x != 2; });
 
           node_test_stream out_nodes(out);
 
@@ -1111,7 +1105,7 @@ go_bandit([]() {
           //                          T T
           */
 
-          zdd out = zdd_project(zdd_3, [](zdd::label_type x) { return x % 2 == 0; });
+          zdd out = zdd_project(ep, zdd_3, [](zdd::label_type x) { return x % 2 == 0; });
 
           node_test_stream out_nodes(out);
 
@@ -1148,7 +1142,7 @@ go_bandit([]() {
 
         it("switches to Nested Sweeping for exploding ZDD 5", [&]() {
           std::vector<zdd::label_type> call_history;
-          zdd out = zdd_project(zdd_5, [&call_history](const zdd::label_type x) -> bool {
+          zdd out = zdd_project(ep, zdd_5, [&call_history](const zdd::label_type x) -> bool {
             call_history.push_back(x);
             return 1 < x;
           });
@@ -1499,8 +1493,6 @@ go_bandit([]() {
           AssertThat(call_history.at(51), Is().EqualTo(2u));
           AssertThat(call_history.at(52), Is().EqualTo(1u));
         });
-
-        quantify_mode = quantify_mode_t::Auto;
       });
     });
 
@@ -1541,8 +1533,8 @@ go_bandit([]() {
         AssertThat(out.file_ptr(), Is().EqualTo(in.file_ptr()));
       });
 
-      describe("quantify_mode == Singleton / Partial", [&]() {
-        quantify_mode = quantify_mode_t::Singleton;
+      describe("quantify_alg == Singleton / Partial", [&]() {
+        const exec_policy ep = exec_policy::quantify::Singleton;
 
         it("collapses zdd_1 with dom = Ø into { Ø } [const &]", [&](){
           const zdd in = zdd_1;
@@ -1567,7 +1559,7 @@ go_bandit([]() {
         });
 
         it("collapses zdd_2 with dom = Ø into { Ø } [&&]", [&](){
-          zdd out = zdd_project(zdd(zdd_2), []() { return -1; });
+          zdd out = zdd_project(ep, zdd(zdd_2), []() { return -1; });
 
           node_test_stream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
@@ -1589,7 +1581,7 @@ go_bandit([]() {
 
         it("collapses zdd_3 with dom = Ø into { Ø } [const &]", [&](){
           const zdd in = zdd_3;
-          zdd out = zdd_project(in, []() { return -1; });
+          zdd out = zdd_project(ep, in, []() { return -1; });
 
           node_test_stream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
@@ -1613,7 +1605,7 @@ go_bandit([]() {
           zdd::label_type var = 1;
 
           const zdd in = zdd_2;
-          zdd out = zdd_project(in, [&var]() {
+          zdd out = zdd_project(ep, in, [&var]() {
             const zdd::label_type ret = var;
             var -= 2;
             return ret;
@@ -1639,7 +1631,7 @@ go_bandit([]() {
 
         it("computes with disjoint dom to be { Ø } [zdd_3] [&&]", [&](){
           zdd::label_type var = 5;
-          zdd out = zdd_project(zdd(zdd_3), [&var]() {
+          zdd out = zdd_project(ep, zdd(zdd_3), [&var]() {
             return 3 <= var && var <= 5 ? var-- : -1;
           });
 
@@ -1683,7 +1675,7 @@ go_bandit([]() {
            */
 
           zdd::label_type var = 0;
-          zdd out = zdd_project(in, [&var]() {
+          zdd out = zdd_project(ep, in, [&var]() {
             return var == 0 ? var--: var;
           });
 
@@ -1720,7 +1712,7 @@ go_bandit([]() {
            *       F T
            */
           zdd::label_type var = 1;
-          zdd out = zdd_project(in, [&var]() {
+          zdd out = zdd_project(ep, in, [&var]() {
             return var <= 1 ? var--: var;
           });
 
@@ -1760,7 +1752,7 @@ go_bandit([]() {
           //        T T
           */
           zdd::label_type var = 4;
-          zdd out = zdd_project(in, [&var]() {
+          zdd out = zdd_project(ep, in, [&var]() {
             return 2 <= var && var <= 4 ? var-- : -1;
           });
 
@@ -1818,7 +1810,7 @@ go_bandit([]() {
           //       T T
           */
           zdd::label_type var = 4;
-          zdd out = zdd_project(zdd_2, [&var]() {
+          zdd out = zdd_project(ep, zdd_2, [&var]() {
             return 2 <= var && var <= 4 ? var-- : -1;
           });
 
@@ -1876,7 +1868,7 @@ go_bandit([]() {
           //        T T
           */
           zdd::label_type var = 4;
-          zdd out = zdd_project(zdd_3, [&var]() {
+          zdd out = zdd_project(ep, zdd_3, [&var]() {
             const zdd::label_type ret = var;
             var -= 2;
             return ret;
@@ -1927,7 +1919,7 @@ go_bandit([]() {
           //    F T T T
           */
           zdd::label_type var = 4;
-          zdd out = zdd_project(zdd_4, [&var]() {
+          zdd out = zdd_project(ep, zdd_4, [&var]() {
             const zdd::label_type ret = var;
             var -= 4;
             return ret;
@@ -1981,7 +1973,7 @@ go_bandit([]() {
           //     F  T
           */
           zdd::label_type var = 4;
-          zdd out = zdd_project(zdd_4, [&var]() {
+          zdd out = zdd_project(ep, zdd_4, [&var]() {
             const zdd::label_type res = var;
             if (var == 4) { var -= 2; }
             else          { var = -1; }
@@ -2025,16 +2017,14 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
           AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
         });
-
-        quantify_mode = quantify_mode_t::Auto;
       });
 
-      describe("quantify_mode == Nested / Auto", [&]() {
-        quantify_mode = quantify_mode_t::Nested;
+      describe("quantify_alg == Nested / Auto", [&]() {
+        const exec_policy ep = exec_policy::quantify::Nested;
 
         it("collapses zdd_1 with dom = Ø into { Ø } [const &]", [&](){
           const zdd in = zdd_1;
-          zdd out = zdd_project(in, []() { return -1; });
+          zdd out = zdd_project(ep, in, []() { return -1; });
 
           node_test_stream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
@@ -2055,7 +2045,7 @@ go_bandit([]() {
         });
 
         it("collapses zdd_2 with dom = Ø into { Ø } [&&]", [&](){
-          zdd out = zdd_project(zdd(zdd_2), []() { return -1; });
+          zdd out = zdd_project(ep, zdd(zdd_2), []() { return -1; });
 
           node_test_stream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
@@ -2077,7 +2067,7 @@ go_bandit([]() {
 
         it("collapses zdd_3 with dom = Ø into { Ø } [const &]", [&](){
           const zdd in = zdd_3;
-          zdd out = zdd_project(in, []() { return -1; });
+          zdd out = zdd_project(ep, in, []() { return -1; });
 
           node_test_stream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
@@ -2101,7 +2091,7 @@ go_bandit([]() {
           zdd::label_type var = 1;
 
           const zdd in = zdd_2;
-          zdd out = zdd_project(in, [&var]() {
+          zdd out = zdd_project(ep, in, [&var]() {
             const zdd::label_type ret = var;
             var -= 2;
             return ret;
@@ -2127,7 +2117,7 @@ go_bandit([]() {
 
         it("computes with disjoint dom to be { Ø } [zdd_3] [&&]", [&](){
           zdd::label_type var = 5;
-          zdd out = zdd_project(zdd(zdd_3), [&var]() {
+          zdd out = zdd_project(ep, zdd(zdd_3), [&var]() {
             return 3 <= var && var <= 5 ? var-- : -1;
           });
 
@@ -2173,7 +2163,7 @@ go_bandit([]() {
            */
 
           zdd::label_type var = 0;
-          zdd out = zdd_project(in, [&var]() {
+          zdd out = zdd_project(ep, in, [&var]() {
             return var == 0 ? var--: var;
           });
 
@@ -2210,7 +2200,7 @@ go_bandit([]() {
            *       F T
            */
           zdd::label_type var = 1;
-          zdd out = zdd_project(in, [&var]() {
+          zdd out = zdd_project(ep, in, [&var]() {
             return var <= 1 ? var--: var;
           });
 
@@ -2250,7 +2240,7 @@ go_bandit([]() {
           //        T T
           */
           zdd::label_type var = 4;
-          zdd out = zdd_project(in, [&var]() {
+          zdd out = zdd_project(ep, in, [&var]() {
             return 2 <= var && var <= 4 ? var-- : -1;
           });
 
@@ -2308,7 +2298,7 @@ go_bandit([]() {
           //       T T
           */
           zdd::label_type var = 4;
-          zdd out = zdd_project(zdd_2, [&var]() {
+          zdd out = zdd_project(ep, zdd_2, [&var]() {
             return 2 <= var && var <= 4 ? var-- : -1;
           });
 
@@ -2366,7 +2356,7 @@ go_bandit([]() {
           //        T T
           */
           zdd::label_type var = 4;
-          zdd out = zdd_project(zdd_3, [&var]() {
+          zdd out = zdd_project(ep, zdd_3, [&var]() {
             const zdd::label_type ret = var;
             var -= 2;
             return ret;
@@ -2417,7 +2407,7 @@ go_bandit([]() {
           //    F T T T
           */
           zdd::label_type var = 4;
-          zdd out = zdd_project(zdd_4, [&var]() {
+          zdd out = zdd_project(ep, zdd_4, [&var]() {
             const zdd::label_type ret = var;
             var -= 4;
             return ret;
@@ -2471,7 +2461,7 @@ go_bandit([]() {
           //     F  T
           */
           zdd::label_type var = 4;
-          zdd out = zdd_project(zdd_4, [&var]() {
+          zdd out = zdd_project(ep, zdd_4, [&var]() {
             const zdd::label_type res = var;
             if (var == 4) { var -= 2; }
             else          { var = -1; }
@@ -2530,7 +2520,7 @@ go_bandit([]() {
           //      T T
           */
           zdd::label_type var = 8;
-          zdd out = zdd_project(in, [&var]() {
+          zdd out = zdd_project(ep, in, [&var]() {
             const zdd::label_type res = var;
             var -= 2;
             return res;
@@ -2576,8 +2566,6 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
           AssertThat(out->number_of_terminals[true],  Is().EqualTo(4u));
         });
-
-        quantify_mode = quantify_mode_t::Auto;
       });
     });
 
@@ -2585,8 +2573,8 @@ go_bandit([]() {
       // Since this is merely a wrapper on the generator function, we will just
       // double-check with a few tests.
 
-      describe("quantify_mode == Singleton / Partial", [&]() {
-        quantify_mode = quantify_mode_t::Singleton;
+      describe("quantify_alg == Singleton / Partial", [&]() {
+        const exec_policy ep = exec_policy::quantify::Singleton;
 
         it("computes zdd_2 with dom = {4,3,2} [&&]", [&](){
           const std::vector<int> dom = {4,3,2};
@@ -2601,7 +2589,7 @@ go_bandit([]() {
           //       / \
           //       T T
           */
-          zdd out = zdd_project(zdd_2, dom.cbegin(), dom.cend());
+          zdd out = zdd_project(ep, zdd_2, dom.cbegin(), dom.cend());
 
           node_test_stream out_nodes(out);
 
@@ -2644,12 +2632,10 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
           AssertThat(out->number_of_terminals[true],  Is().EqualTo(4u));
         });
-
-        quantify_mode = quantify_mode_t::Auto;
       });
 
-      describe("quantify_mode == Nested / Auto", [&]() {
-        quantify_mode = quantify_mode_t::Nested;
+      describe("quantify_alg == Nested / Auto", [&]() {
+        const exec_policy ep = exec_policy::quantify::Nested;
 
         it("computes zdd_3 with dom = {4,2,0} [&&]", [&](){
           const std::vector<int> dom = {4,2,0};
@@ -2664,7 +2650,7 @@ go_bandit([]() {
           //        / \
           //        T T
           */
-          zdd out = zdd_project(zdd_3, dom.cbegin(), dom.cend());
+          zdd out = zdd_project(ep, zdd_3, dom.cbegin(), dom.cend());
 
           node_test_stream out_nodes(out);
 
@@ -2713,7 +2699,7 @@ go_bandit([]() {
           //    / \ / \
           //    F T T T
           */
-          zdd out = zdd_project(in, dom.cbegin(), dom.cend());
+          zdd out = zdd_project(ep, in, dom.cbegin(), dom.cend());
 
           node_test_stream out_nodes(out);
 
@@ -2752,8 +2738,6 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
           AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
         });
-
-        quantify_mode = quantify_mode_t::Auto;
       });
     });
   });

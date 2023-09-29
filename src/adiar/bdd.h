@@ -497,7 +497,62 @@ namespace adiar
   /// \cond
   template<typename ForwardIt>
   __bdd bdd_exists(bdd &&f, ForwardIt begin, ForwardIt end)
-  { return bdd_exists(std::forward<bdd>(f), make_generator(begin, end)); }
+  { return bdd_exists(std::move(f), make_generator(begin, end)); }
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Existential quantification of a single variable.
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_exists(const exec_policy &ep, const bdd &f, bdd::label_type var);
+
+  /// \cond
+  inline __bdd bdd_exists(const exec_policy &ep, bdd &&f, bdd::label_type var)
+  { return bdd_exists(ep, f, var); }
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief      Existential quantification of multiple variables.
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_exists(const exec_policy &ep,
+                   const bdd &f,
+                   const predicate<bdd::label_type> &vars);
+
+  /// \cond
+  __bdd bdd_exists(const exec_policy &ep,
+                   bdd &&f,
+                   const predicate<bdd::label_type> &vars);
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Existential quantification of multiple variables.
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_exists(const exec_policy &ep,
+                   const bdd &f,
+                   const generator<bdd::label_type> &vars);
+
+  /// \cond
+  __bdd bdd_exists(const exec_policy &ep,
+                   bdd &&f,
+                   const generator<bdd::label_type> &vars);
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Existential quantification of multiple variables.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename ForwardIt>
+  __bdd bdd_exists(const exec_policy &ep,
+                   const bdd &f,
+                   ForwardIt begin,
+                   ForwardIt end)
+  { return bdd_exists(ep, f, make_generator(begin, end)); }
+
+  /// \cond
+  template<typename ForwardIt>
+  __bdd bdd_exists(const exec_policy &ep,
+                   bdd &&f,
+                   ForwardIt begin,
+                   ForwardIt end)
+  { return bdd_exists(ep, std::move(f), make_generator(begin, end)); }
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -584,6 +639,61 @@ namespace adiar
   template<typename ForwardIt>
   __bdd bdd_forall(bdd &&f, ForwardIt begin, ForwardIt end)
   { return bdd_forall(std::forward<bdd>(f), make_generator(begin, end)); }
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Forall quantification of a single variable.
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_forall(const exec_policy &ep, const bdd &f, bdd::label_type var);
+
+  /// \cond
+  inline __bdd bdd_forall(const exec_policy &ep, bdd &&f, bdd::label_type var)
+  { return bdd_forall(ep, f, var); }
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Forall quantification of multiple variables.
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_forall(const exec_policy &ep,
+                   const bdd &f,
+                   const predicate<bdd::label_type> &vars);
+
+  /// \cond
+  __bdd bdd_forall(const exec_policy &ep,
+                   bdd &&f,
+                   const predicate<bdd::label_type> &vars);
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Forall quantification of multiple variables.
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_forall(const exec_policy &ep,
+                   const bdd &f,
+                   const generator<bdd::label_type> &vars);
+
+  /// \cond
+  __bdd bdd_forall(const exec_policy &ep,
+                   bdd &&f,
+                   const generator<bdd::label_type> &vars);
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Forall quantification of multiple variables.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename ForwardIt>
+  __bdd bdd_forall(const exec_policy &ep,
+                   const bdd &f,
+                   ForwardIt begin,
+                   ForwardIt end)
+  { return bdd_forall(ep, f, make_generator(begin, end)); }
+
+  /// \cond
+  template<typename ForwardIt>
+  __bdd bdd_forall(const exec_policy &ep,
+                   bdd &&f,
+                   ForwardIt begin,
+                   ForwardIt end)
+  { return bdd_forall(ep, std::move(f), make_generator(begin, end)); }
   /// \endcond
 
   /// \}

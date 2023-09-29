@@ -4,6 +4,8 @@
 #include <adiar/functional.h>
 #include <adiar/statistics.h>
 
+#include <adiar/exec_policy.h>
+
 #include <adiar/internal/cut.h>
 #include <adiar/internal/dd_func.h>
 #include <adiar/internal/algorithms/reduce.h>
@@ -810,7 +812,8 @@ namespace adiar::internal
       //////////////////////////////////////////////////////////////////////////
       template<typename nesting_policy, typename outer_roots_t>
       typename nesting_policy::__dd_type
-      down(nesting_policy &policy_impl,
+      down(const exec_policy &ep,
+           nesting_policy &policy_impl,
            const typename nesting_policy::shared_node_file_type &outer_file,
            outer_roots_t &outer_roots,
            const size_t inner_memory)
@@ -828,7 +831,7 @@ namespace adiar::internal
         // To avoid having to do the boiler-plate yourself, use
         // `down__sweep_switch` below (assuming your algorithm fits).
         const typename nesting_policy::__dd_type res =
-          policy_impl.sweep(outer_file, outer_roots, inner_memory);
+          policy_impl.sweep(ep, outer_file, outer_roots, inner_memory);
 
         outer_roots.reset();
         return res;
@@ -841,7 +844,8 @@ namespace adiar::internal
       //////////////////////////////////////////////////////////////////////////
       template<typename nesting_policy, typename outer_roots_t>
       inline typename nesting_policy::__dd_type
-      down__sweep_switch(nesting_policy &policy_impl,
+      down__sweep_switch(const exec_policy &ep,
+                         nesting_policy &policy_impl,
                          const typename nesting_policy::shared_node_file_type &outer_file,
                          outer_roots_t &outer_roots,
                          const size_t inner_memory)
@@ -860,7 +864,7 @@ namespace adiar::internal
 
         // ---------------------------------------------------------------------
         // Case: Run Inner Sweep (with random access)
-        // TODO
+        adiar_assert(ep.access_mode() != exec_policy::access::Random_Access);
 
         // ---------------------------------------------------------------------
         // Case: Run Inner Sweep (with priority queues)
@@ -876,9 +880,9 @@ namespace adiar::internal
 
         const size_t inner_pq_bound = policy_impl.pq_bound(outer_file, outer_roots.size());
 
-        const bool external_only = memory_mode == memory_mode_t::External;
+        const bool external_only = ep.memory_mode() == exec_policy::memory::External;
 
-        const size_t inner_pq_max_size = memory_mode == memory_mode_t::Internal
+        const size_t inner_pq_max_size = ep.memory_mode() == exec_policy::memory::Internal
           ? std::min(inner_pq_fits, inner_pq_bound)
           : inner_pq_bound;
 
@@ -898,7 +902,7 @@ namespace adiar::internal
           using decorator_t = down__pq_decorator<inner_pq_t, outer_roots_t>;
           decorator_t decorated_pq(inner_pq, outer_roots);
 
-          return policy_impl.sweep_pq(outer_file, decorated_pq, inner_remaining_memory);
+          return policy_impl.sweep_pq(ep, outer_file, decorated_pq, inner_remaining_memory);
         } else if(!external_only && inner_pq_max_size <= inner_pq_fits) {
 #ifdef ADIAR_STATS
           stats.inner.down.lpq.internal += 1u;
@@ -911,7 +915,7 @@ namespace adiar::internal
           using decorator_t = down__pq_decorator<inner_pq_t, outer_roots_t>;
           decorator_t decorated_pq(inner_pq, outer_roots);
 
-          return policy_impl.sweep_pq(outer_file, decorated_pq, inner_remaining_memory);
+          return policy_impl.sweep_pq(ep, outer_file, decorated_pq, inner_remaining_memory);
         } else {
 #ifdef ADIAR_STATS
           stats.inner.down.lpq.external += 1u;
@@ -924,7 +928,7 @@ namespace adiar::internal
           using decorator_t = down__pq_decorator<inner_pq_t, outer_roots_t>;
           decorator_t decorated_pq(inner_pq, outer_roots);
 
-          return policy_impl.sweep_pq(outer_file, decorated_pq, inner_remaining_memory);
+          return policy_impl.sweep_pq(ep, outer_file, decorated_pq, inner_remaining_memory);
         }
       }
 
@@ -1208,7 +1212,8 @@ namespace adiar::internal
       //////////////////////////////////////////////////////////////////////////
       template<typename nesting_policy, typename inner_pq_t, typename outer_pq_t>
       inline void
-      up(const arc_stream<> &outer_arcs,
+      up(const exec_policy &/*ep*/,
+         const arc_stream<> &outer_arcs,
          outer_pq_t &outer_pq,
          node_writer &outer_writer,
          const typename nesting_policy::shared_arc_file_type &inner_arcs_file,
@@ -1281,7 +1286,8 @@ namespace adiar::internal
       //////////////////////////////////////////////////////////////////////////
       template<typename nesting_policy, typename outer_pq_t>
       void
-      up(const arc_stream<> &outer_arcs,
+      up(const exec_policy &ep,
+         const arc_stream<> &outer_arcs,
          outer_pq_t &outer_pq,
          node_writer &outer_writer,
          const typename nesting_policy::shared_arc_file_type &inner_arcs_file,
@@ -1307,17 +1313,18 @@ namespace adiar::internal
 
         const size_t inner_pq_bound = inner_arcs_file->max_1level_cut;
 
-        const size_t inner_pq_max_size = memory_mode == memory_mode_t::Internal
+        const size_t inner_pq_max_size = ep.memory_mode() == exec_policy::memory::Internal
           ? std::min(inner_pq_memory_fits, inner_pq_bound)
           : inner_pq_bound;
 
-        const bool external_only = memory_mode == memory_mode_t::External;
+        const bool external_only = ep.memory_mode() == exec_policy::memory::External;
         if (!external_only && inner_pq_max_size <= no_lookahead_bound(1)) {
 #ifdef ADIAR_STATS
           stats.inner.up.lpq.unbucketed += 1u;
 #endif
           using inner_pq_t = up__pq_t<0, memory_mode_t::Internal>;
-          up<nesting_policy, inner_pq_t>(outer_arcs, outer_pq, outer_writer,
+          up<nesting_policy, inner_pq_t>(ep,
+                                         outer_arcs, outer_pq, outer_writer,
                                          inner_arcs_file,
                                          inner_pq_memory, inner_pq_max_size, inner_sorters_memory,
                                          is_last_inner);
@@ -1327,7 +1334,8 @@ namespace adiar::internal
           stats.inner.up.lpq.internal += 1u;
 #endif
           using inner_pq_t = up__pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>;
-          up<nesting_policy, inner_pq_t>(outer_arcs, outer_pq, outer_writer,
+          up<nesting_policy, inner_pq_t>(ep,
+                                         outer_arcs, outer_pq, outer_writer,
                                          inner_arcs_file,
                                          inner_pq_memory, inner_pq_max_size, inner_sorters_memory,
                                          is_last_inner);
@@ -1336,7 +1344,8 @@ namespace adiar::internal
           stats.inner.up.lpq.external += 1u;
 #endif
           using inner_pq_t = up__pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::External>;
-          up<nesting_policy, inner_pq_t>(outer_arcs, outer_pq, outer_writer,
+          up<nesting_policy, inner_pq_t>(ep,
+                                         outer_arcs, outer_pq, outer_writer,
                                          inner_arcs_file,
                                          inner_pq_memory, inner_pq_max_size, inner_sorters_memory,
                                          is_last_inner);
@@ -1354,7 +1363,8 @@ namespace adiar::internal
            size_t outer_look_ahead,
            memory_mode_t outer_mem_mode>
   typename nesting_policy::dd_type
-  __nested_sweep(const typename nesting_policy::shared_arc_file_type &dag,
+  __nested_sweep(const exec_policy &ep,
+                 const typename nesting_policy::shared_arc_file_type &dag,
                  nesting_policy &policy_impl,
                  const size_t outer_pq_memory,
                  const size_t outer_roots_memory,
@@ -1631,7 +1641,7 @@ namespace adiar::internal
         //   Use a simpler (and hence faster?) algorithm for a GC-only sweep.
 
         const unreduced_t inner_unreduced =
-          nested_sweeping::inner::down(policy_impl, outer_file, outer_roots, inner_memory);
+          nested_sweeping::inner::down(ep, policy_impl, outer_file, outer_roots, inner_memory);
 
         if (inner_unreduced.template has<shared_node_file_type>()) {
           adiar_assert(!outer_levels.can_pull(),
@@ -1654,7 +1664,8 @@ namespace adiar::internal
         outer_writer.attach(outer_file);
 
         if (is_last_inner) {
-          nested_sweeping::inner::up<nesting_policy>(outer_arcs, outer_pq, outer_writer,
+          nested_sweeping::inner::up<nesting_policy>(ep,
+                                                     outer_arcs, outer_pq, outer_writer,
                                                      inner_arcs, inner_memory, is_last_inner);
         } else {
           adiar_assert(next_inner < outer_level.level(),
@@ -1662,7 +1673,8 @@ namespace adiar::internal
 
           outer_pq_decorator_t outer_pq_decorator(outer_pq, outer_roots, next_inner);
 
-          nested_sweeping::inner::up<nesting_policy>(outer_arcs, outer_pq_decorator, outer_writer,
+          nested_sweeping::inner::up<nesting_policy>(ep,
+                                                     outer_arcs, outer_pq_decorator, outer_writer,
                                                      inner_arcs, inner_memory, is_last_inner);
         }
       } else if (outer_roots.size() > 0) {
@@ -1769,7 +1781,8 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   template<typename nesting_policy>
   typename nesting_policy::dd_type
-  nested_sweep(const typename nesting_policy::__dd_type &input,
+  nested_sweep(const exec_policy &ep,
+               const typename nesting_policy::__dd_type &input,
                nesting_policy &policy_impl)
   {
     using reduced_t      = typename nesting_policy::dd_type;
@@ -1834,29 +1847,29 @@ namespace adiar::internal
 
     const size_t pq_roots_bound = dag->max_1level_cut;
 
-    const size_t outer_pq_roots_max = memory_mode == memory_mode_t::Internal
+    const size_t outer_pq_roots_max = ep.memory_mode() == exec_policy::memory::Internal
       ? std::min({outer_pq_memory_fits, outer_roots_memory_fits, pq_roots_bound})
       : pq_roots_bound;
 
-    const bool external_only = memory_mode == memory_mode_t::External;
+    const bool external_only = ep.memory_mode() == exec_policy::memory::External;
     if (!external_only && outer_pq_roots_max <= no_lookahead_bound(1)) {
 #ifdef ADIAR_STATS
       stats_reduce.lpq.unbucketed += 1u;
 #endif
       return __nested_sweep<nesting_policy, 0, memory_mode_t::Internal>
-        (dag, policy_impl, outer_pq_memory, outer_roots_memory, outer_pq_roots_max, inner_memory);
+        (ep, dag, policy_impl, outer_pq_memory, outer_roots_memory, outer_pq_roots_max, inner_memory);
     } else if(!external_only && outer_pq_roots_max <= outer_pq_memory_fits && outer_pq_roots_max <= outer_roots_memory_fits) {
 #ifdef ADIAR_STATS
       stats_reduce.lpq.internal += 1u;
 #endif
       return __nested_sweep<nesting_policy, ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>
-        (dag, policy_impl, outer_pq_memory, outer_roots_memory, outer_pq_roots_max, inner_memory);
+        (ep, dag, policy_impl, outer_pq_memory, outer_roots_memory, outer_pq_roots_max, inner_memory);
     } else {
 #ifdef ADIAR_STATS
       stats_reduce.lpq.external += 1u;
 #endif
       return __nested_sweep<nesting_policy, ADIAR_LPQ_LOOKAHEAD, memory_mode_t::External>
-        (dag, policy_impl, outer_pq_memory, outer_roots_memory, outer_pq_roots_max, inner_memory);
+        (ep, dag, policy_impl, outer_pq_memory, outer_roots_memory, outer_pq_roots_max, inner_memory);
     }
   }
 }
