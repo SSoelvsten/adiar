@@ -155,8 +155,46 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
+  __zdd zdd_binop(const exec_policy &ep,
+                  const zdd &A,
+                  const zdd &B,
+                  const bool_op &op)
+  {
+    return internal::prod2<zdd_prod2_policy>(ep, A, B, op);
+  }
+
   __zdd zdd_binop(const zdd &A, const zdd &B, const bool_op &op)
   {
-    return internal::prod2<zdd_prod2_policy>(A, B, op);
+    return zdd_binop(exec_policy(), A, B, op);
+  }
+
+  __zdd zdd_union(const exec_policy &ep, const zdd &A, const zdd &B)
+  {
+    return zdd_binop(ep, A, B, or_op);
+  }
+
+  __zdd zdd_union(const zdd &A, const zdd &B)
+  {
+    return zdd_union(exec_policy(), A, B);
+  }
+
+  __zdd zdd_intsec(const exec_policy &ep, const zdd &A, const zdd &B)
+  {
+    return zdd_binop(ep, A, B, and_op);
+  }
+
+  __zdd zdd_intsec(const zdd &A, const zdd &B)
+  {
+    return zdd_intsec(exec_policy(), A, B);
+  }
+
+  __zdd zdd_diff(const exec_policy &ep, const zdd &A, const zdd &B)
+  {
+    return zdd_binop(ep, A, B, diff_op);
+  }
+
+  __zdd zdd_diff(const zdd &A, const zdd &B)
+  {
+    return zdd_diff(exec_policy(), A, B);
   }
 }

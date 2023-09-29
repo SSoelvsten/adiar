@@ -117,8 +117,124 @@ namespace adiar
     static constexpr bool no_skip = false;
   };
 
-  __bdd bdd_apply(const bdd &bdd_1, const bdd &bdd_2, const bool_op &op)
+  __bdd bdd_apply(const exec_policy &ep, const bdd &f, const bdd &g, const bool_op &op)
   {
-    return internal::prod2<apply_prod2_policy>(bdd_1, bdd_2, op);
+    return internal::prod2<apply_prod2_policy>(ep, f, g, op);
+  }
+
+  __bdd bdd_apply(const bdd &f, const bdd &g, const bool_op &op)
+  {
+    return bdd_apply(exec_policy(), f, g, op);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_and(const exec_policy &ep, const bdd &f, const bdd &g)
+  {
+    return bdd_apply(ep, f, g, and_op);
+  }
+
+  __bdd bdd_and(const bdd &f, const bdd &g)
+  {
+    return bdd_and(exec_policy(), f, g);
+  }
+
+  __bdd bdd_nand(const exec_policy &ep, const bdd &f, const bdd &g)
+  {
+    return bdd_apply(ep, f, g, nand_op);
+  }
+
+  __bdd bdd_nand(const bdd &f, const bdd &g)
+  {
+    return bdd_nand(exec_policy(), f, g);
+  }
+
+  __bdd bdd_or(const exec_policy &ep, const bdd &f, const bdd &g)
+  {
+    return bdd_apply(ep, f, g, or_op);
+  }
+
+  __bdd bdd_or(const bdd &f, const bdd &g)
+  {
+    return bdd_or(exec_policy(), f, g);
+  }
+
+  __bdd bdd_nor(const exec_policy &ep, const bdd &f, const bdd &g)
+  {
+    return bdd_apply(ep, f, g, nor_op);
+  }
+
+  __bdd bdd_nor(const bdd &f, const bdd &g)
+  {
+    return bdd_nor(exec_policy(), f, g);
+  }
+
+  __bdd bdd_xor(const exec_policy &ep, const bdd &f, const bdd &g)
+  {
+    return bdd_apply(ep, f, g, xor_op);
+  }
+
+  __bdd bdd_xor(const bdd &f, const bdd &g)
+  {
+    return bdd_xor(exec_policy(), f, g);
+  }
+
+  __bdd bdd_xnor(const exec_policy &ep, const bdd &f, const bdd &g)
+  {
+    return bdd_apply(ep, f, g, xnor_op);
+  }
+
+  __bdd bdd_xnor(const bdd &f, const bdd &g)
+  {
+    return bdd_xnor(exec_policy(), f, g);
+  }
+
+  __bdd bdd_imp(const exec_policy &ep, const bdd &f, const bdd &g)
+  {
+    return bdd_apply(ep, f, g, imp_op);
+  }
+
+  __bdd bdd_imp(const bdd &f, const bdd &g)
+  {
+    return bdd_imp(exec_policy(), f, g);
+  }
+
+  __bdd bdd_invimp(const exec_policy &ep, const bdd &f, const bdd &g)
+  {
+    return bdd_apply(ep, f, g, invimp_op);
+  }
+
+  __bdd bdd_invimp(const bdd &f, const bdd &g)
+  {
+    return bdd_invimp(exec_policy(), f, g);
+  }
+
+  __bdd bdd_equiv(const exec_policy &ep, const bdd &f, const bdd &g)
+  {
+    return bdd_apply(ep, f, g, equiv_op);
+  }
+
+  __bdd bdd_equiv(const bdd &f, const bdd &g)
+  {
+    return bdd_equiv(exec_policy(), f, g);
+  }
+
+  __bdd bdd_diff(const exec_policy &ep, const bdd &f, const bdd &g)
+  {
+    return bdd_apply(ep, f, g, diff_op);
+  }
+
+  __bdd bdd_diff(const bdd &f, const bdd &g)
+  {
+    return bdd_diff(exec_policy(), f, g);
+  }
+
+  __bdd bdd_less(const exec_policy &ep, const bdd &f, const bdd &g)
+  {
+    return bdd_apply(ep, f, g, less_op);
+  }
+
+  __bdd bdd_less(const bdd &f, const bdd &g)
+  {
+    return bdd_less(exec_policy(), f, g);
   }
 };

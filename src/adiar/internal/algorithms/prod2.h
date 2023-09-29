@@ -4,8 +4,8 @@
 #include <variant>
 
 #include <adiar/access_mode.h>
-#include <adiar/memory_mode.h>
-#include <adiar/bdd/bdd.h>
+#include <adiar/memory_mode.h> // <-- TODO: Remove
+#include <adiar/exec_policy.h>
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/bool_op.h>
@@ -630,7 +630,8 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   template<typename prod_policy>
   typename prod_policy::__dd_type
-  prod2(const typename prod_policy::dd_type &in_0,
+  prod2(const exec_policy &ep,
+        const typename prod_policy::dd_type &in_0,
         const typename prod_policy::dd_type &in_1,
         const bool_op &op)
   {
@@ -673,15 +674,15 @@ namespace adiar::internal
                                         __prod2_2level_upper_bound<prod_policy>(in_0, in_1, op),
                                         __prod2_ilevel_upper_bound<prod_policy>(in_0, in_1, op)});
 
-    const bool internal_only = memory_mode == memory_mode_t::Internal;
-    const bool external_only = memory_mode == memory_mode_t::External;
+    const bool internal_only = ep.memory_mode() == exec_policy::memory::Internal;
+    const bool external_only = ep.memory_mode() == exec_policy::memory::External;
 
     // TODO: define this otherwise
     // 2 mega byte
     constexpr size_t ra_thresshold = 2 * 1024 * 1024 / sizeof(typename prod_policy::node_type);
 
-    if (access_mode == access_mode_t::Random_Access
-        || (access_mode == access_mode_t::Auto
+    if (ep.access_mode() == exec_policy::access::Random_Access
+        || (ep.access_mode() == exec_policy::access::Auto
             // The smallest of the canonical inputs, must be under the thresshold
             && (   (in_0->canonical && in_1->canonical && std::min(in_0->width, in_1->width) <= ra_thresshold)
                 || (in_0->canonical && in_0->width <= ra_thresshold)
