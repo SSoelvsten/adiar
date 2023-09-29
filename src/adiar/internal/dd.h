@@ -3,6 +3,8 @@
 
 #include <variant>
 
+#include <adiar/exec_policy.h>
+
 #include <adiar/internal/cut.h>
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/node.h>
@@ -79,11 +81,11 @@ namespace adiar::internal
     __dd()
     { }
 
-    __dd(const shared_node_file_type &f) 
+    __dd(const shared_node_file_type &f)
       : _union(f)
     { }
 
-    __dd(const shared_arc_file_type &f) 
+    __dd(const shared_arc_file_type &f)
       : _union(f)
     { }
 
@@ -421,10 +423,10 @@ namespace adiar::internal
     friend class level_merger;
 
     // |- algorithm functions and classes
-    friend bool is_isomorphic(const dd&, const dd&);
+    friend bool is_isomorphic(const exec_policy &, const dd&, const dd&);
 
     template<typename comp_policy>
-    friend bool comparison_check(const dd &in_1, const dd &in_2);
+    friend bool comparison_check(const exec_policy &, const dd &, const dd &);
 
     template<typename to_policy, typename from_policy>
     friend class convert_dd_policy;

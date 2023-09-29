@@ -37,14 +37,24 @@ namespace adiar
     return zdd_istrue(A);
   }
 
-  bool zdd_equal(const zdd &s1, const zdd &s2)
+  bool zdd_equal(const exec_policy &ep, const zdd &A, const zdd &B)
   {
-    return internal::is_isomorphic(s1, s2);
+    return internal::is_isomorphic(ep, A, B);
+  }
+
+  bool zdd_equal(const zdd &A, const zdd &B)
+  {
+    return zdd_equal(exec_policy(), A, B);
+  }
+
+  bool zdd_unequal(const exec_policy &ep, const zdd &A, const zdd &B)
+  {
+    return !zdd_equal(ep, A, B);
   }
 
   bool zdd_unequal(const zdd &A, const zdd &B)
   {
-    return !zdd_equal(A,B);
+    return zdd_unequal(exec_policy(), A,B);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -156,19 +166,29 @@ namespace adiar
     static constexpr bool no_early_return_value = true;
   };
 
-  bool zdd_subseteq(const zdd &s1, const zdd &s2)
+  bool zdd_subseteq(const exec_policy &ep, const zdd &A, const zdd &B)
   {
-    if (s1.file == s2.file) {
+    if (A.file == B.file) {
       return true;
     }
 
-    return internal::comparison_check<zdd_subseteq_policy>(s1, s2);
+    return internal::comparison_check<zdd_subseteq_policy>(ep, A, B);
+  }
+
+  bool zdd_subseteq(const zdd &A, const zdd &B)
+  {
+    return zdd_subseteq(exec_policy(), A, B);
   }
 
   //////////////////////////////////////////////////////////////////////////////
+  bool zdd_subset(const exec_policy &ep, const zdd &A, const zdd &B)
+  {
+    return zdd_subseteq(ep, A, B) && zdd_unequal(ep, A, B);
+  }
+
   bool zdd_subset(const zdd &A, const zdd &B)
   {
-    return zdd_subseteq(A,B) && zdd_unequal(A,B);
+    return zdd_subset(exec_policy(), A, B);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -231,12 +251,17 @@ namespace adiar
     static constexpr bool no_early_return_value = true;
   };
 
-  bool zdd_disjoint(const zdd &s1, const zdd &s2)
+  bool zdd_disjoint(const exec_policy &ep, const zdd &A, const zdd &B)
   {
-    if (s1.file == s2.file) {
-      return zdd_isfalse(s1);
+    if (A.file == B.file) {
+      return zdd_isfalse(A);
     }
 
-    return internal::comparison_check<zdd_disjoint_policy>(s1, s2);
+    return internal::comparison_check<zdd_disjoint_policy>(ep, A, B);
+  }
+
+  bool zdd_disjoint(const zdd &A, const zdd &B)
+  {
+    return zdd_disjoint(exec_policy(), A, B);
   }
 }

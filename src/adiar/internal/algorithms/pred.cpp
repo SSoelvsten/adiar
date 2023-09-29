@@ -217,7 +217,8 @@ namespace adiar::internal
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  bool is_isomorphic(const shared_levelized_file<node> &f0,
+  bool is_isomorphic(const exec_policy &ep,
+                     const shared_levelized_file<node> &f0,
                      const shared_levelized_file<node> &f1,
                      const bool negate0,
                      const bool negate1)
@@ -288,12 +289,12 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
       stats_equality.slow_check.runs += 1u;
 #endif
-      return comparison_check<isomorphism_policy>(f0, f1, negate0, negate1);
+      return comparison_check<isomorphism_policy>(ep, f0, f1, negate0, negate1);
     }
   }
 
-  bool is_isomorphic(const dd &a, const dd &b)
+  bool is_isomorphic(const exec_policy &ep, const dd &a, const dd &b)
   {
-    return is_isomorphic(a.file, b.file, a.negate, b.negate);
+    return is_isomorphic(ep, a.file, b.file, a.negate, b.negate);
   }
 }

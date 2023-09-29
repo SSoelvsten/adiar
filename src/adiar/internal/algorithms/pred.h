@@ -1,6 +1,8 @@
 #ifndef ADIAR_INTERNAL_ALGORITHMS_PRED_H
 #define ADIAR_INTERNAL_ALGORITHMS_PRED_H
 
+#include <adiar/exec_policy.h>
+
 #include <adiar/internal/dd.h>
 #include <adiar/internal/algorithms/prod2.h>
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
@@ -31,7 +33,8 @@ namespace adiar::internal
   /// \return Whether `f0` and `f1` have isomorphic DAGs when applying the given
   ///         negation flags.
   //////////////////////////////////////////////////////////////////////////////
-  bool is_isomorphic(const shared_levelized_file<node> &f0,
+  bool is_isomorphic(const exec_policy &ep,
+                     const shared_levelized_file<node> &f0,
                      const shared_levelized_file<node> &f1,
                      const bool negate0 = false,
                      const bool negate1 = false);
@@ -49,7 +52,7 @@ namespace adiar::internal
   ///
   /// \return    Whether <tt>a</tt> and <tt>b</tt> have isomorphic DAGs.
   //////////////////////////////////////////////////////////////////////////////
-  bool is_isomorphic(const dd &a, const dd &b);
+  bool is_isomorphic(const exec_policy &ep, const dd &a, const dd &b);
 
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
@@ -205,7 +208,8 @@ namespace adiar::internal
   ///   the product construction.
   //////////////////////////////////////////////////////////////////////////////
   template<typename comp_policy>
-  bool comparison_check(const shared_levelized_file<node> &f0,
+  bool comparison_check(const exec_policy &ep,
+                        const shared_levelized_file<node> &f0,
                         const shared_levelized_file<node> &f1,
                         const bool negate0,
                         const bool negate1)
@@ -239,8 +243,8 @@ namespace adiar::internal
     const size_t pq_2_memory_fits =
       comparison_priority_queue_2_t<memory_mode_t::Internal>::memory_fits(pq_2_internal_memory);
 
-    const bool internal_only = memory_mode == memory_mode_t::Internal;
-    const bool external_only = memory_mode == memory_mode_t::External;
+    const bool internal_only = ep.memory_mode() == exec_policy::memory::Internal;
+    const bool external_only = ep.memory_mode() == exec_policy::memory::External;
 
     const size_t pq_1_bound = comp_policy::level_check_t::pq1_upper_bound(f0, f1);
 
@@ -283,9 +287,9 @@ namespace adiar::internal
   }
 
   template<typename comp_policy>
-  bool comparison_check(const dd &a, const dd &b)
+  bool comparison_check(const exec_policy &ep, const dd &a, const dd &b)
   {
-    return comparison_check<comp_policy>(a.file, b.file, a.negate, b.negate);
+    return comparison_check<comp_policy>(ep, a.file, b.file, a.negate, b.negate);
   }
 }
 
