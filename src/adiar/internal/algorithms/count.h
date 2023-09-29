@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include <adiar/exec_policy.h>
+
 #include <adiar/internal/assert.h>
 #include <adiar/internal/dd_func.h>
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
@@ -127,7 +129,8 @@ namespace adiar::internal
   }
 
   template<typename count_policy>
-  uint64_t count(const typename count_policy::dd_type &dd,
+  uint64_t count(const exec_policy &ep,
+                 const typename count_policy::dd_type &dd,
                  const typename count_policy::label_type varcount)
   {
     adiar_assert(!dd_isterminal(dd),
@@ -145,8 +148,8 @@ namespace adiar::internal
     const size_t pq_memory_fits =
       count_priority_queue_t<typename count_policy::queue_t, ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::memory_fits(aux_available_memory);
 
-    const bool internal_only = memory_mode == memory_mode_t::Internal;
-    const bool external_only = memory_mode == memory_mode_t::External;
+    const bool internal_only = ep.memory_mode() == exec_policy::memory::Internal;
+    const bool external_only = ep.memory_mode() == exec_policy::memory::External;
 
     const size_t pq_bound = dd.max_2level_cut(cut::Internal);
 
