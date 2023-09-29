@@ -228,7 +228,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   Cache for the top element.
     ///
-    /// \sa      levelized_priority_queue::_has_top_elem
+    /// \see      levelized_priority_queue::_has_top_elem
     ///
     /// \details Since the priority queue is used in a levelized fashion, then
     ///          the current level is completely frozen. Hence, the top element
@@ -306,7 +306,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Next element to take out of the bucket (if any)
     ///
-    /// \sa    levelized_priority_queue::_has_next_from_bucket
+    /// \see    levelized_priority_queue::_has_next_from_bucket
     ///
     /// \todo  Currently the implementation of the sorter does not allow one to
     ///        peek the next value. We can decrease code complexity by moving
@@ -665,7 +665,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether any elements can be pulled (from the current level).
     ///
-    /// \sa    levelized_priority_queue::empty_level
+    /// \see    levelized_priority_queue::empty_level
     ////////////////////////////////////////////////////////////////////////////
     bool can_pull()
     {
@@ -694,7 +694,7 @@ namespace adiar::internal
     ///
     /// \pre `can_pull() == true`
     ///
-    /// \sa    levelized_priority_queue::top
+    /// \see    levelized_priority_queue::top
     ////////////////////////////////////////////////////////////////////////////
     value_type peek()
     {
@@ -740,7 +740,7 @@ namespace adiar::internal
     ///
     /// \pre `can_pull() == true`
     ///
-    /// \sa    levelized_priority_queue::pull
+    /// \see    levelized_priority_queue::pull
     ////////////////////////////////////////////////////////////////////////////
     void pop()
     {
@@ -762,7 +762,7 @@ namespace adiar::internal
     /// \remark If you only want to know if it is empty for the current level,
     ///         then use <tt>empty_level</tt> (or <tt>can_pull</tt>) instead.
     ///
-    /// \sa     levelized_priority_queue::empty_level
+    /// \see     levelized_priority_queue::empty_level
     //          levelized_priority_queue::can_pull
     ////////////////////////////////////////////////////////////////////////////
     bool empty() const
@@ -845,7 +845,7 @@ namespace adiar::internal
     /// \param has_stop_level Whether to take the stop_level parameter into
     ///                       account.
     ///
-    /// \sa    levelized_priority_queue::setup_next_level
+    /// \see    levelized_priority_queue::setup_next_level
     ////////////////////////////////////////////////////////////////////////////
     inline void forward_to_nonempty_bucket(const ptr_uint64::label_type stop_level, const bool has_stop_level)
     {
@@ -910,7 +910,7 @@ namespace adiar::internal
     ///        the current read-only bucket is relabelled, then it is also reset
     ///        to be pushable.
     ///
-    /// \sa    levelized_priority_queue::setup_next_level
+    /// \see    levelized_priority_queue::setup_next_level
     ////////////////////////////////////////////////////////////////////////////
     inline void relabel_buckets(const ptr_uint64::label_type stop_level)
     {
@@ -1280,7 +1280,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether any elements can be pulled (from the current level).
     ///
-    /// \sa    levelized_priority_queue::empty_level
+    /// \see    levelized_priority_queue::empty_level
     ////////////////////////////////////////////////////////////////////////////
     bool can_pull()
     {
@@ -1303,7 +1303,7 @@ namespace adiar::internal
     ///
     /// \pre `can_pull() == true`
     ///
-    /// \sa    levelized_priority_queue::top
+    /// \see    levelized_priority_queue::top
     ////////////////////////////////////////////////////////////////////////////
     value_type peek()
     {
@@ -1329,7 +1329,7 @@ namespace adiar::internal
     ///
     /// \pre `can_pull() == true`
     ///
-    /// \sa    levelized_priority_queue::pull
+    /// \see    levelized_priority_queue::pull
     ////////////////////////////////////////////////////////////////////////////
     void pop()
     {
@@ -1350,7 +1350,7 @@ namespace adiar::internal
     /// \remark If you only want to know if it is empty for the current level,
     ///         then use <tt>empty_level</tt> (or <tt>can_pull</tt>) instead.
     ///
-    /// \sa     levelized_priority_queue::empty_level
+    /// \see     levelized_priority_queue::empty_level
     //          levelized_priority_queue::can_pull
     ////////////////////////////////////////////////////////////////////////////
     bool empty() const

@@ -191,14 +191,14 @@ namespace adiar::internal
     /// node_carry_size>` because for `node_carry_size` being 0 we still spend 8
     /// bytes on empty space.
     ///
-    /// \sa NO_CHILDREN
+    /// \see NO_CHILDREN
     ////////////////////////////////////////////////////////////////////////////
     std::array<typename base::children_type, node_carry_size> node_carry;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The number of nodes actually carried within `node_carry`.
     ///
-    /// \sa NO_CHILDREN
+    /// \see NO_CHILDREN
     ////////////////////////////////////////////////////////////////////////////
     uint8_t nodes_carried() const
     {
@@ -218,7 +218,7 @@ namespace adiar::internal
     /// \brief Whether the node carry is empty. That is, this is a faster way to
     ///        compute whether `nodes_carried() == 0`.
     ///
-    /// \sa nodes_carried, NO_CHILDREN
+    /// \see nodes_carried, NO_CHILDREN
     ////////////////////////////////////////////////////////////////////////////
     bool empty_carry() const
     {
@@ -298,7 +298,7 @@ namespace adiar::internal
   /// \brief Extension of the request struct to carry extra data. That data can
   ///        also impact the ordering.
   ///
-  /// \sa request
+  /// \see request
   //////////////////////////////////////////////////////////////////////////////
   template<uint8_t Cardinality,
            typename Data,

@@ -171,7 +171,7 @@ namespace adiar::internal
     /// \brief Whether the file(s) are persistent or temporary, i.e. the file(s)
     ///        on disk will \em not be removed when this object is destructed.
     ///
-    /// \sa make_persistent
+    /// \see make_persistent
     ////////////////////////////////////////////////////////////////////////////
     bool is_persistent() const
     {
@@ -194,7 +194,7 @@ namespace adiar::internal
     ///
     /// \throws runtime_error If `canonical_paths() == false`.
     ///
-    /// \sa is_persistent, canonical_paths, move
+    /// \see is_persistent, canonical_paths, move
     ////////////////////////////////////////////////////////////////////////////
     void make_persistent()
     {
@@ -218,7 +218,7 @@ namespace adiar::internal
     /// \throws runtime_error If `can_move() == false` or
     ///                            `move(path_prefix)` operation fails.
     ///
-    /// \sa is_persistent, move
+    /// \see is_persistent, move
     ////////////////////////////////////////////////////////////////////////////
     void make_persistent(const std::string &path_prefix)
     {
@@ -237,7 +237,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the file(s) actually exists on disk.
     ///
-    /// \sa path
+    /// \see path
     ////////////////////////////////////////////////////////////////////////////
     bool exists() const
     {
@@ -340,7 +340,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the paths for all files comprising this levelized file.
     ///
-    /// \sa exists, move
+    /// \see exists move
     ////////////////////////////////////////////////////////////////////////////
     std::array<std::string, FILES+1> paths() const
     {

@@ -168,7 +168,7 @@ namespace adiar::internal
       /// \details This is to be used as the bridge from the *outer* bottom-up
       ///          sweep to the *inner* top-down sweep.
       ///
-      /// \sa sorter, nested_sweep
+      /// \see sorter nested_sweep
       //////////////////////////////////////////////////////////////////////////
       template<memory_mode_t memory_mode,
                typename element_t,
@@ -357,7 +357,7 @@ namespace adiar::internal
       /// \details This is to be used in the *outer* sweep when forwarding
       ///          information to a level above the current one.
       ///
-      /// \sa pq_t, levelized_priority_queue, nested_sweep
+      /// \see pq_t, levelized_priority_queue, nested_sweep
       //////////////////////////////////////////////////////////////////////////
       template<typename outer_pq_t, typename outer_roots_t>
       class up__pq_decorator
@@ -495,7 +495,7 @@ namespace adiar::internal
         ///
         /// \pre   The request's source must be above `_next_inner` or `nil`.
         ///
-        /// \see request, request_with_data
+        /// \see request request_with_data
         ////////////////////////////////////////////////////////////////////////
         void push(const typename outer_roots_t::value_type &e)
         {
@@ -585,7 +585,7 @@ namespace adiar::internal
       /// \details This is to be used as the (levelized) priority queue for the
       ///          *inner* top-down sweep.
       ///
-      /// \sa levelized_priority_queue, nested_sweep
+      /// \see levelized_priority_queue, nested_sweep
       //////////////////////////////////////////////////////////////////////////
       template<typename inner_pq_t, typename outer_roots_t>
       class down__pq_decorator
@@ -700,7 +700,7 @@ namespace adiar::internal
         ///
         /// \pre has_current_level
         ///
-        /// \sa can_pull, empty
+        /// \see can_pull, empty
         ////////////////////////////////////////////////////////////////////////
         bool empty_level() const
         {
@@ -942,7 +942,7 @@ namespace adiar::internal
       /// \details This is to be used as the (levelized) priority queue for the
       ///          *inner* bottom-down reduce sweep .
       ///
-      /// \sa levelized_priority_queue, nested_sweep
+      /// \see levelized_priority_queue, nested_sweep
       //////////////////////////////////////////////////////////////////////////
       template<typename inner_pq_t, typename outer_pq_t>
       class up__pq_decorator
@@ -1055,7 +1055,7 @@ namespace adiar::internal
         ///
         /// \pre has_current_level
         ///
-        /// \sa can_pull, empty
+        /// \see can_pull, empty
         ////////////////////////////////////////////////////////////////////////
         bool empty_level() const
         { return _inner_pq.empty_level(); }
@@ -1204,7 +1204,7 @@ namespace adiar::internal
       //////////////////////////////////////////////////////////////////////////
       /// \brief Execute the Inner Up Sweep (part 2).
       ///
-      /// \sa nested_sweep
+      /// \see nested_sweep
       //////////////////////////////////////////////////////////////////////////
       template<typename nesting_policy, typename inner_pq_t, typename outer_pq_t>
       inline void
@@ -1277,7 +1277,7 @@ namespace adiar::internal
       //////////////////////////////////////////////////////////////////////////
       /// \brief Execute the Inner Up Sweep (part 1).
       ///
-      /// \sa nested_sweep
+      /// \see nested_sweep
       //////////////////////////////////////////////////////////////////////////
       template<typename nesting_policy, typename outer_pq_t>
       void

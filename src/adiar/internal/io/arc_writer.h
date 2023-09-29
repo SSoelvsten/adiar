@@ -12,7 +12,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Writer for a set of arcs.
   ///
-  /// \sa shared_levelized_file<arc>
+  /// \see shared_levelized_file<arc>
   //////////////////////////////////////////////////////////////////////////////
   class arc_writer
     : public levelized_file_writer<arc>
@@ -152,7 +152,7 @@ namespace adiar::internal
     ///
     /// \pre `attached() == true`.
     ///
-    /// \sa unsafe_push_internal unsafe_push_terminal
+    /// \see unsafe_push_internal unsafe_push_terminal
     //////////////////////////////////////////////////////////////////////////////
     void push(const arc &a)
     {

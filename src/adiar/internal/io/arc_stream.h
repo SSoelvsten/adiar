@@ -11,7 +11,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Levelized file stream with additional logic for arc files.
   ///
-  /// \sa shared_levelized_file<arc>
+  /// \see shared_levelized_file<arc>
   //////////////////////////////////////////////////////////////////////////////
   template<bool Reverse = false>
   class arc_stream

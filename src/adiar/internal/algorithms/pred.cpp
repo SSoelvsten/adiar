@@ -76,7 +76,7 @@ namespace adiar::internal
   /// \brief Special dd_policy for `isomorphism_policy` to be used within the
   ///        level merger logic.
   ///
-  /// \sa isomorphism_policy
+  /// \see isomorphism_policy
   //////////////////////////////////////////////////////////////////////////////
   // TODO (Decision Diagrams with other kinds of pointers):
   // template<class dd_policy>

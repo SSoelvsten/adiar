@@ -39,7 +39,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Enum values for `cut`.
     ////////////////////////////////////////////////////////////////////////////
-    enum type {
+    enum type
+    {
       /** Internal arcs only */
       Internal       = 0, // 0x00
       /** Internal arcs and false arcs only */

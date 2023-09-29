@@ -51,7 +51,7 @@ namespace adiar::internal
     ///           should be changed to use the <tt>make_shared_file</tt> and
     ///           <tt>make_shared_levelized_file</tt> instead.
     ///
-    /// \sa make_shared_file make_shared_levelized_file
+    /// \see make_shared_file make_shared_levelized_file
     ////////////////////////////////////////////////////////////////////////////
     shared_file_ptr()
       : shared_ptr<File>(adiar::make_shared<File>())
@@ -60,7 +60,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor to reload a persisted file.
     ///
-    /// \sa make_shared_file make_shared_levelized_file
+    /// \see make_shared_file make_shared_levelized_file
     ////////////////////////////////////////////////////////////////////////////
     shared_file_ptr(const std::string p)
       : shared_ptr<File>(adiar::make_shared<File>(p))

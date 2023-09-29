@@ -16,7 +16,7 @@ namespace adiar::internal
   /// \param Reverse Whether the reading direction should be reversed
   ///                (relatively to the ordering of nodes within the file).
   ///
-  /// \sa shared_levelized_file<arc>
+  /// \see shared_levelized_file<arc>
   //////////////////////////////////////////////////////////////////////////////
   template<bool Reverse = false>
   class node_arc_stream 

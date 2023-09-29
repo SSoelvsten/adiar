@@ -113,7 +113,7 @@ namespace adiar::internal
     /// \brief Whether this file is persistent or temporary, i.e. the file on
     ///        disk will \em not be removed when this object is destructed.
     ///
-    /// \sa make_persistent
+    /// \see make_persistent
     ////////////////////////////////////////////////////////////////////////////
     bool is_persistent() const
     { return _tpie_file.is_persistent(); }
@@ -123,7 +123,7 @@ namespace adiar::internal
     /// \brief Make the file persistent: if the `file<>` object is destructed,
     ///        the physical file on disk will not be deleted.
     ///
-    /// \sa is_persistent
+    /// \see is_persistent
     ////////////////////////////////////////////////////////////////////////////
     void make_persistent()
     {
@@ -142,7 +142,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the file actually exists on disk.
     ///
-    /// \sa path
+    /// \see path
     ////////////////////////////////////////////////////////////////////////////
     bool exists() const
     { return std::filesystem::exists(path()); }
@@ -209,7 +209,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the path for this file.
     ///
-    /// \sa exists, move
+    /// \see exists move
     ////////////////////////////////////////////////////////////////////////////
     const std::string & path() const
     { return _tpie_file.path(); }

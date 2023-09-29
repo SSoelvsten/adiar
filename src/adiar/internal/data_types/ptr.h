@@ -338,7 +338,7 @@ namespace adiar::internal
     ///
     /// \pre `is_node()` evaluates to `true.`
     ///
-    /// \sa arc
+    /// \see arc
     ////////////////////////////////////////////////////////////////////////////
     inline out_idx_type 
     out_idx() const

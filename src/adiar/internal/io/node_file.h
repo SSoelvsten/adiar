@@ -60,7 +60,7 @@ namespace adiar::internal
       ///        without arcs to each respective terminal). Use
       ///        <tt>cut</tt> to index the desired variant of the type.
       ///
-      /// \sa    cut
+      /// \see    cut
       //////////////////////////////////////////////////////////////////////////
       cuts_t max_1level_cut =
         { cut::max, cut::max, cut::max, cut::max };
@@ -70,7 +70,7 @@ namespace adiar::internal
       ///        without arcs to each respective terminal). Use
       ///        <tt>cut</tt> to index the desired variant of the type.
       ///
-      /// \sa    cut
+      /// \see    cut
       //////////////////////////////////////////////////////////////////////////
       cuts_t max_2level_cut =
         { cut::max, cut::max, cut::max, cut::max };

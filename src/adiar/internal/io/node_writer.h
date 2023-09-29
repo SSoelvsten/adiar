@@ -15,7 +15,7 @@ namespace adiar::internal
   /// \brief Writer for nodes, hiding derivation of all meta information and
   /// applying sanity checks on the validity of the input.
   ///
-  /// \sa shared_levelized_file<node>
+  /// \see shared_levelized_file<node>
   //////////////////////////////////////////////////////////////////////////////
   class node_writer
     : public levelized_file_writer<node>
