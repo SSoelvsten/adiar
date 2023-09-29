@@ -12,6 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 /// Core types
 #include <adiar/exception.h>
+#include <adiar/exec_policy.h>
 #include <adiar/functional.h>
 #include <adiar/file.h> // <-- TODO: Remove!
 
