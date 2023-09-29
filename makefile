@@ -69,6 +69,9 @@ test/adiar/builder:
 test/adiar/domain:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar TEST_NAME=domain
 
+test/adiar/exec_policy:
+	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar TEST_NAME=exec_policy
+
 test/adiar/map:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar TEST_NAME=map
 
