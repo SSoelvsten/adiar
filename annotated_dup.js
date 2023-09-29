@@ -11,7 +11,7 @@ var annotated_dup =
         [ "node", "classadiar_1_1internal_1_1node.html", "classadiar_1_1internal_1_1node" ],
         [ "ptr_uint64", "classadiar_1_1internal_1_1ptr__uint64.html", "classadiar_1_1internal_1_1ptr__uint64" ],
         [ "request", "classadiar_1_1internal_1_1request.html", "classadiar_1_1internal_1_1request" ],
-        [ "request< CARDINALITY, 0, INPUTS >", "classadiar_1_1internal_1_1request_3_01CARDINALITY_00_010_00_01INPUTS_01_4.html", "classadiar_1_1internal_1_1request_3_01CARDINALITY_00_010_00_01INPUTS_01_4" ],
+        [ "request< Cardinality, 0, Inputs >", "classadiar_1_1internal_1_1request_3_01Cardinality_00_010_00_01Inputs_01_4.html", "classadiar_1_1internal_1_1request_3_01Cardinality_00_010_00_01Inputs_01_4" ],
         [ "request_lt", "structadiar_1_1internal_1_1request__lt.html", "structadiar_1_1internal_1_1request__lt" ],
         [ "request_first_lt", "structadiar_1_1internal_1_1request__first__lt.html", "structadiar_1_1internal_1_1request__first__lt" ],
         [ "request_second_lt", "structadiar_1_1internal_1_1request__second__lt.html", "structadiar_1_1internal_1_1request__second__lt" ],

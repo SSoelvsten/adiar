@@ -1,8 +1,8 @@
 var searchData=
 [
   ['main_20page_164',['Main Page',['../index.html',1,'']]],
-  ['make_5fconsumer_165',['make_consumer',['../group__module____functional.html#ga2f6e931303a5aba680ccc95a61f84d98',1,'adiar']]],
-  ['make_5fgenerator_166',['make_generator',['../group__module____functional.html#gadaccf254a9272797f9d6ef8ed1269ff3',1,'adiar::make_generator(stream_t &amp;s)'],['../group__module____functional.html#gaa7419b40a68c34f0b4590ba8c0de9875',1,'adiar::make_generator(iterator_t &amp;begin, iterator_t &amp;end)']]],
+  ['make_5fconsumer_165',['make_consumer',['../group__module____functional.html#ga923a64580e0b6124c8e9c9bafb27f7e0',1,'adiar']]],
+  ['make_5fgenerator_166',['make_generator',['../group__module____functional.html#ga10b08b986192013581d64d25d3dd622b',1,'adiar::make_generator(Stream &amp;s)'],['../group__module____functional.html#ga0bb6ca574a1999bd9895ed6517e92972',1,'adiar::make_generator(ForwardIt &amp;begin, ForwardIt &amp;end)']]],
   ['make_5fshared_167',['make_shared',['../namespaceadiar.html#a6fcf0e1da0d4d2f38aa2c66b7e2564bc',1,'adiar']]],
   ['make_5fshared_5ffile_168',['make_shared_file',['../namespaceadiar.html#a15dd836fb1e682ddc5cd81036b0abb58',1,'adiar::make_shared_file(const std::string &amp;p)'],['../namespaceadiar.html#a73d6d0d37467f819bee85cf08e7c976a',1,'adiar::make_shared_file()']]],
   ['make_5funique_169',['make_unique',['../namespaceadiar.html#ad471e76461365e2c558f243869ffc7bf',1,'adiar']]],

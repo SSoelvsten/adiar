@@ -41,33 +41,33 @@ var hierarchy =
       [ "adiar::internal::__uid< pointer_type >", "classadiar_1_1internal_1_1____uid.html", null ]
     ] ],
     [ "adiar::statistics::prod2_t::pq_t", "structadiar_1_1statistics_1_1prod2__t_1_1pq__t.html", null ],
-    [ "ptr_type", null, [
-      [ "adiar::internal::__uid< ptr_type >", "classadiar_1_1internal_1_1____uid.html", null ]
+    [ "Ptr", null, [
+      [ "adiar::internal::__uid< Ptr >", "classadiar_1_1internal_1_1____uid.html", null ]
     ] ],
     [ "adiar::internal::ptr_uint64", "classadiar_1_1internal_1_1ptr__uint64.html", null ],
     [ "adiar::statistics::prod2_t::ra_t", "structadiar_1_1statistics_1_1prod2__t_1_1ra__t.html", null ],
-    [ "adiar::internal::request< CARDINALITY, NODE_CARRY_SIZE, INPUTS >", "classadiar_1_1internal_1_1request.html", null ],
-    [ "adiar::internal::request< CARDINALITY, 0, INPUTS >", "classadiar_1_1internal_1_1request_3_01CARDINALITY_00_010_00_01INPUTS_01_4.html", null ],
-    [ "adiar::internal::request< cardinality, 0u, cardinality >", "classadiar_1_1internal_1_1request.html", [
-      [ "adiar::internal::request_data< cardinality, data_t, node_carry_size, inputs >", "classadiar_1_1internal_1_1request__data.html", null ]
+    [ "adiar::internal::request< Cardinality, NodeCarrySize, Inputs >", "classadiar_1_1internal_1_1request.html", null ],
+    [ "adiar::internal::request< Cardinality, 0, Inputs >", "classadiar_1_1internal_1_1request_3_01Cardinality_00_010_00_01Inputs_01_4.html", null ],
+    [ "adiar::internal::request< Cardinality, 0u, Cardinality >", "classadiar_1_1internal_1_1request.html", [
+      [ "adiar::internal::request_data< Cardinality, Data, NodeCarrySize, Inputs >", "classadiar_1_1internal_1_1request__data.html", null ]
     ] ],
-    [ "adiar::internal::request_data_first_lt< request_t >", "structadiar_1_1internal_1_1request__data__first__lt.html", null ],
-    [ "adiar::internal::request_data_lt< idx, request_t >", "structadiar_1_1internal_1_1request__data__lt.html", null ],
-    [ "adiar::internal::request_data_second_lt< request_t >", "structadiar_1_1internal_1_1request__data__second__lt.html", null ],
-    [ "adiar::internal::request_data_third_lt< request_t >", "structadiar_1_1internal_1_1request__data__third__lt.html", null ],
-    [ "adiar::internal::request_first_lt< request_t >", "structadiar_1_1internal_1_1request__first__lt.html", null ],
-    [ "adiar::internal::request_lt< idx, request_t >", "structadiar_1_1internal_1_1request__lt.html", null ],
-    [ "adiar::internal::request_second_lt< request_t >", "structadiar_1_1internal_1_1request__second__lt.html", null ],
-    [ "adiar::internal::request_third_lt< request_t >", "structadiar_1_1internal_1_1request__third__lt.html", null ],
+    [ "adiar::internal::request_data_first_lt< Request >", "structadiar_1_1internal_1_1request__data__first__lt.html", null ],
+    [ "adiar::internal::request_data_lt< idx, Request >", "structadiar_1_1internal_1_1request__data__lt.html", null ],
+    [ "adiar::internal::request_data_second_lt< Request >", "structadiar_1_1internal_1_1request__data__second__lt.html", null ],
+    [ "adiar::internal::request_data_third_lt< Request >", "structadiar_1_1internal_1_1request__data__third__lt.html", null ],
+    [ "adiar::internal::request_first_lt< Request >", "structadiar_1_1internal_1_1request__first__lt.html", null ],
+    [ "adiar::internal::request_lt< idx, Request >", "structadiar_1_1internal_1_1request__lt.html", null ],
+    [ "adiar::internal::request_second_lt< Request >", "structadiar_1_1internal_1_1request__second__lt.html", null ],
+    [ "adiar::internal::request_third_lt< Request >", "structadiar_1_1internal_1_1request__third__lt.html", null ],
     [ "adiar::statistics::equality_t::slow_t", "structadiar_1_1statistics_1_1equality__t_1_1slow__t.html", null ],
     [ "adiar::statistics", "structadiar_1_1statistics.html", null ],
-    [ "adiar::internal::tuple< value_t, CARDINALITY, IS_SORTED >", "classadiar_1_1internal_1_1tuple.html", null ],
+    [ "adiar::internal::tuple< T, Cardinality, IsSorted >", "classadiar_1_1internal_1_1tuple.html", null ],
     [ "adiar::internal::tuple< pointer_type, cardinality, sorted_target >", "classadiar_1_1internal_1_1tuple.html", null ],
     [ "adiar::internal::tuple< pointer_type, outdegree >", "classadiar_1_1internal_1_1tuple.html", null ],
-    [ "adiar::internal::tuple_first_lt< tuple_t >", "structadiar_1_1internal_1_1tuple__first__lt.html", null ],
-    [ "adiar::internal::tuple_fourth_lt< tuple_t >", "structadiar_1_1internal_1_1tuple__fourth__lt.html", null ],
-    [ "adiar::internal::tuple_second_lt< tuple_t >", "structadiar_1_1internal_1_1tuple__second__lt.html", null ],
-    [ "adiar::internal::tuple_third_lt< tuple_t >", "structadiar_1_1internal_1_1tuple__third__lt.html", null ],
+    [ "adiar::internal::tuple_first_lt< Tuple >", "structadiar_1_1internal_1_1tuple__first__lt.html", null ],
+    [ "adiar::internal::tuple_fourth_lt< Tuple >", "structadiar_1_1internal_1_1tuple__fourth__lt.html", null ],
+    [ "adiar::internal::tuple_second_lt< Tuple >", "structadiar_1_1internal_1_1tuple__second__lt.html", null ],
+    [ "adiar::internal::tuple_third_lt< Tuple >", "structadiar_1_1internal_1_1tuple__third__lt.html", null ],
     [ "adiar::statistics::nested_sweeping_t::outer_t::up_t", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1outer__t_1_1up__t.html", null ],
     [ "adiar::internal::with_parent", "classadiar_1_1internal_1_1with__parent.html", null ]
 ];

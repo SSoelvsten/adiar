@@ -1,4 +1,4 @@
-<map id="adiar::internal::request_data&lt; cardinality, data_t, node_carry_size, inputs &gt;" name="adiar::internal::request_data&lt; cardinality, data_t, node_carry_size, inputs &gt;">
-<area shape="rect" id="node1" title="Extension of the request struct to carry extra data. That data can also impact the ordering." alt="" coords="11,95,222,151"/>
-<area shape="rect" id="node2" href="$classadiar_1_1internal_1_1request.html" title=" " alt="" coords="5,5,228,47"/>
+<map id="adiar::internal::request_data&lt; Cardinality, Data, NodeCarrySize, Inputs &gt;" name="adiar::internal::request_data&lt; Cardinality, Data, NodeCarrySize, Inputs &gt;">
+<area shape="rect" id="node1" title="Extension of the request struct to carry extra data. That data can also impact the ordering." alt="" coords="25,95,212,151"/>
+<area shape="rect" id="node2" href="$classadiar_1_1internal_1_1request.html" title=" " alt="" coords="5,5,232,47"/>
 </map>
