@@ -20,7 +20,6 @@
 /// Core Settings
 #include <adiar/access_mode.h>
 #include <adiar/memory_mode.h>
-#include <adiar/quantify_mode.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Global Domain

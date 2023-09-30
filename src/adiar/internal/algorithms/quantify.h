@@ -6,7 +6,6 @@
 
 #include <adiar/exec_policy.h>
 #include <adiar/functional.h>
-#include <adiar/quantify_mode.h>
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/bool_op.h>
