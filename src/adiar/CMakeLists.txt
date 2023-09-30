@@ -5,7 +5,6 @@ set_property(GLOBAL PROPERTY USE_FOLDERS On)
 
 set(HEADERS
   # adiar
-  access_mode.h
   adiar.h
   assignment.h
   bool_op.h
@@ -97,7 +96,6 @@ set(HEADERS
 
 set(SOURCES
   # adiar/
-  access_mode.cpp
   adiar.cpp
   domain.cpp
   statistics.cpp
