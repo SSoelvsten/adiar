@@ -470,6 +470,14 @@ namespace adiar
                      const shared_file<map_pair<bdd::label_type, assignment>> &xs);
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief Restrict a subset of variables to constant values.
+  //////////////////////////////////////////////////////////////////////////////
+  // TODO v2.0 : Replace with `generator<pair<...>>`.
+  __bdd bdd_restrict(const exec_policy &ep,
+                     const bdd &f,
+                     const shared_file<map_pair<bdd::label_type, assignment>> &xs);
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief     Existential quantification of a single variable.
   ///
   /// \details   Computes the BDD for \f$ \exists x_{i} : f \f$ faster than

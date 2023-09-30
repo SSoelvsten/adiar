@@ -58,16 +58,23 @@ namespace adiar
     using stream_t = internal::file_stream<map_pair<bdd::label_type, assignment>>;
   };
 
-  __bdd bdd_restrict(const bdd &dd,
+  __bdd bdd_restrict(const exec_policy &ep,
+                     const bdd &f,
                      const shared_file<map_pair<bdd::label_type, assignment>> &a)
   {
     if (a->size() == 0
-        || bdd_isterminal(dd)
-        || internal::disjoint_levels(a, dd)) {
-      return dd;
+        || bdd_isterminal(f)
+        || internal::disjoint_levels(a, f)) {
+      return f;
     }
 
     substitute_assignment_file_mgr amgr(a);
-    return internal::substitute<bdd_restrict_policy>(dd, amgr);
+    return internal::substitute<bdd_restrict_policy>(ep, f, amgr);
+  }
+
+  __bdd bdd_restrict(const bdd &f,
+                     const shared_file<map_pair<bdd::label_type, assignment>> &a)
+  {
+    return bdd_restrict(exec_policy(), f, a);
   }
 }

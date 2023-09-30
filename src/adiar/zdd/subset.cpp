@@ -109,7 +109,7 @@ namespace adiar
     { return zdd_terminal(terminal_val); }
   };
 
-  __zdd zdd_offset(const zdd &A, const generator<zdd::label_type> &vars)
+  __zdd zdd_offset(const exec_policy &ep, const zdd &A, const generator<zdd::label_type> &vars)
   {
     // Both { Ø }, and Ø cannot have more variables removed
     if (zdd_isterminal(A)) { return A; }
@@ -120,13 +120,19 @@ namespace adiar
     if (!amgr.has_level_incl()) { return A; }
 
     // Run Substitute sweep
-    __zdd res = internal::substitute<zdd_offset_policy<zdd_subset_labels<assignment::False>>>(A, amgr);
+    __zdd res = internal::substitute<zdd_offset_policy<zdd_subset_labels<assignment::False>>>
+      (ep, A, amgr);
 
     // Skip Reduce if no level of `xs` matched with any in `A`.
     if (!amgr.l_match) {
       return A;
     }
     return res;
+  }
+
+  __zdd zdd_offset(const zdd &A, const generator<zdd::label_type> &vars)
+  {
+    return zdd_offset(exec_policy(), A, vars);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -175,7 +181,7 @@ namespace adiar
     }
   };
 
-  __zdd zdd_onset(const zdd &A, const generator<zdd::label_type> &xs)
+  __zdd zdd_onset(const exec_policy &ep, const zdd &A, const generator<zdd::label_type> &xs)
   {
     if (zdd_isfalse(A)) { return A; }
 
@@ -192,12 +198,18 @@ namespace adiar
     }
 
     // Run Substitute sweep
-    __zdd res = internal::substitute<zdd_onset_policy<zdd_subset_labels<assignment::True>>>(A, amgr);
+    __zdd res = internal::substitute<zdd_onset_policy<zdd_subset_labels<assignment::True>>>
+      (ep, A, amgr);
 
     // Skip Reduce no levels of `xs` matched with one from `A`.
     if (!amgr.l_match) {
       return zdd_empty();
     }
     return res;
+  }
+
+  __zdd zdd_onset(const zdd &A, const generator<zdd::label_type> &xs)
+  {
+    return zdd_onset(exec_policy(), A, xs);
   }
 }
