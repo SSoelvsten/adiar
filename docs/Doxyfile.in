@@ -874,7 +874,6 @@ INPUT                  = @CMAKE_SOURCE_DIR@/docs/index.md \
                          @CMAKE_SOURCE_DIR@/src/adiar/adiar.h \
                          @CMAKE_SOURCE_DIR@/src/adiar/access_mode.h \
                          @CMAKE_SOURCE_DIR@/src/adiar/memory_mode.h \
-                         @CMAKE_SOURCE_DIR@/src/adiar/quantify_mode.h \
                          @CMAKE_SOURCE_DIR@/src/adiar/functional.h \
                          @CMAKE_SOURCE_DIR@/src/adiar/bdd.h \
                          @CMAKE_SOURCE_DIR@/src/adiar/bdd/bdd.h \

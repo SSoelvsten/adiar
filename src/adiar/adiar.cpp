@@ -58,7 +58,6 @@ namespace adiar
       // - reset enum settings
       access_mode   = access_mode_t::Auto;
       memory_mode   = memory_mode_t::Auto;
-      quantify_mode = quantify_mode_t::Auto;
 
       // - all done, mark initialized
       _adiar_initialized = true;
