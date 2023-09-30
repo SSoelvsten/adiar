@@ -726,6 +726,20 @@ namespace adiar
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief       Project family of sets onto a domain, i.e. remove from every
+  ///              set all variables not within the domain.
+  //////////////////////////////////////////////////////////////////////////////
+  __zdd zdd_project(const exec_policy &ep,
+                    const zdd &A,
+                    const predicate<zdd::label_type> &dom);
+
+  /// \cond
+  __zdd zdd_project(const exec_policy &ep,
+                    zdd &&A,
+                    const predicate<zdd::label_type> &dom);
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief     Project family of sets onto a domain, i.e. remove from every
   ///            set all variables not within the domain.
   ///
@@ -744,6 +758,20 @@ namespace adiar
 
   /// \cond
   __zdd zdd_project(zdd &&A, const generator<zdd::label_type> &dom);
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief       Project family of sets onto a domain, i.e. remove from every
+  ///              set all variables not within the domain.
+  //////////////////////////////////////////////////////////////////////////////
+  __zdd zdd_project(const exec_policy &ep,
+                    const zdd &A,
+                    const generator<zdd::label_type> &dom);
+
+  /// \cond
+  __zdd zdd_project(const exec_policy &ep,
+                    zdd &&A,
+                    const generator<zdd::label_type> &dom);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -770,34 +798,6 @@ namespace adiar
   template<typename ForwardIt>
   __zdd zdd_project(zdd &&A, ForwardIt begin, ForwardIt end)
   { return zdd_project(std::forward<zdd>(A), make_generator(begin, end)); }
-  /// \endcond
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief       Project family of sets onto a domain, i.e. remove from every
-  ///              set all variables not within the domain.
-  //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_project(const exec_policy &ep,
-                    const zdd &A,
-                    const predicate<zdd::label_type> &dom);
-
-  /// \cond
-  __zdd zdd_project(const exec_policy &ep,
-                    zdd &&A,
-                    const predicate<zdd::label_type> &dom);
-  /// \endcond
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief       Project family of sets onto a domain, i.e. remove from every
-  ///              set all variables not within the domain.
-  //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_project(const exec_policy &ep,
-                    const zdd &A,
-                    const generator<zdd::label_type> &dom);
-
-  /// \cond
-  __zdd zdd_project(const exec_policy &ep,
-                    zdd &&A,
-                    const generator<zdd::label_type> &dom);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -1155,6 +1155,14 @@ namespace adiar
   __zdd zdd_from(const bdd &f, const generator<zdd::label_type> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief Obtains the ZDD that represents the same function/set as the given
+  ///        BDD within the given domain.
+  //////////////////////////////////////////////////////////////////////////////
+  __zdd zdd_from(const exec_policy &ep,
+                 const bdd &f,
+                 const generator<zdd::label_type> &dom);
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief       Obtains the ZDD that represents the same function/set as the
   ///              given BDD within the given domain.
   ///
@@ -1173,6 +1181,17 @@ namespace adiar
   { return zdd_from(f, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief Obtains the ZDD that represents the same function/set as the given
+  ///        BDD within the given domain.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename ForwardIt>
+  __zdd zdd_from(const exec_policy &ep,
+                 const bdd &f,
+                 ForwardIt begin,
+                 ForwardIt end)
+  { return bdd_from(ep, f, make_generator(begin, end)); }
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief     Obtains the ZDD that represents the same function/set as the
   ///            given BDD within the global \ref module__domain.
   ///
@@ -1185,25 +1204,6 @@ namespace adiar
   ///            that is equals to or a superset of the variables in `A`.
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_from(const bdd &f);
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Obtains the ZDD that represents the same function/set as the given
-  ///        BDD within the given domain.
-  //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_from(const exec_policy &ep,
-                 const bdd &f,
-                 const generator<zdd::label_type> &dom);
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Obtains the ZDD that represents the same function/set as the given
-  ///        BDD within the given domain.
-  //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  __zdd zdd_from(const exec_policy &ep,
-                 const bdd &f,
-                 ForwardIt begin,
-                 ForwardIt end)
-  { return bdd_from(ep, f, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Obtains the BDD that represents the same function/set as the given

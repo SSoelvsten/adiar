@@ -497,6 +497,16 @@ namespace adiar
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief Existential quantification of a single variable.
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_exists(const exec_policy &ep, const bdd &f, bdd::label_type var);
+
+  /// \cond
+  inline __bdd bdd_exists(const exec_policy &ep, bdd &&f, bdd::label_type var)
+  { return bdd_exists(ep, f, var); }
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief      Existential quantification of multiple variables.
   ///
   /// \details    Repeatedly calls `bdd_exists` for the given variables
@@ -518,6 +528,19 @@ namespace adiar
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief      Existential quantification of multiple variables.
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_exists(const exec_policy &ep,
+                   const bdd &f,
+                   const predicate<bdd::label_type> &vars);
+
+  /// \cond
+  __bdd bdd_exists(const exec_policy &ep,
+                   bdd &&f,
+                   const predicate<bdd::label_type> &vars);
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief     Existential quantification of multiple variables.
   ///
   /// \details   Repeatedly calls `bdd_exists` for the given variables
@@ -535,6 +558,19 @@ namespace adiar
 
   /// \cond
   __bdd bdd_exists(bdd &&f, const generator<bdd::label_type> &vars);
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Existential quantification of multiple variables.
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_exists(const exec_policy &ep,
+                   const bdd &f,
+                   const generator<bdd::label_type> &vars);
+
+  /// \cond
+  __bdd bdd_exists(const exec_policy &ep,
+                   bdd &&f,
+                   const generator<bdd::label_type> &vars);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -560,42 +596,6 @@ namespace adiar
   template<typename ForwardIt>
   __bdd bdd_exists(bdd &&f, ForwardIt begin, ForwardIt end)
   { return bdd_exists(std::move(f), make_generator(begin, end)); }
-  /// \endcond
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Existential quantification of a single variable.
-  //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_exists(const exec_policy &ep, const bdd &f, bdd::label_type var);
-
-  /// \cond
-  inline __bdd bdd_exists(const exec_policy &ep, bdd &&f, bdd::label_type var)
-  { return bdd_exists(ep, f, var); }
-  /// \endcond
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief      Existential quantification of multiple variables.
-  //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_exists(const exec_policy &ep,
-                   const bdd &f,
-                   const predicate<bdd::label_type> &vars);
-
-  /// \cond
-  __bdd bdd_exists(const exec_policy &ep,
-                   bdd &&f,
-                   const predicate<bdd::label_type> &vars);
-  /// \endcond
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Existential quantification of multiple variables.
-  //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_exists(const exec_policy &ep,
-                   const bdd &f,
-                   const generator<bdd::label_type> &vars);
-
-  /// \cond
-  __bdd bdd_exists(const exec_policy &ep,
-                   bdd &&f,
-                   const generator<bdd::label_type> &vars);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -638,6 +638,16 @@ namespace adiar
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief Forall quantification of a single variable.
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_forall(const exec_policy &ep, const bdd &f, bdd::label_type var);
+
+  /// \cond
+  inline __bdd bdd_forall(const exec_policy &ep, bdd &&f, bdd::label_type var)
+  { return bdd_forall(ep, f, var); }
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief      Forall quantification of multiple variables.
   ///
   /// \details    Repeatedly calls `bdd_forall` for the given variables
@@ -659,6 +669,19 @@ namespace adiar
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief Forall quantification of multiple variables.
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_forall(const exec_policy &ep,
+                   const bdd &f,
+                   const predicate<bdd::label_type> &vars);
+
+  /// \cond
+  __bdd bdd_forall(const exec_policy &ep,
+                   bdd &&f,
+                   const predicate<bdd::label_type> &vars);
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief     Forall quantification of multiple variables.
   ///
   /// \details   Repeatedly calls `bdd_forall` for the given variables
@@ -676,6 +699,19 @@ namespace adiar
 
   /// \cond
   __bdd bdd_forall(bdd &&f, const generator<bdd::label_type> &vars);
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Forall quantification of multiple variables.
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_forall(const exec_policy &ep,
+                   const bdd &f,
+                   const generator<bdd::label_type> &vars);
+
+  /// \cond
+  __bdd bdd_forall(const exec_policy &ep,
+                   bdd &&f,
+                   const generator<bdd::label_type> &vars);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -701,42 +737,6 @@ namespace adiar
   template<typename ForwardIt>
   __bdd bdd_forall(bdd &&f, ForwardIt begin, ForwardIt end)
   { return bdd_forall(std::forward<bdd>(f), make_generator(begin, end)); }
-  /// \endcond
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Forall quantification of a single variable.
-  //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_forall(const exec_policy &ep, const bdd &f, bdd::label_type var);
-
-  /// \cond
-  inline __bdd bdd_forall(const exec_policy &ep, bdd &&f, bdd::label_type var)
-  { return bdd_forall(ep, f, var); }
-  /// \endcond
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Forall quantification of multiple variables.
-  //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_forall(const exec_policy &ep,
-                   const bdd &f,
-                   const predicate<bdd::label_type> &vars);
-
-  /// \cond
-  __bdd bdd_forall(const exec_policy &ep,
-                   bdd &&f,
-                   const predicate<bdd::label_type> &vars);
-  /// \endcond
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Forall quantification of multiple variables.
-  //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_forall(const exec_policy &ep,
-                   const bdd &f,
-                   const generator<bdd::label_type> &vars);
-
-  /// \cond
-  __bdd bdd_forall(const exec_policy &ep,
-                   bdd &&f,
-                   const generator<bdd::label_type> &vars);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -1080,6 +1080,14 @@ namespace adiar
   __bdd bdd_from(const zdd &A, const generator<bdd::label_type> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief Obtains the BDD that represents the same function/set as the given
+  ///        ZDD within the given domain.
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_from(const exec_policy &ep,
+                 const zdd &A,
+                 const generator<bdd::label_type> &dom);
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief       Obtains the BDD that represents the same function/set as the
   ///              given ZDD within the given domain.
   ///
@@ -1098,6 +1106,17 @@ namespace adiar
   { return bdd_from(A, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief Obtains the BDD that represents the same function/set as the given
+  ///        ZDD within the given domain.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename ForwardIt>
+  __bdd bdd_from(const exec_policy &ep,
+                 const zdd &A,
+                 ForwardIt begin,
+                 ForwardIt end)
+  { return bdd_from(ep, A, make_generator(begin, end)); }
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief     Obtains the BDD that represents the same function/set as the
   ///            given ZDD within the global domain.
   ///
@@ -1112,25 +1131,6 @@ namespace adiar
   ///            that is equals to or a superset of the variables in `A`.
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_from(const zdd &A);
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Obtains the BDD that represents the same function/set as the given
-  ///        ZDD within the given domain.
-  //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_from(const exec_policy &ep,
-                 const zdd &A,
-                 const generator<bdd::label_type> &dom);
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Obtains the BDD that represents the same function/set as the given
-  ///        ZDD within the given domain.
-  //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  __bdd bdd_from(const exec_policy &ep,
-                 const zdd &A,
-                 ForwardIt begin,
-                 ForwardIt end)
-  { return bdd_from(ep, A, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Obtains the BDD that represents the same function/set as the given
