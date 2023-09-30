@@ -4,11 +4,12 @@
 #include <variant>
 
 #include <adiar/assignment.h>
+#include <adiar/exec_policy.h>
+
 #include <adiar/internal/cnl.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/dd.h>
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
-
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/convert.h>
@@ -218,8 +219,10 @@ namespace adiar::internal
   }
 
   template<typename substitute_policy, typename substitute_assignment_mgr>
-  typename substitute_policy::__dd_type substitute(const typename substitute_policy::dd_type &dd,
-                                                     substitute_assignment_mgr &amgr)
+  typename substitute_policy::__dd_type
+  substitute(const exec_policy &ep,
+             const typename substitute_policy::dd_type &dd,
+             substitute_assignment_mgr &amgr)
   {
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.
@@ -233,8 +236,8 @@ namespace adiar::internal
     const tpie::memory_size_type pq_memory_fits =
       substitute_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::memory_fits(aux_available_memory);
 
-    const bool internal_only = memory_mode == memory_mode_t::Internal;
-    const bool external_only = memory_mode == memory_mode_t::External;
+    const bool internal_only = ep.memory_mode() == exec_policy::memory::Internal;
+    const bool external_only = ep.memory_mode() == exec_policy::memory::External;
 
     const size_t pq_bound = __substitute_2level_upper_bound<substitute_policy>(dd);
 

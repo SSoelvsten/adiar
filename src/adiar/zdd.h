@@ -625,6 +625,13 @@ namespace adiar
   __zdd zdd_offset(const zdd &A, const generator<zdd::label_type> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief Subset that do \em not include the given set of variables.
+  //////////////////////////////////////////////////////////////////////////////
+  __zdd zdd_offset(const exec_policy &ep,
+                   const zdd &A,
+                   const generator<zdd::label_type> &vars);
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief      Subset that do \em not include the given set of variables.
   ///
   /// \param A    Family of set
@@ -642,6 +649,16 @@ namespace adiar
   { return zdd_offset(A, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief Subset that do \em not include the given set of variables.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename ForwardIt>
+  __zdd zdd_offset(const exec_policy &ep,
+                   const zdd &A,
+                   ForwardIt begin,
+                   ForwardIt end)
+  { return zdd_offset(ep, A, make_generator(begin, end)); }
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief      Subset that \em do include the given set of variables.
   ///
   /// \param A    Family of set
@@ -654,6 +671,13 @@ namespace adiar
   /// \f$ \{ a \in A \mid \forall i \in \mathit{vars} : i \in a \} \f$
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_onset(const zdd &A, const generator<zdd::label_type> &vars);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief      Subset that \em do include the given set of variables.
+  //////////////////////////////////////////////////////////////////////////////
+  __zdd zdd_onset(const exec_policy &ep,
+                  const zdd &A,
+                  const generator<zdd::label_type> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Subset that \em do include the given set of variables.
@@ -671,6 +695,16 @@ namespace adiar
   template<typename ForwardIt>
   __zdd zdd_onset(const zdd &A, ForwardIt begin, ForwardIt end)
   { return zdd_onset(A, make_generator(begin, end)); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief      Subset that \em do include the given set of variables.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename ForwardIt>
+  __zdd zdd_onset(const exec_policy &ep,
+                  const zdd &A,
+                  ForwardIt begin,
+                  ForwardIt end)
+  { return zdd_onset(ep, A, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Project family of sets onto a domain, i.e. remove from every
