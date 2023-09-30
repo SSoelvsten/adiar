@@ -56,7 +56,6 @@ namespace adiar
       statistics_reset();
 
       // - reset enum settings
-      access_mode   = access_mode_t::Auto;
       memory_mode   = memory_mode_t::Auto;
 
       // - all done, mark initialized

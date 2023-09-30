@@ -3,7 +3,6 @@
 
 #include <variant>
 
-#include <adiar/access_mode.h>
 #include <adiar/memory_mode.h> // <-- TODO: Remove
 #include <adiar/exec_policy.h>
 
