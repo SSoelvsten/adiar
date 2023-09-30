@@ -452,6 +452,11 @@ namespace adiar
   __bdd bdd_ite(const bdd &f, const bdd &g, const bdd &h);
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief   If-Then-Else operator.
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_ite(const exec_policy &ep, const bdd &f, const bdd &g, const bdd &h);
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief    Restrict a subset of variables to constant values.
   ///
   /// \details  For each tuple (i,v) in the assignment `xs` the variable
