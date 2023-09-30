@@ -1,5 +1,7 @@
 #include <adiar/bdd.h>
 
+#include <adiar/exec_policy.h>
+
 #include <adiar/internal/io/levelized_file_stream.h>
 #include <adiar/internal/io/levelized_file_writer.h>
 #include <adiar/internal/assert.h>
@@ -503,7 +505,10 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_ite(const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else)
+  __bdd bdd_ite(const exec_policy &ep,
+                const bdd &f,
+                const bdd &g,
+                const bdd &h)
   {
     // There are multiple cases, where this boils down to an Apply rather than
     // an If-Then-Else. The bdd_apply uses tuples rather than triples and only
@@ -514,32 +519,32 @@ namespace adiar
     // Randal E. Bryant.
 
     // Resolve being given the same underlying file in both cases
-    if (bdd_then.file == bdd_else.file) {
-      return bdd_then.negate == bdd_else.negate
-        ? __bdd(bdd_then)
-        : bdd_xnor(bdd_if, bdd_then);
+    if (g.file == h.file) {
+      return g.negate == h.negate
+        ? __bdd(g)
+        : bdd_xnor(f, g);
     }
 
     // Resolve being given the same underlying file for conditional and a case
-    if (bdd_if.file == bdd_then.file) {
-      return bdd_if.negate == bdd_then.negate
-        ? bdd_or(bdd_if, bdd_else)
-        : bdd_and(bdd_not(bdd_if), bdd_else);
-    } else if (bdd_if.file == bdd_else.file) {
-      return bdd_if.negate == bdd_else.negate
-        ? bdd_and(bdd_if, bdd_then)
-        : bdd_imp(bdd_if, bdd_then);
+    if (f.file == g.file) {
+      return f.negate == g.negate
+        ? bdd_or(f, h)
+        : bdd_and(bdd_not(f), h);
+    } else if (f.file == h.file) {
+      return f.negate == h.negate
+        ? bdd_and(f, g)
+        : bdd_imp(f, g);
     }
 
     // Resolve being given a terminal in one of the cases
-    if (bdd_isterminal(bdd_then)) {
-      return bdd_apply(dd_valueof(bdd_then) ? bdd_if : bdd_not(bdd_if),
-                       bdd_else,
-                       dd_valueof(bdd_then) ? or_op : and_op);
-    } else if (bdd_isterminal(bdd_else))  {
-      return bdd_apply(bdd_if,
-                       bdd_then,
-                       dd_valueof(bdd_else) ? imp_op : and_op);
+    if (bdd_isterminal(g)) {
+      return bdd_apply(dd_valueof(g) ? f : bdd_not(f),
+                       h,
+                       dd_valueof(g) ? or_op : and_op);
+    } else if (bdd_isterminal(h))  {
+      return bdd_apply(f,
+                       g,
+                       dd_valueof(h) ? imp_op : and_op);
     }
 
     // Compute amount of memory available for auxiliary data structures after
@@ -581,15 +586,15 @@ namespace adiar
     const size_t pq_3_memory_fits =
       ite_priority_queue_3_t<memory_mode_t::Internal>::memory_fits(pq_3_internal_memory);
 
-    const bool internal_only = memory_mode == memory_mode_t::Internal;
-    const bool external_only = memory_mode == memory_mode_t::External;
+    const bool internal_only = ep.memory_mode() == exec_policy::memory::Internal;
+    const bool external_only = ep.memory_mode() == exec_policy::memory::External;
 
-    const size_t pq_1_bound = std::min({__ite_ilevel_upper_bound<internal::get_2level_cut, 2u>(bdd_if, bdd_then, bdd_else),
-                                        __ite_ilevel_upper_bound(bdd_if, bdd_then, bdd_else)});
+    const size_t pq_1_bound = std::min({__ite_ilevel_upper_bound<internal::get_2level_cut, 2u>(f, g, h),
+                                        __ite_ilevel_upper_bound(f, g, h)});
 
     const size_t max_pq_1_size = internal_only ? std::min(pq_1_memory_fits, pq_1_bound) : pq_1_bound;
 
-    const size_t pq_2_bound = __ite_ilevel_upper_bound<internal::get_1level_cut, 0u>(bdd_if, bdd_then, bdd_else);
+    const size_t pq_2_bound = __ite_ilevel_upper_bound<internal::get_1level_cut, 0u>(f, g, h);
 
     const size_t max_pq_2_size = internal_only ? std::min(pq_2_memory_fits, pq_2_bound) : pq_2_bound;
 
@@ -604,7 +609,7 @@ namespace adiar
       return __bdd_ite<ite_priority_queue_1_t<0, memory_mode_t::Internal>,
                        ite_priority_queue_2_t<memory_mode_t::Internal>,
                        ite_priority_queue_3_t<memory_mode_t::Internal>>
-        (bdd_if, bdd_then, bdd_else, pq_1_internal_memory, max_pq_1_size,
+        (f, g, h, pq_1_internal_memory, max_pq_1_size,
          pq_2_internal_memory, max_pq_2_size, pq_3_internal_memory, max_pq_3_size);
     } else if(!external_only && max_pq_1_size <= pq_1_memory_fits
                                                && max_pq_2_size <= pq_2_memory_fits
@@ -615,7 +620,7 @@ namespace adiar
       return __bdd_ite<ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>,
                        ite_priority_queue_2_t<memory_mode_t::Internal>,
                        ite_priority_queue_3_t<memory_mode_t::Internal>>
-        (bdd_if, bdd_then, bdd_else, pq_1_internal_memory, max_pq_1_size,
+        (f, g, h, pq_1_internal_memory, max_pq_1_size,
          pq_2_internal_memory, max_pq_2_size, pq_3_internal_memory, max_pq_3_size);
     } else {
 #ifdef ADIAR_STATS
@@ -628,8 +633,13 @@ namespace adiar
       return __bdd_ite<ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::External>,
                        ite_priority_queue_2_t<memory_mode_t::External>,
                        ite_priority_queue_3_t<memory_mode_t::External>>
-        (bdd_if, bdd_then, bdd_else, pq_1_memory, max_pq_1_size,
+        (f, g, h, pq_1_memory, max_pq_1_size,
          pq_2_memory, max_pq_2_size, pq_3_memory, max_pq_3_size);
     }
+  }
+
+  __bdd bdd_ite(const bdd &f, const bdd &g, const bdd &h)
+  {
+    return bdd_ite(exec_policy(), f, g, h);
   }
 }

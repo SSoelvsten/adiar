@@ -54,10 +54,15 @@ namespace adiar
     // |- functions
     friend bdd bdd_not(const bdd&);
     friend bdd bdd_not(bdd&&);
-    friend size_t bdd_nodecount(const bdd&);
-    friend typename bdd::label_type bdd_varcount(const bdd&);
 
-    friend __bdd bdd_ite(const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else);
+    friend size_t
+    bdd_nodecount(const bdd&);
+
+    friend typename bdd::label_type
+    bdd_varcount(const bdd&);
+
+    friend __bdd
+    bdd_ite(const exec_policy &ep, const bdd &f, const bdd &g, const bdd &h);
 
   public:
     /// \cond
