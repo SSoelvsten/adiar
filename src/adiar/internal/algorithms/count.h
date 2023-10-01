@@ -42,7 +42,7 @@ namespace adiar::internal
     }
   };
 
-  template <typename value_t, size_t look_ahead, memory_mode_t mem_mode>
+  template <typename value_t, size_t look_ahead, memory_mode mem_mode>
   using count_priority_queue_t =
     levelized_node_priority_queue<value_t, count_queue_lt<value_t>,
                                   look_ahead,
@@ -146,7 +146,7 @@ namespace adiar::internal
     const size_t aux_available_memory = memory_available() - node_stream<>::memory_usage();
 
     const size_t pq_memory_fits =
-      count_priority_queue_t<typename count_policy::queue_t, ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::memory_fits(aux_available_memory);
+      count_priority_queue_t<typename count_policy::queue_t, ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(aux_available_memory);
 
     const bool internal_only = ep.memory_mode() == exec_policy::memory::Internal;
     const bool external_only = ep.memory_mode() == exec_policy::memory::External;
@@ -161,7 +161,7 @@ namespace adiar::internal
 #endif
       return __count<count_policy, count_priority_queue_t<typename count_policy::queue_t,
                                                           0,
-                                                          memory_mode_t::Internal>>
+                                                          memory_mode::Internal>>
         (dd, varcount, aux_available_memory, max_pq_size);
     } else if(!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
@@ -169,7 +169,7 @@ namespace adiar::internal
 #endif
       return __count<count_policy, count_priority_queue_t<typename count_policy::queue_t,
                                                           ADIAR_LPQ_LOOKAHEAD,
-                                                          memory_mode_t::Internal>>
+                                                          memory_mode::Internal>>
         (dd, varcount, aux_available_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
@@ -177,7 +177,7 @@ namespace adiar::internal
 #endif
       return __count<count_policy, count_priority_queue_t<typename count_policy::queue_t,
                                                           ADIAR_LPQ_LOOKAHEAD,
-                                                          memory_mode_t::External>>
+                                                          memory_mode::External>>
         (dd, varcount, aux_available_memory, max_pq_size);
     }
   }

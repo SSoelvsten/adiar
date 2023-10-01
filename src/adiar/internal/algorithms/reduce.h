@@ -70,7 +70,7 @@ namespace adiar::internal
   /// \brief Decorator on the levelized priority queue to also keep track of
   ///        the number of arcs to each terminal.
   ////////////////////////////////////////////////////////////////////////////
-  template<size_t look_ahead, memory_mode_t mem_mode>
+  template<size_t look_ahead, memory_mode mem_mode>
   class reduce_priority_queue : public levelized_arc_priority_queue<reduce_arc, reduce_queue_lt,
                                                                     look_ahead,
                                                                     mem_mode>
@@ -613,7 +613,7 @@ namespace adiar::internal
     const size_t sorters_memory = aux_available_memory - pq_memory - tpie::file_stream<mapping>::memory_usage();
 
     const tpie::memory_size_type pq_memory_fits =
-      reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::memory_fits(pq_memory);
+      reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(pq_memory);
 
     const bool internal_only = input._policy.memory_mode() == exec_policy::memory::Internal;
     const bool external_only = input._policy.memory_mode() == exec_policy::memory::External;
@@ -626,19 +626,19 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
       stats_reduce.lpq.unbucketed += 1u;
 #endif
-      return __reduce<dd_policy, reduce_priority_queue<0, memory_mode_t::Internal>>
+      return __reduce<dd_policy, reduce_priority_queue<0, memory_mode::Internal>>
         (in_file, pq_memory, sorters_memory);
     } else if(!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
       stats_reduce.lpq.internal += 1u;
 #endif
-      return __reduce<dd_policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>>
+      return __reduce<dd_policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>>
         (in_file, pq_memory, sorters_memory);
     } else {
 #ifdef ADIAR_STATS
       stats_reduce.lpq.external += 1u;
 #endif
-      return __reduce<dd_policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::External>>
+      return __reduce<dd_policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode::External>>
         (in_file, pq_memory, sorters_memory);
     }
   }

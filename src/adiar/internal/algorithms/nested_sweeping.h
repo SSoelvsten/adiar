@@ -8,13 +8,13 @@
 
 #include <adiar/internal/cut.h>
 #include <adiar/internal/dd_func.h>
+#include <adiar/internal/memory.h>
+#include <adiar/internal/util.h>
 #include <adiar/internal/algorithms/reduce.h>
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
 #include <adiar/internal/data_structures/sorter.h>
 #include <adiar/internal/data_types/ptr.h>
 #include <adiar/internal/data_types/request.h>
-#include <adiar/internal/memory.h>
-#include <adiar/internal/util.h>
 
 namespace adiar::internal
 {
@@ -172,7 +172,7 @@ namespace adiar::internal
       ///
       /// \see sorter nested_sweep
       //////////////////////////////////////////////////////////////////////////
-      template<memory_mode_t memory_mode,
+      template<memory_mode MemoryMode,
                typename element_t,
                typename element_comp_t>
       class roots_sorter
@@ -194,7 +194,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         /// \brief Memory mode of sorter.
         ////////////////////////////////////////////////////////////////////////
-        static constexpr memory_mode_t mem_mode = memory_mode;
+        static constexpr memory_mode mem_mode = MemoryMode;
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief Type of the sorter.
@@ -326,7 +326,7 @@ namespace adiar::internal
         /// \details This leaves the other in an illegal state that requires a
         ///          call to `reset()`.
         ////////////////////////////////////////////////////////////////////////
-        void move(roots_sorter<memory_mode, element_t, element_comp_t> &o)
+        void move(roots_sorter<mem_mode, element_t, element_comp_t> &o)
         {
           _sorter_ptr = std::move(o._sorter_ptr);
           _max_source = o._max_source;
@@ -349,7 +349,7 @@ namespace adiar::internal
       //////////////////////////////////////////////////////////////////////////
       /// \brief Default priority queue for the Outer Up Sweep.
       //////////////////////////////////////////////////////////////////////////
-      template<size_t look_ahead, memory_mode_t mem_mode>
+      template<size_t look_ahead, memory_mode mem_mode>
       using up__pq_t = reduce_priority_queue<look_ahead, mem_mode>;
 
       //////////////////////////////////////////////////////////////////////////
@@ -378,7 +378,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////////
         /// \brief Memory mode (same as decorated priority queue).
         ////////////////////////////////////////////////////////////////////////////
-        static constexpr memory_mode_t mem_mode = outer_pq_t::mem_mode;
+        static constexpr memory_mode mem_mode = outer_pq_t::mem_mode;
 
       private:
         ////////////////////////////////////////////////////////////////////////
@@ -608,7 +608,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////////
         /// \brief Memory mode (same as decorated priority queue).
         ////////////////////////////////////////////////////////////////////////////
-        static constexpr memory_mode_t mem_mode = inner_pq_t::mem_mode;
+        static constexpr memory_mode mem_mode = inner_pq_t::mem_mode;
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief Type of the elements in the priority queue / sorter.
@@ -876,7 +876,7 @@ namespace adiar::internal
         const size_t inner_remaining_memory = inner_memory - inner_stream_memory - inner_pq_memory;
 
         const size_t inner_pq_fits =
-          nesting_policy::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::memory_fits(inner_pq_memory);
+          nesting_policy::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(inner_pq_memory);
 
         const size_t inner_pq_bound = policy_impl.pq_bound(outer_file, outer_roots.size());
 
@@ -894,7 +894,7 @@ namespace adiar::internal
           adiar_assert(inner_pq_max_size <= inner_pq_fits,
                       "'no_lookahead' implies it should (in practice) satisfy the '<='");
 
-          using inner_pq_t = typename nesting_policy::template pq_t<0, memory_mode_t::Internal>;
+          using inner_pq_t = typename nesting_policy::template pq_t<0, memory_mode::Internal>;
           inner_pq_t inner_pq({typename nesting_policy::dd_type(outer_file)},
                               inner_pq_memory, inner_pq_max_size,
                               stats.inner.down.lpq);
@@ -907,7 +907,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
           stats.inner.down.lpq.internal += 1u;
 #endif
-          using inner_pq_t = typename nesting_policy::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>;
+          using inner_pq_t = typename nesting_policy::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>;
           inner_pq_t inner_pq({typename nesting_policy::dd_type(outer_file)},
                               inner_pq_memory, inner_pq_max_size,
                               stats.inner.down.lpq);
@@ -920,7 +920,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
           stats.inner.down.lpq.external += 1u;
 #endif
-          using inner_pq_t = typename nesting_policy::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::External>;
+          using inner_pq_t = typename nesting_policy::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::External>;
           inner_pq_t inner_pq({typename nesting_policy::dd_type(outer_file)},
                               inner_pq_memory, inner_pq_max_size,
                               stats.inner.down.lpq);
@@ -935,7 +935,7 @@ namespace adiar::internal
       //////////////////////////////////////////////////////////////////////////
       /// \brief Default priority queue for the Inner Up Sweep.
       //////////////////////////////////////////////////////////////////////////
-      template<size_t look_ahead, memory_mode_t mem_mode>
+      template<size_t look_ahead, memory_mode mem_mode>
       using up__pq_t = outer::up__pq_t<look_ahead, mem_mode>;
 
       //////////////////////////////////////////////////////////////////////////
@@ -965,7 +965,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////////
         /// \brief Memory mode (same as decorated priority queue).
         ////////////////////////////////////////////////////////////////////////////
-        static constexpr memory_mode_t mem_mode = inner_pq_t::mem_mode;
+        static constexpr memory_mode mem_mode = inner_pq_t::mem_mode;
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief Type of the elements in the priority queue / sorter.
@@ -1309,7 +1309,7 @@ namespace adiar::internal
           inner_aux_available_memory - inner_pq_memory - tpie::file_stream<mapping>::memory_usage();
 
         const tpie::memory_size_type inner_pq_memory_fits =
-          up__pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::memory_fits(inner_pq_memory);
+          up__pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(inner_pq_memory);
 
         const size_t inner_pq_bound = inner_arcs_file->max_1level_cut;
 
@@ -1322,7 +1322,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
           stats.inner.up.lpq.unbucketed += 1u;
 #endif
-          using inner_pq_t = up__pq_t<0, memory_mode_t::Internal>;
+          using inner_pq_t = up__pq_t<0, memory_mode::Internal>;
           up<nesting_policy, inner_pq_t>(ep,
                                          outer_arcs, outer_pq, outer_writer,
                                          inner_arcs_file,
@@ -1333,7 +1333,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
           stats.inner.up.lpq.internal += 1u;
 #endif
-          using inner_pq_t = up__pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>;
+          using inner_pq_t = up__pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>;
           up<nesting_policy, inner_pq_t>(ep,
                                          outer_arcs, outer_pq, outer_writer,
                                          inner_arcs_file,
@@ -1343,7 +1343,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
           stats.inner.up.lpq.external += 1u;
 #endif
-          using inner_pq_t = up__pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::External>;
+          using inner_pq_t = up__pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::External>;
           up<nesting_policy, inner_pq_t>(ep,
                                          outer_arcs, outer_pq, outer_writer,
                                          inner_arcs_file,
@@ -1361,7 +1361,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   template<typename nesting_policy,
            size_t outer_look_ahead,
-           memory_mode_t outer_mem_mode>
+           memory_mode outer_mem_mode>
   typename nesting_policy::dd_type
   __nested_sweep(const exec_policy &ep,
                  const typename nesting_policy::shared_arc_file_type &dag,
@@ -1826,12 +1826,12 @@ namespace adiar::internal
       // Output streams
       - node_writer::memory_usage();
 
-    using outer_default_lpq_t = nested_sweeping::outer::up__pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>;
+    using outer_default_lpq_t = nested_sweeping::outer::up__pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>;
 
     constexpr size_t data_structures_in_pq = outer_default_lpq_t::data_structures;
 
     using internal_roots_sorter_t =
-      nested_sweeping::outer::roots_sorter<memory_mode_t::Internal, request_t, request_pred_t>;
+      nested_sweeping::outer::roots_sorter<memory_mode::Internal, request_t, request_pred_t>;
 
     constexpr size_t data_structures_in_roots = internal_roots_sorter_t::data_structures;
 
@@ -1856,19 +1856,19 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
       stats_reduce.lpq.unbucketed += 1u;
 #endif
-      return __nested_sweep<nesting_policy, 0, memory_mode_t::Internal>
+      return __nested_sweep<nesting_policy, 0, memory_mode::Internal>
         (ep, dag, policy_impl, outer_pq_memory, outer_roots_memory, outer_pq_roots_max, inner_memory);
     } else if(!external_only && outer_pq_roots_max <= outer_pq_memory_fits && outer_pq_roots_max <= outer_roots_memory_fits) {
 #ifdef ADIAR_STATS
       stats_reduce.lpq.internal += 1u;
 #endif
-      return __nested_sweep<nesting_policy, ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>
+      return __nested_sweep<nesting_policy, ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>
         (ep, dag, policy_impl, outer_pq_memory, outer_roots_memory, outer_pq_roots_max, inner_memory);
     } else {
 #ifdef ADIAR_STATS
       stats_reduce.lpq.external += 1u;
 #endif
-      return __nested_sweep<nesting_policy, ADIAR_LPQ_LOOKAHEAD, memory_mode_t::External>
+      return __nested_sweep<nesting_policy, ADIAR_LPQ_LOOKAHEAD, memory_mode::External>
         (ep, dag, policy_impl, outer_pq_memory, outer_roots_memory, outer_pq_roots_max, inner_memory);
     }
   }

@@ -16,7 +16,6 @@ set(HEADERS
   file.h
   functional.h
   map.h
-  memory_mode.h
   statistics.h
 
   # adiar/bdd
@@ -99,7 +98,6 @@ set(SOURCES
   adiar.cpp
   domain.cpp
   statistics.cpp
-  memory_mode.cpp
 
   # adiar/bdd/
   bdd/apply.cpp

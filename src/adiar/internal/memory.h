@@ -17,6 +17,16 @@ namespace adiar::internal
   {
     return tpie::get_memory_manager().available();
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Enum to specify implementation of auxiliary data structures.
+  ///
+  /// \details TPIE provides in most cases two different implementations of each
+  ///          data structure: (1) that handles enormous amounts of data by
+  ///          using the external memory (the disk) and (2) an implementation
+  ///          that is much faster but is limited to internal memory (the RAM).
+  //////////////////////////////////////////////////////////////////////////////
+  enum class memory_mode { Internal, External };
 }
 
 namespace adiar

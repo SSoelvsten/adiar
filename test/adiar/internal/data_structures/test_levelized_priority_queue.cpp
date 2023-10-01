@@ -64,7 +64,7 @@ typedef levelized_file_writer<lpq_test_data> lpq_test_writer;
 template <typename file_t, size_t look_ahead>
 using test_priority_queue = levelized_priority_queue<lpq_test_data, lpq_test_lt,
                                                      look_ahead,
-                                                     memory_mode_t::Internal,
+                                                     memory_mode::Internal,
                                                      file_t, 1u, std::less<>, false,
                                                      1u>;
 
@@ -3994,7 +3994,7 @@ go_bandit([]() {
 
       it("can sort elements from buckets", [&f]() {
         levelized_priority_queue<lpq_test_data, lpq_test_gt, 1u,
-                                 memory_mode_t::Internal,
+                                 memory_mode::Internal,
                                  adiar::shared_file<ptr_uint64::label_type>, 1u, std::greater<>, false,
                                  1u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -4030,7 +4030,7 @@ go_bandit([]() {
 
       it("can sort elements in overflow priority queue", [&f]() {
         levelized_priority_queue<lpq_test_data, lpq_test_gt, 1u,
-                                 memory_mode_t::Internal,
+                                 memory_mode::Internal,
                                  adiar::shared_file<ptr_uint64::label_type>, 1u, std::greater<>, false,
                                  1u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -4053,7 +4053,7 @@ go_bandit([]() {
 
       it("can merge elements from buckets and overflow", [&f]() {
         levelized_priority_queue<lpq_test_data, lpq_test_gt, 1u,
-                                 memory_mode_t::Internal,
+                                 memory_mode::Internal,
                                  adiar::shared_file<ptr_uint64::label_type>, 1u, std::greater<>, false,
                                  1u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -4109,7 +4109,7 @@ go_bandit([]() {
 
       it("can sort elements from the priority queue [1]", [&f]() {
         levelized_priority_queue<lpq_test_data, lpq_test_gt, 0u,
-                                 memory_mode_t::Internal,
+                                 memory_mode::Internal,
                                  adiar::shared_file<ptr_uint64::label_type>, 1u, std::greater<>, false,
                                  1u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -4145,7 +4145,7 @@ go_bandit([]() {
 
       it("can sort elements from the priority queue [2]", [&f]() {
         levelized_priority_queue<lpq_test_data, lpq_test_gt, 0u,
-                                 memory_mode_t::Internal,
+                                 memory_mode::Internal,
                                  adiar::shared_file<ptr_uint64::label_type>, 1u, std::greater<>, false,
                                  1u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -4168,7 +4168,7 @@ go_bandit([]() {
 
       it("can sort elements from the priority queue [3]", [&f]() {
         levelized_priority_queue<lpq_test_data, lpq_test_gt, 0u,
-                                 memory_mode_t::Internal,
+                                 memory_mode::Internal,
                                  adiar::shared_file<ptr_uint64::label_type>, 1u, std::greater<>, false,
                                  1u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -4215,7 +4215,7 @@ go_bandit([]() {
         adiar::shared_file<ptr_uint64::label_type> f;
 
         levelized_priority_queue<lpq_test_data, lpq_test_lt, 1u,
-                                 memory_mode_t::Internal,
+                                 memory_mode::Internal,
                                  adiar::shared_file<ptr_uint64::label_type>, 1u, std::less<>, false,
                                  0u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -4236,7 +4236,7 @@ go_bandit([]() {
         }
 
         levelized_priority_queue<lpq_test_data, lpq_test_lt, 1u,
-                                 memory_mode_t::Internal,
+                                 memory_mode::Internal,
                                  adiar::shared_file<ptr_uint64::label_type>, 1u, std::less<>, false,
                                  0u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -4257,7 +4257,7 @@ go_bandit([]() {
         }
 
         levelized_priority_queue<lpq_test_data, lpq_test_lt, 1u,
-                                 memory_mode_t::Internal,
+                                 memory_mode::Internal,
                                  adiar::shared_file<ptr_uint64::label_type>, 1u, std::less<>, false,
                                  0u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -4280,7 +4280,7 @@ go_bandit([]() {
         }
 
         levelized_priority_queue<lpq_test_data, lpq_test_lt, 1u,
-                                 memory_mode_t::Internal,
+                                 memory_mode::Internal,
                                  lpq_test_file, 1u, std::less<>, false,
                                  0u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -4319,7 +4319,7 @@ go_bandit([]() {
         }
 
         levelized_priority_queue<lpq_test_data, lpq_test_lt, 1u,
-                                 memory_mode_t::Internal,
+                                 memory_mode::Internal,
                                  lpq_test_file, 1u, std::less<>, false,
                                  0u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -4362,7 +4362,7 @@ go_bandit([]() {
         }
 
         levelized_priority_queue<lpq_test_data, lpq_test_gt, 1u,
-                                 memory_mode_t::Internal,
+                                 memory_mode::Internal,
                                  lpq_test_file, 1u, std::greater<>, true,
                                  0u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -4412,7 +4412,7 @@ go_bandit([]() {
         }
 
         levelized_priority_queue<lpq_test_data, lpq_test_gt, 1u,
-                                 memory_mode_t::Internal,
+                                 memory_mode::Internal,
                                  lpq_test_file, 1u, std::greater<>, true,
                                  0u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -4481,7 +4481,7 @@ go_bandit([]() {
         }
 
         levelized_priority_queue<lpq_test_data, lpq_test_gt, 1u,
-                                 memory_mode_t::Internal,
+                                 memory_mode::Internal,
                                  lpq_test_file, 2u, std::greater<>, true,
                                  0u>
           pq({f1,f2}, memory_available(), 32, stats_lpq_tests);
@@ -4555,7 +4555,7 @@ go_bandit([]() {
         adiar::shared_file<ptr_uint64::label_type> f;
 
         levelized_priority_queue<lpq_test_data, lpq_test_lt, 0u,
-                                 memory_mode_t::Internal,
+                                 memory_mode::Internal,
                                  adiar::shared_file<ptr_uint64::label_type>, 1u, std::less<>, false,
                                  0u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -4576,7 +4576,7 @@ go_bandit([]() {
         }
 
         levelized_priority_queue<lpq_test_data, lpq_test_lt, 0u,
-                                 memory_mode_t::Internal,
+                                 memory_mode::Internal,
                                  lpq_test_file, 1u, std::less<>, false,
                                  0u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -4615,7 +4615,7 @@ go_bandit([]() {
         }
 
         levelized_priority_queue<lpq_test_data, lpq_test_lt, 0u,
-                                 memory_mode_t::Internal,
+                                 memory_mode::Internal,
                                  lpq_test_file, 1u, std::less<ptr_uint64::label_type>, false,
                                  0u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -4659,7 +4659,7 @@ go_bandit([]() {
         }
 
         levelized_priority_queue<lpq_test_data, lpq_test_lt, 1u,
-                                 memory_mode_t::Internal,
+                                 memory_mode::Internal,
                                  lpq_test_file, 2u, std::less<>, false,
                                  0u>
           pq({f1,f2}, memory_available(), 32, stats_lpq_tests);
@@ -4729,7 +4729,7 @@ go_bandit([]() {
         }
 
         levelized_priority_queue<lpq_test_data, lpq_test_lt, 0u,
-                                 memory_mode_t::Internal,
+                                 memory_mode::Internal,
                                  lpq_test_file, 2u, std::less<>, false,
                                  0u>
           pq({f1,f2}, memory_available(), 32, stats_lpq_tests);
