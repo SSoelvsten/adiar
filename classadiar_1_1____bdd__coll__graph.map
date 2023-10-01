@@ -1,5 +1,5 @@
 <map id="adiar::__bdd" name="adiar::__bdd">
 <area shape="rect" id="node1" title="A (possibly) unreduced Binary Decision Diagram." alt="" coords="30,171,131,197"/>
 <area shape="rect" id="node2" href="$classadiar_1_1internal_1_1____dd.html" title=" " alt="" coords="5,95,156,121"/>
-<area shape="rect" id="node3" href="$classadiar_1_1exec__policy.html" title="Collection of enum values to change the execution of Adiar&#39;s algorithms." alt="" coords="11,5,150,32"/>
+<area shape="rect" id="node3" href="$classadiar_1_1exec__policy.html" title="Settings to dictate the execution of Adiar&#39;s algorithms." alt="" coords="11,5,150,32"/>
 </map>

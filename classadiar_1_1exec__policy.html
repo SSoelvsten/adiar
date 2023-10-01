@@ -100,7 +100,7 @@ $(document).ready(function(){initNavTree('classadiar_1_1exec__policy.html',''); 
 </div><!--header-->
 <div class="contents">
 
-<p>Collection of enum values to change the execution of Adiar's algorithms.  
+<p>Settings to dictate the execution of Adiar's algorithms.  
  <a href="classadiar_1_1exec__policy.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="exec__policy_8h_source.html">adiar/exec_policy.h</a>&gt;</code></p>
@@ -207,8 +207,14 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="separator:aa63e6c8dcb365fba66bb2830258a3eb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Collection of enum values to change the execution of Adiar's algorithms. </p>
-</div><h2 class="groupheader">Member Enumeration Documentation</h2>
+<div class="textblock"><p>Settings to dictate the execution of Adiar's algorithms. </p>
+<p>Adiar's algorithms work very differently from other BDD implementations. Hence, it makes use of multiple novel techniques to make it competitive across the entire spectrum of BDD shapes and sizes. These can be turned on/off or tweaked by changing these settings.</p>
+<p>Most likely, you would want to apply all techniques (in a safe way) and so you do not need to think about changing any of these.</p>
+<p>For example, you can fix the <code>bdd_exists</code> to only use <em>internal</em> memory and the <em>Nested Sweeping</em> framework as follows: </p><div class="fragment"><div class="line"><a class="code" href="group__module____bdd.html#gacf8f50868fb8eac4eff5587173ab703c">bdd_exists</a>(exec_policy::access::Internal &amp; exec_policy::quant::Nested,</div>
+<div class="line">           f,</div>
+<div class="line">           vars.rbegin(), vars.rend());</div>
+<div class="ttc" id="agroup__module____bdd_html_gacf8f50868fb8eac4eff5587173ab703c"><div class="ttname"><a href="group__module____bdd.html#gacf8f50868fb8eac4eff5587173ab703c">adiar::bdd_exists</a></div><div class="ttdeci">__bdd bdd_exists(const bdd &amp;f, bdd::label_type var)</div><div class="ttdoc">Existential quantification of a single variable.</div></div>
+</div><!-- fragment --> </div><h2 class="groupheader">Member Enumeration Documentation</h2>
 <a id="a3c3d34a49a59b44a4174375114271f15"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3c3d34a49a59b44a4174375114271f15">&#9670;&nbsp;</a></span>access</h2>
 

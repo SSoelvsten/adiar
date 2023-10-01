@@ -35,7 +35,7 @@
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classadiar_1_1exec__policy.html" target="_top" xlink:title="Collection of enum values to change the execution of Adiar&#39;s algorithms.">
+<g id="a_node3"><a xlink:href="classadiar_1_1exec__policy.html" target="_top" xlink:title="Settings to dictate the execution of Adiar&#39;s algorithms.">
 <polygon fill="none" stroke="black" points="4.5,-124.5 4.5,-143.5 108.5,-143.5 108.5,-124.5 4.5,-124.5"/>
 <text text-anchor="middle" x="56.5" y="-131.5" font-family="Helvetica,sans-Serif" font-size="10.00">adiar::exec_policy</text>
 </a>
