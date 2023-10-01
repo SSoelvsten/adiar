@@ -240,7 +240,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <dl class="section warning"><dt>Warning</dt><dd>Using <code>Random_Access</code> may lead to crashes if all inputs are too wide or input to random access is not canonical!</dd></dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#gaa76a2cada411953213108a945d9fabfb" title="Apply a binary operator between two BDDs.">bdd_apply</a> <a class="el" href="group__module____zdd.html#gabe38fcc7812544a97938aa268197edbe" title="Apply a binary operator between the sets of two families.">zdd_binop</a> </dd></dl>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a3c3d34a49a59b44a4174375114271f15a06b9281e396db002010bde1de57262eb"></a>Auto&#160;</td><td class="fielddoc"><p>Automatically decide on type of access to use. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a3c3d34a49a59b44a4174375114271f15a06b9281e396db002010bde1de57262eb"></a>Auto&#160;</td><td class="fielddoc"><p>Pick <em>Random</em> Access when an input is narrow enough. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a3c3d34a49a59b44a4174375114271f15a6c97f842eb519778e75a9c93115ba13c"></a>Random_Access&#160;</td><td class="fielddoc"><p>Always use Random Access </p>
 </td></tr>
@@ -276,7 +276,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
          Operations using Maximum Graph Cuts" ATVA 2023.</dd></dl>
 <dl class="section warning"><dt>Warning</dt><dd>Using <code>Internal</code> may lead to crashes if an input or output is too large! </dd></dl>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a3c5d03f2961f93a86e0ce24d9fcea29aa06b9281e396db002010bde1de57262eb"></a>Auto&#160;</td><td class="fielddoc"><p>Automatically decide on type of memory to use. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a3c5d03f2961f93a86e0ce24d9fcea29aa06b9281e396db002010bde1de57262eb"></a>Auto&#160;</td><td class="fielddoc"><p>Pick <em>internal</em> memory as long as it is safe to do so. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a3c5d03f2961f93a86e0ce24d9fcea29aaafbf0897a5a83fdd873dfb032ec695d3"></a>Internal&#160;</td><td class="fielddoc"><p>Always use <em>internal</em> memory </p>
 </td></tr>
@@ -311,7 +311,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <dl class="section remark"><dt>Remarks</dt><dd>Not all approaches can apply to each algorithm. If the desired approach does not apply, then an approach that is <em>less</em> than it is used instead. For example, <code>Partial</code> cannot be used with a <code>generator</code> and so <code>Singleton</code> is used instead.</dd></dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#gacf8f50868fb8eac4eff5587173ab703c" title="Existential quantification of a single variable.">bdd_exists</a> <a class="el" href="group__module____bdd.html#gaf7ae252bd0954ac6c63013b345ca30ee" title="Forall quantification of a single variable.">bdd_forall</a> <a class="el" href="group__module____zdd.html#gac2a28278086ebd64a086c8e087574632" title="Project family of sets onto a domain, i.e. remove from every set all variables not within the domain.">zdd_project</a> </dd></dl>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a1d37a49f8ef3843dd33c0cc843313902a06b9281e396db002010bde1de57262eb"></a>Auto&#160;</td><td class="fielddoc"><p>Automatically decide what approach to use (may switching half-way). </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a1d37a49f8ef3843dd33c0cc843313902a06b9281e396db002010bde1de57262eb"></a>Auto&#160;</td><td class="fielddoc"><p>Automatically decide what approach to use (may switch half-way). </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a1d37a49f8ef3843dd33c0cc843313902a13c479c348969ab459513a4bfd559bb9"></a>Nested&#160;</td><td class="fielddoc"><p>Use the <em>nested</em> <em>sweeping</em> framework. </p>
 </td></tr>
