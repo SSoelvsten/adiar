@@ -9,22 +9,23 @@ namespace adiar
   /// \{
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \name Execution Policy
+  /// \brief Settings to dictate the execution of Adiar's algorithms.
   ///
   /// Adiar's algorithms work very differently from other BDD implementations.
   /// Hence, it makes use of multiple novel techniques to make it competitive
-  /// across the entire spectrum of BDD shapes and sizes.
+  /// across the entire spectrum of BDD shapes and sizes. These can be turned
+  /// on/off or tweaked by changing these settings.
   ///
-  /// An instance of the `exec_policy` class may be parsed to each algorithm to
-  /// change which or whether one of these techniques should be used throughout
-  /// execution. Most likely, you can entirely ignore this and just use the
-  /// default settings.
+  /// Most likely, you would want to apply all techniques (in a safe way) and so
+  /// you do not need to think about changing any of these.
   ///
-  /// \{
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Collection of enum values to change the execution of Adiar's
-  ///        algorithms.
+  /// For example, you can fix the `bdd_exists` to only use \em internal memory
+  /// and the \em Nested \em Sweeping framework as follows:
+  /// ```cpp
+  /// bdd_exists(exec_policy::memory::Internal & exec_policy::quantify::Nested,
+  ///            f,
+  ///            vars.rbegin(), vars.rend());
+  /// ```
   //////////////////////////////////////////////////////////////////////////////
   class exec_policy
   {
@@ -275,9 +276,6 @@ namespace adiar
       return ep.set(qs);
     }
   };
-
-  /// \}
-  //////////////////////////////////////////////////////////////////////////////
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////
