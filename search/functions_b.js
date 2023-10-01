@@ -1,12 +1,7 @@
 var searchData=
 [
-  ['make_5fconsumer_532',['make_consumer',['../group__module____functional.html#ga923a64580e0b6124c8e9c9bafb27f7e0',1,'adiar']]],
-  ['make_5fgenerator_533',['make_generator',['../group__module____functional.html#ga0bb6ca574a1999bd9895ed6517e92972',1,'adiar::make_generator(ForwardIt &amp;begin, ForwardIt &amp;end)'],['../group__module____functional.html#ga10b08b986192013581d64d25d3dd622b',1,'adiar::make_generator(Stream &amp;s)']]],
-  ['make_5fshared_534',['make_shared',['../namespaceadiar.html#a6fcf0e1da0d4d2f38aa2c66b7e2564bc',1,'adiar']]],
-  ['make_5fshared_5ffile_535',['make_shared_file',['../namespaceadiar.html#a73d6d0d37467f819bee85cf08e7c976a',1,'adiar::make_shared_file()'],['../namespaceadiar.html#a15dd836fb1e682ddc5cd81036b0abb58',1,'adiar::make_shared_file(const std::string &amp;p)']]],
-  ['make_5funique_536',['make_unique',['../namespaceadiar.html#ad471e76461365e2c558f243869ffc7bf',1,'adiar']]],
-  ['map_5fpair_537',['map_pair',['../classadiar_1_1map__pair.html#a6a09290256a757a5588f16f0d0c4856f',1,'adiar::map_pair::map_pair(const key_t key, const value_t val)'],['../classadiar_1_1map__pair.html#a4315807a0beb4f52b43525ce70e2337d',1,'adiar::map_pair::map_pair(const key_t key, const bool val)']]],
-  ['max_5f1level_5fcut_538',['max_1level_cut',['../classadiar_1_1internal_1_1____dd.html#abf98f6daf805cee9a5d996660a1747f5',1,'adiar::internal::__dd']]],
-  ['max_5f2level_5fcut_539',['max_2level_cut',['../classadiar_1_1internal_1_1____dd.html#a8a1d14325ab214d7303c3ba2631503ad',1,'adiar::internal::__dd']]],
-  ['memory_5fmode_540',['memory_mode',['../classadiar_1_1exec__policy.html#afd18c4a65cf97751e01622fb42626ac0',1,'adiar::exec_policy']]]
+  ['label_558',['label',['../classadiar_1_1internal_1_1level__info.html#ac4839cb6d030a4fe7027580e65d420cd',1,'adiar::internal::level_info::label()'],['../classadiar_1_1internal_1_1node.html#ab21b57654bb38927b63e95b4d46a90c4',1,'adiar::internal::node::label()'],['../classadiar_1_1internal_1_1ptr__uint64.html#a808f2c653987ec3af52fbdcc2828353a',1,'adiar::internal::ptr_uint64::label()']]],
+  ['level_559',['level',['../classadiar_1_1map__pair.html#a205ab241adf7a5d9725df21cb2202781',1,'adiar::map_pair::level()'],['../classadiar_1_1internal_1_1level__info.html#ac7c20ac651477992438b376d92a3eb4c',1,'adiar::internal::level_info::level()'],['../classadiar_1_1internal_1_1request_3_01Cardinality_00_010_00_01Inputs_01_4.html#a428b883f1d1ac278276e883571e922ab',1,'adiar::internal::request&lt; Cardinality, 0, Inputs &gt;::level()']]],
+  ['level_5finfo_560',['level_info',['../classadiar_1_1internal_1_1level__info.html#a83ddecf69484d0378372d80348e915dc',1,'adiar::internal::level_info::level_info()=default'],['../classadiar_1_1internal_1_1level__info.html#ae1d65e98fe83c4cd713d168e4f26e18c',1,'adiar::internal::level_info::level_info(const level_info &amp;li)=default'],['../classadiar_1_1internal_1_1level__info.html#a7c80a450929ca42f09d01d85ac763ed6',1,'adiar::internal::level_info::level_info(level_info &amp;&amp;li)=default'],['../classadiar_1_1internal_1_1level__info.html#ac02b908c21b5fc2087590bba100f9ce1',1,'adiar::internal::level_info::level_info(level_type label, size_t width)']]],
+  ['low_561',['low',['../classadiar_1_1internal_1_1node.html#a27439de9730f3e360ce016d1feaf4acc',1,'adiar::internal::node']]]
 ];

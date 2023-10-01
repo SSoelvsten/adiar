@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['dd_402',['dd',['../classadiar_1_1internal_1_1dd.html',1,'adiar::internal']]],
-  ['down_5ft_403',['down_t',['../structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t_1_1down__t.html',1,'adiar::statistics::nested_sweeping_t::inner_t']]]
+  ['dd_423',['dd',['../classadiar_1_1internal_1_1dd.html',1,'adiar::internal']]],
+  ['down_5ft_424',['down_t',['../structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t_1_1down__t.html',1,'adiar::statistics::nested_sweeping_t::inner_t']]]
 ];

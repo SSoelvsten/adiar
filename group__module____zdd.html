@@ -871,7 +871,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
 <p>Bottom of the powerset lattice. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">vars</td><td>Generator function of the variables in <em>descending</em> order. When none are left, it must return a value greater than <code><a class="el" href="classadiar_1_1internal_1_1dd.html#a791e07735222a7e43e57bcdf643ff9f2" title="The maximal possible value for a unique identifier&#39;s label.">zdd::max_label</a></code>.</td></tr>
+    <tr><td class="paramname">dom</td><td>Generator function of the variables in <em>descending</em> order. When none are left, it must return a value greater than <code><a class="el" href="classadiar_1_1internal_1_1dd.html#a791e07735222a7e43e57bcdf643ff9f2" title="The maximal possible value for a unique identifier&#39;s label.">zdd::max_label</a></code>.</td></tr>
   </table>
   </dd>
 </dl>
@@ -1635,6 +1635,12 @@ template&lt;typename ForwardIt &gt; </div>
 </div><div class="memdoc">
 
 <p>Retrieves the lexicographically largest set a in A. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>Set of sets of interest.</td></tr>
+  </table>
+  </dd>
+</dl>
 <p>Outputs the trace of the high-most path to the true terminal. The resulting assignment is lexicographically largest, where every variable is treated as a digit and \( x_0 &gt; x_1 &gt; \dots \). </p>
 
 </div>
@@ -1668,6 +1674,7 @@ template&lt;typename ForwardIt &gt; </div>
 <p>Retrieves the lexicographically largest set a in A. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramname">A</td><td>Set of sets of interest.</td></tr>
     <tr><td class="paramname">cb</td><td>Callback function that is called with the variables of the largest set in <em>ascending</em> order of the levels of <code>A</code>.</td></tr>
   </table>
   </dd>
@@ -1693,6 +1700,12 @@ template&lt;typename ForwardIt &gt; </div>
 </div><div class="memdoc">
 
 <p>Retrieves the lexicographically smallest set a in A. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>Set of sets of interest.</td></tr>
+  </table>
+  </dd>
+</dl>
 <p>Outputs the trace of the low-most path to the true terminal. The resulting assignment is lexicographically smallest, where every variable is treated as a digit and \( x_0 &gt; x_1 &gt; \dots \). </p>
 
 </div>
@@ -1726,6 +1739,7 @@ template&lt;typename ForwardIt &gt; </div>
 <p>Retrieves the lexicographically smallest set a in A. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramname">A</td><td>Set of sets of interest.</td></tr>
     <tr><td class="paramname">cb</td><td>Callback function that is called with the variables of the smallest set in <em>ascending</em> order of the levels of <code>A</code>.</td></tr>
   </table>
   </dd>
@@ -2137,7 +2151,7 @@ template&lt;typename ForwardIt &gt; </div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">A</td><td>Family of sets to project</td></tr>
-    <tr><td class="paramname">gen</td><td>Generator function, that produces the variables of the domain in <em>descending</em> order. When none are left to-be quantified, it returns a value larger than <code><a class="el" href="classadiar_1_1internal_1_1dd.html#a791e07735222a7e43e57bcdf643ff9f2" title="The maximal possible value for a unique identifier&#39;s label.">zdd::max_label</a></code>, e.g. -1.</td></tr>
+    <tr><td class="paramname">dom</td><td>Generator function, that produces the variables of the domain in <em>descending</em> order. When none are left to-be quantified, it returns a value larger than <code><a class="el" href="classadiar_1_1internal_1_1dd.html#a791e07735222a7e43e57bcdf643ff9f2" title="The maximal possible value for a unique identifier&#39;s label.">zdd::max_label</a></code>, e.g. -1.</td></tr>
   </table>
   </dd>
 </dl>
@@ -2411,7 +2425,7 @@ template&lt;typename ForwardIt &gt; </div>
 <p>Top of the powerset lattice. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">vars</td><td>Generator function of the variables in <em>descending</em> order.</td></tr>
+    <tr><td class="paramname">dom</td><td>Generator function of the variables in <em>descending</em> order.</td></tr>
   </table>
   </dd>
 </dl>

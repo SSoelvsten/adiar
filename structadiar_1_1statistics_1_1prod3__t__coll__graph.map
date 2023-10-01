@@ -1,6 +1,6 @@
 <map id="adiar::statistics::prod3_t" name="adiar::statistics::prod3_t">
 <area shape="rect" id="node1" title="3&#45;ary Product Construction algorithm statistics." alt="" coords="37,291,168,332"/>
 <area shape="rect" id="node2" href="$structadiar_1_1statistics_1_1____alg__base.html" title="Common statistics for all algorithms." alt="" coords="37,200,168,241"/>
-<area shape="rect" id="node3" href="$structadiar_1_1statistics_1_1____alg__base_1_1____lpq.html" title="Type and usage of this algorithm&#39;s levelized priority queue." alt="" coords="35,96,171,137"/>
+<area shape="rect" id="node3" href="$structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html" title="Type and usage of this algorithm&#39;s levelized priority queue." alt="" coords="29,96,177,137"/>
 <area shape="rect" id="node4" href="$structadiar_1_1statistics_1_1levelized__priority__queue__t.html" title="Levelized Priority Queue statistics." alt="" coords="5,5,200,47"/>
 </map>

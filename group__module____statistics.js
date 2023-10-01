@@ -2,19 +2,19 @@ var group__module____statistics =
 [
     [ "statistics", "structadiar_1_1statistics.html", [
       [ "__alg_base", "structadiar_1_1statistics_1_1____alg__base.html", [
-        [ "__lpq", "structadiar_1_1statistics_1_1____alg__base_1_1____lpq.html", [
-          [ "total", "structadiar_1_1statistics_1_1____alg__base_1_1____lpq.html#a0bb42da76860279344dab2894f7b0d81", null ],
-          [ "external", "structadiar_1_1statistics_1_1____alg__base_1_1____lpq.html#a05ca28ca9522d0aef6773b42e7bd0d2f", null ],
-          [ "internal", "structadiar_1_1statistics_1_1____alg__base_1_1____lpq.html#ace284aa043163a8e288f4d8982a1b454", null ],
-          [ "push_bucket", "structadiar_1_1statistics_1_1____alg__base_1_1____lpq.html#a704d98578648ed0b0daf834b92b21fe7", null ],
-          [ "push_overflow", "structadiar_1_1statistics_1_1____alg__base_1_1____lpq.html#a844804602d4c05ae87cef7f40c10371d", null ],
-          [ "sum_actual_max_size", "structadiar_1_1statistics_1_1____alg__base_1_1____lpq.html#ae485ef1f9462d3c8106dc37a519ca896", null ],
-          [ "sum_destructors", "structadiar_1_1statistics_1_1____alg__base_1_1____lpq.html#a18db66cef68fc1e68532347a86bd3d2b", null ],
-          [ "sum_max_size_ratio", "structadiar_1_1statistics_1_1____alg__base_1_1____lpq.html#a6cbf004655dd759cc729fad62a47321d", null ],
-          [ "sum_predicted_max_size", "structadiar_1_1statistics_1_1____alg__base_1_1____lpq.html#acbc2d26c2cafb41e66a1965679dfbc78", null ],
-          [ "unbucketed", "structadiar_1_1statistics_1_1____alg__base_1_1____lpq.html#a7cabb37cf4c3313235f2ee805c510aac", null ]
+        [ "__lpq_t", "structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html", [
+          [ "total", "structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html#a5528e809829233a8f28065318e4c06ae", null ],
+          [ "external", "structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html#a6f5781021c252979f0e3e628638d3b16", null ],
+          [ "internal", "structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html#ace683decb4959f11218dabc75961badb", null ],
+          [ "push_bucket", "structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html#a704d98578648ed0b0daf834b92b21fe7", null ],
+          [ "push_overflow", "structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html#a844804602d4c05ae87cef7f40c10371d", null ],
+          [ "sum_actual_max_size", "structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html#ae485ef1f9462d3c8106dc37a519ca896", null ],
+          [ "sum_destructors", "structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html#a18db66cef68fc1e68532347a86bd3d2b", null ],
+          [ "sum_max_size_ratio", "structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html#a6cbf004655dd759cc729fad62a47321d", null ],
+          [ "sum_predicted_max_size", "structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html#acbc2d26c2cafb41e66a1965679dfbc78", null ],
+          [ "unbucketed", "structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html#a3acfce9e75921a6a4fc7e2829845f08f", null ]
         ] ],
-        [ "lpq", "structadiar_1_1statistics_1_1____alg__base.html#a62a711675495715b5d743c2fc43139ac", null ]
+        [ "lpq", "structadiar_1_1statistics_1_1____alg__base.html#ab769667ff5ecea10ecd9e2589b7e72bf", null ]
       ] ],
       [ "arc_file_t", "structadiar_1_1statistics_1_1arc__file__t.html", [
         [ "push_in_order", "structadiar_1_1statistics_1_1arc__file__t.html#a873e75b1ded2fa2476c962742dc15d07", null ],
@@ -24,7 +24,7 @@ var group__module____statistics =
         [ "sort_out_of_order", "structadiar_1_1statistics_1_1arc__file__t.html#a3a8ee42e74efd8bf7b906930b3630372", null ]
       ] ],
       [ "count_t", "structadiar_1_1statistics_1_1count__t.html", [
-        [ "lpq", "structadiar_1_1statistics_1_1count__t.html#a62a711675495715b5d743c2fc43139ac", null ]
+        [ "lpq", "structadiar_1_1statistics_1_1count__t.html#ab769667ff5ecea10ecd9e2589b7e72bf", null ]
       ] ],
       [ "equality_t", "structadiar_1_1statistics_1_1equality__t.html", [
         [ "fast_t", "structadiar_1_1statistics_1_1equality__t_1_1fast__t.html", [
@@ -43,11 +43,11 @@ var group__module____statistics =
         [ "exit_on_terminalcount", "structadiar_1_1statistics_1_1equality__t.html#acfad6b0365652afc6c232497f94e28c9", null ],
         [ "exit_on_varcount", "structadiar_1_1statistics_1_1equality__t.html#a2fb0af2f48be760a798196ded72171fc", null ],
         [ "fast_check", "structadiar_1_1statistics_1_1equality__t.html#a6875d1f6447096850add31577688ffbf", null ],
-        [ "lpq", "structadiar_1_1statistics_1_1equality__t.html#a62a711675495715b5d743c2fc43139ac", null ],
+        [ "lpq", "structadiar_1_1statistics_1_1equality__t.html#ab769667ff5ecea10ecd9e2589b7e72bf", null ],
         [ "slow_check", "structadiar_1_1statistics_1_1equality__t.html#a889424f58afa95ef6f985763fcd1674e", null ]
       ] ],
       [ "intercut_t", "structadiar_1_1statistics_1_1intercut__t.html", [
-        [ "lpq", "structadiar_1_1statistics_1_1intercut__t.html#a62a711675495715b5d743c2fc43139ac", null ]
+        [ "lpq", "structadiar_1_1statistics_1_1intercut__t.html#ab769667ff5ecea10ecd9e2589b7e72bf", null ]
       ] ],
       [ "levelized_priority_queue_t", "structadiar_1_1statistics_1_1levelized__priority__queue__t.html", [
         [ "push_bucket", "structadiar_1_1statistics_1_1levelized__priority__queue__t.html#a704d98578648ed0b0daf834b92b21fe7", null ],
@@ -60,10 +60,10 @@ var group__module____statistics =
       [ "nested_sweeping_t", "structadiar_1_1statistics_1_1nested__sweeping__t.html", [
         [ "inner_t", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t.html", [
           [ "down_t", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t_1_1down__t.html", [
-            [ "lpq", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t_1_1down__t.html#a62a711675495715b5d743c2fc43139ac", null ]
+            [ "lpq", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t_1_1down__t.html#ab769667ff5ecea10ecd9e2589b7e72bf", null ]
           ] ],
           [ "up_t", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t_1_1up__t.html", [
-            [ "lpq", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t_1_1up__t.html#a62a711675495715b5d743c2fc43139ac", null ]
+            [ "lpq", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t_1_1up__t.html#ab769667ff5ecea10ecd9e2589b7e72bf", null ]
           ] ],
           [ "down", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t.html#aff5827395cd9179ba6e638827983105e", null ],
           [ "up", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t.html#a768dcc8edcd311f7526a57eb77a11a82", null ]
@@ -91,27 +91,27 @@ var group__module____statistics =
           [ "runs", "structadiar_1_1statistics_1_1prod2__t_1_1ra__t.html#af4609e33d3ae17cbae08e03247bdb4aa", null ],
           [ "used_narrowest", "structadiar_1_1statistics_1_1prod2__t_1_1ra__t.html#a31ecbf582eeb29fbde200e7b3b77051f", null ]
         ] ],
-        [ "lpq", "structadiar_1_1statistics_1_1prod2__t.html#a62a711675495715b5d743c2fc43139ac", null ],
+        [ "lpq", "structadiar_1_1statistics_1_1prod2__t.html#ab769667ff5ecea10ecd9e2589b7e72bf", null ],
         [ "pq", "structadiar_1_1statistics_1_1prod2__t.html#a8bb9d4f8332175f125fc51b413f1d996", null ],
         [ "ra", "structadiar_1_1statistics_1_1prod2__t.html#abfe9703ad33905349780ae5c43ad69f2", null ],
         [ "trivial_file", "structadiar_1_1statistics_1_1prod2__t.html#a3fb3fbf6dce52ee96fac9d9f183fb5fb", null ],
         [ "trivial_terminal", "structadiar_1_1statistics_1_1prod2__t.html#a6d3f4d0066639dda6b702f51d3bdff09", null ]
       ] ],
       [ "prod3_t", "structadiar_1_1statistics_1_1prod3__t.html", [
-        [ "lpq", "structadiar_1_1statistics_1_1prod3__t.html#a62a711675495715b5d743c2fc43139ac", null ]
+        [ "lpq", "structadiar_1_1statistics_1_1prod3__t.html#ab769667ff5ecea10ecd9e2589b7e72bf", null ]
       ] ],
       [ "quantify_t", "structadiar_1_1statistics_1_1quantify__t.html", [
-        [ "lpq", "structadiar_1_1statistics_1_1quantify__t.html#a62a711675495715b5d743c2fc43139ac", null ]
+        [ "lpq", "structadiar_1_1statistics_1_1quantify__t.html#ab769667ff5ecea10ecd9e2589b7e72bf", null ]
       ] ],
       [ "reduce_t", "structadiar_1_1statistics_1_1reduce__t.html", [
-        [ "lpq", "structadiar_1_1statistics_1_1reduce__t.html#a62a711675495715b5d743c2fc43139ac", null ],
+        [ "lpq", "structadiar_1_1statistics_1_1reduce__t.html#ab769667ff5ecea10ecd9e2589b7e72bf", null ],
         [ "removed_by_rule_1", "structadiar_1_1statistics_1_1reduce__t.html#a8f89cf0d7b85be177d529be8dbbcef5c", null ],
         [ "removed_by_rule_2", "structadiar_1_1statistics_1_1reduce__t.html#a5f8c1dab667836c226b3c4cf7debca22", null ],
         [ "sum_node_arcs", "structadiar_1_1statistics_1_1reduce__t.html#a2519ee24c18aafb9177078b92d6c338d", null ],
         [ "sum_terminal_arcs", "structadiar_1_1statistics_1_1reduce__t.html#a624cd625bf7ff160e3625ddf65cca558", null ]
       ] ],
       [ "substitute_t", "structadiar_1_1statistics_1_1substitute__t.html", [
-        [ "lpq", "structadiar_1_1statistics_1_1substitute__t.html#a62a711675495715b5d743c2fc43139ac", null ]
+        [ "lpq", "structadiar_1_1statistics_1_1substitute__t.html#ab769667ff5ecea10ecd9e2589b7e72bf", null ]
       ] ],
       [ "arc_file", "structadiar_1_1statistics.html#a71af2d8c10882a8db51be5d6de3c129e", null ],
       [ "count", "structadiar_1_1statistics.html#aef4c38a2f1741aeaa3ac55f8ef912be7", null ],

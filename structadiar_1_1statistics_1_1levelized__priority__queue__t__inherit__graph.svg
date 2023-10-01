@@ -21,10 +21,10 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="structadiar_1_1statistics_1_1____alg__base_1_1____lpq.html" target="_top" xlink:title="Type and usage of this algorithm&#39;s levelized priority queue.">
-<polygon fill="none" stroke="black" points="22,-0.5 22,-30.5 124,-30.5 124,-0.5 22,-0.5"/>
-<text text-anchor="start" x="30" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">adiar::statistics::</text>
-<text text-anchor="middle" x="73" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">__alg_base::__lpq</text>
+<g id="a_node2"><a xlink:href="structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html" target="_top" xlink:title="Type and usage of this algorithm&#39;s levelized priority queue.">
+<polygon fill="none" stroke="black" points="17.5,-0.5 17.5,-30.5 128.5,-30.5 128.5,-0.5 17.5,-0.5"/>
+<text text-anchor="start" x="25.5" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">adiar::statistics::</text>
+<text text-anchor="middle" x="73" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">__alg_base::__lpq_t</text>
 </a>
 </g>
 </g>

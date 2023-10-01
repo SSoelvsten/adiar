@@ -9,8 +9,9 @@ var searchData=
   ['domain_5fget_96',['domain_get',['../group__module____domain.html#gae042e775eb7dc649601f6fc075b7fe07',1,'adiar']]],
   ['domain_5fisset_97',['domain_isset',['../group__module____domain.html#ga8424919bff298b87ef08f326db6e0d75',1,'adiar']]],
   ['domain_5fmax_98',['domain_max',['../group__module____domain.html#ga8bff450c02a2bfa77b10d76557905a77',1,'adiar']]],
-  ['domain_5fset_99',['domain_set',['../group__module____domain.html#ga6e829c6a97a6b871e9f650a7f3a45e63',1,'adiar::domain_set(const domain_var varcount)'],['../group__module____domain.html#ga7014a19ae7d9ad390bd35b7a1e3df3ec',1,'adiar::domain_set(const generator&lt; domain_var &gt; &amp;dom)'],['../group__module____domain.html#ga1fa604b1892c0111c4fde4183f11b140',1,'adiar::domain_set(ForwardIt begin, ForwardIt end)'],['../group__module____domain.html#gac8f61ecb2148dfb718af47a4c1a9a89b',1,'adiar::domain_set(const shared_file&lt; domain_var &gt; &amp;dom)']]],
+  ['domain_5fset_99',['domain_set',['../group__module____domain.html#gac8f61ecb2148dfb718af47a4c1a9a89b',1,'adiar::domain_set(const shared_file&lt; domain_var &gt; &amp;dom)'],['../group__module____domain.html#ga1fa604b1892c0111c4fde4183f11b140',1,'adiar::domain_set(ForwardIt begin, ForwardIt end)'],['../group__module____domain.html#ga7014a19ae7d9ad390bd35b7a1e3df3ec',1,'adiar::domain_set(const generator&lt; domain_var &gt; &amp;dom)'],['../group__module____domain.html#ga6e829c6a97a6b871e9f650a7f3a45e63',1,'adiar::domain_set(const domain_var varcount)']]],
   ['domain_5funset_100',['domain_unset',['../group__module____domain.html#gaeb7fdbf6de32b88b515a65856384593f',1,'adiar']]],
   ['domain_5fvar_101',['domain_var',['../group__module____domain.html#gabffcbfe753972ad7bb25244829364343',1,'adiar']]],
-  ['down_5ft_102',['down_t',['../structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t_1_1down__t.html',1,'adiar::statistics::nested_sweeping_t::inner_t']]]
+  ['down_102',['down',['../structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t.html#aff5827395cd9179ba6e638827983105e',1,'adiar::statistics::nested_sweeping_t::inner_t']]],
+  ['down_5ft_103',['down_t',['../structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t_1_1down__t.html',1,'adiar::statistics::nested_sweeping_t::inner_t']]]
 ];

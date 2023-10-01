@@ -31,7 +31,7 @@ var hierarchy =
     [ "adiar::statistics::nested_sweeping_t::inner_t", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t.html", null ],
     [ "adiar::internal::level_info", "classadiar_1_1internal_1_1level__info.html", null ],
     [ "adiar::statistics::levelized_priority_queue_t", "structadiar_1_1statistics_1_1levelized__priority__queue__t.html", [
-      [ "adiar::statistics::__alg_base::__lpq", "structadiar_1_1statistics_1_1____alg__base_1_1____lpq.html", null ]
+      [ "adiar::statistics::__alg_base::__lpq_t", "structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html", null ]
     ] ],
     [ "adiar::map_pair< key_type, value_enum >", "classadiar_1_1map__pair.html", null ],
     [ "adiar::statistics::nested_sweeping_t", "structadiar_1_1statistics_1_1nested__sweeping__t.html", null ],

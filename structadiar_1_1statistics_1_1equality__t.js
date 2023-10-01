@@ -8,6 +8,6 @@ var structadiar_1_1statistics_1_1equality__t =
     [ "exit_on_terminalcount", "structadiar_1_1statistics_1_1equality__t.html#acfad6b0365652afc6c232497f94e28c9", null ],
     [ "exit_on_varcount", "structadiar_1_1statistics_1_1equality__t.html#a2fb0af2f48be760a798196ded72171fc", null ],
     [ "fast_check", "structadiar_1_1statistics_1_1equality__t.html#a6875d1f6447096850add31577688ffbf", null ],
-    [ "lpq", "structadiar_1_1statistics_1_1equality__t.html#a62a711675495715b5d743c2fc43139ac", null ],
+    [ "lpq", "structadiar_1_1statistics_1_1equality__t.html#ab769667ff5ecea10ecd9e2589b7e72bf", null ],
     [ "slow_check", "structadiar_1_1statistics_1_1equality__t.html#a889424f58afa95ef6f985763fcd1674e", null ]
 ];

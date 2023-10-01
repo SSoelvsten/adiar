@@ -115,24 +115,52 @@ Collaboration diagram for adiar::internal::with_parent:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a26400658d8c9a789b7fa455ed24fb91f"><td class="memItemLeft" align="right" valign="top"><a id="a26400658d8c9a789b7fa455ed24fb91f"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;</b> (const <a class="el" href="classadiar_1_1internal_1_1with__parent.html">with_parent</a> &amp;o) const</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1with__parent.html#a26400658d8c9a789b7fa455ed24fb91f">operator&lt;</a> (const <a class="el" href="classadiar_1_1internal_1_1with__parent.html">with_parent</a> &amp;o) const</td></tr>
+<tr class="memdesc:a26400658d8c9a789b7fa455ed24fb91f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Comparator to break ties based on the . <br /></td></tr>
 <tr class="separator:a26400658d8c9a789b7fa455ed24fb91f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:ad0da52d1a6a520511e989c23bb93f1e2"><td class="memItemLeft" align="right" valign="top"><a id="ad0da52d1a6a520511e989c23bb93f1e2"></a>
-<a class="el" href="classadiar_1_1internal_1_1node.html#a74bede4c18357fdc8d91ce37c848cd22">node::pointer_type</a>&#160;</td><td class="memItemRight" valign="bottom"><b>source</b></td></tr>
+<a class="el" href="classadiar_1_1internal_1_1node.html#a74bede4c18357fdc8d91ce37c848cd22">node::pointer_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1with__parent.html#ad0da52d1a6a520511e989c23bb93f1e2">source</a></td></tr>
+<tr class="memdesc:ad0da52d1a6a520511e989c23bb93f1e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the source of the request. <br /></td></tr>
 <tr class="separator:ad0da52d1a6a520511e989c23bb93f1e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:afd6aed4fd4956ae0287766322d670aa2"><td class="memItemLeft" align="right" valign="top"><a id="afd6aed4fd4956ae0287766322d670aa2"></a>
-static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>sort_on_tiebreak</b> = true</td></tr>
+<tr class="memitem:afd6aed4fd4956ae0287766322d670aa2"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1with__parent.html#afd6aed4fd4956ae0287766322d670aa2">sort_on_tiebreak</a> = true</td></tr>
+<tr class="memdesc:afd6aed4fd4956ae0287766322d670aa2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the parent pointer should be part of resolving sorting two requests.  <a href="classadiar_1_1internal_1_1with__parent.html#afd6aed4fd4956ae0287766322d670aa2">More...</a><br /></td></tr>
 <tr class="separator:afd6aed4fd4956ae0287766322d670aa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Class to carry the parent of a recursion within <code><a class="el" href="classadiar_1_1internal_1_1request__data.html" title="Extension of the request struct to carry extra data. That data can also impact the ordering.">request_data</a></code>. </p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
+</div><h2 class="groupheader">Member Data Documentation</h2>
+<a id="afd6aed4fd4956ae0287766322d670aa2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd6aed4fd4956ae0287766322d670aa2">&#9670;&nbsp;</a></span>sort_on_tiebreak</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool adiar::internal::with_parent::sort_on_tiebreak = true</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether the parent pointer should be part of resolving sorting two requests. </p>
+<p>Currently, this is only true in debug mode, since we do not need it for correctness but only for predictability of the order of the output. </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li>/home/runner/work/adiar/adiar/src/adiar/internal/data_types/<a class="el" href="request_8h_source.html">request.h</a></li>
 </ul>
 </div><!-- contents -->
