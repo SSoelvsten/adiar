@@ -48,7 +48,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     enum class access
     {
-      /** Automatically decide on type of access to use. */
+      /** Pick \em Random Access when an input is narrow enough. */
       Auto,
       /** Always use Random Access */
       Random_Access,
@@ -76,7 +76,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     enum class memory
     {
-      /** Automatically decide on type of memory to use. */
+      /** Pick \em internal memory as long as it is safe to do so. */
       Auto,
       /** Always use \em internal memory */
       Internal,
@@ -101,7 +101,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     enum class quantify
     {
-      /** Automatically decide what approach to use (may switching half-way). */
+      /** Automatically decide what approach to use (may switch half-way). */
       Auto,
       /** Use the \em nested \em sweeping framework. */
       Nested,
