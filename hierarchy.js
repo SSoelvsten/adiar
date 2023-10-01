@@ -26,6 +26,7 @@ var hierarchy =
       [ "adiar::bdd", "classadiar_1_1bdd.html", null ],
       [ "adiar::zdd", "classadiar_1_1zdd.html", null ]
     ] ],
+    [ "adiar::exec_policy", "classadiar_1_1exec__policy.html", null ],
     [ "adiar::statistics::equality_t::fast_t", "structadiar_1_1statistics_1_1equality__t_1_1fast__t.html", null ],
     [ "adiar::statistics::nested_sweeping_t::inner_t", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t.html", null ],
     [ "adiar::internal::level_info", "classadiar_1_1internal_1_1level__info.html", null ],

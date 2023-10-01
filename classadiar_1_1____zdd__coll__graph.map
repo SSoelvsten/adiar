@@ -1,4 +1,5 @@
 <map id="adiar::__zdd" name="adiar::__zdd">
-<area shape="rect" id="node1" title="A (possibly unreduced) Zero&#45;suppressed Decision Diagram." alt="" coords="31,80,131,107"/>
-<area shape="rect" id="node2" href="$classadiar_1_1internal_1_1____dd.html" title=" " alt="" coords="5,5,156,32"/>
+<area shape="rect" id="node1" title="A (possibly unreduced) Zero&#45;suppressed Decision Diagram." alt="" coords="31,171,131,197"/>
+<area shape="rect" id="node2" href="$classadiar_1_1internal_1_1____dd.html" title=" " alt="" coords="5,95,156,121"/>
+<area shape="rect" id="node3" href="$classadiar_1_1exec__policy.html" title="Collection of enum values to change the execution of Adiar&#39;s algorithms." alt="" coords="11,5,150,32"/>
 </map>

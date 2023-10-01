@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['memory_5fmode_5ft_746',['memory_mode_t',['../group__module____adiar.html#gaa457265c627a4561a55df8b29ed1375c',1,'adiar']]]
+  ['memory_762',['memory',['../classadiar_1_1exec__policy.html#a3c5d03f2961f93a86e0ce24d9fcea29a',1,'adiar::exec_policy']]]
 ];

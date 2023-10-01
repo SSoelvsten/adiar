@@ -91,6 +91,8 @@ $(document).ready(function(){initNavTree('group__module____adiar.html',''); init
 </div>
 
 <div class="header">
+  <div class="summary">
+<a href="#nested-classes">Classes</a>  </div>
   <div class="headertitle">
 <div class="title">Adiar Kernel</div>  </div>
 </div><!--header-->
@@ -99,45 +101,11 @@ $(document).ready(function(){initNavTree('group__module____adiar.html',''); init
 <p>Set up of Adiar and its core settings.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader">Access Mode</h2></td></tr>
-<tr><td class="ititle" colspan="2"><p><a class="anchor" id="amgrpd947aa43211217130e006fb4a28a524c"></a>Adiar’s Algorithms delay recursion through use of auxiliary data structures. These auxiliary data structures are redundant when the width of one or more inputs fits in the internal memory. In these cases it is much faster to use random access. </p>
-</td></tr>
-<tr class="memitem:gaf478550fd9fee97c8357934d10e69ada"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#gaf478550fd9fee97c8357934d10e69ada">adiar::access_mode_t</a> { <b>Auto</b>
-, <b>Random_Access</b>
-, <b>Priority_Queue</b>
- }</td></tr>
-<tr class="memdesc:gaf478550fd9fee97c8357934d10e69ada"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether Adiar should exclusively use random access (<code>Random_Access</code>) or priority queues (<code>Priority_Queue</code>) or automatically pick either way based on the width of inputs.  <a href="group__module____adiar.html#gaf478550fd9fee97c8357934d10e69ada">More...</a><br /></td></tr>
-<tr class="separator:gaf478550fd9fee97c8357934d10e69ada"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga7d6776af40156e16b1dc9e4ca2b74b36"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__module____adiar.html#gaf478550fd9fee97c8357934d10e69ada">access_mode_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#ga7d6776af40156e16b1dc9e4ca2b74b36">adiar::access_mode</a></td></tr>
-<tr class="memdesc:ga7d6776af40156e16b1dc9e4ca2b74b36"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current access mode (default: <code>Auto</code>).  <a href="group__module____adiar.html#ga7d6776af40156e16b1dc9e4ca2b74b36">More...</a><br /></td></tr>
-<tr class="separator:ga7d6776af40156e16b1dc9e4ca2b74b36"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader">Memory Mode</h2></td></tr>
-<tr><td class="ititle" colspan="2"><p><a class="anchor" id="amgrp3c1c296fde4719d90775fefc9c935bd2"></a>Adiar’s Algorithms delay recursion through use of auxiliary data structures. These auxiliary data structures can be optimised for internal memory, and so have a high performance on very small instances, or they can be designed for external memory such that they can handle decision diagrams much larger than the available memory. </p>
-</td></tr>
-<tr class="memitem:gaa457265c627a4561a55df8b29ed1375c"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#gaa457265c627a4561a55df8b29ed1375c">adiar::memory_mode_t</a> { <b>Auto</b>
-, <b>Internal</b>
-, <b>External</b>
- }</td></tr>
-<tr class="memdesc:gaa457265c627a4561a55df8b29ed1375c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether Adiar should exclusively use internal or external memory or automatically pick either type based on size of input.  <a href="group__module____adiar.html#gaa457265c627a4561a55df8b29ed1375c">More...</a><br /></td></tr>
-<tr class="separator:gaa457265c627a4561a55df8b29ed1375c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa7f0e02f27b1884ce06f69040fb8ff89"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__module____adiar.html#gaa457265c627a4561a55df8b29ed1375c">memory_mode_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89">adiar::memory_mode</a></td></tr>
-<tr class="memdesc:gaa7f0e02f27b1884ce06f69040fb8ff89"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current memory mode (default: <code>Auto</code>).  <a href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89">More...</a><br /></td></tr>
-<tr class="separator:gaa7f0e02f27b1884ce06f69040fb8ff89"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader">Quantify Mode</h2></td></tr>
-<tr><td class="ititle" colspan="2"><p><a class="anchor" id="amgrpddea1c93324accc7be265035a4a04eb8"></a>Adiar’s supports multiple approaches to compute the quantification of multiple variables. </p>
-</td></tr>
-<tr class="memitem:gaf196668596378a31f3752af9d3059e87"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#gaf196668596378a31f3752af9d3059e87">adiar::quantify_mode_t</a> { <b>Auto</b>
-, <b>Nested</b>
-, <b>Partial</b>
-, <b>Singleton</b>
- }</td></tr>
-<tr class="memdesc:gaf196668596378a31f3752af9d3059e87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Which strategy Adiar should use to quantify/project variables.  <a href="group__module____adiar.html#gaf196668596378a31f3752af9d3059e87">More...</a><br /></td></tr>
-<tr class="separator:gaf196668596378a31f3752af9d3059e87"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga99e435daedf83de1caaa609be49e9e99"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__module____adiar.html#gaf196668596378a31f3752af9d3059e87">quantify_mode_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#ga99e435daedf83de1caaa609be49e9e99">adiar::quantify_mode</a></td></tr>
-<tr class="memdesc:ga99e435daedf83de1caaa609be49e9e99"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current quantification mode (default: <code>Auto</code>).  <a href="group__module____adiar.html#ga99e435daedf83de1caaa609be49e9e99">More...</a><br /></td></tr>
-<tr class="separator:ga99e435daedf83de1caaa609be49e9e99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1exec__policy.html">adiar::exec_policy</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Collection of enum values to change the execution of Adiar's algorithms.  <a href="classadiar_1_1exec__policy.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader">Package Initialisation</h2></td></tr>
 <tr><td class="ititle" colspan="2"><p><a class="anchor" id="amgrp414c34eac6873267e452317bc52a184a"></a>After having linked the C++ source file with Adiar, one needs to include the <code>&lt;<a class="el" href="adiar_8h_source.html">adiar/adiar.h</a>&gt;</code> header, initialise the library before using any of its data structures, and finally remember to deinitialise the library again before the program terminates. </p>
@@ -156,115 +124,38 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
 <tr class="memitem:ga9501bb9e871253964682b7ac1942f911"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#ga9501bb9e871253964682b7ac1942f911">adiar::adiar_deinit</a> ()</td></tr>
 <tr class="memdesc:ga9501bb9e871253964682b7ac1942f911"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closes and cleans up everything by Adiar.  <a href="group__module____adiar.html#ga9501bb9e871253964682b7ac1942f911">More...</a><br /></td></tr>
 <tr class="separator:ga9501bb9e871253964682b7ac1942f911"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader">Execution Policy</h2></td></tr>
+<tr><td class="ititle" colspan="2"><p><a class="anchor" id="amgrp52d238f8c5fb4b310652fa89792ddaa1"></a>Adiar's algorithms work very differently from other BDD implementations. Hence, it makes use of multiple novel techniques to make it competitive across the entire spectrum of BDD shapes and sizes.</p>
+<p>An instance of the <code><a class="el" href="classadiar_1_1exec__policy.html" title="Collection of enum values to change the execution of Adiar&#39;s algorithms.">exec_policy</a></code> class may be parsed to each algorithm to change which or whether one of these techniques should be used throughout execution. Most likely, you can entirely ignore this and just use the default settings. </p>
+</td></tr>
+<tr class="memitem:ga99166900af3e6a4de2283c457c236b24"><td class="memItemLeft" align="right" valign="top"><a id="ga99166900af3e6a4de2283c457c236b24"></a>
+<a class="el" href="classadiar_1_1exec__policy.html">exec_policy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#ga99166900af3e6a4de2283c457c236b24">adiar::operator&amp;</a> (const <a class="el" href="classadiar_1_1exec__policy.html#a3c3d34a49a59b44a4174375114271f15">exec_policy::access</a> &amp;am, const <a class="el" href="classadiar_1_1exec__policy.html#a3c5d03f2961f93a86e0ce24d9fcea29a">exec_policy::memory</a> &amp;mm)</td></tr>
+<tr class="memdesc:ga99166900af3e6a4de2283c457c236b24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator overload to support lifting enum values to <code><a class="el" href="classadiar_1_1exec__policy.html" title="Collection of enum values to change the execution of Adiar&#39;s algorithms.">exec_policy</a></code>. <br /></td></tr>
+<tr class="separator:ga99166900af3e6a4de2283c457c236b24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga970fdf1f587aef1e784f2487ddb822a5"><td class="memItemLeft" align="right" valign="top"><a id="ga970fdf1f587aef1e784f2487ddb822a5"></a>
+<a class="el" href="classadiar_1_1exec__policy.html">exec_policy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#ga970fdf1f587aef1e784f2487ddb822a5">adiar::operator&amp;</a> (const <a class="el" href="classadiar_1_1exec__policy.html#a3c5d03f2961f93a86e0ce24d9fcea29a">exec_policy::memory</a> &amp;mm, const <a class="el" href="classadiar_1_1exec__policy.html#a3c3d34a49a59b44a4174375114271f15">exec_policy::access</a> &amp;am)</td></tr>
+<tr class="memdesc:ga970fdf1f587aef1e784f2487ddb822a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator overload to support lifting enum values to <code><a class="el" href="classadiar_1_1exec__policy.html" title="Collection of enum values to change the execution of Adiar&#39;s algorithms.">exec_policy</a></code>. <br /></td></tr>
+<tr class="separator:ga970fdf1f587aef1e784f2487ddb822a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabd373f32843295c67098c70630635242"><td class="memItemLeft" align="right" valign="top"><a id="gabd373f32843295c67098c70630635242"></a>
+<a class="el" href="classadiar_1_1exec__policy.html">exec_policy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#gabd373f32843295c67098c70630635242">adiar::operator&amp;</a> (const <a class="el" href="classadiar_1_1exec__policy.html#a3c3d34a49a59b44a4174375114271f15">exec_policy::access</a> &amp;am, const <a class="el" href="classadiar_1_1exec__policy.html#a1d37a49f8ef3843dd33c0cc843313902">exec_policy::quantify</a> &amp;qs)</td></tr>
+<tr class="memdesc:gabd373f32843295c67098c70630635242"><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator overload to support lifting enum values to <code><a class="el" href="classadiar_1_1exec__policy.html" title="Collection of enum values to change the execution of Adiar&#39;s algorithms.">exec_policy</a></code>. <br /></td></tr>
+<tr class="separator:gabd373f32843295c67098c70630635242"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga65971bd3b29868c62b84ae233df57c8e"><td class="memItemLeft" align="right" valign="top"><a id="ga65971bd3b29868c62b84ae233df57c8e"></a>
+<a class="el" href="classadiar_1_1exec__policy.html">exec_policy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#ga65971bd3b29868c62b84ae233df57c8e">adiar::operator&amp;</a> (const <a class="el" href="classadiar_1_1exec__policy.html#a1d37a49f8ef3843dd33c0cc843313902">exec_policy::quantify</a> &amp;qs, const <a class="el" href="classadiar_1_1exec__policy.html#a3c3d34a49a59b44a4174375114271f15">exec_policy::access</a> &amp;am)</td></tr>
+<tr class="memdesc:ga65971bd3b29868c62b84ae233df57c8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator overload to support lifting enum values to <code><a class="el" href="classadiar_1_1exec__policy.html" title="Collection of enum values to change the execution of Adiar&#39;s algorithms.">exec_policy</a></code>. <br /></td></tr>
+<tr class="separator:ga65971bd3b29868c62b84ae233df57c8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6bff8e68222ab5a671a994fa3d4177e0"><td class="memItemLeft" align="right" valign="top"><a id="ga6bff8e68222ab5a671a994fa3d4177e0"></a>
+<a class="el" href="classadiar_1_1exec__policy.html">exec_policy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#ga6bff8e68222ab5a671a994fa3d4177e0">adiar::operator&amp;</a> (const <a class="el" href="classadiar_1_1exec__policy.html#a3c5d03f2961f93a86e0ce24d9fcea29a">exec_policy::memory</a> &amp;mm, const <a class="el" href="classadiar_1_1exec__policy.html#a1d37a49f8ef3843dd33c0cc843313902">exec_policy::quantify</a> &amp;qs)</td></tr>
+<tr class="memdesc:ga6bff8e68222ab5a671a994fa3d4177e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator overload to support lifting enum values to <code><a class="el" href="classadiar_1_1exec__policy.html" title="Collection of enum values to change the execution of Adiar&#39;s algorithms.">exec_policy</a></code>. <br /></td></tr>
+<tr class="separator:ga6bff8e68222ab5a671a994fa3d4177e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3c9d812fb9386bbf82584b4b155399a6"><td class="memItemLeft" align="right" valign="top"><a id="ga3c9d812fb9386bbf82584b4b155399a6"></a>
+<a class="el" href="classadiar_1_1exec__policy.html">exec_policy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#ga3c9d812fb9386bbf82584b4b155399a6">adiar::operator&amp;</a> (const <a class="el" href="classadiar_1_1exec__policy.html#a1d37a49f8ef3843dd33c0cc843313902">exec_policy::quantify</a> &amp;qs, const <a class="el" href="classadiar_1_1exec__policy.html#a3c5d03f2961f93a86e0ce24d9fcea29a">exec_policy::memory</a> &amp;mm)</td></tr>
+<tr class="memdesc:ga3c9d812fb9386bbf82584b4b155399a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator overload to support lifting enum values to <code><a class="el" href="classadiar_1_1exec__policy.html" title="Collection of enum values to change the execution of Adiar&#39;s algorithms.">exec_policy</a></code>. <br /></td></tr>
+<tr class="separator:ga3c9d812fb9386bbf82584b4b155399a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Set up of Adiar and its core settings. </p>
-<h2 class="groupheader">Enumeration Type Documentation</h2>
-<a id="gaf478550fd9fee97c8357934d10e69ada"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaf478550fd9fee97c8357934d10e69ada">&#9670;&nbsp;</a></span>access_mode_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group__module____adiar.html#gaf478550fd9fee97c8357934d10e69ada">adiar::access_mode_t</a></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Whether Adiar should exclusively use random access (<code>Random_Access</code>) or priority queues (<code>Priority_Queue</code>) or automatically pick either way based on the width of inputs. </p>
-<table class="markdownTable">
-<tr class="markdownTableHead">
-<th class="markdownTableHeadNone">Enum Value   </th><th class="markdownTableHeadNone">Effect    </th></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone"><code>Auto</code>   </td><td class="markdownTableBodyNone">Automatically decide on type of access to use.    </td></tr>
-<tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone"><code>Random_Access</code>   </td><td class="markdownTableBodyNone">Always use <em>random access</em>.    </td></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone"><code>Priority_Queue</code>   </td><td class="markdownTableBodyNone">Always use <em>priority queues</em>.   </td></tr>
-</table>
-
-</div>
-</div>
-<a id="gaa457265c627a4561a55df8b29ed1375c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaa457265c627a4561a55df8b29ed1375c">&#9670;&nbsp;</a></span>memory_mode_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group__module____adiar.html#gaa457265c627a4561a55df8b29ed1375c">adiar::memory_mode_t</a></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Whether Adiar should exclusively use internal or external memory or automatically pick either type based on size of input. </p>
-<table class="markdownTable">
-<tr class="markdownTableHead">
-<th class="markdownTableHeadNone">Enum Value   </th><th class="markdownTableHeadNone">Effect    </th></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone"><code>Auto</code>   </td><td class="markdownTableBodyNone">Automatically decide on type of memory to use.    </td></tr>
-<tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone"><code>Internal</code>   </td><td class="markdownTableBodyNone">Always use <em>internal</em> memory.    </td></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone"><code>External</code>   </td><td class="markdownTableBodyNone">Always use <em>external</em> memory.   </td></tr>
-</table>
-
-</div>
-</div>
-<a id="gaf196668596378a31f3752af9d3059e87"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaf196668596378a31f3752af9d3059e87">&#9670;&nbsp;</a></span>quantify_mode_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group__module____adiar.html#gaf196668596378a31f3752af9d3059e87">adiar::quantify_mode_t</a></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Which strategy Adiar should use to quantify/project variables. </p>
-<table class="markdownTable">
-<tr class="markdownTableHead">
-<th class="markdownTableHeadNone">Enum Value   </th><th class="markdownTableHeadNone">Effect    </th></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone"><code>Auto</code>   </td><td class="markdownTableBodyNone">Automatically decide on the approach to use.    </td></tr>
-<tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone"><code>Nested</code>   </td><td class="markdownTableBodyNone">Use the <em>nested sweeping</em> framework.    </td></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone"><code>Partial</code>   </td><td class="markdownTableBodyNone">Use repeated <em>partial quantification</em>.    </td></tr>
-<tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone"><code>Singleton</code>   </td><td class="markdownTableBodyNone">Quantify each variable <em>independently</em> one at a time.   </td></tr>
-</table>
-<dl class="section remark"><dt>Remarks</dt><dd>Not all approaches can apply to each algorithm. If the desired approach does not apply, then an approach that is <em>less</em> than it is used instead, e.g. if <code>Partial</code> is picked but not possible then <code>INDIVIDUAL</code> is used. </dd></dl>
-
-</div>
-</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="ga9501bb9e871253964682b7ac1942f911"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga9501bb9e871253964682b7ac1942f911">&#9670;&nbsp;</a></span>adiar_deinit()</h2>
@@ -334,87 +225,6 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
   </dd>
 </dl>
 
-</div>
-</div>
-<h2 class="groupheader">Variable Documentation</h2>
-<a id="ga7d6776af40156e16b1dc9e4ca2b74b36"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga7d6776af40156e16b1dc9e4ca2b74b36">&#9670;&nbsp;</a></span>access_mode</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group__module____adiar.html#gaf478550fd9fee97c8357934d10e69ada">access_mode_t</a> adiar::access_mode</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>The current access mode (default: <code>Auto</code>). </p>
-<p>If you want to force <em>Adiar</em> to a specific access mode then you should set the global variable <code><a class="el" href="group__module____adiar.html#ga7d6776af40156e16b1dc9e4ca2b74b36" title="The current access mode (default: Auto).">adiar::access_mode</a></code> to one of the above three values. For example, one can force <em>Adiar</em> always use random access with the following piece of code. </p><div class="fragment"><div class="line"><a class="code" href="group__module____adiar.html#ga7d6776af40156e16b1dc9e4ca2b74b36">adiar::access_mode</a> = adiar::access_mode_t::Random_Access</div>
-<div class="ttc" id="agroup__module____adiar_html_ga7d6776af40156e16b1dc9e4ca2b74b36"><div class="ttname"><a href="group__module____adiar.html#ga7d6776af40156e16b1dc9e4ca2b74b36">adiar::access_mode</a></div><div class="ttdeci">access_mode_t access_mode</div><div class="ttdoc">The current access mode (default: Auto).</div></div>
-</div><!-- fragment --><dl class="section warning"><dt>Warning</dt><dd>Using <code>Random_Access</code> may lead to crashes if all inputs are too wide or input to random access is not canonical! </dd></dl>
-
-</div>
-</div>
-<a id="gaa7f0e02f27b1884ce06f69040fb8ff89"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaa7f0e02f27b1884ce06f69040fb8ff89">&#9670;&nbsp;</a></span>memory_mode</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group__module____adiar.html#gaa457265c627a4561a55df8b29ed1375c">memory_mode_t</a> adiar::memory_mode</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>The current memory mode (default: <code>Auto</code>). </p>
-<p>If you want to force <em>Adiar</em> to a specific memory mode then you should set the global variable <code><a class="el" href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89" title="The current memory mode (default: Auto).">adiar::memory_mode</a></code> to one of the above three values. For example, one can force <em>Adiar</em> always use internal memory with the following piece of code. </p><div class="fragment"><div class="line"><a class="code" href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89">adiar::memory_mode</a> = adiar::memory_mode_t::Internal</div>
-<div class="ttc" id="agroup__module____adiar_html_gaa7f0e02f27b1884ce06f69040fb8ff89"><div class="ttname"><a href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89">adiar::memory_mode</a></div><div class="ttdeci">memory_mode_t memory_mode</div><div class="ttdoc">The current memory mode (default: Auto).</div></div>
-</div><!-- fragment --><dl class="section warning"><dt>Warning</dt><dd>Using <code>Internal</code> may lead to crashes if an input or output is too large! </dd></dl>
-
-</div>
-</div>
-<a id="ga99e435daedf83de1caaa609be49e9e99"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga99e435daedf83de1caaa609be49e9e99">&#9670;&nbsp;</a></span>quantify_mode</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group__module____adiar.html#gaf196668596378a31f3752af9d3059e87">quantify_mode_t</a> adiar::quantify_mode</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>The current quantification mode (default: <code>Auto</code>). </p>
-<p>If you want to force <em>Adiar</em> to a specific quantify approach then you should set the global variable <code><a class="el" href="group__module____adiar.html#ga99e435daedf83de1caaa609be49e9e99" title="The current quantification mode (default: Auto).">adiar::quantify_mode</a></code> to one of the above four values. For example, one can force <em>Adiar</em> always use nested sweeping with the following piece of code. </p><div class="fragment"><div class="line"><a class="code" href="group__module____adiar.html#ga99e435daedf83de1caaa609be49e9e99">adiar::quantify_mode</a> = adiar::quantify_mode_t::Nested</div>
-<div class="ttc" id="agroup__module____adiar_html_ga99e435daedf83de1caaa609be49e9e99"><div class="ttname"><a href="group__module____adiar.html#ga99e435daedf83de1caaa609be49e9e99">adiar::quantify_mode</a></div><div class="ttdeci">quantify_mode_t quantify_mode</div><div class="ttdoc">The current quantification mode (default: Auto).</div></div>
-</div><!-- fragment --> 
 </div>
 </div>
 </div><!-- contents -->

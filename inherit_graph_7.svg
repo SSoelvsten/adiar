@@ -11,10 +11,10 @@
 <!-- Node0 -->
 <g id="node1" class="node">
 <title>Node0</title>
-<g id="a_node1"><a xlink:href="structadiar_1_1internal_1_1arc__target__lt.html" target="_top" xlink:title="Sorting predicate on the target.">
+<g id="a_node1"><a xlink:href="structadiar_1_1internal_1_1arc__source__lt.html" target="_top" xlink:title="Sorting predicate: First on unique identifier of the source, and secondly on whether it is the high a...">
 <polygon fill="none" stroke="black" points="0,-0.5 0,-30.5 106,-30.5 106,-0.5 0,-0.5"/>
 <text text-anchor="start" x="8" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">adiar::internal::arc</text>
-<text text-anchor="middle" x="53" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">_target_lt</text>
+<text text-anchor="middle" x="53" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">_source_lt</text>
 </a>
 </g>
 </g>

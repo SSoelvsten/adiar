@@ -53,7 +53,7 @@ var NAVTREE =
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [
         [ "All", "namespacemembers.html", "namespacemembers_dup" ],
-        [ "Functions", "namespacemembers_func.html", null ],
+        [ "Functions", "namespacemembers_func.html", "namespacemembers_func" ],
         [ "Variables", "namespacemembers_vars.html", null ],
         [ "Typedefs", "namespacemembers_type.html", null ],
         [ "Enumerations", "namespacemembers_enum.html", null ]
@@ -68,6 +68,7 @@ var NAVTREE =
         [ "Functions", "functions_func.html", null ],
         [ "Variables", "functions_vars.html", null ],
         [ "Typedefs", "functions_type.html", null ],
+        [ "Enumerations", "functions_enum.html", null ],
         [ "Related Functions", "functions_rela.html", null ]
       ] ]
     ] ],
@@ -79,11 +80,11 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"access__mode_8h_source.html",
-"classadiar_1_1internal_1_1ptr__uint64.html#ab7e7341885a5085f64a0a40724765be7",
-"group__module____bdd.html#ga58afed7dd475606eac552dcd1484b9c3",
-"group__module____zdd.html#gabe38fcc7812544a97938aa268197edbe",
-"structadiar_1_1statistics_1_1levelized__priority__queue__t.html#a844804602d4c05ae87cef7f40c10371d"
+"",
+"classadiar_1_1internal_1_1node.html#ad755b419a418b3eea12da8696fd72eb1",
+"group__module____bdd.html#ga1912c5554f3036f779f56c16156f2b1b",
+"group__module____zdd.html#ga186e2ea81c0e52d54c6f576f2081f2bb",
+"namespacemembers_f.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

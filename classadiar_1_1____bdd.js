@@ -5,8 +5,8 @@ var classadiar_1_1____bdd =
     [ "shared_arc_file_type", "classadiar_1_1____bdd.html#a073bd9314a5213108cdb99e4175dc5ae", null ],
     [ "shared_node_file_type", "classadiar_1_1____bdd.html#a0e3ab4aa5b10f26683c9d7b7bfb577b1", null ],
     [ "__bdd", "classadiar_1_1____bdd.html#a9f1476c5655847d33650231b299b1643", null ],
-    [ "__bdd", "classadiar_1_1____bdd.html#ac50dd44e4e4f50ae9c48e079c833ade7", null ],
-    [ "__bdd", "classadiar_1_1____bdd.html#a8788298398806f4308907d7c066b2c27", null ],
+    [ "__bdd", "classadiar_1_1____bdd.html#a2129d0462907d8826290b6965a79be39", null ],
+    [ "__bdd", "classadiar_1_1____bdd.html#aafb049a2192c2fe7a50bca5d64968c72", null ],
     [ "__bdd", "classadiar_1_1____bdd.html#a7570d3835ce5f78696889b9834927c14", null ],
     [ "empty", "classadiar_1_1____bdd.html#ac0c7ac8b720b251d2f8bbe65e85ce47c", null ],
     [ "get", "classadiar_1_1____bdd.html#a71393c9e75998e25cf72d7df1085946e", null ],
@@ -16,6 +16,7 @@ var classadiar_1_1____bdd =
     [ "number_of_terminals", "classadiar_1_1____bdd.html#a9269b183c9faf9a654aae8d0aef7e651", null ],
     [ "number_of_terminals", "classadiar_1_1____bdd.html#afbef57f343dbd466d9300bd282640058", null ],
     [ "size", "classadiar_1_1____bdd.html#ab249b578d368d029ea66e732d9fd1849", null ],
+    [ "_policy", "classadiar_1_1____bdd.html#a014842c4dde92f899b34a1e4be85fcbc", null ],
     [ "_union", "classadiar_1_1____bdd.html#a7b2fb8e6fab74bdaa6a691345737c765", null ],
     [ "negate", "classadiar_1_1____bdd.html#a44bc260b06baa04550c2828c1ce05e17", null ]
 ];
