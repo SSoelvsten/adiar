@@ -40,11 +40,5 @@ var group__module____adiar =
     [ "adiar_deinit", "group__module____adiar.html#ga9501bb9e871253964682b7ac1942f911", null ],
     [ "adiar_init", "group__module____adiar.html#ga4f0460393f1bb6651306587b11d64660", null ],
     [ "adiar_initialized", "group__module____adiar.html#ga41ee63e52a125ccc5ad3442b15cad182", null ],
-    [ "operator&", "group__module____adiar.html#ga99166900af3e6a4de2283c457c236b24", null ],
-    [ "operator&", "group__module____adiar.html#gabd373f32843295c67098c70630635242", null ],
-    [ "operator&", "group__module____adiar.html#ga970fdf1f587aef1e784f2487ddb822a5", null ],
-    [ "operator&", "group__module____adiar.html#ga6bff8e68222ab5a671a994fa3d4177e0", null ],
-    [ "operator&", "group__module____adiar.html#ga65971bd3b29868c62b84ae233df57c8e", null ],
-    [ "operator&", "group__module____adiar.html#ga3c9d812fb9386bbf82584b4b155399a6", null ],
     [ "minimum_memory", "group__module____adiar.html#ga3135db1bb2a7b25635cfd5abd5421f6b", null ]
 ];

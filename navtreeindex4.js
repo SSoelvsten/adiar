@@ -1,11 +1,5 @@
 var NAVTREEINDEX4 =
 {
-"namespacemembers_f.html":[6,1,0,5],
-"namespacemembers_func.html":[6,1,1],
-"namespacemembers_func.html":[6,1,1,0],
-"namespacemembers_func_b.html":[6,1,1,1],
-"namespacemembers_func_d.html":[6,1,1,2],
-"namespacemembers_func_m.html":[6,1,1,3],
 "namespacemembers_func_o.html":[6,1,1,4],
 "namespacemembers_func_s.html":[6,1,1,5],
 "namespacemembers_func_z.html":[6,1,1,6],
