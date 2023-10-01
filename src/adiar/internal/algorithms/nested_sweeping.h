@@ -1371,11 +1371,11 @@ namespace adiar::internal
                  const size_t outer_pq_roots_max,
                  const size_t inner_memory)
   {
-    using level_type        = typename nesting_policy::label_type;
-    using reduced_t      = typename nesting_policy::dd_type;
-    using unreduced_t    = typename nesting_policy::__dd_type;
-    using request_t      = typename nesting_policy::request_t;
-    using request_pred_t = typename nesting_policy::request_pred_t;
+    using level_type            = typename nesting_policy::label_type;
+    using reduced_t             = typename nesting_policy::dd_type;
+    using unreduced_t           = typename nesting_policy::__dd_type;
+    using request_t             = typename nesting_policy::request_t;
+    using request_pred_t        = typename nesting_policy::request_pred_t;
     using shared_arc_file_type  = typename nesting_policy::shared_arc_file_type;
     using shared_node_file_type = typename nesting_policy::shared_node_file_type;
 
@@ -1390,7 +1390,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
       // TODO
 #endif
-      return reduce<nesting_policy>(dag);
+      return reduce<nesting_policy>(typename nesting_policy::__dd_type(dag, ep));
     }
 
     // Set up input

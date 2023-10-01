@@ -89,7 +89,7 @@ go_bandit([]() {
         in->max_1level_cut = 2;
 
         // Reduce it
-        bdd out(in);
+        bdd out(__bdd(in, exec_policy()));
 
         AssertThat(bdd_iscanonical(out), Is().True());
 
@@ -193,7 +193,7 @@ go_bandit([]() {
         in->max_1level_cut = 2;
 
         // Reduce it
-        bdd out(in);
+        bdd out(__bdd(in, exec_policy()));
 
         AssertThat(bdd_iscanonical(out), Is().True());
 
@@ -302,7 +302,7 @@ go_bandit([]() {
         in->max_1level_cut = 4;
 
         // Reduce it
-        bdd out(in);
+        bdd out(__bdd(in, exec_policy()));
 
         AssertThat(bdd_iscanonical(out), Is().True());
 
@@ -419,7 +419,7 @@ go_bandit([]() {
         in->max_1level_cut = 4;
 
         // Reduce it
-        bdd out(in);
+        bdd out(__bdd(in, exec_policy()));
 
         AssertThat(bdd_iscanonical(out), Is().True());
 
@@ -543,7 +543,7 @@ go_bandit([]() {
         in->max_1level_cut = 4;
 
         // Reduce it
-        bdd out(in);
+        bdd out(__bdd(in, exec_policy()));
 
         AssertThat(bdd_iscanonical(out), Is().True());
 
@@ -673,7 +673,7 @@ go_bandit([]() {
         in->max_1level_cut = 4;
 
         // Reduce it
-        bdd out(in);
+        bdd out(__bdd(in, exec_policy()));
 
         AssertThat(bdd_iscanonical(out), Is().True());
 
@@ -783,7 +783,7 @@ go_bandit([]() {
         in->max_1level_cut = 4;
 
         // Reduce it
-        bdd out(in);
+        bdd out(__bdd(in, exec_policy()));
 
         AssertThat(bdd_iscanonical(out), Is().True());
 
@@ -888,7 +888,7 @@ go_bandit([]() {
         in->max_1level_cut = 3;
 
         // Reduce it
-        bdd out(in);
+        bdd out(__bdd(in, exec_policy()));
 
         AssertThat(bdd_iscanonical(out), Is().True());
 
@@ -994,7 +994,7 @@ go_bandit([]() {
         in->max_1level_cut = 3;
 
         // Reduce it
-        bdd out(in);
+        bdd out(__bdd(in, exec_policy()));
 
         AssertThat(bdd_iscanonical(out), Is().True());
 
@@ -1105,7 +1105,7 @@ go_bandit([]() {
         in->max_1level_cut = 4;
 
         // Reduce it
-        bdd out(in);
+        bdd out(__bdd(in, exec_policy()));
 
         AssertThat(bdd_iscanonical(out), Is().True());
 
@@ -1202,7 +1202,7 @@ go_bandit([]() {
         in->max_1level_cut = 2;
 
         // Reduce it
-        bdd out(in);
+        bdd out(__bdd(in, exec_policy()));
 
         AssertThat(bdd_iscanonical(out), Is().True());
 
@@ -1305,7 +1305,7 @@ go_bandit([]() {
         in->max_1level_cut = 4;
 
         // Reduce it
-        bdd out(in);
+        bdd out(__bdd(in, exec_policy()));
 
         AssertThat(bdd_iscanonical(out), Is().True());
 
@@ -1423,7 +1423,7 @@ go_bandit([]() {
         in->max_1level_cut = 3;
 
         // Reduce it
-        bdd out(in);
+        bdd out(__bdd(in, exec_policy()));
 
         AssertThat(bdd_iscanonical(out), Is().True());
 
@@ -1519,7 +1519,7 @@ go_bandit([]() {
         in->max_1level_cut = 4;
 
         // Reduce it
-        bdd out(in);
+        bdd out(__bdd(in, exec_policy()));
 
         AssertThat(bdd_iscanonical(out), Is().True());
 
@@ -1650,7 +1650,7 @@ go_bandit([]() {
         in->max_1level_cut = 4;
 
         // Reduce it
-        bdd out(in);
+        bdd out(__bdd(in, exec_policy()));
 
         AssertThat(bdd_iscanonical(out), Is().True());
 
@@ -1752,7 +1752,7 @@ go_bandit([]() {
         in->max_1level_cut = 0;
 
         // Reduce it
-        bdd out(in);
+        bdd out(__bdd(in, exec_policy()));
 
         AssertThat(bdd_iscanonical(out), Is().True());
 
@@ -1814,7 +1814,7 @@ go_bandit([]() {
         in->max_1level_cut = 1;
 
         // Reduce it
-        bdd out(in);
+        bdd out(__bdd(in, exec_policy()));
 
         AssertThat(bdd_iscanonical(out), Is().True());
 
@@ -1867,7 +1867,7 @@ go_bandit([]() {
         in->max_1level_cut = 0;
 
         // Reduce it
-        bdd out(in);
+        bdd out(__bdd(in, exec_policy()));
 
         AssertThat(bdd_iscanonical(out), Is().True());
 
@@ -1969,7 +1969,7 @@ go_bandit([]() {
         in->max_1level_cut = 4;
 
         // Reduce it
-        bdd out(in);
+        bdd out(__bdd(in, exec_policy()));
 
         AssertThat(bdd_iscanonical(out), Is().True());
 
@@ -2138,7 +2138,7 @@ go_bandit([]() {
         in->max_1level_cut = 8;
 
         // Reduce it
-        bdd out(in);
+        bdd out(__bdd(in, exec_policy()));
 
         AssertThat(bdd_iscanonical(out), Is().True());
 
@@ -2305,7 +2305,7 @@ go_bandit([]() {
         }
 
         // Reduce it
-        bdd out(in);
+        bdd out(__bdd(in, exec_policy()));
 
         AssertThat(bdd_iscanonical(out), Is().True());
 
@@ -2423,7 +2423,7 @@ go_bandit([]() {
         in->max_1level_cut = 2;
 
         // Reduce it
-        bdd out(in);
+        bdd out(__bdd(in, exec_policy()));
 
         AssertThat(bdd_iscanonical(out), Is().True());
 
@@ -2490,7 +2490,7 @@ go_bandit([]() {
         in->max_1level_cut = 1;
 
         // Reduce it
-        zdd out(in);
+        zdd out(__zdd(in, exec_policy()));
 
         AssertThat(zdd_iscanonical(out), Is().True());
 
@@ -2570,7 +2570,7 @@ go_bandit([]() {
         in->max_1level_cut = 3;
 
         // Reduce it
-        zdd out(in);
+        zdd out(__zdd(in, exec_policy()));
 
         AssertThat(zdd_iscanonical(out), Is().True());
 
@@ -2683,7 +2683,7 @@ go_bandit([]() {
         in->max_1level_cut = 2;
 
         // Reduce it
-        zdd out(in);
+        zdd out(__zdd(in, exec_policy()));
 
         AssertThat(zdd_iscanonical(out), Is().True());
 
@@ -2763,7 +2763,7 @@ go_bandit([]() {
         in->max_1level_cut = 0;
 
         // Reduce it
-        zdd out(in);
+        zdd out(__zdd(in, exec_policy()));
 
         AssertThat(zdd_iscanonical(out), Is().True());
 
@@ -2825,7 +2825,7 @@ go_bandit([]() {
         in->max_1level_cut = 1;
 
         // Reduce it
-        zdd out(in);
+        zdd out(__zdd(in, exec_policy()));
 
         AssertThat(zdd_iscanonical(out), Is().True());
 
@@ -2891,7 +2891,7 @@ go_bandit([]() {
         in->max_1level_cut = 1;
 
         // Reduce it
-        zdd out(in);
+        zdd out(__zdd(in, exec_policy()));
 
         AssertThat(out->canonical, Is().True());
 
@@ -2944,7 +2944,7 @@ go_bandit([]() {
         in->max_1level_cut = 0;
 
         // Reduce it
-        zdd out(in);
+        zdd out(__zdd(in, exec_policy()));
 
         AssertThat(zdd_iscanonical(out), Is().True());
 
@@ -3001,7 +3001,7 @@ go_bandit([]() {
         in->max_1level_cut = 0;
 
         // Reduce it
-        zdd out(in);
+        zdd out(__zdd(in, exec_policy()));
 
         AssertThat(zdd_iscanonical(out), Is().True());
 
@@ -3105,7 +3105,7 @@ go_bandit([]() {
         in->max_1level_cut = 4;
 
         // Reduce it
-        zdd out(in);
+        zdd out(__zdd(in, exec_policy()));
 
         AssertThat(zdd_iscanonical(out), Is().True());
 
@@ -3235,7 +3235,7 @@ go_bandit([]() {
         in->max_1level_cut = 2;
 
         // Reduce it
-        zdd out(in);
+        zdd out(__zdd(in, exec_policy()));
 
         AssertThat(zdd_iscanonical(out), Is().True());
 

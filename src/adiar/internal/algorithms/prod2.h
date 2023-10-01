@@ -235,7 +235,8 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   template<typename prod_policy, typename pq_1_t>
   typename prod_policy::__dd_type
-  __prod2_ra(const typename prod_policy::dd_type &in_0,
+  __prod2_ra(const exec_policy &ep,
+             const typename prod_policy::dd_type &in_0,
              const typename prod_policy::dd_type &in_1,
              const bool_op &op,
              const size_t pq_memory, const size_t max_pq_size)
@@ -345,12 +346,13 @@ namespace adiar::internal
 
     out_arcs->max_1level_cut = max_1level_cut;
 
-    return out_arcs;
+    return typename prod_policy::__dd_type(out_arcs, ep);
   }
 
   template<typename prod_policy, typename pq_1_t, typename pq_2_t>
   typename prod_policy::__dd_type
-  __prod2_pq(const typename prod_policy::dd_type &in_0,
+  __prod2_pq(const exec_policy &ep,
+             const typename prod_policy::dd_type &in_0,
              const typename prod_policy::dd_type &in_1,
              const bool_op &op,
              const size_t pq_1_memory, const size_t max_pq_1_size,
@@ -496,7 +498,7 @@ namespace adiar::internal
 
     out_arcs->max_1level_cut = max_1level_cut;
 
-    return out_arcs;
+    return typename prod_policy::__dd_type(out_arcs, ep);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -728,21 +730,21 @@ namespace adiar::internal
 #endif
         return __prod2_ra<prod_policy,
                           prod_priority_queue_t<0, memory_mode_t::Internal>>
-          (ra_in_0, ra_in_1, ra_op, pq_available_memory, max_pq_size);
+          (ep, ra_in_0, ra_in_1, ra_op, pq_available_memory, max_pq_size);
       } else if (!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
         stats_prod2.lpq.internal += 1u;
 #endif
         return __prod2_ra<prod_policy,
                           prod_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>>
-          (ra_in_0, ra_in_1, ra_op, pq_available_memory, max_pq_size);
+          (ep, ra_in_0, ra_in_1, ra_op, pq_available_memory, max_pq_size);
       } else {
 #ifdef ADIAR_STATS
         stats_prod2.lpq.external += 1u;
 #endif
         return __prod2_ra<prod_policy,
                           prod_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::External>>
-          (ra_in_0, ra_in_1, ra_op, pq_available_memory, max_pq_size);
+          (ep, ra_in_0, ra_in_1, ra_op, pq_available_memory, max_pq_size);
       }
     }
 
@@ -794,7 +796,7 @@ namespace adiar::internal
       return __prod2_pq<prod_policy,
                         prod_priority_queue_1_t<0, memory_mode_t::Internal>,
                         prod_priority_queue_2_t<memory_mode_t::Internal>>
-        (in_0, in_1, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
+        (ep, in_0, in_1, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
     } else if(!external_only && max_pq_1_size <= pq_1_memory_fits
                              && max_pq_2_size <= pq_2_memory_fits) {
 #ifdef ADIAR_STATS
@@ -803,7 +805,7 @@ namespace adiar::internal
       return __prod2_pq<prod_policy,
                         prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>,
                         prod_priority_queue_2_t<memory_mode_t::Internal>>
-        (in_0, in_1, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
+        (ep, in_0, in_1, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
     } else {
 #ifdef ADIAR_STATS
       stats_prod2.lpq.external += 1u;
@@ -814,7 +816,7 @@ namespace adiar::internal
       return __prod2_pq<prod_policy,
                         prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::External>,
                         prod_priority_queue_2_t<memory_mode_t::External>>
-        (in_0, in_1, op, pq_1_memory, max_pq_1_size, pq_2_memory, max_pq_2_size);
+        (ep, in_0, in_1, op, pq_1_memory, max_pq_1_size, pq_2_memory, max_pq_2_size);
     }
   }
 }

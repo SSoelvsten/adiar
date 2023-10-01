@@ -61,8 +61,8 @@ public:
   /// \brief The Sweep Logic for the PQ access mode case.
   //////////////////////////////////////////////////////////////////////////////
   template<typename inner_pq_t>
-  shared_levelized_file<arc>
-  sweep_pq(const exec_policy &/*ep*/,
+  __bdd
+  sweep_pq(const exec_policy &ep,
            const shared_levelized_file<node> &outer_file,
            inner_pq_t &inner_pq,
            const size_t /*inner_remaining_memory == 0*/)
@@ -110,7 +110,7 @@ public:
       af->max_1level_cut = std::max(af->max_1level_cut, inner_pq.size());
     }
 
-    return af;
+    return __bdd(af, ep);
   }
 
 private:
@@ -203,7 +203,7 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   template<typename inner_pq_t>
   __bdd
-  sweep_pq(const exec_policy &/*ep*/,
+  sweep_pq(const exec_policy &ep,
            const shared_levelized_file<node> &outer_file,
            inner_pq_t &inner_pq,
            const size_t /*inner_remaining_memory == 0*/)
@@ -254,7 +254,8 @@ public:
         aw.push(level_info(level_label, level_size));
       }
     }
-    return af;
+
+    return __bdd(af, ep);
   }
 
 public:
@@ -3854,7 +3855,7 @@ go_bandit([]() {
         //     / \
         //     T F
         */
-        const bdd out = nested_sweep<>(exec_policy(), in, inner_impl);
+        const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -3950,7 +3951,7 @@ go_bandit([]() {
         //     / \
         //     T F
         */
-        const bdd out = nested_sweep<>(exec_policy(), in, inner_impl);
+        const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -4039,7 +4040,7 @@ go_bandit([]() {
         //    / \
         //    T F
         */
-        const bdd out = nested_sweep<>(exec_policy(), in, inner_impl);
+        const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -4146,7 +4147,7 @@ go_bandit([]() {
         //     / \/ \
         //     T F  T
         */
-        const bdd out = nested_sweep<>(exec_policy(), in, inner_impl);
+        const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -4267,7 +4268,7 @@ go_bandit([]() {
         //      / \
         //      F T
         */
-        const bdd out = nested_sweep<>(exec_policy(), in, inner_impl);
+        const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -4472,7 +4473,7 @@ go_bandit([]() {
         //        / \
         //        F T
         */
-        const bdd out = nested_sweep<>(exec_policy(), in, inner_impl);
+        const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -4587,7 +4588,7 @@ go_bandit([]() {
         //       / \
         //       T F
         */
-        const bdd out = nested_sweep<>(exec_policy(), in, inner_impl);
+        const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -4682,7 +4683,7 @@ go_bandit([]() {
         //           / \
         //           T F
         */
-        const bdd out = nested_sweep<>(exec_policy(), in, inner_impl);
+        const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
 
         // Check it looks all right
@@ -4771,7 +4772,7 @@ go_bandit([]() {
         //    / \
         //    F T
         */
-        const bdd out = nested_sweep<>(exec_policy(), in, inner_impl);
+        const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -4850,7 +4851,7 @@ go_bandit([]() {
         //    / \
         //    F T
         */
-        const bdd out = nested_sweep<>(exec_policy(), in, inner_impl);
+        const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -4921,7 +4922,7 @@ go_bandit([]() {
         /* output
         //     T
         */
-        const bdd out = nested_sweep<>(exec_policy(), in, inner_impl);
+        const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -4990,7 +4991,7 @@ go_bandit([]() {
         //    / \
         //    T F
         */
-        const bdd out = nested_sweep<>(exec_policy(), in, inner_impl);
+        const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -5059,7 +5060,7 @@ go_bandit([]() {
         /* output
         //     T
         */
-        const bdd out = nested_sweep<>(exec_policy(), in, inner_impl);
+        const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -5125,8 +5126,7 @@ go_bandit([]() {
         /* output
         //     F
         */
-        const bdd out
-          = nested_sweep<>(exec_policy(), in, inner_impl);
+        const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -5192,7 +5192,7 @@ go_bandit([]() {
         /* output
         //     T
         */
-        const bdd out = nested_sweep<>(exec_policy(), in, inner_impl);
+        const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -5261,7 +5261,7 @@ go_bandit([]() {
         //                          / \
         //                          T T
         */
-        const bdd out = nested_sweep<>(exec_policy(), in, inner_impl);
+        const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -5362,7 +5362,7 @@ go_bandit([]() {
           //        / \
           //        T F      <--- NOTE: only negated once!
           */
-          const bdd out = nested_sweep<>(exec_policy(), in, inner_impl);
+          const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
           // Check it looks all right
           node_test_stream out_nodes(out);
@@ -5499,8 +5499,7 @@ go_bandit([]() {
           //       / \
           //       T F       <--- NOTE: only negated once!
           */
-
-          const bdd out = nested_sweep<>(exec_policy(), in, inner_impl);
+          const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
           // Check it looks all right
           node_test_stream out_nodes(out);
@@ -5660,7 +5659,7 @@ go_bandit([]() {
         it("outputs with 'Always_Canonical' a canonical BDD", [&]() {
           test_not_sweep<nested_sweeping::Always_Canonical> inner_impl(2);
 
-          const bdd out = nested_sweep<>(exec_policy(), in, inner_impl);
+          const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
           // Check it looks all right
           node_test_stream out_nodes(out);
@@ -5724,7 +5723,7 @@ go_bandit([]() {
         it("outputs with 'Final_Canonical' a canonical BDD", [&]() {
           test_not_sweep<nested_sweeping::Final_Canonical> inner_impl(2);
 
-          const bdd out = nested_sweep<>(exec_policy(), in, inner_impl);
+          const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
           // Check it looks all right
           node_test_stream out_nodes(out);
@@ -5823,7 +5822,7 @@ go_bandit([]() {
 
           test_not_sweep<nested_sweeping::Never_Canonical> inner_impl(2);
 
-          const bdd out = nested_sweep<>(exec_policy(), in, inner_impl);
+          const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
           // Check it looks all right
           node_test_stream out_nodes(out);
@@ -5903,7 +5902,7 @@ go_bandit([]() {
         it("outputs with 'Auto' a canonical BDD", [&]() {
           test_not_sweep<nested_sweeping::Auto> inner_impl(2);
 
-          const bdd out = nested_sweep<>(exec_policy(), in, inner_impl);
+          const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
           // Check it looks all right
           node_test_stream out_nodes(out);

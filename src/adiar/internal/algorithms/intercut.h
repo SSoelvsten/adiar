@@ -160,10 +160,11 @@ namespace adiar::internal
   }
 
   template<typename intercut_policy, typename pq_t>
-  typename intercut_policy::__dd_type __intercut (const typename intercut_policy::dd_type &dd,
-                                                    const generator<typename intercut_policy::label_type> &xs,
-                                                    const size_t pq_memory,
-                                                    const size_t max_pq_size)
+  typename intercut_policy::__dd_type __intercut (const exec_policy &ep,
+                                                  const typename intercut_policy::dd_type &dd,
+                                                  const generator<typename intercut_policy::label_type> &xs,
+                                                  const size_t pq_memory,
+                                                  const size_t max_pq_size)
   {
     node_stream<> in_nodes(dd);
     node n = in_nodes.pull();
@@ -303,7 +304,7 @@ namespace adiar::internal
     }
 
     out_arcs->max_1level_cut = max_1level_cut;
-    return out_arcs;
+    return typename intercut_policy::__dd_type(out_arcs, ep);
   }
 
   template<typename intercut_policy>
@@ -351,21 +352,21 @@ namespace adiar::internal
 #endif
       return __intercut<intercut_policy,
                         intercut_priority_queue_t<0, memory_mode_t::Internal>>
-        (dd, xs, pq_memory, max_pq_size);
+        (ep, dd, xs, pq_memory, max_pq_size);
     } else if(!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
       stats_intercut.lpq.internal += 1u;
 #endif
       return __intercut<intercut_policy,
                         intercut_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>>
-        (dd, xs, pq_memory, max_pq_size);
+        (ep, dd, xs, pq_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
       stats_intercut.lpq.external += 1u;
 #endif
       return __intercut<intercut_policy,
                         intercut_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::External>>
-        (dd, xs, pq_memory, max_pq_size);
+        (ep, dd, xs, pq_memory, max_pq_size);
     }
   }
 }

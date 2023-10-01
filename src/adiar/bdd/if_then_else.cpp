@@ -189,7 +189,8 @@ namespace adiar
   }
 
   template<typename pq_1_t, typename pq_2_t, typename pq_3_t>
-  __bdd __bdd_ite(const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else,
+  __bdd __bdd_ite(const exec_policy &ep,
+                  const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else,
                   const size_t pq_1_memory, const size_t max_pq_1_size,
                   const size_t pq_2_memory, const size_t max_pq_2_size,
                   const size_t pq_3_memory, const size_t max_pq_3_size)
@@ -448,7 +449,7 @@ namespace adiar
     aw.push(internal::level_info(out_label, out_id));
 
     out_arcs->max_1level_cut = max_1level_cut;
-    return out_arcs;
+    return __bdd(out_arcs, ep);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -505,10 +506,7 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_ite(const exec_policy &ep,
-                const bdd &f,
-                const bdd &g,
-                const bdd &h)
+  __bdd bdd_ite(const exec_policy &ep, const bdd &f, const bdd &g, const bdd &h)
   {
     // There are multiple cases, where this boils down to an Apply rather than
     // an If-Then-Else. The bdd_apply uses tuples rather than triples and only
@@ -609,7 +607,7 @@ namespace adiar
       return __bdd_ite<ite_priority_queue_1_t<0, memory_mode_t::Internal>,
                        ite_priority_queue_2_t<memory_mode_t::Internal>,
                        ite_priority_queue_3_t<memory_mode_t::Internal>>
-        (f, g, h, pq_1_internal_memory, max_pq_1_size,
+        (ep, f, g, h, pq_1_internal_memory, max_pq_1_size,
          pq_2_internal_memory, max_pq_2_size, pq_3_internal_memory, max_pq_3_size);
     } else if(!external_only && max_pq_1_size <= pq_1_memory_fits
                                                && max_pq_2_size <= pq_2_memory_fits
@@ -620,7 +618,7 @@ namespace adiar
       return __bdd_ite<ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>,
                        ite_priority_queue_2_t<memory_mode_t::Internal>,
                        ite_priority_queue_3_t<memory_mode_t::Internal>>
-        (f, g, h, pq_1_internal_memory, max_pq_1_size,
+        (ep, f, g, h, pq_1_internal_memory, max_pq_1_size,
          pq_2_internal_memory, max_pq_2_size, pq_3_internal_memory, max_pq_3_size);
     } else {
 #ifdef ADIAR_STATS
@@ -633,7 +631,7 @@ namespace adiar
       return __bdd_ite<ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::External>,
                        ite_priority_queue_2_t<memory_mode_t::External>,
                        ite_priority_queue_3_t<memory_mode_t::External>>
-        (f, g, h, pq_1_memory, max_pq_1_size,
+        (ep, f, g, h, pq_1_memory, max_pq_1_size,
          pq_2_memory, max_pq_2_size, pq_3_memory, max_pq_3_size);
     }
   }

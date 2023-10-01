@@ -17,16 +17,14 @@ namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
   // '__bdd' Constructors
-  __bdd::__bdd()
-    : internal::__dd()
-  { }
+  __bdd::__bdd() = default;
 
-  __bdd::__bdd(const internal::__dd::shared_node_file_type &f)
+  __bdd::__bdd(const shared_node_file_type &f)
     : internal::__dd(f)
   { }
 
-  __bdd::__bdd(const internal::__dd::shared_arc_file_type &f)
-    : internal::__dd(f)
+  __bdd::__bdd(const shared_arc_file_type &f, const exec_policy &ep)
+    : internal::__dd(f, ep)
   { }
 
   __bdd::__bdd(const bdd &dd)
@@ -43,7 +41,7 @@ namespace adiar
     : bdd(false)
   { }
 
-  bdd::bdd(const internal::dd::shared_node_file_type &f, bool negate)
+  bdd::bdd(const shared_node_file_type &f, bool negate)
     : internal::dd(f, negate)
   { }
 
