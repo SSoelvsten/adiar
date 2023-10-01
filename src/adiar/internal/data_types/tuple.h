@@ -19,41 +19,41 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   // Ordered access to two elements.
   template<typename T>
-  inline const T& 
+  inline const T&
   first(const T &t1, const T &t2)
   { return std::min(t1, t2); }
 
   template<typename T>
-  inline const T& 
+  inline const T&
   second(const T &t1, const T &t2)
   { return std::max(t1, t2); }
 
   //////////////////////////////////////////////////////////////////////////////
   // Ordered access to three elements.
   template<typename T>
-  inline const T& 
+  inline const T&
   first(const T &t1, const T &t2, const T &t3)
   { return std::min(t1, std::min(t2, t3)); }
 
   template<typename T>
-  inline const T& 
+  inline const T&
   second(const T &t1, const T &t2, const T &t3)
   { return std::max(std::min(t1, t2), std::min(std::max(t1,t2),t3)); }
 
   template<typename T>
-  inline const T& 
+  inline const T&
   third(const T &t1, const T &t2, const T &t3)
   { return std::max(t1, std::max(t2, t3)); }
 
   //////////////////////////////////////////////////////////////////////////////
   // Ordered access to four elements.
   template<typename T>
-  inline const T& 
+  inline const T&
   first(const T &t1, const T &t2, const T &t3, const T &t4)
   { return std::min(std::min(t1, t2), std::min(t3, t4)); }
 
   template<typename T>
-  inline const T& 
+  inline const T&
   second(const T &t1, const T &t2, const T &t3, const T &t4)
   {
     return std::min(std::min(std::max(t1,t2), std::max(t3,t4)),
@@ -61,7 +61,7 @@ namespace adiar::internal
   }
 
   template<typename T>
-  inline const T& 
+  inline const T&
   third(const T &t1, const T &t2, const T &t3, const T &t4)
   {
     return std::max(std::min(std::max(t1,t2), std::max(t3,t4)),
@@ -69,7 +69,7 @@ namespace adiar::internal
   }
 
   template<typename T>
-  inline const T& 
+  inline const T&
   fourth(const T &t1, const T &t2, const T &t3, const T &t4)
   { return std::max(std::max(t1, t2), std::max(t3, t4)); }
 
@@ -217,10 +217,54 @@ namespace adiar::internal
 
     /* ============================ CONSTRUCTORS ============================ */
   public:
-    // Provide 'default' constructors to ensure it being a 'POD' inside of TPIE.
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Default construction (trivial).
+    ///
+    /// \details The default, copy, and move construction has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
     tuple() = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Copy construction (trivial).
+    ///
+    /// \details The default, copy, and move construction has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
     tuple(const tuple &p) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Move construction (trivial).
+    ///
+    /// \details The default, copy, and move construction has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
+    tuple(tuple &&p) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Destruction (trivial).
+    ///
+    /// \details The destructor has to be `default` to ensure it is a *POD* and
+    ///          hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
     ~tuple() = default;
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Copy assignment (trivial).
+    ///
+    /// \details The copy and move assignment has to be `default` to ensure it
+    ///          is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
+    tuple& operator =(const tuple &p) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Move assignment (trivial).
+    ///
+    /// \details The copy and move assignment has to be `default` to ensure it
+    ///          is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
+    tuple& operator =(tuple &&p) = default;
 
   public:
     // Provide other constructors for ease of use
@@ -352,9 +396,14 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////
   // Non-lexicographical comparators
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Ordering based on the first element (in sorted order).
+  //////////////////////////////////////////////////////////////////////////////
   template<typename Tuple>
   struct tuple_first_lt
   {
+    /// \copydoc tuple_first_lt
     inline bool operator()(const Tuple &a, const Tuple &b)
     {
       // Sort primarily by the element to be encountered first.
@@ -367,9 +416,13 @@ namespace adiar::internal
     }
   };
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Ordering based on the second element (in sorted order).
+  //////////////////////////////////////////////////////////////////////////////
   template<typename Tuple>
   struct tuple_second_lt
   {
+    /// \copydoc tuple_second_lt
     inline bool operator()(const Tuple &a, const Tuple &b)
     {
       // Sort primarily by the element to be encountered second
@@ -379,9 +432,13 @@ namespace adiar::internal
     }
   };
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Ordering based on the third element (in sorted order).
+  //////////////////////////////////////////////////////////////////////////////
   template<typename Tuple>
   struct tuple_third_lt
   {
+    /// \copydoc tuple_third_lt
     inline bool operator()(const Tuple &a, const Tuple &b)
     {
       // Sort primarily by the element to be encountered third
@@ -391,9 +448,13 @@ namespace adiar::internal
     }
   };
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Ordering based on the fourth element (in sorted order).
+  //////////////////////////////////////////////////////////////////////////////
   template<typename Tuple>
   struct tuple_fourth_lt
   {
+    /// \copydoc tuple_fourth_lt
     inline bool operator()(const Tuple &a, const Tuple &b)
     {
       // Sort primarily by the element to be encountered fourth

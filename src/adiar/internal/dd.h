@@ -33,14 +33,14 @@ namespace adiar::internal
   /// will call the correct reduce algorithm.
   ///
   /// An algorithm may return a node-based decision diagram in a
-  /// \ref shared_levelized_file<node> or a yet to-be reduced decision diagram in
-  /// in an \ref shared_levelized_file<arc>. So, we use a `std::variant` to hold
-  /// the \ref shared_levelized_file<node> or \ref shared_levelized_file<arc>
-  /// without having to pay for the expensive constructors and use a lot of space.
+  /// `shared_levelized_file<node>` or a yet to-be reduced decision diagram in
+  /// in an `shared_levelized_file<arc>`. So, we use a `std::variant` to hold
+  /// the `shared_levelized_file<node>` or `shared_levelized_file<arc>` without
+  /// having to pay for the expensive constructors and use a lot of space.
   ///
-  /// A third possiblity is for it to contain a `std::monostate`, i.e. \ref
-  /// no_file, such that an algorithm can return 'null' in some specific places.
-  /// In most cases, this should be ignored and will otherwise lead to
+  /// A third possiblity is for it to contain a `std::monostate`, i.e.
+  /// `no_file`, such that an algorithm can return 'null' in some specific
+  /// places. In most cases, this should be ignored and will otherwise lead to
   /// exceptions.
   //////////////////////////////////////////////////////////////////////////////
   class __dd
@@ -87,33 +87,61 @@ namespace adiar::internal
 
     ////////////////////////////////////////////////////////////////////////////
     // Constructors
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Default construction to \em nothing.
+    ////////////////////////////////////////////////////////////////////////////
     __dd() = default;
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Conversion for algorithms returning already-reduced nodes.
+    ////////////////////////////////////////////////////////////////////////////
     __dd(const shared_node_file_type &f)
       : _union(f)
     { }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Conversion for algorithms returning to-be reduced arcs
+    ////////////////////////////////////////////////////////////////////////////
     __dd(const shared_arc_file_type &f, const exec_policy &ep)
       : _union(f), _policy(ep)
     { }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Conversion from a decision diagram (such that it can be passed
+    ///        along).
+    ////////////////////////////////////////////////////////////////////////////
     __dd(const dd &dd);
 
     ////////////////////////////////////////////////////////////////////////////
     // Accessors
     // TODO: change from 'file_t' to 'file::value_type'.
+
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether the union currently holds a certain file type.
+    //////////////////////////////////////////////////////////////////////////////
     template<typename file_t>
     bool has() const
     {
       return std::holds_alternative<file_t>(_union);
     }
 
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Get the content of a certain type.
+    ///
+    /// \pre `has<file_t>() == true`
+    //////////////////////////////////////////////////////////////////////////////
     template<typename file_t>
     const file_t& get() const
     {
       return std::get<file_t>(_union);
     }
 
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether it currently holds no content.
+    ///
+    /// \details The end user should not see this in the end.
+    //////////////////////////////////////////////////////////////////////////////
     bool empty() const
     {
       return has<no_file>();
@@ -402,6 +430,10 @@ namespace adiar::internal
     }
 
   private:
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain the cut-type that matches with the current state of the
+    ///        negation flag.
+    //////////////////////////////////////////////////////////////////////////////
     cut negate_cut_type(const cut ct) const
     {
       if (!negate) { return ct; }
@@ -528,18 +560,36 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// Function declaration
   public:
+
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Provides the pointer to the node that is the result of applying
+    ///        the specific reduction rule of this decision diagram.
+    ///
+    /// \details This function is expected to return a pointer to the given node
+    ///          or one of its children.
+    //////////////////////////////////////////////////////////////////////////////
     static inline pointer_type
     reduction_rule(const node_type &n);
 
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Provides the children of a node that was suppressed.
+    ///
+    /// \details While the label and the .
+    //////////////////////////////////////////////////////////////////////////////
     static inline children_type
     reduction_rule_inv(const pointer_type &child);
 
-    // TODO: stop using these in favour of 'reduction_rule_inv' above
+    //////////////////////////////////////////////////////////////////////////////
+    /// Please use `reduction_rule_inv` instead!
+    //////////////////////////////////////////////////////////////////////////////
     static inline void
     compute_cofactor(const bool on_curr_level,
                      pointer_type &low,
                      pointer_type &high);
 
+    //////////////////////////////////////////////////////////////////////////////
+    /// Please use `reduction_rule_inv` instead!
+    //////////////////////////////////////////////////////////////////////////////
     static inline children_type
     compute_cofactor(const bool on_curr_level,
                      const children_type &children);

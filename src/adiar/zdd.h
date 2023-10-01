@@ -262,9 +262,9 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Bottom of the powerset lattice.
   ///
-  /// \param vars Generator function of the variables in \em descending order.
-  ///             When none are left, it must return a value greater than
-  ///             `zdd::max_label`.
+  /// \param dom Generator function of the variables in \em descending order.
+  ///            When none are left, it must return a value greater than
+  ///            `zdd::max_label`.
   ///
   /// \see zdd_empty
   //////////////////////////////////////////////////////////////////////////////
@@ -292,9 +292,9 @@ namespace adiar
   zdd zdd_bot();
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief      Top of the powerset lattice.
+  /// \brief     Top of the powerset lattice.
   ///
-  /// \param vars Generator function of the variables in \em descending order.
+  /// \param dom Generator function of the variables in \em descending order.
   ///
   /// \see zdd_powerset, zdd_null
   //////////////////////////////////////////////////////////////////////////////
@@ -745,7 +745,7 @@ namespace adiar
   ///
   /// \param A   Family of sets to project
   ///
-  /// \param gen Generator function, that produces the variables of the domain in
+  /// \param dom Generator function, that produces the variables of the domain in
   ///            \em descending order. When none are left to-be quantified, it
   ///            returns a value larger than `zdd::max_label`, e.g. -1.
   ///
@@ -1055,6 +1055,8 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Retrieves the lexicographically smallest set a in A.
   ///
+  /// \param A Set of sets of interest.
+  ///
   /// \details Outputs the trace of the low-most path to the true terminal. The
   ///          resulting assignment is lexicographically smallest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
@@ -1063,6 +1065,8 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Retrieves the lexicographically smallest set a in A.
+  ///
+  /// \param A  Set of sets of interest.
   ///
   /// \param cb Callback function that is called with the variables of the
   ///           smallest set in \em ascending order of the  levels of `A`.
@@ -1080,6 +1084,8 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Retrieves the lexicographically largest set a in A.
   ///
+  /// \param A Set of sets of interest.
+  ///
   /// \details Outputs the trace of the high-most path to the true terminal. The
   ///          resulting assignment is lexicographically largest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
@@ -1088,6 +1094,8 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Retrieves the lexicographically largest set a in A.
+  ///
+  /// \param A  Set of sets of interest.
   ///
   /// \param cb Callback function that is called with the variables of the
   ///           largest set in \em ascending order of the  levels of `A`.

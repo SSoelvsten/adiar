@@ -68,7 +68,14 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     static constexpr bool sorted_target = cardinality == 1u || inputs == 1u;
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of a variable label.
+    ////////////////////////////////////////////////////////////////////////////
     using label_type = node::label_type;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of a pointer.
+    ////////////////////////////////////////////////////////////////////////////
     using pointer_type = node::pointer_type;
 
     /* ========================== RECURSION TARGET ========================== */
@@ -142,14 +149,60 @@ namespace adiar::internal
 
     /* ============================ CONSTRUCTORS ============================ */
   public:
-    // Provide 'default' constructors to ensure it being a 'POD' inside of TPIE.
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Default construction (trivial).
+    ///
+    /// \details The default, copy, and move construction has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
     request() = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Copy construction (trivial).
+    ///
+    /// \details The default, copy, and move construction has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
     request(const request &r) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Move construction (trivial).
+    ///
+    /// \details The default, copy, and move construction has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
+    request(request &&r) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Destruction (trivial).
+    ///
+    /// \details The destructor has to be `default` to ensure it is a *POD* and
+    ///          hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
     ~request() = default;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Copy assignment (trivial).
+    ///
+    /// \details The copy and move assignment has to be `default` to ensure it
+    ///          is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
+    request& operator =(const request &r) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Move assignment (trivial).
+    ///
+    /// \details The copy and move assignment has to be `default` to ensure it
+    ///          is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
+    request& operator =(request &&r) = default;
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a request to the given `target`.
+    ///
+    /// \param t  Target of the request
     ////////////////////////////////////////////////////////////////////////////
     request(const target_t &t) : target(t)
     { }
@@ -228,13 +281,64 @@ namespace adiar::internal
 
     /* ============================ CONSTRUCTORS ============================ */
   public:
-    // Provide 'default' constructors to ensure it being a 'POD' inside of TPIE.
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Default construction (trivial).
+    ///
+    /// \details The default, copy, and move construction has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
     request() = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Copy construction (trivial).
+    ///
+    /// \details The default, copy, and move construction has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
     request(const request &r) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Move construction (trivial).
+    ///
+    /// \details The default, copy, and move construction has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
+    request(request &&r) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Destruction (trivial).
+    ///
+    /// \details The destructor has to be `default` to ensure it is a *POD* and
+    ///          hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
     ~request() = default;
 
   public:
-    // Provide 'non-default' constructors to make it easy to use outside of TPIE.
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Copy assignment (trivial).
+    ///
+    /// \details The copy and move assignment has to be `default` to ensure it
+    ///          is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
+    request& operator =(const request &r) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Move assignment (trivial).
+    ///
+    /// \details The copy and move assignment has to be `default` to ensure it
+    ///          is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
+    request& operator =(request &&r) = default;
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Construction of a request.
+    ///
+    /// \param t  Target of the request
+    ///
+    /// \param nc List of the children that already have been visited but needs
+    ///           to be forwarded to fully resolve the request to `t`.
+    ////////////////////////////////////////////////////////////////////////////
     request(const typename base::target_t &t,
             const std::array<typename base::children_type, node_carry_size> &nc)
       : base(t), node_carry(nc)
@@ -245,14 +349,19 @@ namespace adiar::internal
   // Priority queue functions
 
   // TODO: turn it into only having the cardinality
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Lexicographical ordering of the request's targets.
+  //////////////////////////////////////////////////////////////////////////////
   template<size_t idx, typename Request>
   struct request_lt
   {
+    /// \copydoc request_lt
     inline bool operator()(const Request &a, const Request &b)
     {
       const typename Request::label_type label_a = a.target.first().label();
       const typename Request::label_type label_b = b.target.first().label();
-      
+
       if constexpr (Request::cardinality == 2) {
         constexpr size_t o_idx = 1u - idx;
 
@@ -267,27 +376,39 @@ namespace adiar::internal
     }
   };
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Ordering based on the first target in sorted order.
+  //////////////////////////////////////////////////////////////////////////////
   template<typename Request>
   struct request_first_lt
   {
+    /// \copydoc request_first_lt
     inline bool operator()(const Request &a, const Request &b)
     {
       return tuple_first_lt<typename Request::target_t>()(a.target, b.target);
     }
   };
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Ordering based on the second target in sorted order.
+  //////////////////////////////////////////////////////////////////////////////
   template<typename Request>
   struct request_second_lt
   {
+    /// \copydoc request_second_lt
     inline bool operator()(const Request &a, const Request &b)
     {
       return tuple_second_lt<typename Request::target_t>()(a.target, b.target);
     }
   };
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Ordering based on the third target in sorted order.
+  //////////////////////////////////////////////////////////////////////////////
   template<typename Request>
   struct request_third_lt
   {
+    /// \copydoc request_third_lt
     inline bool operator()(const Request &a, const Request &b)
     {
       return tuple_third_lt<typename Request::target_t>()(a.target, b.target);
@@ -304,7 +425,7 @@ namespace adiar::internal
            typename Data,
            uint8_t NodeCarrySize = 0u,
            uint8_t Inputs = Cardinality>
-  class request_data 
+  class request_data
     : public request<Cardinality, NodeCarrySize, Inputs>
   {
   private:
@@ -324,13 +445,67 @@ namespace adiar::internal
 
     /* ============================ CONSTRUCTORS ============================ */
   public:
-    // Provide 'default' constructors to ensure it being a 'POD' inside of TPIE.
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Default construction (trivial).
+    ///
+    /// \details The default, copy, and move construction has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
     request_data() = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Copy construction (trivial).
+    ///
+    /// \details The default, copy, and move construction has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
     request_data(const request_data &r) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Move construction (trivial).
+    ///
+    /// \details The default, copy, and move construction has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
+    request_data(request_data &&r) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Destruction (trivial).
+    ///
+    /// \details The destructor has to be `default` to ensure it is a *POD* and
+    ///          hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
     ~request_data() = default;
 
   public:
-    // Provide 'non-default' constructors to make it easy to use outside of TPIE.
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Copy assignment (trivial).
+    ///
+    /// \details The copy and move assignment has to be `default` to ensure it
+    ///          is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
+    request_data& operator =(const request_data &r) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Move assignment (trivial).
+    ///
+    /// \details The copy and move assignment has to be `default` to ensure it
+    ///          is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
+    request_data& operator =(request_data &&r) = default;
+
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Construction of a request.
+    ///
+    /// \param t  Target of the request
+    ///
+    /// \param nc List of the children that already have been visited but needs
+    ///           to be forwarded to fully resolve the request to `t`.
+    ///
+    /// \param d  Additional data to be forwarded.
+    ////////////////////////////////////////////////////////////////////////////
     request_data(const typename Request::target_t &t,
                  const std::array<typename Request::children_type, NodeCarrySize> &nc,
                  const data_type &d)
@@ -340,9 +515,15 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////
   // Priority queue functions
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Lexicographical ordering on a request's targets. Ties are
+  ///        (potentially) broken on the data.
+  //////////////////////////////////////////////////////////////////////////////
   template<size_t idx, typename Request>
   struct request_data_lt
   {
+    /// \copydoc request_data_lt
     inline bool operator()(const Request &a, const Request &b)
     {
       if (Request::data_type::sort_on_tiebreak && a.target == b.target) {
@@ -352,9 +533,14 @@ namespace adiar::internal
     }
   };
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Ordering based on the first target in sorted order. Ties are
+  ///        (potentially) broken on the data.
+  //////////////////////////////////////////////////////////////////////////////
   template<typename Request>
   struct request_data_first_lt
   {
+    /// \copydoc request_first_lt
     inline bool operator()(const Request &a, const Request &b)
     {
       if (Request::data_type::sort_on_tiebreak && a.target == b.target) {
@@ -364,9 +550,14 @@ namespace adiar::internal
     }
   };
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Ordering based on the second target in sorted order. Ties are
+  ///        (potentially) broken on the data.
+  //////////////////////////////////////////////////////////////////////////////
   template<typename Request>
   struct request_data_second_lt
   {
+    /// \copydoc request_second_lt
     inline bool operator()(const Request &a, const Request &b)
     {
       if (Request::data_type::sort_on_tiebreak && a.target == b.target) {
@@ -376,9 +567,14 @@ namespace adiar::internal
     }
   };
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Ordering based on the third target in sorted order. Ties are
+  ///        (potentially) broken on the data.
+  //////////////////////////////////////////////////////////////////////////////
   template<typename Request>
   struct request_data_third_lt
   {
+    /// \copydoc request_third_lt
     inline bool operator()(const Request &a, const Request &b)
     {
       if (Request::data_type::sort_on_tiebreak && a.target == b.target) {
@@ -394,6 +590,14 @@ namespace adiar::internal
   class with_parent
   {
   public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether the parent pointer should be part of resolving sorting
+    /// two requests.
+    ///
+    /// \details Currently, this is only true in debug mode, since we do not
+    /// need it for correctness but only for predictability of the order of the
+    /// output.
+    ////////////////////////////////////////////////////////////////////////////
 #ifdef NDEBUG
     static constexpr bool sort_on_tiebreak = false;
 #else
@@ -401,8 +605,12 @@ namespace adiar::internal
 #endif
 
     ////////////////////////////////////////////////////////////////////////////
+    /// \brief Pointer to the source of the request.
+    ////////////////////////////////////////////////////////////////////////////
     node::pointer_type source;
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Comparator to break ties based on the .
     ////////////////////////////////////////////////////////////////////////////
     inline bool operator< (const with_parent &o) const
     { return this->source < o.source; }

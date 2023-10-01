@@ -93,12 +93,59 @@ namespace adiar::internal
     friend void __print_dot(const dd_t&, std::ostream &);
 
   public:
-    // Provide 'default' constructors to ensure it being a 'POD' inside of TPIE.
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Default construction (trivial).
+    ///
+    /// \details The default, copy, and move constructor has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
     ptr_uint64() = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Copy construction (trivial).
+    ///
+    /// \details The default, copy, and move constructor has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
     ptr_uint64(const ptr_uint64 &p) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Move construction (trivial).
+    ///
+    /// \details The default, copy, and move constructor has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
+    ptr_uint64(ptr_uint64 &&p) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Destruction (trivial).
+    ///
+    /// \details The destructor has to be `default` to ensure it is a *POD* and
+    ///          hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
     ~ptr_uint64() = default;
 
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Copy assignment (trivial).
+    ///
+    /// \details The copy and move assignment has to be `default` to ensure it
+    ///          is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
+    ptr_uint64& operator =(const ptr_uint64 &p) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Move assignment (trivial).
+    ///
+    /// \details The copy and move assignment has to be `default` to ensure it
+    ///          is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
+    ptr_uint64& operator =(ptr_uint64 &&p) = default;
+
   protected:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Reinterpret an unsigned 64 bit integer as a `ptr`.
+    ////////////////////////////////////////////////////////////////////////////
     constexpr ptr_uint64(const uint64_t raw) : _raw(raw)
     { }
 
@@ -137,6 +184,11 @@ namespace adiar::internal
 
     /* ================================= nil ================================ */
   protected:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Compile-time derived value for `nil`.
+    ///
+    /// \see nil
+    ////////////////////////////////////////////////////////////////////////////
     static constexpr uint64_t nil_val =
       std::numeric_limits<uint64_t>::max() ^ flag_mask;
 
@@ -236,10 +288,10 @@ namespace adiar::internal
     static constexpr id_type max_id = (1ull << id_bits) - 1;
 
   private:
-    friend ptr_uint64 
+    friend ptr_uint64
     essential(const ptr_uint64 &p);
-  
-    friend ptr_uint64 
+
+    friend ptr_uint64
     with_out_idx(const ptr_uint64 &p, const out_idx_type out_idx);
 
     ////////////////////////////////////////////////////////////////////////////
@@ -264,24 +316,34 @@ namespace adiar::internal
     /// their level-identifier, and finally by their .
     ////////////////////////////////////////////////////////////////////////////
   protected:
-    static uint64_t 
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Bit manipulation needed to encode the variable label.
+    ////////////////////////////////////////////////////////////////////////////
+    static uint64_t
     encode_label(const label_type label)
     {
       adiar_assert(label <= max_label, "Cannot represent given label");
       return (uint64_t) label << (id_bits + out_idx_bits + flag_bits);
     }
 
-    static uint64_t 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Bit manipulation needed to encode the level id.
+    ////////////////////////////////////////////////////////////////////////////
+    static uint64_t
     encode_id(const id_type id)
     {
       adiar_assert(id <= max_id, "Cannot represent given id");
       return (uint64_t) id << (out_idx_bits + flag_bits);
     }
 
-    static uint64_t 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Bit manipulation needed to encode the outdegree index.
+    ////////////////////////////////////////////////////////////////////////////
+    static uint64_t
     encode_out_idx(const out_idx_type out_idx)
-    { 
-      return (uint64_t) out_idx << (flag_bits); 
+    {
+      return (uint64_t) out_idx << (flag_bits);
     }
 
   public:
@@ -305,7 +367,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether a pointer is for an internal node (label, id).
     ////////////////////////////////////////////////////////////////////////////
-    inline bool 
+    inline bool
     is_node() const
     {
       return _raw <= ~ptr_uint64::terminal_bit;
@@ -316,7 +378,7 @@ namespace adiar::internal
     ///
     /// \pre `is_node()` evaluates to `true.`
     ////////////////////////////////////////////////////////////////////////////
-    inline label_type 
+    inline label_type
     label() const
     {
       return _raw >> (id_bits + out_idx_bits + flag_bits);
@@ -327,7 +389,7 @@ namespace adiar::internal
     ///
     /// \pre `is_node()` evaluates to `true.`
     ////////////////////////////////////////////////////////////////////////////
-    inline id_type 
+    inline id_type
     id() const
     {
       return (_raw >> (out_idx_bits + flag_bits)) & max_id;
@@ -340,7 +402,7 @@ namespace adiar::internal
     ///
     /// \see arc
     ////////////////////////////////////////////////////////////////////////////
-    inline out_idx_type 
+    inline out_idx_type
     out_idx() const
     {
       return (_raw >> flag_bits) & max_out_idx;
@@ -390,7 +452,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether this pointer points to a terminal node.
     ////////////////////////////////////////////////////////////////////////////
-    inline bool 
+    inline bool
     is_terminal() const
     {
       return !is_nil() && _raw >= ptr_uint64::terminal_bit;
@@ -401,7 +463,7 @@ namespace adiar::internal
     ///
     /// \pre `is_terminal()` evaluates to `true`.
     ////////////////////////////////////////////////////////////////////////////
-    inline terminal_type 
+    inline terminal_type
     value() const
     {
       adiar_assert(is_terminal());
@@ -416,7 +478,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether this pointer points to the `false` terminal.
     ////////////////////////////////////////////////////////////////////////////
-    inline bool 
+    inline bool
     is_false() const
     {
       return is_terminal() && !value();
@@ -425,7 +487,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether this pointer points to the `true` terminal.
     ////////////////////////////////////////////////////////////////////////////
-    inline bool 
+    inline bool
     is_true() const
     {
       return is_terminal() && value();
@@ -434,7 +496,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether a pointer is for a node on a given level.
     ////////////////////////////////////////////////////////////////////////////
-    inline bool 
+    inline bool
     on_level(const label_type level) const
     {
       return is_terminal() ? false : label() == level;
@@ -442,21 +504,45 @@ namespace adiar::internal
 
     /* ============================== COMPARATOR ============================ */
   public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Lexicographical ordering on internal nodes (i, id), followed by
+    ///        terminals `false`, `true`, and finally `nil`.
+    ////////////////////////////////////////////////////////////////////////////
     inline bool operator< (const ptr_uint64 &o) const
     { return this->_raw < o._raw; }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Lexicographical ordering on internal nodes (i, id), followed by
+    ///        terminals `false`, `true`, and finally `nil`.
+    ////////////////////////////////////////////////////////////////////////////
     inline bool operator<= (const ptr_uint64 &o) const
     { return this->_raw <= o._raw; }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Lexicographical ordering on internal nodes (i, id), followed by
+    ///        terminals `false`, `true`, and finally `nil`.
+    ////////////////////////////////////////////////////////////////////////////
     inline bool operator> (const ptr_uint64 &o) const
     { return (o < *this); }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Lexicographical ordering on internal nodes (i, id), followed by
+    ///        terminals `false`, `true`, and finally `nil`.
+    ////////////////////////////////////////////////////////////////////////////
     inline bool operator>= (const ptr_uint64 &o) const
     { return (o <= *this); }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether pointers reference the same node and also share the same
+    ///        auxiliary data, i.e. `flag` and `out_idx`.
+    ////////////////////////////////////////////////////////////////////////////
     inline bool operator== (const ptr_uint64 &o) const
     { return this->_raw == o._raw; }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether pointers reference the same node and also share the same
+    ///        auxiliary data, i.e. `flag` and `out_idx`.
+    ////////////////////////////////////////////////////////////////////////////
     inline bool operator!= (const ptr_uint64 &o) const
     { return !(*this == o); }
 

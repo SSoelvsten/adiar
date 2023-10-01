@@ -85,10 +85,54 @@ namespace adiar::internal
     children_type _children;
 
   public:
-    // Provide 'default' constructors to ensure it being a 'POD' inside of TPIE.
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Default construction (trivial).
+    ///
+    /// \details The default, copy, and move assignment has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
     node() = default;
-    node(const node &) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Copy construction (trivial).
+    ///
+    /// \details The default, copy, and move constructor has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
+    node(const node &n) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Move construction (trivial).
+    ///
+    /// \details The default, copy, and move constructor has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
+    node(node &&n) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Destruction (trivial).
+    ///
+    /// \details The destructor has to be `default` to ensure it is a *POD* and
+    ///          hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
     ~node() = default;
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Copy assignment (trivial).
+    ///
+    /// \details The copy and move assignment has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
+    node& operator =(const node &n) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Move assignment (trivial).
+    ///
+    /// \details The copy and move assignment has to be `default` to ensure it
+    ///          is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
+    node& operator =(node &&n) = default;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -278,15 +322,27 @@ namespace adiar::internal
 
     /* =============================== COMPARATORS ========================== */
   public:
+
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Sorting of node based based on its `uid()` (i.e. its time-stamp).
+    ///        If they are the same, then it secondly is sorted on its cildren.
+    //////////////////////////////////////////////////////////////////////////////
     inline bool operator<  (const node &o) const
     {
       return (this->_uid < o._uid)
         || (this->_uid == o._uid && this->_children < o._children);
     }
 
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Sorting of node based based on its `uid()` (i.e. its time-stamp).
+    ///        If they are the same, then it secondly is sorted on its cildren.
+    //////////////////////////////////////////////////////////////////////////////
     inline bool operator>  (const node &o) const
     { return (o < *this); }
 
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Check uid and children match.
+    //////////////////////////////////////////////////////////////////////////////
     inline bool operator== (const node &o) const
     {
       return this->_uid == o._uid
@@ -294,12 +350,23 @@ namespace adiar::internal
         && this->_children[true]  == o._children[true];
     }
 
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Check either uid or one of the children mismatch.
+    //////////////////////////////////////////////////////////////////////////////
     inline bool operator!= (const node &o) const
     { return !(*this == o); }
 
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Sorting of node based based on its `uid()` (i.e. its time-stamp).
+    ///        If they are the same, then it secondly is sorted on its cildren.
+    //////////////////////////////////////////////////////////////////////////////
     inline bool operator<= (const node &o) const
     { return (*this < o) || (*this == o); }
 
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Sorting of node based based on its `uid()` (i.e. its time-stamp).
+    ///        If they are the same, then it secondly is sorted on its cildren.
+    //////////////////////////////////////////////////////////////////////////////
     inline bool operator>= (const node &o) const
     { return (*this > o) || (*this == o); }
 

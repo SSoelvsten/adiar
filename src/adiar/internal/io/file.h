@@ -17,7 +17,7 @@
 namespace adiar::internal
 {
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief   Provides compile-time known settings and meta information 
+  /// \brief   Provides compile-time known settings and meta information
   ///          variables used in `file<elem_type>` and
   ///          `levelized_file<elem_type>`.
   ///
@@ -41,7 +41,7 @@ namespace adiar::internal
   /// \tparam  T Type of the file's content.
   //////////////////////////////////////////////////////////////////////////////
   template <typename T> // <-- Header
-  class file 
+  class file
   // : public file_traits<T>::stats
   {
   public:

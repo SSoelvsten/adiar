@@ -23,16 +23,54 @@ namespace adiar::internal
     using pointer_type = Ptr;
 
   public:
-    // Provide 'default' constructors to ensure it being a 'POD' inside of TPIE.
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Default construction (trivial).
+    ///
+    /// \details The default, copy, and move constructor has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
     __uid() = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Copy construction (trivial).
+    ///
+    /// \details The default, copy, and move constructor has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
     __uid(const __uid<pointer_type> &p) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Move construction (trivial).
+    ///
+    /// \details The default, copy, and move constructor has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
+    __uid(__uid<pointer_type> &&p) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Destruction (trivial).
+    ///
+    /// \details The destructor has to be `default` to ensure it is a *POD* and
+    ///          hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
     ~__uid() = default;
 
-  private:
-    static pointer_type clean_ptr(const pointer_type &p)
-    {
-      return p.is_node() ? pointer_type(p.label(), p.id()) : unflag(p);
-    }
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Copy assignment
+    ///
+    /// \details The default, copy, and move assignment has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
+    __uid& operator =(const __uid<pointer_type> &p) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Move assignment
+    ///
+    /// \details The default, copy, and move assignment has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
+    __uid& operator =(__uid<pointer_type> &&p) = default;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -63,7 +101,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the `ptr` for this node uid with the given `out_idx`.
     ////////////////////////////////////////////////////////////////////////////
-    inline pointer_type 
+    inline pointer_type
     with(const typename pointer_type::out_idx_type out_idx) const
     {
       adiar_assert(pointer_type::is_node());
@@ -74,7 +112,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a pointer to an internal node (label, id).
     ////////////////////////////////////////////////////////////////////////////
-    __uid(const typename pointer_type::label_type label, 
+    __uid(const typename pointer_type::label_type label,
           const typename pointer_type::id_type id)
       : pointer_type(label, id)
     { }
@@ -99,6 +137,9 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   // Specialization for the single-integer pointer `ptr_uint64`.
 
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Obtain the `ptr` for this node uid with the given `out_idx`.
+  ////////////////////////////////////////////////////////////////////////////
   template<>
   inline ptr_uint64
   __uid<ptr_uint64>::with(const ptr_uint64::out_idx_type out_idx) const
@@ -108,6 +149,9 @@ namespace adiar::internal
     return ptr_uint64((_raw & out_idx_mask) | pointer_type::encode_out_idx(out_idx));
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether this uid identifies a terminal node.
+  //////////////////////////////////////////////////////////////////////////////
   template<>
   inline bool
   __uid<ptr_uint64>::is_terminal() const

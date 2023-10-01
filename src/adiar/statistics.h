@@ -151,7 +151,7 @@ namespace adiar
       //////////////////////////////////////////////////////////////////////////
       /// \brief Type and usage of this algorithm's levelized priority queue.
       //////////////////////////////////////////////////////////////////////////
-      struct __lpq : public levelized_priority_queue_t
+      struct __lpq_t : public levelized_priority_queue_t
       {
         ////////////////////////////////////////////////////////////////////////
         /// \brief Number of *unbucketed internal* levelized priority queues.
@@ -176,7 +176,7 @@ namespace adiar
           return unbucketed + internal + external;
         }
       }
-      /// \copydoc __lpq
+      /// \copydoc __lpq_t
       lpq;
     };
 
@@ -341,7 +341,7 @@ namespace adiar
         ////////////////////////////////////////////////////////////////////////
         size_t max_width = 0u;
       }
-      /// \copydoc random_access_t
+      /// \copydoc ra_t
       ra;
 
       //////////////////////////////////////////////////////////////////////////
@@ -456,8 +456,10 @@ namespace adiar
         ////////////////////////////////////////////////////////////////////////
         struct up_t
         { }
+        /// \copybrief up_t
         up;
       }
+      /// \copydoc outer_t
       outer;
 
       //////////////////////////////////////////////////////////////////////////
@@ -470,6 +472,7 @@ namespace adiar
         ////////////////////////////////////////////////////////////////////////
         struct down_t : public __alg_base
         { }
+        /// \copybrief down_t;
         down;
 
         ////////////////////////////////////////////////////////////////////////
@@ -477,8 +480,10 @@ namespace adiar
         ////////////////////////////////////////////////////////////////////////
         struct up_t : public __alg_base
         { }
+        /// \copybrief up_t;
         up;
       }
+      /// \copydoc inner_t
       inner;
     }
     /// \copydoc nested_sweeping_t

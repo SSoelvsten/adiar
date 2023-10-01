@@ -13,18 +13,50 @@ namespace adiar::internal
     // TODO (Larger variable identifiers):
     //   template <typename level_type = ptr_uint64::label_type>
   public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of a variable level.
+    ////////////////////////////////////////////////////////////////////////////
     using level_type = ptr_uint64::label_type;
 
     /* ================================ VARIABLES =========================== */
   private:
+
     level_type _label;
+
     size_t _width;
 
     /* ============================== CONSTRUCTORS ========================== */
   public:
-    // Provide 'default' constructors to ensure it being a 'POD' inside of TPIE.
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Default construction (trivial).
+    ///
+    /// \details The default, copy, and move construction has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
     level_info() = default;
-    level_info(const level_info &) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Copy construction (trivial).
+    ///
+    /// \details The default, copy, and move construction has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
+    level_info(const level_info &li) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Move construction (trivial).
+    ///
+    /// \details The default, copy, and move construction has to be `default` to
+    ///          ensure it is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
+    level_info(level_info &&li) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Destruction (trivial).
+    ///
+    /// \details The destructor has to be `default` to ensure it is a *POD* and
+    ///          hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
     ~level_info() = default;
 
     ////////////////////////////////////////////////////////////////////////////
@@ -34,6 +66,23 @@ namespace adiar::internal
     level_info(level_type label, size_t width)
       : _label(label), _width(width)
     { }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Copy assignment (trivial).
+    ///
+    /// \details The copy and move assignment has to be `default` to ensure it
+    ///          is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
+    level_info& operator =(const level_info &li) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Move assignment (trivial).
+    ///
+    /// \details The copy and move assignment has to be `default` to ensure it
+    ///          is a *POD* and hence can be used by TPIE's files.
+    ////////////////////////////////////////////////////////////////////////////
+    level_info& operator =(level_info &&li) = default;
 
     /* ============================ MEMBER FUNCTIONS ======================== */
   public:
@@ -57,9 +106,16 @@ namespace adiar::internal
 
     /* =============================== OPERATORS ============================ */
   public:
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether all entries on this level match.
+    ////////////////////////////////////////////////////////////////////////////
     inline bool operator== (const level_info &o) const
     { return this->_label == o._label && this->_width == o._width; }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether any entry on this level mismatches.
+    ////////////////////////////////////////////////////////////////////////////
     inline bool operator!= (const level_info &o) const
     { return !(*this == o); }
 

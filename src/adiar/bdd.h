@@ -553,9 +553,9 @@ namespace adiar
   ///
   /// \param f   BDD to be quantified.
   ///
-  /// \param gen Generator function, that produces variables to be quantified in
-  ///            \em descending order. When none are left to-be quantified, it
-  ///            returns a value larger than `bdd::max_label`.
+  /// \param vars Generator function, that produces variables to be quantified in
+  ///             \em descending order. When none are left to-be quantified, it
+  ///             returns a value larger than `bdd::max_label`.
   ///
   /// \returns   \f$ \exists x_i \in \texttt{gen()} : f \f$
   //////////////////////////////////////////////////////////////////////////////
