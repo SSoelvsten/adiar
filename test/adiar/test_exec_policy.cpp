@@ -108,6 +108,50 @@ go_bandit([]() {
         });
       });
 
+      describe("operator ==(const exec_policy&)", []() {
+        it("matches for default settings", []() {
+          exec_policy ep1;
+          exec_policy ep2;
+
+          AssertThat(ep1, Is().EqualTo(ep2));
+        });
+
+        it("matches for (non-default) Adiar v1.0 settings", []() {
+          exec_policy ep1;
+          ep1.set(exec_policy::quantify::Singleton)
+             .set(exec_policy::memory::External)
+             .set(exec_policy::access::Priority_Queue);
+
+          exec_policy ep2;
+          ep2.set(exec_policy::access::Priority_Queue)
+             .set(exec_policy::memory::External)
+             .set(exec_policy::quantify::Singleton);
+
+          AssertThat(ep1, Is().EqualTo(ep2));
+        });
+
+        it("mismatches on 'access mode'", []() {
+          exec_policy ep1 = exec_policy::access::Priority_Queue;
+          exec_policy ep2 = exec_policy::access::Random_Access;
+
+          AssertThat(ep1, Is().Not().EqualTo(ep2));
+        });
+
+        it("mismatches on 'memory mode'", []() {
+          exec_policy ep1 = exec_policy::memory::Internal;
+          exec_policy ep2 = exec_policy::memory::Auto;
+
+          AssertThat(ep1, Is().Not().EqualTo(ep2));
+        });
+
+        it("mismatches on 'quantify algorithm'", []() {
+          exec_policy ep1 = exec_policy::quantify::Nested;
+          exec_policy ep2 = exec_policy::quantify::Partial;
+
+          AssertThat(ep1, Is().Not().EqualTo(ep2));
+        });
+      });
+
       describe("operator &(const exec_policy&)", []() {
         it("can create a copy with another 'access mode'", []() {
           exec_policy in = exec_policy::memory::Internal;
