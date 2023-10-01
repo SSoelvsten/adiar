@@ -59,7 +59,7 @@ namespace adiar::internal
   template<uint8_t nodes_carried>
   using pred_request = request<2, nodes_carried>;
 
-  template<size_t look_ahead, memory_mode_t mem_mode>
+  template<size_t look_ahead, memory_mode mem_mode>
   using comparison_priority_queue_1_t =
     levelized_node_priority_queue<pred_request<0>, request_first_lt<pred_request<0>>,
                                   look_ahead,
@@ -69,7 +69,7 @@ namespace adiar::internal
 
   using pred_request_2 = request<2, 1>;
 
-  template<memory_mode_t mem_mode>
+  template<memory_mode mem_mode>
   using comparison_priority_queue_2_t =
     priority_queue<mem_mode, pred_request<1>, request_second_lt<pred_request<1>>>;
 
@@ -227,10 +227,10 @@ namespace adiar::internal
       - comp_policy::level_check_t::memory_usage();
 
     constexpr size_t data_structures_in_pq_1 =
-      comparison_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::data_structures;
+      comparison_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::data_structures;
 
     constexpr size_t data_structures_in_pq_2 =
-      comparison_priority_queue_2_t<memory_mode_t::Internal>::data_structures;
+      comparison_priority_queue_2_t<memory_mode::Internal>::data_structures;
 
     const size_t pq_1_internal_memory =
       (aux_available_memory / (data_structures_in_pq_1 + data_structures_in_pq_2)) * data_structures_in_pq_1;
@@ -238,10 +238,10 @@ namespace adiar::internal
     const size_t pq_2_internal_memory = aux_available_memory - pq_1_internal_memory;
 
     const size_t pq_1_memory_fits =
-      comparison_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::memory_fits(pq_1_internal_memory);
+      comparison_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(pq_1_internal_memory);
 
     const size_t pq_2_memory_fits =
-      comparison_priority_queue_2_t<memory_mode_t::Internal>::memory_fits(pq_2_internal_memory);
+      comparison_priority_queue_2_t<memory_mode::Internal>::memory_fits(pq_2_internal_memory);
 
     const bool internal_only = ep.memory_mode() == exec_policy::memory::Internal;
     const bool external_only = ep.memory_mode() == exec_policy::memory::External;
@@ -260,8 +260,8 @@ namespace adiar::internal
       stats_equality.lpq.unbucketed += 1u;
 #endif
       return __comparison_check<comp_policy,
-                                comparison_priority_queue_1_t<0, memory_mode_t::Internal>,
-                                comparison_priority_queue_2_t<memory_mode_t::Internal>>
+                                comparison_priority_queue_1_t<0, memory_mode::Internal>,
+                                comparison_priority_queue_2_t<memory_mode::Internal>>
         (f0, f1, negate0, negate1, pq_1_internal_memory, pq_2_internal_memory, max_pq_1_size);
     } else if(!external_only && max_pq_1_size <= pq_1_memory_fits
                              && max_pq_2_size <= pq_2_memory_fits) {
@@ -269,8 +269,8 @@ namespace adiar::internal
       stats_equality.lpq.internal += 1u;
 #endif
       return __comparison_check<comp_policy,
-                                comparison_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>,
-                                comparison_priority_queue_2_t<memory_mode_t::Internal>>
+                                comparison_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>,
+                                comparison_priority_queue_2_t<memory_mode::Internal>>
         (f0, f1, negate0, negate1, pq_1_internal_memory, pq_2_internal_memory, max_pq_1_size);
     } else {
 #ifdef ADIAR_STATS
@@ -280,8 +280,8 @@ namespace adiar::internal
       const size_t pq_2_memory = pq_1_memory;
 
       return __comparison_check<comp_policy,
-                                comparison_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::External>,
-                                comparison_priority_queue_2_t<memory_mode_t::External>>
+                                comparison_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::External>,
+                                comparison_priority_queue_2_t<memory_mode::External>>
         (f0, f1, negate0, negate1, pq_1_memory, pq_2_memory, max_pq_1_size);
     }
   }

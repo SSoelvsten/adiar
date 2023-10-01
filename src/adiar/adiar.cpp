@@ -55,9 +55,6 @@ namespace adiar
       // - reset statistics
       statistics_reset();
 
-      // - reset enum settings
-      memory_mode   = memory_mode_t::Auto;
-
       // - all done, mark initialized
       _adiar_initialized = true;
     } catch (const std::exception &e) {

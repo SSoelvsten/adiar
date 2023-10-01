@@ -6,20 +6,19 @@
 #include <tpie/tpie.h>
 #include <tpie/priority_queue.h>
 
-#include <adiar/memory_mode.h>
 #include <adiar/internal/assert.h>
 #include <adiar/internal/memory.h>
 
 namespace adiar::internal
 {
-  template <memory_mode_t mem_mode, typename T, typename Comp = std::less<T>>
+  template <memory_mode mem_mode, typename T, typename Comp = std::less<T>>
   class priority_queue;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Wrapper for TPIE's internal binary heap.
   //////////////////////////////////////////////////////////////////////////////
   template<typename T, typename Comp>
-  class priority_queue<memory_mode_t::Internal, T, Comp>
+  class priority_queue<memory_mode::Internal, T, Comp>
   {
   private:
     using pq_type = tpie::internal_priority_queue<T, Comp>;
@@ -73,7 +72,7 @@ namespace adiar::internal
   ///        'internal' memory type.
   //////////////////////////////////////////////////////////////////////////////
   template <typename T, typename Comp = std::less<T>>
-  using internal_priority_queue = priority_queue<memory_mode_t::Internal, T, Comp>;
+  using internal_priority_queue = priority_queue<memory_mode::Internal, T, Comp>;
 
   // LCOV_EXCL_START
   // TODO: Unit test external memory variants?
@@ -82,7 +81,7 @@ namespace adiar::internal
   /// \brief Wrapper for TPIE's internal binary heap.
   //////////////////////////////////////////////////////////////////////////////
   template<typename T, typename Comp>
-  class priority_queue<memory_mode_t::External, T, Comp>
+  class priority_queue<memory_mode::External, T, Comp>
   {
   public:
     static constexpr size_t data_structures = 1u;
@@ -119,7 +118,7 @@ namespace adiar::internal
   ///        'external' memory type.
   //////////////////////////////////////////////////////////////////////////////
   template <typename T, typename Comp = std::less<T>>
-  using external_priority_queue = priority_queue<memory_mode_t::External, T, Comp>;
+  using external_priority_queue = priority_queue<memory_mode::External, T, Comp>;
 
   // LCOV_EXCL_STOP
 }
