@@ -155,7 +155,8 @@ namespace adiar::internal
 
   template<typename node_stream_t, typename pq_1_t, typename pq_2_t, typename quantify_policy, typename in_t>
   typename quantify_policy::__dd_type
-  __quantify(const in_t &in,
+  __quantify(const exec_policy &ep,
+             const in_t &in,
              quantify_policy &policy_impl,
              const bool_op &op,
              pq_1_t &quantify_pq_1,
@@ -353,7 +354,7 @@ namespace adiar::internal
                                                   - out_arcs->number_of_terminals[true],
                                         out_arcs->max_1level_cut);
 
-    return out_arcs;
+    return typename quantify_policy::__dd_type(out_arcs, ep);
   }
 
 
@@ -387,7 +388,8 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   template<typename node_stream_t, typename pq_1_t, typename pq_2_t, typename quantify_policy, typename in_t>
   typename quantify_policy::__dd_type
-  __quantify(const in_t &in,
+  __quantify(const exec_policy &ep,
+             const in_t &in,
              quantify_policy &policy_impl,
              const bool_op &op,
              const size_t pq_1_memory, const size_t max_pq_1_size,
@@ -419,7 +421,7 @@ namespace adiar::internal
     pq_2_t quantify_pq_2(pq_2_memory, max_pq_2_size);
 
     return __quantify<node_stream_t, pq_1_t, pq_2_t>
-      (in, policy_impl, op, quantify_pq_1, quantify_pq_2);
+      (ep, in, policy_impl, op, quantify_pq_1, quantify_pq_2);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -483,7 +485,7 @@ namespace adiar::internal
       return __quantify<node_stream_t,
                         pq_1_template<0, memory_mode_t::Internal>,
                         quantify_priority_queue_2_t<memory_mode_t::Internal>>
-        (in, policy_impl, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
+        (ep, in, policy_impl, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
     } else if(!external_only && max_pq_1_size <= pq_1_memory_fits
                              && max_pq_2_size <= pq_2_memory_fits) {
 #ifdef ADIAR_STATS
@@ -492,7 +494,7 @@ namespace adiar::internal
       return __quantify<node_stream_t,
                         pq_1_template<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>,
                         quantify_priority_queue_2_t<memory_mode_t::Internal>>
-        (in, policy_impl, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
+        (ep, in, policy_impl, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
     } else {
 #ifdef ADIAR_STATS
       stats_quantify.lpq.external += 1u;
@@ -503,7 +505,7 @@ namespace adiar::internal
       return __quantify<node_stream_t,
                         pq_1_template<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::External>,
                         quantify_priority_queue_2_t<memory_mode_t::External>>
-        (in, policy_impl, op, pq_1_memory, max_pq_1_size, pq_2_memory, max_pq_2_size);
+        (ep, in, policy_impl, op, pq_1_memory, max_pq_1_size, pq_2_memory, max_pq_2_size);
     }
   }
 
@@ -656,13 +658,13 @@ namespace adiar::internal
         inner_pq_2_t inner_pq_2(inner_remaining_memory, max_pq_2_size);
 
         return __quantify<node_stream<>, inner_pq_1_t, inner_pq_2_t>
-          (outer_file, *this, _op, inner_pq_1, inner_pq_2);
+          (ep, outer_file, *this, _op, inner_pq_1, inner_pq_2);
       } else {
         using inner_pq_2_t = quantify_priority_queue_2_t<memory_mode_t::External>;
         inner_pq_2_t inner_pq_2(inner_remaining_memory, max_pq_2_size);
 
         return __quantify<node_stream<>, inner_pq_1_t, inner_pq_2_t>
-          (outer_file, *this, _op, inner_pq_1, inner_pq_2);
+          (ep, outer_file, *this, _op, inner_pq_1, inner_pq_2);
       }
     }
 

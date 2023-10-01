@@ -106,14 +106,15 @@ go_bandit([]() {
       af->max_1level_cut = 1;
 
       it("should copy-construct values from shared_levelized_file<arc>", [&]() {
-        __bdd t1 = af;
+        __bdd t1(af, exec_policy::memory::Internal);
         AssertThat(t1.has<shared_levelized_file<arc>>(), Is().True());
         AssertThat(t1.get<shared_levelized_file<arc>>(), Is().EqualTo(af));
         AssertThat(t1.negate, Is().False());
+        AssertThat(t1._policy, Is().EqualTo(exec_policy(exec_policy::memory::Internal)));
       });
 
       it("should reduce on copy construct to bdd with shared_levelized_file<arc>", [&]() {
-        bdd out = __bdd(af);
+        bdd out = __bdd(af, exec_policy());
         AssertThat(out, Is().EqualTo(x0));
       });
     });

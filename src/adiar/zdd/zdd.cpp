@@ -24,12 +24,12 @@ namespace adiar
     : internal::__dd()
   { }
 
-  __zdd::__zdd(const internal::__dd::shared_node_file_type &f)
+  __zdd::__zdd(const shared_node_file_type &f)
     : internal::__dd(f)
   { }
 
-  __zdd::__zdd(const internal::__dd::shared_arc_file_type &f)
-    : internal::__dd(f)
+  __zdd::__zdd(const shared_arc_file_type &f, const exec_policy &ep)
+    : internal::__dd(f, ep)
   { }
 
   __zdd::__zdd(const zdd &dd)
@@ -46,9 +46,9 @@ namespace adiar
     : zdd(zdd_terminal(t))
   { }
 
-  zdd::zdd(const internal::dd::shared_node_file_type &A, bool negate)
+  zdd::zdd(const shared_node_file_type &A, bool negate)
     : internal::dd(A, negate)
-  { 
+  {
     if (negate) { throw invalid_argument("ZDDs cannot be negated"); }
   }
 

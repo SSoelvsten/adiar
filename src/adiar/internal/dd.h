@@ -67,26 +67,34 @@ namespace adiar::internal
     using shared_arc_file_type = shared_levelized_file<arc_type>;
 
     ////////////////////////////////////////////////////////////////////////////
-    // Union of levelized node or arc files to reflect the possible return types
-    // of a function and a 'no_file' for 'error'.
+    /// \brief Union of levelized node or arc files to reflect the possible
+    ///        return types of a function and a 'no_file' for 'error'.
+    ////////////////////////////////////////////////////////////////////////////
     std::variant<no_file, shared_node_file_type, shared_arc_file_type>
     _union;
 
     ////////////////////////////////////////////////////////////////////////////
-    // Propagating the negation flag below
+    /// \brief Propagation of the `dd.negate` flag.
+    ///
+    /// TODO: prefix with '_'
+    ////////////////////////////////////////////////////////////////////////////
     bool negate = false;
 
     ////////////////////////////////////////////////////////////////////////////
+    /// \brief Copy of the execution policy given to the top-down algorithm.
+    ////////////////////////////////////////////////////////////////////////////
+    exec_policy _policy;
+
+    ////////////////////////////////////////////////////////////////////////////
     // Constructors
-    __dd()
-    { }
+    __dd() = default;
 
     __dd(const shared_node_file_type &f)
       : _union(f)
     { }
 
-    __dd(const shared_arc_file_type &f)
-      : _union(f)
+    __dd(const shared_arc_file_type &f, const exec_policy &ep)
+      : _union(f), _policy(ep)
     { }
 
     __dd(const dd &dd);

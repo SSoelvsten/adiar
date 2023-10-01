@@ -88,10 +88,12 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////
   template<typename substitute_policy, typename substitute_assignment_mgr, typename pq_t>
-  typename substitute_policy::__dd_type __substitute(const typename substitute_policy::dd_type &dd,
-                                                       substitute_assignment_mgr &amgr,
-                                                       const size_t pq_memory,
-                                                       const size_t pq_max_size)
+  typename substitute_policy::__dd_type
+  __substitute(const exec_policy &ep,
+               const typename substitute_policy::dd_type &dd,
+               substitute_assignment_mgr &amgr,
+               const size_t pq_memory,
+               const size_t pq_max_size)
   {
     // Set up to run the substitution algorithm
     node_stream<> ns(dd);
@@ -208,7 +210,7 @@ namespace adiar::internal
     if (!output_changes) {
       return dd;
     }
-    return out_arcs;
+    return typename substitute_policy::__dd_type(out_arcs, ep);
   }
 
   template<typename substitute_policy>
@@ -249,21 +251,21 @@ namespace adiar::internal
 #endif
       return __substitute<substitute_policy, substitute_assignment_mgr,
                           substitute_priority_queue_t<0, memory_mode_t::Internal>>
-        (dd, amgr, aux_available_memory, max_pq_size);
+        (ep, dd, amgr, aux_available_memory, max_pq_size);
     } else if(!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
       stats_substitute.lpq.internal += 1u;
 #endif
       return __substitute<substitute_policy, substitute_assignment_mgr,
                           substitute_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>>
-        (dd, amgr, aux_available_memory, max_pq_size);
+        (ep, dd, amgr, aux_available_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
       stats_substitute.lpq.external += 1u;
 #endif
       return __substitute<substitute_policy, substitute_assignment_mgr,
                           substitute_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::External>>
-        (dd, amgr, aux_available_memory, max_pq_size);
+        (ep, dd, amgr, aux_available_memory, max_pq_size);
     }
   }
 }

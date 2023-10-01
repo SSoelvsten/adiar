@@ -93,14 +93,15 @@ go_bandit([]() {
       af->max_1level_cut = 1;
 
       it("should copy-construct values from __zdd::shared_arc_file_type", [&]() {
-        __zdd t1 = af;
+        __zdd t1 = __zdd(af, exec_policy::access::Random_Access);
         AssertThat(t1.has<__zdd::shared_arc_file_type>(), Is().True());
         AssertThat(t1.get<__zdd::shared_arc_file_type>(), Is().EqualTo(af));
         AssertThat(t1.negate, Is().False());
+        AssertThat(t1._policy, Is().EqualTo(exec_policy(exec_policy::access::Random_Access)));
       });
 
       it("should reduce on copy construct to zdd with __zdd::shared_arc_file_type", [&]() {
-        zdd out = __zdd(af);
+        zdd out = __zdd(af, exec_policy());
         AssertThat(out, Is().EqualTo(x0_or_x1));
       });
     });

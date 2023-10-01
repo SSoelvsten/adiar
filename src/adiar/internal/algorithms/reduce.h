@@ -1,6 +1,8 @@
 #ifndef ADIAR_INTERNAL_ALGORITHMS_REDUCE_H
 #define ADIAR_INTERNAL_ALGORITHMS_REDUCE_H
 
+#include <adiar/exec_policy.h>
+
 #include <adiar/internal/assert.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/memory.h>
@@ -613,8 +615,8 @@ namespace adiar::internal
     const tpie::memory_size_type pq_memory_fits =
       reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::Internal>::memory_fits(pq_memory);
 
-    const bool internal_only = memory_mode == memory_mode_t::Internal;
-    const bool external_only = memory_mode == memory_mode_t::External;
+    const bool internal_only = input._policy.memory_mode() == exec_policy::memory::Internal;
+    const bool external_only = input._policy.memory_mode() == exec_policy::memory::External;
 
     const size_t pq_bound = in_file->max_1level_cut;
 
