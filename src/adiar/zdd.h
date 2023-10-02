@@ -441,6 +441,14 @@ namespace adiar
   __zdd zdd_change(const zdd &A, const generator<zdd::label_type> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief The symmetric difference between each set in the family and the
+  ///        given set of variables.
+  //////////////////////////////////////////////////////////////////////////////
+  __zdd zdd_change(const exec_policy &ep,
+                   const zdd &A,
+                   const generator<zdd::label_type> &vars);
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief      The symmetric difference between each set in the family and
   ///             the given set of variables.
   ///
@@ -457,14 +465,6 @@ namespace adiar
   template<typename ForwardIt>
   __zdd zdd_change(const zdd &A, ForwardIt begin, ForwardIt end)
   { return zdd_change(A, make_generator(begin, end)); }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief The symmetric difference between each set in the family and the
-  ///        given set of variables.
-  //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_change(const exec_policy &ep,
-                   const zdd &A,
-                   const generator<zdd::label_type> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The symmetric difference between each set in the family and the
@@ -488,6 +488,14 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_complement(const zdd &A, const generator<zdd::label_type> &dom);
 
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Complement of A within the given domain.
+  //////////////////////////////////////////////////////////////////////////////
+  __zdd zdd_complement(const exec_policy& ep,
+                       const zdd &A,
+                       const generator<zdd::label_type> &dom);
+
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       Complement of A within the given domain.
   ///
@@ -505,6 +513,16 @@ namespace adiar
   { return zdd_complement(A, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief Complement of A within the given domain.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename ForwardIt>
+  __zdd zdd_complement(const exec_policy &ep,
+                       const zdd &A,
+                       ForwardIt begin,
+                       ForwardIt end)
+  { return zdd_complement(ep, A, make_generator(begin, end)); }
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief     Complement of A within the global \ref module__domain
   ///
   /// \param A   family of sets to complement
@@ -519,6 +537,11 @@ namespace adiar
   __zdd zdd_complement(const zdd &A);
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief     Complement of A within the global \ref module__domain
+  //////////////////////////////////////////////////////////////////////////////
+  __zdd zdd_complement(const exec_policy& ep, const zdd &A);
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \see zdd_complement
   //////////////////////////////////////////////////////////////////////////////
   __zdd operator~ (const zdd& A);
@@ -526,28 +549,6 @@ namespace adiar
   /// \cond
   __zdd operator~ (__zdd&& A);
   /// \endcond
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Complement of A within the given domain.
-  //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_complement(const exec_policy& ep,
-                       const zdd &A,
-                       const generator<zdd::label_type> &dom);
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Complement of A within the given domain.
-  //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  __zdd zdd_complement(const exec_policy &ep,
-                       const zdd &A,
-                       ForwardIt begin,
-                       ForwardIt end)
-  { return zdd_complement(ep, A, make_generator(begin, end)); }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief     Complement of A within the global \ref module__domain
-  //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_complement(const exec_policy& ep, const zdd &A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Expands the domain of the given ZDD to also include the given
@@ -568,6 +569,14 @@ namespace adiar
   /// \f$ \bigcup_{a \in A, i \in 2^{vars}} (a \cup i) \f$
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_expand(const zdd &A, const generator<zdd::label_type> &vars);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief   Expands the domain of the given ZDD to also include the given set
+  ///          of labels.
+  //////////////////////////////////////////////////////////////////////////////
+  __zdd zdd_expand(const exec_policy &ep,
+                   const zdd &A,
+                   const generator<zdd::label_type> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       Expands the domain of the given ZDD to also include the given
@@ -591,14 +600,6 @@ namespace adiar
   template<typename ForwardIt>
   __zdd zdd_expand(const zdd &A, ForwardIt begin, ForwardIt end)
   { return zdd_expand(A, make_generator(begin, end)); }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief   Expands the domain of the given ZDD to also include the given set
-  ///          of labels.
-  //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_expand(const exec_policy &ep,
-                   const zdd &A,
-                   const generator<zdd::label_type> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Expands the domain of the given ZDD to also include the given set
