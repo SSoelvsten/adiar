@@ -218,21 +218,15 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
     partial_assignment.push_back(row_q);
 
     // Construct the assignment for this entire column
-    adiar::assignment_file column_assignment;
+    std::vector<adiar::pair<adiar::bdd::label_type, bool>> column_assignment;
 
-    { // The assignment_writer has to be detached, before we call any
-      // bdd functions. It is automatically detached upon destruction,
-      //  hence we have it in this little scope.
-      adiar::file_writer<map_pair<bdd::label_t, bool>> aw(column_assignment);
-
-      for (uint64_t row = 0; row < N; row++) {
-        aw << assignment(label_of_position(N, row, column),
-                                row == row_q);
-      }
+    for (uint64_t row = 0; row < N; row++) {
+      column_assignment.push_back({label_of_position(N, row, column), row == row_q});
     }
 
     adiar::bdd restricted_constraints = adiar::bdd_restrict(constraints,
-                                                            column_assignment);
+                                                            column_assignment.begin(),
+                                                            column_assignment.end());
 
     if (adiar::bdd_pathcount(restricted_constraints) == 1) {
       solutions += 1;

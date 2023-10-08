@@ -3,8 +3,8 @@
 
 #include <variant>
 
-#include <adiar/assignment.h>
 #include <adiar/exec_policy.h>
+#include <adiar/types.h>
 
 #include <adiar/internal/cnl.h>
 #include <adiar/internal/cut.h>

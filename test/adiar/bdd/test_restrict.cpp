@@ -23,11 +23,31 @@ go_bandit([]() {
     node n2 = node(1,0, n3.uid(), n4.uid());
     node n1 = node(0,0, n3.uid(), n2.uid());
 
-    shared_levelized_file<bdd::node_type> bdd;
+    shared_levelized_file<bdd::node_type> bdd_1;
 
     { // Garbage collect writer to free write-lock
-      node_writer bdd_w(bdd);
-      bdd_w << n5 << n4 << n3 << n2 << n1;
+      node_writer w(bdd_1);
+      w << n5 << n4 << n3 << n2 << n1;
+    }
+
+    /*
+    //          F
+    */
+    shared_levelized_file<bdd::node_type> bdd_F;
+
+    { // Garbage collect writer to free write-lock
+      node_writer w(bdd_F);
+      w << node(false);
+    }
+
+    /*
+    //          T
+    */
+    shared_levelized_file<bdd::node_type> bdd_T;
+
+    { // Garbage collect writer to free write-lock
+      node_writer w(bdd_T);
+      w << node(true);
     }
 
     it("should bridge level [1] Assignment: (_,_,T,_)", [&]() {
@@ -43,14 +63,9 @@ go_bandit([]() {
       //                  F T
       */
 
-      adiar::shared_file<map_pair<bdd::label_type, assignment>> ass;
+      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {2, true} };
 
-      { // Garbage collect writer to free write-lock
-        adiar::file_writer<map_pair<bdd::label_type, assignment>> aw(ass);
-        aw << map_pair<bdd::label_type, assignment>(2, true);
-      }
-
-      __bdd out = bdd_restrict(bdd, ass);
+      __bdd out = bdd_restrict(exec_policy(), bdd_1, ass.begin(), ass.end());
 
       arc_test_stream arcs(out);
 
@@ -104,14 +119,9 @@ go_bandit([]() {
       //                F T
       */
 
-      adiar::shared_file<map_pair<bdd::label_type, assignment>> ass;
+      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {1, false} };
 
-      { // Garbage collect writer to free write-lock
-        adiar::file_writer<map_pair<bdd::label_type, assignment>> aw(ass);
-        aw << map_pair<bdd::label_type, assignment>(1, false);
-      }
-
-      __bdd out = bdd_restrict(bdd, ass);
+      __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
 
       arc_test_stream arcs(out);
 
@@ -158,14 +168,9 @@ go_bandit([]() {
       //                    F T
       */
 
-      adiar::shared_file<map_pair<bdd::label_type, assignment>> ass;
+      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {1,true} };
 
-      { // Garbage collect writer to free write-lock
-        adiar::file_writer<map_pair<bdd::label_type, assignment>> aw(ass);
-        aw << map_pair<bdd::label_type, assignment>(1, true);
-      }
-
-      __bdd out = bdd_restrict(bdd, ass);
+      __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
 
       arc_test_stream arcs(out);
 
@@ -224,15 +229,9 @@ go_bandit([]() {
       //               F T T F
       */
 
-      adiar::shared_file<map_pair<bdd::label_type, assignment>> ass;
+      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {0,true}, {3,false} };
 
-      { // Garbage collect writer to free write-lock
-        adiar::file_writer<map_pair<bdd::label_type, assignment>> aw(ass);
-        aw << map_pair<bdd::label_type, assignment>(0, true)
-           << map_pair<bdd::label_type, assignment>(3, false);
-      }
-
-      __bdd out = bdd_restrict(bdd, ass);
+      __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
 
       arc_test_stream arcs(out);
 
@@ -279,16 +278,9 @@ go_bandit([]() {
       //                F T
       */
 
-      adiar::shared_file<map_pair<bdd::label_type, assignment>> ass;
+      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {0,false}, {1,true}, {3,false} };
 
-      { // Garbage collect writer to free write-lock
-        adiar::file_writer<map_pair<bdd::label_type, assignment>> aw(ass);
-        aw << map_pair<bdd::label_type, assignment>(0, false)
-           << map_pair<bdd::label_type, assignment>(1, true)
-           << map_pair<bdd::label_type, assignment>(3, false);
-      }
-
-      __bdd out = bdd_restrict(bdd, ass);
+      __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
 
       arc_test_stream arcs(out);
 
@@ -314,15 +306,9 @@ go_bandit([]() {
     });
 
     it("should return F terminal. Assignment: (F,_,F,_)", [&]() {
-      adiar::shared_file<map_pair<bdd::label_type, assignment>> ass;
+      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {0,false}, {2,false} };
 
-      { // Garbage collect writer to free write-lock
-        adiar::file_writer<map_pair<bdd::label_type, assignment>> aw(ass);
-        aw << map_pair<bdd::label_type, assignment>(0, false)
-           << map_pair<bdd::label_type, assignment>(2, false);
-      }
-
-      __bdd out = bdd_restrict(bdd, ass);
+      __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
 
       node_test_stream out_nodes(out);
 
@@ -343,16 +329,9 @@ go_bandit([]() {
     });
 
     it("should return T terminal. Assignment: (T,T,F,_)", [&]() {
-      adiar::shared_file<map_pair<bdd::label_type, assignment>> ass;
+      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {0,true}, {1,true}, {2,false} };
 
-      {  // Garbage collect writer to free write-lock
-        adiar::file_writer<map_pair<bdd::label_type, assignment>> aw(ass);
-        aw << map_pair<bdd::label_type, assignment>(0, true)
-           << map_pair<bdd::label_type, assignment>(1, true)
-           << map_pair<bdd::label_type, assignment>(2, false);
-      }
-
-      __bdd out = bdd_restrict(bdd, ass);
+      __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
 
       node_test_stream out_nodes(out);
 
@@ -373,73 +352,38 @@ go_bandit([]() {
     });
 
     it("should return input unchanged when given a T terminal", [&]() {
-      shared_levelized_file<bdd::node_type> T_file;
+      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {0,true}, {2,true}, {42,false} };
 
-      { // Garbage collect writer to free write-lock
-        node_writer Tw(T_file);
-        Tw << node(true);
-      }
+      __bdd out = bdd_restrict(bdd_T, ass.begin(), ass.end());
 
-      adiar::shared_file<map_pair<bdd::label_type, assignment>> ass;
-
-      { // Garbage collect writer to free write-lock
-        adiar::file_writer<map_pair<bdd::label_type, assignment>> aw(ass);
-        aw << map_pair<bdd::label_type, assignment>(0, true)
-           << map_pair<bdd::label_type, assignment>(2, true)
-           << map_pair<bdd::label_type, assignment>(42, false);
-      }
-
-      __bdd out = bdd_restrict(T_file, ass);
-
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(T_file));
+      AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_T));
       AssertThat(out.negate, Is().False());
     });
 
     it("should return input unchanged when given a F terminal", [&]() {
-      shared_levelized_file<bdd::node_type> F_file;
+      std::vector<adiar::pair<bdd::label_type, bool>> ass  { {2,true}, {21,true}, {28,false} };
 
-      { // Garbage collect writer to free write-lock
-        node_writer Fw(F_file);
-        Fw << node(false);
-      }
+      __bdd out = bdd_restrict(bdd_F, ass.begin(), ass.end());
 
-      adiar::shared_file<map_pair<bdd::label_type, assignment>> ass;
-
-      { // Garbage collect writer to free write-lock
-        adiar::file_writer<map_pair<bdd::label_type, assignment>> aw(ass);
-        aw << map_pair<bdd::label_type, assignment>(2, true)
-           << map_pair<bdd::label_type, assignment>(21, true)
-           << map_pair<bdd::label_type, assignment>(28, false);
-      }
-
-      __bdd out = bdd_restrict(F_file, ass);
-
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(F_file));
+      AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_F));
       AssertThat(out.negate, Is().False());
     });
 
     it("should return input unchanged when given an empty assignment", [&]() {
-      adiar::shared_file<map_pair<bdd::label_type, assignment>> ass;
+      std::vector<adiar::pair<bdd::label_type, bool>> ass;
 
-      __bdd out = bdd_restrict(bdd, ass);
+      __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
 
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd));
+      AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
       AssertThat(out.negate, Is().False());
     });
 
-    it("should return input unchanged when assignment that is disjoint of its live variables", [&]() {
-      adiar::shared_file<map_pair<bdd::label_type, assignment>> ass;
-      { // Garbage collect writer to free write-lock
-        adiar::file_writer<map_pair<bdd::label_type, assignment>> aw(ass);
-        aw << map_pair<bdd::label_type, assignment>(5, false)
-           << map_pair<bdd::label_type, assignment>(6, true)
-           << map_pair<bdd::label_type, assignment>(7, true)
-          ;
-      }
+    it("should return input unchanged if assignment is disjoint of its variables", [&]() {
+      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {5,false}, {6,true}, {7,true} };
 
-      __bdd out = bdd_restrict(bdd, ass);
+      __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
 
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd));
+      AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
       AssertThat(out.negate, Is().False());
     });
 
@@ -456,7 +400,7 @@ go_bandit([]() {
       ptr_uint64 terminal_T = ptr_uint64(true);
       ptr_uint64 terminal_F = ptr_uint64(false);
 
-      shared_levelized_file<bdd::node_type> node_input;
+      shared_levelized_file<bdd::node_type> in;
 
       node n4 = node(2,0, terminal_T, terminal_F);
       node n3 = node(1,1, terminal_T, terminal_F);
@@ -464,18 +408,13 @@ go_bandit([]() {
       node n1 = node(0,0, n2.uid(), n3.uid());
 
       { // Garbage collect writer to free write-lock
-        node_writer inw(node_input);
+        node_writer inw(in);
         inw << n4 << n3 << n2 << n1;
       }
 
-      adiar::shared_file<map_pair<bdd::label_type, assignment>> ass;
+      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {2,true} };
 
-      {  // Garbage collect writer to free write-lock
-        adiar::file_writer<map_pair<bdd::label_type, assignment>> aw(ass);
-        aw << map_pair<bdd::label_type, assignment>(2, true);
-      }
-
-      __bdd out = bdd_restrict(node_input, ass);
+      __bdd out = bdd_restrict(in, ass.begin(), ass.end());
 
       arc_test_stream arcs(out);
 
@@ -530,7 +469,7 @@ go_bandit([]() {
       ptr_uint64 terminal_T = ptr_uint64(true);
       ptr_uint64 terminal_F = ptr_uint64(false);
 
-      shared_levelized_file<bdd::node_type> node_input;
+      shared_levelized_file<bdd::node_type> in;
 
       node n5 = node(2,1, terminal_F, terminal_T);
       node n4 = node(2,0, terminal_T, terminal_F);
@@ -539,18 +478,13 @@ go_bandit([]() {
       node n1 = node(0,0, n2.uid(), n3.uid());
 
       { // Garbage collect writer to free write-lock
-        node_writer inw(node_input);
+        node_writer inw(in);
         inw << n5 << n4 << n3 << n2 << n1;
       }
 
-      adiar::shared_file<map_pair<bdd::label_type, assignment>> ass;
+      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {2,true} };
 
-      {  // Garbage collect writer to free write-lock
-        adiar::file_writer<map_pair<bdd::label_type, assignment>> aw(ass);
-        aw << map_pair<bdd::label_type, assignment>(2, true);
-      }
-
-      __bdd out = bdd_restrict(node_input, ass);
+      __bdd out = bdd_restrict(in, ass.begin(), ass.end());
 
       arc_test_stream arcs(out);
 
@@ -607,7 +541,7 @@ go_bandit([]() {
       //                 Here, node 4 and 6 are going to be dead, when x1 -> T.
       */
 
-      shared_levelized_file<bdd::node_type> dead_bdd;
+      shared_levelized_file<bdd::node_type> in;
 
       node n9 = node(3,1, terminal_T, terminal_F);
       node n8 = node(3,0, terminal_F, terminal_T);
@@ -620,18 +554,13 @@ go_bandit([]() {
       node n1 = node(0,0, n2.uid(), n3.uid());
 
       { // Garbage collect writer to free write-lock
-        node_writer dead_w(dead_bdd);
+        node_writer dead_w(in);
         dead_w << n9 << n8 << n7 << n6 << n5 << n4 << n3 << n2 << n1;
       }
 
-      adiar::shared_file<map_pair<bdd::label_type, assignment>> ass;
+      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {1,true} };
 
-      {  // Garbage collect writer to free write-lock
-        adiar::file_writer<map_pair<bdd::label_type, assignment>> aw(ass);
-        aw << map_pair<bdd::label_type, assignment>(1, true);
-      }
-
-      __bdd out = bdd_restrict(dead_bdd, ass);
+      __bdd out = bdd_restrict(in, ass.begin(), ass.end());
 
       arc_test_stream arcs(out);
 
@@ -689,24 +618,19 @@ go_bandit([]() {
     });
 
     it("should return terminal-child of restricted root [assignment = T]", [&]() {
-      shared_levelized_file<bdd::node_type> terminal_child_of_root_bdd;
+      shared_levelized_file<bdd::node_type> in;
 
       node n2 = node(2, node::max_id, terminal_T, terminal_T);
       node n1 = node(1, node::max_id, n2.uid(), terminal_F);
 
       { // Garbage collect writer to free write-lock
-        node_writer dead_w(terminal_child_of_root_bdd);
+        node_writer dead_w(in);
         dead_w << n2 << n1;
       }
 
-      adiar::shared_file<map_pair<bdd::label_type, assignment>> ass;
+      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {1,true} };
 
-      {  // Garbage collect writer to free write-lock
-        adiar::file_writer<map_pair<bdd::label_type, assignment>> aw(ass);
-        aw << map_pair<bdd::label_type, assignment>(1, true);
-      }
-
-      __bdd out = bdd_restrict(terminal_child_of_root_bdd, ass);
+      __bdd out = bdd_restrict(in, ass.begin(), ass.end());
 
       node_test_stream out_nodes(out);
 
@@ -727,24 +651,19 @@ go_bandit([]() {
     });
 
     it("should return terminal-child of restricted root [assignment = F]", [&]() {
-      shared_levelized_file<bdd::node_type> terminal_child_of_root_bdd;
+      shared_levelized_file<bdd::node_type> in;
 
       node n2 = node(2, node::max_id, terminal_T, terminal_T);
       node n1 = node(0, node::max_id, terminal_T, n2.uid());
 
       { // Garbage collect writer to free write-lock
-        node_writer dead_w(terminal_child_of_root_bdd);
+        node_writer dead_w(in);
         dead_w << n2 << n1;
       }
 
-      adiar::shared_file<map_pair<bdd::label_type, assignment>> ass;
+      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {0,false} };
 
-      {  // Garbage collect writer to free write-lock
-        adiar::file_writer<map_pair<bdd::label_type, assignment>> aw(ass);
-        aw << map_pair<bdd::label_type, assignment>(0, false);
-      }
-
-      __bdd out = bdd_restrict(terminal_child_of_root_bdd, ass);
+      __bdd out = bdd_restrict(in, ass.begin(), ass.end());
 
       node_test_stream out_nodes(out);
 

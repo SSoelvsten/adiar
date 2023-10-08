@@ -6,7 +6,6 @@ set_property(GLOBAL PROPERTY USE_FOLDERS On)
 set(HEADERS
   # adiar
   adiar.h
-  assignment.h
   bool_op.h
   builder.h
   deprecated.h
@@ -17,6 +16,7 @@ set(HEADERS
   functional.h
   map.h
   statistics.h
+  types.h
 
   # adiar/bdd
   bdd.h
