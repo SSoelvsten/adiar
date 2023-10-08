@@ -294,6 +294,45 @@ go_bandit([]() {
       });
     });
 
+    describe("domain_set(), domain_unset(), domain_size()", []() {
+      it("has zero-sized domain if none is set", []() {
+        domain_unset();
+
+        AssertThat(domain_isset(), Is().False());
+        AssertThat(domain_size(), Is().EqualTo(0u));
+      });
+
+      it("reports domain has no elements when set to the empty domain", []() {
+        domain_unset();
+        AssertThat(domain_isset(), Is().False());
+
+        domain_set(0);
+        AssertThat(domain_isset(), Is().True());
+
+        AssertThat(domain_size(), Is().EqualTo(0u));
+      });
+
+      it("can report having a domain of 1 element", []() {
+        domain_unset();
+        AssertThat(domain_isset(), Is().False());
+
+        domain_set(1);
+        AssertThat(domain_isset(), Is().True());
+
+        AssertThat(domain_size(), Is().EqualTo(1u));
+      });
+
+      it("can report having a domain of 42 element", []() {
+        domain_unset();
+        AssertThat(domain_isset(), Is().False());
+
+        domain_set(42);
+        AssertThat(domain_isset(), Is().True());
+
+        AssertThat(domain_size(), Is().EqualTo(42u));
+      });
+    });
+
     // TODO: more tests when 'https://github.com/thomasmoelhave/tpie/issues/265'
     //       is resolved.
   });
