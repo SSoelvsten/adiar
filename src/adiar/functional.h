@@ -31,13 +31,13 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief General-purpose polymorphic function wrapper.
   ///
-  /// \tparam ret_type  The type signature of the form `ret_t (args_t...)`.
+  /// \tparam TypeSignature The type signature of the form `ret_t (args_t...)`.
   //////////////////////////////////////////////////////////////////////////////
   template<typename TypeSignature>
   using function = std::function<TypeSignature>;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Predicate function given value(s) of the `Args`.
+  /// \brief Predicate function given value(s) of type(s) `Args`.
   ///
   /// \tparam Args List of the argument's type in the order, they are supposed
   ///              to be given. This list may be empty.
@@ -46,7 +46,7 @@ namespace adiar
   using predicate = function<bool (Args...)>;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Consumer function of value(s) of the `Args`.
+  /// \brief Consumer function of value(s) of type(s) `Args`.
   ///
   /// \remark Most functions that provide values to a consumer will do so in a
   ///         specific order; you may abuse this to improve the performance of
@@ -78,14 +78,16 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief  Generator function that *produces* a new value of `ret_type` for
+  /// \brief  Generator function that *produces* a new value of `RetType` for
   ///         each call.
   ///
   /// \remark Most functions that take a generator as the input expect it (1) to
   ///         produce values in a specific order and (2) to provide a certain
-  ///         type of value to mark having reached *the end*.
+  ///         type of value to mark having reached the \em end. For (1), please
+  ///         see the documentation of each respective function, while for (2)
+  ///         use `generator_end`.
   ///
-  /// \tparam ret_type Type of each yielded value from the generator.
+  /// \tparam RetType Type of each yielded value from the generator.
   //////////////////////////////////////////////////////////////////////////////
   template<typename RetType>
   using generator = function<RetType ()>;
