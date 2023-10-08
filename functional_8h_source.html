@@ -99,77 +99,86 @@ $(document).ready(function(){initNavTree('functional_8h_source.html',''); initRe
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define ADIAR_FUNCTIONAL_H</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;functional&gt;</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;adiar/exception.h&gt;</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceadiar.html">adiar</a></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;{</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> type_signature&gt;</div>
-<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="group__module____functional.html#ga9e6cd3304af27467f193e619c723c5f8">   36</a></span>&#160;  <span class="keyword">using</span> <span class="keyword">function</span> = std::function&lt;type_signature&gt;;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span>... Args&gt;</div>
-<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="group__module____functional.html#ga78d4d136e1487656864654cd556233d8">   45</a></span>&#160;  <span class="keyword">using</span> <a class="code" href="group__module____functional.html#ga78d4d136e1487656864654cd556233d8">predicate</a> = <span class="keyword">function</span>&lt;bool (Args...)&gt;;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span>... Args&gt;</div>
-<div class="line"><a name="l00058"></a><span class="lineno"><a class="line" href="group__module____functional.html#ga99494f283acb45d89d508b47a9e7b4b5">   58</a></span>&#160;  <span class="keyword">using</span> <a class="code" href="group__module____functional.html#ga99494f283acb45d89d508b47a9e7b4b5">consumer</a> = <span class="keyword">function</span>&lt;void (Args...)&gt;;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ForwardIt&gt;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <span class="keyword">inline</span> <a class="code" href="group__module____functional.html#ga99494f283acb45d89d508b47a9e7b4b5">consumer&lt;typename ForwardIt::value_type&gt;</a></div>
-<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="group__module____functional.html#ga923a64580e0b6124c8e9c9bafb27f7e0">   69</a></span>&#160;  <a class="code" href="group__module____functional.html#ga923a64580e0b6124c8e9c9bafb27f7e0">make_consumer</a>(ForwardIt &amp;begin, ForwardIt &amp;end)</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  {</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keywordflow">return</span> [&amp;begin, &amp;end](<span class="keyword">const</span> <span class="keyword">typename</span> ForwardIt::value_type x) {</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      <span class="keywordflow">if</span> (begin == end) {</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <span class="keywordflow">throw</span> <a class="code" href="namespaceadiar.html#a134e4e5c35c637e80cb45c0eaf92aafe">out_of_range</a>(<span class="stringliteral">&quot;Iterator range unable to contain all generated values&quot;</span>);</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      }</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;      *(begin++) = x;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    };</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  }</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="comment">// TODO: Use template specialization to simplify the use of an end value, i.e.</span></div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="comment">//       `generator&lt;ret_type&gt;::end` or `generator_end&lt;ret_type&gt;::value`.</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; </div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ret_type&gt;</div>
-<div class="line"><a name="l00093"></a><span class="lineno"><a class="line" href="group__module____functional.html#ga702012d1897ef7f3b33e07b134fd0d5f">   93</a></span>&#160;  <span class="keyword">using</span> <a class="code" href="group__module____functional.html#ga702012d1897ef7f3b33e07b134fd0d5f">generator</a> = <span class="keyword">function</span>&lt;ret_type ()&gt;;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160; </div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ForwardIt&gt;</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <span class="keyword">inline</span> <a class="code" href="group__module____functional.html#ga702012d1897ef7f3b33e07b134fd0d5f">generator&lt;typename ForwardIt::value_type&gt;</a></div>
-<div class="line"><a name="l00100"></a><span class="lineno"><a class="line" href="group__module____functional.html#ga0bb6ca574a1999bd9895ed6517e92972">  100</a></span>&#160;  <a class="code" href="group__module____functional.html#ga0bb6ca574a1999bd9895ed6517e92972">make_generator</a>(ForwardIt &amp;begin, ForwardIt &amp;end)</div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;type_traits&gt;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; </div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;adiar/exception.h&gt;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceadiar.html">adiar</a></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;{</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> TypeSignature&gt;</div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="group__module____functional.html#ga7cedafe2a659228db84b6dc3c35fb0ca">   37</a></span>&#160;  <span class="keyword">using</span> <span class="keyword">function</span> = std::function&lt;TypeSignature&gt;;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span>... Args&gt;</div>
+<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="group__module____functional.html#ga78d4d136e1487656864654cd556233d8">   46</a></span>&#160;  <span class="keyword">using</span> <a class="code" href="group__module____functional.html#ga78d4d136e1487656864654cd556233d8">predicate</a> = <span class="keyword">function</span>&lt;bool (Args...)&gt;;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; </div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span>... Args&gt;</div>
+<div class="line"><a name="l00059"></a><span class="lineno"><a class="line" href="group__module____functional.html#ga99494f283acb45d89d508b47a9e7b4b5">   59</a></span>&#160;  <span class="keyword">using</span> <a class="code" href="group__module____functional.html#ga99494f283acb45d89d508b47a9e7b4b5">consumer</a> = <span class="keyword">function</span>&lt;void (Args...)&gt;;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ForwardIt&gt;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="keyword">inline</span> <a class="code" href="group__module____functional.html#ga99494f283acb45d89d508b47a9e7b4b5">consumer&lt;typename ForwardIt::value_type&gt;</a></div>
+<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="group__module____functional.html#ga923a64580e0b6124c8e9c9bafb27f7e0">   70</a></span>&#160;  <a class="code" href="group__module____functional.html#ga923a64580e0b6124c8e9c9bafb27f7e0">make_consumer</a>(ForwardIt &amp;begin, ForwardIt &amp;end)</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  {</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keywordflow">return</span> [&amp;begin, &amp;end](<span class="keyword">const</span> <span class="keyword">typename</span> ForwardIt::value_type x) {</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;      <span class="keywordflow">if</span> (begin == end) {</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <span class="keywordflow">throw</span> <a class="code" href="namespaceadiar.html#a134e4e5c35c637e80cb45c0eaf92aafe">out_of_range</a>(<span class="stringliteral">&quot;Iterator range unable to contain all generated values&quot;</span>);</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;      }</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;      *(begin++) = x;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    };</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  }</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> RetType&gt;</div>
+<div class="line"><a name="l00091"></a><span class="lineno"><a class="line" href="group__module____functional.html#gafc1dc465a57ff35315eefcd90fbd3e34">   91</a></span>&#160;  <span class="keyword">using</span> <a class="code" href="group__module____functional.html#gafc1dc465a57ff35315eefcd90fbd3e34">generator</a> = <span class="keyword">function</span>&lt;RetType ()&gt;;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160; </div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> RetType&gt;</div>
+<div class="line"><a name="l00100"></a><span class="lineno"><a class="line" href="structadiar_1_1generator__end.html">  100</a></span>&#160;  <span class="keyword">struct </span><a class="code" href="structadiar_1_1generator__end.html">generator_end</a></div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  {</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="keywordflow">return</span> [&amp;begin, &amp;end]() {</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;      <span class="keywordflow">if</span> (begin == end) {</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;        <span class="comment">// TODO (DD Iterators): change return value depending on `value_type`.</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>typename ForwardIt::value_type<span class="keyword">&gt;</span>(-1);</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;      }</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;      <span class="keywordflow">return</span> *(begin++);</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    };</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  }</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160; </div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Stream&gt;</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  <span class="keyword">inline</span> generator&lt;typename Stream::value_type&gt;</div>
-<div class="line"><a name="l00116"></a><span class="lineno"><a class="line" href="group__module____functional.html#ga10b08b986192013581d64d25d3dd622b">  116</a></span>&#160;  <a class="code" href="group__module____functional.html#ga0bb6ca574a1999bd9895ed6517e92972">make_generator</a>(Stream &amp;s)</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  {</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    <span class="keywordflow">return</span> [&amp;s]() {</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;      <span class="keywordflow">if</span> (!s.can_pull()) {</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>typename Stream::value_type<span class="keyword">&gt;</span>(-1);</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;      }</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;      <span class="keywordflow">return</span> s.pull();</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    };</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  }</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160; </div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160; </div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;}</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160; </div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// ADIAR_FUNCTIONAL_H</span></div>
-<div class="ttc" id="agroup__module____functional_html_ga0bb6ca574a1999bd9895ed6517e92972"><div class="ttname"><a href="group__module____functional.html#ga0bb6ca574a1999bd9895ed6517e92972">adiar::make_generator</a></div><div class="ttdeci">generator&lt; typename ForwardIt::value_type &gt; make_generator(ForwardIt &amp;begin, ForwardIt &amp;end)</div><div class="ttdoc">Wrap a begin and end iterator pair into a generator function.</div><div class="ttdef"><b>Definition:</b> functional.h:100</div></div>
-<div class="ttc" id="agroup__module____functional_html_ga702012d1897ef7f3b33e07b134fd0d5f"><div class="ttname"><a href="group__module____functional.html#ga702012d1897ef7f3b33e07b134fd0d5f">adiar::generator</a></div><div class="ttdeci">function&lt; ret_type()&gt; generator</div><div class="ttdoc">Generator function that produces a new value of ret_type for each call.</div><div class="ttdef"><b>Definition:</b> functional.h:93</div></div>
-<div class="ttc" id="agroup__module____functional_html_ga78d4d136e1487656864654cd556233d8"><div class="ttname"><a href="group__module____functional.html#ga78d4d136e1487656864654cd556233d8">adiar::predicate</a></div><div class="ttdeci">function&lt; bool(Args...)&gt; predicate</div><div class="ttdoc">Predicate function given value(s) of the Args.</div><div class="ttdef"><b>Definition:</b> functional.h:45</div></div>
-<div class="ttc" id="agroup__module____functional_html_ga923a64580e0b6124c8e9c9bafb27f7e0"><div class="ttname"><a href="group__module____functional.html#ga923a64580e0b6124c8e9c9bafb27f7e0">adiar::make_consumer</a></div><div class="ttdeci">consumer&lt; typename ForwardIt::value_type &gt; make_consumer(ForwardIt &amp;begin, ForwardIt &amp;end)</div><div class="ttdoc">Wrap a begin and end iterator pair into a consumer function.</div><div class="ttdef"><b>Definition:</b> functional.h:69</div></div>
-<div class="ttc" id="agroup__module____functional_html_ga99494f283acb45d89d508b47a9e7b4b5"><div class="ttname"><a href="group__module____functional.html#ga99494f283acb45d89d508b47a9e7b4b5">adiar::consumer</a></div><div class="ttdeci">function&lt; void(Args...)&gt; consumer</div><div class="ttdoc">Consumer function of value(s) of the Args.</div><div class="ttdef"><b>Definition:</b> functional.h:58</div></div>
-<div class="ttc" id="anamespaceadiar_html"><div class="ttname"><a href="namespaceadiar.html">adiar</a></div><div class="ttdoc">Core types.</div><div class="ttdef"><b>Definition:</b> adiar.h:38</div></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="keyword">using</span> value_type = RetType;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160; </div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    static_assert(std::is_integral&lt;RetType&gt;::value);</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keyword">static</span> constexpr value_type value = <span class="keyword">static_cast&lt;</span>value_type<span class="keyword">&gt;</span>(-1);</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  };</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160; </div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <span class="comment">// TODO: Specialize for DDs (Both BDDs and ZDDs) to return an empty file.</span></div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160; </div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ForwardIt&gt;</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  <span class="keyword">inline</span> <a class="code" href="group__module____functional.html#gafc1dc465a57ff35315eefcd90fbd3e34">generator&lt;typename ForwardIt::value_type&gt;</a></div>
+<div class="line"><a name="l00115"></a><span class="lineno"><a class="line" href="group__module____functional.html#ga0bb6ca574a1999bd9895ed6517e92972">  115</a></span>&#160;  <a class="code" href="group__module____functional.html#ga0bb6ca574a1999bd9895ed6517e92972">make_generator</a>(ForwardIt &amp;begin, ForwardIt &amp;end)</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  {</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    <span class="keywordflow">return</span> [&amp;begin, &amp;end]() {</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;      <span class="keywordflow">if</span> (begin == end) {</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="structadiar_1_1generator__end.html">generator_end&lt;typename ForwardIt::value_type&gt;::value</a>;</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;      }</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;      <span class="keywordflow">return</span> *(begin++);</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    };</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  }</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160; </div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Stream&gt;</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <span class="keyword">inline</span> generator&lt;typename Stream::value_type&gt;</div>
+<div class="line"><a name="l00130"></a><span class="lineno"><a class="line" href="group__module____functional.html#ga10b08b986192013581d64d25d3dd622b">  130</a></span>&#160;  <a class="code" href="group__module____functional.html#ga0bb6ca574a1999bd9895ed6517e92972">make_generator</a>(Stream &amp;s)</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  {</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    <span class="keywordflow">return</span> [&amp;s]() {</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;      <span class="keywordflow">if</span> (!s.can_pull()) {</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="structadiar_1_1generator__end.html">generator_end&lt;typename Stream::value_type&gt;::value</a>;</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;      }</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;      <span class="keywordflow">return</span> s.pull();</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;    };</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;  }</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160; </div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160; </div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;}</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160; </div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// ADIAR_FUNCTIONAL_H</span></div>
+<div class="ttc" id="agroup__module____functional_html_ga0bb6ca574a1999bd9895ed6517e92972"><div class="ttname"><a href="group__module____functional.html#ga0bb6ca574a1999bd9895ed6517e92972">adiar::make_generator</a></div><div class="ttdeci">generator&lt; typename ForwardIt::value_type &gt; make_generator(ForwardIt &amp;begin, ForwardIt &amp;end)</div><div class="ttdoc">Wrap a begin and end iterator pair into a generator function.</div><div class="ttdef"><b>Definition:</b> functional.h:115</div></div>
+<div class="ttc" id="agroup__module____functional_html_ga78d4d136e1487656864654cd556233d8"><div class="ttname"><a href="group__module____functional.html#ga78d4d136e1487656864654cd556233d8">adiar::predicate</a></div><div class="ttdeci">function&lt; bool(Args...)&gt; predicate</div><div class="ttdoc">Predicate function given value(s) of the Args.</div><div class="ttdef"><b>Definition:</b> functional.h:46</div></div>
+<div class="ttc" id="agroup__module____functional_html_ga923a64580e0b6124c8e9c9bafb27f7e0"><div class="ttname"><a href="group__module____functional.html#ga923a64580e0b6124c8e9c9bafb27f7e0">adiar::make_consumer</a></div><div class="ttdeci">consumer&lt; typename ForwardIt::value_type &gt; make_consumer(ForwardIt &amp;begin, ForwardIt &amp;end)</div><div class="ttdoc">Wrap a begin and end iterator pair into a consumer function.</div><div class="ttdef"><b>Definition:</b> functional.h:70</div></div>
+<div class="ttc" id="agroup__module____functional_html_ga99494f283acb45d89d508b47a9e7b4b5"><div class="ttname"><a href="group__module____functional.html#ga99494f283acb45d89d508b47a9e7b4b5">adiar::consumer</a></div><div class="ttdeci">function&lt; void(Args...)&gt; consumer</div><div class="ttdoc">Consumer function of value(s) of the Args.</div><div class="ttdef"><b>Definition:</b> functional.h:59</div></div>
+<div class="ttc" id="agroup__module____functional_html_gafc1dc465a57ff35315eefcd90fbd3e34"><div class="ttname"><a href="group__module____functional.html#gafc1dc465a57ff35315eefcd90fbd3e34">adiar::generator</a></div><div class="ttdeci">function&lt; RetType()&gt; generator</div><div class="ttdoc">Generator function that produces a new value of ret_type for each call.</div><div class="ttdef"><b>Definition:</b> functional.h:91</div></div>
+<div class="ttc" id="anamespaceadiar_html"><div class="ttname"><a href="namespaceadiar.html">adiar</a></div><div class="ttdoc">Core types.</div><div class="ttdef"><b>Definition:</b> adiar.h:37</div></div>
 <div class="ttc" id="anamespaceadiar_html_a134e4e5c35c637e80cb45c0eaf92aafe"><div class="ttname"><a href="namespaceadiar.html#a134e4e5c35c637e80cb45c0eaf92aafe">adiar::out_of_range</a></div><div class="ttdeci">std::out_of_range out_of_range</div><div class="ttdoc">Attempt to access elements outside of the given range.</div><div class="ttdef"><b>Definition:</b> exception.h:43</div></div>
+<div class="ttc" id="astructadiar_1_1generator__end_html"><div class="ttname"><a href="structadiar_1_1generator__end.html">adiar::generator_end</a></div><div class="ttdoc">Template specialization to derive the end (similar to EOF) return-value for a generator function.</div><div class="ttdef"><b>Definition:</b> functional.h:101</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

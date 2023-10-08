@@ -248,21 +248,15 @@ Printing each Solution</h1>
 <div class="line">    partial_assignment.push_back(row_q);</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">// Construct the assignment for this entire column</span></div>
-<div class="line">    adiar::assignment_file column_assignment;</div>
+<div class="line">    std::vector&lt;adiar::pair&lt;adiar::bdd::label_type, bool&gt;&gt; column_assignment;</div>
 <div class="line"> </div>
-<div class="line">    { <span class="comment">// The assignment_writer has to be detached, before we call any</span></div>
-<div class="line">      <span class="comment">// bdd functions. It is automatically detached upon destruction,</span></div>
-<div class="line">      <span class="comment">//  hence we have it in this little scope.</span></div>
-<div class="line">      <a class="code" href="namespaceadiar.html#ac0c8a98240760bd6186b1f3f590abca8">adiar::file_writer&lt;map_pair&lt;bdd::label_t, bool&gt;</a>&gt; aw(column_assignment);</div>
-<div class="line"> </div>
-<div class="line">      <span class="keywordflow">for</span> (uint64_t row = 0; row &lt; N; row++) {</div>
-<div class="line">        aw &lt;&lt; <a class="code" href="namespaceadiar.html#a723cfcc9239dfdc3cf4cdc74df0265c2">assignment</a>(label_of_position(N, row, column),</div>
-<div class="line">                                row == row_q);</div>
-<div class="line">      }</div>
+<div class="line">    <span class="keywordflow">for</span> (uint64_t row = 0; row &lt; N; row++) {</div>
+<div class="line">      column_assignment.push_back({label_of_position(N, row, column), row == row_q});</div>
 <div class="line">    }</div>
 <div class="line"> </div>
-<div class="line">    <a class="code" href="classadiar_1_1bdd.html">adiar::bdd</a> restricted_constraints = <a class="code" href="group__module____bdd.html#ga58afed7dd475606eac552dcd1484b9c3">adiar::bdd_restrict</a>(constraints,</div>
-<div class="line">                                                            column_assignment);</div>
+<div class="line">    <a class="code" href="classadiar_1_1bdd.html">adiar::bdd</a> restricted_constraints = <a class="code" href="group__module____bdd.html#ga88084995736d65b9a5f647b98c44da2e">adiar::bdd_restrict</a>(constraints,</div>
+<div class="line">                                                            column_assignment.begin(),</div>
+<div class="line">                                                            column_assignment.end());</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">if</span> (<a class="code" href="group__module____bdd.html#gadd0becff66aaae9313c29248bc33750e">adiar::bdd_pathcount</a>(restricted_constraints) == 1) {</div>
 <div class="line">      solutions += 1;</div>
@@ -319,11 +313,10 @@ Printing each Solution</h1>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">return</span> n_queens_list(N, 0, partial_assignment, board);</div>
 <div class="line">}</div>
-<div class="ttc" id="agroup__module____bdd_html_ga58afed7dd475606eac552dcd1484b9c3"><div class="ttname"><a href="group__module____bdd.html#ga58afed7dd475606eac552dcd1484b9c3">adiar::bdd_restrict</a></div><div class="ttdeci">__bdd bdd_restrict(const bdd &amp;f, const shared_file&lt; map_pair&lt; bdd::label_type, assignment &gt;&gt; &amp;xs)</div><div class="ttdoc">Restrict a subset of variables to constant values.</div></div>
 <div class="ttc" id="agroup__module____bdd_html_ga82d50901064486da23984c7dfac196c0"><div class="ttname"><a href="group__module____bdd.html#ga82d50901064486da23984c7dfac196c0">adiar::bdd_satmin</a></div><div class="ttdeci">bdd bdd_satmin(const bdd &amp;f)</div><div class="ttdoc">The lexicographically smallest x such that f(x) is true.</div></div>
+<div class="ttc" id="agroup__module____bdd_html_ga88084995736d65b9a5f647b98c44da2e"><div class="ttname"><a href="group__module____bdd.html#ga88084995736d65b9a5f647b98c44da2e">adiar::bdd_restrict</a></div><div class="ttdeci">__bdd bdd_restrict(const bdd &amp;f, const generator&lt; pair&lt; bdd::label_type, bool &gt;&gt; &amp;xs)</div><div class="ttdoc">Restrict a subset of variables to constant values.</div></div>
 <div class="ttc" id="agroup__module____bdd_html_gadd0becff66aaae9313c29248bc33750e"><div class="ttname"><a href="group__module____bdd.html#gadd0becff66aaae9313c29248bc33750e">adiar::bdd_pathcount</a></div><div class="ttdeci">uint64_t bdd_pathcount(const bdd &amp;f)</div><div class="ttdoc">Count all unique (but not necessarily disjoint) paths to the true terminal.</div></div>
-<div class="ttc" id="anamespaceadiar_html_a723cfcc9239dfdc3cf4cdc74df0265c2"><div class="ttname"><a href="namespaceadiar.html#a723cfcc9239dfdc3cf4cdc74df0265c2">adiar::assignment</a></div><div class="ttdeci">assignment</div><div class="ttdoc">Possible values to assign a variable.</div><div class="ttdef"><b>Definition:</b> assignment.h:13</div></div>
-<div class="ttc" id="anamespaceadiar_html_ac0c8a98240760bd6186b1f3f590abca8"><div class="ttname"><a href="namespaceadiar.html#ac0c8a98240760bd6186b1f3f590abca8">adiar::file_writer</a></div><div class="ttdeci">internal::file_writer&lt; elem_t &gt; file_writer</div><div class="ttdef"><b>Definition:</b> file.h:25</div></div>
+<div class="ttc" id="anamespaceadiar_html_a723cfcc9239dfdc3cf4cdc74df0265c2"><div class="ttname"><a href="namespaceadiar.html#a723cfcc9239dfdc3cf4cdc74df0265c2">adiar::assignment</a></div><div class="ttdeci">assignment</div><div class="ttdoc">Possible values to assign a variable.</div><div class="ttdef"><b>Definition:</b> types.h:13</div></div>
 </div><!-- fragment --><p>where <code>n_queens_print_solutions</code> is a function that prints out the assignment file.</p>
 <div class="fragment"><div class="line"><span class="keywordtype">void</span> n_queens_print_solution(std::vector&lt;uint64_t&gt;&amp; assignment)</div>
 <div class="line">{</div>

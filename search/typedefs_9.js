@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['node_5ffile_5ftype_786',['node_file_type',['../classadiar_1_1internal_1_1dd.html#a0cdac2e628e7e850c765f934b54bd6c6',1,'adiar::internal::dd']]],
-  ['node_5ftype_787',['node_type',['../classadiar_1_1internal_1_1____dd.html#aa1eafa94e60449e285536ba37968bd83',1,'adiar::internal::__dd::node_type()'],['../classadiar_1_1internal_1_1dd.html#ae61644f31c4f02c71977814fa92c2435',1,'adiar::internal::dd::node_type()']]]
+  ['out_5fidx_5ftype_776',['out_idx_type',['../classadiar_1_1internal_1_1ptr__uint64.html#abdc8b8afad1b407498a11332b6aaece1',1,'adiar::internal::ptr_uint64']]],
+  ['out_5fof_5frange_777',['out_of_range',['../namespaceadiar.html#a134e4e5c35c637e80cb45c0eaf92aafe',1,'adiar']]]
 ];

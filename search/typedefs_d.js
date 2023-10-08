@@ -1,8 +1,5 @@
 var searchData=
 [
-  ['shared_5farc_5ffile_5ftype_794',['shared_arc_file_type',['../classadiar_1_1internal_1_1____dd.html#a073bd9314a5213108cdb99e4175dc5ae',1,'adiar::internal::__dd']]],
-  ['shared_5ffile_795',['shared_file',['../namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4',1,'adiar']]],
-  ['shared_5fnode_5ffile_5ftype_796',['shared_node_file_type',['../classadiar_1_1internal_1_1____dd.html#a0e3ab4aa5b10f26683c9d7b7bfb577b1',1,'adiar::internal::__dd::shared_node_file_type()'],['../classadiar_1_1internal_1_1dd.html#a6e3a8ba34a8e4c6ffa86612923293b0f',1,'adiar::internal::dd::shared_node_file_type()']]],
-  ['shared_5fptr_797',['shared_ptr',['../namespaceadiar.html#af1d82216ca9a1da7562b64def09c6ad5',1,'adiar']]],
-  ['system_5ferror_798',['system_error',['../namespaceadiar.html#a0c8a41f4c8e148e1e565bb18825da862',1,'adiar']]]
+  ['target_5ft_786',['target_t',['../classadiar_1_1internal_1_1request_3_01Cardinality_00_010_00_01Inputs_01_4.html#a14709b3541de8cbe12f1197eeb0b4983',1,'adiar::internal::request&lt; Cardinality, 0, Inputs &gt;']]],
+  ['terminal_5ftype_787',['terminal_type',['../classadiar_1_1internal_1_1dd.html#ab27dcf883d83c04d944288f0b3507cd8',1,'adiar::internal::dd::terminal_type()'],['../classadiar_1_1internal_1_1arc.html#aacca1aac7cc14ad9322c96b9b4bb50e7',1,'adiar::internal::arc::terminal_type()'],['../classadiar_1_1internal_1_1node.html#aea7f48b5a8aeea7b42c4f9b2ee19b2f9',1,'adiar::internal::node::terminal_type()'],['../classadiar_1_1internal_1_1ptr__uint64.html#abc0883449afe153630a6660c8bfc8855',1,'adiar::internal::ptr_uint64::terminal_type()']]]
 ];

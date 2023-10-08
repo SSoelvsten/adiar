@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['knight_27s_20tour_843',['Knight&apos;s Tour',['../knights_tour.html',1,'page__examples']]]
+  ['knight_27s_20tour_828',['Knight&apos;s Tour',['../knights_tour.html',1,'page__examples']]]
 ];

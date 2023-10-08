@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['memory_810',['memory',['../classadiar_1_1exec__policy.html#a3c5d03f2961f93a86e0ce24d9fcea29a',1,'adiar::exec_policy']]]
+  ['quantify_796',['quantify',['../classadiar_1_1exec__policy.html#a1d37a49f8ef3843dd33c0cc843313902',1,'adiar::exec_policy']]]
 ];
