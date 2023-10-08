@@ -45,37 +45,42 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  class bdd_eval_file_visitor
+  class bdd_eval_generator_visitor
   {
-    internal::file_stream<map_pair<bdd::label_type, boolean>> mps;
-    map_pair<bdd::label_type, boolean> mp;
+    const generator<pair<bdd::label_type, bool>> &_generator;
+    pair<bdd::label_type, bool> _next_pair;
 
     bool result = false;
 
   public:
-    bdd_eval_file_visitor(const shared_file<map_pair<bdd::label_type, boolean>>& msf)
-      : mps(msf)
-    { if (mps.can_pull()) { mp = mps.pull(); } }
+    bdd_eval_generator_visitor(const generator<pair<bdd::label_type, bool>>& g)
+      : _generator(g)
+    {
+      _next_pair = _generator();
+    }
 
     inline bdd::pointer_type visit(const bdd::node_type &n)
     {
       const bdd::label_type level = n.label();
-      while (mp.level() < level) {
-        if (!mps.can_pull()) {
+
+      while (_next_pair.first < level) {
+        const pair<bdd::label_type, bool> p = _generator();
+
+        if (bdd::max_label < p.first) {
           throw out_of_range("Labels are insufficient to traverse BDD");
         }
-        if (mps.peek().level() <= mp.level()) {
+        if (p.first <= _next_pair.first) {
           throw invalid_argument("Labels are not in ascending order");
         }
 
-        mp = mps.pull();
+        _next_pair = p;
       }
 
-      if (mp.level() != level) {
+      if (_next_pair.first != level) {
         throw invalid_argument("Missing assignment for node visited in BDD");
       }
 
-      return mp.value() ? n.high() : n.low();
+      return n.child(_next_pair.second);
     }
 
     inline void visit(const bool s)
@@ -85,10 +90,9 @@ namespace adiar
     { return result; }
   };
 
-  bool bdd_eval(const bdd &bdd,
-                const shared_file<map_pair<bdd::label_type, boolean>> &mpf)
+  bool bdd_eval(const bdd &bdd, const generator<pair<bdd::label_type, bool>> &xs)
   {
-    bdd_eval_file_visitor v(mpf);
+    bdd_eval_generator_visitor v(xs);
     internal::traverse(bdd, v);
     return v.get_result();
   }
@@ -96,7 +100,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   class bdd_sat_bdd_callback
   {
-    // TODO: replace with TPIE's external stack
+    // TODO: replace with TPIE's external stack / an internal stack
     using e = map_pair<bdd::label_type, boolean>;
 
     shared_file<e> ef;
