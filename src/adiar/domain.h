@@ -12,8 +12,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <adiar/exception.h>
-#include <adiar/file.h> // <-- TODO: Replace with <adiar/internal/io/file.h>
 #include <adiar/functional.h>
+
+#include <adiar/internal/io/file.h>
+#include <adiar/internal/io/shared_file_ptr.h>
 
 // TODO: Make 'domain_var' independent of node type. Then remove this include.
 #include <adiar/internal/data_types/node.h>
@@ -75,7 +77,7 @@ namespace adiar
   ///
   /// \see domain_get()
   //////////////////////////////////////////////////////////////////////////////
-  void domain_set(const shared_file<domain_var> &dom);
+  void domain_set(const internal::shared_file<domain_var> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Removes any globally shared domain variables (if any).
@@ -102,7 +104,7 @@ namespace adiar
   ///
   /// \see domain_set(const shared_file<domain_var> &dom)
   //////////////////////////////////////////////////////////////////////////////
-  shared_file<domain_var> domain_get();
+  internal::shared_file<domain_var> domain_get();
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The size of the domain.

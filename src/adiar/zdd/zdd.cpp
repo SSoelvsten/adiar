@@ -225,7 +225,7 @@ namespace adiar
 
   __zdd zdd_from(const exec_policy &ep, const bdd &f)
   {
-    const shared_file<zdd::label_type> dom = domain_get();
+    const internal::shared_file<zdd::label_type> dom = domain_get();
     internal::file_stream<domain_var> ds(dom);
 
     return zdd_from(ep, f, make_generator(ds));

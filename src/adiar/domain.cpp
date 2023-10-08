@@ -1,8 +1,7 @@
 #include "domain.h"
 
 #include <adiar/internal/data_types/node.h>
-#include <adiar/internal/io/file.h>
-#include <adiar/internal/io/shared_file_ptr.h>
+#include <adiar/internal/io/file_writer.h>
 
 namespace adiar
 {
@@ -13,7 +12,7 @@ namespace adiar
 
   void domain_set(const domain_var varcount)
   {
-    shared_file<domain_var> dom;
+    internal::shared_file<domain_var> dom;
     { // Garbage collect writer to free write-lock
       internal::file_writer<domain_var> lw(dom);
       for (domain_var v = 0; v < varcount; v++) { lw << v; }
@@ -23,7 +22,7 @@ namespace adiar
 
   void domain_set(const generator<domain_var> &gen)
   {
-    shared_file<domain_var> dom;
+    internal::shared_file<domain_var> dom;
     { // Garbage collect writer to free write-lock
       internal::file_writer<domain_var> lw(dom);
 
@@ -34,7 +33,7 @@ namespace adiar
     domain_set(dom);
   }
 
-  void domain_set(const shared_file<domain_var> &dom)
+  void domain_set(const internal::shared_file<domain_var> &dom)
   {
     domain_ptr = dom;
   }
@@ -49,7 +48,7 @@ namespace adiar
     return domain_ptr ? true : false;
   }
 
-  shared_file<domain_var> domain_get()
+  internal::shared_file<domain_var> domain_get()
   {
     if(!domain_isset()) {
       throw domain_error("Domain must be set before it can be used");

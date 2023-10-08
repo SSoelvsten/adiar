@@ -292,14 +292,14 @@ go_bandit([]() {
 
     describe("level_merger<shared_file<label_type>, ...>", [&]() {
       it("can use a single label_file", [&]() {
-        adiar::shared_file<ptr_uint64::label_type> f;
+        shared_file<ptr_uint64::label_type> f;
 
         { // Garbage collect the writers
           label_writer w(f);
           w << 0 << 2 << 3;
         }
 
-        level_merger<adiar::shared_file<ptr_uint64::label_type>, std::less<>, 1> merger;
+        level_merger<shared_file<ptr_uint64::label_type>, std::less<>, 1> merger;
 
         merger.hook({f});
 
@@ -316,8 +316,8 @@ go_bandit([]() {
       });
 
       it("can merge two label_files", [&]() {
-        adiar::shared_file<ptr_uint64::label_type> f1;
-        adiar::shared_file<ptr_uint64::label_type> f2;
+        shared_file<ptr_uint64::label_type> f1;
+        shared_file<ptr_uint64::label_type> f2;
 
         { // Garbage collect the writers
           label_writer w1(f1);
@@ -327,7 +327,7 @@ go_bandit([]() {
           w2 << 0 << 1 << 3;
         }
 
-        level_merger<adiar::shared_file<ptr_uint64::label_type>, std::less<>, 2> merger;
+        level_merger<shared_file<ptr_uint64::label_type>, std::less<>, 2> merger;
 
         merger.hook({f1, f2});
 
