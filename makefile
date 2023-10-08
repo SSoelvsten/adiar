@@ -72,9 +72,6 @@ test/adiar/domain:
 test/adiar/exec_policy:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar TEST_NAME=exec_policy
 
-test/adiar/map:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar TEST_NAME=map
-
 test/adiar/bdd/apply:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=apply
 

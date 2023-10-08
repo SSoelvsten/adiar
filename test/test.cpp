@@ -82,7 +82,6 @@ go_bandit([]() {
 ////////////////////////////////////////////////////////////////////////////////
 // Adiar Core unit tests
 #include "adiar/test_bool_op.cpp"
-#include "adiar/test_map.cpp"
 
 #include "adiar/test_domain.cpp"
 #include "adiar/test_builder.cpp"

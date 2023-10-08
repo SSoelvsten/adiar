@@ -151,17 +151,6 @@ namespace snowhouse
       return stream.str();
     }
   };
-
-  template<>
-  struct Stringizer<adiar::map_pair<adiar::bdd::label_type, adiar::assignment>>
-  {
-    static std::string ToString(const adiar::map_pair<adiar::bdd::label_type, adiar::assignment>& a)
-    {
-      std::stringstream stream;
-      stream << "assignment: [x" << a.key() << "|->" << static_cast<size_t>(a.value()) << "]";
-      return stream.str();
-    }
-  };
 }
 
 ////////////////////////////////////////////////////////////////////////////////

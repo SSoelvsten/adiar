@@ -14,7 +14,6 @@ set(HEADERS
   exec_policy.h
   file.h
   functional.h
-  map.h
   statistics.h
   types.h
 
