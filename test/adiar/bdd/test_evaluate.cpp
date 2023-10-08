@@ -81,258 +81,191 @@ go_bandit([]() {
         nw << node(true);
       }
 
-      describe("bdd_eval(bdd, adiar::shared_file<...>)", [&]() {
+      describe("bdd_eval(bdd, adiar::generator<...>)", [&]() {
         it("returns F on test BDD with assignment (F,F,F,T)", [&]() {
-          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
+          std::vector<pair<bdd::label_type, bool>> ass = {
+            {0, false},
+            {1, false},
+            {2, false},
+            {3, true}
+          };
 
-          { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
-
-            aw << map_pair<bdd::label_type, boolean>(0, false)
-               << map_pair<bdd::label_type, boolean>(1, false)
-               << map_pair<bdd::label_type, boolean>(2, false)
-               << map_pair<bdd::label_type, boolean>(3, true);
-          }
-
-          AssertThat(bdd_eval(bdd, ass), Is().False());
+          AssertThat(bdd_eval(bdd, ass.begin(), ass.end()), Is().False());
         });
 
         it("returns F on test BDD with assignment (F,_,F,T)", [&]() {
-          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
+          std::vector<pair<bdd::label_type, bool>> ass = {
+            {0, false},
+            {2, false},
+            {3, true}
+          };
 
-          { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
-
-            aw << map_pair<bdd::label_type, boolean>(0, false)
-               << map_pair<bdd::label_type, boolean>(2, false)
-               << map_pair<bdd::label_type, boolean>(3, true);
-          }
-
-          AssertThat(bdd_eval(bdd, ass), Is().False());
+          AssertThat(bdd_eval(bdd, ass.begin(), ass.end()), Is().False());
         });
 
         it("returns T on test BDD with assignment (F,T,T,T)", [&]() {
-          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
+          std::vector<pair<bdd::label_type, bool>> ass = {
+            {0, false},
+            {1, true},
+            {2, true},
+            {3, true}
+          };
 
-          { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
-
-            aw << map_pair<bdd::label_type, boolean>(0, false)
-               << map_pair<bdd::label_type, boolean>(1, true)
-               << map_pair<bdd::label_type, boolean>(2, true)
-               << map_pair<bdd::label_type, boolean>(3, true);
-          }
-
-          AssertThat(bdd_eval(bdd, ass), Is().True());
+          AssertThat(bdd_eval(bdd, ass.begin(), ass.end()), Is().True());
         });
 
         it("returns F on test BDD with assignment (T,F,F,T)", [&]() {
-          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
+          std::vector<pair<bdd::label_type, bool>> ass = {
+            {0, true},
+            {1, false},
+            {2, false},
+            {3, true}
+          };
 
-          { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
-
-            aw << map_pair<bdd::label_type, boolean>(0, true)
-               << map_pair<bdd::label_type, boolean>(1, false)
-               << map_pair<bdd::label_type, boolean>(2, false)
-               << map_pair<bdd::label_type, boolean>(3, true);
-          }
-
-          AssertThat(bdd_eval(bdd, ass), Is().False());
+          AssertThat(bdd_eval(bdd, ass.begin(), ass.end()), Is().False());
         });
 
         it("returns T on test BDD with assignment (T,F,T,F)", [&]() {
-          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
+          std::vector<pair<bdd::label_type, bool>> ass = {
+            {0, true},
+            {1, false},
+            {2, true},
+            {3, false}
+          };
 
-          { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
-
-            aw << map_pair<bdd::label_type, boolean>(0, true)
-               << map_pair<bdd::label_type, boolean>(1, false)
-               << map_pair<bdd::label_type, boolean>(2, true)
-               << map_pair<bdd::label_type, boolean>(3, false);
-          }
-
-          AssertThat(bdd_eval(bdd, ass), Is().True());
+          AssertThat(bdd_eval(bdd, ass.begin(), ass.end()), Is().True());
         });
 
         it("returns T on test BDD with assignment (T,T,F,T)", [&]() {
-          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
+          std::vector<pair<bdd::label_type, bool>> ass = {
+            {0, true},
+            {1, true},
+            {2, false},
+            {3, true}
+          };
 
-          { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
-
-            aw << map_pair<bdd::label_type, boolean>(0, true)
-               << map_pair<bdd::label_type, boolean>(1, true)
-               << map_pair<bdd::label_type, boolean>(2, false)
-               << map_pair<bdd::label_type, boolean>(3, true);
-          }
-
-          AssertThat(bdd_eval(bdd, ass), Is().True());
+          AssertThat(bdd_eval(bdd, ass.begin(), ass.end()), Is().True());
         });
 
         it("returns T on test BDD with assignment (T,T,T,F)", [&]() {
-          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
+          std::vector<pair<bdd::label_type, bool>> ass = {
+            {0, true},
+            {1, true},
+            {2, true},
+            {3, false}
+          };
 
-          { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
-
-            aw << map_pair<bdd::label_type, boolean>(0, true)
-               << map_pair<bdd::label_type, boolean>(1, true)
-               << map_pair<bdd::label_type, boolean>(2, true)
-               << map_pair<bdd::label_type, boolean>(3, false);
-          }
-
-          AssertThat(bdd_eval(bdd, ass), Is().False());
+          AssertThat(bdd_eval(bdd, ass.begin(), ass.end()), Is().False());
         });
 
         it("returns T on test BDD with assignment (T,T,T,T)", [&]() {
-          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
+          std::vector<pair<bdd::label_type, bool>> ass = {
+            {0, true},
+            {1, true},
+            {2, true},
+            {3, true}
+          };
 
-          { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
-
-            aw << map_pair<bdd::label_type, boolean>(0, true)
-               << map_pair<bdd::label_type, boolean>(1, true)
-               << map_pair<bdd::label_type, boolean>(2, true)
-               << map_pair<bdd::label_type, boolean>(3, true);
-          }
-
-          AssertThat(bdd_eval(bdd, ass), Is().True());
+          AssertThat(bdd_eval(bdd, ass.begin(), ass.end()), Is().True());
         });
 
         it("should be able to evaluate BDD that skips level [1]", [&skip_bdd]() {
-          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
+          std::vector<pair<bdd::label_type, bool>> ass = {
+            {0, false},
+            {1, true},
+            {2, false},
+            {3, true},
+            {4, true}
+          };
 
-          { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
-
-            aw << map_pair<bdd::label_type, boolean>(0, false)
-               << map_pair<bdd::label_type, boolean>(1, true)
-               << map_pair<bdd::label_type, boolean>(2, false)
-               << map_pair<bdd::label_type, boolean>(3, true)
-               << map_pair<bdd::label_type, boolean>(4, true);
-          }
-
-          AssertThat(bdd_eval(skip_bdd, ass), Is().False());
+          AssertThat(bdd_eval(skip_bdd, ass.begin(), ass.end()), Is().False());
         });
 
         it("should be able to evaluate BDD that skips level [2]", [&skip_bdd]() {
-          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
+          std::vector<pair<bdd::label_type, bool>> ass = {
+            {0, true},
+            {1, false},
+            {2, true},
+            {3, true},
+            {4, false}
+          };
 
-          { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
-
-            aw << map_pair<bdd::label_type, boolean>(0, true)
-               << map_pair<bdd::label_type, boolean>(1, false)
-               << map_pair<bdd::label_type, boolean>(2, true)
-               << map_pair<bdd::label_type, boolean>(3, true)
-               << map_pair<bdd::label_type, boolean>(4, false);
-          }
-
-          AssertThat(bdd_eval(skip_bdd, ass), Is().False());
+          AssertThat(bdd_eval(skip_bdd, ass.begin(), ass.end()), Is().False());
         });
 
         it("returns T on BDD with non-zero root with assignment (F,T)", [&]() {
-          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
+          std::vector<pair<bdd::label_type, bool>> ass = {
+            {0, false},
+            {1, true}
+          };
 
-          { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
-
-            aw << map_pair<bdd::label_type, boolean>(0, false)
-               << map_pair<bdd::label_type, boolean>(1, true);
-          }
-
-          AssertThat(bdd_eval(non_zero_bdd, ass), Is().True());
+          AssertThat(bdd_eval(non_zero_bdd, ass.begin(), ass.end()), Is().True());
         });
 
         it("returns F on F terminal-only BDD", [&]() {
-          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
+          std::vector<pair<bdd::label_type, bool>> ass = {
+            {0, true},
+            {1, false},
+            {2, false},
+            {3, true}
+          };
 
-          { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
-
-            aw << map_pair<bdd::label_type, boolean>(0, true)
-               << map_pair<bdd::label_type, boolean>(1, false)
-               << map_pair<bdd::label_type, boolean>(2, false)
-               << map_pair<bdd::label_type, boolean>(3, true);
-          }
-
-          AssertThat(bdd_eval(bdd_F, ass), Is().False());
+          AssertThat(bdd_eval(bdd_F, ass.begin(), ass.end()), Is().False());
         });
 
         it("returns F on F terminal-only BDD with empty assignment", [&]() {
-          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
+          std::vector<pair<bdd::label_type, bool>> ass = { };
 
-          AssertThat(bdd_eval(bdd_F, ass), Is().False());
+          AssertThat(bdd_eval(bdd_F, ass.begin(), ass.end()), Is().False());
         });
 
         it("returns T on T terminal-only BDD", [&]() {
-          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
+          std::vector<pair<bdd::label_type, bool>> ass = {
+            {0, true},
+            {1, true},
+            {2, false},
+            {3, true}
+          };
 
-          { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
-
-            aw << map_pair<bdd::label_type, boolean>(0, true)
-               << map_pair<bdd::label_type, boolean>(1, true)
-               << map_pair<bdd::label_type, boolean>(2, false)
-               << map_pair<bdd::label_type, boolean>(3, true);
-          }
-
-          AssertThat(bdd_eval(bdd_T, ass), Is().True());
+          AssertThat(bdd_eval(bdd_T, ass.begin(), ass.end()), Is().True());
         });
 
         it("returns T on T terminal-only BDD with empty assignment", [&]() {
-          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
+          std::vector<pair<bdd::label_type, bool>> ass;
 
-          AssertThat(bdd_eval(bdd_T, ass), Is().True());
+          AssertThat(bdd_eval(bdd_T, ass.begin(), ass.end()), Is().True());
         });
 
         it("throws exception when given non-ascending list of assignments", [&]() {
-          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
+          std::vector<pair<bdd::label_type, bool>> ass = {
+            {0, true},
+            {2, true},
+            {1, true},
+            {3, true},
+            {4, true}
+          };
 
-          { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
-
-            aw << map_pair<bdd::label_type, boolean>(0, true)
-               << map_pair<bdd::label_type, boolean>(2, true)
-               << map_pair<bdd::label_type, boolean>(1, true)
-               << map_pair<bdd::label_type, boolean>(3, true)
-               << map_pair<bdd::label_type, boolean>(4, true)
-              ;
-          }
-
-          AssertThrows(invalid_argument, bdd_eval(skip_bdd, ass));
+          AssertThrows(invalid_argument, bdd_eval(skip_bdd, ass.begin(), ass.end()));
         });
 
         it("throws exception when running out of assignments", [&]() {
-          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
+          std::vector<pair<bdd::label_type, bool>> ass = {
+            {0, true},
+            {1, true}
+          };
 
-          { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
-
-            aw << map_pair<bdd::label_type, boolean>(0, true)
-               << map_pair<bdd::label_type, boolean>(1, true)
-              ;
-          }
-
-          AssertThrows(out_of_range, bdd_eval(skip_bdd, ass));
+          AssertThrows(out_of_range, bdd_eval(skip_bdd, ass.begin(), ass.end()));
         });
 
         it("throws exception when list is missing a needed assignment", [&]() {
-          adiar::shared_file<map_pair<bdd::label_type, boolean>> ass;
+          std::vector<pair<bdd::label_type, bool>> ass = {
+            {0, true},
+            {1, true},
+            {3, true},
+            {4, true}
+          };
 
-          { // Garbage collect writer to free write-lock
-            adiar::file_writer<map_pair<bdd::label_type, boolean>> aw(ass);
-
-            aw << map_pair<bdd::label_type, boolean>(0, true)
-               << map_pair<bdd::label_type, boolean>(1, true)
-               << map_pair<bdd::label_type, boolean>(3, true)
-               << map_pair<bdd::label_type, boolean>(4, true)
-              ;
-          }
-
-          AssertThrows(invalid_argument, bdd_eval(skip_bdd, ass));
+          AssertThrows(invalid_argument, bdd_eval(skip_bdd, ass.begin(), ass.end()));
         });
       });
 

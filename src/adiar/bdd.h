@@ -35,6 +35,20 @@ namespace adiar
   ///
   /// \{
 
+  /// \cond
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief End marker for the BDD assignment generators.
+  //////////////////////////////////////////////////////////////////////////////
+  template<>
+  struct generator_end<pair<bdd::label_type, bool>>
+  {
+    using value_type = pair<bdd::label_type, bool>;
+
+    static constexpr value_type value =
+      make_pair(static_cast<bdd::label_type>(-1), false);
+  };
+  /// \endcond
+
   //////////////////////////////////////////////////////////////////////////////
   /// \name Basic BDD Constructors
   ///
@@ -458,20 +472,6 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_ite(const exec_policy &ep, const bdd &f, const bdd &g, const bdd &h);
 
-  /// \cond
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief End marker for the BDD restrict generators.
-  //////////////////////////////////////////////////////////////////////////////
-  template<>
-  struct generator_end<pair<bdd::label_type, bool>>
-  {
-    using value_type = pair<bdd::label_type, bool>;
-
-    static constexpr value_type value =
-      make_pair(static_cast<bdd::label_type>(-1), false);
-  };
-  /// \endcond
-
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Restrict a subset of variables to constant values.
   ///
@@ -480,9 +480,9 @@ namespace adiar
   ///           scope of the variables in `xs`, i.e. any later mention of
   ///           a variable i is not the same as variable i in `xs`.
   ///
-  /// \param f  BDD to restrict
+  /// \param f  BDD to restrict.
   ///
-  /// \param xs Assignments (i,v) to variables in (in ascending order)
+  /// \param xs Assignments (i,v) to variables in (in ascending order).
   ///
   /// \returns  \f$ f|_{(i,v) \in xs : x_i = v} \f$
   //////////////////////////////////////////////////////////////////////////////
@@ -1059,9 +1059,9 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Evaluate a BDD according to an assignment to its variables.
   ///
-  /// \param f  The BDD to evaluate
+  /// \param f  The BDD to evaluate.
   ///
-  /// \param xs A list of tuples `(i,v)` in ascending order of `i`.
+  /// \param xs Assignments (i,v) to variables in (in ascending order).
   ///
   /// \pre      Assignment tuples in `xs` is in ascending order
   ///
@@ -1070,9 +1070,26 @@ namespace adiar
   ///
   /// \throws invalid_argument If a level in the BDD does not exist in `xs`.
   //////////////////////////////////////////////////////////////////////////////
-  // TODO v2.0 : Replace with `generator<pair<...>>`
-  bool bdd_eval(const bdd &f,
-                const shared_file<map_pair<bdd::label_type, boolean>> &xs);
+  bool bdd_eval(const bdd &f, const generator<pair<bdd::label_type, bool>> &xs);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief       Evaluate a BDD according to an assignment to its variables.
+  ///
+  /// \param f     The BDD to evaluate.
+  ///
+  /// \param begin Single-pass forward iterator that provides the assignment in
+  ///              \em ascending order.
+  ///
+  /// \param end   Marks the end for `begin`.
+  ///
+  /// \throws out_of_range If traversal of the BDD leads to going beyond the end
+  ///                      of the content of `xs`.
+  ///
+  /// \throws invalid_argument If a level in the BDD does not exist in `xs`.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename ForwardIt>
+  bool bdd_eval(const bdd &f, ForwardIt begin, ForwardIt end)
+  { return bdd_eval(f, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Get the labels of the levels of the BDD.
