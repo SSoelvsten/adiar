@@ -12,7 +12,6 @@ set(HEADERS
   domain.h
   exception.h
   exec_policy.h
-  file.h
   functional.h
   statistics.h
   types.h

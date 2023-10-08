@@ -138,7 +138,7 @@ go_bandit([]() {
       });
 
       it("should compute {{0},{1}}' == {Ø,{0,1}} with dom {0,1}", [&]() {
-        adiar::shared_file<zdd::label_type> dom;
+        shared_file<zdd::label_type> dom;
         {
           label_writer lw(dom);
           lw << 0 << 1;
@@ -162,7 +162,7 @@ go_bandit([]() {
       });
 
       it("should compute with __zdd&& operators [|,~,-,]", [&]() {
-          adiar::shared_file<zdd::label_type> dom;
+          shared_file<zdd::label_type> dom;
           {
             label_writer lw(dom);
             lw << 0 << 1;

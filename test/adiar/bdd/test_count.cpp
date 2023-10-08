@@ -126,7 +126,7 @@ go_bandit([]() {
     }
 
     // Set domain to be empty
-    adiar::shared_file<bdd::label_type> empty_dom;
+    shared_file<bdd::label_type> empty_dom;
     domain_set(empty_dom);
 
     describe("bdd_nodecount", [&]() {
@@ -292,7 +292,7 @@ go_bandit([]() {
     });
 
     describe("bdd_satcount(f) [non-empty dom]", [&]() {
-      adiar::shared_file<bdd::label_type> dom;
+      shared_file<bdd::label_type> dom;
       {
         label_writer lw(dom);
         lw << 0 << 1 << 2 << 3 << 4 << 5 << 6;

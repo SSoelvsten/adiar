@@ -54,7 +54,7 @@ namespace adiar
     }
 
     static zdd on_terminal_input(const bool terminal_value, const zdd& /*dd*/,
-                                 const shared_file<zdd::label_type> &universe)
+                                 const internal::shared_file<zdd::label_type> &universe)
     {
       // TODO: remove
       internal::file_stream<zdd::label_type, true> ls(universe);
@@ -118,7 +118,7 @@ namespace adiar
 
   __zdd zdd_complement(const exec_policy &ep, const zdd &A)
   {
-    const shared_file<zdd::label_type> dom = domain_get();
+    const internal::shared_file<zdd::label_type> dom = domain_get();
     internal::file_stream<domain_var> ds(dom);
 
     return zdd_complement(ep, A, make_generator(ds));

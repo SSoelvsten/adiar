@@ -227,18 +227,18 @@ go_bandit([]() {
     describe("file() + file_stream", []() {
       it("can attach to and detach from an empty file [con-/destructor]", []() {
         file<int> f;
-        adiar::internal::file_stream<int> fs(f);
+        file_stream<int> fs(f);
       });
 
       it("can attach to and detach from an empty file [member functions]", []() {
         file<int> f;
-        adiar::internal::file_stream<int> fs;
+        file_stream<int> fs;
         fs.attach(f);
       });
 
       it("remembers it was attached", []() {
         file<int> f;
-        adiar::internal::file_stream<int> fs(f);
+        file_stream<int> fs(f);
         AssertThat(fs.attached(), Is().True());
         fs.detach();
         AssertThat(fs.attached(), Is().False());
@@ -246,14 +246,14 @@ go_bandit([]() {
 
       it("cannot be pulled from", []() {
         file<int> f;
-        adiar::internal::file_stream<int> fs(f);
+        file_stream<int> fs(f);
 
         AssertThat(fs.can_pull(), Is().False());
       });
 
       it("can be reset", []() {
         file<int> f;
-        adiar::internal::file_stream<int> fs(f);
+        file_stream<int> fs(f);
 
         fs.reset();
         AssertThat(fs.attached(), Is().True());
@@ -264,18 +264,18 @@ go_bandit([]() {
     describe("file() + file_writer", [&tmp_path, &curr_path]() {
       it("can attach to and detach from an empty file [con-/destructor]", []() {
         file<int> f;
-        adiar::file_writer<int> fw(f);
+        file_writer<int> fw(f);
       });
 
       it("can attach to and detach from an empty file [member functions]", []() {
         file<int> f;
-        adiar::file_writer<int> fw;
+        file_writer<int> fw;
         fw.detach();
       });
 
       it("remembers it was attached", []() {
         file<int> f;
-        adiar::file_writer<int> fw(f);
+        file_writer<int> fw(f);
         AssertThat(fw.attached(), Is().True());
         fw.detach();
         AssertThat(fw.attached(), Is().False());
@@ -285,7 +285,7 @@ go_bandit([]() {
         file<int> f;
         AssertThat(f.exists(), Is().False());
 
-        adiar::file_writer<int> fw(f);
+        file_writer<int> fw(f);
         fw.detach();
 
         AssertThat(f.exists(), Is().True());
@@ -293,7 +293,7 @@ go_bandit([]() {
 
       it("reports whether elements were pushed", []() {
         file<int> f;
-        adiar::file_writer<int> fw(f);
+        file_writer<int> fw(f);
 
         AssertThat(fw.has_pushed(), Is().False());
         AssertThat(fw.empty(), Is().True());
@@ -311,7 +311,7 @@ go_bandit([]() {
       it("changes size when writing content to file [1]", []() {
         file<int> f;
 
-        adiar::file_writer<int> fw(f);
+        file_writer<int> fw(f);
 
         AssertThat(fw.size(), Is().EqualTo(0u));
         fw << 1 << 2;
@@ -326,7 +326,7 @@ go_bandit([]() {
       it("changes size when writing content to file [2]", []() {
         file<int> f;
 
-        adiar::file_writer<int> fw(f);
+        file_writer<int> fw(f);
         AssertThat(fw.size(), Is().EqualTo(0u));
         fw << 42;
         AssertThat(fw.size(), Is().EqualTo(1u));
@@ -346,7 +346,7 @@ go_bandit([]() {
 
         file<int> f;
 
-        adiar::file_writer<int> fw(f);
+        file_writer<int> fw(f);
         fw << 42 << 21;
         fw.detach();
 
@@ -371,7 +371,7 @@ go_bandit([]() {
 
         file<int> f;
 
-        adiar::file_writer<int> fw(f);
+        file_writer<int> fw(f);
         fw << 42 << 21;
         fw.detach();
 
@@ -392,12 +392,12 @@ go_bandit([]() {
       it("can read written content [1]", []() {
         file<int> f;
 
-        adiar::file_writer<int> fw(f);
+        file_writer<int> fw(f);
         fw << 1 << 2 << 3;
         fw.detach();
         AssertThat(fw.attached(), Is().False());
 
-        adiar::internal::file_stream<int, false> fs(f);
+        file_stream<int, false> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(1));
         AssertThat(fs.can_pull(), Is().True());
@@ -411,12 +411,12 @@ go_bandit([]() {
       it("can read written content [2]", []() {
         file<int> f;
 
-        adiar::file_writer<int> fw(f);
+        file_writer<int> fw(f);
         fw << 42 << 21;
         fw.detach();
         AssertThat(fw.attached(), Is().False());
 
-        adiar::internal::file_stream<int, false> fs(f);
+        file_stream<int, false> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(42));
         AssertThat(fs.can_pull(), Is().True());
@@ -428,12 +428,12 @@ go_bandit([]() {
       it("can read written content in reverse [1]", []() {
         file<int> f;
 
-        adiar::file_writer<int> fw(f);
+        file_writer<int> fw(f);
         fw << 1 << 2 << 3;
         fw.detach();
         AssertThat(fw.attached(), Is().False());
 
-        adiar::internal::file_stream<int, true> fs(f);
+        file_stream<int, true> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(3));
         AssertThat(fs.can_pull(), Is().True());
@@ -447,12 +447,12 @@ go_bandit([]() {
       it("can read written content in reverse [2]", []() {
         file<int> f;
 
-        adiar::file_writer<int> fw(f);
+        file_writer<int> fw(f);
         fw << 42 << 21;
         fw.detach();
         AssertThat(fw.attached(), Is().False());
 
-        adiar::internal::file_stream<int, true> fs(f);
+        file_stream<int, true> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(21));
         AssertThat(fs.can_pull(), Is().True());
@@ -464,12 +464,12 @@ go_bandit([]() {
       it("can seek existing elements [forward]", []() {
         file<int> f;
 
-        adiar::file_writer<int> fw(f);
+        file_writer<int> fw(f);
         fw << 1 << 2 << 3 << 4 << 5 << 6;
         fw.detach();
         AssertThat(fw.attached(), Is().False());
 
-        adiar::internal::file_stream<int> fs(f);
+        file_stream<int> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.seek(2), Is().EqualTo(2));
         AssertThat(fs.can_pull(), Is().True());
@@ -484,12 +484,12 @@ go_bandit([]() {
       it("can seek existing elements [reverse]", []() {
         file<int> f;
 
-        adiar::file_writer<int> fw(f);
+        file_writer<int> fw(f);
         fw << 6 << 5 << 4 << 3 << 2 << 1;
         fw.detach();
         AssertThat(fw.attached(), Is().False());
 
-        adiar::internal::file_stream<int, true> fs(f);
+        file_stream<int, true> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.seek(2), Is().EqualTo(2));
         AssertThat(fs.can_pull(), Is().True());
@@ -504,12 +504,12 @@ go_bandit([]() {
       it("can seek non-existing element [forward]", []() {
         file<int> f;
 
-        adiar::file_writer<int> fw(f);
+        file_writer<int> fw(f);
         fw << 1 << 2 << 3 << 5 << 6;
         fw.detach();
         AssertThat(fw.attached(), Is().False());
 
-        adiar::internal::file_stream<int> fs(f);
+        file_stream<int> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.seek(2), Is().EqualTo(2));
         AssertThat(fs.can_pull(), Is().True());
@@ -520,12 +520,12 @@ go_bandit([]() {
       it("can seek non-existing element [reverse]", []() {
         file<int> f;
 
-        adiar::file_writer<int> fw(f);
+        file_writer<int> fw(f);
         fw << 6 << 5 << 3 << 2 << 1;
         fw.detach();
         AssertThat(fw.attached(), Is().False());
 
-        adiar::internal::file_stream<int, true> fs(f);
+        file_stream<int, true> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.seek(2), Is().EqualTo(2));
         AssertThat(fs.can_pull(), Is().True());
@@ -536,12 +536,12 @@ go_bandit([]() {
       it("can seek past end [forward]", []() {
         file<int> f;
 
-        adiar::file_writer<int> fw(f);
+        file_writer<int> fw(f);
         fw << 1 << 2 << 3 << 5 << 6;
         fw.detach();
         AssertThat(fw.attached(), Is().False());
 
-        adiar::internal::file_stream<int> fs(f);
+        file_stream<int> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.seek(3), Is().EqualTo(3));
         AssertThat(fs.can_pull(), Is().True());
@@ -554,12 +554,12 @@ go_bandit([]() {
       it("can seek past end [reverse]", []() {
         file<int> f;
 
-        adiar::file_writer<int> fw(f);
+        file_writer<int> fw(f);
         fw << 6 << 5 << 3 << 2 << 1;
         fw.detach();
         AssertThat(fw.attached(), Is().False());
 
-        adiar::internal::file_stream<int, true> fs(f);
+        file_stream<int, true> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.seek(3), Is().EqualTo(3));
         AssertThat(fs.can_pull(), Is().True());
@@ -572,13 +572,13 @@ go_bandit([]() {
       it("can sort written content", []() {
         file<int> f;
 
-        adiar::file_writer<int> fw(f);
+        file_writer<int> fw(f);
         fw << 42 << 2 << 32 << 21;
         fw.sort<std::less<>>();
         fw.detach();
         AssertThat(fw.attached(), Is().False());
 
-        adiar::internal::file_stream<int> fs(f);
+        file_stream<int> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(2));
         AssertThat(fs.can_pull(), Is().True());
@@ -600,14 +600,14 @@ go_bandit([]() {
 
         file<int> f;
 
-        adiar::file_writer<int> fw(f);
+        file_writer<int> fw(f);
         fw << 12 << 9 << 1;
         fw.detach();
 
         AssertThat(f.can_move(), Is().True());
         f.move(new_path);
 
-        adiar::internal::file_stream<int, false> fs(f);
+        file_stream<int, false> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(12));
         AssertThat(fs.can_pull(), Is().True());
@@ -627,14 +627,14 @@ go_bandit([]() {
 
         file<int> f;
 
-        adiar::file_writer<int> fw(f);
+        file_writer<int> fw(f);
         fw << 12 << 9 << 1;
         fw.detach();
 
         AssertThat(f.can_move(), Is().True());
         f.move(new_path);
 
-        adiar::internal::file_stream<int, false> fs(f);
+        file_stream<int, false> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(12));
         AssertThat(fs.can_pull(), Is().True());
@@ -654,14 +654,14 @@ go_bandit([]() {
 
         file<int> f;
 
-        adiar::file_writer<int> fw(f);
+        file_writer<int> fw(f);
         fw << 8 << 9 << 4 << 2;
         fw.detach();
 
         AssertThat(f.can_move(), Is().True());
         f.move(new_path);
 
-        adiar::internal::file_stream<int, true> fs(f);
+        file_stream<int, true> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(2));
         AssertThat(fs.can_pull(), Is().True());
@@ -683,14 +683,14 @@ go_bandit([]() {
 
         file<int> f;
 
-        adiar::file_writer<int> fw(f);
+        file_writer<int> fw(f);
         fw << 8 << 9 << 4 << 2;
         fw.detach();
 
         AssertThat(f.can_move(), Is().True());
         f.move(new_path);
 
-        adiar::internal::file_stream<int, true> fs(f);
+        file_stream<int, true> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(2));
         AssertThat(fs.can_pull(), Is().True());
@@ -766,7 +766,7 @@ go_bandit([]() {
       {
         file<int> f;
 
-        adiar::file_writer<int> fw(f);
+        file_writer<int> fw(f);
         fw << 0 << 1 << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9;
         fw.detach();
 
@@ -787,7 +787,7 @@ go_bandit([]() {
 
       it("can read content with a stream", [&path]() {
         file<int> f(path);
-        adiar::internal::file_stream<int> fs(f);
+        file_stream<int> fs(f);
 
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(0));
@@ -814,7 +814,7 @@ go_bandit([]() {
 
       it("can read content in reverse with a stream", [&path]() {
         file<int> f(path);
-        adiar::internal::file_stream<int, true> fs(f);
+        file_stream<int, true> fs(f);
 
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(9));
@@ -841,7 +841,7 @@ go_bandit([]() {
 
       it("cannot reattach a writer to a persisted file", [&path]() {
         file<int> f(path);
-        adiar::file_writer<int> fw;
+        file_writer<int> fw;
         AssertThrows(runtime_error, fw.attach(f));
       });
 
@@ -859,7 +859,7 @@ go_bandit([]() {
         f.sort<std::less<int>>();
         AssertThat(f.exists(), Is().False());
 
-        adiar::internal::file_stream<int> fs(f);
+        file_stream<int> fs(f);
         AssertThat(fs.can_pull(), Is().False());
         fs.detach();
       });
@@ -872,7 +872,7 @@ go_bandit([]() {
         f.sort<std::less<int>>();
         AssertThat(f.exists(), Is().True());
 
-        adiar::internal::file_stream<int> fs(f);
+        file_stream<int> fs(f);
         AssertThat(fs.can_pull(), Is().False());
         fs.detach();
       });
@@ -880,13 +880,13 @@ go_bandit([]() {
       it("can sort non-empty file [1]", []() {
         file<int> f;
 
-        adiar::file_writer<int> fw(f);
+        file_writer<int> fw(f);
         fw << 8 << 9 << 4 << 2;
         fw.detach();
 
         f.sort<std::less<int>>();
 
-        adiar::internal::file_stream<int> fs(f);
+        file_stream<int> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(2));
         AssertThat(fs.can_pull(), Is().True());
@@ -902,13 +902,13 @@ go_bandit([]() {
       it("can sort non-empty file [2]", []() {
         file<int> f;
 
-        adiar::file_writer<int> fw(f);
+        file_writer<int> fw(f);
         fw << 42 << -1 << 8 << 21 << 8 << 3;
         fw.detach();
 
         f.sort<std::less<int>>();
 
-        adiar::internal::file_stream<int> fs(f);
+        file_stream<int> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(-1));
         AssertThat(fs.can_pull(), Is().True());
@@ -949,7 +949,7 @@ go_bandit([]() {
           file<int> f;
           f.touch();
 
-          adiar::file_writer<int> fw(f);
+          file_writer<int> fw(f);
           fw << -1 << 8 << 3;
           fw.detach();
 
@@ -963,7 +963,7 @@ go_bandit([]() {
 
         { // Check is not sorted
           file<int> f(path);
-          adiar::internal::file_stream<int> fs(f);
+          file_stream<int> fs(f);
           AssertThat(fs.can_pull(), Is().True());
           AssertThat(fs.pull(), Is().EqualTo(-1));
           AssertThat(fs.can_pull(), Is().True());
@@ -1010,7 +1010,7 @@ go_bandit([]() {
 
       it("can copy over an existing file [non-empty, 1]", []() {
         file<int> f1;
-        adiar::file_writer<int> fw(f1);
+        file_writer<int> fw(f1);
 
         fw << 21 << 42 << 21;
         fw.detach();
@@ -1023,7 +1023,7 @@ go_bandit([]() {
         AssertThat(f2.size(), Is().EqualTo(3u));
         AssertThat(f2.path(), Is().Not().EqualTo(f1.path()));
 
-        adiar::internal::file_stream<int> fs(f2);
+        file_stream<int> fs(f2);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(21));
         AssertThat(fs.can_pull(), Is().True());
@@ -1036,7 +1036,7 @@ go_bandit([]() {
 
       it("can copy over an existing file [non-empty, 2]", []() {
         file<int> f1;
-        adiar::file_writer<int> fw(f1);
+        file_writer<int> fw(f1);
 
         fw << 0 << 1 << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9;
         fw.detach();
@@ -1049,7 +1049,7 @@ go_bandit([]() {
         AssertThat(f2.size(), Is().EqualTo(10u));
         AssertThat(f2.path(), Is().Not().EqualTo(f1.path()));
 
-        adiar::internal::file_stream<int> fs(f2);
+        file_stream<int> fs(f2);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(0));
         AssertThat(fs.can_pull(), Is().True());
@@ -1086,7 +1086,7 @@ go_bandit([]() {
 
       it("is temporary if original file is temporary [non-empty]", []() {
         file<int> f1;
-        adiar::file_writer<int> fw(f1);
+        file_writer<int> fw(f1);
         fw << 0 << 1 << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9;
         fw.detach();
         AssertThat(f1.exists(), Is().True());
@@ -1120,7 +1120,7 @@ go_bandit([]() {
         std::string path;
         {
           file<int> f1;
-          adiar::file_writer<int> fw(f1);
+          file_writer<int> fw(f1);
           fw << 0 << 1 << 2 << 3 << 4;
           fw.detach();
           f1.make_persistent();

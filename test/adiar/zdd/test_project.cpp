@@ -258,7 +258,7 @@ go_bandit([]() {
         const exec_policy &ep = exec_policy::quantify::Singleton;
 
         it("computes with dom = Ø to be { Ø } for non-empty input [zdd_1] [const &]", [&](){
-          adiar::shared_file<zdd::label_type> dom;
+          shared_file<zdd::label_type> dom;
 
           const zdd in = zdd_1;
           zdd out = zdd_project(ep, in, [](zdd::label_type) { return false; });
@@ -282,7 +282,7 @@ go_bandit([]() {
         });
 
         it("computes with dom = Ø to be { Ø } for non-empty input [zdd_2] [&&]", [&](){
-          adiar::shared_file<zdd::label_type> dom;
+          shared_file<zdd::label_type> dom;
 
           zdd out = zdd_project(ep, zdd(zdd_2), [](zdd::label_type) { return false; });
 
@@ -794,7 +794,7 @@ go_bandit([]() {
         const exec_policy ep = exec_policy::quantify::Nested;
 
         it("computes with dom = Ø to be { Ø } for non-empty input [zdd_1]", [&](){
-          adiar::shared_file<zdd::label_type> dom;
+          shared_file<zdd::label_type> dom;
 
           const zdd in = zdd_1;
           zdd out = zdd_project(ep, in, [](zdd::label_type) { return false; });
@@ -946,7 +946,7 @@ go_bandit([]() {
         const exec_policy ep = exec_policy::quantify::Auto;
 
         it("computes with dom = Ø to be { Ø } for non-empty input [zdd_2]", [&](){
-          adiar::shared_file<zdd::label_type> dom;
+          shared_file<zdd::label_type> dom;
 
           zdd out = zdd_project(ep, zdd(zdd_2), [](zdd::label_type) { return false; });
 
@@ -1662,7 +1662,7 @@ go_bandit([]() {
         }
 
         it("returns { Ø } for {1} with dom = {0} [const &]", [&](){
-          adiar::shared_file<zdd::label_type> dom;
+          shared_file<zdd::label_type> dom;
           { label_writer lw(dom);
             lw << 0;
           }
@@ -1698,7 +1698,7 @@ go_bandit([]() {
         });
 
         it("returns { 1 } for {1} with dom = {1,0} [const &]", [&](){
-          adiar::shared_file<zdd::label_type> dom;
+          shared_file<zdd::label_type> dom;
           { label_writer lw(dom);
             lw << 0 << 1;
           }
@@ -2150,7 +2150,7 @@ go_bandit([]() {
         }
 
         it("returns { Ø } for {1} with dom = {0} [const &]", [&](){
-          adiar::shared_file<zdd::label_type> dom;
+          shared_file<zdd::label_type> dom;
           { label_writer lw(dom);
             lw << 0;
           }
@@ -2186,7 +2186,7 @@ go_bandit([]() {
         });
 
         it("returns { 1 } for {1} with dom = {1,0} [const &]", [&](){
-          adiar::shared_file<zdd::label_type> dom;
+          shared_file<zdd::label_type> dom;
           { label_writer lw(dom);
             lw << 0 << 1;
           }

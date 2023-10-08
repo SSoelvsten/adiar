@@ -72,7 +72,7 @@ go_bandit([]() {
   describe("adiar/internal/levelized_priority_queue.h", []() {
     ////////////////////////////////////////////////////////////////////////////
     // TODO: Most level files should be replaced with a simpler
-    //       adiar::shared_file<ptr_uint64::label_type> (and use the << operator).
+    //       shared_file<ptr_uint64::label_type> (and use the << operator).
     //       Yet, we of course need one test or two with a meta file.
     //
     // TODO: Are we not missing some unit tests for the very simple accessors?
@@ -91,14 +91,14 @@ go_bandit([]() {
       });
 
       it("initialises with #levels = 1 (which is skipped)", []() {
-        adiar::shared_file<ptr_uint64::label_type> f;
+        shared_file<ptr_uint64::label_type> f;
 
         { // Garbage collect the writer early
           label_writer fw(f);
           fw << 2;
         }
 
-        test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+        test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.has_current_level(), Is().False());
@@ -106,14 +106,14 @@ go_bandit([]() {
       });
 
       it("initialises with #levels = 2 (#buckets = 1)", []() {
-        adiar::shared_file<ptr_uint64::label_type> f;
+        shared_file<ptr_uint64::label_type> f;
 
         { // Garbage collect the writer early
           label_writer fw(f);
           fw << 1 << 2;
         }
 
-        test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+        test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.has_current_level(), Is().False());
@@ -123,7 +123,7 @@ go_bandit([]() {
       });
 
       it("initialises with #buckets == #levels", []() {
-        adiar::shared_file<ptr_uint64::label_type> f;
+        shared_file<ptr_uint64::label_type> f;
 
         { // Garbage collect the writer early
           label_writer fw(f);
@@ -131,7 +131,7 @@ go_bandit([]() {
              << 3 << 4; // buckets
         }
 
-        test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+        test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.has_current_level(), Is().False());
@@ -141,7 +141,7 @@ go_bandit([]() {
       });
 
       it("initialises with #buckets < #levels", []() {
-        adiar::shared_file<ptr_uint64::label_type> f;
+        shared_file<ptr_uint64::label_type> f;
 
         { // Garbage collect the writer early
           label_writer fw(f);
@@ -150,7 +150,7 @@ go_bandit([]() {
              << 5;     // overflow
         }
 
-        test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+        test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.has_current_level(), Is().False());
@@ -168,7 +168,7 @@ go_bandit([]() {
 
       describe(".setup_next_level()", []() {
         it("can forward until the first non-empty bucket [1]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -178,7 +178,7 @@ go_bandit([]() {
                << 4;     // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -200,7 +200,7 @@ go_bandit([]() {
         });
 
         it("can forward until the first non-empty bucket [2]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -210,7 +210,7 @@ go_bandit([]() {
                << 4;     // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -232,7 +232,7 @@ go_bandit([]() {
         });
 
         it("can forward up until the overflow queue [1]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -242,7 +242,7 @@ go_bandit([]() {
                << 4;     // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -263,7 +263,7 @@ go_bandit([]() {
         });
 
         it("can forward up until the overflow queue [2]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -273,7 +273,7 @@ go_bandit([]() {
                << 4 << 5 << 6; // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -303,7 +303,7 @@ go_bandit([]() {
         });
 
         it("can forward until next bucket", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -313,7 +313,7 @@ go_bandit([]() {
                << 4;     // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -350,7 +350,7 @@ go_bandit([]() {
         });
 
         it("can forward past buckets until top of overflow queue", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -360,7 +360,7 @@ go_bandit([]() {
                << 4 << 5; // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -397,7 +397,7 @@ go_bandit([]() {
         });
 
         it("can relabel buckets until top of overflow queue", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -410,7 +410,7 @@ go_bandit([]() {
                << 9;         // overflow not yet touched
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -432,7 +432,7 @@ go_bandit([]() {
         });
 
         it("can relabel buckets until top of overflow queue (on second last level)", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -444,7 +444,7 @@ go_bandit([]() {
                << 8;            // overflow that will have relabelled bucket(s)
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -481,7 +481,7 @@ go_bandit([]() {
 
       describe(".setup_next_level(stop_label)", []() {
         it("does nothing when given level prior to next bucket [1]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -491,7 +491,7 @@ go_bandit([]() {
                << 5;     // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -509,7 +509,7 @@ go_bandit([]() {
         });
 
         it("does nothing when given level prior to next bucket [2]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -519,7 +519,7 @@ go_bandit([]() {
                << 6;          // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {2, 1});
           pq.setup_next_level(); // 2
@@ -538,7 +538,7 @@ go_bandit([]() {
         });
 
         it("forwards to first bucket", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -548,7 +548,7 @@ go_bandit([]() {
                << 4;     // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -570,7 +570,7 @@ go_bandit([]() {
         });
 
         it("forwards to second bucket", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -580,7 +580,7 @@ go_bandit([]() {
                << 4;     // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -602,7 +602,7 @@ go_bandit([]() {
         });
 
         it("forwards to next bucket with content", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -612,7 +612,7 @@ go_bandit([]() {
                << 4;     // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -632,7 +632,7 @@ go_bandit([]() {
         });
 
         it("forwards to next bucket without content", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -642,7 +642,7 @@ go_bandit([]() {
                << 4;     // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {3, 1});
 
@@ -659,7 +659,7 @@ go_bandit([]() {
         });
 
         it("stops early at bucket with content", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -669,7 +669,7 @@ go_bandit([]() {
                << 4;     // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -686,7 +686,7 @@ go_bandit([]() {
         });
 
         it("forwards to first bucket for unknown level prior to second bucket", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -696,7 +696,7 @@ go_bandit([]() {
                << 5;     // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -716,7 +716,7 @@ go_bandit([]() {
         });
 
         it("relabels with current buckets included", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -726,7 +726,7 @@ go_bandit([]() {
                << 4;     // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -748,7 +748,7 @@ go_bandit([]() {
         });
 
         it("relabels early at top of overflow queue", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -758,7 +758,7 @@ go_bandit([]() {
                << 4 << 5 << 6; // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
           AssertThat(pq.can_pull(), Is().False());
@@ -781,7 +781,7 @@ go_bandit([]() {
         });
 
         it("can relabel for unknown level", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -793,7 +793,7 @@ go_bandit([]() {
                << 11 ;           // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {2, 1});
           pq.setup_next_level();
@@ -1088,7 +1088,7 @@ go_bandit([]() {
         });
 
         it("can use relabelled buckets [1]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -1097,7 +1097,7 @@ go_bandit([]() {
               << 3 << 4 << 5 << 6; // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {2, 1}); // bucket
 
@@ -1136,7 +1136,7 @@ go_bandit([]() {
         });
 
         it("can use relabelled buckets [2]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -1145,7 +1145,7 @@ go_bandit([]() {
               << 3 << 4 << 5 << 6; // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {3, 1}); // overflow
 
@@ -1175,7 +1175,7 @@ go_bandit([]() {
         });
 
         it("can push after relabelling that skips levels [1]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -1184,7 +1184,7 @@ go_bandit([]() {
               << 3 << 4 << 5 << 6 << 7; // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {1, 1}); // bucket
           pq.push(lpq_test_data {5, 1}); // overflow
@@ -1226,7 +1226,7 @@ go_bandit([]() {
         });
 
         it("can push after relabelling that skips levels [2]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -1235,7 +1235,7 @@ go_bandit([]() {
               << 3 << 4 << 5 << 6 << 7; // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {5, 1}); // overflow
           pq.push(lpq_test_data {6, 1}); // overflow
@@ -1273,7 +1273,7 @@ go_bandit([]() {
         });
 
         it("can use buckets after relabelling close to the end", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -1282,7 +1282,7 @@ go_bandit([]() {
               << 3 << 4 << 5; // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {4, 1}); // overflow
           pq.push(lpq_test_data {1, 1}); // bucket
@@ -1317,7 +1317,7 @@ go_bandit([]() {
         });
 
         it("can use buckets after relabelling close to the end (the current read bucket dies)", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -1326,7 +1326,7 @@ go_bandit([]() {
               << 4 << 5;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {4, 1}); // overflow
           pq.push(lpq_test_data {2, 1}); // bucket
@@ -1361,7 +1361,7 @@ go_bandit([]() {
         });
 
         it("can use buckets after bucket-hitting stop-level", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -1370,7 +1370,7 @@ go_bandit([]() {
               << 3 << 4; // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {2, 1}); // buckete
 
@@ -1404,7 +1404,7 @@ go_bandit([]() {
         });
 
         it("can use relabelled buckets (with stop-level)", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -1413,7 +1413,7 @@ go_bandit([]() {
               << 3 << 4 << 5 << 6; // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {4, 1}); // overflow
 
@@ -1442,7 +1442,7 @@ go_bandit([]() {
         });
 
         it("can use relabelled bucket of a level that was also a prior bucket due to the stop-level", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -1451,7 +1451,7 @@ go_bandit([]() {
               << 3 << 4; // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.setup_next_level(1u); // buckets: [2,3]
 
@@ -1479,7 +1479,7 @@ go_bandit([]() {
         });
 
         it("can push after relabelling (with stop-level) that skips levels [1]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -1488,7 +1488,7 @@ go_bandit([]() {
               << 3 << 4 << 5 << 6 << 7; // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {1, 1}); // bucket
           pq.push(lpq_test_data {7, 2}); // overflow
@@ -1524,7 +1524,7 @@ go_bandit([]() {
         });
 
         it("can push after relabelling (with stop-level) that skips levels [2]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -1533,7 +1533,7 @@ go_bandit([]() {
               << 3 << 4 << 5 << 6 << 7; // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {6, 1}); // overflow
           pq.push(lpq_test_data {7, 2}); // overflow
@@ -1567,7 +1567,7 @@ go_bandit([]() {
         });
 
         it("can use buckets after relabelling (with stop-level) close to the end", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -1576,7 +1576,7 @@ go_bandit([]() {
               << 3 << 4 << 5; // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {1, 1}); // bucket
 
@@ -1607,7 +1607,7 @@ go_bandit([]() {
         });
 
         it("can use buckets after relabelling (with stop-level) close to the end (the current read bucket dies)", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -1616,7 +1616,7 @@ go_bandit([]() {
               << 4 << 5;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {2, 1}); // bucket
 
@@ -1649,7 +1649,7 @@ go_bandit([]() {
 
       describe(".pop()", []{
         it("can pop from bucket [1]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -1658,7 +1658,7 @@ go_bandit([]() {
               << 3;        // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {2,1});
 
@@ -1672,7 +1672,7 @@ go_bandit([]() {
         });
 
         it("can pop from bucket [2]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -1681,7 +1681,7 @@ go_bandit([]() {
               << 3;        // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {2,1});
           pq.push(lpq_test_data {2,2});
@@ -1699,7 +1699,7 @@ go_bandit([]() {
         });
 
         it("can pop from overflow [1]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -1708,7 +1708,7 @@ go_bandit([]() {
               << 3 << 4;   // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {3,1}); // overflow
 
@@ -1722,7 +1722,7 @@ go_bandit([]() {
         });
 
         it("can pop from overflow [2]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -1731,7 +1731,7 @@ go_bandit([]() {
               << 3 << 4;   // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {3,1}); // overflow
           pq.push(lpq_test_data {2,1}); // bucket
@@ -1763,7 +1763,7 @@ go_bandit([]() {
       //////////////////////////////////////////////////////////////////////////
       //                           .can_pull()                                //
       describe(".empty_level() / .can_pull()", []{
-        adiar::shared_file<ptr_uint64::label_type> f;
+        shared_file<ptr_uint64::label_type> f;
 
         { // Garbage collect the writer early
           label_writer fw(f);
@@ -1774,14 +1774,14 @@ go_bandit([]() {
         }
 
         it("cannot pull after initialisation", [&f]() {
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
           AssertThat(pq.can_pull(), Is().False());
         });
 
         it("shows element after forwarding to level", [&f]() {
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data { 2,1 });
           pq.setup_next_level(); // 2
@@ -1790,7 +1790,7 @@ go_bandit([]() {
         });
 
         it("shows a level becomes empty", [&f]() {
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data { 2,1 });
           pq.setup_next_level(); // 2
@@ -1807,7 +1807,7 @@ go_bandit([]() {
         });
 
         it("shows forwarding to an empty level", [&f]() {
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data { 3,1 });
           pq.setup_next_level(2); // 2
@@ -1960,7 +1960,7 @@ go_bandit([]() {
 
       describe(".size()", []{
         it("increments on push to bucket [1]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -1968,7 +1968,7 @@ go_bandit([]() {
                << 1 << 2; // buckets
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.size(), Is().EqualTo(0u));
 
@@ -1980,7 +1980,7 @@ go_bandit([]() {
         });
 
         it("increments on push to bucket [2]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -1988,7 +1988,7 @@ go_bandit([]() {
                << 1 << 2; // buckets
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.size(), Is().EqualTo(0u));
 
@@ -2002,7 +2002,7 @@ go_bandit([]() {
         });
 
         it("increments on push to overflow queue", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -2012,7 +2012,7 @@ go_bandit([]() {
 
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.size(), Is().EqualTo(0u));
 
@@ -2024,7 +2024,7 @@ go_bandit([]() {
         });
 
         it("decrements on pull from bucket", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -2032,7 +2032,7 @@ go_bandit([]() {
                << 1 << 2; // buckets
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {1, 1});
           pq.push(lpq_test_data {1, 2});
@@ -2046,7 +2046,7 @@ go_bandit([]() {
         });
 
         it("decrements on pull from overflow queue", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -2055,7 +2055,7 @@ go_bandit([]() {
                << 3 << 4; // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {4, 1});
           pq.push(lpq_test_data {4, 2});
@@ -2069,7 +2069,7 @@ go_bandit([]() {
         });
 
         it("decrements on pull from bucket", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -2077,7 +2077,7 @@ go_bandit([]() {
                << 1 << 2; // buckets
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {1, 1});
           pq.push(lpq_test_data {1, 2});
@@ -2091,7 +2091,7 @@ go_bandit([]() {
         });
 
         it("decrements on pull from overflow queue", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -2100,7 +2100,7 @@ go_bandit([]() {
                << 3 << 4; // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {4, 1});
           pq.push(lpq_test_data {4, 2});
@@ -2114,7 +2114,7 @@ go_bandit([]() {
         });
 
         it("is unchanged on top from bucket", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -2122,7 +2122,7 @@ go_bandit([]() {
                << 1 << 2; // buckets
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {1, 1});
           pq.push(lpq_test_data {1, 2});
@@ -2134,7 +2134,7 @@ go_bandit([]() {
         });
 
         it("is unchanged on top from overflow queue", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -2143,7 +2143,7 @@ go_bandit([]() {
                << 3 << 4; // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {4, 1});
           pq.push(lpq_test_data {4, 2});
@@ -2178,7 +2178,7 @@ go_bandit([]() {
 
       describe(".setup_next_level()", []() {
         it("can forward until the first non-empty level [1]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -2187,7 +2187,7 @@ go_bandit([]() {
                << 2 << 3 << 4;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -2206,7 +2206,7 @@ go_bandit([]() {
         });
 
         it("can forward until the first non-empty level [2]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -2215,7 +2215,7 @@ go_bandit([]() {
                << 2 << 3 << 4;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -2234,7 +2234,7 @@ go_bandit([]() {
         });
 
         it("can forward until the first non-empty level [3]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -2243,7 +2243,7 @@ go_bandit([]() {
                << 2 << 3 << 4;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -2264,7 +2264,7 @@ go_bandit([]() {
         });
 
         it("can forward until the first non-empty level [4]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -2273,7 +2273,7 @@ go_bandit([]() {
                << 2 << 3 << 4 << 5 << 6;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -2303,7 +2303,7 @@ go_bandit([]() {
         });
 
         it("can forward until next level [1]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -2312,7 +2312,7 @@ go_bandit([]() {
                << 2 << 3 << 4;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -2346,7 +2346,7 @@ go_bandit([]() {
         });
 
         it("can forward until next level [2]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -2355,7 +2355,7 @@ go_bandit([]() {
                << 2 << 3 << 4 << 5;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -2389,7 +2389,7 @@ go_bandit([]() {
         });
 
         it("can forward until next level [3]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -2398,7 +2398,7 @@ go_bandit([]() {
                << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -2417,7 +2417,7 @@ go_bandit([]() {
         });
 
         it("can forward until next level [4]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -2426,7 +2426,7 @@ go_bandit([]() {
                << 2 << 3 << 4 << 5 << 6 << 7 << 8;            // overflow that will have relabelled bucket(s)
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -2460,7 +2460,7 @@ go_bandit([]() {
 
       describe(".setup_next_level(stop_label)", []() {
         it("forwards to first level", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -2469,7 +2469,7 @@ go_bandit([]() {
                << 2 << 3 << 4;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -2491,7 +2491,7 @@ go_bandit([]() {
         });
 
         it("forwards to next level with content [1]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -2500,7 +2500,7 @@ go_bandit([]() {
                << 2 << 3 << 4;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -2519,7 +2519,7 @@ go_bandit([]() {
         });
 
         it("stops early at level with content", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -2528,7 +2528,7 @@ go_bandit([]() {
                << 2 << 3 << 4;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -2545,7 +2545,7 @@ go_bandit([]() {
         });
 
         it("forwards to unknown level without content [1]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -2554,7 +2554,7 @@ go_bandit([]() {
                << 2 << 4 << 5;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -2574,7 +2574,7 @@ go_bandit([]() {
         });
 
         it("forwards to stop level [2]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -2583,7 +2583,7 @@ go_bandit([]() {
                << 2 << 3 << 4;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -2605,7 +2605,7 @@ go_bandit([]() {
         });
 
         it("forwards to next level with content [2]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -2614,7 +2614,7 @@ go_bandit([]() {
                << 2 << 3 << 4 << 5 << 6;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
           AssertThat(pq.can_pull(), Is().False());
@@ -2634,7 +2634,7 @@ go_bandit([]() {
         });
 
         it("forwards to unknown level without content [2]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -2643,7 +2643,7 @@ go_bandit([]() {
                << 2 << 3 << 4 << 5 << 6 << 7 << 9 << 10 << 11;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {2, 1});
           pq.setup_next_level();
@@ -2938,7 +2938,7 @@ go_bandit([]() {
         });
 
         it("can push [5]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -2946,7 +2946,7 @@ go_bandit([]() {
               << 1 << 2 << 3 << 4 << 5 << 6;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {2, 1});
 
@@ -2985,7 +2985,7 @@ go_bandit([]() {
         });
 
         it("can push [6]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -2993,7 +2993,7 @@ go_bandit([]() {
               << 1 << 2 << 3 << 4 << 5 << 6;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {3, 1});
 
@@ -3023,7 +3023,7 @@ go_bandit([]() {
         });
 
         it("can push [7]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -3031,7 +3031,7 @@ go_bandit([]() {
               << 1 << 2 << 3 << 4 << 5 << 6 << 7;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {1, 1});
           pq.push(lpq_test_data {5, 1});
@@ -3073,7 +3073,7 @@ go_bandit([]() {
         });
 
         it("can push [8]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -3081,7 +3081,7 @@ go_bandit([]() {
               << 1 << 2 << 3 << 4 << 5 << 6 << 7;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {5, 1});
           pq.push(lpq_test_data {6, 1});
@@ -3119,7 +3119,7 @@ go_bandit([]() {
         });
 
         it("can push [9]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -3127,7 +3127,7 @@ go_bandit([]() {
               << 1 << 2 << 3 << 4 << 5;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {4, 1});
           pq.push(lpq_test_data {1, 1});
@@ -3162,7 +3162,7 @@ go_bandit([]() {
         });
 
         it("can push [10]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -3170,7 +3170,7 @@ go_bandit([]() {
               << 1 << 2 << 3 << 4 << 5;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {4, 1});
           pq.push(lpq_test_data {2, 1});
@@ -3205,7 +3205,7 @@ go_bandit([]() {
         });
 
         it("can set up next level with a stop_label [3]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -3213,7 +3213,7 @@ go_bandit([]() {
               << 1 << 2 << 3 << 4;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {2, 1});
 
@@ -3247,7 +3247,7 @@ go_bandit([]() {
         });
 
         it("can set up next level with a stop_label [4]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -3255,7 +3255,7 @@ go_bandit([]() {
               << 1 << 2 << 3 << 4 << 5 << 6;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {4, 1});
 
@@ -3284,7 +3284,7 @@ go_bandit([]() {
         });
 
         it("can set up next level with a stop_label [5]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -3292,7 +3292,7 @@ go_bandit([]() {
               << 1 << 2 << 3 << 4;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {2, 1});
           pq.push(lpq_test_data {3, 2});
@@ -3318,7 +3318,7 @@ go_bandit([]() {
         });
 
         it("can set up next level with a stop_label [6]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -3326,7 +3326,7 @@ go_bandit([]() {
               << 1 << 2 << 3 << 4 << 5 << 6 << 7;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {1, 1});
           pq.push(lpq_test_data {7, 2});
@@ -3362,7 +3362,7 @@ go_bandit([]() {
         });
 
         it("can set up next level with a stop_label [7]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -3370,7 +3370,7 @@ go_bandit([]() {
               << 1 << 2 << 3 << 4 << 5 << 6 << 7;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {6, 1});
           pq.push(lpq_test_data {7, 2});
@@ -3404,7 +3404,7 @@ go_bandit([]() {
         });
 
         it("can set up next level with a stop_label [8]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -3412,7 +3412,7 @@ go_bandit([]() {
               << 1 << 2 << 3 << 4 << 5;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {1, 1});
 
@@ -3443,7 +3443,7 @@ go_bandit([]() {
         });
 
         it("can set up next level with a stop_label [9]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -3451,7 +3451,7 @@ go_bandit([]() {
               << 1 << 2 << 3 << 4 << 5;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {2, 1});
 
@@ -3484,7 +3484,7 @@ go_bandit([]() {
 
       describe(".pop()", []{
         it("can pop [1]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -3492,7 +3492,7 @@ go_bandit([]() {
               << 1 << 2 << 3;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {2,1});
 
@@ -3506,7 +3506,7 @@ go_bandit([]() {
         });
 
         it("can pop [2]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -3514,7 +3514,7 @@ go_bandit([]() {
               << 1 << 2 << 3;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {2,1});
           pq.push(lpq_test_data {2,2});
@@ -3532,7 +3532,7 @@ go_bandit([]() {
         });
 
         it("can pop [3]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -3540,7 +3540,7 @@ go_bandit([]() {
               << 1 << 2 << 3 << 4;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {3,1});
 
@@ -3554,7 +3554,7 @@ go_bandit([]() {
         });
 
         it("can pop [4]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           {
             label_writer w(f);
@@ -3562,7 +3562,7 @@ go_bandit([]() {
               << 1 << 2 << 3 << 4;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {3,1}); // overflow
           pq.push(lpq_test_data {2,1}); // bucket
@@ -3594,7 +3594,7 @@ go_bandit([]() {
       //////////////////////////////////////////////////////////////////////////
       //                           .can_pull()                                //
       describe(".empty_level() / .can_pull()", []{
-        adiar::shared_file<ptr_uint64::label_type> f;
+        shared_file<ptr_uint64::label_type> f;
 
         { // Garbage collect the writer early
           label_writer fw(f);
@@ -3605,14 +3605,14 @@ go_bandit([]() {
         }
 
         it("cannot pull after initialisation", [&f]() {
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
           AssertThat(pq.can_pull(), Is().False());
         });
 
         it("shows element after forwarding to level", [&f]() {
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data { 2,1 });
           pq.setup_next_level(); // 2
@@ -3621,7 +3621,7 @@ go_bandit([]() {
         });
 
         it("shows a level becomes empty", [&f]() {
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data { 2,1 });
           pq.setup_next_level(); // 2
@@ -3638,7 +3638,7 @@ go_bandit([]() {
         });
 
         it("shows forwarding to an empty level", [&f]() {
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data { 3,1 });
           pq.setup_next_level(2); // 2
@@ -3790,7 +3790,7 @@ go_bandit([]() {
 
       describe(".size()", []{
         it("increments on push to priority queue [1]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -3798,7 +3798,7 @@ go_bandit([]() {
                << 1 << 2;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.size(), Is().EqualTo(0u));
 
@@ -3810,7 +3810,7 @@ go_bandit([]() {
         });
 
         it("increments on push to priority queue [2]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -3818,7 +3818,7 @@ go_bandit([]() {
                << 1 << 2;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.size(), Is().EqualTo(0u));
 
@@ -3832,7 +3832,7 @@ go_bandit([]() {
         });
 
         it("increments on push to priority queue [3]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -3840,7 +3840,7 @@ go_bandit([]() {
                << 1 << 2 << 3 << 4;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           AssertThat(pq.size(), Is().EqualTo(0u));
 
@@ -3852,7 +3852,7 @@ go_bandit([]() {
         });
 
         it("decrements on pull from priority queue [1]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -3860,7 +3860,7 @@ go_bandit([]() {
                << 1 << 2;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {1, 1});
           pq.push(lpq_test_data {1, 2});
@@ -3874,7 +3874,7 @@ go_bandit([]() {
         });
 
         it("decrements on pull from priority queue [2]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -3882,7 +3882,7 @@ go_bandit([]() {
                << 1 << 2 << 3 << 4;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {4, 1});
           pq.push(lpq_test_data {4, 2});
@@ -3896,7 +3896,7 @@ go_bandit([]() {
         });
 
         it("decrements on pull from priority queue [3]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -3904,7 +3904,7 @@ go_bandit([]() {
                << 1 << 2;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {1, 1});
           pq.push(lpq_test_data {1, 2});
@@ -3918,7 +3918,7 @@ go_bandit([]() {
         });
 
         it("decrements on pull from priority queue [4]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -3926,7 +3926,7 @@ go_bandit([]() {
                << 1 << 2  << 3 << 4;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {4, 1});
           pq.push(lpq_test_data {4, 2});
@@ -3940,7 +3940,7 @@ go_bandit([]() {
         });
 
         it("is unchanged on top from priority queue [1]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -3948,7 +3948,7 @@ go_bandit([]() {
                << 1 << 2;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {1, 1});
           pq.push(lpq_test_data {1, 2});
@@ -3960,7 +3960,7 @@ go_bandit([]() {
         });
 
         it("is unchanged on top from priority queue [2]", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer fw(f);
@@ -3968,7 +3968,7 @@ go_bandit([]() {
                << 1 << 2 << 3 << 4;
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {4, 1});
           pq.push(lpq_test_data {4, 2});
@@ -3982,7 +3982,7 @@ go_bandit([]() {
     });
 
     describe("levelized_priority_queue<..., lpq_test_gt, ..., std::greater<>, ...>", []() {
-      adiar::shared_file<ptr_uint64::label_type> f;
+      shared_file<ptr_uint64::label_type> f;
 
       { // Garbage collect the writer early
         label_writer fw(f);
@@ -3995,7 +3995,7 @@ go_bandit([]() {
       it("can sort elements from buckets", [&f]() {
         levelized_priority_queue<lpq_test_data, lpq_test_gt, 1u,
                                  memory_mode::Internal,
-                                 adiar::shared_file<ptr_uint64::label_type>, 1u, std::greater<>, false,
+                                 shared_file<ptr_uint64::label_type>, 1u, std::greater<>, false,
                                  1u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
 
@@ -4031,7 +4031,7 @@ go_bandit([]() {
       it("can sort elements in overflow priority queue", [&f]() {
         levelized_priority_queue<lpq_test_data, lpq_test_gt, 1u,
                                  memory_mode::Internal,
-                                 adiar::shared_file<ptr_uint64::label_type>, 1u, std::greater<>, false,
+                                 shared_file<ptr_uint64::label_type>, 1u, std::greater<>, false,
                                  1u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
 
@@ -4054,7 +4054,7 @@ go_bandit([]() {
       it("can merge elements from buckets and overflow", [&f]() {
         levelized_priority_queue<lpq_test_data, lpq_test_gt, 1u,
                                  memory_mode::Internal,
-                                 adiar::shared_file<ptr_uint64::label_type>, 1u, std::greater<>, false,
+                                 shared_file<ptr_uint64::label_type>, 1u, std::greater<>, false,
                                  1u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
 
@@ -4097,7 +4097,7 @@ go_bandit([]() {
 
     //Fixed (ub)
     describe("levelized_priority_queue<..., look_ahead=0, lpq_test_gt, ..., std::greater<>, ...>", []() {
-      adiar::shared_file<ptr_uint64::label_type> f;
+      shared_file<ptr_uint64::label_type> f;
 
       { // Garbage collect the writer early
         label_writer fw(f);
@@ -4110,7 +4110,7 @@ go_bandit([]() {
       it("can sort elements from the priority queue [1]", [&f]() {
         levelized_priority_queue<lpq_test_data, lpq_test_gt, 0u,
                                  memory_mode::Internal,
-                                 adiar::shared_file<ptr_uint64::label_type>, 1u, std::greater<>, false,
+                                 shared_file<ptr_uint64::label_type>, 1u, std::greater<>, false,
                                  1u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
 
@@ -4146,7 +4146,7 @@ go_bandit([]() {
       it("can sort elements from the priority queue [2]", [&f]() {
         levelized_priority_queue<lpq_test_data, lpq_test_gt, 0u,
                                  memory_mode::Internal,
-                                 adiar::shared_file<ptr_uint64::label_type>, 1u, std::greater<>, false,
+                                 shared_file<ptr_uint64::label_type>, 1u, std::greater<>, false,
                                  1u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
 
@@ -4169,7 +4169,7 @@ go_bandit([]() {
       it("can sort elements from the priority queue [3]", [&f]() {
         levelized_priority_queue<lpq_test_data, lpq_test_gt, 0u,
                                  memory_mode::Internal,
-                                 adiar::shared_file<ptr_uint64::label_type>, 1u, std::greater<>, false,
+                                 shared_file<ptr_uint64::label_type>, 1u, std::greater<>, false,
                                  1u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
 
@@ -4212,11 +4212,11 @@ go_bandit([]() {
 
     describe("levelized_priority_queue<..., look_ahead=1, ..., init_level=0>", []() {
       it("initialises #levels = 0", []() {
-        adiar::shared_file<ptr_uint64::label_type> f;
+        shared_file<ptr_uint64::label_type> f;
 
         levelized_priority_queue<lpq_test_data, lpq_test_lt, 1u,
                                  memory_mode::Internal,
-                                 adiar::shared_file<ptr_uint64::label_type>, 1u, std::less<>, false,
+                                 shared_file<ptr_uint64::label_type>, 1u, std::less<>, false,
                                  0u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
 
@@ -4228,7 +4228,7 @@ go_bandit([]() {
       });
 
       it("initialises with #levels = 1 < #buckets", []() {
-        adiar::shared_file<ptr_uint64::label_type> f;
+        shared_file<ptr_uint64::label_type> f;
 
         { // Garbage collect the writer early
           label_writer fw(f);
@@ -4237,7 +4237,7 @@ go_bandit([]() {
 
         levelized_priority_queue<lpq_test_data, lpq_test_lt, 1u,
                                  memory_mode::Internal,
-                                 adiar::shared_file<ptr_uint64::label_type>, 1u, std::less<>, false,
+                                 shared_file<ptr_uint64::label_type>, 1u, std::less<>, false,
                                  0u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
 
@@ -4249,7 +4249,7 @@ go_bandit([]() {
       });
 
       it("initialises #buckets <= #levels", []() {
-        adiar::shared_file<ptr_uint64::label_type> f;
+        shared_file<ptr_uint64::label_type> f;
 
         { // Garbage collect the writer early
           label_writer fw(f);
@@ -4258,7 +4258,7 @@ go_bandit([]() {
 
         levelized_priority_queue<lpq_test_data, lpq_test_lt, 1u,
                                  memory_mode::Internal,
-                                 adiar::shared_file<ptr_uint64::label_type>, 1u, std::less<>, false,
+                                 shared_file<ptr_uint64::label_type>, 1u, std::less<>, false,
                                  0u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
 
@@ -4552,11 +4552,11 @@ go_bandit([]() {
 
     describe("levelized_priority_queue<..., look_ahead=0, ..., init_level=0>", []() {
       it("initialises correctly", []() {
-        adiar::shared_file<ptr_uint64::label_type> f;
+        shared_file<ptr_uint64::label_type> f;
 
         levelized_priority_queue<lpq_test_data, lpq_test_lt, 0u,
                                  memory_mode::Internal,
-                                 adiar::shared_file<ptr_uint64::label_type>, 1u, std::less<>, false,
+                                 shared_file<ptr_uint64::label_type>, 1u, std::less<>, false,
                                  0u>
           pq({f}, memory_available(), 32, stats_lpq_tests);
 
@@ -5473,7 +5473,7 @@ go_bandit([]() {
         });
 
         it("can push into relabelled buckets", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer w(f);
@@ -5483,7 +5483,7 @@ go_bandit([]() {
               << 5 << 6 << 7 << 8 << 9 << 10;  // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 3> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 3> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {5, 2}); // overflow
           AssertThat(pq.size(), Is().EqualTo(1u));
@@ -5518,7 +5518,7 @@ go_bandit([]() {
         });
 
         it("can push into relabelled buckets (with stop-level)", []() {
-          adiar::shared_file<ptr_uint64::label_type> f;
+          shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
             label_writer w(f);
@@ -5528,7 +5528,7 @@ go_bandit([]() {
               << 5 << 6 << 7 << 8 << 9 << 10;  // overflow
           }
 
-          test_priority_queue<adiar::shared_file<ptr_uint64::label_type>, 3> pq({f}, memory_available(), 32, stats_lpq_tests);
+          test_priority_queue<shared_file<ptr_uint64::label_type>, 3> pq({f}, memory_available(), 32, stats_lpq_tests);
 
           pq.push(lpq_test_data {9, 2}); // overflow
           AssertThat(pq.size(), Is().EqualTo(1u));

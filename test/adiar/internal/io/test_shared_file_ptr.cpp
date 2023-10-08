@@ -21,13 +21,13 @@ go_bandit([]() {
       // TODO: make_shared_file
 
       it("is default-constructed as non-nullptr", []() {
-        adiar::shared_file<int> f;
+        shared_file<int> f;
         AssertThat(f.get(), Is().Not().Null());
       });
 
       it("is default-constructed as a separate temporary and empty file object", []() {
-        adiar::shared_file<int> f1;
-        adiar::shared_file<int> f2;
+        shared_file<int> f1;
+        shared_file<int> f2;
         AssertThat(f1.get(), Is().Not().EqualTo(f2.get()));
         AssertThat(f1->path(), Is().Not().EqualTo(f2->path()));
 
@@ -41,14 +41,14 @@ go_bandit([]() {
       });
 
       it("is copy-constructed to share the file object", []() {
-        adiar::shared_file<int> f1;
-        adiar::shared_file<int> f2(f1);
+        shared_file<int> f1;
+        shared_file<int> f2(f1);
         AssertThat(f1.get(), Is().EqualTo(f2.get()));
       });
 
       it("shares the file object after assignment", []() {
-        adiar::shared_file<int> f1;
-        adiar::shared_file<int> f2 = f1;
+        shared_file<int> f1;
+        shared_file<int> f2 = f1;
         AssertThat(f1.get(), Is().EqualTo(f2.get()));
       });
 
@@ -56,7 +56,7 @@ go_bandit([]() {
         std::string path;
 
         {
-          adiar::shared_file<int> f;
+          shared_file<int> f;
           path = f->path();
           AssertThat(std::filesystem::exists(path), Is().False());
           f->touch();
@@ -68,7 +68,7 @@ go_bandit([]() {
       });
 
       it("can 'reset' into a nullptr and trigger deletion of file on disk", []() {
-        adiar::shared_file<int> f;
+        shared_file<int> f;
         f->touch();
         const std::string path = f->path();
 
@@ -80,13 +80,13 @@ go_bandit([]() {
       });
 
       it("first deletes file on disk when reference count reaches 0 [.reset()]", []() {
-        adiar::shared_file<int> f1;
+        shared_file<int> f1;
         f1->touch();
         const std::string path = f1->path();
 
         AssertThat(std::filesystem::exists(path), Is().True());
 
-        adiar::shared_file<int> f2(f1);
+        shared_file<int> f2(f1);
 
         AssertThat(std::filesystem::exists(path), Is().True());
 
@@ -102,13 +102,13 @@ go_bandit([]() {
       it("first deletes file on disk when reference count reaches 0 [scope]", []() {
         std::string path;
         {
-          adiar::shared_file<int> f1;
+          shared_file<int> f1;
           f1->touch();
           path = f1->path();
 
           AssertThat(std::filesystem::exists(path), Is().True());
           {
-            adiar::shared_file<int> f2 = f1;
+            shared_file<int> f2 = f1;
             AssertThat(std::filesystem::exists(path), Is().True());
           }
           AssertThat(std::filesystem::exists(path), Is().True());
@@ -120,9 +120,9 @@ go_bandit([]() {
         it("file_writer is part of reference counting", []() {
           std::string path;
 
-          adiar::file_writer<int> fw;
+          file_writer<int> fw;
           {
-            adiar::shared_file<int> f;
+            shared_file<int> f;
             path = f->path();
             fw.attach(f);
             AssertThat(std::filesystem::exists(path), Is().True());
@@ -135,9 +135,9 @@ go_bandit([]() {
         it("file_stream is part of reference counting", []() {
           std::string path;
 
-          adiar::file_stream<int> fs;
+          file_stream<int> fs;
           {
-            adiar::shared_file<int> f;
+            shared_file<int> f;
             path = f->path();
             fs.attach(f);
             AssertThat(std::filesystem::exists(path), Is().True());
@@ -148,13 +148,13 @@ go_bandit([]() {
         });
 
         it("can read written content", []() {
-          adiar::shared_file<int> f;
+          shared_file<int> f;
           {
-            adiar::file_writer<int> fw(f);
+            file_writer<int> fw(f);
             fw << 1 << 2 << 3 << 4;
           }
           {
-            adiar::file_stream<int, false> fs(f);
+            file_stream<int, false> fs(f);
             AssertThat(fs.can_pull(), Is().True());
             AssertThat(fs.pull(),     Is().EqualTo(1));
             AssertThat(fs.can_pull(), Is().True());
@@ -168,13 +168,13 @@ go_bandit([]() {
         });
 
         it("can read written content in reverse", []() {
-          adiar::shared_file<int> f;
+          shared_file<int> f;
           {
-            adiar::file_writer<int> fw(f);
+            file_writer<int> fw(f);
             fw << 21 << 42 << 21 << 84;
           }
           {
-            adiar::file_stream<int, true> fs(f);
+            file_stream<int, true> fs(f);
             AssertThat(fs.can_pull(), Is().True());
             AssertThat(fs.pull(),     Is().EqualTo(84));
             AssertThat(fs.can_pull(), Is().True());
@@ -192,34 +192,34 @@ go_bandit([]() {
 
       describe("::copy(...)", []() {
         it("can copy over empty file", []() {
-          adiar::shared_file<int> f1;
+          shared_file<int> f1;
 
           AssertThat(f1->exists(), Is().False());
           f1->touch();
           AssertThat(f1->exists(), Is().True());
           AssertThat(f1->empty(), Is().True());
 
-          adiar::shared_file<int> f2 = adiar::shared_file<int>::copy(f1);
+          shared_file<int> f2 = shared_file<int>::copy(f1);
 
           AssertThat(f2->exists(), Is().True());
           AssertThat(f1->path(), Is().Not().EqualTo(f2->path()));
         });
 
         it("can copy over non-empty file", []() {
-          adiar::shared_file<int> f1;
+          shared_file<int> f1;
           {
-            adiar::file_writer<int> fw(f1);
+            file_writer<int> fw(f1);
             fw << 1 << 2 << 4 << 8 << 16;
           }
 
-          adiar::shared_file<int> f2 = adiar::shared_file<int>::copy(f1);
+          shared_file<int> f2 = shared_file<int>::copy(f1);
 
           // Check path
           AssertThat(f2->path(), Is().Not().EqualTo(f1->path()));
 
           // Check content
           {
-            adiar::file_stream<int> fs(f2);
+            file_stream<int> fs(f2);
             AssertThat(fs.can_pull(), Is().True());
             AssertThat(fs.pull(),     Is().EqualTo(1));
             AssertThat(fs.can_pull(), Is().True());
@@ -244,9 +244,9 @@ go_bandit([]() {
         }
 
         { // Create a persisted file
-          adiar::shared_file<int> f;
+          shared_file<int> f;
 
-          adiar::file_writer<int> fw(f);
+          file_writer<int> fw(f);
           fw << 0 << 2 << 4 << 6 << 8;
 
           // TODO: header file content
@@ -257,9 +257,9 @@ go_bandit([]() {
         }
 
         {
-          adiar::shared_file<int> f(file_path);
+          shared_file<int> f(file_path);
 
-          adiar::file_stream<int> fs(f);
+          file_stream<int> fs(f);
           AssertThat(fs.can_pull(), Is().True());
           AssertThat(fs.pull(),     Is().EqualTo(0));
           AssertThat(fs.can_pull(), Is().True());
@@ -290,9 +290,9 @@ go_bandit([]() {
         }
 
         { // Create a persisted file
-          adiar::shared_file<int> f;
+          shared_file<int> f;
 
-          adiar::file_writer<int> fw(f);
+          file_writer<int> fw(f);
           fw << 1 << 3 << 5 << 7;
 
           // TODO: header file content
@@ -303,9 +303,9 @@ go_bandit([]() {
         }
 
         {
-          adiar::shared_file<int> f(file_path);
+          shared_file<int> f(file_path);
 
-          adiar::file_stream<int> fs(f);
+          file_stream<int> fs(f);
           AssertThat(fs.can_pull(), Is().True());
           AssertThat(fs.pull(),     Is().EqualTo(1));
           AssertThat(fs.can_pull(), Is().True());
