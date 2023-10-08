@@ -23,7 +23,6 @@
 #include <adiar/types.h>
 
 #include <adiar/file.h> // <-- TODO: remove!
-#include <adiar/map.h> // <-- TODO: remove!
 
 #include <adiar/bdd/bdd.h>
 #include <adiar/zdd/zdd.h>
