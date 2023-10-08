@@ -114,9 +114,7 @@ namespace adiar
 
   uint64_t bdd_satcount(const exec_policy &ep, const bdd &f)
   {
-    const bdd::label_type domain_size = domain_isset() ? domain_get()->size() : 0;
-    const bdd::label_type varcount = bdd_varcount(f);
-    return bdd_satcount(ep, f, std::max(domain_size, varcount));
+    return bdd_satcount(ep, f, std::max<bdd::label_type>(domain_size(), bdd_varcount(f)));
   };
 
   uint64_t bdd_satcount(const bdd &f)
