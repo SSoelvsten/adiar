@@ -1,5 +1,8 @@
 #include <adiar/bdd.h>
 
+#include <tpie/tpie.h>
+#include <tpie/internal_stack.h>
+
 #include <adiar/domain.h>
 #include <adiar/exception.h>
 #include <adiar/internal/cut.h>
@@ -100,41 +103,45 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   class bdd_sat_bdd_callback
   {
-    // TODO: replace with TPIE's external stack / an internal stack
-    using e = map_pair<bdd::label_type, boolean>;
+    // Reserve an internal memory vector (of up to 8 MiB) for the result.
+    // TODO: Abstract the stack into <adiar/internal/data_structures/stack.h>.
+    using value_type = pair<bdd::label_type, bool>;
+    using stack_type = tpie::internal_stack<value_type>;
 
-    shared_file<e> ef;
-    internal::file_writer<e> ew;
+    stack_type _stack;
 
   public:
-    bdd_sat_bdd_callback() : ew(ef)
+    bdd_sat_bdd_callback(const size_t stack_size)
+      : _stack(std::min<size_t>(stack_size, bdd::max_label+1))
     { }
 
     void operator() (bdd::label_type x, bool v)
-    { ew << map_pair<bdd::label_type, boolean>(x, v); }
+    {
+      _stack.push({x, v});
+    }
 
     bdd get_bdd()
     {
-      assert(ew.size() > 0);
-      ew.detach();
-      internal::file_stream<e, true> es(ef);
+      adiar_assert(!_stack.empty());
+
+      // TODO: generalise into `bdd_cube(generator<label_type, bool>)` (#533)
 
       internal::shared_levelized_file<bdd::node_type> nf;
       internal::node_writer nw(nf);
 
       bdd::pointer_type latest = bdd::pointer_type(true);
+      while (!_stack.empty()) {
+        const value_type& b = _stack.top();
 
-      while (es.can_pull()) {
-        const e kv = es.pull();
-
-        const bdd::node_type n(kv.key(), bdd::max_id,
-                            kv.value() ? bdd::pointer_type(false) : latest,
-                            kv.value() ? latest : bdd::pointer_type(false));
+        const bdd::node_type n(b.first, bdd::max_id,
+                               b.second ? bdd::pointer_type(false) : latest,
+                               b.second ? latest : bdd::pointer_type(false));
 
         nw.unsafe_push(n);
-        nw.unsafe_push(internal::level_info(kv.key(), 1u));
+        nw.unsafe_push(internal::level_info(b.first, 1u));
 
         latest = n.uid();
+        _stack.pop();
       }
 
       nf->max_1level_cut[internal::cut::Internal]       = 1u;
@@ -225,7 +232,7 @@ namespace adiar
   {
     if (bdd_isterminal(f)) { return f; }
 
-    bdd_sat_bdd_callback _cb;
+    bdd_sat_bdd_callback _cb(f->levels() + domain_size());
     __bdd_satX<internal::traverse_satmin_visitor>(f, _cb);
     return _cb.get_bdd();
   }
@@ -240,7 +247,7 @@ namespace adiar
   {
     if (bdd_isterminal(f)) { return f; }
 
-    bdd_sat_bdd_callback _cb;
+    bdd_sat_bdd_callback _cb(f->levels() + domain_size());
     __bdd_satX<internal::traverse_satmax_visitor>(f, _cb);
     return _cb.get_bdd();
   }
