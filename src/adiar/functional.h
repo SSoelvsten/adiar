@@ -2,6 +2,7 @@
 #define ADIAR_FUNCTIONAL_H
 
 #include <functional>
+#include <type_traits>
 
 #include <adiar/exception.h>
 
@@ -32,8 +33,8 @@ namespace adiar
   ///
   /// \tparam ret_type  The type signature of the form `ret_t (args_t...)`.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename type_signature>
-  using function = std::function<type_signature>;
+  template<typename TypeSignature>
+  using function = std::function<TypeSignature>;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Predicate function given value(s) of the `Args`.
@@ -76,9 +77,6 @@ namespace adiar
     };
   }
 
-  // TODO: Use template specialization to simplify the use of an end value, i.e.
-  //       `generator<ret_type>::end` or `generator_end<ret_type>::value`.
-
   //////////////////////////////////////////////////////////////////////////////
   /// \brief  Generator function that *produces* a new value of `ret_type` for
   ///         each call.
@@ -89,8 +87,25 @@ namespace adiar
   ///
   /// \tparam ret_type Type of each yielded value from the generator.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ret_type>
-  using generator = function<ret_type ()>;
+  template<typename RetType>
+  using generator = function<RetType ()>;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Template specialization to derive the `end` (similar to `EOF`)
+  ///        return-value for a generator function.
+  ///
+  /// \details By default, we provide the integer implementation of -1.
+  //////////////////////////////////////////////////////////////////////////////
+  template <typename RetType>
+  struct generator_end
+  {
+    using value_type = RetType;
+
+    static_assert(std::is_integral<RetType>::value);
+    static constexpr value_type value = static_cast<value_type>(-1);
+  };
+
+  // TODO: Specialize for DDs (Both BDDs and ZDDs) to return an empty file.
 
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Wrap a `begin` and `end` iterator pair into a generator function.
@@ -101,8 +116,7 @@ namespace adiar
   {
     return [&begin, &end]() {
       if (begin == end) {
-        // TODO (DD Iterators): change return value depending on `value_type`.
-        return static_cast<typename ForwardIt::value_type>(-1);
+        return generator_end<typename ForwardIt::value_type>::value;
       }
       return *(begin++);
     };
@@ -117,7 +131,7 @@ namespace adiar
   {
     return [&s]() {
       if (!s.can_pull()) {
-        return static_cast<typename Stream::value_type>(-1);
+        return generator_end<typename Stream::value_type>::value;
       }
       return s.pull();
     };
