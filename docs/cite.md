@@ -146,3 +146,43 @@ the notion of an *i-level cut* of a graph and use these to derive sound upper
 bounds on the size of the data structures. This drastically decreases the
 threshold as to when *Adiar*'s running time is only a small constant factor
 slower than other implementations.
+
+- Steffan Christ Sølvsten, Jaco van de Pol.
+  “[*Predicting Memory Demands of BDD Operations Using Maximum Graph Cuts*](https://link.springer.com/chapter/10.1007/978-3-031-45332-8_4)”.
+  In: *Automated Technology for Verification and Analysis* (ATVA). (2023)
+  ```bibtex
+  @InProceedings{soelvsten2023:ATVA,
+    title     = {Predicting Memory Demands of BDD Operations Using Maximum Graph Cuts},
+    author    = {S{\o}lvsten, Steffan Christ
+             and van de Pol, Jaco},
+    booktitle = {Automated Technology for Verification and Analysis},
+    year      = {2023},
+    editor    = {Andr{\'e}, {\'E}tienne
+             and Sun, Jun},
+    pages     = {72--92},
+    numPages  = {21},
+    publisher = {Springer},
+    series    = {Lecture Notes in Computer Science},
+    volume    = {14216},
+    isbn      = {978-3-031-45332-8},
+    doi       = {10.1007/978-3-031-45332-8_4}
+  }
+  ```
+
+- Steffan Christ Sølvsten, Jaco van de Pol.
+  “[*Predicting Memory Demands of BDD Operations Using Maximum Graph Cuts (Extended Paper)*](https://arxiv.org/abs/2307.04488)”.
+  In: *arXiv preprint*. (2023)
+  ```bibtex
+  @Misc{soelvsten2023:arXiv,
+    title         = {Predicting Memory Demands of BDD Operations Using Maximum Graph Cuts (Extended Paper)},
+    author        = {S{\o}lvsten, Steffan Christ
+                 and van de Pol, Jaco},
+    year          = {2023},
+    archivePrefix = {arXiv},
+    eprint        = {2307.04488},
+    primaryClass  = {cs.DS},
+    numPages      = {25},
+    howPublished  = {arXiv},
+    url           = {https://arxiv.org/abs/2307.04488},
+  }
+  ```
