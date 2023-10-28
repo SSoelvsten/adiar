@@ -165,7 +165,7 @@ slower than other implementations.
     series    = {Lecture Notes in Computer Science},
     volume    = {14216},
     isbn      = {978-3-031-45332-8},
-    doi       = {10.1007/978-3-031-45332-8_4}
+    doi       = {10.1007/978-3-031-45332-8\_4}
   }
   ```
 
