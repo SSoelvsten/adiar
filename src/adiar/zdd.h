@@ -1016,6 +1016,37 @@ namespace adiar
   /// \{
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief Get the variable labels in \em ascending order.
+  ///
+  /// \param A  ZDD of interest.
+  ///
+  /// \param cb Callback function that consumes the variable labels.
+  //////////////////////////////////////////////////////////////////////////////
+  void zdd_varprofile(const zdd &A, const consumer<zdd::label_type> &cb);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Copy the variable labels (in \em ascending order) into the given
+  ///        container.
+  ///
+  /// \param A     ZDD of interest.
+  ///
+  /// \param begin Single-pass forward iterator for where to place the output.
+  ///
+  /// \param end   Marks the end for `begin`.
+  ///
+  /// \returns     An iterator to the first entry that still is left empty.
+  ///
+  /// \throws out_of_range If the distance between `begin` and `end` is not big
+  ///                      enough to contain all variables in `f`.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename ForwardIt>
+  ForwardIt zdd_varprofile(const zdd &A, ForwardIt begin, ForwardIt end)
+  {
+    zdd_varprofile(A, make_consumer(begin, end));
+    return begin;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief Get the minimal occurring variable in this ZDD.
   //////////////////////////////////////////////////////////////////////////////
   zdd::label_type zdd_minvar(const zdd &A);
@@ -1110,36 +1141,6 @@ namespace adiar
   //
   // template<typename ForwardIt>
   // zdd_maxelem(const zdd &A, ForwardIt begin, ForwardIt end)
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief    Get the labels of the levels of the ZDD.
-  ///
-  /// \param A  ZDD of interest.
-  ///
-  /// \param cb Callback function that consumes the levels in \em ascending order.
-  //////////////////////////////////////////////////////////////////////////////
-  void zdd_varprofile(const zdd &A, const consumer<zdd::label_type> &cb);
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Write the labels of the ZDD's levels into the given container.
-  ///
-  /// \param A     ZDD of interest.
-  ///
-  /// \param begin Single-pass forward iterator for where to place the output.
-  ///
-  /// \param end   Marks the end for `begin`.
-  ///
-  /// \returns     An iterator to the first entry that still is left empty.
-  ///
-  /// \throws out_of_range If the distance between `begin` and `end` is not big
-  ///                      enough to contain all variables in `f`.
-  //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  ForwardIt zdd_varprofile(const zdd &A, ForwardIt begin, ForwardIt end)
-  {
-    zdd_varprofile(A, make_consumer(begin, end));
-    return begin;
-  }
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////
