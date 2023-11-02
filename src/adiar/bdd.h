@@ -959,6 +959,37 @@ namespace adiar
   /// \{
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief Get the variable labels in \em ascending order.
+  ///
+  /// \param f  BDD of interest.
+  ///
+  /// \param cb Callback function that consumes the variable labels.
+  //////////////////////////////////////////////////////////////////////////////
+  void bdd_varprofile(const bdd &f, const consumer<bdd::label_type> &cb);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Copy the variable labels (in \em ascending order) into the given
+  ///        container.
+  ///
+  /// \param f     BDD of interest.
+  ///
+  /// \param begin Single-pass forward iterator for where to place the output.
+  ///
+  /// \param end   Marks the end for `begin`.
+  ///
+  /// \returns     An iterator to the first entry that still is left empty.
+  ///
+  /// \throws out_of_range If the distance between `begin` and `end` is not big
+  ///                      enough to contain all variables in `f`.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename ForwardIt>
+  ForwardIt bdd_varprofile(const bdd &f, ForwardIt begin, ForwardIt end)
+  {
+    bdd_varprofile(f, make_consumer(begin, end));
+    return begin;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief Get the minimal occurring variable in this BDD.
   //////////////////////////////////////////////////////////////////////////////
   bdd::label_type bdd_minvar(const bdd &f);
@@ -1087,36 +1118,6 @@ namespace adiar
   template<typename ForwardIt>
   bool bdd_eval(const bdd &f, ForwardIt begin, ForwardIt end)
   { return bdd_eval(f, make_generator(begin, end)); }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Get the labels of the levels of the BDD.
-  ///
-  /// \param f  BDD of interest.
-  ///
-  /// \param cb Callback function that consumes the levels (in ascending order).
-  //////////////////////////////////////////////////////////////////////////////
-  void bdd_varprofile(const bdd &f, const consumer<bdd::label_type> &cb);
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Write the labels of the BDD's levels into the given container.
-  ///
-  /// \param f     BDD of interest.
-  ///
-  /// \param begin Single-pass forward iterator for where to place the output.
-  ///
-  /// \param end   Marks the end for `begin`.
-  ///
-  /// \returns     An iterator to the first entry that still is left empty.
-  ///
-  /// \throws out_of_range If the distance between `begin` and `end` is not big
-  ///                      enough to contain all variables in `f`.
-  //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  ForwardIt bdd_varprofile(const bdd &f, ForwardIt begin, ForwardIt end)
-  {
-    bdd_varprofile(f, make_consumer(begin, end));
-    return begin;
-  }
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////
