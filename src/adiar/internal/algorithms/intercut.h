@@ -201,7 +201,7 @@ namespace adiar::internal
     shared_file<typename intercut_policy::label_type> dd_levels;
     {
       file_writer<typename intercut_policy::label_type> lw(dd_levels);
-      dd_varprofile(dd, [&lw](const typename intercut_policy::label_type x) {
+      dd_support(dd, [&lw](const typename intercut_policy::label_type x) {
         lw << x;
       });
     }

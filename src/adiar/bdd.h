@@ -965,7 +965,7 @@ namespace adiar
   ///
   /// \param cb Callback function that consumes the variable labels.
   //////////////////////////////////////////////////////////////////////////////
-  void bdd_varprofile(const bdd &f, const consumer<bdd::label_type> &cb);
+  void bdd_support(const bdd &f, const consumer<bdd::label_type> &cb);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Copy the variable labels (in \em ascending order) into the given
@@ -983,9 +983,9 @@ namespace adiar
   ///                      enough to contain all variables in `f`.
   //////////////////////////////////////////////////////////////////////////////
   template<typename ForwardIt>
-  ForwardIt bdd_varprofile(const bdd &f, ForwardIt begin, ForwardIt end)
+  ForwardIt bdd_support(const bdd &f, ForwardIt begin, ForwardIt end)
   {
-    bdd_varprofile(f, make_consumer(begin, end));
+    bdd_support(f, make_consumer(begin, end));
     return begin;
   }
 

@@ -120,7 +120,7 @@ namespace adiar::internal
   ///        decision diagram.
   ////////////////////////////////////////////////////////////////////////////
   template <typename DD>
-  void dd_varprofile(const DD &dd, const consumer<typename DD::label_type> &cb)
+  void dd_support(const DD &dd, const consumer<typename DD::label_type> &cb)
   {
     level_info_stream<> info_stream(dd);
     while(info_stream.can_pull()) { cb(info_stream.pull().label()); }

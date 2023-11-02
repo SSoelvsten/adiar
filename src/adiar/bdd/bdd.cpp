@@ -164,9 +164,9 @@ namespace adiar
     return internal::dd_maxvar(f);
   }
 
-  void bdd_varprofile(const bdd &f, const consumer<bdd::label_type> &cb)
+  void bdd_support(const bdd &f, const consumer<bdd::label_type> &cb)
   {
-    return internal::dd_varprofile(f, cb);
+    return internal::dd_support(f, cb);
   }
 
   //////////////////////////////////////////////////////////////////////////////

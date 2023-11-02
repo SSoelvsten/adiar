@@ -203,9 +203,9 @@ namespace adiar
     return internal::dd_maxvar(A);
   }
 
-  void zdd_varprofile(const zdd &A, const consumer<zdd::label_type> &cb)
+  void zdd_support(const zdd &A, const consumer<zdd::label_type> &cb)
   {
-    return internal::dd_varprofile(A, cb);
+    return internal::dd_support(A, cb);
   }
 
   //////////////////////////////////////////////////////////////////////////////
