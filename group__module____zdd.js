@@ -146,6 +146,8 @@ var group__module____zdd =
     [ "zdd_subset", "group__module____zdd.html#gaa6b56cce129e9f4e72b227a6d1ccf9d8", null ],
     [ "zdd_subseteq", "group__module____zdd.html#ga539ad6c8a17c0097c929456731fb9088", null ],
     [ "zdd_subseteq", "group__module____zdd.html#ga361defdff32d55c0e33a0debd21ef941", null ],
+    [ "zdd_support", "group__module____zdd.html#gaf3f8d25600420295e6d18b5c0961d71d", null ],
+    [ "zdd_support", "group__module____zdd.html#gaf09b76057ef50c6733aa943ab8cfa79e", null ],
     [ "zdd_terminal", "group__module____zdd.html#gae021f09fcf2d28a1704ef7627370071a", null ],
     [ "zdd_top", "group__module____zdd.html#ga07ebb4a7a9e9ba1fd781389ec41c2674", null ],
     [ "zdd_top", "group__module____zdd.html#ga85c6d8aa10bf2d6fd3a8c611e5858df8", null ],
@@ -155,8 +157,6 @@ var group__module____zdd =
     [ "zdd_union", "group__module____zdd.html#ga1ccc9a267c99017a82566ff4fc091f62", null ],
     [ "zdd_union", "group__module____zdd.html#gaa0279a267e34216eae54cc4bc38ef78f", null ],
     [ "zdd_varcount", "group__module____zdd.html#gaf4c3df77689b68f6f516ae087487ed28", null ],
-    [ "zdd_varprofile", "group__module____zdd.html#gaeb2218928f22d14ce9a78038b91892fd", null ],
-    [ "zdd_varprofile", "group__module____zdd.html#gaf9aa6efd4845bc01f3ad1b0c5792fc1e", null ],
     [ "zdd_vars", "group__module____zdd.html#ga442f3cfcb7d6bffec930c2da6d0bf24d", null ],
     [ "zdd_vars", "group__module____zdd.html#ga9f097afdc0c59ec40b94809fe3379ea5", null ]
 ];

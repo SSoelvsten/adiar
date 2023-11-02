@@ -397,6 +397,13 @@ uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <tr class="separator:gafabb8fe9644393e18843eb1f1d466ef2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader">Input Variables</h2></td></tr>
+<tr class="memitem:gaba9c6758f6c0ba4fea4ccc7b68f5b8d6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gaba9c6758f6c0ba4fea4ccc7b68f5b8d6">adiar::bdd_support</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="group__module____functional.html#ga99494f283acb45d89d508b47a9e7b4b5">consumer</a>&lt; <a class="el" href="classadiar_1_1internal_1_1dd.html#a89544dd479c73f3704c989d54e72b10b">bdd::label_type</a> &gt; &amp;cb)</td></tr>
+<tr class="memdesc:gaba9c6758f6c0ba4fea4ccc7b68f5b8d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the variable labels in <em>ascending</em> order.  <a href="group__module____bdd.html#gaba9c6758f6c0ba4fea4ccc7b68f5b8d6">More...</a><br /></td></tr>
+<tr class="separator:gaba9c6758f6c0ba4fea4ccc7b68f5b8d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabfbddc98031801febb1dbb35faf0f500"><td class="memTemplParams" colspan="2">template&lt;typename ForwardIt &gt; </td></tr>
+<tr class="memitem:gabfbddc98031801febb1dbb35faf0f500"><td class="memTemplItemLeft" align="right" valign="top">ForwardIt&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gabfbddc98031801febb1dbb35faf0f500">adiar::bdd_support</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, ForwardIt begin, ForwardIt end)</td></tr>
+<tr class="memdesc:gabfbddc98031801febb1dbb35faf0f500"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy the variable labels (in <em>ascending</em> order) into the given container.  <a href="group__module____bdd.html#gabfbddc98031801febb1dbb35faf0f500">More...</a><br /></td></tr>
+<tr class="separator:gabfbddc98031801febb1dbb35faf0f500"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gafcd7318723c4e2c52a99d130b74d205d"><td class="memItemLeft" align="right" valign="top"><a id="gafcd7318723c4e2c52a99d130b74d205d"></a>
 <a class="el" href="classadiar_1_1internal_1_1dd.html#a89544dd479c73f3704c989d54e72b10b">bdd::label_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gafcd7318723c4e2c52a99d130b74d205d">adiar::bdd_minvar</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
 <tr class="memdesc:gafcd7318723c4e2c52a99d130b74d205d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the minimal occurring variable in this BDD. <br /></td></tr>
@@ -427,13 +434,6 @@ uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <tr class="memitem:ga33904d7e3002ab18a1e212d0b4bd2a6b"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga33904d7e3002ab18a1e212d0b4bd2a6b">adiar::bdd_eval</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, ForwardIt begin, ForwardIt end)</td></tr>
 <tr class="memdesc:ga33904d7e3002ab18a1e212d0b4bd2a6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate a BDD according to an assignment to its variables.  <a href="group__module____bdd.html#ga33904d7e3002ab18a1e212d0b4bd2a6b">More...</a><br /></td></tr>
 <tr class="separator:ga33904d7e3002ab18a1e212d0b4bd2a6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac698beb355b5840ec6273ea4deb5fad4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gac698beb355b5840ec6273ea4deb5fad4">adiar::bdd_varprofile</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="group__module____functional.html#ga99494f283acb45d89d508b47a9e7b4b5">consumer</a>&lt; <a class="el" href="classadiar_1_1internal_1_1dd.html#a89544dd479c73f3704c989d54e72b10b">bdd::label_type</a> &gt; &amp;cb)</td></tr>
-<tr class="memdesc:gac698beb355b5840ec6273ea4deb5fad4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the labels of the levels of the BDD.  <a href="group__module____bdd.html#gac698beb355b5840ec6273ea4deb5fad4">More...</a><br /></td></tr>
-<tr class="separator:gac698beb355b5840ec6273ea4deb5fad4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga922be30b548b706f94f6922c7c45e417"><td class="memTemplParams" colspan="2">template&lt;typename ForwardIt &gt; </td></tr>
-<tr class="memitem:ga922be30b548b706f94f6922c7c45e417"><td class="memTemplItemLeft" align="right" valign="top">ForwardIt&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga922be30b548b706f94f6922c7c45e417">adiar::bdd_varprofile</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, ForwardIt begin, ForwardIt end)</td></tr>
-<tr class="memdesc:ga922be30b548b706f94f6922c7c45e417"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write the labels of the BDD's levels into the given container.  <a href="group__module____bdd.html#ga922be30b548b706f94f6922c7c45e417">More...</a><br /></td></tr>
-<tr class="separator:ga922be30b548b706f94f6922c7c45e417"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader">Conversion to BDDs</h2></td></tr>
 <tr class="memitem:ga1912c5554f3036f779f56c16156f2b1b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga1912c5554f3036f779f56c16156f2b1b">adiar::bdd_from</a> (const <a class="el" href="classadiar_1_1zdd.html">zdd</a> &amp;A, const <a class="el" href="group__module____functional.html#gafc1dc465a57ff35315eefcd90fbd3e34">generator</a>&lt; <a class="el" href="classadiar_1_1internal_1_1dd.html#a89544dd479c73f3704c989d54e72b10b">bdd::label_type</a> &gt; &amp;dom)</td></tr>
@@ -2024,6 +2024,96 @@ template&lt;typename ForwardIt &gt; </div>
 
 </div>
 </div>
+<a id="gaba9c6758f6c0ba4fea4ccc7b68f5b8d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaba9c6758f6c0ba4fea4ccc7b68f5b8d6">&#9670;&nbsp;</a></span>bdd_support() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void adiar::bdd_support </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group__module____functional.html#ga99494f283acb45d89d508b47a9e7b4b5">consumer</a>&lt; <a class="el" href="classadiar_1_1internal_1_1dd.html#a89544dd479c73f3704c989d54e72b10b">bdd::label_type</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>cb</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the variable labels in <em>ascending</em> order. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>BDD of interest.</td></tr>
+    <tr><td class="paramname">cb</td><td>Callback function that consumes the variable labels. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gabfbddc98031801febb1dbb35faf0f500"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gabfbddc98031801febb1dbb35faf0f500">&#9670;&nbsp;</a></span>bdd_support() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ForwardIt &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">ForwardIt adiar::bdd_support </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ForwardIt&#160;</td>
+          <td class="paramname"><em>begin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ForwardIt&#160;</td>
+          <td class="paramname"><em>end</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy the variable labels (in <em>ascending</em> order) into the given container. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>BDD of interest.</td></tr>
+    <tr><td class="paramname">begin</td><td>Single-pass forward iterator for where to place the output.</td></tr>
+    <tr><td class="paramname">end</td><td>Marks the end for <code>begin</code>.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>An iterator to the first entry that still is left empty.</dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">out_of_range</td><td>If the distance between <code>begin</code> and <code>end</code> is not big enough to contain all variables in <code>f</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="ga17447560cf6131804fa976e987150b24"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga17447560cf6131804fa976e987150b24">&#9670;&nbsp;</a></span>bdd_terminal()</h2>
 
@@ -2105,96 +2195,6 @@ template&lt;typename ForwardIt &gt; </div>
 
 <p>Whether f and g represent different functions. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#gad95adbcf4ac35cd0ac917233843f935f" title="Whether f and g represent the same function.">bdd_equal</a> </dd></dl>
-
-</div>
-</div>
-<a id="gac698beb355b5840ec6273ea4deb5fad4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gac698beb355b5840ec6273ea4deb5fad4">&#9670;&nbsp;</a></span>bdd_varprofile() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void adiar::bdd_varprofile </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
-          <td class="paramname"><em>f</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="group__module____functional.html#ga99494f283acb45d89d508b47a9e7b4b5">consumer</a>&lt; <a class="el" href="classadiar_1_1internal_1_1dd.html#a89544dd479c73f3704c989d54e72b10b">bdd::label_type</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>cb</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Get the labels of the levels of the BDD. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">f</td><td>BDD of interest.</td></tr>
-    <tr><td class="paramname">cb</td><td>Callback function that consumes the levels (in ascending order). </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga922be30b548b706f94f6922c7c45e417"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga922be30b548b706f94f6922c7c45e417">&#9670;&nbsp;</a></span>bdd_varprofile() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename ForwardIt &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">ForwardIt adiar::bdd_varprofile </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
-          <td class="paramname"><em>f</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">ForwardIt&#160;</td>
-          <td class="paramname"><em>begin</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">ForwardIt&#160;</td>
-          <td class="paramname"><em>end</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Write the labels of the BDD's levels into the given container. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">f</td><td>BDD of interest.</td></tr>
-    <tr><td class="paramname">begin</td><td>Single-pass forward iterator for where to place the output.</td></tr>
-    <tr><td class="paramname">end</td><td>Marks the end for <code>begin</code>.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>An iterator to the first entry that still is left empty.</dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">out_of_range</td><td>If the distance between <code>begin</code> and <code>end</code> is not big enough to contain all variables in <code>f</code>. </td></tr>
-  </table>
-  </dd>
-</dl>
 
 </div>
 </div>
