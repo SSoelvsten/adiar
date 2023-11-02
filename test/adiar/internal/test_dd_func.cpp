@@ -48,18 +48,18 @@ go_bandit([]() {
       writer << n4 << n3 << n2 << n1;
     }
 
-    describe("dd_varprofile(f, cb)", [&]() {
+    describe("dd_support(f, cb)", [&]() {
       // TODO
     });
 
-    describe("dd_varprofile(f, begin, end)", [&]() {
+    describe("dd_support(f, begin, end)", [&]() {
       it("does not write anything for BDD false terminal", [&]() {
         std::vector<int> out(42, -1);
 
         auto it_b   = out.begin();
         auto it_e   = out.end();
 
-        const auto out_it = bdd_varprofile(terminal_F, it_b, it_e);
+        const auto out_it = bdd_support(terminal_F, it_b, it_e);
 
         AssertThat(out_it, Is().EqualTo(it_b));
         AssertThat(*it_b, Is().EqualTo(-1));
@@ -71,7 +71,7 @@ go_bandit([]() {
         auto it_b   = out.begin();
         auto it_e   = out.end();
 
-        const auto out_it = zdd_varprofile(terminal_T, it_b, it_e);
+        const auto out_it = zdd_support(terminal_T, it_b, it_e);
 
         AssertThat(out_it, Is().EqualTo(it_b));
         AssertThat(*it_b, Is().EqualTo(-1));
@@ -83,7 +83,7 @@ go_bandit([]() {
         auto it_b   = out.begin();
         auto it_e   = out.end();
 
-        const auto out_it = zdd_varprofile(x0, it_b, it_e);
+        const auto out_it = zdd_support(x0, it_b, it_e);
 
         AssertThat(out_it, Is().EqualTo(it_b+1));
         AssertThat(*it_b, Is().EqualTo(0));
@@ -96,7 +96,7 @@ go_bandit([]() {
         auto it_b   = out.begin();
         auto it_e   = out.end();
 
-        const auto out_it = zdd_varprofile(x42, it_b, it_e);
+        const auto out_it = zdd_support(x42, it_b, it_e);
 
         AssertThat(out_it, Is().EqualTo(it_b+1));
         AssertThat(*it_b, Is().EqualTo(42));
@@ -109,7 +109,7 @@ go_bandit([]() {
         auto it_b   = out.begin();
         auto it_e   = out.end();
 
-        const auto out_it = bdd_varprofile(bdd_file, it_b, it_e);
+        const auto out_it = bdd_support(bdd_file, it_b, it_e);
 
         AssertThat(*(it_b+0), Is().EqualTo(1));
         AssertThat(*(it_b+1), Is().EqualTo(3));
@@ -125,7 +125,7 @@ go_bandit([]() {
         auto it_b   = out.begin();
         auto it_e   = out.end();
 
-        const auto out_it = zdd_varprofile(zdd_file, it_b, it_e);
+        const auto out_it = zdd_support(zdd_file, it_b, it_e);
 
         AssertThat(*(it_b+0), Is().EqualTo(0));
         AssertThat(*(it_b+1), Is().EqualTo(1));
@@ -137,12 +137,12 @@ go_bandit([]() {
 
       it("throws if range is too small for BDD", [&]() {
         std::vector<int> out(1,-1);
-        AssertThrows(out_of_range, bdd_varprofile(bdd_file, out.begin(), out.end()));
+        AssertThrows(out_of_range, bdd_support(bdd_file, out.begin(), out.end()));
       });
 
       it("throws if range is too small for ZDD", [&]() {
         std::vector<int> out(1,-1);
-        AssertThrows(out_of_range, zdd_varprofile(zdd_file, out.begin(), out.end()));
+        AssertThrows(out_of_range, zdd_support(zdd_file, out.begin(), out.end()));
       });
     });
 

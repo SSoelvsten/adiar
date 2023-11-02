@@ -1022,7 +1022,7 @@ namespace adiar
   ///
   /// \param cb Callback function that consumes the variable labels.
   //////////////////////////////////////////////////////////////////////////////
-  void zdd_varprofile(const zdd &A, const consumer<zdd::label_type> &cb);
+  void zdd_support(const zdd &A, const consumer<zdd::label_type> &cb);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Copy the variable labels (in \em ascending order) into the given
@@ -1040,9 +1040,9 @@ namespace adiar
   ///                      enough to contain all variables in `f`.
   //////////////////////////////////////////////////////////////////////////////
   template<typename ForwardIt>
-  ForwardIt zdd_varprofile(const zdd &A, ForwardIt begin, ForwardIt end)
+  ForwardIt zdd_support(const zdd &A, ForwardIt begin, ForwardIt end)
   {
-    zdd_varprofile(A, make_consumer(begin, end));
+    zdd_support(A, make_consumer(begin, end));
     return begin;
   }
 
