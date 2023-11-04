@@ -41,6 +41,7 @@ namespace adiar
   {
     using value_type = pair<bdd::label_type, bool>;
 
+    // TODO: use `generator_end<bdd::label_type>::value` instead of code duplication.
     static constexpr value_type value =
       make_pair(static_cast<bdd::label_type>(-1), false);
   };
