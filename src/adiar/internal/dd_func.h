@@ -72,28 +72,48 @@ namespace adiar::internal
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Get the minimal occurring label in the decision diagram
+  /// \brief Get the root's variable label.
+  ///
+  /// \throws invalid_argument If `dd` is a terminal.
+  //////////////////////////////////////////////////////////////////////////////
+  template <typename DD>
+  dd::label_type dd_topvar(const DD &dd)
+  {
+    // TODO: Move into 'dd' class...
+    if (dd_isterminal(dd)) {
+      throw invalid_argument("Cannot obtain top variable of root");
+    }
+    return dd->first_level();
+  }
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Get the minimal occurring label in the decision diagram.
+  ///
+  /// \throws invalid_argument If `dd` is a terminal.
   //////////////////////////////////////////////////////////////////////////////
   template <typename DD>
   dd::label_type dd_minvar(const DD &dd)
   {
-    // TODO: Exception if terminal.
-
-    // TODO: Move into 'dd' class...
-    return dd->first_level();
+    // TODO: Custom implementation with an O(L) scan when variable order is not
+    //       certain to be the default ascending one.
+    return dd_topvar(dd);
   }
 
-  // TODO: dd_topvar(dd&) := dd_minvar(dd&)
-
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Get the maximal occurring label in the decision diagram
+  /// \brief Get the maximal occurring label in the decision diagram.
+  ///
+  /// \throws invalid_argument If `dd` is a terminal.
   //////////////////////////////////////////////////////////////////////////////
   template <typename DD>
   dd::label_type dd_maxvar(const DD &dd)
   {
-    // TODO: Exception if terminal.
-
     // TODO: Move into 'dd' class...
+    if (dd_isterminal(dd)) {
+      throw invalid_argument("Cannot obtain maximal variable of root");
+    }
+
+    // TODO: Use an O(L) scan when variable order is not default ascending.
     return dd->last_level();
   }
 

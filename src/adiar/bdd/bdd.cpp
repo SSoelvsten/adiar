@@ -154,6 +154,11 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Input variables
+  bdd::label_type bdd_topvar(const bdd &f)
+  {
+    return internal::dd_topvar(f);
+  }
+
   bdd::label_type bdd_minvar(const bdd &f)
   {
     return internal::dd_minvar(f);
