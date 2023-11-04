@@ -1040,7 +1040,8 @@ namespace adiar
   /// \{
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Get the variable labels in \em ascending order.
+  /// \brief Get (in \em ascending order) all of the variable labels that occur
+  ///        in the BDD.
   ///
   /// \param f  BDD of interest.
   ///
@@ -1049,8 +1050,8 @@ namespace adiar
   void bdd_support(const bdd &f, const consumer<bdd::label_type> &cb);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Copy the variable labels (in \em ascending order) into the given
-  ///        container.
+  /// \brief Copy all of the variable labels (in \em ascending order) that occur
+  ///        in the BDD into the given container.
   ///
   /// \param f     BDD of interest.
   ///
@@ -1078,14 +1079,14 @@ namespace adiar
   bdd::label_type bdd_topvar(const bdd &f);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Get the minimal occurring variable in this BDD.
+  /// \brief Get the minimal occurring variable in the function's support.
   ///
   /// \throws invalid_argument If `f` is a terminal.
   //////////////////////////////////////////////////////////////////////////////
   bdd::label_type bdd_minvar(const bdd &f);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Get the maximal occurring variable in this BDD.
+  /// \brief Get the maximal occurring variable in the function's support.
   ///
   /// \throws invalid_argument If `f` is a terminal.
   //////////////////////////////////////////////////////////////////////////////

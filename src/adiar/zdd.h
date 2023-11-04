@@ -1080,7 +1080,8 @@ namespace adiar
   /// \{
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Get the variable labels in \em ascending order.
+  /// \brief Get (in \em ascending order) all of the variable labels that occur
+  ///        in the family.
   ///
   /// \param A  ZDD of interest.
   ///
@@ -1089,8 +1090,8 @@ namespace adiar
   void zdd_support(const zdd &A, const consumer<zdd::label_type> &cb);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Copy the variable labels (in \em ascending order) into the given
-  ///        container.
+  /// \brief Copy all of the variable labels (in \em ascending order) that occur
+  ///        in the family into the given container.
   ///
   /// \param A     ZDD of interest.
   ///
@@ -1113,21 +1114,21 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Get the root's variable label.
   ///
-  /// \throws invalid_argument If `f` is a terminal.
+  /// \throws invalid_argument If `A` is a terminal.
   //////////////////////////////////////////////////////////////////////////////
   zdd::label_type zdd_topvar(const zdd &f);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Get the minimal occurring variable in this ZDD.
+  /// \brief Get the minimal occurring variable in the family.
   ///
-  /// \throws invalid_argument If `f` is a terminal.
+  /// \throws invalid_argument If `A` is a terminal.
   //////////////////////////////////////////////////////////////////////////////
   zdd::label_type zdd_minvar(const zdd &A);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Get the maximal occurring variable in this ZDD.
+  /// \brief Get the maximal occurring variable in the family.
   ///
-  /// \throws invalid_argument If `f` is a terminal.
+  /// \throws invalid_argument If `A` is a terminal.
   //////////////////////////////////////////////////////////////////////////////
   zdd::label_type zdd_maxvar(const zdd &A);
 
