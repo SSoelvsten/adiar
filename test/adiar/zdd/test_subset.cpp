@@ -189,35 +189,35 @@ go_bandit([]() {
     describe("zdd_offset(const zdd&, IT, IT)", [&]() {
       // TODO: unit tests for behaviour only tested with 'zdd_offset(A, var)'
 
-      it("should return input unchanged when given Ø", [&]() {
+      it("returns input unchanged when given Ø", [&]() {
         std::vector<int> labels = { 21, 42 };
 
         __zdd out = zdd_offset(zdd_F, labels.begin(), labels.end());
         AssertThat(out.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(zdd_F));
       });
 
-      it("should return input unchanged when given { Ø }", [&]() {
+      it("returns input unchanged when given { Ø }", [&]() {
         std::vector<int> labels = { 7, 42 };
 
         __zdd out = zdd_offset(zdd_T, labels.begin(), labels.end());
         AssertThat(out.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(zdd_T));
       });
 
-      it("should return input unchanged when given empty set of labels", [&]() {
+      it("returns input unchanged when given empty set of labels", [&]() {
         std::vector<int> labels = { };
 
         __zdd out = zdd_offset(zdd_1, labels.begin(), labels.end());
         AssertThat(out.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(zdd_1));
       });
 
-      it("should return input unchanged for [4] without (0,3,4,5,6)", [&]() {
+      it("returns input unchanged for [4] without (0,3,4,5,6)", [&]() {
         std::vector<int> labels = { 0, 3, 4, 5, 6 };
 
         __zdd out = zdd_offset(zdd_4, labels.begin(), labels.end());
         AssertThat(out.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(zdd_4));
       });
 
-      it("should restrict to a terminal in [1] without (0,1,3)", [&]() {
+      it("restricts to a terminal in [1] without (0,1,3)", [&]() {
         std::vector<int> labels = { 0, 1, 3 };
 
         __zdd out = zdd_offset(zdd_1, labels.begin(), labels.end());
@@ -240,7 +240,7 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
-      it("should restrict to a terminal in [3] without (1,2)", [&]() {
+      it("restricts to a terminal in [3] without (1,2)", [&]() {
         std::vector<int> labels = { 1,2 };
 
         __zdd out = zdd_offset(zdd_3, labels.begin(), labels.end());
@@ -263,7 +263,7 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
-      it("should restrict to a (reduced) terminal in [6] without (1,2)", [&]() {
+      it("restricts to a (reduced) terminal in [6] without (1,2)", [&]() {
         std::vector<int> labels = { 0,2 };
 
         __zdd out = zdd_offset(zdd_6, labels.begin(), labels.end());
@@ -288,22 +288,22 @@ go_bandit([]() {
     });
 
     describe("zdd_offset(const zdd&, zdd::label_type)", [&]() {
-      it("should return input unchanged when given Ø", [&]() {
+      it("returns input unchanged when given Ø", [&]() {
         __zdd out = zdd_offset(zdd_F, 42);
         AssertThat(out.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(zdd_F));
       });
 
-      it("should return input unchanged when given { Ø }", [&]() {
+      it("returns input unchanged when given { Ø }", [&]() {
         __zdd out = zdd_offset(zdd_T, 42);
         AssertThat(out.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(zdd_T));
       });
 
-      it("should return input unchanged when given [4] without 0", [&]() {
+      it("returns input unchanged when given [4] without 0", [&]() {
         __zdd out = zdd_offset(zdd_4, 0);
         AssertThat(out.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(zdd_4));
       });
 
-      it("should return { Ø } for [4] without 2", [&]() {
+      it("returns { Ø } for [4] without 2", [&]() {
         __zdd out = zdd_offset(zdd_4, 2);
 
         arc_test_stream arcs(out);
@@ -330,7 +330,7 @@ go_bandit([]() {
         AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
-      it("should return { Ø, { 1 } } for [5] without 2", [&]() {
+      it("returns { Ø, { 1 } } for [5] without 2", [&]() {
         __zdd out = zdd_offset(zdd_5, 2);
 
         arc_test_stream arcs(out);
@@ -357,7 +357,7 @@ go_bandit([]() {
         AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
-      it("should return { Ø, { 2 } } for [5] without 1", [&]() {
+      it("returns { Ø, { 2 } } for [5] without 1", [&]() {
         __zdd out = zdd_offset(zdd_5, 1);
 
         arc_test_stream arcs(out);
@@ -384,7 +384,7 @@ go_bandit([]() {
         AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
-      it("should return { Ø, { 2 } } for [5] without 1", [&]() {
+      it("returns { Ø, { 2 } } for [5] without 1", [&]() {
         __zdd out = zdd_offset(zdd_5, 1);
 
         arc_test_stream arcs(out);
@@ -411,7 +411,7 @@ go_bandit([]() {
         AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
-      it("should skip 'dead' nodes in [1] without 1", [&]() {
+      it("skips 'dead' nodes in [1] without 1", [&]() {
         __zdd out = zdd_offset(zdd_1, 1);
 
         arc_test_stream arcs(out);
@@ -458,7 +458,7 @@ go_bandit([]() {
         AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
-      it("should restrict to a (reduced) terminal in [6] without 1", [&]() {
+      it("restricts to a (reduced) terminal in [6] without 1", [&]() {
         __zdd out = zdd_offset(zdd_6, 0);
 
         node_test_stream out_nodes(out);
@@ -479,7 +479,7 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
-      it("should bridge levels in [2] without 3", [&]() {
+      it("bridges levels in [2] without 3", [&]() {
         __zdd out = zdd_offset(zdd_2, 3);
 
         arc_test_stream arcs(out);
@@ -528,7 +528,7 @@ go_bandit([]() {
     });
 
     describe("zdd_offset(const zdd&)", [&]() {
-      it("should skip root of [1]", [&]() {
+      it("skips root of [1]", [&]() {
         __zdd out = zdd_offset(zdd_1);
 
         arc_test_stream arcs(out);
@@ -590,7 +590,7 @@ go_bandit([]() {
         AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(3u));
       });
 
-      it("should skip 'dead' nodes of [2 mirrored]", [&]() {
+      it("skips 'dead' nodes of [2 mirrored]", [&]() {
         __zdd out = zdd_offset(zdd_2_mirror);
 
         arc_test_stream arcs(out);
@@ -644,28 +644,28 @@ go_bandit([]() {
     describe("zdd_onset(const zdd&, IT, IT)", [&]() {
       // TODO: unit tests for behaviour only tested with 'zdd_onset(A, var)'
 
-      it("should return input unchanged when given Ø", [&]() {
+      it("returns input unchanged when given Ø", [&]() {
         std::vector<int> labels = { 21, 42 };
 
         __zdd out = zdd_onset(zdd_F, labels.begin(), labels.end());
         AssertThat(out.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(zdd_F));
       });
 
-      it("should return input unchanged when given { Ø } for ()", [&]() {
+      it("returns input unchanged when given { Ø } for ()", [&]() {
         std::vector<int> labels = { };
 
         __zdd out = zdd_onset(zdd_T, labels.begin(), labels.end());
         AssertThat(out.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(zdd_T));
       });
 
-      it("should return input unchanged when given [1] for ()", [&]() {
+      it("returns input unchanged when given [1] for ()", [&]() {
         std::vector<int> labels = { };
 
         __zdd out = zdd_onset(zdd_1, labels.begin(), labels.end());
         AssertThat(out.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(zdd_1));
       });
 
-      it("should return Ø when given { Ø } for (21,42)", [&]() {
+      it("returns Ø when given { Ø } for (21,42)", [&]() {
         std::vector<int> labels = { 21, 42 };
 
         __zdd out = zdd_onset(zdd_T, labels.begin(), labels.end());
@@ -688,7 +688,7 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
-      it("should return Ø when given disjoint labels", [&]() {
+      it("returns Ø when given disjoint labels", [&]() {
         std::vector<int> labels = { 5, 6 };
 
         __zdd out = zdd_onset(zdd_1, labels.begin(), labels.end());
@@ -711,7 +711,7 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
-      it("should return Ø when given { Ø, { 0 } } for (0,1)", [&]() {
+      it("returns Ø when given { Ø, { 0 } } for (0,1)", [&]() {
         std::vector<int> labels = { 0, 1 };
 
         __zdd out = zdd_onset(zdd_7, labels.begin(), labels.end());
@@ -734,7 +734,7 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
-      it("should return { Ø } in [2] for (0,2,3)", [&]() {
+      it("returns { Ø } in [2] for (0,2,3)", [&]() {
         // One would normally expect this to return { Ø }, but for zdd_onset
         // this is not the case!
         std::vector<int> labels = { 0, 2, 3 };
@@ -785,7 +785,7 @@ go_bandit([]() {
         AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
-      it("should return Ø in [2] for (0,2,3,4)", [&]() {
+      it("returns Ø in [2] for (0,2,3,4)", [&]() {
         // Similar to above, while it inevitably will be Ø, the top-down nature
         // of zdd_onset cannot know this before having output nodes. The later
         // Reduce will put it to this.
@@ -832,7 +832,7 @@ go_bandit([]() {
         AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
-      it("should skip 'dead' nodes of [1] for (1,2)", [&]() {
+      it("skips 'dead' nodes of [1] for (1,2)", [&]() {
         std::vector<int> labels = { 1, 2 };
 
         __zdd out = zdd_onset(zdd_1, labels.begin(), labels.end());
@@ -899,7 +899,7 @@ go_bandit([]() {
         AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(3u));
       });
 
-      it("should skip root in [2] due to cut on high edge for (1,3)", [&]() {
+      it("skips root in [2] due to cut on high edge for (1,3)", [&]() {
         std::vector<int> labels = { 1 };
 
         __zdd out = zdd_onset(zdd_2, labels.begin(), labels.end());
@@ -948,7 +948,7 @@ go_bandit([]() {
         AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
-      it("should cut high edge on restricted node, if it goes past the next label", [&]() {
+      it("cuts high edge on restricted node, if it goes past the next label", [&]() {
         /*
                    _1_       ---- x0
                   /   \
@@ -1033,12 +1033,12 @@ go_bandit([]() {
     });
 
     describe("zdd_onset(const zdd&, zdd::label_type)", [&]() {
-      it("should return input unchanged when given Ø", [&]() {
+      it("returns input unchanged when given Ø", [&]() {
         __zdd out = zdd_onset(zdd_F, 0);
         AssertThat(out.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(zdd_F));
       });
 
-      it("should return Ø when given { Ø } for 0", [&]() {
+      it("returns Ø when given { Ø } for 0", [&]() {
         __zdd out = zdd_onset(zdd_T, 0);
 
         node_test_stream out_nodes(out);
@@ -1059,7 +1059,7 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
-      it("should return Ø when given non-existent label (after)", [&]() {
+      it("returns Ø when given non-existent label (after)", [&]() {
         __zdd out = zdd_onset(zdd_1, 5);
 
         node_test_stream out_nodes(out);
@@ -1080,7 +1080,7 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
-      it("should return Ø when given non-existent label (in-between)", [&]() {
+      it("returns Ø when given non-existent label (in-between)", [&]() {
         __zdd out = zdd_onset(zdd_6, 1);
 
         node_test_stream out_nodes(out);
@@ -1101,7 +1101,7 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
-      it("should return { { 0 } } when given [7] with 0", [&]() {
+      it("returns { { 0 } } when given [7] with 0", [&]() {
         __zdd out = zdd_onset(zdd_7, 0);
 
         arc_test_stream arcs(out);
@@ -1128,7 +1128,7 @@ go_bandit([]() {
         AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
-      it("should return Ø in { Ø, {0}, {0,2} } with 1", [&]() {
+      it("returns Ø in { Ø, {0}, {0,2} } with 1", [&]() {
         /*
         //     1       ---- x0
         //    / \
@@ -1166,7 +1166,7 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
-      it("should cut edge going across onset label in { {2}, {0,1}, {0,2}, {0,1,2} } with 1", [&]() {
+      it("cuts edge going across onset label in { {2}, {0,1}, {0,2}, {0,1,2} } with 1", [&]() {
         /*
         //     1       ---- x0
         //    / \
@@ -1233,7 +1233,7 @@ go_bandit([]() {
         AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
-      it("should cut edge and ignore 'dead' node in { {2}, {0,1}, {0,2} } with 1", [&]() {
+      it("cuts edge and ignore 'dead' node in { {2}, {0,1}, {0,2} } with 1", [&]() {
         /*
         //       1       ---- x0
         //      / \
@@ -1290,7 +1290,7 @@ go_bandit([]() {
         AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
-      it("should falsify early terminals in [2] for (3)", [&]() {
+      it("falsifies early terminals in [2] for (3)", [&]() {
         std::vector<int> labels = { 3 };
 
         __zdd out = zdd_onset(zdd_2, labels.begin(), labels.end());
@@ -1348,7 +1348,7 @@ go_bandit([]() {
         AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
-      it("should falsify early terminal and bridge over removed node in [1] with 4", [&]() {
+      it("falsifies early terminal and bridge over removed node in [1] with 4", [&]() {
         __zdd out = zdd_onset(zdd_1, 4);
 
         arc_test_stream arcs(out);
@@ -1415,7 +1415,7 @@ go_bandit([]() {
     });
 
     describe("zdd_onset(const zdd&)", [&]() {
-      it("should keep root but shortcut its low for [1]", [&]() {
+      it("keeps root but shortcut its low for [1]", [&]() {
         __zdd out = zdd_onset(zdd_1);
 
         arc_test_stream arcs(out);
@@ -1485,7 +1485,7 @@ go_bandit([]() {
         AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(3u));
       });
 
-      it("should skip 'dead' nodes for [2]", [&]() {
+      it("skips 'dead' nodes for [2]", [&]() {
         __zdd out = zdd_onset(zdd_2);
 
         arc_test_stream arcs(out);
