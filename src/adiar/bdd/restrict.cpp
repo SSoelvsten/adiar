@@ -9,6 +9,30 @@
 
 namespace adiar
 {
+  //////////////////////////////////////////////////////////////////////////////
+  class bdd_restrict_policy : public bdd_policy
+  {
+  public:
+    template<typename AssignmentMgr>
+    static internal::substitute_rec keep_node(const bdd::node_type &n, AssignmentMgr &/*amgr*/)
+    { return internal::substitute_rec_output { n }; }
+
+    template<typename AssignmentMgr>
+    static internal::substitute_rec fix_false(const bdd::node_type &n, AssignmentMgr &/*amgr*/)
+    { return internal::substitute_rec_skipto { n.low() }; }
+
+    template<typename AssignmentMgr>
+    static internal::substitute_rec fix_true(const bdd::node_type &n, AssignmentMgr &/*amgr*/)
+    { return internal::substitute_rec_skipto { n.high() }; }
+
+  public:
+    template<typename AssignmentMgr>
+    static inline bdd terminal(bool terminal_val, AssignmentMgr &/*amgr*/)
+    { return bdd_terminal(terminal_val); }
+  };
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Variant: Generator-based Restrict
   class restrict_generator_mgr
   {
     const generator<pair<bdd::label_type, bool>> &_generator;
@@ -37,29 +61,7 @@ namespace adiar
     }
   };
 
-  //////////////////////////////////////////////////////////////////////////////
-  class bdd_restrict_policy : public bdd_policy
-  {
-  public:
-    template<typename AssignmentMgr>
-    static internal::substitute_rec keep_node(const bdd::node_type &n, AssignmentMgr &/*amgr*/)
-    { return internal::substitute_rec_output { n }; }
 
-    template<typename AssignmentMgr>
-    static internal::substitute_rec fix_false(const bdd::node_type &n, AssignmentMgr &/*amgr*/)
-    { return internal::substitute_rec_skipto { n.low() }; }
-
-    template<typename AssignmentMgr>
-    static internal::substitute_rec fix_true(const bdd::node_type &n, AssignmentMgr &/*amgr*/)
-    { return internal::substitute_rec_skipto { n.high() }; }
-
-  public:
-    template<typename AssignmentMgr>
-    static inline bdd terminal(bool terminal_val, AssignmentMgr &/*amgr*/)
-    { return bdd_terminal(terminal_val); }
-  };
-
-  //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_restrict(const exec_policy &ep,
                      const bdd &f,
                      const generator<pair<bdd::label_type, bool>> &xs)
@@ -78,6 +80,8 @@ namespace adiar
     return bdd_restrict(exec_policy(), f, xs);
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  // Overload: Single-variable Restrict
   __bdd bdd_restrict(const exec_policy &ep,
                      const bdd &f, bdd::label_type var, bool val)
   {
@@ -96,5 +100,27 @@ namespace adiar
   __bdd bdd_restrict(const bdd &f, bdd::label_type var, bool val)
   {
     return bdd_restrict(exec_policy(), f, var, val);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Overload: Root Restrict
+  __bdd bdd_low(const exec_policy &ep, const bdd &f)
+  {
+    return bdd_restrict(ep, f, bdd_topvar(f), false);
+  }
+
+  __bdd bdd_low(const bdd &f)
+  {
+    return bdd_low(exec_policy(), f);
+  }
+
+  __bdd bdd_high(const exec_policy &ep, const bdd &f)
+  {
+    return bdd_restrict(ep, f, bdd_topvar(f), true);
+  }
+
+  __bdd bdd_high(const bdd &f)
+  {
+    return bdd_high(exec_policy(), f);
   }
 }

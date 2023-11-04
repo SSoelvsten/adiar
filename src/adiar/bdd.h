@@ -457,9 +457,9 @@ namespace adiar
   ///
   /// \returns \f$ f ? g : h \f$
   ///
-  /// \remark In other BDD packages this function is good for manually
-  ///         constructing a BDD bottom-up. But, in Adiar you should use the
-  ///         \ref bdd_builder class (see \ref builder) instead
+  /// \remark In other BDD packages, this function is good for manually
+  ///         constructing a BDD bottom-up. But, here you should use the \ref
+  ///         bdd_builder class (see \ref builder) instead
   ///
   /// \see    bdd_apply builder bdd_builder
   //////////////////////////////////////////////////////////////////////////////
@@ -545,6 +545,42 @@ namespace adiar
                      const bdd &f,
                      bdd::label_type var,
                      bool val);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief   Restrict the root to `false`, i.e. follow its low edge.
+  ///
+  /// \remark In other BDD packages, this function is good for traversing a BDD.
+  ///         But, here this is not a constant-time operation but constructs an
+  ///         entire new BDD of up-to linear size.
+  ///
+  /// \throws invalid_argument If `f` is a terminal.
+  ///
+  /// \see bdd_restrict
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_low(const bdd &f);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Restrict a single variable to a constant value.
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_low(const exec_policy &ep, const bdd &f);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief   Restrict the root to `true`, i.e. follow its high edge.
+  ///
+  /// \remark In other BDD packages, this function is good for traversing a BDD.
+  ///         But, here this is not a constant-time operation but constructs
+  ///         an entire new BDD of up-to linear size.
+  ///
+  /// \throws invalid_argument If `f` is a terminal.
+  ///
+  /// \see bdd_restrict
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_high(const bdd &f);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Restrict a single variable to a constant value.
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_high(const exec_policy &ep, const bdd &f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Existential quantification of a single variable.
