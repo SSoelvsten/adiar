@@ -162,7 +162,7 @@ go_bandit([]() {
     });
 
     describe("bdd_restrict(const bdd&, IT, IT)", [&]() {
-      it("should bridge levels in BDD 1 for (_,T,T,_)", [&]() {
+      it("bridges levels in BDD 1 for (_,T,T,_)", [&]() {
         /*
         //                 1      ---- x0
         //                / \
@@ -211,7 +211,7 @@ go_bandit([]() {
         AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
-      it("should remove root of BDD 1 for (T,_,_,F)", [&]() {
+      it("removes root of BDD 1 for (T,_,_,F)", [&]() {
         /*
         //                  2     ---- x1
         //                 / \
@@ -263,7 +263,7 @@ go_bandit([]() {
         AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
-      it("should ignore skipped variables in BDD 1 for (F,T,_,F)", [&]() {
+      it("ignores skipped variables in BDD 1 for (F,T,_,F)", [&]() {
         /*
         //                 3      ---- x2
         //                / \
@@ -297,7 +297,7 @@ go_bandit([]() {
         AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
-      it("should return F terminal in BDD 1 for (F,_,F,_)", [&]() {
+      it("returns F terminal in BDD 1 for (F,_,F,_)", [&]() {
         std::vector<adiar::pair<bdd::label_type, bool>> ass = { {0,false}, {2,false} };
 
         __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
@@ -320,7 +320,7 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
-      it("should return T terminal in BDD 1 for (T,T,F,_)", [&]() {
+      it("returns T terminal in BDD 1 for (T,T,F,_)", [&]() {
         std::vector<adiar::pair<bdd::label_type, bool>> ass = { {0,true}, {1,true}, {2,false} };
 
         __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
@@ -343,7 +343,7 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
-      it("should return terminal for restricted root in BDD 2 [F]", [&]() {
+      it("returns terminal for restricted root in BDD 2 [F]", [&]() {
         std::vector<adiar::pair<bdd::label_type, bool>> ass = { {1,true}, {2,true} };
 
         __bdd out = bdd_restrict(bdd_2_high_F, ass.begin(), ass.end());
@@ -366,7 +366,7 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
-      it("should return terminal for restricted root in BDD 2 [T]", [&]() {
+      it("returns terminal for restricted root in BDD 2 [T]", [&]() {
         std::vector<adiar::pair<bdd::label_type, bool>> ass = { {0,false}, {2,false} };
 
         __bdd out = bdd_restrict(bdd_2_low_T, ass.begin(), ass.end());
@@ -389,7 +389,7 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
-      it("should return input unchanged when given a T terminal", [&]() {
+      it("returns input unchanged when given a T terminal", [&]() {
         std::vector<adiar::pair<bdd::label_type, bool>> ass = { {0,true}, {2,true}, {42,false} };
 
         __bdd out = bdd_restrict(bdd_T, ass.begin(), ass.end());
@@ -398,7 +398,7 @@ go_bandit([]() {
         AssertThat(out.negate, Is().False());
       });
 
-      it("should return input unchanged when given a F terminal", [&]() {
+      it("returns input unchanged when given a F terminal", [&]() {
         std::vector<adiar::pair<bdd::label_type, bool>> ass  { {2,true}, {21,true}, {28,false} };
 
         __bdd out = bdd_restrict(bdd_F, ass.begin(), ass.end());
@@ -407,7 +407,7 @@ go_bandit([]() {
         AssertThat(out.negate, Is().False());
       });
 
-      it("should return input unchanged when given an empty assignment", [&]() {
+      it("returns input unchanged when given an empty assignment", [&]() {
         std::vector<adiar::pair<bdd::label_type, bool>> ass;
 
         __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
@@ -416,7 +416,7 @@ go_bandit([]() {
         AssertThat(out.negate, Is().False());
       });
 
-      it("should return input unchanged if assignment is disjoint of its variables", [&]() {
+      it("returns input unchanged if assignment is disjoint of its variables", [&]() {
         std::vector<adiar::pair<bdd::label_type, bool>> ass = { {5,false}, {6,true}, {7,true} };
 
         __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
@@ -425,7 +425,7 @@ go_bandit([]() {
         AssertThat(out.negate, Is().False());
       });
 
-      it("should sort restricted terminal arc in BDD 4 for (_,F,T,_)", [&]() {
+      it("sorts restricted terminal arc in BDD 4 for (_,F,T,_)", [&]() {
         /*
         //                    _1_       ---- x0
         //                   /   \
@@ -462,7 +462,7 @@ go_bandit([]() {
         AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
-      it("should skip 'dead' nodes in BDD 5 for (F,T,_,_)", [&]() {
+      it("skips 'dead' nodes in BDD 5 for (F,T,_,_)", [&]() {
         std::vector<adiar::pair<bdd::label_type, bool>> ass = { {0, false}, {1,true} };
 
         __bdd out = bdd_restrict(bdd_5, ass.begin(), ass.end());
@@ -501,7 +501,7 @@ go_bandit([]() {
         AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
-      it("should skip 'dead' nodes in BDD 5 for (T,T,_,_)", [&]() {
+      it("skips 'dead' nodes in BDD 5 for (T,T,_,_)", [&]() {
         std::vector<adiar::pair<bdd::label_type, bool>> ass = { {0, true}, {1,true} };
 
         __bdd out = bdd_restrict(bdd_5, ass.begin(), ass.end());
@@ -542,7 +542,7 @@ go_bandit([]() {
     });
 
     describe("bdd_restrict(const bdd&, bdd::label_type, bool)", [&]() {
-      it("should bridge a level in BDD 1 for x2 = T", [&]() {
+      it("bridges over a level in BDD 1 for x2 = T", [&]() {
         /*
         //                 1      ---- x0
         //                / \
@@ -598,7 +598,7 @@ go_bandit([]() {
         AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(3u));
       });
 
-      it("should bridge levels in BDD 1 for x1 = F", [&]() {
+      it("bridges over levels in BDD 1 for x1 = F", [&]() {
         /*
         //                 1      ---- x0
         //                / \
@@ -643,7 +643,7 @@ go_bandit([]() {
         AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
-      it("should bridge levels in BDD 1 for x1 = T", [&]() {
+      it("bridges over levels in BDD 1 for x1 = T", [&]() {
         /*
         //                  1         ---- x0
         //                 / \
@@ -705,7 +705,7 @@ go_bandit([]() {
         AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(3u));
       });
 
-      it("should remove root of BDD 1 for x0 = T", [&]() {
+      it("removes root of BDD 1 for x0 = T", [&]() {
         /*
         //              2        ---- x1
         //             / \
@@ -767,7 +767,7 @@ go_bandit([]() {
         AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(3u));
       });
 
-      it("should return terminal of restricted root [F]", [&]() {
+      it("returns terminal of restricted root [F]", [&]() {
         __bdd out = bdd_restrict(bdd_2_high_F, 1, true);
 
         node_test_stream out_nodes(out);
@@ -788,7 +788,7 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
-      it("should return terminal of restricted root [T]", [&]() {
+      it("returns terminal of restricted root [T]", [&]() {
         __bdd out = bdd_restrict(bdd_2_low_T, 0, false);
 
         node_test_stream out_nodes(out);
@@ -809,21 +809,21 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
-      it("should return input unchanged when given a T terminal", [&]() {
+      it("returns input unchanged when given a T terminal", [&]() {
         __bdd out = bdd_restrict(bdd_T, 42, true);
 
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_T));
         AssertThat(out.negate, Is().False());
       });
 
-      it("should return input unchanged when given a F terminal", [&]() {
+      it("returns input unchanged when given a F terminal", [&]() {
         __bdd out = bdd_restrict(bdd_F, 8, false);
 
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_F));
         AssertThat(out.negate, Is().False());
       });
 
-      it("should return input unchanged if variable does not exist", [&]() {
+      it("returns input unchanged if variable does not exist", [&]() {
         std::vector<adiar::pair<bdd::label_type, bool>> ass = { {5,false}, {6,true}, {7,true} };
 
         __bdd out = bdd_restrict(bdd_1, 4, true);
@@ -832,7 +832,7 @@ go_bandit([]() {
         AssertThat(out.negate, Is().False());
       });
 
-      it("should sort restricted terminal arcs in BDD 3", [&]() {
+      it("sorts restricted terminal arcs in BDD 3", [&]() {
         /*
         //                     1         ---- x0
         //                   /   \
@@ -936,7 +936,7 @@ go_bandit([]() {
         AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
-      it("should skip 'dead' nodes in BDD 5 for x1 = T", [&]() {
+      it("skips 'dead' nodes in BDD 5 for x1 = T", [&]() {
         __bdd out = bdd_restrict(bdd_5, 1, true);
 
         arc_test_stream arcs(out);
@@ -996,7 +996,7 @@ go_bandit([]() {
     });
 
     describe("bdd_low(const bdd&)", [&]() {
-      it("should construct low subtree of BDD 1", [&]() {
+      it("constructs low subtree of BDD 1", [&]() {
         /*
         //            3
         //           / \
@@ -1030,7 +1030,7 @@ go_bandit([]() {
         AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
-      it("should return terminal in BDD 2", [&]() {
+      it("returns terminal in BDD 2", [&]() {
         __bdd out = bdd_low(bdd_2_low_T);
 
         node_test_stream out_nodes(out);
@@ -1051,17 +1051,17 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
-      it("should throw exception when given the F terminal", [&]() {
+      it("throws an exception when given the F terminal", [&]() {
         AssertThrows(invalid_argument, bdd_low(bdd_F));
       });
 
-      it("should throw exception when given the T terminal", [&]() {
+      it("throws an exception when given the T terminal", [&]() {
         AssertThrows(invalid_argument, bdd_low(bdd_T));
       });
     });
 
     describe("bdd_high(const bdd&)", [&]() {
-      it("should construct high subtree of BDD 1", [&]() {
+      it("constructs high subtree of BDD 1", [&]() {
         /*
         //              2        ---- x1
         //             / \
@@ -1123,7 +1123,7 @@ go_bandit([]() {
         AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(3u));
       });
 
-      it("should return terminal in BDD 2", [&]() {
+      it("returns terminal in BDD 2", [&]() {
         __bdd out = bdd_high(bdd_2_high_F);
 
         node_test_stream out_nodes(out);
@@ -1144,11 +1144,11 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
-      it("should throw exception when given the F terminal", [&]() {
+      it("throws an exception when given the F terminal", [&]() {
         AssertThrows(invalid_argument, bdd_high(bdd_F));
       });
 
-      it("should throw exception when given the T terminal", [&]() {
+      it("throws an exception when given the T terminal", [&]() {
         AssertThrows(invalid_argument, bdd_high(bdd_T));
       });
     });
