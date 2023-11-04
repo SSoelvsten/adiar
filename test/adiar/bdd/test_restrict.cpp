@@ -994,5 +994,163 @@ go_bandit([]() {
         AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(3u));
       });
     });
+
+    describe("bdd_low(const bdd&)", [&]() {
+      it("should construct low subtree of BDD 1", [&]() {
+        /*
+        //            3
+        //           / \
+        //           F T
+        */
+
+        __bdd out = bdd_low(bdd_1);
+
+        arc_test_stream arcs(out);
+
+        AssertThat(arcs.can_pull_internal(), Is().False());
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_3.uid(), false, terminal_F }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_3.uid(), true,  terminal_T }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().False());
+
+        level_info_test_stream meta_arcs(out);
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2,1u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      it("should return terminal in BDD 2", [&]() {
+        __bdd out = bdd_low(bdd_2_low_T);
+
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream meta_arcs(out);
+        AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      it("should throw exception when given the F terminal", [&]() {
+        AssertThrows(invalid_argument, bdd_low(bdd_F));
+      });
+
+      it("should throw exception when given the T terminal", [&]() {
+        AssertThrows(invalid_argument, bdd_low(bdd_T));
+      });
+    });
+
+    describe("bdd_high(const bdd&)", [&]() {
+      it("should construct high subtree of BDD 1", [&]() {
+        /*
+        //              2        ---- x1
+        //             / \
+        //            3   4      ---- x2
+        //           / \ / \
+        //           F T T 5     ---- x3
+        //                / \
+        //                F T
+        */
+
+        __bdd out = bdd_high(bdd_1);
+
+        arc_test_stream arcs(out);
+
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1_2.uid(), false, n1_3.uid() }));
+
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1_2.uid(), true,  n1_4.uid() }));
+
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1_4.uid(), true,  n1_5.uid() }));
+
+        AssertThat(arcs.can_pull_internal(), Is().False());
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_3.uid(), false, terminal_F }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_3.uid(), true,  terminal_T }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_4.uid(), false, terminal_T }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_5.uid(), false, terminal_F }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_5.uid(), true,  terminal_T }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().False());
+
+        level_info_test_stream meta_arcs(out);
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(1,1u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2,2u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(3,1u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(3u));
+      });
+
+      it("should return terminal in BDD 2", [&]() {
+        __bdd out = bdd_high(bdd_2_high_F);
+
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream meta_arcs(out);
+        AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(0u));
+      });
+
+      it("should throw exception when given the F terminal", [&]() {
+        AssertThrows(invalid_argument, bdd_high(bdd_F));
+      });
+
+      it("should throw exception when given the T terminal", [&]() {
+        AssertThrows(invalid_argument, bdd_high(bdd_T));
+      });
+    });
   });
  });
