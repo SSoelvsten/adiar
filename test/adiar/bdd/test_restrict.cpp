@@ -2,6 +2,30 @@
 
 go_bandit([]() {
   describe("adiar/bdd/restrict.cpp", []() {
+    const ptr_uint64 terminal_T(true);
+    const ptr_uint64 terminal_F(false);
+
+    shared_levelized_file<bdd::node_type> bdd_F;
+    /*
+    //          F
+    */
+
+    { // Garbage collect writer to free write-lock
+      node_writer nw(bdd_F);
+      nw << node(false);
+    }
+
+    shared_levelized_file<bdd::node_type> bdd_T;
+    /*
+    //          T
+    */
+
+    { // Garbage collect writer to free write-lock
+      node_writer nw(bdd_T);
+      nw << node(true);
+    }
+
+    shared_levelized_file<bdd::node_type> bdd_1;
     /*
     //             1         ---- x0
     //            / \
@@ -14,673 +38,961 @@ go_bandit([]() {
     //                F T
     */
 
-    ptr_uint64 terminal_T = ptr_uint64(true);
-    ptr_uint64 terminal_F = ptr_uint64(false);
-
-    node n5 = node(3,0, terminal_F, terminal_T);
-    node n4 = node(2,1, terminal_T, n5.uid());
-    node n3 = node(2,0, terminal_F, terminal_T);
-    node n2 = node(1,0, n3.uid(), n4.uid());
-    node n1 = node(0,0, n3.uid(), n2.uid());
-
-    shared_levelized_file<bdd::node_type> bdd_1;
+    const node n1_5(3,0, terminal_F, terminal_T);
+    const node n1_4(2,1, terminal_T, n1_5.uid());
+    const node n1_3(2,0, terminal_F, terminal_T);
+    const node n1_2(1,0, n1_3.uid(), n1_4.uid());
+    const node n1_1(0,0, n1_3.uid(), n1_2.uid());
 
     { // Garbage collect writer to free write-lock
-      node_writer w(bdd_1);
-      w << n5 << n4 << n3 << n2 << n1;
+      node_writer nw(bdd_1);
+      nw << n1_5 << n1_4 << n1_3 << n1_2 << n1_1;
+    }
+
+    shared_levelized_file<bdd::node_type> bdd_2_high_F;
+    /*
+    //                 1       ---- x1
+    //                / \
+    //                2 F      ---- x2
+    //               / \
+    //               F T
+    */
+
+    { // Garbage collect writer to free write-lock
+      const node n2_2(2, node::max_id, terminal_F, terminal_T);
+      const node n2_1(1, node::max_id, n2_2.uid(), terminal_F);
+
+      node_writer nw(bdd_2_high_F);
+      nw << n2_2 << n2_1;
+    }
+
+    shared_levelized_file<bdd::node_type> bdd_2_low_T;
+    /*
+    //                 1       ---- x0
+    //                / \
+    //                T |      ---- x1
+    //                  |
+    //                  2      ---- x2
+    //                 / \
+    //                 F T
+    */
+
+    { // Garbage collect writer to free write-lock
+      const node n2_2(2, node::max_id, terminal_F, terminal_T);
+      const node n2_1(0, node::max_id, terminal_T, n2_2.uid());
+
+      node_writer nw(bdd_2_low_T);
+      nw << n2_2 << n2_1;
+    }
+
+    shared_levelized_file<bdd::node_type> bdd_3;
+    /*
+    //                    1            ---- x0
+    //                   / \
+    //                  2   3         ---- x1
+    //                 / \ / \
+    //                 4 F 5 F        ---- x2
+    //                / \ / \
+    //                T F F T
+    */
+    const node n3_5 = node(2,1, terminal_F, terminal_T);
+    const node n3_4 = node(2,0, terminal_T, terminal_F);
+    const node n3_3 = node(1,1, n3_5.uid(), terminal_F);
+    const node n3_2 = node(1,0, n3_4.uid(), terminal_F);
+    const node n3_1 = node(0,0, n3_2.uid(), n3_3.uid());
+
+    { // Garbage collect writer to free write-lock
+      node_writer nw(bdd_3);
+      nw << n3_5 << n3_4 << n3_3 << n3_2 << n3_1;
+    }
+
+    shared_levelized_file<bdd::node_type> bdd_4;
+    /*
+    //                    1
+    //                   / \
+    //                  2   3
+    //                 / \ / \
+    //                 4 F T F
+    //                / \
+    //                T F
+    */
+    const node n4_4(2,0, terminal_T, terminal_F);
+    const node n4_3(1,1, terminal_T, terminal_F);
+    const node n4_2(1,0, n4_4.uid(), terminal_F);
+    const node n4_1(0,0, n4_2.uid(), n4_3.uid());
+
+    { // Garbage collect writer to free write-lock
+      node_writer nw(bdd_4);
+      nw << n4_4 << n4_3 << n4_2 << n4_1;
     }
 
     /*
-    //          F
+    //                        1           ---- x0
+    //                      /   \
+    //                     2     3        ---- x1
+    //                    / \   / \
+    //                   4  5   6  7      ---- x2
+    //                  / \/ \ / \/ \
+    //                  T F  8 F  9 T     ---- x3
+    //                      / \  / \
+    //                      F T  T F
+    //
+    //                 Here, node 4 and 6 are going to be dead, when x1 -> T.
     */
-    shared_levelized_file<bdd::node_type> bdd_F;
+
+    shared_levelized_file<bdd::node_type> bdd_5;
+
+    const node n5_9(3,1, terminal_T, terminal_F);
+    const node n5_8(3,0, terminal_F, terminal_T);
+    const node n5_7(2,3, n5_9.uid(), terminal_T);
+    const node n5_6(2,2, terminal_T, n5_9.uid());
+    const node n5_5(2,1, terminal_F, n5_8.uid());
+    const node n5_4(2,0, terminal_T, terminal_F);
+    const node n5_3(1,1, n5_6.uid(), n5_7.uid());
+    const node n5_2(1,0, n5_4.uid(), n5_5.uid());
+    const node n5_1(0,0, n5_2.uid(), n5_3.uid());
 
     { // Garbage collect writer to free write-lock
-      node_writer w(bdd_F);
-      w << node(false);
+      node_writer nw(bdd_5);
+      nw << n5_9 << n5_8 << n5_7 << n5_6 << n5_5 << n5_4 << n5_3 << n5_2 << n5_1;
     }
 
-    /*
-    //          T
-    */
-    shared_levelized_file<bdd::node_type> bdd_T;
-
-    { // Garbage collect writer to free write-lock
-      node_writer w(bdd_T);
-      w << node(true);
-    }
-
-    it("should bridge level [1] Assignment: (_,_,T,_)", [&]() {
-      /*
-      //                 1      ---- x0
-      //                / \
-      //                T 2     ---- x1
-      //                 / \
-      //                 T |
-      //                   |
-      //                   5    ---- x3
-      //                  / \
-      //                  F T
-      */
-
-      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {2, true} };
-
-      __bdd out = bdd_restrict(exec_policy(), bdd_1, ass.begin(), ass.end());
-
-      arc_test_stream arcs(out);
-
-      AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), true,  n2.uid() }));
-
-      AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n2.uid(), true,  n5.uid() }));
-
-      AssertThat(arcs.can_pull_internal(), Is().False());
-
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1.uid(), false, terminal_T }));
-
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n2.uid(), false, terminal_T }));
-
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5.uid(), false, terminal_F }));
-
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5.uid(), true,  terminal_T }));
-
-      level_info_test_stream meta_arcs(out);
-
-      AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0,1u)));
-
-      AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(1,1u)));
-
-      AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(3,1u)));
-
-      AssertThat(meta_arcs.can_pull(), Is().False());
-
-      AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
-
-      AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
-      AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(3u));
+    describe("bdd_restrict(const bdd&, const generator<...>&)", [&]() {
+      // TODO
     });
 
-    it("should bridge levels [2]. Assignment: (_,F,_,_)", [&]() {
-      /*
-      //                 1      ---- x0
-      //                / \
-      //                | |
-      //                \ /
-      //                 3      ---- x2
-      //                / \
-      //                F T
-      */
+    describe("bdd_restrict(const bdd&, IT, IT)", [&]() {
+      it("should bridge levels in BDD 1 for (_,T,T,_)", [&]() {
+        /*
+        //                 1      ---- x0
+        //                / \
+        //                T  \     ---- x1
+        //                   |
+        //                   |
+        //                   |
+        //                   5    ---- x3
+        //                  / \
+        //                  F T
+        */
 
-      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {1, false} };
+        std::vector<adiar::pair<bdd::label_type, bool>> ass = { {1,true}, {2, true} };
 
-      __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
+        __bdd out = bdd_restrict(exec_policy(), bdd_1, ass.begin(), ass.end());
 
-      arc_test_stream arcs(out);
+        arc_test_stream arcs(out);
 
-      AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), false, n3.uid() }));
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1_1.uid(), true,  n1_5.uid() }));
 
-      AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), true,  n3.uid() }));
+        AssertThat(arcs.can_pull_internal(), Is().False());
 
-      AssertThat(arcs.can_pull_internal(), Is().False());
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_1.uid(), false, terminal_T }));
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), false, terminal_F }));
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_5.uid(), false, terminal_F }));
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), true,  terminal_T }));
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_5.uid(), true,  terminal_T }));
 
-      level_info_test_stream meta_arcs(out);
+        level_info_test_stream meta_arcs(out);
 
-      AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0,1u)));
 
-      AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(3,1u)));
 
-      AssertThat(meta_arcs.can_pull(), Is().False());
+        AssertThat(meta_arcs.can_pull(), Is().False());
 
-      AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
-      AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
+      });
+
+      it("should remove root of BDD 1 for (T,_,_,F)", [&]() {
+        /*
+        //                  2     ---- x1
+        //                 / \
+        //                /   \
+        //                3   4   ---- x2
+        //               / \ / \
+        //               F T T F
+        */
+
+        std::vector<adiar::pair<bdd::label_type, bool>> ass = { {0,true}, {3,false} };
+
+        __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
+
+        arc_test_stream arcs(out);
+
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1_2.uid(), false, n1_3.uid() }));
+
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1_2.uid(), true,  n1_4.uid() }));
+
+        AssertThat(arcs.can_pull_internal(), Is().False());
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_3.uid(), false, terminal_F }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_3.uid(), true,  terminal_T }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_4.uid(), false, terminal_T }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_4.uid(), true,  terminal_F }));
+
+        level_info_test_stream meta_arcs(out);
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(1,1u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2,2u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
+      });
+
+      it("should ignore skipped variables in BDD 1 for (F,T,_,F)", [&]() {
+        /*
+        //                 3      ---- x2
+        //                / \
+        //                F T
+        */
+
+        std::vector<adiar::pair<bdd::label_type, bool>> ass = { {0,false}, {1,true}, {3,false} };
+
+        __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
+
+        arc_test_stream arcs(out);
+
+        AssertThat(arcs.can_pull_internal(), Is().False());
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_3.uid(), false, terminal_F }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_3.uid(), true,  terminal_T }));
+
+        level_info_test_stream meta_arcs(out);
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2,1u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      it("should return F terminal in BDD 1 for (F,_,F,_)", [&]() {
+        std::vector<adiar::pair<bdd::label_type, bool>> ass = { {0,false}, {2,false} };
+
+        __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
+
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream meta_arcs(out);
+        AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(0u));
+      });
+
+      it("should return T terminal in BDD 1 for (T,T,F,_)", [&]() {
+        std::vector<adiar::pair<bdd::label_type, bool>> ass = { {0,true}, {1,true}, {2,false} };
+
+        __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
+
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream meta_arcs(out);
+        AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      it("should return terminal for restricted root in BDD 2 [F]", [&]() {
+        std::vector<adiar::pair<bdd::label_type, bool>> ass = { {1,true}, {2,true} };
+
+        __bdd out = bdd_restrict(bdd_2_high_F, ass.begin(), ass.end());
+
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream meta_arcs(out);
+        AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(0u));
+      });
+
+      it("should return terminal for restricted root in BDD 2 [T]", [&]() {
+        std::vector<adiar::pair<bdd::label_type, bool>> ass = { {0,false}, {2,false} };
+
+        __bdd out = bdd_restrict(bdd_2_low_T, ass.begin(), ass.end());
+
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream meta_arcs(out);
+        AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      it("should return input unchanged when given a T terminal", [&]() {
+        std::vector<adiar::pair<bdd::label_type, bool>> ass = { {0,true}, {2,true}, {42,false} };
+
+        __bdd out = bdd_restrict(bdd_T, ass.begin(), ass.end());
+
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_T));
+        AssertThat(out.negate, Is().False());
+      });
+
+      it("should return input unchanged when given a F terminal", [&]() {
+        std::vector<adiar::pair<bdd::label_type, bool>> ass  { {2,true}, {21,true}, {28,false} };
+
+        __bdd out = bdd_restrict(bdd_F, ass.begin(), ass.end());
+
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_F));
+        AssertThat(out.negate, Is().False());
+      });
+
+      it("should return input unchanged when given an empty assignment", [&]() {
+        std::vector<adiar::pair<bdd::label_type, bool>> ass;
+
+        __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
+
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
+        AssertThat(out.negate, Is().False());
+      });
+
+      it("should return input unchanged if assignment is disjoint of its variables", [&]() {
+        std::vector<adiar::pair<bdd::label_type, bool>> ass = { {5,false}, {6,true}, {7,true} };
+
+        __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
+
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
+        AssertThat(out.negate, Is().False());
+      });
+
+      it("should sort restricted terminal arc in BDD 4 for (_,F,T,_)", [&]() {
+        /*
+        //                    _1_       ---- x0
+        //                   /   \
+        //                   F*  T      ---- x1
+        //                                        * This arc will be resolved as the last one
+        */
+
+        std::vector<adiar::pair<bdd::label_type, bool>> ass = { {1, false}, {2, true} };
+
+        __bdd out = bdd_restrict(bdd_4, ass.begin(), ass.end());
+
+        arc_test_stream arcs(out);
+
+        AssertThat(arcs.can_pull_internal(), Is().False());
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n4_1.uid(), false, terminal_F }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n4_1.uid(), true,  terminal_T }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().False());
+
+        level_info_test_stream meta_arcs(out);
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0,1u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      it("should skip 'dead' nodes in BDD 5 for (F,T,_,_)", [&]() {
+        std::vector<adiar::pair<bdd::label_type, bool>> ass = { {0, false}, {1,true} };
+
+        __bdd out = bdd_restrict(bdd_5, ass.begin(), ass.end());
+
+        arc_test_stream arcs(out);
+
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n5_5.uid(), true,  n5_8.uid() }));
+
+        AssertThat(arcs.can_pull_internal(), Is().False());
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5_5.uid(), false, terminal_F }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5_8.uid(), false, terminal_F }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5_8.uid(), true,  terminal_T }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().False());
+
+        level_info_test_stream meta_arcs(out);
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2,1u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(3,1u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      it("should skip 'dead' nodes in BDD 5 for (T,T,_,_)", [&]() {
+        std::vector<adiar::pair<bdd::label_type, bool>> ass = { {0, true}, {1,true} };
+
+        __bdd out = bdd_restrict(bdd_5, ass.begin(), ass.end());
+
+        arc_test_stream arcs(out);
+
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n5_7.uid(), false, n5_9.uid() }));
+
+        AssertThat(arcs.can_pull_internal(), Is().False());
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5_7.uid(), true,  terminal_T }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5_9.uid(), false, terminal_T }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5_9.uid(), true,  terminal_F }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().False());
+
+        level_info_test_stream meta_arcs(out);
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2,1u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(3,1u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
+      });
     });
 
-    it("should bridge levels [3]. Assignment: (_,T,_,_)", [&]() {
-      /*
-      //                  1         ---- x0
-      //                 / \
-      //                /   \
-      //                |   |
-      //                3   4       ---- x2
-      //               / \ / \
-      //               F T T 5      ---- x3
-      //                    / \
-      //                    F T
-      */
+    describe("bdd_restrict(const bdd&, bdd::label_type, bool)", [&]() {
+      it("should bridge a level in BDD 1 for x2 = T", [&]() {
+        /*
+        //                 1      ---- x0
+        //                / \
+        //                T 2     ---- x1
+        //                 / \
+        //                 T |
+        //                   |
+        //                   5    ---- x3
+        //                  / \
+        //                  F T
+        */
 
-      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {1,true} };
+        __bdd out = bdd_restrict(bdd_1, 2, true);
 
-      __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
+        arc_test_stream arcs(out);
 
-      arc_test_stream arcs(out);
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1_1.uid(), true,  n1_2.uid() }));
 
-      AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), false, n3.uid() }));
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1_2.uid(), true,  n1_5.uid() }));
 
-      AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), true,  n4.uid() }));
+        AssertThat(arcs.can_pull_internal(), Is().False());
 
-      AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n4.uid(), true,  n5.uid() }));
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_1.uid(), false, terminal_T }));
 
-      AssertThat(arcs.can_pull_internal(), Is().False());
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_2.uid(), false, terminal_T }));
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), false, terminal_F }));
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_5.uid(), false, terminal_F }));
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), true,  terminal_T }));
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_5.uid(), true,  terminal_T }));
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n4.uid(), false, terminal_T }));
+        level_info_test_stream meta_arcs(out);
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5.uid(), false, terminal_F }));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0,1u)));
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5.uid(), true,  terminal_T }));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(1,1u)));
 
-      level_info_test_stream meta_arcs(out);
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(3,1u)));
 
-      AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().False());
 
-      AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2,2u)));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(3u));
+      });
 
-      AssertThat(meta_arcs.can_pull(), Is().False());
+      it("should bridge levels in BDD 1 for x1 = F", [&]() {
+        /*
+        //                 1      ---- x0
+        //                / \
+        //                | |
+        //                \ /
+        //                 3      ---- x2
+        //                / \
+        //                F T
+        */
 
-      AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        __bdd out = bdd_restrict(bdd_1, 1, false);
 
-      AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(2u));
-      AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(3u));
-    });
+        arc_test_stream arcs(out);
 
-    it("should remove root. Assignment: (T,_,_,F)", [&]() {
-      /*
-      //                  2     ---- x1
-      //                 / \
-      //                /   \
-      //                3   4   ---- x2
-      //               / \ / \
-      //               F T T F
-      */
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1_1.uid(), false, n1_3.uid() }));
 
-      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {0,true}, {3,false} };
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1_1.uid(), true,  n1_3.uid() }));
 
-      __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
+        AssertThat(arcs.can_pull_internal(), Is().False());
 
-      arc_test_stream arcs(out);
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_3.uid(), false, terminal_F }));
 
-      AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n2.uid(), false, n3.uid() }));
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_3.uid(), true,  terminal_T }));
 
-      AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n2.uid(), true,  n4.uid() }));
+        level_info_test_stream meta_arcs(out);
 
-      AssertThat(arcs.can_pull_internal(), Is().False());
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0,1u)));
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), false, terminal_F }));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2,1u)));
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), true,  terminal_T }));
+        AssertThat(meta_arcs.can_pull(), Is().False());
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n4.uid(), false, terminal_T }));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n4.uid(), true,  terminal_F }));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
+      });
 
-      level_info_test_stream meta_arcs(out);
+      it("should bridge levels in BDD 1 for x1 = T", [&]() {
+        /*
+        //                  1         ---- x0
+        //                 / \
+        //                /   \
+        //                |   |
+        //                3   4       ---- x2
+        //               / \ / \
+        //               F T T 5      ---- x3
+        //                    / \
+        //                    F T
+        */
 
-      AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(1,1u)));
+        __bdd out = bdd_restrict(bdd_1, 1, true);
 
-      AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2,2u)));
+        arc_test_stream arcs(out);
 
-      AssertThat(meta_arcs.can_pull(), Is().False());
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1_1.uid(), false, n1_3.uid() }));
 
-      AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1_1.uid(), true,  n1_4.uid() }));
 
-      AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(2u));
-      AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
-    });
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1_4.uid(), true,  n1_5.uid() }));
 
-    it("should ignore skipped variables. Assignment: (F,T,_,F)", [&]() {
-      /*
-      //                 3      ---- x2
-      //                / \
-      //                F T
-      */
+        AssertThat(arcs.can_pull_internal(), Is().False());
 
-      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {0,false}, {1,true}, {3,false} };
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_3.uid(), false, terminal_F }));
 
-      __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_3.uid(), true,  terminal_T }));
 
-      arc_test_stream arcs(out);
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_4.uid(), false, terminal_T }));
 
-      AssertThat(arcs.can_pull_internal(), Is().False());
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_5.uid(), false, terminal_F }));
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), false, terminal_F }));
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_5.uid(), true,  terminal_T }));
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), true,  terminal_T }));
+        level_info_test_stream meta_arcs(out);
 
-      level_info_test_stream meta_arcs(out);
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0,1u)));
 
-      AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2,2u)));
 
-      AssertThat(meta_arcs.can_pull(), Is().False());
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(3,1u)));
 
-      AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+        AssertThat(meta_arcs.can_pull(), Is().False());
 
-      AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
-      AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
-    });
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-    it("should return F terminal. Assignment: (F,_,F,_)", [&]() {
-      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {0,false}, {2,false} };
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(3u));
+      });
 
-      __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
+      it("should remove root of BDD 1 for x0 = T", [&]() {
+        /*
+        //              2        ---- x1
+        //             / \
+        //            3   4      ---- x2
+        //           / \ / \
+        //           F T T 5     ---- x3
+        //                / \
+        //                F T
+        */
 
-      node_test_stream out_nodes(out);
+        __bdd out = bdd_restrict(bdd_1, 0, true);
 
-      AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
-      AssertThat(out_nodes.can_pull(), Is().False());
+        arc_test_stream arcs(out);
 
-      level_info_test_stream meta_arcs(out);
-      AssertThat(meta_arcs.can_pull(), Is().False());
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1_2.uid(), false, n1_3.uid() }));
 
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal], Is().EqualTo(0u));
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All], Is().EqualTo(1u));
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1_2.uid(), true,  n1_4.uid() }));
 
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false], Is().EqualTo(1u));
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(0u));
-    });
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1_4.uid(), true,  n1_5.uid() }));
 
-    it("should return T terminal. Assignment: (T,T,F,_)", [&]() {
-      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {0,true}, {1,true}, {2,false} };
+        AssertThat(arcs.can_pull_internal(), Is().False());
 
-      __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_3.uid(), false, terminal_F }));
 
-      node_test_stream out_nodes(out);
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_3.uid(), true,  terminal_T }));
 
-      AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
-      AssertThat(out_nodes.can_pull(), Is().False());
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_4.uid(), false, terminal_T }));
 
-      level_info_test_stream meta_arcs(out);
-      AssertThat(meta_arcs.can_pull(), Is().False());
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_5.uid(), false, terminal_F }));
 
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal], Is().EqualTo(0u));
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All], Is().EqualTo(1u));
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1_5.uid(), true,  terminal_T }));
 
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false], Is().EqualTo(0u));
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(1u));
-    });
+        AssertThat(arcs.can_pull_terminal(), Is().False());
 
-    it("should return input unchanged when given a T terminal", [&]() {
-      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {0,true}, {2,true}, {42,false} };
+        level_info_test_stream meta_arcs(out);
 
-      __bdd out = bdd_restrict(bdd_T, ass.begin(), ass.end());
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(1,1u)));
 
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_T));
-      AssertThat(out.negate, Is().False());
-    });
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2,2u)));
 
-    it("should return input unchanged when given a F terminal", [&]() {
-      std::vector<adiar::pair<bdd::label_type, bool>> ass  { {2,true}, {21,true}, {28,false} };
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(3,1u)));
 
-      __bdd out = bdd_restrict(bdd_F, ass.begin(), ass.end());
+        AssertThat(meta_arcs.can_pull(), Is().False());
 
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_F));
-      AssertThat(out.negate, Is().False());
-    });
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-    it("should return input unchanged when given an empty assignment", [&]() {
-      std::vector<adiar::pair<bdd::label_type, bool>> ass;
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(3u));
+      });
 
-      __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
+      it("should return terminal of restricted root [F]", [&]() {
+        __bdd out = bdd_restrict(bdd_2_high_F, 1, true);
 
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
-      AssertThat(out.negate, Is().False());
-    });
+        node_test_stream out_nodes(out);
 
-    it("should return input unchanged if assignment is disjoint of its variables", [&]() {
-      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {5,false}, {6,true}, {7,true} };
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+        AssertThat(out_nodes.can_pull(), Is().False());
 
-      __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
+        level_info_test_stream meta_arcs(out);
+        AssertThat(meta_arcs.can_pull(), Is().False());
 
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
-      AssertThat(out.negate, Is().False());
-    });
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All], Is().EqualTo(1u));
 
-    it("should have terminal arcs restricted to a terminal sorted [1]", []() {
-      /*
-      //                    1                 1         ---- x0
-      //                   / \              /   \
-      //                  2   3     =>     2     3      ---- x1
-      //                 / \ / \         /   \  / \
-      //                 4 F T F         F*  F  T F     ---- x2
-      //                / \
-      //                T F              * This arc will be resolved as the last one
-      */
-      ptr_uint64 terminal_T = ptr_uint64(true);
-      ptr_uint64 terminal_F = ptr_uint64(false);
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(0u));
+      });
 
-      shared_levelized_file<bdd::node_type> in;
+      it("should return terminal of restricted root [T]", [&]() {
+        __bdd out = bdd_restrict(bdd_2_low_T, 0, false);
 
-      node n4 = node(2,0, terminal_T, terminal_F);
-      node n3 = node(1,1, terminal_T, terminal_F);
-      node n2 = node(1,0, n4.uid(), terminal_F);
-      node n1 = node(0,0, n2.uid(), n3.uid());
+        node_test_stream out_nodes(out);
 
-      { // Garbage collect writer to free write-lock
-        node_writer inw(in);
-        inw << n4 << n3 << n2 << n1;
-      }
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+        AssertThat(out_nodes.can_pull(), Is().False());
 
-      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {2,true} };
+        level_info_test_stream meta_arcs(out);
+        AssertThat(meta_arcs.can_pull(), Is().False());
 
-      __bdd out = bdd_restrict(in, ass.begin(), ass.end());
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All], Is().EqualTo(1u));
 
-      arc_test_stream arcs(out);
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(1u));
+      });
 
-      AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), false, n2.uid() }));
+      it("should return input unchanged when given a T terminal", [&]() {
+        __bdd out = bdd_restrict(bdd_T, 42, true);
 
-      AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), true,  n3.uid() }));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_T));
+        AssertThat(out.negate, Is().False());
+      });
 
-      AssertThat(arcs.can_pull_internal(), Is().False());
+      it("should return input unchanged when given a F terminal", [&]() {
+        __bdd out = bdd_restrict(bdd_F, 8, false);
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n2.uid(), false, terminal_F }));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_F));
+        AssertThat(out.negate, Is().False());
+      });
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n2.uid(), true,  terminal_F }));
+      it("should return input unchanged if variable does not exist", [&]() {
+        std::vector<adiar::pair<bdd::label_type, bool>> ass = { {5,false}, {6,true}, {7,true} };
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), false, terminal_T }));
+        __bdd out = bdd_restrict(bdd_1, 4, true);
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), true,  terminal_F }));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
+        AssertThat(out.negate, Is().False());
+      });
 
-      AssertThat(arcs.can_pull_terminal(), Is().False());
+      it("should sort restricted terminal arcs in BDD 3", [&]() {
+        /*
+        //                     1         ---- x0
+        //                   /   \
+        //                 _2_    3      ---- x1
+        //                /   \  / \
+        //                F*  F  T F     ---- x2
+        //                                       * This arc will be resolved as the last one
+        */
 
-      level_info_test_stream meta_arcs(out);
+        __bdd out = bdd_restrict(bdd_3, 2, true);
 
-      AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0,1u)));
+        arc_test_stream arcs(out);
 
-      AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(1,2u)));
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n3_1.uid(), false, n3_2.uid() }));
 
-      AssertThat(meta_arcs.can_pull(), Is().False());
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n3_1.uid(), true,  n3_3.uid() }));
 
-      AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(arcs.can_pull_internal(), Is().False());
 
-      AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(3u));
-      AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
-    });
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3_2.uid(), false, terminal_F }));
 
-    it("should have terminal arcs restricted to a terminal sorted [2]", []() {
-      /*
-      //                    1                _ 1 _
-      //                   / \              /     \
-      //                  2   3     =>     2       3
-      //                 / \ / \         /   \   /   \
-      //                 4 F 5 F         F*  F   T*  F
-      //                / \ / \
-      //                T F F T          * Both these will be resolved out-of-order!
-      */
-      ptr_uint64 terminal_T = ptr_uint64(true);
-      ptr_uint64 terminal_F = ptr_uint64(false);
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3_2.uid(), true,  terminal_F }));
 
-      shared_levelized_file<bdd::node_type> in;
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3_3.uid(), false, terminal_T }));
 
-      node n5 = node(2,1, terminal_F, terminal_T);
-      node n4 = node(2,0, terminal_T, terminal_F);
-      node n3 = node(1,1, n5.uid(), terminal_F);
-      node n2 = node(1,0, n4.uid(), terminal_F);
-      node n1 = node(0,0, n2.uid(), n3.uid());
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3_3.uid(), true,  terminal_F} ));
 
-      { // Garbage collect writer to free write-lock
-        node_writer inw(in);
-        inw << n5 << n4 << n3 << n2 << n1;
-      }
+        AssertThat(arcs.can_pull_terminal(), Is().False());
 
-      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {2,true} };
+        level_info_test_stream meta_arcs(out);
 
-      __bdd out = bdd_restrict(in, ass.begin(), ass.end());
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0,1u)));
 
-      arc_test_stream arcs(out);
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(1,2u)));
 
-      AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), false, n2.uid() }));
+        AssertThat(meta_arcs.can_pull(), Is().False());
 
-      AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), true,  n3.uid() }));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-      AssertThat(arcs.can_pull_internal(), Is().False());
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
+      });
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n2.uid(), false, terminal_F }));
+      it("should sort restricted terminal arc in BDD 4", [&]() {
+        /*
+        //                      1         ---- x0
+        //                    /   \
+        //                  _2_    3      ---- x1
+        //                 /   \  / \
+        //                 F*  F  T F     ---- x2
+        //                                                         * This arc will be resolved as the last one
+        */
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n2.uid(), true,  terminal_F }));
+        __bdd out = bdd_restrict(bdd_4, 2, true);
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), false, terminal_T }));
+        arc_test_stream arcs(out);
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), true,  terminal_F} ));
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n4_1.uid(), false, n4_2.uid() }));
 
-      AssertThat(arcs.can_pull_terminal(), Is().False());
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n4_1.uid(), true,  n4_3.uid() }));
 
-      level_info_test_stream meta_arcs(out);
+        AssertThat(arcs.can_pull_internal(), Is().False());
 
-      AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n4_2.uid(), false, terminal_F }));
 
-      AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(1,2u)));
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n4_2.uid(), true,  terminal_F }));
 
-      AssertThat(meta_arcs.can_pull(), Is().False());
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n4_3.uid(), false, terminal_T }));
 
-      AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n4_3.uid(), true,  terminal_F }));
 
-      AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(3u));
-      AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
-    });
+        AssertThat(arcs.can_pull_terminal(), Is().False());
 
-    it("should skip 'dead' nodes", [&]() {
-      /*
-      //                        1           ---- x0
-      //                      /   \
-      //                     2     3        ---- x1
-      //                    / \   / \
-      //                   4  5   6  7      ---- x2
-      //                  / \/ \ / \/ \
-      //                  T F  8 F  9 T     ---- x3
-      //                      / \  / \
-      //                      F T  T F
-      //
-      //                 Here, node 4 and 6 are going to be dead, when x1 -> T.
-      */
+        level_info_test_stream meta_arcs(out);
 
-      shared_levelized_file<bdd::node_type> in;
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0,1u)));
 
-      node n9 = node(3,1, terminal_T, terminal_F);
-      node n8 = node(3,0, terminal_F, terminal_T);
-      node n7 = node(2,3, n9.uid(), terminal_T);
-      node n6 = node(2,2, terminal_T, n9.uid());
-      node n5 = node(2,1, terminal_F, n8.uid());
-      node n4 = node(2,0, terminal_T, terminal_F);
-      node n3 = node(1,1, n6.uid(), n7.uid());
-      node n2 = node(1,0, n4.uid(), n5.uid());
-      node n1 = node(0,0, n2.uid(), n3.uid());
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(1,2u)));
 
-      { // Garbage collect writer to free write-lock
-        node_writer dead_w(in);
-        dead_w << n9 << n8 << n7 << n6 << n5 << n4 << n3 << n2 << n1;
-      }
+        AssertThat(meta_arcs.can_pull(), Is().False());
 
-      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {1,true} };
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-      __bdd out = bdd_restrict(in, ass.begin(), ass.end());
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
+      });
 
-      arc_test_stream arcs(out);
+      it("should skip 'dead' nodes in BDD 5 for x1 = T", [&]() {
+        __bdd out = bdd_restrict(bdd_5, 1, true);
 
-      AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), false, n5.uid() }));
+        arc_test_stream arcs(out);
 
-      AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), true,  n7.uid() }));
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n5_1.uid(), false, n5_5.uid() }));
 
-      AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n5.uid(), true,  n8.uid() }));
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n5_1.uid(), true,  n5_7.uid() }));
 
-      AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n7.uid(), false, n9.uid() }));
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n5_5.uid(), true,  n5_8.uid() }));
 
-      AssertThat(arcs.can_pull_internal(), Is().False());
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n5_7.uid(), false, n5_9.uid() }));
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5.uid(), false, terminal_F }));
+        AssertThat(arcs.can_pull_internal(), Is().False());
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n7.uid(), true,  terminal_T }));
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5_5.uid(), false, terminal_F }));
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n8.uid(), false, terminal_F }));
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5_7.uid(), true,  terminal_T }));
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n8.uid(), true,  terminal_T }));
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5_8.uid(), false, terminal_F }));
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n9.uid(), false, terminal_T }));
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5_8.uid(), true,  terminal_T }));
 
-      AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n9.uid(), true,  terminal_F }));
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5_9.uid(), false, terminal_T }));
 
-      AssertThat(arcs.can_pull_terminal(), Is().False());
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5_9.uid(), true,  terminal_F }));
 
-      level_info_test_stream meta_arcs(out);
+        AssertThat(arcs.can_pull_terminal(), Is().False());
 
-      AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0,1u)));
+        level_info_test_stream meta_arcs(out);
 
-      AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2,2u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0,1u)));
 
-      AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(3,2u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2,2u)));
 
-      AssertThat(meta_arcs.can_pull(), Is().False());
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(3,2u)));
 
-      AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(meta_arcs.can_pull(), Is().False());
 
-      AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(3u));
-      AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(3u));
-    });
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-    it("should return terminal-child of restricted root [assignment = T]", [&]() {
-      shared_levelized_file<bdd::node_type> in;
-
-      node n2 = node(2, node::max_id, terminal_T, terminal_T);
-      node n1 = node(1, node::max_id, n2.uid(), terminal_F);
-
-      { // Garbage collect writer to free write-lock
-        node_writer dead_w(in);
-        dead_w << n2 << n1;
-      }
-
-      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {1,true} };
-
-      __bdd out = bdd_restrict(in, ass.begin(), ass.end());
-
-      node_test_stream out_nodes(out);
-
-      AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
-      AssertThat(out_nodes.can_pull(), Is().False());
-
-      level_info_test_stream meta_arcs(out);
-      AssertThat(meta_arcs.can_pull(), Is().False());
-
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal], Is().EqualTo(0u));
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All], Is().EqualTo(1u));
-
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false], Is().EqualTo(1u));
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(0u));
-    });
-
-    it("should return terminal-child of restricted root [assignment = F]", [&]() {
-      shared_levelized_file<bdd::node_type> in;
-
-      node n2 = node(2, node::max_id, terminal_T, terminal_T);
-      node n1 = node(0, node::max_id, terminal_T, n2.uid());
-
-      { // Garbage collect writer to free write-lock
-        node_writer dead_w(in);
-        dead_w << n2 << n1;
-      }
-
-      std::vector<adiar::pair<bdd::label_type, bool>> ass = { {0,false} };
-
-      __bdd out = bdd_restrict(in, ass.begin(), ass.end());
-
-      node_test_stream out_nodes(out);
-
-      AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
-      AssertThat(out_nodes.can_pull(), Is().False());
-
-      level_info_test_stream meta_arcs(out);
-      AssertThat(meta_arcs.can_pull(), Is().False());
-
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal], Is().EqualTo(0u));
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All], Is().EqualTo(1u));
-
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false], Is().EqualTo(0u));
-      AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(3u));
+      });
     });
   });
  });
