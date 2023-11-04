@@ -9,9 +9,14 @@ namespace adiar
     return internal::dd_iscanonical(f);
   }
 
-  bool bdd_isterminal(const bdd &f)
+  bool bdd_isconst(const bdd &f)
   {
     return internal::dd_isterminal(f);
+  }
+
+  bool bdd_isterminal(const bdd &f)
+  {
+    return bdd_isconst(f);
   }
 
   bool bdd_isfalse(const bdd &f)

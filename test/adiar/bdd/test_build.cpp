@@ -6,6 +6,35 @@ go_bandit([]() {
     ptr_uint64 terminal_F = ptr_uint64(false);
 
     describe("bdd_terminal(v)", [&]() {
+      it("can create true terminal [bdd_const]", [&]() {
+        bdd res = bdd_const(true);
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(true)));
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(bdd_iscanonical(res), Is().True());
+
+        AssertThat(res->width, Is().EqualTo(0u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
       it("can create true terminal [bdd_terminal]", [&]() {
         bdd res = bdd_terminal(true);
         node_test_stream ns(res);
@@ -91,6 +120,35 @@ go_bandit([]() {
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      it("can create false terminal [bdd_const]", [&]() {
+        bdd res = bdd_const(false);
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(false)));
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(0u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(bdd_iscanonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
       it("can create false terminal [bdd_terminal]", [&]() {

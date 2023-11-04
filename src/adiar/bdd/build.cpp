@@ -13,19 +13,24 @@
 namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_terminal(bool value)
+  bdd bdd_const(bool value)
   {
     return internal::build_terminal<bdd_policy>(value);
   }
 
+  bdd bdd_terminal(bool value)
+  {
+    return bdd_const(value);
+  }
+
   bdd bdd_false()
   {
-    return internal::build_terminal<bdd_policy>(false);
+    return bdd_const(false);
   }
 
   bdd bdd_true()
   {
-    return internal::build_terminal<bdd_policy>(true);
+    return bdd_const(true);
   }
 
   //////////////////////////////////////////////////////////////////////////////

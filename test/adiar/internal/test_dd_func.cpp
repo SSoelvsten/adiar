@@ -157,6 +157,7 @@ go_bandit([]() {
 
       describe("dd_isterminal(...)", [&]() {
         it("rejects x0 as a BDD terminal file", [&]() {
+          AssertThat(bdd_isconst(x0), Is().False());
           AssertThat(bdd_isterminal(x0), Is().False());
         });
 
@@ -165,6 +166,7 @@ go_bandit([]() {
         });
 
         it("rejects larger BDD as being a terminal", [&]() {
+          AssertThat(bdd_isconst(bdd_file), Is().False());
           AssertThat(bdd_isterminal(bdd_file), Is().False());
         });
 
@@ -173,6 +175,7 @@ go_bandit([]() {
         });
 
         it("accepts a BDD true terminal", [&]() {
+          AssertThat(bdd_isconst(terminal_T), Is().True());
           AssertThat(bdd_isterminal(terminal_T), Is().True());
         });
 
@@ -181,6 +184,7 @@ go_bandit([]() {
         });
 
         it("accepts a BDD false terminal", [&]() {
+          AssertThat(bdd_isconst(terminal_F), Is().True());
           AssertThat(bdd_isterminal(terminal_F), Is().True());
         });
 
