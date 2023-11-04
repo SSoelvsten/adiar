@@ -77,4 +77,24 @@ namespace adiar
   {
     return bdd_restrict(exec_policy(), f, xs);
   }
+
+  __bdd bdd_restrict(const exec_policy &ep,
+                     const bdd &f, bdd::label_type var, bool val)
+  {
+    bool gen_called = false;
+    auto gen = [&gen_called, &var, &val]() -> pair<bdd::label_type, bool> {
+      if (gen_called) {
+        return generator_end<pair<bdd::label_type, bool>>::value;
+      }
+      gen_called = true;
+      return {var, val};
+    };
+
+    return bdd_restrict(ep, f, gen);
+  }
+
+  __bdd bdd_restrict(const bdd &f, bdd::label_type var, bool val)
+  {
+    return bdd_restrict(exec_policy(), f, var, val);
+  }
 }

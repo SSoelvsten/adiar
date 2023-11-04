@@ -523,6 +523,29 @@ namespace adiar
   { return bdd_restrict(ep, f, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief     Restrict a single variable to a constant value.
+  ///
+  /// \details   The variable `i` is restructed to the value `v`
+  ///
+  /// \param f   BDD to restrict.
+  ///
+  /// \param var Variable to assign
+  ///
+  /// \param val Value assigned
+  ///
+  /// \returns  \f$ f|_{(i,v) \in xs : x_i = v} \f$
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_restrict(const bdd &f, bdd::label_type var, bool val);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Restrict a single variable to a constant value.
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_restrict(const exec_policy &ep,
+                     const bdd &f,
+                     bdd::label_type var,
+                     bool val);
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief     Existential quantification of a single variable.
   ///
   /// \details   Computes the BDD for \f$ \exists x_{i} : f \f$ faster than
