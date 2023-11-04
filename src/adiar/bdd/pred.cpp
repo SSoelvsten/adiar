@@ -45,8 +45,10 @@ namespace adiar
     internal::node_stream<> ns(f);
     const bdd::node_type root = ns.pull();
 
-    return root.low()  == bdd::node_type::pointer_type(false)
-        && root.high() == bdd::node_type::pointer_type(true);
+    adiar_assert(root.low() != root.high(),
+                 "A reduced BDD cannot have identical children");
+
+    return root.high() == bdd::node_type::pointer_type(true);
   }
 
   bool bdd_isnithvar(const bdd& f)
@@ -56,8 +58,10 @@ namespace adiar
     internal::node_stream<> ns(f);
     const bdd::node_type root = ns.pull();
 
-    return root.low()  == bdd::node_type::pointer_type(true)
-        && root.high() == bdd::node_type::pointer_type(false);
+    adiar_assert(root.low() != root.high(),
+                 "A reduced BDD cannot have identical children");
+
+    return root.low()  == bdd::node_type::pointer_type(true);
   }
 
   bool bdd_equal(const exec_policy &ep, const bdd &f, const bdd &g)
