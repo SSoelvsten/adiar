@@ -560,7 +560,7 @@ namespace adiar
   __bdd bdd_low(const bdd &f);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Restrict a single variable to a constant value.
+  /// \brief Restrict the root to `false`, i.e. follow its low edge.
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_low(const exec_policy &ep, const bdd &f);
 
@@ -578,7 +578,7 @@ namespace adiar
   __bdd bdd_high(const bdd &f);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Restrict a single variable to a constant value.
+  /// \brief Restrict the root to `true`, i.e. follow its high edge.
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_high(const exec_policy &ep, const bdd &f);
 
