@@ -193,6 +193,11 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Input variables
+  zdd::label_type zdd_topvar(const zdd &A)
+  {
+    return internal::dd_topvar(A);
+  }
+
   zdd::label_type zdd_minvar(const zdd &A)
   {
     return internal::dd_minvar(A);

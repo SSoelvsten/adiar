@@ -322,8 +322,100 @@ go_bandit([]() {
       });
     });
 
-    describe("top and bottom-most variables", [&]() {
-      // TODO
+    describe("bdd_topvar / zdd_topvar", [&]() {
+      // TODO: When 'minvar != topvar', move these tests out
+
+      it("returns 0 for x0 BDD", [&]() {
+        AssertThat(bdd_topvar(x0), Is().EqualTo(0u));
+        AssertThat(bdd_minvar(x0), Is().EqualTo(0u));
+      });
+
+      it("returns 0 for x0 ZDD", [&]() {
+        AssertThat(zdd_topvar(x0), Is().EqualTo(0u));
+        AssertThat(zdd_minvar(x0), Is().EqualTo(0u));
+      });
+
+      it("returns 42 for x42 BDD", [&]() {
+        AssertThat(bdd_topvar(x42), Is().EqualTo(42u));
+        AssertThat(bdd_minvar(x42), Is().EqualTo(42u));
+      });
+
+      it("returns 42 for x42 ZDD", [&]() {
+        AssertThat(zdd_topvar(x42), Is().EqualTo(42u));
+        AssertThat(zdd_minvar(x42), Is().EqualTo(42u));
+      });
+
+      it("returns root variable for larger BDD", [&]() {
+        AssertThat(bdd_topvar(bdd_file), Is().EqualTo(1u));
+        AssertThat(bdd_minvar(bdd_file), Is().EqualTo(1u));
+      });
+
+      it("returns root variable for larger ZDD", [&]() {
+        AssertThat(zdd_topvar(zdd_file), Is().EqualTo(0u));
+        AssertThat(zdd_minvar(zdd_file), Is().EqualTo(0u));
+      });
+
+      it("throws an exception for F terminal [BDD]", [&]() {
+        AssertThrows(invalid_argument, bdd_topvar(terminal_F));
+        AssertThrows(invalid_argument, bdd_minvar(terminal_F));
+      });
+
+      it("throws an exception for T terminal [BDD]", [&]() {
+        AssertThrows(invalid_argument, bdd_topvar(terminal_T));
+        AssertThrows(invalid_argument, bdd_minvar(terminal_T));
+      });
+
+      it("throws an exception for F terminal [ZDD]", [&]() {
+        AssertThrows(invalid_argument, zdd_topvar(terminal_F));
+        AssertThrows(invalid_argument, zdd_minvar(terminal_F));
+      });
+
+      it("throws an exception for T terminal [ZDD]", [&]() {
+        AssertThrows(invalid_argument, zdd_topvar(terminal_T));
+        AssertThrows(invalid_argument, zdd_minvar(terminal_T));
+      });
+    });
+
+    describe("bdd_maxvar / zdd_maxvar", [&]() {
+      it("returns 0 for x0 BDD", [&]() {
+        AssertThat(bdd_maxvar(x0), Is().EqualTo(0u));
+      });
+
+      it("returns 0 for x0 ZDD", [&]() {
+        AssertThat(zdd_maxvar(x0), Is().EqualTo(0u));
+      });
+
+      it("returns 42 for x42 BDD", [&]() {
+        AssertThat(bdd_maxvar(x42), Is().EqualTo(42u));
+      });
+
+      it("returns 42 for x42 ZDD", [&]() {
+        AssertThat(zdd_maxvar(x42), Is().EqualTo(42u));
+      });
+
+      it("returns root variable for larger BDD", [&]() {
+        AssertThat(bdd_maxvar(bdd_file), Is().EqualTo(4u));
+      });
+
+      it("returns root variable for larger ZDD", [&]() {
+        AssertThat(zdd_maxvar(zdd_file), Is().EqualTo(2u));
+      });
+
+      it("throws an exception for F terminal [BDD]", [&]() {
+        AssertThrows(invalid_argument, bdd_maxvar(terminal_F));
+      });
+
+      it("throws an exception for T terminal [BDD]", [&]() {
+        AssertThrows(invalid_argument, bdd_maxvar(terminal_T));
+      });
+
+      it("throws an exception for F terminal [ZDD]", [&]() {
+        AssertThrows(invalid_argument, zdd_maxvar(terminal_F));
+      });
+
+      it("throws an exception for T terminal [ZDD]", [&]() {
+        AssertThrows(invalid_argument, zdd_maxvar(terminal_T));
+      });
     });
   });
 });
