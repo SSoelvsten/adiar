@@ -90,6 +90,9 @@ test/adiar/bdd/evaluate:
 test/adiar/bdd/if_then_else:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=if_then_else
 
+test/adiar/bdd/pred:
+	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=pred
+
 test/adiar/bdd/negate:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=negate
 
