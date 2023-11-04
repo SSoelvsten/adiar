@@ -484,6 +484,29 @@ namespace adiar
   __bdd bdd_ite(const exec_policy &ep, const bdd &f, const bdd &g, const bdd &h);
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief     Restrict a single variable to a constant value.
+  ///
+  /// \details   The variable `i` is restructed to the value `v`
+  ///
+  /// \param f   BDD to restrict.
+  ///
+  /// \param var Variable to assign
+  ///
+  /// \param val Value assigned
+  ///
+  /// \returns  \f$ f|_{x_i = v} \f$
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_restrict(const bdd &f, bdd::label_type var, bool val);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Restrict a single variable to a constant value.
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_restrict(const exec_policy &ep,
+                     const bdd &f,
+                     bdd::label_type var,
+                     bool val);
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief    Restrict a subset of variables to constant values.
   ///
   /// \details  For each tuple (i,v) in the assignment `xs`, the variable
@@ -535,29 +558,6 @@ namespace adiar
                      ForwardIt begin,
                      ForwardIt end)
   { return bdd_restrict(ep, f, make_generator(begin, end)); }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief     Restrict a single variable to a constant value.
-  ///
-  /// \details   The variable `i` is restructed to the value `v`
-  ///
-  /// \param f   BDD to restrict.
-  ///
-  /// \param var Variable to assign
-  ///
-  /// \param val Value assigned
-  ///
-  /// \returns  \f$ f|_{(i,v) \in xs : x_i = v} \f$
-  //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_restrict(const bdd &f, bdd::label_type var, bool val);
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Restrict a single variable to a constant value.
-  //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_restrict(const exec_policy &ep,
-                     const bdd &f,
-                     bdd::label_type var,
-                     bool val);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Restrict the root to `false`, i.e. follow its low edge.

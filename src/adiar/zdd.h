@@ -612,6 +612,41 @@ namespace adiar
   { return zdd_expand(ep, A, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief     Subset that do \em not include the given element.
+  ///
+  /// \param A   Family of set
+  ///
+  /// \param var Variable to include.
+  ///
+  /// \returns
+  /// \f$ \{ a \in A \mid \mathit{var} \not\in a \} \f$
+  //////////////////////////////////////////////////////////////////////////////
+  __zdd zdd_offset(const zdd &A, zdd::label_type var);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Subset that do \em not include the given element.
+  //////////////////////////////////////////////////////////////////////////////
+  __zdd zdd_offset(const exec_policy &ep, const zdd &A, zdd::label_type var);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief  Subset that do \em not include the top variable.
+  ///
+  /// \param A Family of set
+  ///
+  /// \remark  In other BDD packages, this function is good for traversing a ZDD.
+  ///          But, here this is not a constant-time operation but constructs
+  ///          an entire new ZDD of up-to linear size.
+  ///
+  /// \throws invalid_argument If `A` is a terminal.
+  //////////////////////////////////////////////////////////////////////////////
+  __zdd zdd_offset(const zdd &A);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Subset that do \em not include the top variable.
+  //////////////////////////////////////////////////////////////////////////////
+  __zdd zdd_offset(const exec_policy &ep, const zdd &A);
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief      Subset that do \em not include the given set of variables.
   ///
   /// \param A    Family of set
@@ -660,21 +695,23 @@ namespace adiar
   { return zdd_offset(ep, A, make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief     Subset that do \em not include the given element.
+  /// \brief     Subset that \em do include the given element.
   ///
   /// \param A   Family of set
   ///
   /// \param var Variable to include.
+  /// \returns
+  /// \f$ \{ a \in A \mid \mathit{var} \in a \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_offset(const zdd &A, zdd::label_type var);
+  __zdd zdd_onset(const zdd &A, zdd::label_type var);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Subset that do \em not include the given element.
+  /// \brief Subset that \em do include the given element.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_offset(const exec_policy &ep, const zdd &A, zdd::label_type var);
+  __zdd zdd_onset(const exec_policy &ep, const zdd &A, zdd::label_type var);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief  Subset that do \em not include the top variable.
+  /// \brief   Subset that \em do include the top variable.
   ///
   /// \param A Family of set
   ///
@@ -684,12 +721,12 @@ namespace adiar
   ///
   /// \throws invalid_argument If `A` is a terminal.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_offset(const zdd &A);
+  __zdd zdd_onset(const zdd &A);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Subset that do \em not include the top variable.
+  /// \brief Subset that \em do include the top variable.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_offset(const exec_policy &ep, const zdd &A);
+  __zdd zdd_onset(const exec_policy &ep, const zdd &A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Subset that \em do include the given set of variables.
@@ -738,38 +775,6 @@ namespace adiar
                   ForwardIt begin,
                   ForwardIt end)
   { return zdd_onset(ep, A, make_generator(begin, end)); }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief     Subset that \em do include the given element.
-  ///
-  /// \param A   Family of set
-  ///
-  /// \param var Variable to include.
-  //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_onset(const zdd &A, zdd::label_type var);
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Subset that \em do include the given element.
-  //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_onset(const exec_policy &ep, const zdd &A, zdd::label_type var);
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief   Subset that \em do include the top variable.
-  ///
-  /// \param A Family of set
-  ///
-  /// \remark  In other BDD packages, this function is good for traversing a ZDD.
-  ///          But, here this is not a constant-time operation but constructs
-  ///          an entire new ZDD of up-to linear size.
-  ///
-  /// \throws invalid_argument If `A` is a terminal.
-  //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_onset(const zdd &A);
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Subset that \em do include the top variable.
-  //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_onset(const exec_policy &ep, const zdd &A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Project family of sets onto a domain, i.e. remove from every
