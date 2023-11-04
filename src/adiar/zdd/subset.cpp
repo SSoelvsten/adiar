@@ -160,6 +160,16 @@ namespace adiar
     return zdd_offset(exec_policy(), A, var);
   }
 
+  __zdd zdd_offset(const exec_policy &ep, const zdd &A)
+  {
+    return zdd_offset(ep, A, zdd_topvar(A));
+  }
+
+  __zdd zdd_offset(const zdd &A)
+  {
+    return zdd_offset(exec_policy(), A);
+  }
+
   //////////////////////////////////////////////////////////////////////////////
   template<typename assignment_mgr>
   class zdd_onset_policy : public zdd_policy
@@ -247,5 +257,15 @@ namespace adiar
   __zdd zdd_onset(const zdd &A, zdd::label_type var)
   {
     return zdd_onset(exec_policy(), A, var);
+  }
+
+  __zdd zdd_onset(const exec_policy &ep, const zdd &A)
+  {
+    return zdd_onset(ep, A, zdd_topvar(A));
+  }
+
+  __zdd zdd_onset(const zdd &A)
+  {
+    return zdd_onset(exec_policy(), A);
   }
 }
