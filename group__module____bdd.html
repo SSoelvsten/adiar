@@ -373,6 +373,15 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga81eb97e73e588784178e8eaee96cdbc8">adiar::bdd_istrue</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
 <tr class="memdesc:ga81eb97e73e588784178e8eaee96cdbc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether a BDD is the constant <code>true</code>. <br /></td></tr>
 <tr class="separator:ga81eb97e73e588784178e8eaee96cdbc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga846ac0d1f836e7642f0ae25edf34cf95"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga846ac0d1f836e7642f0ae25edf34cf95">adiar::bdd_isvar</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
+<tr class="memdesc:ga846ac0d1f836e7642f0ae25edf34cf95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether a BDD is a function dependent on a single variable.  <a href="group__module____bdd.html#ga846ac0d1f836e7642f0ae25edf34cf95">More...</a><br /></td></tr>
+<tr class="separator:ga846ac0d1f836e7642f0ae25edf34cf95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga676083b3cee95980a2bef05cfcc42ace"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga676083b3cee95980a2bef05cfcc42ace">adiar::bdd_isithvar</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
+<tr class="memdesc:ga676083b3cee95980a2bef05cfcc42ace"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether a BDD is the function of a single positive variable.  <a href="group__module____bdd.html#ga676083b3cee95980a2bef05cfcc42ace">More...</a><br /></td></tr>
+<tr class="separator:ga676083b3cee95980a2bef05cfcc42ace"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaec1931f03462feafeabad08c00e2c6fa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gaec1931f03462feafeabad08c00e2c6fa">adiar::bdd_isnithvar</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
+<tr class="memdesc:gaec1931f03462feafeabad08c00e2c6fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether a BDD is the function of a single negative variable.  <a href="group__module____bdd.html#gaec1931f03462feafeabad08c00e2c6fa">More...</a><br /></td></tr>
+<tr class="separator:gaec1931f03462feafeabad08c00e2c6fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad95adbcf4ac35cd0ac917233843f935f"><td class="memItemLeft" align="right" valign="top"><a id="gad95adbcf4ac35cd0ac917233843f935f"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gad95adbcf4ac35cd0ac917233843f935f">adiar::bdd_equal</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;g)</td></tr>
 <tr class="memdesc:gad95adbcf4ac35cd0ac917233843f935f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the two BDDs represent the same function. <br /></td></tr>
@@ -1492,6 +1501,48 @@ template&lt;typename ForwardIt &gt; </div>
 
 </div>
 </div>
+<a id="ga676083b3cee95980a2bef05cfcc42ace"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga676083b3cee95980a2bef05cfcc42ace">&#9670;&nbsp;</a></span>bdd_isithvar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool adiar::bdd_isithvar </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether a BDD is the function of a single positive variable. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#ga846ac0d1f836e7642f0ae25edf34cf95" title="Whether a BDD is a function dependent on a single variable.">bdd_isvar</a> <a class="el" href="group__module____bdd.html#ga4967671bd4f3386c612bb0f13214543c" title="The BDD representing the i&#39;th variable.">bdd_ithvar</a> </dd></dl>
+
+</div>
+</div>
+<a id="gaec1931f03462feafeabad08c00e2c6fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaec1931f03462feafeabad08c00e2c6fa">&#9670;&nbsp;</a></span>bdd_isnithvar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool adiar::bdd_isnithvar </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether a BDD is the function of a single negative variable. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#ga846ac0d1f836e7642f0ae25edf34cf95" title="Whether a BDD is a function dependent on a single variable.">bdd_isvar</a> <a class="el" href="group__module____bdd.html#ga165bbda2d8b2ba36123a35862226fff8" title="The BDD representing the negation of the i&#39;th variable.">bdd_nithvar</a> </dd></dl>
+
+</div>
+</div>
 <a id="gae9b7614e69deb2a40b9b43ef9712d2c4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gae9b7614e69deb2a40b9b43ef9712d2c4">&#9670;&nbsp;</a></span>bdd_isterminal()</h2>
 
@@ -1510,6 +1561,27 @@ template&lt;typename ForwardIt &gt; </div>
 
 <p>Whether a BDD is a constant (terminal). </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#ga89c8736e3461536eb39cf4a323ab875b" title="Whether a BDD is the constant false.">bdd_isfalse</a> <a class="el" href="group__module____bdd.html#ga81eb97e73e588784178e8eaee96cdbc8" title="Whether a BDD is the constant true.">bdd_istrue</a> </dd></dl>
+
+</div>
+</div>
+<a id="ga846ac0d1f836e7642f0ae25edf34cf95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga846ac0d1f836e7642f0ae25edf34cf95">&#9670;&nbsp;</a></span>bdd_isvar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool adiar::bdd_isvar </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether a BDD is a function dependent on a single variable. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#ga676083b3cee95980a2bef05cfcc42ace" title="Whether a BDD is the function of a single positive variable.">bdd_isithvar</a> <a class="el" href="group__module____bdd.html#gaec1931f03462feafeabad08c00e2c6fa" title="Whether a BDD is the function of a single negative variable.">bdd_isnithvar</a> </dd></dl>
 
 </div>
 </div>
