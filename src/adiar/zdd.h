@@ -674,6 +674,24 @@ namespace adiar
   __zdd zdd_offset(const exec_policy &ep, const zdd &A, zdd::label_type var);
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief  Subset that do \em not include the top variable.
+  ///
+  /// \param A Family of set
+  ///
+  /// \remark  In other BDD packages, this function is good for traversing a ZDD.
+  ///          But, here this is not a constant-time operation but constructs
+  ///          an entire new ZDD of up-to linear size.
+  ///
+  /// \throws invalid_argument If `A` is a terminal.
+  //////////////////////////////////////////////////////////////////////////////
+  __zdd zdd_offset(const zdd &A);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Subset that do \em not include the top variable.
+  //////////////////////////////////////////////////////////////////////////////
+  __zdd zdd_offset(const exec_policy &ep, const zdd &A);
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief      Subset that \em do include the given set of variables.
   ///
   /// \param A    Family of set
@@ -734,6 +752,24 @@ namespace adiar
   /// \brief Subset that \em do include the given element.
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_onset(const exec_policy &ep, const zdd &A, zdd::label_type var);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief   Subset that \em do include the top variable.
+  ///
+  /// \param A Family of set
+  ///
+  /// \remark  In other BDD packages, this function is good for traversing a ZDD.
+  ///          But, here this is not a constant-time operation but constructs
+  ///          an entire new ZDD of up-to linear size.
+  ///
+  /// \throws invalid_argument If `A` is a terminal.
+  //////////////////////////////////////////////////////////////////////////////
+  __zdd zdd_onset(const zdd &A);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Subset that \em do include the top variable.
+  //////////////////////////////////////////////////////////////////////////////
+  __zdd zdd_onset(const exec_policy &ep, const zdd &A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Project family of sets onto a domain, i.e. remove from every
