@@ -1,6 +1,5 @@
 var NAVTREEINDEX4 =
 {
-"hierarchy.html":[7,2],
 "index.html":[0],
 "index.html":[],
 "index.html#autotoc_md0":[0,0],
@@ -249,5 +248,6 @@ var NAVTREEINDEX4 =
 "structadiar_1_1statistics_1_1prod2__t_1_1ra__t.html#af4609e33d3ae17cbae08e03247bdb4aa":[5,6,0,8,1,3],
 "structadiar_1_1statistics_1_1prod3__t.html":[5,6,0,9],
 "structadiar_1_1statistics_1_1prod3__t.html#ab769667ff5ecea10ecd9e2589b7e72bf":[5,6,0,9,0],
-"structadiar_1_1statistics_1_1quantify__t.html":[5,6,0,10]
+"structadiar_1_1statistics_1_1quantify__t.html":[5,6,0,10],
+"structadiar_1_1statistics_1_1quantify__t.html#ab769667ff5ecea10ecd9e2589b7e72bf":[5,6,0,10,0]
 };
