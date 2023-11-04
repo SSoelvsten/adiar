@@ -1,6 +1,5 @@
 var NAVTREEINDEX4 =
 {
-"index.html#autotoc_md1":[0,1],
 "index.html#autotoc_md2":[0,2],
 "knights_tour.html":[3,1],
 "knights_tour.html#autotoc_md10":[3,1,0,1],
@@ -51,16 +50,16 @@ var NAVTREEINDEX4 =
 "namespaceadiar.html#aeaa9d1d4a583e160d9db913598b1c827":[6,0,0,287],
 "namespaceadiar.html#af1d82216ca9a1da7562b64def09c6ad5":[6,0,0,23],
 "namespaceadiar.html#af4f487e39dded71f30fc122939acdbdd":[6,0,0,289],
-"namespacemembers.html":[6,1,0],
 "namespacemembers.html":[6,1,0,0],
+"namespacemembers.html":[6,1,0],
 "namespacemembers_b.html":[6,1,0,1],
 "namespacemembers_c.html":[6,1,0,2],
 "namespacemembers_d.html":[6,1,0,3],
 "namespacemembers_e.html":[6,1,0,4],
 "namespacemembers_enum.html":[6,1,4],
 "namespacemembers_f.html":[6,1,0,5],
-"namespacemembers_func.html":[6,1,1,0],
 "namespacemembers_func.html":[6,1,1],
+"namespacemembers_func.html":[6,1,1,0],
 "namespacemembers_func_b.html":[6,1,1,1],
 "namespacemembers_func_d.html":[6,1,1,2],
 "namespacemembers_func_m.html":[6,1,1,3],
@@ -249,5 +248,6 @@ var NAVTREEINDEX4 =
 "structadiar_1_1statistics_1_1quantify__t.html#ab769667ff5ecea10ecd9e2589b7e72bf":[5,6,0,10,0],
 "structadiar_1_1statistics_1_1reduce__t.html":[5,6,0,11],
 "structadiar_1_1statistics_1_1reduce__t.html#a2519ee24c18aafb9177078b92d6c338d":[5,6,0,11,3],
-"structadiar_1_1statistics_1_1reduce__t.html#a5f8c1dab667836c226b3c4cf7debca22":[5,6,0,11,2]
+"structadiar_1_1statistics_1_1reduce__t.html#a5f8c1dab667836c226b3c4cf7debca22":[5,6,0,11,2],
+"structadiar_1_1statistics_1_1reduce__t.html#a624cd625bf7ff160e3625ddf65cca558":[5,6,0,11,4]
 };

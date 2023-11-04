@@ -1,6 +1,5 @@
 var NAVTREEINDEX5 =
 {
-"structadiar_1_1statistics_1_1reduce__t.html#a624cd625bf7ff160e3625ddf65cca558":[5,6,0,11,4],
 "structadiar_1_1statistics_1_1reduce__t.html#a8f89cf0d7b85be177d529be8dbbcef5c":[5,6,0,11,1],
 "structadiar_1_1statistics_1_1reduce__t.html#ab769667ff5ecea10ecd9e2589b7e72bf":[5,6,0,11,0],
 "structadiar_1_1statistics_1_1substitute__t.html":[5,6,0,12],
@@ -19,5 +18,6 @@ var NAVTREEINDEX5 =
 "uid_8h.html#a2cfcb0f86047e2341fafabc88563dfb8":[6,0,0,0,27],
 "uid_8h_source.html":[8,0,0,0,1,0,7],
 "zdd_2zdd_8h_source.html":[8,0,0,0,2,0],
-"zdd_8h_source.html":[8,0,0,0,13]
+"zdd_8h_source.html":[8,0,0,0,13],
+"":[6,0,0,0]
 };
