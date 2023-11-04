@@ -95,6 +95,7 @@ go_bandit([]() {
 #include "adiar/bdd/test_count.cpp"
 #include "adiar/bdd/test_evaluate.cpp"
 #include "adiar/bdd/test_if_then_else.cpp"
+#include "adiar/bdd/test_pred.cpp"
 #include "adiar/bdd/test_negate.cpp"
 #include "adiar/bdd/test_quantify.cpp"
 #include "adiar/bdd/test_restrict.cpp"
