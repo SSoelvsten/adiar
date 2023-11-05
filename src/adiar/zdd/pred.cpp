@@ -237,7 +237,7 @@ namespace adiar
       }
 
       // Has the right-hand side fallen out of its set?
-      if (rp[0].is_false()) {
+      if (rp[1].is_false()) {
         return false;
       }
 
