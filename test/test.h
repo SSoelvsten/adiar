@@ -163,7 +163,10 @@ namespace adiar::internal
     static constexpr size_t files = 2u;
 
     struct stats
-    { /* No extra 'int' specific variables */ };
+    {
+      // Value for testing meta information
+      int meta_value = 0;
+    };
   };
 }
 
