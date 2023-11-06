@@ -4,692 +4,1473 @@
 go_bandit([]() {
   describe("adiar/internal/algoritms/pred.h", []() {
     describe("is_isomorphic", []() {
-      describe("Trivial cases", []() {
-        shared_levelized_file<dd::node_type>
-        terminal_F, x21, x42, x21_and_x22, x21_and_x22_and_x42, x21_and_x42, x21_xor_x42;
+      shared_levelized_file<dd::node_type> F;
+      /*
+      //           F
+      */
+      {
+        node_writer w(F);
+        w << node(false);
+      }
 
-        { // Garbage collect writers to free write-lock
-          node_writer w_F(terminal_F);
-          w_F << node(false);
+      shared_levelized_file<dd::node_type> T;
+      /*
+      //           T
+      */
+      {
+        node_writer w(T);
+        w << node(true);
+      }
 
-          node_writer w_21(x21);
-          w_21 << node(21,0, ptr_uint64(false), ptr_uint64(true));
+      shared_levelized_file<dd::node_type> x42;
+      /*
+      //           1      ---- x42
+      //          / \
+      //          F T
+      */
+      {
+        node_writer w(x42);
+        w << node(42, node::max_id, node::pointer_type(false), node::pointer_type(true));
+      }
 
-          node_writer w_42(x42);
-          w_42 << node(42,0, ptr_uint64(false), ptr_uint64(true));
-
-          node_writer w_21_and_22(x21_and_x22);
-          w_21_and_22 << node(22,0, ptr_uint64(false), ptr_uint64(true))
-                      << node(21,0, ptr_uint64(false), ptr_uint64(22,0));
-
-          node_writer w_21_and_22_and_42(x21_and_x22_and_x42);
-          w_21_and_22_and_42 << node(42,0, ptr_uint64(false), ptr_uint64(true))
-                             << node(22,0, ptr_uint64(false), ptr_uint64(42,0))
-                             << node(21,0, ptr_uint64(false), ptr_uint64(22,0));
-
-          node_writer w_21_and_42(x21_and_x42);
-          w_21_and_42 << node(42,0, ptr_uint64(false), ptr_uint64(true))
-                      << node(21,0, ptr_uint64(false), ptr_uint64(42,0));
-
-          node_writer w_21_xor_42(x21_xor_x42);
-          w_21_xor_42 << node(42,1, ptr_uint64(true), ptr_uint64(false))
-                      << node(42,0, ptr_uint64(false), ptr_uint64(true))
-                      << node(21,0, ptr_uint64(42,0), ptr_uint64(42,1));
-        }
-
-        it("accepts same file with same negation flag", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), terminal_F, terminal_F, false, false), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), terminal_F, terminal_F, true, true), Is().True());
+      describe("Case: File Pointer Address", [&]() {
+        it("accepts F when negation flags match", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(F, false), dd(F, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(F, true),  dd(F, true)), Is().True());
         });
 
-        it("rejects same file with differing negation falgs", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), terminal_F, terminal_F, false, true), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), terminal_F, terminal_F, true, false), Is().False());
+        it("accepts T when negation flags match", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(F, false), dd(F, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(F, true),  dd(F, true)), Is().True());
         });
 
-        it("rejects on different number of nodes [1]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), x21, x21_and_x42, false, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), x21, x21_and_x42, false, true), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), x21_and_x42, x21, true, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), x21_and_x42, x21, true, true), Is().False());
+        it("accepts x42 when negation flags match", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, false), dd(x42, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, true),  dd(x42, true)), Is().True());
         });
 
-        it("rejects on different number of nodes [2]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), x21_xor_x42, x21_and_x42, false, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), x21_xor_x42, x21_and_x42, false, true), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), x21_and_x42, x21_xor_x42, true, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), x21_and_x42, x21_xor_x42, true, true), Is().False());
+        it("rejects F when negation flags mismatch", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(F, false), dd(F, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(F, true),  dd(F, false)), Is().False());
         });
 
-        it("rejects on different number of levels [1]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), terminal_F, x42, false, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), terminal_F, x42, false, true), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), x42, terminal_F, true, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), x42, terminal_F, true, true), Is().False());
+        it("rejects T when negation flags mismatch", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(F, false), dd(F, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(F, true),  dd(F, false)), Is().False());
         });
 
-        it("rejects on different number of levels [2]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), x21_and_x22_and_x42, x21_and_x22, false, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), x21_and_x22_and_x42, x21_and_x22, false, true), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), x21_and_x22, x21_and_x22_and_x42, true, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), x21_and_x22, x21_and_x22_and_x42, true, true), Is().False());
+        it("rejects x42 when negation flags mismatch", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, false), dd(x42, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, true),  dd(x42, false)), Is().False());
+        });
+      });
+
+      shared_levelized_file<dd::node_type> x21;
+      /*
+      //         1      ---- x21
+      //        / \
+      //        F T
+      */
+      {
+        node_writer w(x21);
+        w << node(21, node::max_id, node::pointer_type(false), node::pointer_type(true));
+      }
+
+      shared_levelized_file<dd::node_type> x21_and_x42;
+      /*
+      //          1      ---- x21
+      //         / \
+      //         F 2     ---- x42
+      //          / \
+      //          F T
+      */
+      {
+        const node n2(42, node::max_id, node::pointer_type(false), node::pointer_type(true));
+        const node n1(21, node::max_id, node::pointer_type(false), n2.uid());
+
+        node_writer w(x21_and_x42);
+        w << n2 << n1;
+      }
+
+      shared_levelized_file<dd::node_type> x21_xor_x42;
+      /*
+      //          _1_      ---- x21
+      //         /   \
+      //         2   3     ---- x42
+      //        / \ / \
+      //        T F F T
+      */
+      {
+        const node n3(42, node::max_id,   node::pointer_type(false), node::pointer_type(true));
+        const node n2(42, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
+        const node n1(21, node::max_id,   n2.uid(), n3.uid());
+
+        node_writer w(x21_xor_x42);
+        w << n3 << n2 << n1;
+      }
+
+      describe("Case: #Nodes", [&]() {
+        it("rejects F (#nodes = 0) vs. x21 (#nodes = 2)", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(F, false), dd(x21, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(F, false), dd(x21, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21, true), dd(F, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21, true), dd(F, true)), Is().False());
         });
 
-        it("rejects on different labels in level [1]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), x21, x42, false, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), x21, x42, false, true), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), x42, x21, true, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), x42, x21, true, true), Is().False());
+        it("rejects x21 (#nodes = 1) vs. x21 & x42 (#nodes = 2)", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(x21, false), dd(x21_and_x42, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21, false), dd(x21_and_x42, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true), dd(x21, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true), dd(x21, true)), Is().False());
         });
 
-        it("rejects on different labels in level [2]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), x21_and_x42, x21_and_x22, false, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), x21_and_x42, x21_and_x22, false, true), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), x21_and_x22, x21_and_x42, true, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), x21_and_x22, x21_and_x42, true, true), Is().False());
+        it("rejects x42 (#nodes = 1) vs. x21 & x42 (#nodes = 2)", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, false), dd(x21_and_x42, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, false), dd(x21_and_x42, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true), dd(x42, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true), dd(x42, true)), Is().False());
         });
 
-        it("rejects on different size of level", [&]() {
+        it("rejects x21 (#nodes = 1) vs. x21 ^ x42 (#nodes = 3)", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(x21, false), dd(x21_xor_x42, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21, false), dd(x21_xor_x42, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_xor_x42, true), dd(x21, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_xor_x42, true), dd(x21, true)), Is().False());
+        });
+
+        it("rejects x21 & x42 (#nodes = 2) vs. x21 ^ x42 (#nodes = 3)", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_xor_x42, false), dd(x21_and_x42, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_xor_x42, false), dd(x21_and_x42, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true), dd(x21_xor_x42, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true), dd(x21_xor_x42, true)), Is().False());
+        });
+      });
+
+      shared_levelized_file<node> dd_4;
+      /*
+      // Similar to dd_3 (see further below) but mirrored horisontally
+      //
+      //           1     ---- x0
+      //          / \
+      //         2  |    ---- x1
+      //        / \ /
+      //        F  3     ---- x2
+      //          / \
+      //          4 T    ---- x3
+      //         / \
+      //         T F
+      */
+      {
+        const node n4(3, node::max_id, node::pointer_type(true),  node::pointer_type(false));
+        const node n3(2, node::max_id, n4.uid(),                  node::pointer_type(true));
+        const node n2(1, node::max_id, node::pointer_type(false), n3.uid());
+        const node n1(0, node::max_id, n2.uid(),                  n3.uid());
+
+        node_writer w(dd_4);
+        w << n4 << n3 << n2 << n1;
+      }
+
+      shared_levelized_file<node> dd_5;
+      /*
+      // Similar to dd_4 but (2) goes to a terminal instead of (3)
+      //
+      //          1        ---- x0
+      //         / \
+      //         2  \      ---- x1
+      //        / \  \
+      //        F T  3     ---- x2
+      //            / \
+      //            4 T    ---- x3
+      //           / \
+      //           T F
+      */
+      {
+        const node n4(3, node::max_id, node::pointer_type(true),  node::pointer_type(false));
+        const node n3(2, node::max_id, n4.uid(),                  node::pointer_type(true));
+        const node n2(1, node::max_id, node::pointer_type(false), node::pointer_type(true));
+        const node n1(0, node::max_id, n2.uid(),                  n3.uid());
+
+        node_writer w(dd_5);
+        w << n4 << n3 << n2 << n1;
+      }
+
+      shared_levelized_file<node> dd_6;
+      /*
+      // Similar to dd_5 but (3) goes to F rather than T
+      //
+      //          1       ---- x0
+      //         / \
+      //         2  \     ---- x1
+      //        / \  \
+      //        F T  3    ---- x2
+      //            / \
+      //            4 F   ---- x3
+      //           / \
+      //           T F
+      */
+      {
+        const node n4(3, node::max_id, node::pointer_type(true),  node::pointer_type(false));
+        const node n3(2, node::max_id, n4.uid(),                  node::pointer_type(false));
+        const node n2(1, node::max_id, node::pointer_type(false), node::pointer_type(true));
+        const node n1(0, node::max_id, n2.uid(),                  n3.uid());
+
+        node_writer w(dd_6);
+        w << n4 << n3 << n2 << n1;
+      }
+
+      describe("Case: #Terminal Arcs", [&]() {
+        it("rejects F (̈́[1,0]) vs. T ([0,1])", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(F, false), dd(T, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(T, true),  dd(F, true)), Is().False());
+        });
+
+        it("rejects F (̈́[1,0]) vs. ~F ([0,1])", [&]() {
+          const auto F_copy = shared_levelized_file<dd::node_type>::copy(F);
+
+          AssertThat(is_isomorphic(exec_policy(), dd(F,      false), dd(F_copy, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(F_copy, true),  dd(F,      false)), Is().False());
+        });
+
+        it("rejects x21 & x42 (̈́[1,2]) vs. ~x21 | (x21 & x42) ([2,1])", [&]() {
+          shared_levelized_file<dd::node_type> a = x21_and_x42;
+
+          shared_levelized_file<dd::node_type> b;
+          /*
+          //          1      ---- x21
+          //         / \
+          //         T 2     ---- x42
+          //          / \
+          //          F T
+          */
+          {
+            const node n2(42, node::max_id, node::pointer_type(false), node::pointer_type(true));
+            const node n1(21, node::max_id, node::pointer_type(true), n2.uid());
+
+            node_writer w(b);
+            w << n2 << n1;
+          }
+
+          AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(b, false), dd(a, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(b, true),  dd(a, true)),  Is().False());
+        });
+
+        it("rejects x21 & x42 (̈́[1,2]) vs. ~(x21 & ~x42) ([2,1])", [&]() {
+          shared_levelized_file<dd::node_type> a = x21_and_x42;
+
+          shared_levelized_file<dd::node_type> b;
+          /*
+          //          1      ---- x21
+          //         / \
+          //         F 2     ---- x42
+          //          / \
+          //          T F
+          */
+          {
+            const node n2(42, node::max_id, node::pointer_type(true), node::pointer_type(false));
+            const node n1(21, node::max_id, node::pointer_type(false), n2.uid());
+
+            node_writer w(b);
+            w << n2 << n1;
+          }
+
+          AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(b, true),  dd(a, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(b, false), dd(a, true)),  Is().False());
+        });
+
+        it("rejects [4] ([2,2]) vs. ~[5] ([3,2]) due to one extra F terminal", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4, false), dd(dd_5, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4, false), dd(dd_5, true)),  Is().False());
+        });
+
+        it("rejects [4] ([2,2]) vs. [5] ([2,3]) due to one extra T terminal", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4, false), dd(dd_5, false)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_5, false), dd(dd_4, false)),  Is().False());
+        });
+
+        it("rejects [5] ([2,3]) vs. [6] ([3,2])", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_5, false), dd(dd_6, false)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_5, true),  dd(dd_6, true)),   Is().False());
+        });
+      });
+
+      shared_levelized_file<dd::node_type> x21_x22_x42_chain;
+      /*
+      // This matches 'x21_xor_x42' above in the number of nodes and the number
+      // of edges to each terminal. Hence, it only mismatches on the number of
+      // levels.
+      //
+      //          1      ---- x21
+      //         / \
+      //         F 2     ---- x22
+      //          / \
+      //          T 3    ---- x42
+      //           / \
+      //           F T
+      */
+      {
+        const node n3(42, node::max_id, node::pointer_type(false), node::pointer_type(true));
+        const node n2(22, node::max_id, node::pointer_type(true),  n3.uid());
+        const node n1(21, node::max_id, node::pointer_type(false), n2.uid());
+
+        node_writer w(x21_x22_x42_chain);
+        w << n3 << n2 << n1;
+      }
+
+      describe("Case: #Levels", [&]() {
+        it("rejects F (#levels = 0) vs. x42 (#levels = 1)", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(F,  false),  dd(x42, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(F,  false),  dd(x42, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, true),  dd(F, false)),   Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, true),  dd(F, true)),    Is().False());
+        });
+
+        it("rejects T (#levels = 0) vs. x21 & x42 (#levels = 2)", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(T,           false), dd(x21_and_x42, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(T,           false), dd(x21_and_x42, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true),  dd(T,           false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true),  dd(T,           true)),  Is().False());
+        });
+
+        it("rejects x21 (#levels = 1) vs. x21 & x42 (#levels = 2)", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(x21,         false), dd(x21_and_x42, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21,         false), dd(x21_and_x42, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true),  dd(x21,         false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true),  dd(x21,         true)),  Is().False());
+        });
+
+        it("rejects x21 ^ x42 (#levels = 2) vs. (x21 & ~x22) | (x21 & x42) (#levels = 3)", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_x22_x42_chain, false), dd(x21_xor_x42,       false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_x22_x42_chain, false), dd(x21_xor_x42,       true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_xor_x42,       true),  dd(x21_x22_x42_chain, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_xor_x42,       true),  dd(x21_x22_x42_chain, true)),  Is().False());
+        });
+      });
+
+      // -----------------------------------------------------------------------
+      // TODO: width case (when implemented)
+      // -----------------------------------------------------------------------
+
+      shared_levelized_file<dd::node_type> x21_and_x22;
+      /*
+      //          1      ---- x21
+      //         / \
+      //         F 2     ---- x42
+      //          / \
+      //          F T
+      */
+      {
+        const node n2(22, node::max_id, node::pointer_type(false), node::pointer_type(true));
+        const node n1(21, node::max_id, node::pointer_type(false), n2.uid());
+
+        node_writer w(x21_and_x22);
+        w << n2 << n1;
+      }
+
+      describe("Case: Individual Level's Label and Width)", [&]() {
+        it("rejects x21 vs x42 on the label", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(x21, false), dd(x42, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21, false), dd(x42, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, true),  dd(x21, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, true),  dd(x21, true)),  Is().False());
+        });
+
+        it("rejects x21 & x42 vs x21 & x22 on the label", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, false), dd(x21_and_x22, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, false), dd(x21_and_x22, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x22, true),  dd(x21_and_x42, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x22, true),  dd(x21_and_x42, true)),  Is().False());
+        });
+
+        it("rejects due to different max-width", []() {
           // Create two BDDs with 7 nodes each on variables x0, x1, x2,
           // and x3 (i.e. the same number of nodes and levels). One with 3
           // nodes for x2 and one node for x3 and one with 2 nodes for x2 and x3.
-
-          shared_levelized_file<dd::node_type> seven_a, seven_b;
-
+          shared_levelized_file<dd::node_type> in_a;
+          /*
+          //                _1_        ---- x0
+          //               /   \
+          //             _2_   _3_     ---- x1
+          //            /   \ /   \
+          //            4    5    6    ---- x2
+          //           / \  / \  / \
+          //           F  \ T |  F T
+          //               \ /
+          //                7          ---- x3
+          //               / \
+          //               F T
+          */
           { // Garbage collect writers to free write-lock
-            node_writer w_seven_a(seven_a);
-            w_seven_a << node(3,0, ptr_uint64(false), ptr_uint64(true))
-                    << node(2,2, ptr_uint64(false), ptr_uint64(true))
-                    << node(2,1, ptr_uint64(true), ptr_uint64(3,0))
-                    << node(2,0, ptr_uint64(false), ptr_uint64(3,0))
-                    << node(1,1, ptr_uint64(2,0), ptr_uint64(2,1))
-                    << node(1,0, ptr_uint64(2,1), ptr_uint64(2,2))
-                    << node(0,0, ptr_uint64(1,0), ptr_uint64(1,1));
+            const node n7(3, node::max_id,   node::pointer_type(false), node::pointer_type(true));
+            const node n6(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
+            const node n5(2, node::max_id-1, node::pointer_type(true),  n7.uid());
+            const node n4(2, node::max_id-2, node::pointer_type(false), n7.uid());
+            const node n3(1, node::max_id,   n5.uid(),                  n6.uid());
+            const node n2(1, node::max_id-1, n4.uid(),                  n5.uid());
+            const node n1(0, node::max_id,   n2.uid(),                  n2.uid());
 
-            node_writer w_seven_b(seven_b);
-            w_seven_b << node(3,1, ptr_uint64(true), ptr_uint64(false))
-                      << node(3,0, ptr_uint64(false), ptr_uint64(true))
-                      << node(2,1, ptr_uint64(3,1), ptr_uint64(true))
-                      << node(2,0, ptr_uint64(false), ptr_uint64(3,0))
-                      << node(1,1, ptr_uint64(2,1), ptr_uint64(2,0))
-                      << node(1,0, ptr_uint64(2,0), ptr_uint64(2,1))
-                      << node(0,0, ptr_uint64(1,0), ptr_uint64(1,1));
+            node_writer w(in_a);
+            w << n7 << n6 << n5 << n4 << n3 << n2 << n1;
           }
 
-          AssertThat(is_isomorphic(exec_policy(), seven_a, seven_b, false, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), seven_a, seven_b, false, true), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), seven_b, seven_a, true, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), seven_b, seven_a, true, true), Is().False());
+          shared_levelized_file<dd::node_type> in_b;
+          /*
+          //              1         ---- x0
+          //             / \
+          //             2 3        ---- x1
+          //             |X|
+          //            _4 5_       ---- x2
+          //           / | | \
+          //           F 6 7 T      ---- x3
+          //            /| |\
+          //            TF FT
+          */
+          { // Garbage collect writers to free write-lock
+            const node n7(3, node::max_id,   node::pointer_type(false), node::pointer_type(true));
+            const node n6(3, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
+            const node n5(2, node::max_id,   n7.uid(),                  node::pointer_type(true));
+            const node n4(2, node::max_id-1, node::pointer_type(false), n6.uid());
+            const node n3(1, node::max_id,   n4.uid(),                  n5.uid());
+            const node n2(1, node::max_id-1, n5.uid(),                  n4.uid());
+            const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+
+            node_writer w(in_b);
+            w << n7 << n6 << n5 << n4 << n3 << n2 << n1;
+          }
+
+          AssertThat(is_isomorphic(exec_policy(), dd(in_a, false), dd(in_b, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(in_a, false), dd(in_b, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(in_b, true),  dd(in_a, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(in_b, true),  dd(in_a, true)),  Is().False());
+        });
+
+        it("rejects due to levels have mismatching width", []() {
+          shared_levelized_file<dd::node_type> in_a;
+          /*
+          //               _1_        ---- x0
+          //              /   \
+          //              2   3       ---- x1
+          //             / \ / \
+          //             |  4  |      ---- x2
+          //             \ / \ /
+          //              5   6       ---- x3
+          //             / \ / \
+          //             T F F T
+          */
+          { // Garbage collect writers to free write-lock
+            const node n6(3, node::max_id,   node::pointer_type(false), node::pointer_type(true));
+            const node n5(3, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
+            const node n4(2, node::max_id,   n5.uid(),                  n6.uid());
+            const node n3(1, node::max_id,   n4.uid(),                  n6.uid());
+            const node n2(1, node::max_id-1, n5.uid(),                  n4.uid());
+            const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+
+            node_writer w(in_a);
+            w << n6 << n5 << n4 << n3 << n2 << n1;
+          }
+
+          shared_levelized_file<dd::node_type> in_b;
+          /*
+          //                 _1_       ---- x0
+          //                /   \
+          //               _2_   3     ---- x1
+          //              /   \ / \
+          //              |    4  5    ---- x2
+          //              \   /| / \
+          //               \  |F | T
+          //                \ | /
+          //                 \|/
+          //                  6        ---- x3
+          //                 / \
+          //                 F T
+          */
+          { // Garbage collect writers to free write-lock
+            const node n6(3, node::max_id,   node::pointer_type(false), node::pointer_type(true));
+            const node n5(2, node::max_id,   n6.uid(),                  node::pointer_type(true));
+            const node n4(2, node::max_id,   n6.uid(),                  node::pointer_type(false));
+            const node n3(1, node::max_id,   n4.uid(),                  n5.uid());
+            const node n2(1, node::max_id-1, n6.uid(),                  n4.uid());
+            const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+
+            node_writer w(in_b);
+            w << n6 << n5 << n4 << n3 << n2 << n1;
+          }
+
+          AssertThat(is_isomorphic(exec_policy(), dd(in_a, false), dd(in_b, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(in_a, false), dd(in_b, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(in_b, true),  dd(in_a, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(in_b, true),  dd(in_a, true)),  Is().False());
         });
       });
 
-
-      //////////////////////
-      // Sink-only cases
-      shared_levelized_file<dd::node_type> F_a, F_b, T_a;
+      shared_levelized_file<dd::node_type> not_x42;
+      /*
+      //         1      ---- x42
+      //        / \
+      //        T F
+      */
 
       { // Garbage collect writers to free write-lock
-        node_writer nw_F_a(F_a);
-        nw_F_a << node(false);
-
-        node_writer nw_F_b(F_b);
-        nw_F_b << node(false);
-
-        node_writer nw_T_a(T_a);
-        nw_T_a << node(true);
+        node_writer w(not_x42);
+        w << node(42, node::max_id, node::pointer_type(true), node::pointer_type(false));
       }
 
-      //////////////////////
-      // One-node cases
+      shared_levelized_file<dd::node_type> trivial_x69;
       /*
-           1     ---- x42
-          / \
-          F T
+      //          1       ---- x69
+      //         / \
+      //         T T
       */
-      shared_levelized_file<dd::node_type> x42_a, x42_b, not_x42;
 
       { // Garbage collect writers to free write-lock
-        node_writer wa(x42_a);
-        wa << node(42, node::max_id, ptr_uint64(false), ptr_uint64(true));
-
-        node_writer wb(x42_b);
-        wb << node(42, node::max_id, ptr_uint64(false), ptr_uint64(true));
-
-        node_writer wn(not_x42);
-        wn << node(42, node::max_id, ptr_uint64(true), ptr_uint64(false));
+        node_writer w(trivial_x69);
+        w << node(60, node::max_id, node::pointer_type(true), node::pointer_type(true));
       }
 
+      shared_levelized_file<dd::node_type> not_trivial_x69;
       /*
-           1    or   1   ---- x69
-          / \       / \
-          T T       F F
+      //          1       ---- x69
+      //         / \
+      //         F F
       */
-      shared_levelized_file<dd::node_type> x69_T, x69_F;
 
       { // Garbage collect writers to free write-lock
-        node_writer wT(x69_T);
-        wT << node(69, node::max_id, ptr_uint64(true), ptr_uint64(true));
-
-        node_writer wF(x69_F);
-        wF << node(69, node::max_id, ptr_uint64(false), ptr_uint64(false));
+        node_writer w(not_trivial_x69);
+        w << node(60, node::max_id, node::pointer_type(false), node::pointer_type(false));
       }
 
-
-      //////////////////////
-      // Traversal cases
-      shared_levelized_file<node> bdd_1;
+      shared_levelized_file<node> dd_1;
       /*
-            _1_     ---- x0
-           /   \
-           2   3    ---- x1
-          / \ / \
-          T  4  F   ---- x2
-            / \
-            F T
+      //      _1_     ---- x0
+      //     /   \
+      //     2   3    ---- x1
+      //    / \ / \
+      //    T  4  F   ---- x2
+      //      / \
+      //      F T
       */
-      { node_writer w(bdd_1);
-        w << node(2, node::max_id,   ptr_uint64(false),      ptr_uint64(true))
-          << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id),   ptr_uint64(false))
-          << node(1, node::max_id-1, ptr_uint64(true),       ptr_uint64(2, ptr_uint64::max_id))
-          << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id));
+      {
+        const node n4(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
+        const node n3(1, node::max_id,   n4.uid(),                  node::pointer_type(false));
+        const node n2(1, node::max_id-1, node::pointer_type(true),  n4.uid());
+        const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+
+        node_writer w(dd_1);
+        w << n4 << n3 << n2 << n1;
       }
 
-      shared_levelized_file<node> bdd_1n;
-      /* bdd_1 negated */
-      { node_writer w(bdd_1n);
-        w << node(2, node::max_id,   ptr_uint64(true),       ptr_uint64(false))
-          << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id),   ptr_uint64(true))
-          << node(1, node::max_id-1, ptr_uint64(false),      ptr_uint64(2, ptr_uint64::max_id))
-          << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id));
-      }
-
-      // bdd_1 with child of (2) and low child of (4) flipped in truth value
-      shared_levelized_file<node> bdd_1_low_leaf;
-      { node_writer w(bdd_1_low_leaf);
-        w << node(2, node::max_id,   ptr_uint64(true),       ptr_uint64(true))
-          << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id),   ptr_uint64(false))
-          << node(1, node::max_id-1, ptr_uint64(false),      ptr_uint64(2, ptr_uint64::max_id))
-          << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id));
-      }
-
-      // bdd_1 with child of (3) and high child of (4) flipped in truth value
-      shared_levelized_file<node> bdd_1_high_leaf;
-      { node_writer w(bdd_1_high_leaf);
-        w << node(2, node::max_id,   ptr_uint64(false),      ptr_uint64(false))
-          << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id),   ptr_uint64(true))
-          << node(1, node::max_id-1, ptr_uint64(true),       ptr_uint64(2, ptr_uint64::max_id))
-          << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id));
-      }
-
-      shared_levelized_file<node> bdd_2;
+      shared_levelized_file<node> dd_1n;
       /*
-             1      ---- x0
-            / \
-           2   3    ---- x1
-          /  X  \
-         F  / \  F
-           4   5     ---- x2
-          / \ / \
-         T   F   T
+      // All terminals flipped.
+      //
+      //      _1_     ---- x0
+      //     /   \
+      //     2   3    ---- x1
+      //    / \ / \
+      //    F  4  T   ---- x2
+      //      / \
+      //      T F
       */
-      { node_writer w(bdd_2);
-        w << node(2, node::max_id,   ptr_uint64(false),      ptr_uint64(true))
-          << node(2, node::max_id-1, ptr_uint64(true),       ptr_uint64(false))
-          << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(false))
-          << node(1, node::max_id-1, ptr_uint64(false),      ptr_uint64(2, ptr_uint64::max_id))
-          << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id));
+      {
+        const node n4(2, node::max_id,   node::pointer_type(true),  node::pointer_type(false));
+        const node n3(1, node::max_id,   n4.uid(),                  node::pointer_type(true));
+        const node n2(1, node::max_id-1, node::pointer_type(false), n4.uid());
+        const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+
+        node_writer w(dd_1n);
+        w << n4 << n3 << n2 << n1;
       }
 
-      shared_levelized_file<node> bdd_2n;
-      /* bdd_2 negated */
-      { node_writer w(bdd_2n);
-        w << node(2, node::max_id,   ptr_uint64(true),       ptr_uint64(false))
-          << node(2, node::max_id-1, ptr_uint64(false),      ptr_uint64(true))
-          << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(true))
-          << node(1, node::max_id-1, ptr_uint64(true),       ptr_uint64(2, ptr_uint64::max_id))
-          << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id));
-      }
-
-      shared_levelized_file<node> bdd_2_low_child;
+      shared_levelized_file<node> dd_1_low_leaf;
       /*
-             1       ---- x0
-            / \
-           2   3     ---- x1
-          / \  |\
-         4   5 | F   ---- x2
-        / \ / \|
-       T   F   T
-
-          which in traversal look similar to bdd_2 until (3) on level x1
+      // Low terminals of (2) and (4) flipped.
+      //
+      //      _1_     ---- x0
+      //     /   \
+      //     2   3    ---- x1
+      //    / \ / \
+      //    F  4  F   ---- x2
+      //      / \
+      //      T T
       */
-      { node_writer w(bdd_2_low_child);
-        w << node(2, node::max_id,   ptr_uint64(false),      ptr_uint64(true))
-          << node(2, node::max_id-1, ptr_uint64(true),       ptr_uint64(false))
-          << node(1, node::max_id,   ptr_uint64(true),       ptr_uint64(false))
-          << node(1, node::max_id-1, ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(2, ptr_uint64::max_id))
-          << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id));
+      {
+        const node n4(2, node::max_id,   node::pointer_type(true),  node::pointer_type(true));
+        const node n3(1, node::max_id,   n4.uid(),                  node::pointer_type(false));
+        const node n2(1, node::max_id-1, node::pointer_type(false), n4.uid());
+        const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+
+        node_writer w(dd_1_low_leaf);
+        w << n4 << n3 << n2 << n1;
       }
 
-      shared_levelized_file<node> bdd_2_high_child;
+      shared_levelized_file<node> dd_1_high_leaf;
       /*
-             1     ---- x0
-            / \
-           2   3   ---- x1
-          /  X  \
-         4  | 5 |  ---- x2
-        /  \|/ \|
-        T   F   T
-
-          which in traversal look similar to bdd_2 until (2) on level x1
+      // High terminals of (3) and (4) flipped.
+      //
+      //
+      //      _1_         ---- x0
+      //     /   \
+      //     2   3        ---- x1
+      //    / \ / \
+      //    T  4  T       ---- x2
+      //      / \
+      //      F F
       */
-      { node_writer w(bdd_2_high_child);
-        w << node(2, node::max_id,   ptr_uint64(false),      ptr_uint64(true))
-          << node(2, node::max_id-1, ptr_uint64(true),       ptr_uint64(false))
-          << node(1, node::max_id,   ptr_uint64(false),      ptr_uint64(true))
-          << node(1, node::max_id-1, ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(2, ptr_uint64::max_id))
-          << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id),   ptr_uint64(1, ptr_uint64::max_id-1));
+      {
+        const node n4(2, node::max_id,   node::pointer_type(false), node::pointer_type(false));
+        const node n3(1, node::max_id,   n4.uid(),                  node::pointer_type(true));
+        const node n2(1, node::max_id-1, node::pointer_type(true),  n4.uid());
+        const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+
+        node_writer w(dd_1_high_leaf);
+        w << n4 << n3 << n2 << n1;
       }
 
-      shared_levelized_file<node> bdd_3;
+      shared_levelized_file<node> dd_2;
       /*
-           1      ---- x0
-          / \
-          |  2    ---- x1
-          \ / \
-           3  F   ---- x2
-          / \
-          T 4     ---- x3
-           / \
-           F T
+      //        _1_          ---- x0
+      //       /   \
+      //      _2_ _3_        ---- x1
+      //     /   X   \
+      //     F  / \  F
+      //       4   5         ---- x2
+      //      / \ / \
+      //      T F F T
       */
-      { node_writer w(bdd_3);
-        w << node(3, node::max_id, ptr_uint64(false),    ptr_uint64(true))
-          << node(2, node::max_id, ptr_uint64(true),     ptr_uint64(3, ptr_uint64::max_id))
-          << node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(false))
-          << node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id));
+      {
+        const node n5(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
+        const node n4(2, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
+        const node n3(1, node::max_id,   n4.uid(),                  node::pointer_type(false));
+        const node n2(1, node::max_id-1, node::pointer_type(false), n5.uid());
+        const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+
+        node_writer w(dd_2);
+        w << n5 << n4 << n3 << n2 << n1;
       }
 
-      shared_levelized_file<node> bdd_4;
+      shared_levelized_file<node> dd_2n;
       /*
-             1     ---- x0
-            / \
-           2  |    ---- x1
-          / \ /
-          F  3     ---- x2
-            / \
-            4 T    ---- x3
-           / \
-           F T
-
-          The same as bdd_3 but mirrored horisontally
+      // Negation of the above (by flipping terminals of (2) and (3) and
+      // swapping their references to n4 and n5 to keep the diagram canonical)
+      //
+      //        __1__        ---- x0
+      //       /     \
+      //       2     3       ---- x1
+      //      / \   / \
+      //      T 4   5 T      ---- x2
+      //       / \ / \
+      //       T F F T
       */
-      { node_writer w(bdd_4);
-        w << node(3, node::max_id, ptr_uint64(true),     ptr_uint64(false))
-          << node(2, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))
-          << node(1, node::max_id, ptr_uint64(false),    ptr_uint64(2, ptr_uint64::max_id))
-          << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id));
+      {
+        const node n5(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
+        const node n4(2, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
+        const node n3(1, node::max_id,   n5.uid(),                  node::pointer_type(true));
+        const node n2(1, node::max_id-1, node::pointer_type(true),  n4.uid());
+        const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+
+        node_writer w(dd_2n);
+        w << n5 << n4 << n3 << n2 << n1;
       }
 
-      shared_levelized_file<node> bdd_5;
+      shared_levelized_file<node> dd_2_low_child;
       /*
-             1     ---- x0
-            / \
-           2   |   ---- x1
-          / \  |
-          F T  3   ---- x2
-              / \
-              4 T  ---- x3
-             / \
-             F T
-
-          The same as bdd_4 but (2) goes to a terminal instead of (3)
+      // During traversal this look similar to dd_2 until (2) on level x1
+      //
+      //          __1__        ---- x0
+      //         /     \
+      //        _2_    3       ---- x1
+      //       /   \  / \
+      //       4   5  T F      ---- x2
+      //      / \ / \
+      //      T F F T
       */
-      { node_writer w(bdd_5);
-        w << node(3, node::max_id, ptr_uint64(true),     ptr_uint64(false))
-          << node(2, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))
-          << node(1, node::max_id, ptr_uint64(false),    ptr_uint64(true))
-          << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id));
+      {
+        const node n5(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
+        const node n4(2, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
+        const node n3(1, node::max_id,   node::pointer_type(true),  node::pointer_type(false));
+        const node n2(1, node::max_id-1, n4.uid(),                  n5.uid());
+        const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+
+        node_writer w(dd_2_low_child);
+        w << n5 << n4 << n3 << n2 << n1;
       }
 
-      shared_levelized_file<node> bdd_6;
+      shared_levelized_file<node> dd_2_low_child2;
       /*
-             1     ---- x0
-            / \
-           2   |   ---- x1
-          / \  |
-          F T  3   ---- x2
-              / \
-              4 F  ---- x3
-             / \
-             F T
-
-          The same as bdd_5 but (3) goes to a false terminal instead of true
+      // During traversal this look similar to dd_2_low_child until (2) on level x1
+      //
+      //          __1__        ---- x0
+      //         /     \
+      //         2     3       ---- x1
+      //        _X_   / \
+      //       4   5  T F      ---- x2
+      //      / \ / \
+      //      T F F T
       */
-      { node_writer w(bdd_5);
-        w << node(3, node::max_id, ptr_uint64(true),     ptr_uint64(false))
-          << node(2, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(false))
-          << node(1, node::max_id, ptr_uint64(false),    ptr_uint64(true))
-          << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id));
+      {
+        const node n5(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
+        const node n4(2, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
+        const node n3(1, node::max_id,   node::pointer_type(true),  node::pointer_type(false));
+        const node n2(1, node::max_id-1, n5.uid(),                  n4.uid());
+        const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+
+        node_writer w(dd_2_low_child2);
+        w << n5 << n4 << n3 << n2 << n1;
       }
 
-      describe("Fast 2N/B check", [&]() {
-        // The fast checks require the BDDs to be on 'canonical' form, which
-        // makes two isomorphic BDDs truly identical.
+      shared_levelized_file<node> dd_2_high_child;
+      /*
+      // During traversal this look similar to dd_2 until (2) on level x1
+      //
+      //        __1__        ---- x0
+      //       /     \
+      //       2     3       ---- x1
+      //      / \   / \
+      //      F 4   5 F      ---- x2
+      //       / \ / \
+      //       T F F T
+      */
+      {
+        const node n5(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
+        const node n4(2, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
+        const node n3(1, node::max_id,   n5.uid(),                  node::pointer_type(false));
+        const node n2(1, node::max_id-1, node::pointer_type(false), n4.uid());
+        const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
 
-        //////////////////////
-        // Sink-only cases
-        it("accepts two different F terminals ", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), F_a, F_b), Is().True());
+        node_writer w(dd_2_high_child);
+        w << n5 << n4 << n3 << n2 << n1;
+      }
+
+      shared_levelized_file<node> dd_3;
+      /*
+      //         1      ---- x0
+      //        / \
+      //        |  2    ---- x1
+      //        \ / \
+      //         3  F   ---- x2
+      //        / \
+      //        T 4     ---- x3
+      //         / \
+      //         F T
+      */
+      {
+        const node n4(3, node::max_id, node::pointer_type(false), node::pointer_type(true));
+        const node n3(2, node::max_id, node::pointer_type(true),  n4.uid());
+        const node n2(1, node::max_id, n3.uid(),                  node::pointer_type(false));
+        const node n1(0, node::max_id, n3.uid(),                  n2.uid());
+
+        node_writer w(dd_3);
+        w << n4 << n3 << n2 << n1;
+      }
+
+      shared_levelized_file<node> dd_3n;
+      /*
+      // Same as dd_3 but with all terminals flipped
+      //
+      //         1      ---- x0
+      //        / \
+      //        |  2    ---- x1
+      //        \ / \
+      //         3  T  ---- x2
+      //        / \
+      //        F 4     ---- x3
+      //         / \
+      //         T F
+      */
+      {
+        const node n4(3, node::max_id, node::pointer_type(true),  node::pointer_type(false));
+        const node n3(2, node::max_id, node::pointer_type(false), n4.uid());
+        const node n2(1, node::max_id, n3.uid(),                  node::pointer_type(true));
+        const node n1(0, node::max_id, n3.uid(),                  n2.uid());
+
+        node_writer w(dd_3n);
+        w << n4 << n3 << n2 << n1;
+      }
+
+      shared_levelized_file<node> dd_3_low_child;
+      /*
+      // Same as dd_3 but with (2) directly going to (4) on low
+      //
+      //         _1_      ---- x0
+      //        /   \
+      //        |   2     ---- x1
+      //        |  / \
+      //        3 /  F    ---- x2
+      //       / \|
+      //       T  4       ---- x3
+      //         / \
+      //         F T
+      */
+      {
+        const node n4(3, node::max_id, node::pointer_type(false), node::pointer_type(true));
+        const node n3(2, node::max_id, node::pointer_type(true),  n4.uid());
+        const node n2(1, node::max_id, n4.uid(),                  node::pointer_type(false));
+        const node n1(0, node::max_id, n3.uid(),                  n2.uid());
+
+        node_writer w(dd_3_low_child);
+        w << n4 << n3 << n2 << n1;
+      }
+
+      shared_levelized_file<node> dd_4n;
+      /*
+      // Similar to dd_4 but with terminals flipped.
+      //
+      //           1     ---- x0
+      //          / \
+      //         2  |    ---- x1
+      //        / \ /
+      //        T  3     ---- x2
+      //          / \
+      //          4 F    ---- x3
+      //         / \
+      //         F T
+      */
+      {
+        const node n4(3, node::max_id, node::pointer_type(false), node::pointer_type(true));
+        const node n3(2, node::max_id, n4.uid(),                  node::pointer_type(false));
+        const node n2(1, node::max_id, node::pointer_type(true), n3.uid());
+        const node n1(0, node::max_id, n2.uid(),                  n3.uid());
+
+        node_writer w(dd_4n);
+        w << n4 << n3 << n2 << n1;
+      }
+
+      shared_levelized_file<node> dd_4_high_child;
+      /*
+      // Same as dd_4 but with (2) directly going to (4) on the high
+      //
+      //           _1_           ---- x0
+      //          /   \
+      //          2   |          ---- x1
+      //         / \  |
+      //         F  \ 3          ---- x2
+      //            |/ \
+      //            4  T         ---- x3
+      //           / \
+      //           T F
+      */
+      {
+        const node n4(3, node::max_id, node::pointer_type(true),  node::pointer_type(false));
+        const node n3(2, node::max_id, n4.uid(),                  node::pointer_type(true));
+        const node n2(1, node::max_id, node::pointer_type(false), n4.uid());
+        const node n1(0, node::max_id, n2.uid(),                  n3.uid());
+
+        node_writer w(dd_4_high_child);
+        w << n4 << n3 << n2 << n1;
+      }
+
+      shared_levelized_file<node> dd_7;
+      /*
+      //         __1__       ---- x0
+      //        /     \
+      //        2     3      ---- x1
+      //       / \   / \
+      //       4 T   5 T     ---- x2
+      //      / \   / \
+      //      T F   F T
+      */
+      {
+        const node n5(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
+        const node n4(2, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
+        const node n3(1, node::max_id,   n5.uid(),                  node::pointer_type(true));
+        const node n2(1, node::max_id-1, n4.uid(),                  node::pointer_type(true));
+        const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+
+        node_writer w(dd_7);
+        w << n5 << n4 << n3 << n2 << n1;
+      }
+
+      shared_levelized_file<node> dd_7n;
+      /*
+      // Same as dd_7 but with terminals negated (and sorted to keep it
+      // canonical)
+      //
+      //           1         ---- x0
+      //         __X__
+      //        2     3      ---- x1
+      //       / \   / \
+      //       4 F   5 F     ---- x2
+      //      / \   / \
+      //      T F   F T
+      */
+      {
+        const node n5(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
+        const node n4(2, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
+        const node n3(1, node::max_id,   n5.uid(),                  node::pointer_type(false));
+        const node n2(1, node::max_id-1, n4.uid(),                  node::pointer_type(false));
+        const node n1(0, node::max_id,   n3.uid(),                  n2.uid());
+
+        node_writer w(dd_7n);
+        w << n5 << n4 << n3 << n2 << n1;
+      }
+
+      shared_levelized_file<node> dd_7_high_child;
+      /*
+      // During traversal this look similar to dd_5 until (3) on level x1
+      //
+      //         __1__        ---- x0
+      //        /     \
+      //       _2_     3      ---- x1
+      //      /   \    ||
+      //      4   5    T      ---- x2
+      //     / \ / \
+      //     T F F T
+      */
+      {
+        const node n5(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
+        const node n4(2, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
+        const node n3(1, node::max_id,   node::pointer_type(true),  node::pointer_type(true));
+        const node n2(1, node::max_id-1, n4.uid(),                  n5.uid());
+        const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+
+        node_writer w(dd_7_high_child);
+        w << n5 << n4 << n3 << n2 << n1;
+      }
+
+      describe("Case: N/B Comparison Check", [&]() {
+        // NOTE: The fast checks require the BDDs to be on 'canonical' form,
+        // which makes two isomorphic BDDs truly identical.
+
+        it("accepts F", [&]() {
+          const auto a = F;
+          const auto b = shared_levelized_file<node>::copy(F);
+
+          AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, true)),  Is().True());
         });
 
-        it("rejects an F and a T terminal ", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), T_a, F_a), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), F_b, T_a), Is().False());
+        it("accepts T", [&]() {
+          const auto a = T;
+          const auto b = shared_levelized_file<node>::copy(T);
+
+          AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, true)),  Is().True());
         });
 
-        it("rejects an F with a T terminal, where both are negated", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), T_a, F_a, true, true), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), T_a, F_a, true, true), Is().False());
+        it("accepts x42", [&]() {
+          const auto a = x42;
+          const auto b = shared_levelized_file<node>::copy(x42);
+
+          AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, true)),  Is().True());
         });
 
-        //////////////////////
-        // One-node cases
-        it("accepts two different x42", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), x42_a, x42_b, false, false), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), x42_a, x42_b, true, true), Is().True());
+        it("accepts ~x42", [&]() {
+          const auto a = not_x42;
+          const auto b = shared_levelized_file<node>::copy(not_x42);
+
+          AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, true)),  Is().True());
+        });
+
+        it("rejects on child mismatch [terminal value]", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(not_x42, false), dd(x42,     false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42,     false), dd(not_x42, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(not_x42, true),  dd(x42,     true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42,     true),  dd(not_x42, true)),  Is().False());
+        });
+
+        it("accepts [trivial_x69]", [&]() {
+          const auto a = trivial_x69;
+          const auto b = shared_levelized_file<node>::copy(trivial_x69);
+
+          AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, true)),  Is().True());
+        });
+
+        it("rejects on child mismatch [terminal value]", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(trivial_x69,     false), dd(not_trivial_x69, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(not_trivial_x69, false), dd(trivial_x69,     false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(trivial_x69,     true),  dd(not_trivial_x69, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(not_trivial_x69, true),  dd(trivial_x69,     true)),  Is().False());
+        });
+
+        it("accepts [1]", [&]() {
+          const auto a = dd_1;
+          const auto b = shared_levelized_file<node>::copy(dd_1);
+
+          AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, true)),  Is().True());
+        });
+
+        it("rejects on low child mismatch [terminal value]", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1,  false), dd(dd_1n, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1n, false), dd(dd_1,  false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1,  true),  dd(dd_1n, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1n, true),  dd(dd_1,  true)),  Is().False());
+        });
+
+        it("rejects on low child mismatch [terminal value]", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1,          false), dd(dd_1_low_leaf, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1_low_leaf, false), dd(dd_1,          false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1,          true),  dd(dd_1_low_leaf, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1_low_leaf, true),  dd(dd_1,          true)),  Is().False());
+        });
+
+        it("rejects on high child mismatch [terminal value]", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1,           false), dd(dd_1_high_leaf, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1_high_leaf, false), dd(dd_1,           false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1,           true),  dd(dd_1_high_leaf, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1_high_leaf, true),  dd(dd_1,           true)),  Is().False());
+        });
+
+        it("accepts [2]", [&]() {
+          const auto a = dd_2;
+          const auto b = shared_levelized_file<node>::copy(dd_2);
+
+          AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, true)),  Is().True());
+        });
+
+        it("rejects on low child mismatch [terminal value]", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2,  false), dd(dd_2n, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n, false), dd(dd_2,  false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2,  true),  dd(dd_2n, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n, true),  dd(dd_2,  true)),  Is().False());
+        });
+
+        it("rejects on low child mismatch [internal vs. terminal]", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2,           false), dd(dd_2_low_child, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_child, false), dd(dd_2, false)),           Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2,           true),  dd(dd_2_low_child, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_child, true),  dd(dd_2, true)),            Is().False());
+        });
+
+        it("rejects on low child mismatch [node id]", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_child,  false), dd(dd_2_low_child2, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_child2, false), dd(dd_2_low_child,  false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_child,  true),  dd(dd_2_low_child2, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_child2, true),  dd(dd_2_low_child,  true)),  Is().False());
+        });
+
+        it("rejects on high child mismatch [node id]", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2,            false), dd(dd_2_high_child, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_high_child, false), dd(dd_2,            false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2,            true),  dd(dd_2_high_child, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_high_child, true) , dd(dd_2,            true)), Is().False());
+        });
+
+        it("accepts [3]", [&]() {
+          const auto a = dd_3;
+          const auto b = shared_levelized_file<node>::copy(dd_3);
+
+          AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, true)),  Is().True());
+        });
+
+        it("rejects on low child mismatch [node label]", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_3,           false), dd(dd_3_low_child, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_3_low_child, false), dd(dd_3,           false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_3,           true),  dd(dd_3_low_child, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_3_low_child, true),  dd(dd_3,           true)),  Is().False());
+        });
+
+        it("accepts [4]", [&]() {
+          const auto a = dd_4;
+          const auto b = shared_levelized_file<node>::copy(dd_4);
+
+          AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, true)),  Is().True());
+        });
+
+        it("rejects on high child mismatch [node label]", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4,            false), dd(dd_4_high_child, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4_high_child, false), dd(dd_4,            false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4,            true),  dd(dd_4_high_child, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4_high_child, true) , dd(dd_4,            true)), Is().False());
+        });
+
+        it("accepts [7]", [&]() {
+          const auto a = dd_7;
+          const auto b = shared_levelized_file<node>::copy(dd_7);
+
+          AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, true)),  Is().True());
+        });
+
+        it("rejects on root's children flipped [node id]", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7,  false), dd(dd_7n, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7n, false), dd(dd_7,  false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7,  true),  dd(dd_7n, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7n, true) , dd(dd_7,  true)), Is().False());
+        });
+
+        it("rejects on high child mismatch [internal vs. terminal]", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7,            false), dd(dd_7_high_child, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7_high_child, false), dd(dd_7,            false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7,            true),  dd(dd_7_high_child, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7_high_child, true) , dd(dd_7,            true)), Is().False());
+        });
+      });
+
+      describe("Case: O(sort(N)) Comparison Check", [&]() {
+        it("accepts ~F and T", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(T, false), dd(F, true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(F, true),  dd(T, false)), Is().True());
+        });
+
+        it("accepts F and ~T", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(T, false), dd(F, true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(F, true),  dd(T, false)), Is().True());
         });
 
         it("rejects x42 and ~x42", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), x42_a, not_x42, false, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), x42_a, not_x42, true, true), Is().False());
+          const auto a = x42;
+          const auto b = shared_levelized_file<node>::copy(x42);
+
+          AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, false)), Is().False());
         });
 
-        it("rejects x69_T and x69_F", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), x69_T, x69_F, false, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), x69_T, x69_F, true, true), Is().False());
+        it("accepts x42 and negated ~x42", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, false), dd(not_x42, true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, true),  dd(not_x42, false)), Is().True());
         });
 
-        //////////////////////
-        // Traversal cases
-        it("rejects its negation [1]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), bdd_1, bdd_1n, false, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), bdd_1, bdd_1n, true, true), Is().False());
+        it("accepts [1] and negated [~1]", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1, false), dd(dd_1n, true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1, true),  dd(dd_1n, false)), Is().True());
         });
 
-        it("rejects its negation [2]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), bdd_2, bdd_2n, false, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), bdd_2, bdd_2n, true, true), Is().False());
+        it("rejects on low child mismatch [terminal value]", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1n,         true),  dd(dd_1_low_leaf, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1_low_leaf, false), dd(dd_1n,         false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1n,         false), dd(dd_1_low_leaf, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1_low_leaf, true),  dd(dd_1n,         false)), Is().False());
         });
 
-        it("rejects on low child mismatch (leaf value) [1]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), bdd_1, bdd_1_low_leaf, false, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), bdd_1, bdd_1_low_leaf, true, true), Is().False());
+        it("rejects on high child mismatch [terminal value]", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1n,          true),  dd(dd_1_high_leaf, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1_high_leaf, false), dd(dd_1n,          true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1n,          false), dd(dd_1_high_leaf, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1_high_leaf, true),  dd(dd_1n,          false)), Is().False());
         });
 
-        it("rejects on low child mismatch (internal node vs. leaf) [2]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), bdd_2, bdd_2_low_child, false, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), bdd_2, bdd_2_low_child, true, true), Is().False());
+        it("accepts [2] and negated [~2]", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2,  false), dd(dd_2n, true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n, true),  dd(dd_2,  false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2,  true),  dd(dd_2n, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n, false), dd(dd_2,  true)),  Is().True());
         });
 
-        it("rejects on low child mismatch (internal node labels) [3]", [&]() {
-          shared_levelized_file<node> bdd_3_b;
-          /* Same as bdd_3 but with (2) directly going to (4) on the low */
-          { // Garbage collect writers to free write-lock
-            node_writer w(bdd_3_b);
-            w << node(3, node::max_id, ptr_uint64(false),    ptr_uint64(true))
-              << node(2, node::max_id, ptr_uint64(true),     ptr_uint64(3, ptr_uint64::max_id))
-              << node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(false))
-              << node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id));
+        it("rejects on low child mismatch [internal vs. terminal]", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n,          true),  dd(dd_2_low_child, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_child, false), dd(dd_2n,          true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n,          false), dd(dd_2_low_child, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_child, true),  dd(dd_2n,          false)), Is().False());
+        });
+
+        it("rejects on low child mismatch [node id]", [&]() {
+          shared_levelized_file<node> dd_2_low_childn;
+          /*
+          // Same as dd_2_low_child but all terminals flipped (by swapping
+          // children of (2) and (3) to keep it canonical)
+          //
+          //          __1__        ---- x0
+          //         /     \
+          //         2     3       ---- x1
+          //        _X_   / \
+          //       4   5  F T      ---- x2
+          //      / \ / \
+          //      T F F T
+          */
+          {
+            const node n5(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
+            const node n4(2, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
+            const node n3(1, node::max_id,   node::pointer_type(false), node::pointer_type(true));
+            const node n2(1, node::max_id-1, n5.uid(),                  n4.uid());
+            const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+
+            node_writer w(dd_2_low_childn);
+            w << n5 << n4 << n3 << n2 << n1;
           }
 
-          AssertThat(is_isomorphic(exec_policy(), bdd_3, bdd_3_b, false, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), bdd_3, bdd_3_b, true, true), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_childn, true),  dd(dd_2_low_child2, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_child2, false), dd(dd_2_low_childn, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_childn, false), dd(dd_2_low_child2, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_child2, true),  dd(dd_2_low_childn, false)), Is().False());
         });
 
-        it("rejects on high child mismatch (leaf value) [1]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), bdd_1, bdd_1_high_leaf, false, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), bdd_1, bdd_1_high_leaf, true, true), Is().False());
+        it("rejects on high child mismatch [node id]", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n,           true),  dd(dd_2_high_child, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_high_child, false), dd(dd_2n,           true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n,           false), dd(dd_2_high_child, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_high_child, true) , dd(dd_2n,           false)), Is().False());
         });
 
-        it("rejects on high child mismatch (internal node vs. leaf) [2]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), bdd_2, bdd_2_high_child, false, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), bdd_2, bdd_2_high_child, true, true), Is().False());
+        it("accepts [3] and negated [~3]", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_3,  false), dd(dd_3n, true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_3n, true),  dd(dd_3,  false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_3,  true),  dd(dd_3n, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_3n, false),  dd(dd_3, true)),  Is().True());
         });
 
-        it("rejects on high child mismatch (internal node labels) [4]", [&]() {
-          shared_levelized_file<node> bdd_4_b;
-          /* Same as bdd_4 but with (2) directly going to (4) on the high */
-          { node_writer w(bdd_4_b);
-            w << node(3, node::max_id, ptr_uint64(true),     ptr_uint64(false))
-              << node(2, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))
-              << node(1, node::max_id, ptr_uint64(false),    ptr_uint64(3, ptr_uint64::max_id))
-              << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id));
+        it("rejects on low child mismatch [node label]", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_3n,          true),  dd(dd_3_low_child, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_3_low_child, false), dd(dd_3n,          true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_3n,          false), dd(dd_3_low_child, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_3_low_child, true),  dd(dd_3n,          false)), Is().False());
+        });
+
+        it("accepts [4] and negated [~4]", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4,  false), dd(dd_4n, true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4n, false), dd(dd_4,  true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4,  true),  dd(dd_4n, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4n,  true), dd(dd_4,  false)), Is().True());
+        });
+
+        it("rejects on high child mismatch [node label]", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4n,           true),  dd(dd_4_high_child, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4_high_child, false), dd(dd_4n,           true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4n,           false), dd(dd_4_high_child, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4_high_child, true) , dd(dd_4n,           false)), Is().False());
+        });
+
+        it("accepts [7] and negated [~7]", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7,  false), dd(dd_7n, true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7n, false), dd(dd_7,  true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7,  true),  dd(dd_7n, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7n, true),  dd(dd_7,  false)), Is().True());
+        });
+
+        it("rejects on high child mismatch [internal vs. terminal]", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7n,           true),  dd(dd_7_high_child, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7_high_child, false), dd(dd_7n,           true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7n,           false), dd(dd_7_high_child, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7_high_child, true) , dd(dd_7n,           false)), Is().False());
+        });
+
+        it("rejects on root's children mismatching", [&]() {
+          shared_levelized_file<node> a;
+          /*
+          //          1       ---- x1
+          //         / \
+          //         2 F      ---- x0
+          //        / \
+          //        F T
+          */
+          {
+            const node n2(1, node::max_id, node::pointer_type(false), node::pointer_type(true));
+            const node n1(0, node::max_id, n2.uid(),                  node::pointer_type(false));
+
+            node_writer w(a);
+            w << n2 << n1;
           }
 
-          AssertThat(is_isomorphic(exec_policy(), bdd_4, bdd_4_b, false, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), bdd_4, bdd_4_b, true, true), Is().False());
+          shared_levelized_file<node> b;
+          /*
+          //          1     ---- x1
+          //         / \
+          //         F 2    ---- x0
+          //          / \
+          //          F T
+          */
+          {
+            const node n2(1, node::max_id, node::pointer_type(true), node::pointer_type(false));
+            const node n1(0, node::max_id, node::pointer_type(true), n2.uid());
+
+            node_writer w(b);
+            w << n2 << n1;
+          }
+
+          AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, false)), Is().False());
         });
 
-        it("rejects on mismatch of total number of terminals", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), bdd_4, bdd_5, false, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), bdd_4, bdd_5, true, true), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), bdd_4, bdd_5, false, true), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), bdd_4, bdd_5, true, false), Is().False());
+        it("rejects on root's low child mismatches [terminal value]", [&]() {
+          shared_levelized_file<node> a;
+          /*
+          //            1       ---- x0
+          //           / \
+          //           T 2      ---- x1
+          //            / \
+          //            3 F     ---- x2
+          //           / \
+          //           F T
+          */
+          {
+            const node n3(2, node::max_id, node::pointer_type(false), node::pointer_type(true));
+            const node n2(1, node::max_id, n3.uid(),                  node::pointer_type(false));
+            const node n1(0, node::max_id, node::pointer_type(true),  n2.uid());
+
+            node_writer w(a);
+            w << n3 << n2 << n1;
+          }
+
+          const auto b = shared_levelized_file<node>::copy(a);
+
+          AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, false)), Is().False());
         });
 
-        it("rejects on mismatch of number of one type of terminal", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), bdd_5, bdd_6, false, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), bdd_5, bdd_6, true, true), Is().False());
-        });
-      });
+        it("rejects on root's high child mismatches [terminal value]", [&]() {
+          shared_levelized_file<node> a;
+          /*
+          //            1       ---- x0
+          //           / \
+          //           2 T      ---- x1
+          //          / \
+          //          3 F       ---- x2
+          //         / \
+          //         F T
+          */
+          {
+            const node n3(2, node::max_id, node::pointer_type(false), node::pointer_type(true));
+            const node n2(1, node::max_id, n3.uid(),                  node::pointer_type(false));
+            const node n1(0, node::max_id, n2.uid(),                  node::pointer_type(true));
 
-      describe("Slow O(sort(N)) check", [&]() {
-        //////////////////////
-        // Sink-only cases
-        it("rejects two F terminals, where one is negated", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), F_a, F_b, true, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), F_a, F_b, false, true), Is().False());
-        });
+            node_writer w(a);
+            w << n3 << n2 << n1;
+          }
 
-        it("accepts an F with a T terminal, where one is negated", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), T_a, F_a, true, false), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), T_a, F_a, false, true), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), F_b, T_a, true, false), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), F_b, T_a, false, true), Is().True());
-        });
+          const auto b = shared_levelized_file<node>::copy(a);
 
-        //////////////////////
-        // One-node cases
-        it("rejects two x42, where one is negated", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), x42_a, x42_b, false, true), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), x42_a, x42_b, true, false), Is().False());
-        });
-
-        it("accepts x42 with negated ~x42", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), x42_a, not_x42, false, true), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), x42_a, not_x42, true, false), Is().True());
-        });
-
-        //////////////////////
-        // Traversal cases
-        it("accepts with negation of negated [1]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), bdd_1, bdd_1n, false, true), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), bdd_1, bdd_1n, true, false), Is().True());
-        });
-
-        it("accepts with negation of negated [2]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), bdd_2, bdd_2n, false, true), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), bdd_2, bdd_2n, true, false), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, false)), Is().False());
         });
 
         it("accepts with nodes swapped [1]", [&]() {
-          // bdd_1 with nodes (2) and (3) swapped (and hence non-canonical)
-          shared_levelized_file<node> bdd_1b;
+          /*
+          // dd_1 with nodes (2) and (3) swapped (and hence non-canonical)
+          //
+          //       1     ---- x0
+          //      _X_
+          //     2   3    ---- x1
+          //    / \ / \
+          //    | F T |   ---- x2
+          //     \   /
+          //      \ /
+          //       4      ---- x3
+          //      / \
+          //      F T
+          */
+          shared_levelized_file<node> dd_1b;
           { // Garbage collect writers to free write-lock
-            node_writer w(bdd_1b);
-            w << node(2, node::max_id,   ptr_uint64(false),    ptr_uint64(true))
-              << node(1, node::max_id,   ptr_uint64(true),     ptr_uint64(2, ptr_uint64::max_id))
-              << node(1, node::max_id-1, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(false))
-              << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id-1));
+            const node n4(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
+            const node n3(1, node::max_id,   node::pointer_type(true),  n4.uid());
+            const node n2(1, node::max_id-1, n4.uid(),                  node::pointer_type(false));
+            const node n1(0, node::max_id,   n3.uid(),                  n2.uid());
+
+            node_writer w(dd_1b);
+            w << n4 << n3 << n2 << n1;
           }
 
-          AssertThat(is_isomorphic(exec_policy(), bdd_1, bdd_1b, false, false), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), bdd_1n, bdd_1b, true, false), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), bdd_1n, bdd_1b, false, true), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), bdd_1, bdd_1b, true, true), Is().True());
+          adiar_assert(dd_1b->canonical == false);
+
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1,  false), dd(dd_1b, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1b, false), dd(dd_1,  false)), Is().True());
+
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1n, true),  dd(dd_1b, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1b, false), dd(dd_1n, true)), Is().True());
+
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1n, false), dd(dd_1b, true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1b, true),  dd(dd_1n, false)),  Is().True());
+
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1,  true),  dd(dd_1b, true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1b, true),  dd(dd_1,  true)),  Is().True());
         });
 
         it("accepts with nodes swapped [2]", [&]() {
-          // bdd_2 with nodes (4) and (5) swapped (and hence non-canonical)
-          shared_levelized_file<node> bdd_2b;
-          { // Garbage collect writers to free write-lock
-            node_writer w(bdd_2b);
-            w << node(2, node::max_id,   ptr_uint64(true),       ptr_uint64(false))
-              << node(2, node::max_id-1, ptr_uint64(false),      ptr_uint64(true))
-              << node(1, node::max_id,   ptr_uint64(false),      ptr_uint64(2, ptr_uint64::max_id-1))
-              << node(1, node::max_id-1, ptr_uint64(2, ptr_uint64::max_id),   ptr_uint64(false))
-              << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id-1));
-          }
-
-          AssertThat(is_isomorphic(exec_policy(), bdd_2, bdd_2b, false, false), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), bdd_2n, bdd_2b, true, false), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), bdd_2n, bdd_2b, false, true), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), bdd_2, bdd_2b, true, true), Is().True());
-        });
-
-        it("rejects on low child mismatch (leaf value) [1]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), bdd_1n, bdd_1_low_leaf, true, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), bdd_1n, bdd_1_low_leaf, false, true), Is().False());
-        });
-
-        it("rejects on low child mismatch (internal node vs. leaf) [2]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), bdd_2n, bdd_2_low_child, true, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), bdd_2n, bdd_2_low_child, false, true), Is().False());
-        });
-
-        it("rejects on low child mismatch (internal node labels) [3]", [&]() {
-          shared_levelized_file<node> bdd_3_b;
-          /* Same as bdd_3 negated but with (2) directly going to (4) on the low */
-          { node_writer w(bdd_3_b);
-            w << node(3, node::max_id, ptr_uint64(true),     ptr_uint64(false))
-              << node(2, node::max_id, ptr_uint64(false),    ptr_uint64(3, ptr_uint64::max_id))
-              << node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))
-              << node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id));
-          }
-
-          AssertThat(is_isomorphic(exec_policy(), bdd_3, bdd_3_b, true, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), bdd_3, bdd_3_b, false, true), Is().False());
-        });
-
-        it("rejects on low child mismatch on root", [&]() {
-          shared_levelized_file<node> bdd_a;
-          { node_writer w(bdd_a);
-            w << node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))
-              << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(false));
-          }
-
-          shared_levelized_file<node> bdd_b;
-          { node_writer w(bdd_b);
-            w << node(1, node::max_id, ptr_uint64(true), ptr_uint64(false))
-              << node(0, node::max_id, ptr_uint64(true), ptr_uint64(1, ptr_uint64::max_id));
-          }
-
-          AssertThat(is_isomorphic(exec_policy(), bdd_a, bdd_b, true, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), bdd_a, bdd_b, false, true), Is().False());
-        });
-
-        it("rejects on high child mismatch (leaf value) [1]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), bdd_1n, bdd_1_high_leaf, false, true), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), bdd_1n, bdd_1_high_leaf, true, false), Is().False());
-        });
-
-        it("rejects on high child mismatch (internal node vs. leaf) [2]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), bdd_2n, bdd_2_high_child, true, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), bdd_2n, bdd_2_high_child, false, true), Is().False());
-        });
-
-        it("rejects on high child mismatch (internal node labels) [4]", [&]() {
-          shared_levelized_file<node> bdd_4_b;
-          /* Same as bdd_4 negated but with (2) directly going to (4) on
-             the high */
-          { node_writer w(bdd_4_b);
-            w << node(3, node::max_id, ptr_uint64(false),    ptr_uint64(true))
-              << node(2, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(false))
-              << node(1, node::max_id, ptr_uint64(true),     ptr_uint64(3, ptr_uint64::max_id))
-              << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id));
-          }
-
-          AssertThat(is_isomorphic(exec_policy(), bdd_4, bdd_4_b, true, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), bdd_4, bdd_4_b, false, true), Is().False());
-        });
-
-        it("rejects on high child mismatch on root", [&]() {
-          shared_levelized_file<node> bdd_a;
-          { node_writer w(bdd_a);
-            w << node(2, node::max_id, ptr_uint64(false),    ptr_uint64(true))
-              << node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(false))
-              << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(true));
-          }
-
-          shared_levelized_file<node> bdd_b;
-          { node_writer w(bdd_b);
-            w << node(2, node::max_id, ptr_uint64(true),     ptr_uint64(false))
-              << node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(false))
-              << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(true));
-          }
-
-          AssertThat(is_isomorphic(exec_policy(), bdd_a, bdd_b, true, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), bdd_a, bdd_b, false, true), Is().False());
-        });
-
-        it("rejects when resolving more requests on a level than nodes in original BDDs", [&]() {
           /*
-                       1          ---- x0
-                      / \
-                      | 2         ---- x1
-                      |/ \
-                      3   4       ---- x2
-                     / \ / \
-                     .  .  .
-
-                     (x3 level omitted from drawing)
-
-                   We can then create another version where the low and high of
-                   (2) has been swapped. This can be seen on level x2 (despite
-                   all the children are to something with x3) since the unique
-                   requests are:
-
-                   [ (3,3), (3,4), (4,3) ]
-
-                   which means that (3) in the first one has been related to
-                   both (3) and (4) in the other one. Hence, they cannot be
-                   isomorphic.
+          // dd_2 with nodes (4) and (5) swapped (and hence non-canonical)
+          //
+          //        _1_          ---- x0
+          //       /   \
+          //      2     3         ---- x1
+          //     / \   / \
+          //     F 4   5 F        ---- x2
+          //      / \ / \
+          //      F T T F
           */
-          shared_levelized_file<node> bdd_5_a;
+          shared_levelized_file<node> dd_2b;
           { // Garbage collect writers to free write-lock
-            node_writer w(bdd_5_a);
-            w << node(3, node::max_id,   ptr_uint64(false), ptr_uint64(true))
-              << node(3, node::max_id-1, ptr_uint64(true), ptr_uint64(false))
-              << node(2, node::max_id,   ptr_uint64(3, ptr_uint64::max_id-1), ptr_uint64(3, ptr_uint64::max_id))
-              << node(2, node::max_id-1, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(3, ptr_uint64::max_id-1))
-              << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(2, ptr_uint64::max_id))
-              << node(0, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id));
+            const node n5(2, node::max_id,   node::pointer_type(true),  node::pointer_type(false));
+            const node n4(2, node::max_id-1, node::pointer_type(false), node::pointer_type(true));
+            const node n3(1, node::max_id,   n5.uid(),                  node::pointer_type(false));
+            const node n2(1, node::max_id-1, node::pointer_type(false), n4.uid());
+            const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+
+            node_writer w(dd_2b);
+            w << n5 << n4 << n3 << n2 << n1;
           }
 
-          shared_levelized_file<node> bdd_5_b;
+          adiar_assert(dd_2b->canonical == false);
+
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2,  false), dd(dd_2b, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2b, false), dd(dd_2,  false)), Is().True());
+
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n, true),  dd(dd_2b, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2b, false), dd(dd_2n, true)), Is().True());
+
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n, false), dd(dd_2b, true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2b, true),  dd(dd_2n, false)),  Is().True());
+
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2,  true),  dd(dd_2b, true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2b, true),  dd(dd_2,  true)),  Is().True());
+        });
+
+        it("rejects when number of requests exceed the input's width", [&]() {
+          /*
+          //             1          ---- x0
+          //            / \
+          //            | 2         ---- x1
+          //            |/ \
+          //            3   4       ---- x2
+          //           / \ / \
+          //           .  .  .
+          //
+          //           (x3 level omitted from drawing)
+          //
+          //         We can then create another version where the low and high
+          //         of (2) has been swapped. This can be seen on level x2
+          //         (despite all the children are to something with x3) since
+          //         the unique requests are:
+          //
+          //         [ (3,3), (3,4), (4,3) ]
+          //
+          //         which means that (3) in the first one has been related to
+          //         both (3) and (4) in the other one. Hence, they cannot be
+          //         isomorphic.
+          */
+          shared_levelized_file<node> a;
           { // Garbage collect writers to free write-lock
-            node_writer w(bdd_5_b);
-            w << node(3, node::max_id,   ptr_uint64(false),      ptr_uint64(true))
-              << node(3, node::max_id-1, ptr_uint64(true),       ptr_uint64(false))
-              << node(2, node::max_id,   ptr_uint64(3, ptr_uint64::max_id-1), ptr_uint64(3, ptr_uint64::max_id))
-              << node(2, node::max_id-1, ptr_uint64(3, ptr_uint64::max_id),   ptr_uint64(3, ptr_uint64::max_id-1))
-              // This one has its children flipped
-              << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id),   ptr_uint64(2, ptr_uint64::max_id-1))
-              << node(0, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id));
+            const node n6(3, node::max_id,   node::pointer_type(false), node::pointer_type(true));
+            const node n5(3, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
+            const node n4(2, node::max_id,   n5.uid(),                  n6.uid());
+            const node n3(2, node::max_id-1, n6.uid(),                  n5.uid());
+            const node n2(1, node::max_id,   n3.uid(),                  n4.uid());
+            const node n1(0, node::max_id,   n3.uid(),                  n2.uid());
+
+            node_writer w(a);
+            w << n6 << n5 << n4 << n3 << n2 << n1;
           }
 
-          AssertThat(is_isomorphic(exec_policy(), bdd_5_a, bdd_5_b, true, false), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), bdd_5_b, bdd_5_a, false, true), Is().False());
+          shared_levelized_file<node> b;
+          /*
+          //         1         ---- x0
+          //        / \
+          //        | 2        ---- x1
+          //        \ X
+          //         3 4       ---- x2
+          //         . .
+          */
+          { // Garbage collect writers to free write-lock
+            const node n6(3, node::max_id,   node::pointer_type(false), node::pointer_type(true));
+            const node n5(3, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
+            const node n4(2, node::max_id,   n5.uid(),                  n6.uid());
+            const node n3(2, node::max_id-1, n6.uid(),                  n5.uid());
+            const node n2(1, node::max_id,   n4.uid(),                  n3.uid());
+            const node n1(0, node::max_id,   n3.uid(),                  n2.uid());
+
+            node_writer w(b);
+            w << n6 << n5 << n4 << n3 << n2 << n1;
+          }
+
+          AssertThat(is_isomorphic(exec_policy(), dd(b, false), dd(a, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, false)), Is().False());
         });
       });
     });
