@@ -218,7 +218,38 @@ go_bandit([]() {
         w << n4 << n3 << n2 << n1;
       }
 
+      shared_levelized_file<dd::node_type> x21_x22_x42_chain;
+      /*
+      // This matches 'x21_xor_x42' above in the number of nodes and the number
+      // of edges to each terminal.
+      //
+      // Hence, it only mismatches on width and the number of levels.
+      //
+      //          1      ---- x21
+      //         / \
+      //         F 2     ---- x22
+      //          / \
+      //          T 3    ---- x42
+      //           / \
+      //           F T
+      */
+      {
+        const node n3(42, node::max_id, node::pointer_type(false), node::pointer_type(true));
+        const node n2(22, node::max_id, node::pointer_type(true),  n3.uid());
+        const node n1(21, node::max_id, node::pointer_type(false), n2.uid());
+
+        node_writer w(x21_x22_x42_chain);
+        w << n3 << n2 << n1;
+      }
+
       describe("Case: Width", [&]() {
+        it("rejects x21 ^ x42 (#levels = 2) vs. (x21 & ~x22) | (x21 & x42) (#levels = 3)", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_x22_x42_chain, false), dd(x21_xor_x42,       false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_x22_x42_chain, false), dd(x21_xor_x42,       true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_xor_x42,       true),  dd(x21_x22_x42_chain, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_xor_x42,       true),  dd(x21_x22_x42_chain, true)),  Is().False());
+        });
+
         it("rejects due to different width", []() {
           // Create two BDDs with 7 nodes each on variables x0, x1, x2,
           // and x3 (i.e. the same number of nodes and levels). One with 3
@@ -295,6 +326,20 @@ go_bandit([]() {
           AssertThat(is_isomorphic(exec_policy(), dd(F_copy, true),  dd(F,      false)), Is().False());
         });
 
+        it("rejects F ([1,0]) vs. x42 ([1,1])", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(F,  false),  dd(x42, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(F,  false),  dd(x42, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, true),  dd(F, false)),   Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, true),  dd(F, true)),    Is().False());
+        });
+
+        it("rejects T ([0,1]) vs. x21 & x42 ([2,1])", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(T,           false), dd(x21_and_x42, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(T,           false), dd(x21_and_x42, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true),  dd(T,           false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true),  dd(T,           true)),  Is().False());
+        });
+
         it("rejects x21 & x42 (̈́[1,2]) vs. ~x21 | (x21 & x42) ([2,1])", [&]() {
           shared_levelized_file<dd::node_type> a = x21_and_x42;
 
@@ -345,6 +390,13 @@ go_bandit([]() {
           AssertThat(is_isomorphic(exec_policy(), dd(b, false), dd(a, true)),  Is().False());
         });
 
+        it("rejects x21 ([1,1]) vs. x21 & x42 ([2,1])", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(x21,         false), dd(x21_and_x42, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21,         false), dd(x21_and_x42, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true),  dd(x21,         false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true),  dd(x21,         true)),  Is().False());
+        });
+
         it("rejects [4] ([2,2]) vs. ~[5] ([3,2]) due to one extra F terminal", [&]() {
           AssertThat(is_isomorphic(exec_policy(), dd(dd_4, false), dd(dd_5, true)),  Is().False());
           AssertThat(is_isomorphic(exec_policy(), dd(dd_4, false), dd(dd_5, true)),  Is().False());
@@ -361,56 +413,60 @@ go_bandit([]() {
         });
       });
 
-      shared_levelized_file<dd::node_type> x21_x22_x42_chain;
+      shared_levelized_file<node> dd_8;
       /*
-      // This matches 'x21_xor_x42' above in the number of nodes and the number
-      // of edges to each terminal. Hence, it only mismatches on the number of
-      // levels.
-      //
-      //          1      ---- x21
-      //         / \
-      //         F 2     ---- x22
+      //           __1__     ---- x0
+      //          /     \
+      //          2     3    ---- x1
+      //         / \   / \
+      //         F |   4 T   ---- x2
+      //           |  / \
+      //           5  T F    ---- x3
       //          / \
-      //          T 3    ---- x42
-      //           / \
-      //           F T
+      //          F T
       */
       {
-        const node n3(42, node::max_id, node::pointer_type(false), node::pointer_type(true));
-        const node n2(22, node::max_id, node::pointer_type(true),  n3.uid());
-        const node n1(21, node::max_id, node::pointer_type(false), n2.uid());
+        const node n5(3, node::max_id,   node::pointer_type(false), node::pointer_type(true));
+        const node n4(2, node::max_id,   node::pointer_type(true),  node::pointer_type(false));
+        const node n3(1, node::max_id,   n4.uid(),                  node::pointer_type(true));
+        const node n2(1, node::max_id-1, node::pointer_type(false), n5.uid());
+        const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
 
-        node_writer w(x21_x22_x42_chain);
-        w << n3 << n2 << n1;
+        node_writer w(dd_8);
+        w << n5 << n4 << n3 << n2 << n1;
+      }
+
+      shared_levelized_file<node> dd_9;
+      /*
+      // Similar to dd_8, but (5) is moved up to the same level as (4) which
+      // does not change the width, the number of nodes, nor the number of
+      // terminal arcs.
+      //
+      //           __1__      ---- x0
+      //          /     \
+      //          2     3     ---- x1
+      //         / \   / \
+      //         F 4   5 T    ---- x2
+      //          / \ / \
+      //          T F F T
+      */
+      {
+        const node n5(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
+        const node n4(2, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
+        const node n3(1, node::max_id,   n4.uid(),                  node::pointer_type(true));
+        const node n2(1, node::max_id-1, node::pointer_type(false), n5.uid());
+        const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+
+        node_writer w(dd_9);
+        w << n5 << n4 << n3 << n2 << n1;
       }
 
       describe("Case: #Levels", [&]() {
-        it("rejects F (#levels = 0) vs. x42 (#levels = 1)", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(F,  false),  dd(x42, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(F,  false),  dd(x42, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x42, true),  dd(F, false)),   Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x42, true),  dd(F, true)),    Is().False());
-        });
-
-        it("rejects T (#levels = 0) vs. x21 & x42 (#levels = 2)", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(T,           false), dd(x21_and_x42, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(T,           false), dd(x21_and_x42, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true),  dd(T,           false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true),  dd(T,           true)),  Is().False());
-        });
-
-        it("rejects x21 (#levels = 1) vs. x21 & x42 (#levels = 2)", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(x21,         false), dd(x21_and_x42, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21,         false), dd(x21_and_x42, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true),  dd(x21,         false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true),  dd(x21,         true)),  Is().False());
-        });
-
-        it("rejects x21 ^ x42 (#levels = 2) vs. (x21 & ~x22) | (x21 & x42) (#levels = 3)", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_x22_x42_chain, false), dd(x21_xor_x42,       false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_x22_x42_chain, false), dd(x21_xor_x42,       true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_xor_x42,       true),  dd(x21_x22_x42_chain, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_xor_x42,       true),  dd(x21_x22_x42_chain, true)),  Is().False());
+        it("rejects [8] vs. [9] on the number of levels", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_8, false), dd(dd_9, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_8, false), dd(dd_9, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_9, true),  dd(dd_8, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_9, true),  dd(dd_8, true)),  Is().False());
         });
       });
 
