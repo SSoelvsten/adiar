@@ -241,15 +241,6 @@ namespace adiar::internal
     }
 
     // Are they trivially not the same, since they have different number of
-    // levels?
-    if (f0->levels() != f1->levels()) {
-#ifdef ADIAR_STATS
-      stats_equality.exit_on_varcount += 1u;
-#endif
-      return false;
-    }
-
-    // Are they trivially not the same, since they have different number of
     // terminal arcs?
     if(f0->number_of_terminals[negate0] != f1->number_of_terminals[negate1] ||
        f0->number_of_terminals[!negate0] != f1->number_of_terminals[!negate1]) {
@@ -258,6 +249,17 @@ namespace adiar::internal
 #endif
       return false;
     }
+
+    // Are they trivially not the same, since they have different number of
+    // levels?
+    if (f0->levels() != f1->levels()) {
+#ifdef ADIAR_STATS
+      stats_equality.exit_on_varcount += 1u;
+#endif
+      return false;
+    }
+
+    // TODO: Check on width
 
     // Are they trivially not the same, since the labels or the size of each
     // level does not match?
