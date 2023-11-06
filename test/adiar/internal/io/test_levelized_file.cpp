@@ -1498,10 +1498,17 @@ go_bandit([]() {
     describe("levelized_file::copy(const levelized_file&)", [&tmp_path]() {
       it("can copy over non-existing file", []() {
         levelized_file<int> lf1;
+
+        // Set stats content
+        lf1.meta_value = 42;
+
         const std::array<std::string, 2u + 1u> paths1 = lf1.paths();
 
         levelized_file<int> lf2 = levelized_file<int>::copy(lf1);
         const std::array<std::string, 2u + 1u> paths2 = lf2.paths();
+
+        // Check stats content
+        AssertThat(lf2.meta_value, Is().EqualTo(42));
 
         // Check paths are unique
         AssertThat(paths1[0], Is().Not().EqualTo(paths2[0]));
@@ -1528,14 +1535,22 @@ go_bandit([]() {
 
       it("can copy an existing file [empty]", []() {
         levelized_file<int> lf1;
+
+        // Set stats content and state
+        lf1.meta_value = 7;
         lf1.touch();
 
+        // Check file state
         AssertThat(lf1.exists(), Is().True());
         AssertThat(lf1.empty(), Is().True());
         AssertThat(lf1.size(), Is().EqualTo(0u));
 
         levelized_file<int> lf2 = levelized_file<int>::copy(lf1);
 
+        // Check stats content
+        AssertThat(lf2.meta_value, Is().EqualTo(7));
+
+        // Check file state
         AssertThat(lf2.exists(), Is().True());
         AssertThat(lf2.empty(), Is().True());
         AssertThat(lf2.size(), Is().EqualTo(0u));
@@ -1559,6 +1574,7 @@ go_bandit([]() {
 
       it("can copy an existing file [non-empty]", []() {
         levelized_file<int> lf1;
+        // Set file and stats content
         {
           levelized_file_writer<int> lfw(lf1);
 
@@ -1569,6 +1585,9 @@ go_bandit([]() {
           lfw.push(level_info{ 1,2 });
         }
 
+        lf1.meta_value = 4; // <- very random number
+
+        // Check state
         AssertThat(lf1.exists(), Is().True());
         AssertThat(lf1.empty(), Is().False());
         AssertThat(lf1.size(), Is().EqualTo(3u));
@@ -1578,6 +1597,10 @@ go_bandit([]() {
 
         levelized_file<int> lf2 = levelized_file<int>::copy(lf1);
 
+        // Check stats content
+        AssertThat(lf2.meta_value, Is().EqualTo(4));
+
+        // Check state
         AssertThat(lf2.exists(), Is().True());
         AssertThat(lf2.empty(), Is().False());
         AssertThat(lf2.size(), Is().EqualTo(3u));
@@ -1585,6 +1608,7 @@ go_bandit([]() {
         AssertThat(lf2.size(1), Is().EqualTo(1u));
         AssertThat(lf2.levels(), Is().EqualTo(2u));
 
+        // Check file content
         {
           levelized_file_stream<int> lfs(lf2);
 
@@ -1623,7 +1647,7 @@ go_bandit([]() {
         AssertThat(paths1[2], Is().Not().EqualTo(paths2[2]));
       });
 
-      it("can copy an existing persstent file", [&tmp_path]() {
+      it("can copy an existing persistent file", [&tmp_path]() {
         const std::string path_prefix = tmp_path + "sort-prefix.adiar";
 
         // Clean up after prior tests
@@ -1635,6 +1659,8 @@ go_bandit([]() {
           std::filesystem::remove(path_prefix+".levels");
 
         levelized_file<int> lf1;
+
+        // Set stats content and state
         {
           levelized_file_writer<int> lfw(lf1);
 
@@ -1644,8 +1670,10 @@ go_bandit([]() {
           lfw.push(level_info{ 0,1 });
           lfw.push(level_info{ 1,2 });
         }
+        lf1.meta_value = 21;
         lf1.make_persistent(path_prefix);
 
+        // Check state
         AssertThat(lf1.is_persistent(), Is().True());
         AssertThat(lf1.is_temp(), Is().False());
 
@@ -1659,6 +1687,10 @@ go_bandit([]() {
 
         levelized_file<int> lf2 = levelized_file<int>::copy(lf1);
 
+        // Check stats content
+        AssertThat(lf2.meta_value, Is().EqualTo(21));
+
+        // Check state
         AssertThat(lf2.is_persistent(), Is().False());
         AssertThat(lf2.is_temp(), Is().True());
 

@@ -121,9 +121,17 @@ namespace adiar::internal
     template <bool tparam__REVERSE>
     friend class level_info_stream;
 
+  private:
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief Copy of file statistics but without its content.
+    ///////////////////////////////////////////////////////////////////////////
+    levelized_file(const typename file_traits<T>::stats& o)
+      : file_traits<T>::stats(o)
+    { }
+
   public:
     ///////////////////////////////////////////////////////////////////////////
-    /// \brief Constructor for a new unammed \em temporary file.
+    /// \brief Constructor for a new unamed \em temporary file.
     ///////////////////////////////////////////////////////////////////////////
     levelized_file()
     { }
@@ -443,7 +451,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     static levelized_file<value_type, false> copy(const levelized_file<value_type> &lf)
     {
-      levelized_file<value_type, false> lf_copy;
+      const typename file_traits<T>::stats s(lf);
+      levelized_file<value_type, false> lf_copy(s);
 
       for (size_t idx = 0; idx < FILES; idx++)
         lf_copy._files[idx] = file<value_type>::copy(lf._files[idx]);
@@ -459,7 +468,7 @@ namespace adiar::internal
   /// \param elem_type       Type of the file's content.
   ////////////////////////////////////////////////////////////////////////////
   // template <typename elem_type>
-  // class levelized_file<elem_type, /*SplitOnLevels=*/true> 
+  // class levelized_file<elem_type, /*SplitOnLevels=*/true>
   //   : public file_traits<elem_type>::stats
   // {
   //   TODO
