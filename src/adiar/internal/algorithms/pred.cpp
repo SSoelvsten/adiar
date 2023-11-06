@@ -240,6 +240,14 @@ namespace adiar::internal
       return false;
     }
 
+    // Are they trivially not the same, since their width is different?
+    if (f0->width != f1->width) {
+#ifdef ADIAR_STATS
+      stats_equality.exit_on_width += 1u;
+#endif
+      return false;
+    }
+
     // Are they trivially not the same, since they have different number of
     // terminal arcs?
     if(f0->number_of_terminals[negate0] != f1->number_of_terminals[negate1] ||
@@ -259,8 +267,6 @@ namespace adiar::internal
       return false;
     }
 
-    // TODO: Check on width
-
     // Are they trivially not the same, since the labels or the size of each
     // level does not match?
     { // Create new scope to garbage collect the two meta_streams early
@@ -279,6 +285,8 @@ namespace adiar::internal
     }
 
     // TODO: Use 'fast_isomorphism_check' when there is only one node per level.
+    // In this case, we can just ignore the id (and only focus on the label and
+    // terminal values).
 
     // Compare their content to discern whether there exists an isomorphism
     // between them.

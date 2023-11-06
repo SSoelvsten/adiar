@@ -218,6 +218,70 @@ go_bandit([]() {
         w << n4 << n3 << n2 << n1;
       }
 
+      describe("Case: Width", [&]() {
+        it("rejects due to different width", []() {
+          // Create two BDDs with 7 nodes each on variables x0, x1, x2,
+          // and x3 (i.e. the same number of nodes and levels). One with 3
+          // nodes for x2 and one node for x3 and one with 2 nodes for x2 and x3.
+          shared_levelized_file<dd::node_type> in_a;
+          /*
+          //                _1_        ---- x0
+          //               /   \
+          //             _2_   _3_     ---- x1
+          //            /   \ /   \
+          //            4    5    6    ---- x2
+          //           / \  / \  / \
+          //           F  \ T |  F T
+          //               \ /
+          //                7          ---- x3
+          //               / \
+          //               F T
+          */
+          { // Garbage collect writers to free write-lock
+            const node n7(3, node::max_id,   node::pointer_type(false), node::pointer_type(true));
+            const node n6(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
+            const node n5(2, node::max_id-1, node::pointer_type(true),  n7.uid());
+            const node n4(2, node::max_id-2, node::pointer_type(false), n7.uid());
+            const node n3(1, node::max_id,   n5.uid(),                  n6.uid());
+            const node n2(1, node::max_id-1, n4.uid(),                  n5.uid());
+            const node n1(0, node::max_id,   n2.uid(),                  n2.uid());
+
+            node_writer w(in_a);
+            w << n7 << n6 << n5 << n4 << n3 << n2 << n1;
+          }
+
+          shared_levelized_file<dd::node_type> in_b;
+          /*
+          //              1         ---- x0
+          //             / \
+          //             2 3        ---- x1
+          //             |X|
+          //            _4 5_       ---- x2
+          //           / | | \
+          //           F 6 7 T      ---- x3
+          //            /| |\
+          //            TF FT
+          */
+          { // Garbage collect writers to free write-lock
+            const node n7(3, node::max_id,   node::pointer_type(false), node::pointer_type(true));
+            const node n6(3, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
+            const node n5(2, node::max_id,   n7.uid(),                  node::pointer_type(true));
+            const node n4(2, node::max_id-1, node::pointer_type(false), n6.uid());
+            const node n3(1, node::max_id,   n4.uid(),                  n5.uid());
+            const node n2(1, node::max_id-1, n5.uid(),                  n4.uid());
+            const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+
+            node_writer w(in_b);
+            w << n7 << n6 << n5 << n4 << n3 << n2 << n1;
+          }
+
+          AssertThat(is_isomorphic(exec_policy(), dd(in_a, false), dd(in_b, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(in_a, false), dd(in_b, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(in_b, true),  dd(in_a, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(in_b, true),  dd(in_a, true)),  Is().False());
+        });
+      });
+
       describe("Case: #Terminal Arcs", [&]() {
         it("rejects F (̈́[1,0]) vs. T ([0,1])", [&]() {
           AssertThat(is_isomorphic(exec_policy(), dd(F, false), dd(T, false)), Is().False());
@@ -350,10 +414,6 @@ go_bandit([]() {
         });
       });
 
-      // -----------------------------------------------------------------------
-      // TODO: width case (when implemented)
-      // -----------------------------------------------------------------------
-
       shared_levelized_file<dd::node_type> x21_and_x22;
       /*
       //          1      ---- x21
@@ -383,68 +443,6 @@ go_bandit([]() {
           AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, false), dd(x21_and_x22, true)),  Is().False());
           AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x22, true),  dd(x21_and_x42, false)), Is().False());
           AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x22, true),  dd(x21_and_x42, true)),  Is().False());
-        });
-
-        it("rejects due to different max-width", []() {
-          // Create two BDDs with 7 nodes each on variables x0, x1, x2,
-          // and x3 (i.e. the same number of nodes and levels). One with 3
-          // nodes for x2 and one node for x3 and one with 2 nodes for x2 and x3.
-          shared_levelized_file<dd::node_type> in_a;
-          /*
-          //                _1_        ---- x0
-          //               /   \
-          //             _2_   _3_     ---- x1
-          //            /   \ /   \
-          //            4    5    6    ---- x2
-          //           / \  / \  / \
-          //           F  \ T |  F T
-          //               \ /
-          //                7          ---- x3
-          //               / \
-          //               F T
-          */
-          { // Garbage collect writers to free write-lock
-            const node n7(3, node::max_id,   node::pointer_type(false), node::pointer_type(true));
-            const node n6(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
-            const node n5(2, node::max_id-1, node::pointer_type(true),  n7.uid());
-            const node n4(2, node::max_id-2, node::pointer_type(false), n7.uid());
-            const node n3(1, node::max_id,   n5.uid(),                  n6.uid());
-            const node n2(1, node::max_id-1, n4.uid(),                  n5.uid());
-            const node n1(0, node::max_id,   n2.uid(),                  n2.uid());
-
-            node_writer w(in_a);
-            w << n7 << n6 << n5 << n4 << n3 << n2 << n1;
-          }
-
-          shared_levelized_file<dd::node_type> in_b;
-          /*
-          //              1         ---- x0
-          //             / \
-          //             2 3        ---- x1
-          //             |X|
-          //            _4 5_       ---- x2
-          //           / | | \
-          //           F 6 7 T      ---- x3
-          //            /| |\
-          //            TF FT
-          */
-          { // Garbage collect writers to free write-lock
-            const node n7(3, node::max_id,   node::pointer_type(false), node::pointer_type(true));
-            const node n6(3, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
-            const node n5(2, node::max_id,   n7.uid(),                  node::pointer_type(true));
-            const node n4(2, node::max_id-1, node::pointer_type(false), n6.uid());
-            const node n3(1, node::max_id,   n4.uid(),                  n5.uid());
-            const node n2(1, node::max_id-1, n5.uid(),                  n4.uid());
-            const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
-
-            node_writer w(in_b);
-            w << n7 << n6 << n5 << n4 << n3 << n2 << n1;
-          }
-
-          AssertThat(is_isomorphic(exec_policy(), dd(in_a, false), dd(in_b, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(in_a, false), dd(in_b, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(in_b, true),  dd(in_a, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(in_b, true),  dd(in_a, true)),  Is().False());
         });
 
         it("rejects due to levels have mismatching width", []() {
