@@ -294,6 +294,7 @@ namespace adiar
     const uintwide total_runs = internal::stats_equality.exit_on_same_file
                                 + internal::stats_equality.exit_on_nodecount
                                 + internal::stats_equality.exit_on_varcount
+                                + internal::stats_equality.exit_on_width
                                 + internal::stats_equality.exit_on_terminalcount
                                 + internal::stats_equality.exit_on_levels_mismatch
                                 + internal::stats_equality.slow_check.runs
@@ -319,6 +320,8 @@ namespace adiar
       << internal::stats_equality.exit_on_nodecount << endl;
     o << indent << label << "var count mismatch"
       << internal::stats_equality.exit_on_varcount << endl;
+    o << indent << label << "width mismatch"
+      << internal::stats_equality.exit_on_width << endl;
     o << indent << label << "terminal count mismatch"
       << internal::stats_equality.exit_on_terminalcount << endl;
     indent_level--;
