@@ -42,6 +42,7 @@ var group__module____statistics =
         [ "exit_on_same_file", "structadiar_1_1statistics_1_1equality__t.html#abe195d0a5e34af3d03c6937f0b1f7084", null ],
         [ "exit_on_terminalcount", "structadiar_1_1statistics_1_1equality__t.html#acfad6b0365652afc6c232497f94e28c9", null ],
         [ "exit_on_varcount", "structadiar_1_1statistics_1_1equality__t.html#a2fb0af2f48be760a798196ded72171fc", null ],
+        [ "exit_on_width", "structadiar_1_1statistics_1_1equality__t.html#a603f0b976f8b963c9558dccfda7e5663", null ],
         [ "fast_check", "structadiar_1_1statistics_1_1equality__t.html#a6875d1f6447096850add31577688ffbf", null ],
         [ "lpq", "structadiar_1_1statistics_1_1equality__t.html#ab769667ff5ecea10ecd9e2589b7e72bf", null ],
         [ "slow_check", "structadiar_1_1statistics_1_1equality__t.html#a889424f58afa95ef6f985763fcd1674e", null ]
