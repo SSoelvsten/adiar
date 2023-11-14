@@ -21,6 +21,24 @@
 namespace adiar::internal
 {
   //////////////////////////////////////////////////////////////////////////////
+  //  Intercut Algorithm
+  // ====================
+  //
+  // Given a Decision Diagram, a subset of the levels are have their arcs "cut"
+  // in two with a new diagram node inserted (of any desired shape).
+  // Furthermore, existing nodes on said level are changed as desired. Nodes on
+  // *offset* levels are changed differently.
+  //
+  //          ( )     ---- xi                ( )        ---- xi
+  //         /   \                          /   \
+  //        ( )  |    ---- xj     =>       ( )  (?)
+  //        / \  |                         / \  ||
+  //        a b  c                         b a  c
+  //
+  // Examples of uses are `zdd_extend`.
+  //////////////////////////////////////////////////////////////////////////////
+
+  //////////////////////////////////////////////////////////////////////////////
   /// Struct to hold statistics
   extern statistics::intercut_t stats_intercut;
 

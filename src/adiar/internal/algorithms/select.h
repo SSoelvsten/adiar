@@ -22,6 +22,28 @@
 namespace adiar::internal
 {
   //////////////////////////////////////////////////////////////////////////////
+  //  Select Algorithm
+  // ==================
+  //
+  // Given a Decision Diagram, a subset of the levels are removed and bridged
+  // over in either the 'high' or the 'low' direction.
+  //
+  //          _( )_     ---- xi                _( )_        ---- xi
+  //         /     \                          /     \
+  //        ( )   ( )   ---- xj     =>        \      \
+  //        / \   / \                          \      \
+  //        a b   c d                          b      d
+  //
+  // Examples of uses are `bdd_restrict` and `zdd_onset` / `zdd_offset`
+  //
+  // As such, this is merely a niche-case of the Intercut algorithm, where the
+  // *onset* levels are removed and bridged over in a uniform direction (and the
+  // edges crossing said level only have suppressed nodes added). Yet compared
+  // to the Intercut algorithm, this implementation is optimised both in terms
+  // of time and space.
+  //////////////////////////////////////////////////////////////////////////////
+
+  //////////////////////////////////////////////////////////////////////////////
   /// Struct to hold statistics
   extern statistics::select_t stats_select;
 
