@@ -26,6 +26,20 @@
 namespace adiar::internal
 {
   //////////////////////////////////////////////////////////////////////////////
+  //  2-ary Product Construction
+  // ============================
+  //
+  // Given two Decision Diagrams construct the product of both.
+  /*
+  //          (a)          (b)               _(a,b)_
+  //         /   \    X   /   \     =>      /       \
+  //        a0   a1      b1   b2        (a0,b0)   (a1,b1)
+  */
+  // Examples of uses are `bdd_apply` and `zdd_binop`.
+  //////////////////////////////////////////////////////////////////////////////
+
+
+  //////////////////////////////////////////////////////////////////////////////
   /// Struct to hold statistics
   extern statistics::prod2_t stats_prod2;
 
