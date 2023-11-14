@@ -167,10 +167,10 @@
 <!-- Node10 -->
 <g id="node11" class="node">
 <title>Node10</title>
-<g id="a_node11"><a xlink:href="structadiar_1_1statistics_1_1substitute__t.html" target="_top" xlink:title="Substitution algorithm statistics.">
+<g id="a_node11"><a xlink:href="structadiar_1_1statistics_1_1select__t.html" target="_top" xlink:title="Select algorithm statistics.">
 <polygon fill="none" stroke="black" points="155.5,-0.5 155.5,-30.5 253.5,-30.5 253.5,-0.5 155.5,-0.5"/>
 <text text-anchor="start" x="163.5" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">adiar::statistics::</text>
-<text text-anchor="middle" x="204.5" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">substitute_t</text>
+<text text-anchor="middle" x="204.5" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">select_t</text>
 </a>
 </g>
 </g>

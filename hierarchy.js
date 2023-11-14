@@ -10,7 +10,7 @@ var hierarchy =
       [ "adiar::statistics::prod3_t", "structadiar_1_1statistics_1_1prod3__t.html", null ],
       [ "adiar::statistics::quantify_t", "structadiar_1_1statistics_1_1quantify__t.html", null ],
       [ "adiar::statistics::reduce_t", "structadiar_1_1statistics_1_1reduce__t.html", null ],
-      [ "adiar::statistics::substitute_t", "structadiar_1_1statistics_1_1substitute__t.html", null ]
+      [ "adiar::statistics::select_t", "structadiar_1_1statistics_1_1select__t.html", null ]
     ] ],
     [ "adiar::internal::__dd", "classadiar_1_1internal_1_1____dd.html", [
       [ "adiar::__bdd", "classadiar_1_1____bdd.html", null ],

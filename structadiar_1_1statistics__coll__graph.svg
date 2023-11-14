@@ -53,10 +53,10 @@
 <!-- Node6 -->
 <g id="node6" class="node">
 <title>Node6</title>
-<g id="a_node6"><a xlink:href="structadiar_1_1statistics_1_1substitute__t.html" target="_top" xlink:title="Substitution algorithm statistics.">
+<g id="a_node6"><a xlink:href="structadiar_1_1statistics_1_1select__t.html" target="_top" xlink:title="Select algorithm statistics.">
 <polygon fill="none" stroke="black" points="993,-431.5 993,-461.5 1091,-461.5 1091,-431.5 993,-431.5"/>
 <text text-anchor="start" x="1001" y="-449.5" font-family="Helvetica,sans-Serif" font-size="10.00">adiar::statistics::</text>
-<text text-anchor="middle" x="1042" y="-438.5" font-family="Helvetica,sans-Serif" font-size="10.00">substitute_t</text>
+<text text-anchor="middle" x="1042" y="-438.5" font-family="Helvetica,sans-Serif" font-size="10.00">select_t</text>
 </a>
 </g>
 </g>
@@ -242,7 +242,7 @@
 <title>Node6&#45;&gt;Node1</title>
 <path fill="none" stroke="#9a32cd" stroke-dasharray="5,2" d="M1058.45,-422.71C1070.36,-406.24 1088.27,-385.09 1109,-372.5 1193.67,-321.07 1231.84,-351.18 1325,-317.5 1340.72,-311.82 1357.8,-303.54 1370.2,-297.12"/>
 <polygon fill="#9a32cd" stroke="#9a32cd" points="1055.32,-421.09 1052.48,-431.3 1061.06,-425.09 1055.32,-421.09"/>
-<text text-anchor="middle" x="1164" y="-375.5" font-family="Helvetica,sans-Serif" font-size="10.00"> substitute</text>
+<text text-anchor="middle" x="1164" y="-375.5" font-family="Helvetica,sans-Serif" font-size="10.00"> select</text>
 </g>
 <!-- Node7 -->
 <g id="node7" class="node">
