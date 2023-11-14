@@ -269,7 +269,7 @@ namespace adiar::internal
     pq_1_t prod_pq({in_0, in_1}, pq_memory, max_pq_size, stats_prod2.lpq);
     prod_pq.push({ { in_nodes_0.root(), v1.uid() }, {}, { ptr_uint64::nil() } });
 
-    size_t max_1level_cut = 0;
+    out_arcs->max_1level_cut = prod_pq.size();
 
     while (!prod_pq.empty()){
       adiar_assert(prod_pq.empty_level(), "pq has finished processing last layers");
@@ -344,21 +344,19 @@ namespace adiar::internal
         }
       }
 
+      // Update meta information
       if (prod_policy::no_skip || out_id > 0) {
-        // Only output level_info information of level, if output
         aw.push(level_info(out_label, out_id));
       }
 
-      max_1level_cut = std::max(max_1level_cut, prod_pq.size());
+      out_arcs->max_1level_cut = std::max(out_arcs->max_1level_cut, prod_pq.size());
     }
 
     // Ensure the edge case, where the in-going edge from nil to the root pair
     // does not dominate the max_1level_cut
-    max_1level_cut = std::min(aw.size() - out_arcs->number_of_terminals[false]
-                                        - out_arcs->number_of_terminals[true],
-                              max_1level_cut);
-
-    out_arcs->max_1level_cut = max_1level_cut;
+    out_arcs->max_1level_cut = std::min(aw.size() - out_arcs->number_of_terminals[false]
+                                                  - out_arcs->number_of_terminals[true],
+                                        out_arcs->max_1level_cut);
 
     return typename prod_policy::__dd_type(out_arcs, ep);
   }
@@ -376,6 +374,8 @@ namespace adiar::internal
     shared_levelized_file<arc> out_arcs;
     arc_writer aw(out_arcs);
 
+    out_arcs->max_1level_cut = 0;
+
     // Set up input
     node_stream<> in_nodes_0(in_0);
     node_stream<> in_nodes_1(in_1);
@@ -391,126 +391,118 @@ namespace adiar::internal
     pq_2_t prod_pq_2(pq_2_memory, max_pq_2_size);
 
     // Process requests in topological order of both BDDs
-    typename prod_policy::label_type out_label = first(v0.uid(), v1.uid()).label();
-    typename prod_policy::id_type out_id = 0;
+    while (!prod_pq_1.empty()) {
+      // Set up next level
+      prod_pq_1.setup_next_level();
 
-    size_t max_1level_cut = 0;
+      const typename prod_policy::label_type out_label = prod_pq_1.current_level();
+      typename prod_policy::id_type out_id = 0;
 
-    while (!prod_pq_1.empty() || !prod_pq_2.empty()) {
-      if (prod_pq_1.empty_level() && prod_pq_2.empty()) {
-        if (prod_policy::no_skip || out_id > 0) {
-          // Only output level_info information on prior level, if output
-          aw.push(level_info(out_label, out_id));
-        }
+      // Update max 1-level cut
+      out_arcs->max_1level_cut = std::max(out_arcs->max_1level_cut, prod_pq_1.size());
 
-        prod_pq_1.setup_next_level();
-        out_label = prod_pq_1.current_level();
-        out_id = 0;
+      // Process all requests for this level
+      while (!prod_pq_1.empty_level() || !prod_pq_2.empty()) {
+        prod2_request<1> req;
 
-        max_1level_cut = std::max(max_1level_cut, prod_pq_1.size());
-      }
-
-      prod2_request<1> req;
-
-      // Merge requests from prod_pq_1 or prod_pq_2
-      if (prod_pq_1.can_pull() && (prod_pq_2.empty() ||
-                                   prod_pq_1.top().target.first() < prod_pq_2.top().target.second())) {
-        req = { prod_pq_1.top().target,
-                {{ { node::pointer_type::nil(), node::pointer_type::nil() } }},
-                { prod_pq_1.top().data } };
-      } else {
-        req = prod_pq_2.top();
-      }
-
-      adiar_assert(req.target[0].is_terminal() || out_label <= req.target[0].label(),
-                   "Request should never level-wise be behind current position");
-      adiar_assert(req.target[1].is_terminal() || out_label <= req.target[1].label(),
-                   "Request should never level-wise be behind current position");
-
-      // Seek request partially in stream
-      const typename prod_policy::pointer_type t_seek =
-        req.empty_carry() ? req.target.first() : req.target.second();
-
-      while (v0.uid() < t_seek && in_nodes_0.can_pull()) {
-        v0 = in_nodes_0.pull();
-      }
-      while (v1.uid() < t_seek && in_nodes_1.can_pull()) {
-        v1 = in_nodes_1.pull();
-      }
-
-      // Forward information across the level
-      if (req.empty_carry()
-          && req.target[0].is_node() && req.target[1].is_node()
-          && req.target[0].label() == req.target[1].label()
-          && (v0.uid() != req.target[0] || v1.uid() != req.target[1])) {
-        const typename prod_policy::children_type children =
-              (req.target[0] == v0.uid() ? v0 : v1).children();
-
-        while (prod_pq_1.can_pull() && prod_pq_1.top().target == req.target) {
-#ifdef ADIAR_STATS
-          stats_prod2.pq.pq_2_elems += 1u;
-#endif
-          prod_pq_2.push({ req.target, { children }, prod_pq_1.pull().data });
-        }
-        continue;
-      }
-
-      // Recreate children of nodes for req.target
-      const tuple<typename prod_policy::children_type> children =
-        prod_policy::merge(req, t_seek, v0, v1);
-
-      // Create pairing of product children
-      const tuple<typename prod_policy::pointer_type> rec_pair_0 =
-        { children[0][false], children[1][false] };
-
-      const tuple<typename prod_policy::pointer_type> rec_pair_1 =
-        { children[0][true], children[1][true] };
-
-      // Obtain new recursion targets
-      const prod2_rec rec_res =
-        prod_policy::resolve_request(op, rec_pair_0, rec_pair_1);
-
-      // Forward recursion targets
-      if (prod_policy::no_skip || std::holds_alternative<prod2_rec_output>(rec_res)) {
-        const prod2_rec_output r = std::get<prod2_rec_output>(rec_res);
-
-        adiar_assert(out_id < prod_policy::max_id, "Has run out of ids");
-        const node::uid_type out_uid(out_label, out_id++);
-
-        __prod2_recurse_out(prod_pq_1, aw, op, out_uid.with(false), r.low);
-        __prod2_recurse_out(prod_pq_1, aw, op, out_uid.with(true),  r.high);
-
-        __prod2_recurse_in<__prod2_recurse_in__output_node>
-          (prod_pq_1, prod_pq_2, aw, out_uid, req.target);
-
-      } else { // std::holds_alternative<prod2_rec_skipto>(root_rec)
-        const prod2_rec_skipto r = std::get<prod2_rec_skipto>(rec_res);
-        if (r[0].is_terminal() && r[1].is_terminal()) {
-          if (req.data.source.is_nil()) {
-            // Skipped in both DAGs all the way from the root until a pair of terminals.
-            return __prod2_terminal<prod_policy>(r, op);
-          }
-          __prod2_recurse_in<__prod2_recurse_in__output_terminal>
-            (prod_pq_1, prod_pq_2, aw, op(r[0], r[1]), req.target);
+        // Merge requests from prod_pq_1 or prod_pq_2
+        if (prod_pq_1.can_pull() && (prod_pq_2.empty() ||
+                                     prod_pq_1.top().target.first() < prod_pq_2.top().target.second())) {
+          req = { prod_pq_1.top().target,
+                  {{ { node::pointer_type::nil(), node::pointer_type::nil() } }},
+                  { prod_pq_1.top().data } };
         } else {
-          __prod2_recurse_in<__prod2_recurse_in__forward>
-            (prod_pq_1, prod_pq_2, aw, r, req.target);
+          req = prod_pq_2.top();
+        }
+
+        adiar_assert(req.target[0].is_terminal() || out_label <= req.target[0].label(),
+                     "Request should never level-wise be behind current position");
+        adiar_assert(req.target[1].is_terminal() || out_label <= req.target[1].label(),
+                     "Request should never level-wise be behind current position");
+
+        // Seek request partially in stream
+        const typename prod_policy::pointer_type t_seek =
+          req.empty_carry() ? req.target.first() : req.target.second();
+
+        while (v0.uid() < t_seek && in_nodes_0.can_pull()) {
+          v0 = in_nodes_0.pull();
+        }
+        while (v1.uid() < t_seek && in_nodes_1.can_pull()) {
+          v1 = in_nodes_1.pull();
+        }
+
+        // Forward information across the level
+        if (req.empty_carry()
+            && req.target[0].is_node() && req.target[1].is_node()
+            && req.target[0].label() == req.target[1].label()
+            && (v0.uid() != req.target[0] || v1.uid() != req.target[1])) {
+          const typename prod_policy::children_type children =
+            (req.target[0] == v0.uid() ? v0 : v1).children();
+
+          while (prod_pq_1.can_pull() && prod_pq_1.top().target == req.target) {
+#ifdef ADIAR_STATS
+            stats_prod2.pq.pq_2_elems += 1u;
+#endif
+            prod_pq_2.push({ req.target, { children }, prod_pq_1.pull().data });
+          }
+          continue;
+        }
+
+        // Recreate children of nodes for req.target
+        const tuple<typename prod_policy::children_type> children =
+          prod_policy::merge(req, t_seek, v0, v1);
+
+        // Create pairing of product children
+        const tuple<typename prod_policy::pointer_type> rec_pair_0 =
+          { children[0][false], children[1][false] };
+
+        const tuple<typename prod_policy::pointer_type> rec_pair_1 =
+          { children[0][true], children[1][true] };
+
+        // Obtain new recursion targets
+        const prod2_rec rec_res =
+          prod_policy::resolve_request(op, rec_pair_0, rec_pair_1);
+
+        // Forward recursion targets
+        if (prod_policy::no_skip || std::holds_alternative<prod2_rec_output>(rec_res)) {
+          const prod2_rec_output r = std::get<prod2_rec_output>(rec_res);
+
+          adiar_assert(out_id < prod_policy::max_id, "Has run out of ids");
+          const node::uid_type out_uid(out_label, out_id++);
+
+          __prod2_recurse_out(prod_pq_1, aw, op, out_uid.with(false), r.low);
+          __prod2_recurse_out(prod_pq_1, aw, op, out_uid.with(true),  r.high);
+
+          __prod2_recurse_in<__prod2_recurse_in__output_node>
+            (prod_pq_1, prod_pq_2, aw, out_uid, req.target);
+
+        } else { // std::holds_alternative<prod2_rec_skipto>(root_rec)
+          const prod2_rec_skipto r = std::get<prod2_rec_skipto>(rec_res);
+          if (r[0].is_terminal() && r[1].is_terminal()) {
+            if (req.data.source.is_nil()) {
+              // Skipped in both DAGs all the way from the root until a pair of terminals.
+              return __prod2_terminal<prod_policy>(r, op);
+            }
+            __prod2_recurse_in<__prod2_recurse_in__output_terminal>
+              (prod_pq_1, prod_pq_2, aw, op(r[0], r[1]), req.target);
+          } else {
+            __prod2_recurse_in<__prod2_recurse_in__forward>
+              (prod_pq_1, prod_pq_2, aw, r, req.target);
+          }
         }
       }
-    }
 
-    if (prod_policy::no_skip || out_id > 0) {
-      // Push the level of the very last iteration
-      aw.push(level_info(out_label, out_id));
+      // Push meta data about this level
+      if (prod_policy::no_skip || out_id > 0) {
+        aw.push(level_info(out_label, out_id));
+      }
     }
 
     // Ensure the edge case, where the in-going edge from nil to the root pair
     // does not dominate the max_1level_cut
-    max_1level_cut = std::min(aw.size() - out_arcs->number_of_terminals[false]
-                                        - out_arcs->number_of_terminals[true],
-                              max_1level_cut);
-
-    out_arcs->max_1level_cut = max_1level_cut;
+    out_arcs->max_1level_cut = std::min(aw.size() - out_arcs->number_of_terminals[false]
+                                                  - out_arcs->number_of_terminals[true],
+                                        out_arcs->max_1level_cut);
 
     return typename prod_policy::__dd_type(out_arcs, ep);
   }
