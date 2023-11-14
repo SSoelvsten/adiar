@@ -220,236 +220,246 @@ namespace adiar
         internal::disjoint_levels(bdd_then, bdd_else)) {
       return __ite_zip_bdds(bdd_if,bdd_then,bdd_else);
     }
-    // From here on forward, we probably cannot circumvent actually having to do
-    // the product construction.
 
+    // From here on forward, we probably cannot get away from actually having to
+    // do the 3-ary product construction.
+
+    // Set up output
     internal::shared_levelized_file<internal::arc> out_arcs;
     internal::arc_writer aw(out_arcs);
 
+    out_arcs->max_1level_cut = 0;
+
+    // Set up cross-level priority queue
     pq_1_t ite_pq_1({bdd_if, bdd_then, bdd_else}, pq_1_memory, max_pq_1_size, stats_prod3.lpq);
+
+    // Set up per-level priority queues
     pq_2_t ite_pq_2(pq_2_memory, max_pq_2_size);
     pq_3_t ite_pq_3(pq_3_memory, max_pq_3_size);
 
     // Process root and create initial recursion requests
-    internal::node::label_type out_label = first(v_if.uid(), v_then.uid(), v_else.uid()).label();
-    internal::node::id_type out_id = 0;
-
-    internal::node::pointer_type low_if, low_then, low_else, high_if, high_then, high_else;
-    ite_init_request(in_nodes_if, v_if, out_label, low_if, high_if);
-    ite_init_request(in_nodes_then, v_then, out_label, low_then, high_then);
-    ite_init_request(in_nodes_else, v_else, out_label, low_else, high_else);
-
     {
-      const internal::node::uid_type out_uid(out_label, out_id++);
+      const internal::node::label_type out_label = first(v_if.uid(), v_then.uid(), v_else.uid()).label();
+
+      internal::node::pointer_type low_if, low_then, low_else, high_if, high_then, high_else;
+      ite_init_request(in_nodes_if, v_if, out_label, low_if, high_if);
+      ite_init_request(in_nodes_then, v_then, out_label, low_then, high_then);
+      ite_init_request(in_nodes_else, v_else, out_label, low_else, high_else);
+
+      const internal::node::uid_type out_uid(out_label, 0);
       __ite_resolve_request(ite_pq_1, aw, out_uid.with(false), low_if, low_then, low_else);
       __ite_resolve_request(ite_pq_1, aw, out_uid.with(true),  high_if, high_then, high_else);
-    }
 
-    size_t max_1level_cut = 0;
+      aw.push(internal::level_info(out_label, 1));
+    }
 
     // Process all nodes in topological order of both BDDs
-    while (!ite_pq_1.empty() || !ite_pq_2.empty() || !ite_pq_3.empty()) {
-      if (ite_pq_1.empty_level() && ite_pq_2.empty() && ite_pq_3.empty()) {
-        aw.push(internal::level_info(out_label, out_id));
+    while (!ite_pq_1.empty()) {
+      // Set up next level
+      ite_pq_1.setup_next_level();
 
-        ite_pq_1.setup_next_level();
-        out_label = ite_pq_1.current_level();
-        out_id = 0;
+      const internal::node::label_type out_label = ite_pq_1.current_level();
+      internal::node::id_type out_id = 0;
 
-        max_1level_cut = std::max(max_1level_cut, ite_pq_1.size());
-      }
+      // Update max 1-level cut
+      out_arcs->max_1level_cut = std::max(out_arcs->max_1level_cut, ite_pq_1.size());
 
-      ite_request<2> req;
-      bool with_data_1 = false, with_data_2 = false;
+      // Process all requests for this level
+      while (!ite_pq_1.empty_level() || !ite_pq_2.empty() || !ite_pq_3.empty()) {
+        ite_request<2> req;
+        bool with_data_1 = false, with_data_2 = false;
 
-      // Merge requests from priority queues
-      if (ite_pq_1.can_pull()
-          && (ite_pq_2.empty() || ite_pq_1.top().target.first() < ite_pq_2.top().target.second())
-          && (ite_pq_3.empty() || ite_pq_1.top().target.first() < ite_pq_3.top().target.third())) {
-        req = { ite_pq_1.top().target,
-                {{ { internal::node::pointer_type::nil(), internal::node::pointer_type::nil() },
-                   { internal::node::pointer_type::nil(), internal::node::pointer_type::nil() } }},
-                ite_pq_1.top().data };
+        // Merge requests from priority queues
+        if (ite_pq_1.can_pull()
+            && (ite_pq_2.empty() || ite_pq_1.top().target.first() < ite_pq_2.top().target.second())
+            && (ite_pq_3.empty() || ite_pq_1.top().target.first() < ite_pq_3.top().target.third())) {
+          req = { ite_pq_1.top().target,
+                  {{ { internal::node::pointer_type::nil(), internal::node::pointer_type::nil() },
+                     { internal::node::pointer_type::nil(), internal::node::pointer_type::nil() } }},
+                  ite_pq_1.top().data };
 
-        ite_pq_1.pop();
-      } else if (!ite_pq_2.empty()
-                 && (ite_pq_3.empty() || ite_pq_2.top().target.second() < ite_pq_3.top().target.third())) {
-        with_data_1 = true;
+          ite_pq_1.pop();
+        } else if (!ite_pq_2.empty()
+                   && (ite_pq_3.empty() || ite_pq_2.top().target.second() < ite_pq_3.top().target.third())) {
+          with_data_1 = true;
 
-        req = { ite_pq_2.top().target ,
-                { ite_pq_2.top().node_carry[0],
-                  { internal::node::pointer_type::nil(), internal::node::pointer_type::nil() } },
-                ite_pq_2.top().data };
+          req = { ite_pq_2.top().target ,
+                  { ite_pq_2.top().node_carry[0],
+                    { internal::node::pointer_type::nil(), internal::node::pointer_type::nil() } },
+                  ite_pq_2.top().data };
 
-        ite_pq_2.pop();
-      } else {
-        with_data_1 = true;
-        with_data_2 = true;
+          ite_pq_2.pop();
+        } else {
+          with_data_1 = true;
+          with_data_2 = true;
 
-        req = ite_pq_3.top();
-        ite_pq_3.pop();
-      }
+          req = ite_pq_3.top();
+          ite_pq_3.pop();
+        }
 
-      // Seek request partially in stream
-      internal::node::pointer_type t_first = req.target.first();
-      internal::node::pointer_type t_second = req.target.second();
-      internal::node::pointer_type t_third = req.target.third();
+        // Seek request partially in stream
+        internal::node::pointer_type t_first = req.target.first();
+        internal::node::pointer_type t_second = req.target.second();
+        internal::node::pointer_type t_third = req.target.third();
 
-      internal::node::pointer_type t_seek = with_data_2 ? t_third
-                                   : with_data_1 ? t_second
-                                                 : t_first;
+        internal::node::pointer_type t_seek = with_data_2 ? t_third
+          : with_data_1 ? t_second
+          : t_first;
 
-      while (v_if.uid() < t_seek && in_nodes_if.can_pull()) {
-        v_if = in_nodes_if.pull();
-      }
-      while (v_then.uid() < t_seek && in_nodes_then.can_pull()) {
-        v_then = in_nodes_then.pull();
-      }
-      while (v_else.uid() < t_seek && in_nodes_else.can_pull()) {
-        v_else = in_nodes_else.pull();
-      }
+        while (v_if.uid() < t_seek && in_nodes_if.can_pull()) {
+          v_if = in_nodes_if.pull();
+        }
+        while (v_then.uid() < t_seek && in_nodes_then.can_pull()) {
+          v_then = in_nodes_then.pull();
+        }
+        while (v_else.uid() < t_seek && in_nodes_else.can_pull()) {
+          v_else = in_nodes_else.pull();
+        }
 
-      // Forward information across the level
-      if (ite_must_forward(v_if, req.target[0], out_label, t_seek) ||
-          ite_must_forward(v_then, req.target[1], out_label, t_seek) ||
-          ite_must_forward(v_else, req.target[2], out_label, t_seek)) {
-        // An element should be forwarded, if it was not already forwarded
-        // (t_seek <= t_x), if it isn't the last one to seek (t_x < t_third), and
-        // if we actually are holding it.
-        bool forward_if   = (t_seek <= req.target[0])
-          && (req.target[0] < t_third)
-          && (v_if.uid() == req.target[0]);
+        // Forward information across the level
+        if (ite_must_forward(v_if, req.target[0], out_label, t_seek) ||
+            ite_must_forward(v_then, req.target[1], out_label, t_seek) ||
+            ite_must_forward(v_else, req.target[2], out_label, t_seek)) {
+          // An element should be forwarded, if it was not already forwarded
+          // (t_seek <= t_x), if it isn't the last one to seek (t_x < t_third), and
+          // if we actually are holding it.
+          const bool forward_if   = (t_seek <= req.target[0])
+                                 && (req.target[0] < t_third)
+                                 && (v_if.uid() == req.target[0]);
 
-        bool forward_then = (t_seek == req.target[1])
-          && (req.target[1] < t_third)
-          && (v_then.uid() == req.target[1]);
+          const bool forward_then = (t_seek == req.target[1])
+                                 && (req.target[1] < t_third)
+                                 && (v_then.uid() == req.target[1]);
 
-        bool forward_else = (t_seek == req.target[2])
-          && (req.target[2] < t_third)
-          && (v_else.uid() == req.target[2]);
+          const bool forward_else = (t_seek == req.target[2])
+                                 && (req.target[2] < t_third)
+                                 && (v_else.uid() == req.target[2]);
 
-        int number_of_elements_to_forward = ((int) forward_if)
-                                          + ((int) forward_then)
-                                          + ((int) forward_else);
+          const int number_of_elements_to_forward = ((int) forward_if)
+                                                  + ((int) forward_then)
+                                                  + ((int) forward_else);
 
-        if (with_data_1 || number_of_elements_to_forward == 2) {
-          adiar_assert(!with_data_1 || t_seek != t_first,
-                       "cannot have data and still seek the first element");
-          adiar_assert(!(with_data_1 && (number_of_elements_to_forward == 2)),
-                       "cannot have forwarded an element, hold two unforwarded items, and still need to forward for something");
+          if (with_data_1 || number_of_elements_to_forward == 2) {
+            adiar_assert(!with_data_1 || t_seek != t_first,
+                         "cannot have data and still seek the first element");
+            adiar_assert(!(with_data_1 && (number_of_elements_to_forward == 2)),
+                         "cannot have forwarded an element, hold two unforwarded items, and still need to forward for something");
 
-          internal::node::children_type children_1;
-          internal::node::children_type children_2;
-          if (with_data_1) {
-            if (req.target[0] < t_seek || forward_else) {
-              children_1 = req.node_carry[0];
+            internal::node::children_type children_1;
+            internal::node::children_type children_2;
+            if (with_data_1) {
+              if (req.target[0] < t_seek || forward_else) {
+                children_1 = req.node_carry[0];
 
+                internal::node v2 = forward_else ? v_else : v_then;
+                children_2 = v2.children();
+              } else { // if (forward_if || req.target[2] < t_seek)
+                internal::node v1 = forward_if ? v_if : v_then;
+                children_1 = v1.children();
+
+                children_2 = req.node_carry[0];
+              }
+            } else {
+              internal::node v1 = forward_if   ? v_if   : v_then;
               internal::node v2 = forward_else ? v_else : v_then;
-              children_2 = v2.children();
-            } else { // if (forward_if || req.target[2] < t_seek)
-              internal::node v1 = forward_if ? v_if : v_then;
-              children_1 = v1.children();
 
-              children_2 = req.node_carry[0];
+              children_1 = v1.children();
+              children_2 = v2.children();
+            }
+
+            ite_pq_3.push({ req.target, { children_1, children_2 }, req.data });
+
+            while (ite_pq_1.can_pull() && ite_pq_1.top().target == req.target) {
+              ite_pq_3.push({ req.target, { children_1, children_2 }, ite_pq_1.pull().data });
             }
           } else {
-            internal::node v1 = forward_if   ? v_if   : v_then;
-            internal::node v2 = forward_else ? v_else : v_then;
+            // got no data and the stream only gave us a single item to forward.
+            const internal::node v1 = forward_if   ? v_if
+                                    : forward_then ? v_then
+                                    : v_else;
 
-            children_1 = v1.children();
-            children_2 = v2.children();
+            const internal::node::children_type v1_children = v1.children();
+            ite_pq_2.push({ req.target, { v1_children }, req.data });
+
+            while (ite_pq_1.can_pull() && ite_pq_1.top().target == req.target) {
+              ite_pq_2.push({ req.target, { v1_children } , ite_pq_1.pull().data });
+            }
           }
+          continue;
+        }
 
-          ite_pq_3.push({ req.target, { children_1, children_2 }, req.data });
+        // Recreate nodes from priority queue carries
+        internal::node::pointer_type low_if, low_then, low_else, high_if, high_then, high_else;
 
-          while (ite_pq_1.can_pull() && ite_pq_1.top().target == req.target) {
-            ite_pq_3.push({ req.target, { children_1, children_2 }, ite_pq_1.pull().data });
-          }
+        if (req.target[0].is_terminal() || out_label < req.target[0].label()) {
+          low_if = high_if = req.target[0];
         } else {
-          // got no data and the stream only gave us a single item to forward.
-          internal::node v1 = forward_if   ? v_if
-                            : forward_then ? v_then
-                                           : v_else;
+          low_if = req.target[0] == v_if.uid() ? v_if.low() : req.node_carry[0][false];
+          high_if = req.target[0] == v_if.uid() ? v_if.high() : req.node_carry[0][true];
+        }
 
-          internal::node::children_type v1_children = v1.children();
-          ite_pq_2.push({ req.target, { v1_children }, req.data });
+        if (req.target[1].is_nil()
+            || req.target[1].is_terminal()
+            || out_label < req.target[1].label()) {
+          low_then = high_then = req.target[1];
+        } else if (req.target[1] == v_then.uid()) {
+          low_then = v_then.low();
+          high_then = v_then.high();
+        } else if (t_seek <= req.target[0]) {
+          low_then = req.node_carry[0][false];
+          high_then = req.node_carry[0][true];
+        } else {
+          low_then = req.node_carry[1][false];
+          high_then = req.node_carry[1][true];
+        }
 
-          while (ite_pq_1.can_pull() && ite_pq_1.top().target == req.target) {
-            ite_pq_2.push({ req.target, { v1_children } , ite_pq_1.pull().data });
+        if (req.target[2].is_nil()
+            || req.target[2].is_terminal()
+            || out_label < req.target[2].label()) {
+          low_else = high_else = req.target[2];
+        } else if (req.target[2] == v_else.uid()) {
+          low_else = v_else.low();
+          high_else = v_else.high();
+        } else if (t_seek <= req.target[0] && t_seek <= req.target[1]) {
+          low_else = req.node_carry[0][false];
+          high_else = req.node_carry[0][true];
+        } else {
+          low_else = req.node_carry[1][false];
+          high_else = req.node_carry[1][true];
+        }
+
+        // Resolve request
+        adiar_assert(out_id < bdd::max_id, "Has run out of ids");
+        const internal::node::uid_type out_uid(out_label, out_id++);
+
+        __ite_resolve_request(ite_pq_1, aw, out_uid.with(false), low_if, low_then, low_else);
+        __ite_resolve_request(ite_pq_1, aw, out_uid.with(true),  high_if, high_then, high_else);
+
+        // Output ingoing arcs
+        internal::node::pointer_type source = req.data.source;
+
+        while (true) {
+          internal::arc out_arc = { source, out_uid };
+          aw.push_internal(out_arc);
+
+          if (ite_pq_1.can_pull() && ite_pq_1.top().target == req.target) {
+            source = ite_pq_1.pull().data.source;
+          } else if (!ite_pq_2.empty() && ite_pq_2.top().target == req.target) {
+            source = ite_pq_2.top().data.source;
+            ite_pq_2.pop();
+          } else if (!ite_pq_3.empty() && ite_pq_3.top().target == req.target) {
+            source = ite_pq_3.top().data.source;
+            ite_pq_3.pop();
+          } else {
+            break;
           }
         }
-        continue;
       }
 
-      // Recreate nodes from priority queue carries
-      if (req.target[0].is_terminal() || out_label < req.target[0].label()) {
-        low_if = high_if = req.target[0];
-      } else {
-        low_if = req.target[0] == v_if.uid() ? v_if.low() : req.node_carry[0][false];
-        high_if = req.target[0] == v_if.uid() ? v_if.high() : req.node_carry[0][true];
-      }
-
-      if (req.target[1].is_nil()
-          || req.target[1].is_terminal()
-          || out_label < req.target[1].label()) {
-        low_then = high_then = req.target[1];
-      } else if (req.target[1] == v_then.uid()) {
-        low_then = v_then.low();
-        high_then = v_then.high();
-      } else if (t_seek <= req.target[0]) {
-        low_then = req.node_carry[0][false];
-        high_then = req.node_carry[0][true];
-      } else {
-        low_then = req.node_carry[1][false];
-        high_then = req.node_carry[1][true];
-      }
-
-      if (req.target[2].is_nil()
-          || req.target[2].is_terminal()
-          || out_label < req.target[2].label()) {
-        low_else = high_else = req.target[2];
-      } else if (req.target[2] == v_else.uid()) {
-        low_else = v_else.low();
-        high_else = v_else.high();
-      } else if (t_seek <= req.target[0] && t_seek <= req.target[1]) {
-        low_else = req.node_carry[0][false];
-        high_else = req.node_carry[0][true];
-      } else {
-        low_else = req.node_carry[1][false];
-        high_else = req.node_carry[1][true];
-      }
-
-      // Resolve request
-      adiar_assert(out_id < bdd::max_id, "Has run out of ids");
-      const internal::node::uid_type out_uid(out_label, out_id++);
-
-      __ite_resolve_request(ite_pq_1, aw, out_uid.with(false), low_if, low_then, low_else);
-      __ite_resolve_request(ite_pq_1, aw, out_uid.with(true),  high_if, high_then, high_else);
-
-      // Output ingoing arcs
-      internal::node::pointer_type source = req.data.source;
-      while (true) {
-        internal::arc out_arc = { source, out_uid };
-        aw.push_internal(out_arc);
-
-        if (ite_pq_1.can_pull() && ite_pq_1.top().target == req.target) {
-          source = ite_pq_1.pull().data.source;
-        } else if (!ite_pq_2.empty() && ite_pq_2.top().target == req.target) {
-          source = ite_pq_2.top().data.source;
-          ite_pq_2.pop();
-        } else if (!ite_pq_3.empty() && ite_pq_3.top().target == req.target) {
-          source = ite_pq_3.top().data.source;
-          ite_pq_3.pop();
-        } else {
-          break;
-        }
-      }
+      // Push meta data about this level
+      aw.push(internal::level_info(out_label, out_id));
     }
 
-    // Push the level of the very last iteration
-    aw.push(internal::level_info(out_label, out_id));
-
-    out_arcs->max_1level_cut = max_1level_cut;
     return __bdd(out_arcs, ep);
   }
 
