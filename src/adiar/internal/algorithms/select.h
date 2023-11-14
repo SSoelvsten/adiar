@@ -159,7 +159,7 @@ namespace adiar::internal
       }
     }
 
-    size_t max_1level_cut = 0;
+    out_arcs->max_1level_cut = select_pq.size();
 
     // process all to-be-visited nodes in topological order
     while(!select_pq.empty()) {
@@ -170,8 +170,6 @@ namespace adiar::internal
       level = select_pq.current_level();
 
       a = amgr.assignment_for_level(level);
-
-      max_1level_cut = std::max(max_1level_cut, select_pq.size());
 
       // Process entire level
       while (!select_pq.empty_level()) {
@@ -224,13 +222,14 @@ namespace adiar::internal
       if (level_size > 0) {
         aw.push(level_info(level, level_size));
       }
+
+      out_arcs->max_1level_cut = std::max(out_arcs->max_1level_cut, select_pq.size());
     }
 
     if (!output_changes) {
       return dd;
     }
 
-    out_arcs->max_1level_cut = max_1level_cut;
     return typename select_policy::__dd_type(out_arcs, ep);
   }
 
