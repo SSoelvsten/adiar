@@ -1,5 +1,5 @@
-#ifndef ADIAR_INTERNAL_ALGORITHMS_SUBSTITUTION_H
-#define ADIAR_INTERNAL_ALGORITHMS_SUBSTITUTION_H
+#ifndef ADIAR_INTERNAL_ALGORITHMS_SELECT_H
+#define ADIAR_INTERNAL_ALGORITHMS_SELECT_H
 
 #include <variant>
 
@@ -23,20 +23,20 @@ namespace adiar::internal
 {
   //////////////////////////////////////////////////////////////////////////////
   /// Struct to hold statistics
-  extern statistics::substitute_t stats_substitute;
+  extern statistics::select_t stats_select;
 
   //////////////////////////////////////////////////////////////////////////////
   // Priority queue functions
-  struct substitute_arc : public arc
+  struct select_arc : public arc
   { // TODO: replace with request class
-    substitute_arc() = default;
+    select_arc() = default;
 
-    substitute_arc(const substitute_arc &) = default;
+    select_arc(const select_arc &) = default;
 
-    substitute_arc(const arc &a) : arc(a)
+    select_arc(const arc &a) : arc(a)
     { }
 
-    substitute_arc& operator= (const substitute_arc &a) = default;
+    select_arc& operator= (const select_arc &a) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The level at which this nodes target belongs to.
@@ -46,36 +46,36 @@ namespace adiar::internal
   };
 
   template<size_t look_ahead, memory_mode mem_mode>
-  using substitute_priority_queue_t =
-    levelized_node_priority_queue<substitute_arc, arc_target_lt,
+  using select_priority_queue_t =
+    levelized_node_priority_queue<select_arc, arc_target_lt,
                                   look_ahead,
                                   mem_mode>;
 
-  struct substitute_rec_output { node out; };
-  struct substitute_rec_skipto { ptr_uint64 child; };
+  struct select_rec_output { node out; };
+  struct select_rec_skipto { ptr_uint64 child; };
 
-  using substitute_rec = std::variant<substitute_rec_output, substitute_rec_skipto>;
+  using select_rec = std::variant<select_rec_output, select_rec_skipto>;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
-  template<typename substitute_policy, typename substitute_assignment_mgr>
-  inline substitute_rec substitute_apply_assignment(const assignment &a,
+  template<typename select_policy, typename select_assignment_mgr>
+  inline select_rec select_apply_assignment(const assignment &a,
                                                     const node &n,
-                                                    substitute_assignment_mgr &amgr)
+                                                    select_assignment_mgr &amgr)
   {
     switch (a) {
     case assignment::False:
-      return substitute_policy::fix_false(n, amgr);
+      return select_policy::fix_false(n, amgr);
     case assignment::True:
-      return substitute_policy::fix_true(n, amgr);
+      return select_policy::fix_true(n, amgr);
     default:
     case assignment::None:
-      return substitute_policy::keep_node(n, amgr);
+      return select_policy::keep_node(n, amgr);
     }
   }
 
   template<typename pq_t>
-  inline void __substitute_resolve_request(const arc &request,
+  inline void __select_resolve_request(const arc &request,
                                            pq_t &pq,
                                            arc_writer &aw)
   {
@@ -87,11 +87,11 @@ namespace adiar::internal
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  template<typename substitute_policy, typename substitute_assignment_mgr, typename pq_t>
-  typename substitute_policy::__dd_type
-  __substitute(const exec_policy &ep,
-               const typename substitute_policy::dd_type &dd,
-               substitute_assignment_mgr &amgr,
+  template<typename select_policy, typename select_assignment_mgr, typename pq_t>
+  typename select_policy::__dd_type
+  __select(const exec_policy &ep,
+               const typename select_policy::dd_type &dd,
+               select_assignment_mgr &amgr,
                const size_t pq_memory,
                const size_t pq_max_size)
   {
@@ -102,9 +102,9 @@ namespace adiar::internal
     shared_levelized_file<arc> out_arcs;
     arc_writer aw(out_arcs);
 
-    pq_t substitute_pq({dd}, pq_memory, pq_max_size, stats_substitute.lpq);
+    pq_t select_pq({dd}, pq_memory, pq_max_size, stats_select.lpq);
 
-    typename substitute_policy::label_type level = n.label();
+    typename select_policy::label_type level = n.label();
     size_t level_size = 0;
 
     bool output_changes = false;
@@ -113,67 +113,67 @@ namespace adiar::internal
 
     // process the root and create initial recursion requests
     {
-      const substitute_rec rec_res = substitute_apply_assignment<substitute_policy>(a, n, amgr);
+      const select_rec rec_res = select_apply_assignment<select_policy>(a, n, amgr);
 
-      if (std::holds_alternative<substitute_rec_output>(rec_res)) {
-        const node n_res = std::get<substitute_rec_output>(rec_res).out;
+      if (std::holds_alternative<select_rec_output>(rec_res)) {
+        const node n_res = std::get<select_rec_output>(rec_res).out;
 
         level_size = 1;
 
         output_changes |= n_res != n;
 
-        __substitute_resolve_request(low_arc_of(n_res), substitute_pq, aw);
-        __substitute_resolve_request(high_arc_of(n_res), substitute_pq, aw);
-      } else { // std::holds_alternative<substitute_rec_skipto>(n_res)
+        __select_resolve_request(low_arc_of(n_res), select_pq, aw);
+        __select_resolve_request(high_arc_of(n_res), select_pq, aw);
+      } else { // std::holds_alternative<select_rec_skipto>(n_res)
         output_changes = true;
 
-        const ptr_uint64 rec_child = std::get<substitute_rec_skipto>(rec_res).child;;
+        const ptr_uint64 rec_child = std::get<select_rec_skipto>(rec_res).child;;
 
         if(rec_child.is_terminal()) {
-          return substitute_policy::terminal(rec_child.value(), amgr);
+          return select_policy::terminal(rec_child.value(), amgr);
         }
 
-        substitute_pq.push(arc(ptr_uint64::nil(), rec_child));
+        select_pq.push(arc(ptr_uint64::nil(), rec_child));
       }
     }
 
     size_t max_1level_cut = 0;
 
     // process all to-be-visited nodes in topological order
-    while(!substitute_pq.empty()) {
-      if (substitute_pq.empty_level()) {
+    while(!select_pq.empty()) {
+      if (select_pq.empty_level()) {
         if (level_size > 0) {
           aw.push(level_info(level, level_size));
         }
-        substitute_pq.setup_next_level();
+        select_pq.setup_next_level();
 
         level_size = 0;
-        level = substitute_pq.current_level();
+        level = select_pq.current_level();
 
         a = amgr.assignment_for_level(level);
 
-        max_1level_cut = std::max(max_1level_cut, substitute_pq.size());
+        max_1level_cut = std::max(max_1level_cut, select_pq.size());
       }
 
       // seek requested node
-      while (n.uid() < substitute_pq.top().target()) {
+      while (n.uid() < select_pq.top().target()) {
         n = ns.pull();
       }
 
       // process node and forward information
-      const substitute_rec rec_res = substitute_apply_assignment<substitute_policy>(a, n, amgr);
+      const select_rec rec_res = select_apply_assignment<select_policy>(a, n, amgr);
 
-      if(std::holds_alternative<substitute_rec_output>(rec_res)) {
-        const node n_res = std::get<substitute_rec_output>(rec_res).out;
+      if(std::holds_alternative<select_rec_output>(rec_res)) {
+        const node n_res = std::get<select_rec_output>(rec_res).out;
         output_changes |= n_res != n;
 
         // outgoing arcs
-        __substitute_resolve_request(low_arc_of(n_res), substitute_pq, aw);
-        __substitute_resolve_request(high_arc_of(n_res), substitute_pq, aw);
+        __select_resolve_request(low_arc_of(n_res), select_pq, aw);
+        __select_resolve_request(high_arc_of(n_res), select_pq, aw);
 
         // Ingoing arcs
-        while(substitute_pq.can_pull() && substitute_pq.top().target() == n_res.uid()) {
-          const arc parent_arc = substitute_pq.pull();
+        while(select_pq.can_pull() && select_pq.top().target() == n_res.uid()) {
+          const arc parent_arc = select_pq.pull();
 
           if(!parent_arc.source().is_nil()) {
             aw.push_internal(parent_arc);
@@ -181,21 +181,21 @@ namespace adiar::internal
         }
 
         level_size++;
-      } else { // std::holds_alternative<substitute_rec_skipto>(rec_res)
+      } else { // std::holds_alternative<select_rec_skipto>(rec_res)
         output_changes = true;
 
-        const ptr_uint64 rec_child = std::get<substitute_rec_skipto>(rec_res).child;
+        const ptr_uint64 rec_child = std::get<select_rec_skipto>(rec_res).child;
 
-        while(substitute_pq.can_pull() && substitute_pq.top().target() == n.uid()) {
-          const arc parent_arc = substitute_pq.pull();
+        while(select_pq.can_pull() && select_pq.top().target() == n.uid()) {
+          const arc parent_arc = select_pq.pull();
           const arc request = { parent_arc.source(), rec_child };
 
           if(rec_child.is_terminal() && parent_arc.source().is_nil()) {
             // we have restricted ourselves to a terminal
-            return substitute_policy::terminal(rec_child.value(), amgr);
+            return select_policy::terminal(rec_child.value(), amgr);
           }
 
-          __substitute_resolve_request(request, substitute_pq, aw);
+          __select_resolve_request(request, select_pq, aw);
         }
       }
     }
@@ -210,21 +210,21 @@ namespace adiar::internal
     if (!output_changes) {
       return dd;
     }
-    return typename substitute_policy::__dd_type(out_arcs, ep);
+    return typename select_policy::__dd_type(out_arcs, ep);
   }
 
-  template<typename substitute_policy>
-  size_t __substitute_2level_upper_bound(const typename substitute_policy::dd_type &dd)
+  template<typename select_policy>
+  size_t __select_2level_upper_bound(const typename select_policy::dd_type &dd)
   {
     const safe_size_t max_2level_cut = dd.max_2level_cut(cut::Internal);
     return to_size(max_2level_cut + 2u);
   }
 
-  template<typename substitute_policy, typename substitute_assignment_mgr>
-  typename substitute_policy::__dd_type
-  substitute(const exec_policy &ep,
-             const typename substitute_policy::dd_type &dd,
-             substitute_assignment_mgr &amgr)
+  template<typename select_policy, typename select_assignment_mgr>
+  typename select_policy::__dd_type
+  select(const exec_policy &ep,
+             const typename select_policy::dd_type &dd,
+             select_assignment_mgr &amgr)
   {
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.
@@ -236,38 +236,38 @@ namespace adiar::internal
       - node_stream<>::memory_usage() - arc_writer::memory_usage();
 
     const tpie::memory_size_type pq_memory_fits =
-      substitute_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(aux_available_memory);
+      select_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(aux_available_memory);
 
     const bool internal_only = ep.memory_mode() == exec_policy::memory::Internal;
     const bool external_only = ep.memory_mode() == exec_policy::memory::External;
 
-    const size_t pq_bound = __substitute_2level_upper_bound<substitute_policy>(dd);
+    const size_t pq_bound = __select_2level_upper_bound<select_policy>(dd);
 
     const size_t max_pq_size = internal_only ? std::min(pq_memory_fits, pq_bound) : pq_bound;
 
     if(!external_only && max_pq_size <= no_lookahead_bound(1)) {
 #ifdef ADIAR_STATS
-      stats_substitute.lpq.unbucketed += 1u;
+      stats_select.lpq.unbucketed += 1u;
 #endif
-      return __substitute<substitute_policy, substitute_assignment_mgr,
-                          substitute_priority_queue_t<0, memory_mode::Internal>>
+      return __select<select_policy, select_assignment_mgr,
+                          select_priority_queue_t<0, memory_mode::Internal>>
         (ep, dd, amgr, aux_available_memory, max_pq_size);
     } else if(!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
-      stats_substitute.lpq.internal += 1u;
+      stats_select.lpq.internal += 1u;
 #endif
-      return __substitute<substitute_policy, substitute_assignment_mgr,
-                          substitute_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>>
+      return __select<select_policy, select_assignment_mgr,
+                          select_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>>
         (ep, dd, amgr, aux_available_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
-      stats_substitute.lpq.external += 1u;
+      stats_select.lpq.external += 1u;
 #endif
-      return __substitute<substitute_policy, substitute_assignment_mgr,
-                          substitute_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::External>>
+      return __select<select_policy, select_assignment_mgr,
+                          select_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::External>>
         (ep, dd, amgr, aux_available_memory, max_pq_size);
     }
   }
 }
 
-#endif // H_ADIAR_INTERNAL_ALGORITHMS_SUBSTITUTION_H
+#endif // ADIAR_INTERNAL_ALGORITHMS_SELECT_H

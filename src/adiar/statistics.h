@@ -392,14 +392,14 @@ namespace adiar
     quantify;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Substitution algorithm statistics.
+    /// \brief Select algorithm statistics.
     ///
     /// \see bdd_restrict zdd_onset zdd_offset
     ////////////////////////////////////////////////////////////////////////////
-    struct substitute_t : public __alg_base
+    struct select_t : public __alg_base
     { }
-    /// \copydoc substitute_t
-    substitute;
+    /// \copydoc select_t
+    select;
 
     ////////////////////////////////////////////////////////////////////////////
     // Algorithms: Bottom-up Sweeps

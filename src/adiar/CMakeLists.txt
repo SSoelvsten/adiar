@@ -50,7 +50,7 @@ set(HEADERS
   internal/algorithms/prod2.h
   internal/algorithms/quantify.h
   internal/algorithms/reduce.h
-  internal/algorithms/substitution.h
+  internal/algorithms/select.h
   internal/algorithms/traverse.h
 
   # adiar/internal/data_structures
@@ -131,7 +131,7 @@ set(SOURCES
   internal/algorithms/prod2.cpp
   internal/algorithms/quantify.cpp
   internal/algorithms/reduce.cpp
-  internal/algorithms/substitution.cpp
+  internal/algorithms/select.cpp
 
   # adiar/internal/data_structures
   internal/data_structures/levelized_priority_queue.cpp
