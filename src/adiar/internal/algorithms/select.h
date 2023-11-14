@@ -140,12 +140,12 @@ namespace adiar::internal
       if (std::holds_alternative<select_rec_output>(rec_res)) {
         const node n_res = std::get<select_rec_output>(rec_res).out;
 
-        level_size = 1;
-
         output_changes |= n_res != n;
 
         __select_resolve_request(low_arc_of(n_res), select_pq, aw);
         __select_resolve_request(high_arc_of(n_res), select_pq, aw);
+
+        aw.push(level_info(level, 1));
       } else { // std::holds_alternative<select_rec_skipto>(n_res)
         output_changes = true;
 
@@ -163,75 +163,74 @@ namespace adiar::internal
 
     // process all to-be-visited nodes in topological order
     while(!select_pq.empty()) {
-      if (select_pq.empty_level()) {
-        if (level_size > 0) {
-          aw.push(level_info(level, level_size));
-        }
-        select_pq.setup_next_level();
+      // Set up next level
+      select_pq.setup_next_level();
 
-        level_size = 0;
-        level = select_pq.current_level();
+      level_size = 0;
+      level = select_pq.current_level();
 
-        a = amgr.assignment_for_level(level);
+      a = amgr.assignment_for_level(level);
 
-        max_1level_cut = std::max(max_1level_cut, select_pq.size());
-      }
+      max_1level_cut = std::max(max_1level_cut, select_pq.size());
 
-      // seek requested node
-      while (n.uid() < select_pq.top().target()) {
-        n = ns.pull();
-      }
-
-      // process node and forward information
-      const select_rec rec_res = select_apply_assignment<select_policy>(a, n, amgr);
-
-      if(std::holds_alternative<select_rec_output>(rec_res)) {
-        const node n_res = std::get<select_rec_output>(rec_res).out;
-        output_changes |= n_res != n;
-
-        // outgoing arcs
-        __select_resolve_request(low_arc_of(n_res), select_pq, aw);
-        __select_resolve_request(high_arc_of(n_res), select_pq, aw);
-
-        // Ingoing arcs
-        while(select_pq.can_pull() && select_pq.top().target() == n_res.uid()) {
-          const arc parent_arc = select_pq.pull();
-
-          if(!parent_arc.source().is_nil()) {
-            aw.push_internal(parent_arc);
-          }
+      // Process entire level
+      while (!select_pq.empty_level()) {
+        // seek requested node
+        while (n.uid() < select_pq.top().target()) {
+          n = ns.pull();
         }
 
-        level_size++;
-      } else { // std::holds_alternative<select_rec_skipto>(rec_res)
-        output_changes = true;
+        // process node and forward information
+        const select_rec rec_res = select_apply_assignment<select_policy>(a, n, amgr);
 
-        const ptr_uint64 rec_child = std::get<select_rec_skipto>(rec_res).child;
+        if(std::holds_alternative<select_rec_output>(rec_res)) {
+          const node n_res = std::get<select_rec_output>(rec_res).out;
+          output_changes |= n_res != n;
 
-        while(select_pq.can_pull() && select_pq.top().target() == n.uid()) {
-          const arc parent_arc = select_pq.pull();
-          const arc request = { parent_arc.source(), rec_child };
+          // outgoing arcs
+          __select_resolve_request(low_arc_of(n_res), select_pq, aw);
+          __select_resolve_request(high_arc_of(n_res), select_pq, aw);
 
-          if(rec_child.is_terminal() && parent_arc.source().is_nil()) {
-            // we have restricted ourselves to a terminal
-            return select_policy::terminal(rec_child.value(), amgr);
+          // Ingoing arcs
+          while(select_pq.can_pull() && select_pq.top().target() == n_res.uid()) {
+            const arc parent_arc = select_pq.pull();
+
+            if(!parent_arc.source().is_nil()) {
+              aw.push_internal(parent_arc);
+            }
           }
 
-          __select_resolve_request(request, select_pq, aw);
+          level_size++;
+        } else { // std::holds_alternative<select_rec_skipto>(rec_res)
+          output_changes = true;
+
+          const ptr_uint64 rec_child = std::get<select_rec_skipto>(rec_res).child;
+
+          while(select_pq.can_pull() && select_pq.top().target() == n.uid()) {
+            const arc parent_arc = select_pq.pull();
+            const arc request = { parent_arc.source(), rec_child };
+
+            if(rec_child.is_terminal() && parent_arc.source().is_nil()) {
+              // we have restricted ourselves to a terminal
+              return select_policy::terminal(rec_child.value(), amgr);
+            }
+
+            __select_resolve_request(request, select_pq, aw);
+          }
         }
       }
-    }
 
-    // Push the level of the very last iteration
-    if (level_size > 0) {
-      aw.push(level_info(level, level_size));
+      // Push meta data
+      if (level_size > 0) {
+        aw.push(level_info(level, level_size));
+      }
     }
-
-    out_arcs->max_1level_cut = max_1level_cut;
 
     if (!output_changes) {
       return dd;
     }
+
+    out_arcs->max_1level_cut = max_1level_cut;
     return typename select_policy::__dd_type(out_arcs, ep);
   }
 
