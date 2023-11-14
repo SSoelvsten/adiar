@@ -235,8 +235,6 @@ namespace adiar::internal
 
     // Process nodes of the decision diagram in topological order
     while (!intercut_pq.empty()) {
-      if (out_id > 0) { aw.push(level_info(out_label, out_id)); }
-
       intercut_pq.setup_next_level();
       out_label = intercut_pq.current_level();
 
@@ -314,11 +312,11 @@ namespace adiar::internal
         intercut_in__pq<intercut_policy, intercut_out__writer>
           (aw, intercut_pq, out_label, request.target(), out_uid, l);
       }
-    }
 
-    // Push the level of the very last iteration
-    if (out_id > 0) {
-      aw.push(level_info(out_label, out_id));
+      // Push meta data
+      if (out_id > 0) {
+        aw.push(level_info(out_label, out_id));
+      }
     }
 
     out_arcs->max_1level_cut = max_1level_cut;
