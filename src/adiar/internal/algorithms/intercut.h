@@ -28,13 +28,13 @@ namespace adiar::internal
   // in two with a new diagram node inserted (of any desired shape).
   // Furthermore, existing nodes on said level are changed as desired. Nodes on
   // *offset* levels are changed differently.
-  //
+  /*
   //          ( )     ---- xi                ( )        ---- xi
   //         /   \                          /   \
-  //        ( )  |    ---- xj     =>       ( )  (?)
+  //        ( )  |    ---- xj     =>       ( )  (?)     ---- xj
   //        / \  |                         / \  ||
   //        a b  c                         b a  c
-  //
+  */
   // Examples of uses are `zdd_extend`.
   //////////////////////////////////////////////////////////////////////////////
 
