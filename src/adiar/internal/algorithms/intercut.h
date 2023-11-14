@@ -216,6 +216,8 @@ namespace adiar::internal
     shared_levelized_file<arc> out_arcs;
     arc_writer aw(out_arcs);
 
+    out_arcs->max_1level_cut = 0;
+
     shared_file<typename intercut_policy::label_type> dd_levels;
     {
       file_writer<typename intercut_policy::label_type> lw(dd_levels);
@@ -224,23 +226,17 @@ namespace adiar::internal
       });
     }
 
-    pq_t intercut_pq({dd_levels, hit_levels}, pq_memory, max_pq_size, stats_intercut.lpq);
-
     // Add request for root in the queue
-    typename intercut_policy::label_type out_label = std::min(l, n.label());
-    intercut_pq.push(intercut_req(ptr_uint64::nil(), n.uid(), out_label));
-    typename intercut_policy::id_type out_id = 0;
-
-    size_t max_1level_cut = 0;
+    pq_t intercut_pq({dd_levels, hit_levels}, pq_memory, max_pq_size, stats_intercut.lpq);
+    intercut_pq.push(intercut_req(ptr_uint64::nil(), n.uid(), std::min(l, n.label())));
 
     // Process nodes of the decision diagram in topological order
     while (!intercut_pq.empty()) {
+      // Set up next level
       intercut_pq.setup_next_level();
-      out_label = intercut_pq.current_level();
 
-      max_1level_cut = std::max(max_1level_cut, intercut_pq.size());
-
-      out_id = 0;
+      const typename intercut_policy::label_type out_label = intercut_pq.current_level();
+      typename intercut_policy::id_type out_id = 0;
 
       const bool hit_level = out_label == l;
 
@@ -249,9 +245,12 @@ namespace adiar::internal
         l = ls.pull();
       }
 
-      if(!ls.can_pull() && l <= out_label) {
+      if (!ls.can_pull() && l <= out_label) {
         l = intercut_policy::max_label + 1;
       }
+
+      // Update max 1-level cut
+      out_arcs->max_1level_cut = std::max(out_arcs->max_1level_cut, intercut_pq.size());
 
       // Resolve requests that end at the cut for this level
       while (intercut_pq.can_pull() && intercut_pq.peek().target().label() == intercut_pq.peek().level()) {
@@ -313,13 +312,12 @@ namespace adiar::internal
           (aw, intercut_pq, out_label, request.target(), out_uid, l);
       }
 
-      // Push meta data
+      // Update meta data
       if (out_id > 0) {
         aw.push(level_info(out_label, out_id));
       }
     }
 
-    out_arcs->max_1level_cut = max_1level_cut;
     return typename intercut_policy::__dd_type(out_arcs, ep);
   }
 
