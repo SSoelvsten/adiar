@@ -10,7 +10,7 @@
 #include <adiar/internal/algorithms/pred.h>
 #include <adiar/internal/algorithms/prod2.h>
 #include <adiar/internal/algorithms/quantify.h>
-#include <adiar/internal/algorithms/substitution.h>
+#include <adiar/internal/algorithms/select.h>
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
 #include <adiar/internal/io/arc_file.h>
 #include <adiar/internal/io/node_file.h>
@@ -42,7 +42,7 @@ namespace adiar
       internal::stats_prod2,
       stats_prod3,
       internal::stats_quantify,
-      internal::stats_substitute,
+      internal::stats_select,
 
       // bottom-up sweeps
       internal::stats_reduce,
@@ -68,7 +68,7 @@ namespace adiar
     internal::stats_prod2                    = {};
     stats_prod3                              = {};
     internal::stats_quantify                 = {};
-    internal::stats_substitute               = {};
+    internal::stats_select                   = {};
 
     // bottom-up sweeps
     internal::stats_reduce                   = {};
@@ -541,10 +541,10 @@ namespace adiar
   }
 
 
-  void __printstat_substitute(std::ostream &o)
+  void __printstat_select(std::ostream &o)
   {
-    uintwide total_runs = internal::stats_substitute.lpq.total();
-    o << indent << bold_on << label << "Substitution" << bold_off << total_runs << endl;
+    uintwide total_runs = internal::stats_select.lpq.total();
+    o << indent << bold_on << label << "Selection" << bold_off << total_runs << endl;
 
     indent_level++;
     if (total_runs == 0u) {
@@ -553,7 +553,7 @@ namespace adiar
       return;
     }
 
-    __printstat_alg_base(o, internal::stats_substitute);
+    __printstat_alg_base(o, internal::stats_select);
     indent_level--;
   }
 
@@ -603,7 +603,7 @@ namespace adiar
     __printstat_quantify(o);
     o << endl;
 
-    __printstat_substitute(o);
+    __printstat_select(o);
     o << endl;
 
     o << bold_on << "--== Bottom-Up Sweep Algorithms ==--" << bold_off << endl << endl;

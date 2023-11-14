@@ -2,7 +2,7 @@
 #include <adiar/bdd/bdd_policy.h>
 
 #include <adiar/internal/util.h>
-#include <adiar/internal/algorithms/substitution.h>
+#include <adiar/internal/algorithms/select.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/io/file_stream.h>
 #include <adiar/internal/io/shared_file_ptr.h>
@@ -14,16 +14,16 @@ namespace adiar
   {
   public:
     template<typename AssignmentMgr>
-    static internal::substitute_rec keep_node(const bdd::node_type &n, AssignmentMgr &/*amgr*/)
-    { return internal::substitute_rec_output { n }; }
+    static internal::select_rec keep_node(const bdd::node_type &n, AssignmentMgr &/*amgr*/)
+    { return internal::select_rec_output { n }; }
 
     template<typename AssignmentMgr>
-    static internal::substitute_rec fix_false(const bdd::node_type &n, AssignmentMgr &/*amgr*/)
-    { return internal::substitute_rec_skipto { n.low() }; }
+    static internal::select_rec fix_false(const bdd::node_type &n, AssignmentMgr &/*amgr*/)
+    { return internal::select_rec_skipto { n.low() }; }
 
     template<typename AssignmentMgr>
-    static internal::substitute_rec fix_true(const bdd::node_type &n, AssignmentMgr &/*amgr*/)
-    { return internal::substitute_rec_skipto { n.high() }; }
+    static internal::select_rec fix_true(const bdd::node_type &n, AssignmentMgr &/*amgr*/)
+    { return internal::select_rec_skipto { n.high() }; }
 
   public:
     template<typename AssignmentMgr>
@@ -71,7 +71,7 @@ namespace adiar
     if (amgr.empty() || bdd_isterminal(f)) {
       return f;
     }
-    return internal::substitute<bdd_restrict_policy>(ep, f, amgr);
+    return internal::select<bdd_restrict_policy>(ep, f, amgr);
   }
 
   __bdd bdd_restrict(const bdd &f,

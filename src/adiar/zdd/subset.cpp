@@ -3,7 +3,7 @@
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/unreachable.h>
-#include <adiar/internal/algorithms/substitution.h>
+#include <adiar/internal/algorithms/select.h>
 #include <adiar/internal/io/file_stream.h>
 
 namespace adiar
@@ -107,14 +107,14 @@ namespace adiar
   class zdd_offset_policy : public zdd_policy
   {
   public:
-    static internal::substitute_rec keep_node(const zdd::node_type &n, assignment_mgr &/*amgr*/)
-    { return internal::substitute_rec_output { n }; }
+    static internal::select_rec keep_node(const zdd::node_type &n, assignment_mgr &/*amgr*/)
+    { return internal::select_rec_output { n }; }
 
-    static internal::substitute_rec fix_false(const zdd::node_type &n, assignment_mgr &/*amgr*/)
-    { return internal::substitute_rec_skipto { n.low() }; }
+    static internal::select_rec fix_false(const zdd::node_type &n, assignment_mgr &/*amgr*/)
+    { return internal::select_rec_skipto { n.low() }; }
 
     // LCOV_EXCL_START
-    static internal::substitute_rec fix_true(const zdd::node_type &/*n*/, assignment_mgr &/*amgr*/)
+    static internal::select_rec fix_true(const zdd::node_type &/*n*/, assignment_mgr &/*amgr*/)
     { adiar_unreachable(); }
     // LCOV_EXCL_STOP
 
@@ -133,8 +133,8 @@ namespace adiar
     // Empty set of variables in `xs`?
     if (!amgr.has_level_incl()) { return A; }
 
-    // Run Substitute sweep
-    __zdd res = internal::substitute<zdd_offset_policy<zdd_subset_labels<assignment::False>>>
+    // Run select sweep
+    __zdd res = internal::select<zdd_offset_policy<zdd_subset_labels<assignment::False>>>
       (ep, A, amgr);
 
     // Skip Reduce if no level of `xs` matched with any in `A`.
@@ -175,7 +175,7 @@ namespace adiar
   class zdd_onset_policy : public zdd_policy
   {
   public:
-    static internal::substitute_rec keep_node(const zdd::node_type &n, assignment_mgr &amgr)
+    static internal::select_rec keep_node(const zdd::node_type &n, assignment_mgr &amgr)
     {
       if (amgr.has_level_incl()) {
         // If recursion goes past the intended level, then it is replaced with
@@ -186,27 +186,27 @@ namespace adiar
 
         // If this applies to high, then the node should be skipped entirely.
         if (n.high().is_terminal() || n.high().label() > amgr.level_incl()) {
-          return internal::substitute_rec_skipto { low };
+          return internal::select_rec_skipto { low };
         }
-        return internal::substitute_rec_output { zdd::node_type(n.uid(), low, n.high()) };
+        return internal::select_rec_output { zdd::node_type(n.uid(), low, n.high()) };
       }
-      return internal::substitute_rec_output { n };
+      return internal::select_rec_output { n };
     }
 
     // LCOV_EXCL_START
-    static internal::substitute_rec fix_false(const zdd::node_type &/*n*/, assignment_mgr &/*amgr*/)
+    static internal::select_rec fix_false(const zdd::node_type &/*n*/, assignment_mgr &/*amgr*/)
     { adiar_unreachable(); }
     // LCOV_EXCL_STOP
 
-    static internal::substitute_rec fix_true(const zdd::node_type &n, assignment_mgr &amgr)
+    static internal::select_rec fix_true(const zdd::node_type &n, assignment_mgr &amgr)
     {
       if (amgr.has_level_excl()) {
         if (n.high().is_terminal() || n.high().label() > amgr.level_excl()) {
-          return internal::substitute_rec_skipto { zdd::pointer_type(false) };
+          return internal::select_rec_skipto { zdd::pointer_type(false) };
         }
       }
 
-      return internal::substitute_rec_output { zdd::node_type(n.uid(), zdd::pointer_type(false), n.high()) };
+      return internal::select_rec_output { zdd::node_type(n.uid(), zdd::pointer_type(false), n.high()) };
     }
 
   public:
@@ -232,8 +232,8 @@ namespace adiar
       return zdd_empty();
     }
 
-    // Run Substitute sweep
-    __zdd res = internal::substitute<zdd_onset_policy<zdd_subset_labels<assignment::True>>>
+    // Run select sweep
+    __zdd res = internal::select<zdd_onset_policy<zdd_subset_labels<assignment::True>>>
       (ep, A, amgr);
 
     // Skip Reduce no levels of `xs` matched with one from `A`.
