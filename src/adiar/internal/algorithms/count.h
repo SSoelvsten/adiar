@@ -88,13 +88,16 @@ namespace adiar::internal
                    const size_t pq_max_memory,
                    const size_t pq_max_size)
   {
-    node_stream<> ns(dd);
-
-    count_pq_t count_pq({dd}, pq_max_memory, pq_max_size, stats_count.lpq);
-
+    // Set up output
     uint64_t result = 0u;
 
-    {
+    // Set up input
+    node_stream<> ns(dd);
+
+    // Set up cross-level priority queue
+    count_pq_t count_pq({dd}, pq_max_memory, pq_max_size, stats_count.lpq);
+
+    { // process the root and create initial recursion requests
       node root = ns.pull();
       typename count_policy::queue_t request = { root.uid(), 1u };
 
@@ -103,26 +106,25 @@ namespace adiar::internal
     }
 
     // Take out the rest of the nodes and process them one by one
-    while (ns.can_pull()) {
-      node n = ns.pull();
+    while (!count_pq.empty()) {
+      count_pq.setup_next_level();
 
-      if (!count_pq.has_current_level() || count_pq.current_level() != n.label()) {
-        count_pq.setup_next_level();
+      while (!count_pq.empty_level()) {
+        const node n = ns.pull();
+
+        adiar_assert(count_pq.can_pull() && count_pq.top().target == n.uid(),
+                     "Decision Diagram includes dead nodes");
+
+        // Resolve requests
+        typename count_policy::queue_t request = count_pq.pull();
+
+        while (count_pq.can_pull() && count_pq.top().target == n.uid()) {
+          request = count_policy::combine_requests(request, count_pq.pull());
+        }
+
+        result += count_policy::forward_request(count_pq, varcount, n.low(), request);
+        result += count_policy::forward_request(count_pq, varcount, n.high(), request);
       }
-      adiar_assert(count_pq.current_level() == n.label(),
-                   "Priority queue is out-of-sync with node stream");
-      adiar_assert(count_pq.can_pull() && count_pq.top().target == n.uid(),
-                   "Priority queue is out-of-sync with node stream");
-
-      // Resolve requests
-      typename count_policy::queue_t request = count_pq.pull();
-
-      while (count_pq.can_pull() && count_pq.top().target == n.uid()) {
-        request = count_policy::combine_requests(request, count_pq.pull());
-      }
-
-      result += count_policy::forward_request(count_pq, varcount, n.low(), request);
-      result += count_policy::forward_request(count_pq, varcount, n.high(), request);
     }
 
     return result;
