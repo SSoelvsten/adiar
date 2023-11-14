@@ -82,12 +82,14 @@ namespace adiar::internal
                           const tpie::memory_size_type pq_2_memory,
                           const size_t max_pq_size)
   {
+    // Set up input
     node_stream<> in_nodes_0(f0, negate0);
     node_stream<> in_nodes_1(f1, negate1);
 
     node v0 = in_nodes_0.pull();
     node v1 = in_nodes_1.pull();
 
+    // Edge-case for terminals
     if (v0.is_terminal() || v1.is_terminal()) {
       bool ret_value;
       if (comp_policy::resolve_terminals(v0, v1, ret_value)) {
@@ -110,74 +112,75 @@ namespace adiar::internal
     // Initialise level checking
     typename comp_policy::level_check_t level_checker(f0,f1);
 
-    while (!comparison_pq_1.empty() || !comparison_pq_2.empty()) {
-      if (comparison_pq_1.empty_level() && comparison_pq_2.empty()) {
-        comparison_pq_1.setup_next_level();
+    while (!comparison_pq_1.empty()) {
+      // Set up next level
+      comparison_pq_1.setup_next_level();
 
-        level_checker.next_level(comparison_pq_1.current_level());
-      }
+      level_checker.next_level(comparison_pq_1.current_level());
 
-      pred_request_2 req;
+      while (!comparison_pq_1.empty_level() || !comparison_pq_2.empty()) {
+        pred_request_2 req;
 
-      // Merge requests from comparison_pq_1 and comparison_pq_2
-      if (comparison_pq_1.can_pull() && (comparison_pq_2.empty() ||
-                                         comparison_pq_1.top().target.first() < comparison_pq_2.top().target.second())) {
-        req = { comparison_pq_1.top().target,
-                { {{ node::pointer_type::nil(), node::pointer_type::nil() }} } };
-        comparison_pq_1.pop();
-      } else {
-        req = comparison_pq_2.top();
-        comparison_pq_2.pop();
-      }
+        // Merge requests from comparison_pq_1 and comparison_pq_2
+        if (comparison_pq_1.can_pull() && (comparison_pq_2.empty() ||
+                                           comparison_pq_1.top().target.first() < comparison_pq_2.top().target.second())) {
+          req = { comparison_pq_1.top().target,
+                  { {{ node::pointer_type::nil(), node::pointer_type::nil() }} } };
+          comparison_pq_1.pop();
+        } else {
+          req = comparison_pq_2.top();
+          comparison_pq_2.pop();
+        }
 
-      // Seek request partially in stream
-      const typename comp_policy::pointer_type t_seek =
-        req.empty_carry() ? req.target.first() : req.target.second();
+        // Seek request partially in stream
+        const typename comp_policy::pointer_type t_seek =
+          req.empty_carry() ? req.target.first() : req.target.second();
 
-      while (v0.uid() < t_seek && in_nodes_0.can_pull()) {
-        v0 = in_nodes_0.pull();
-      }
-      while (v1.uid() < t_seek && in_nodes_1.can_pull()) {
-        v1 = in_nodes_1.pull();
-      }
+        while (v0.uid() < t_seek && in_nodes_0.can_pull()) {
+          v0 = in_nodes_0.pull();
+        }
+        while (v1.uid() < t_seek && in_nodes_1.can_pull()) {
+          v1 = in_nodes_1.pull();
+        }
 
-      // Skip all requests to the same node
-      while (comparison_pq_1.can_pull() && (comparison_pq_1.top().target == req.target)) {
-        comparison_pq_1.pull();
-      }
+        // Skip all remaining requests to the same node
+        while (comparison_pq_1.can_pull() && (comparison_pq_1.top().target == req.target)) {
+          comparison_pq_1.pull();
+        }
 
-      // Forward information across the level
-      if (req.empty_carry()
-          && req.target[0].is_node() && req.target[1].is_node()
-          && req.target[0].label() == req.target[1].label()
-          && (v0.uid() != req.target[0] || v1.uid() != req.target[1])) {
-        const typename comp_policy::children_type children =
-          (req.target[0] == v0.uid() ? v0 : v1).children();
+        // Forward information across the level
+        if (req.empty_carry()
+            && req.target[0].is_node() && req.target[1].is_node()
+            && req.target[0].label() == req.target[1].label()
+            && (v0.uid() != req.target[0] || v1.uid() != req.target[1])) {
+          const typename comp_policy::children_type children =
+            (req.target[0] == v0.uid() ? v0 : v1).children();
 
-        comparison_pq_2.push({ req.target, { children } });
+          comparison_pq_2.push({ req.target, { children } });
 
-        continue;
-      }
+          continue;
+        }
 
-      if (level_checker.on_step()) {
-        return level_checker.termination_value;
-      }
+        if (level_checker.on_step()) {
+          return level_checker.termination_value;
+        }
 
-      // Obtain children or root for both nodes (depending on level)
-      const tuple<typename comp_policy::children_type, 2> children =
-        comp_policy::merge(req, t_seek, v0, v1);
+        // Obtain children or root for both nodes (depending on level)
+        const tuple<typename comp_policy::children_type, 2> children =
+          comp_policy::merge(req, t_seek, v0, v1);
 
-      // Create pairing of product children and obtain new recursion targets
-      const tuple<typename comp_policy::pointer_type> rec_pair_0 =
-        { children[0][false], children[1][false] };
+        // Create pairing of product children and obtain new recursion targets
+        const tuple<typename comp_policy::pointer_type> rec_pair_0 =
+          { children[0][false], children[1][false] };
 
-      const tuple<typename comp_policy::pointer_type> rec_pair_1 =
-        { children[0][true], children[1][true] };
+        const tuple<typename comp_policy::pointer_type> rec_pair_1 =
+          { children[0][true], children[1][true] };
 
-      // Forward pairing and return early if possible
-      if (comp_policy::resolve_request(comparison_pq_1, rec_pair_0)
-          || comp_policy::resolve_request(comparison_pq_1, rec_pair_1)) {
-        return comp_policy::early_return_value;
+        // Forward pairing and return early if possible
+        if (comp_policy::resolve_request(comparison_pq_1, rec_pair_0)
+            || comp_policy::resolve_request(comparison_pq_1, rec_pair_1)) {
+          return comp_policy::early_return_value;
+        }
       }
     }
 
