@@ -124,17 +124,17 @@ namespace adiar::internal
     shared_levelized_file<arc> out_arcs;
     arc_writer aw(out_arcs);
 
-    pq_t select_pq({dd}, pq_memory, pq_max_size, stats_select.lpq);
+    out_arcs->max_1level_cut = 0;
 
-    typename select_policy::label_type level = n.label();
-    size_t level_size = 0;
+    pq_t select_pq({dd}, pq_memory, pq_max_size, stats_select.lpq);
 
     bool output_changes = false;
 
-    assignment a = amgr.assignment_for_level(level);
-
     // process the root and create initial recursion requests
     {
+      const typename select_policy::label_type level = n.label();
+      assignment a = amgr.assignment_for_level(level);
+
       const select_rec rec_res = select_apply_assignment<select_policy>(a, n, amgr);
 
       if (std::holds_alternative<select_rec_output>(rec_res)) {
@@ -159,17 +159,18 @@ namespace adiar::internal
       }
     }
 
-    out_arcs->max_1level_cut = select_pq.size();
-
     // process all to-be-visited nodes in topological order
     while(!select_pq.empty()) {
       // Set up next level
       select_pq.setup_next_level();
 
-      level_size = 0;
-      level = select_pq.current_level();
+      const typename select_policy::label_type level = select_pq.current_level();
+      typename select_policy::id_type level_size = 0;
 
-      a = amgr.assignment_for_level(level);
+      const assignment a = amgr.assignment_for_level(level);
+
+      // Update max 1-level cut
+      out_arcs->max_1level_cut = std::max(out_arcs->max_1level_cut, select_pq.size());
 
       // Process entire level
       while (!select_pq.empty_level()) {
@@ -218,12 +219,10 @@ namespace adiar::internal
         }
       }
 
-      // Push meta data
+      // Push meta data about this level
       if (level_size > 0) {
         aw.push(level_info(level, level_size));
       }
-
-      out_arcs->max_1level_cut = std::max(out_arcs->max_1level_cut, select_pq.size());
     }
 
     if (!output_changes) {
