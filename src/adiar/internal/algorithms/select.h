@@ -27,13 +27,13 @@ namespace adiar::internal
   //
   // Given a Decision Diagram, a subset of the levels are removed and bridged
   // over in either the 'high' or the 'low' direction.
-  //
+  /*
   //          _( )_     ---- xi                _( )_        ---- xi
   //         /     \                          /     \
   //        ( )   ( )   ---- xj     =>        \      \
   //        / \   / \                          \      \
   //        a b   c d                          b      d
-  //
+  */
   // Examples of uses are `bdd_restrict` and `zdd_onset` / `zdd_offset`
   //
   // As such, this is merely a niche-case of the Intercut algorithm, where the
