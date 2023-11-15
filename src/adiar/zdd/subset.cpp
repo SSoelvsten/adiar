@@ -108,10 +108,10 @@ namespace adiar
   {
   public:
     static internal::select_rec keep_node(const zdd::node_type &n, assignment_mgr &/*amgr*/)
-    { return internal::select_rec_output { n }; }
+    { return n; }
 
     static internal::select_rec fix_false(const zdd::node_type &n, assignment_mgr &/*amgr*/)
-    { return internal::select_rec_skipto { n.low() }; }
+    { return n.low(); }
 
     // LCOV_EXCL_START
     static internal::select_rec fix_true(const zdd::node_type &/*n*/, assignment_mgr &/*amgr*/)
@@ -186,11 +186,11 @@ namespace adiar
 
         // If this applies to high, then the node should be skipped entirely.
         if (n.high().is_terminal() || n.high().label() > amgr.level_incl()) {
-          return internal::select_rec_skipto { low };
+          return low;
         }
-        return internal::select_rec_output { zdd::node_type(n.uid(), low, n.high()) };
+        return zdd::node_type(n.uid(), low, n.high());
       }
-      return internal::select_rec_output { n };
+      return n;
     }
 
     // LCOV_EXCL_START
@@ -202,11 +202,11 @@ namespace adiar
     {
       if (amgr.has_level_excl()) {
         if (n.high().is_terminal() || n.high().label() > amgr.level_excl()) {
-          return internal::select_rec_skipto { zdd::pointer_type(false) };
+          return zdd::pointer_type(false);
         }
       }
 
-      return internal::select_rec_output { zdd::node_type(n.uid(), zdd::pointer_type(false), n.high()) };
+      return zdd::node_type(n.uid(), zdd::pointer_type(false), n.high());
     }
 
   public:
