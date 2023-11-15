@@ -31,7 +31,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
   template<typename Data>
-  using count_request = request_data<1, Data, 0>;
+  using count_request = request_data<1, Data>;
 
   template <typename Data, size_t look_ahead, memory_mode mem_mode>
   using count_priority_queue_t =
