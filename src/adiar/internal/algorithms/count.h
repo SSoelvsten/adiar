@@ -144,14 +144,14 @@ namespace adiar::internal
         // Assuming there are no dead nodes, we should visit every node of dd
         const node n = ns.pull();
 
-        adiar_assert(count_pq.top().target[0] == n.uid(),
+        adiar_assert(count_pq.top().target == n.uid(),
                      "Decision Diagram includes dead nodes");
 
         // Merge requests for 'n'
         const typename PriorityQueue::value_type request = count_pq.pull();
         typename Policy::data_type data = request.data;
 
-        while (count_pq.can_pull() && count_pq.top().target[0] == n.uid()) {
+        while (count_pq.can_pull() && count_pq.top().target == n.uid()) {
           data = Policy::merge(std::move(data), count_pq.pull().data);
         }
 
