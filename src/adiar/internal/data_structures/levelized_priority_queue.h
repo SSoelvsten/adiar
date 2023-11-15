@@ -1379,11 +1379,11 @@ namespace adiar::internal
   ///        an `arc_stream`.
   //////////////////////////////////////////////////////////////////////////////
   template <typename      T,
-            typename      Comp = std::less<T>,
-            size_t        LookAhead   = ADIAR_LPQ_LOOKAHEAD,
-            memory_mode mem_mode     = memory_mode::External,
-            size_t        LevelFileCount  = 1u,
-            size_t        LevelSkip   = 1u>
+            typename      Comp           = std::less<T>,
+            size_t        LookAhead      = ADIAR_LPQ_LOOKAHEAD,
+            memory_mode mem_mode         = memory_mode::External,
+            size_t        LevelFileCount = 1u,
+            size_t        LevelSkip      = 1u>
   using levelized_arc_priority_queue =
     levelized_priority_queue<T, Comp,
                              LookAhead,
