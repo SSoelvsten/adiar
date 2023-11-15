@@ -51,12 +51,6 @@ namespace adiar::internal
     /// Sum of paths from parent
     uint64_t sum;
 
-    /// Dummy sorting predicate
-    inline bool operator< (const path_data &o) const
-    {
-      return this->sum < o.sum;
-    }
-
     static constexpr bool sort_on_tiebreak = false;
   };
 
