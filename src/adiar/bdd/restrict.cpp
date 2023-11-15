@@ -15,15 +15,15 @@ namespace adiar
   public:
     template<typename AssignmentMgr>
     static internal::select_rec keep_node(const bdd::node_type &n, AssignmentMgr &/*amgr*/)
-    { return internal::select_rec_output { n }; }
+    { return n; }
 
     template<typename AssignmentMgr>
     static internal::select_rec fix_false(const bdd::node_type &n, AssignmentMgr &/*amgr*/)
-    { return internal::select_rec_skipto { n.low() }; }
+    { return n.low(); }
 
     template<typename AssignmentMgr>
     static internal::select_rec fix_true(const bdd::node_type &n, AssignmentMgr &/*amgr*/)
-    { return internal::select_rec_skipto { n.high() }; }
+    { return n.high(); }
 
   public:
     template<typename AssignmentMgr>
