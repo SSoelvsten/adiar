@@ -526,8 +526,8 @@ namespace adiar::internal
     /// \copydoc request_data_lt
     inline bool operator()(const Request &a, const Request &b)
     {
-      if (Request::data_type::sort_on_tiebreak && a.target == b.target) {
-        return a.data < b.data;
+      if constexpr (Request::data_type::sort_on_tiebreak) {
+        if (a.target == b.target) return a.data < b.data;
       }
       return request_lt<idx, Request>()(a, b);
     }
@@ -543,8 +543,8 @@ namespace adiar::internal
     /// \copydoc request_first_lt
     inline bool operator()(const Request &a, const Request &b)
     {
-      if (Request::data_type::sort_on_tiebreak && a.target == b.target) {
-        return a.data < b.data;
+      if constexpr (Request::data_type::sort_on_tiebreak) {
+        if (a.target == b.target) return a.data < b.data;
       }
       return request_first_lt<Request>()(a, b);
     }
@@ -560,8 +560,8 @@ namespace adiar::internal
     /// \copydoc request_second_lt
     inline bool operator()(const Request &a, const Request &b)
     {
-      if (Request::data_type::sort_on_tiebreak && a.target == b.target) {
-        return a.data < b.data;
+      if constexpr (Request::data_type::sort_on_tiebreak) {
+        if (a.target == b.target) return a.data < b.data;
       }
       return request_second_lt<Request>()(a, b);
     }
@@ -577,8 +577,8 @@ namespace adiar::internal
     /// \copydoc request_third_lt
     inline bool operator()(const Request &a, const Request &b)
     {
-      if (Request::data_type::sort_on_tiebreak && a.target == b.target) {
-        return a.data < b.data;
+      if constexpr (Request::data_type::sort_on_tiebreak) {
+        if (a.target == b.target) return a.data < b.data;
       }
       return request_third_lt<Request>()(a, b);
     }
