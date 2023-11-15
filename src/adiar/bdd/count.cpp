@@ -12,66 +12,69 @@
 namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
-  // Data structures
-  struct sat_sum : internal::path_sum
+  // SatCount Policy
+  struct sat_data
   {
-    bdd::label_type levels_visited = 0u;
-  };
+    /// Sum of satisfying assignments up to parent
+    uint64_t sum;
 
-  //////////////////////////////////////////////////////////////////////////////
-  // Priority queue functions
-  template<>
-  struct internal::count_queue_lt<sat_sum>
-  {
-    bool operator()(const sat_sum &a, const sat_sum &b)
+    /// Number of levels visited up to parent
+    bdd::label_type levels_visited;
+
+    /// Sorting predicate
+    inline bool operator< (const sat_data &o) const
     {
-      return a.target < b.target || (a.target == b.target && a.levels_visited < b.levels_visited);
+      return this->levels_visited < o.levels_visited;
     }
+
+    static constexpr bool sort_on_tiebreak = true;
   };
 
-  //////////////////////////////////////////////////////////////////////////////
-  // Helper functions
   class sat_count_policy : public bdd_policy
   {
   public:
-    using queue_t = sat_sum;
+    using data_type = sat_data;
 
-    template<typename count_pq_t>
-    inline static uint64_t forward_request(count_pq_t &count_pq,
-                                           const bdd::label_type varcount,
-                                           const bdd::pointer_type child_to_resolve,
-                                           const queue_t &request)
+    static constexpr data_type init_data = { 1u, 0u };
+
+    static constexpr uint64_t
+    resolve_false(const data_type &/*d*/,
+                  const typename bdd::label_type/*varcount*/)
     {
-      adiar_assert(request.sum > 0, "No 'empty' request should be created");
-
-      adiar_assert(request.levels_visited < varcount,
-                   "Cannot have already visited more levels than are expected");
-
-      bdd::label_type levels_visited = request.levels_visited + 1u;
-
-      if (child_to_resolve.is_terminal()) {
-        return child_to_resolve.value()
-          ? request.sum * (1u << (varcount - levels_visited))
-          : 0u;
-      } else {
-        count_pq.push({ child_to_resolve, request.sum, levels_visited });
-        return 0u;
-      }
+      return 0u;
     }
 
-    inline static queue_t combine_requests(const queue_t &acc, const queue_t &next)
+    static inline uint64_t
+    resolve_true(const data_type &d,
+                 const typename bdd::label_type varcount)
     {
-      adiar_assert(acc.target == next.target,
-                   "Requests should be for the same node");
+      adiar_assert(d.levels_visited <= varcount,
+                   "Cannot have visited more levels than exist");
 
+      const uint64_t unvisited = varcount - d.levels_visited;
+      return d.sum * (1u << unvisited);
+    }
+
+    static inline data_type
+    merge(const data_type &&acc, const data_type &next)
+    {
+      adiar_assert(acc.sum > 0u && next.sum > 0u,
+                   "No request should have an 'empty' set of assignemnts");
       adiar_assert(acc.levels_visited <= next.levels_visited,
-                   "Requests should be ordered on the number of levels visited");
+                   "Requests should be merged in ascending order of visited levels");
+
+      const uint64_t visited_diff = next.levels_visited - acc.levels_visited;
 
       return {
-        acc.target,
-        acc.sum * (1u << (next.levels_visited - acc.levels_visited)) + next.sum,
+        acc.sum * (1u << visited_diff) + next.sum,
         next.levels_visited
       };
+    }
+
+    static inline data_type
+    merge_end(const data_type &&acc)
+    {
+      return { acc.sum, acc.levels_visited + 1u };
     }
   };
 

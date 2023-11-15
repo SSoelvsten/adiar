@@ -9,100 +9,137 @@
 #include <adiar/internal/dd_func.h>
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
 #include <adiar/internal/data_types/uid.h>
+#include <adiar/internal/data_types/request.h>
 #include <adiar/internal/io/node_stream.h>
 
 namespace adiar::internal
 {
+  //////////////////////////////////////////////////////////////////////////////
+  //  Count Algorithm
+  // =================
+  //
+  // Traverses a Decision Diagram and accumulates a numeric count along each of
+  // its paths.
+  //
+  // Examples of uses are `bdd_pathcount` and `bdd_satcount`.
+  //////////////////////////////////////////////////////////////////////////////
+
   //////////////////////////////////////////////////////////////////////////////
   /// Struct to hold statistics
   extern statistics::count_t stats_count;
 
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
-  struct path_sum
-  { // TODO: replace with request class
-    node::uid_type target;
-    uint64_t sum;
+  template<typename Data>
+  using count_request = request_data<1, Data, 0>;
 
-    node::label_type level() const
-    { return target.label(); }
-  };
-
-  //////////////////////////////////////////////////////////////////////////////
-  // Priority queue functions
-  template<typename T>
-  struct count_queue_lt;
-
-  template<>
-  struct count_queue_lt<path_sum>
-  {
-    bool operator()(const path_sum &a, const path_sum &b)
-    {
-      return a.target < b.target;
-    }
-  };
-
-  template <typename value_t, size_t look_ahead, memory_mode mem_mode>
+  template <typename Data, size_t look_ahead, memory_mode mem_mode>
   using count_priority_queue_t =
-    levelized_node_priority_queue<value_t, count_queue_lt<value_t>,
+    levelized_node_priority_queue<count_request<Data>,
+                                  request_data_first_lt<count_request<Data>>,
                                   look_ahead,
                                   mem_mode>;
 
   //////////////////////////////////////////////////////////////////////////////
-  // Variadic behaviour
-  template<typename dd_policy>
-  class path_count_policy : public dd_policy
+  // PathCount Policy
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// Auxiliary data for the Priority Queue in PathCount algorithm.
+  //////////////////////////////////////////////////////////////////////////////
+  struct path_data
   {
-  public:
-    using queue_t = path_sum;
+    /// Sum of paths from parent
+    uint64_t sum;
 
-    template<typename count_pq_t>
-    inline static uint64_t forward_request(count_pq_t &count_pq,
-                                           const ptr_uint64::label_type /* varcount */,
-                                           const ptr_uint64 child_to_resolve,
-                                           const queue_t &request)
+    /// Dummy sorting predicate
+    inline bool operator< (const path_data &o) const
     {
-      adiar_assert(request.sum > 0, "No 'empty' request should be created");
-
-      if (child_to_resolve.is_terminal()) {
-        return child_to_resolve.value() ? request.sum : 0u;
-      } else {
-        count_pq.push({ child_to_resolve, request.sum });
-        return 0u;
-      }
+      return this->sum < o.sum;
     }
 
-    inline static queue_t combine_requests(const queue_t &acc, const queue_t &next)
-    {
-      adiar_assert(acc.target == next.target,
-                   "Requests should be for the same node");
+    static constexpr bool sort_on_tiebreak = false;
+  };
 
-      return { acc.target, acc.sum + next.sum };
+  //////////////////////////////////////////////////////////////////////////////
+  /// Policy with logic for specializing Count algorithm into PathCount.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename DdPolicy>
+  class path_count_policy : public DdPolicy
+  {
+  public:
+    using data_type = path_data;
+
+    static constexpr data_type init_data = { 1u };
+
+    static constexpr uint64_t
+    resolve_false(const data_type &/*d*/,
+                  const typename DdPolicy::label_type/*varcount*/)
+    {
+      return 0u;
+    }
+
+    static inline uint64_t
+    resolve_true(const data_type &d,
+                 const typename DdPolicy::label_type/*varcount*/)
+    {
+      return d.sum;
+    }
+
+    static inline data_type
+    merge(const data_type &&acc, const data_type &next)
+    {
+      adiar_assert(acc.sum > 0u && next.sum > 0u,
+                   "No request should have an 'empty' set of paths");
+
+      return { acc.sum + next.sum };
+    }
+
+    static inline data_type
+    merge_end(const data_type &&acc)
+    {
+      return acc;
     }
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  template<typename count_policy, typename count_pq_t>
-  uint64_t __count(const typename count_policy::dd_type &dd,
-                   const typename count_policy::label_type varcount,
+  template<typename Policy, typename PriorityQueue>
+  inline uint64_t
+  __count_resolve(PriorityQueue &count_pq,
+                  const typename Policy::pointer_type &target,
+                  const typename Policy::data_type &data,
+                  const typename Policy::label_type varcount)
+  {
+    if (target.is_false()) {
+      return Policy::resolve_false(data, varcount);
+    }
+    if (target.is_true()) {
+      return Policy::resolve_true(data, varcount);
+    }
+    count_pq.push({ {target}, {}, data });
+    return 0u;
+  }
+
+  template<typename Policy, typename PriorityQueue>
+  uint64_t __count(const typename Policy::dd_type &dd,
+                   const typename Policy::label_type varcount,
                    const size_t pq_max_memory,
                    const size_t pq_max_size)
   {
+    adiar_assert(!dd->is_terminal(),
+                 "Count Algorithm does not support terminal case");
+
     // Set up output
     uint64_t result = 0u;
 
     // Set up input
     node_stream<> ns(dd);
 
-    // Set up cross-level priority queue
-    count_pq_t count_pq({dd}, pq_max_memory, pq_max_size, stats_count.lpq);
+    // Set up cross-level priority queue with a request for the root
+    PriorityQueue count_pq({dd}, pq_max_memory, pq_max_size, stats_count.lpq);
+    {
+      const node root = ns.peek();
 
-    { // process the root and create initial recursion requests
-      node root = ns.pull();
-      typename count_policy::queue_t request = { root.uid(), 1u };
-
-      result += count_policy::forward_request(count_pq, varcount, root.low(), request);
-      result += count_policy::forward_request(count_pq, varcount, root.high(), request);
+      count_pq.push({ {root.uid()}, {}, Policy::init_data });
     }
 
     // Take out the rest of the nodes and process them one by one
@@ -110,30 +147,35 @@ namespace adiar::internal
       count_pq.setup_next_level();
 
       while (!count_pq.empty_level()) {
+        // Assuming there are no dead nodes, we should visit every node of dd
         const node n = ns.pull();
 
-        adiar_assert(count_pq.can_pull() && count_pq.top().target == n.uid(),
+        adiar_assert(count_pq.top().target[0] == n.uid(),
                      "Decision Diagram includes dead nodes");
 
-        // Resolve requests
-        typename count_policy::queue_t request = count_pq.pull();
+        // Merge requests for 'n'
+        const typename PriorityQueue::value_type request = count_pq.pull();
+        typename Policy::data_type data = request.data;
 
-        while (count_pq.can_pull() && count_pq.top().target == n.uid()) {
-          request = count_policy::combine_requests(request, count_pq.pull());
+        while (count_pq.can_pull() && count_pq.top().target[0] == n.uid()) {
+          data = Policy::merge(std::move(data), count_pq.pull().data);
         }
 
-        result += count_policy::forward_request(count_pq, varcount, n.low(), request);
-        result += count_policy::forward_request(count_pq, varcount, n.high(), request);
+        data = Policy::merge_end(std::move(data));
+
+        // Forward requests for children of 'n'
+        result += __count_resolve<Policy>(count_pq, n.low(),  data, varcount);
+        result += __count_resolve<Policy>(count_pq, n.high(), data, varcount);
       }
     }
 
     return result;
   }
 
-  template<typename count_policy>
+  template<typename Policy>
   uint64_t count(const exec_policy &ep,
-                 const typename count_policy::dd_type &dd,
-                 const typename count_policy::label_type varcount)
+                 const typename Policy::dd_type &dd,
+                 const typename Policy::label_type varcount)
   {
     adiar_assert(!dd_isterminal(dd),
                  "Count algorithm does not work on terminal-only edge case");
@@ -148,7 +190,7 @@ namespace adiar::internal
     const size_t aux_available_memory = memory_available() - node_stream<>::memory_usage();
 
     const size_t pq_memory_fits =
-      count_priority_queue_t<typename count_policy::queue_t, ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(aux_available_memory);
+      count_priority_queue_t<typename Policy::data_type, ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(aux_available_memory);
 
     const bool internal_only = ep.memory_mode() == exec_policy::memory::Internal;
     const bool external_only = ep.memory_mode() == exec_policy::memory::External;
@@ -161,25 +203,25 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
       stats_count.lpq.unbucketed += 1u;
 #endif
-      return __count<count_policy, count_priority_queue_t<typename count_policy::queue_t,
-                                                          0,
-                                                          memory_mode::Internal>>
+      return __count<Policy, count_priority_queue_t<typename Policy::data_type,
+                                                    0,
+                                                    memory_mode::Internal>>
         (dd, varcount, aux_available_memory, max_pq_size);
     } else if(!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
       stats_count.lpq.internal += 1u;
 #endif
-      return __count<count_policy, count_priority_queue_t<typename count_policy::queue_t,
-                                                          ADIAR_LPQ_LOOKAHEAD,
-                                                          memory_mode::Internal>>
+      return __count<Policy, count_priority_queue_t<typename Policy::data_type,
+                                                    ADIAR_LPQ_LOOKAHEAD,
+                                                    memory_mode::Internal>>
         (dd, varcount, aux_available_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
       stats_count.lpq.external += 1u;
 #endif
-      return __count<count_policy, count_priority_queue_t<typename count_policy::queue_t,
-                                                          ADIAR_LPQ_LOOKAHEAD,
-                                                          memory_mode::External>>
+      return __count<Policy, count_priority_queue_t<typename Policy::data_type,
+                                                    ADIAR_LPQ_LOOKAHEAD,
+                                                    memory_mode::External>>
         (dd, varcount, aux_available_memory, max_pq_size);
     }
   }
