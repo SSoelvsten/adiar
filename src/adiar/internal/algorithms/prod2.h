@@ -99,7 +99,7 @@ namespace adiar::internal
                                   const tuple<ptr_uint64> &target)
   {
     if (target[0].is_terminal() && target[1].is_terminal()) {
-      arc out_arc = { source, op(target[0], target[1]) };
+      const arc out_arc = { source, op(target[0], target[1]) };
       aw.push_terminal(out_arc);
     } else {
       adiar_assert(source.label() < std::min(target[0], target[1]).label(),
