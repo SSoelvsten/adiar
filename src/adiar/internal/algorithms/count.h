@@ -38,7 +38,9 @@ namespace adiar::internal
     levelized_node_priority_queue<count_request<Data>,
                                   request_data_first_lt<count_request<Data>>,
                                   look_ahead,
-                                  mem_mode>;
+                                  mem_mode,
+                                  1u,
+                                  0u>;
 
   //////////////////////////////////////////////////////////////////////////////
   // PathCount Policy
