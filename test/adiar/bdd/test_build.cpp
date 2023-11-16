@@ -941,6 +941,52 @@ go_bandit([]() {
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
+      it("works with ForwardIt::value_type == 'uint64_t'", [&]() {
+        std::vector<uint64_t> vars = { 1, 3 };
+
+        bdd res = bdd_and(vars.rbegin(), vars.rend());
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id,
+                                                terminal_F,
+                                                terminal_T)));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
+                                                terminal_F,
+                                                ptr_uint64(3, ptr_uint64::max_id))));
+
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(3,1u)));
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(2u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(3u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(3u));
+
+        AssertThat(bdd_iscanonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
       it("throws exception for non-ascending list", []() {
         std::vector<int> vars = { 3, 2 };
 
@@ -1419,6 +1465,68 @@ go_bandit([]() {
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(3u));
+      });
+
+      it("works with ForwardIt::value_type == 'ssize_t'", [&]() {
+        std::vector<ssize_t> vars = { 1, -2, 3, 5 };
+
+        bdd res = bdd_or(vars.rbegin(), vars.rend());
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(5, node::max_id,
+                                                terminal_F,
+                                                terminal_T)));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id,
+                                                ptr_uint64(5, ptr_uint64::max_id),
+                                                terminal_T)));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id,
+                                                terminal_T,
+                                                ptr_uint64(3, ptr_uint64::max_id))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
+                                                ptr_uint64(2, ptr_uint64::max_id),
+                                                terminal_T)));
+
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(5,1u)));
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(3,1u)));
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(4u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(5u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(4u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(5u));
+
+        AssertThat(bdd_iscanonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(4u));
       });
 
       it("throws exception for non-ascending list", []() {
