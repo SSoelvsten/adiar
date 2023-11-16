@@ -105,7 +105,7 @@ namespace adiar
     static_assert(std::is_integral<RetType>::value);
 
   private:
-    static constexpr RetType max_value = std::numeric_limits<RetType>::max();
+    static constexpr RetType max_value = std::numeric_limits<int>::max();
 
   public:
     using value_type = RetType;

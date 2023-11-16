@@ -39,15 +39,10 @@ namespace adiar
   template<>
   struct generator_end<pair<bdd::label_type, bool>>
   {
-    // TODO: use `generator_end<bdd::label_type>::value` instead of code duplication.
-  private:
-    static constexpr bdd::label_type max_label =
-      std::numeric_limits<bdd::label_type>::max();
-
   public:
     using value_type = pair<bdd::label_type, bool>;
 
-    static constexpr value_type value{max_label, false};
+    static constexpr value_type value{generator_end<bdd::label_type>::value, false};
   };
   /// \endcond
 
