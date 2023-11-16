@@ -379,11 +379,360 @@ go_bandit([]() {
       });
     });
 
-    describe("bdd_and(vars)", [&]() {
-      // TODO
+    describe("bdd_and(generator<pair<bdd::label_type, bool>>)", [&]() {
+      it("creates T from empty generator", [&]() {
+        const auto gen = []() -> pair<bdd::label_type, bool> {
+          return make_pair(bdd::max_label+1, false);
+        };
+
+        bdd res = bdd_and(gen);
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(true)));
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(0u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(bdd_iscanonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      it("can create x1", [&]() {
+        int calls = 0;
+
+        const auto gen = [&calls]() -> pair<bdd::label_type, bool> {
+          return calls++ > 0
+            ? make_pair(bdd::max_label+1, false)
+            : make_pair(1u, false);
+        };
+
+        bdd res = bdd_and(gen);
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
+                                                terminal_F,
+                                                terminal_T)));
+
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(bdd_iscanonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      it("can create -x1", [&]() {
+        int calls = 0;
+
+        const auto gen = [&calls]() -> pair<bdd::label_type, bool> {
+          return calls++ > 0
+            ? make_pair(bdd::max_label+1, true)
+            : make_pair(1u, true);
+        };
+
+        bdd res = bdd_and(gen);
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
+                                                terminal_T,
+                                                terminal_F)));
+
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(bdd_iscanonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      // TODO: more tests independent of iterators
+    });
+
+    describe("bdd_and(generator<int>)", [&]() {
+      it("creates T from empty generator", [&]() {
+        const auto gen = []() -> int {
+          return bdd::max_label+1;
+        };
+
+        bdd res = bdd_and(gen);
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(true)));
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(0u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(bdd_iscanonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      it("can create x1", [&]() {
+        int calls = 0;
+
+        const auto gen = [&calls]() -> int {
+          return calls++ > 0 ? bdd::max_label+1 : 1;
+        };
+
+        bdd res = bdd_and(gen);
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
+                                                terminal_F,
+                                                terminal_T)));
+
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(bdd_iscanonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      it("can create -x1", [&]() {
+        int calls = 0;
+
+        const auto gen = [&calls]() -> int {
+          return calls++ > 0 ? bdd::max_label+1 : -1;
+        };
+
+        bdd res = bdd_and(gen);
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
+                                                terminal_T,
+                                                terminal_F)));
+
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(bdd_iscanonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      // TODO: more tests independent of iterators
     });
 
     describe("bdd_and(begin, end)", [&]() {
+      it("can create {} as trivially true", [&]() {
+        std::vector<int> vars;
+
+        bdd res = bdd_and(vars.rbegin(), vars.rend());
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(true)));
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(0u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(bdd_iscanonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      it("can create {x1}", [&]() {
+        std::vector<int> vars = { 1 };
+
+        bdd res = bdd_and(vars.rbegin(), vars.rend());
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
+                                                terminal_F,
+                                                terminal_T)));
+
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(bdd_iscanonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      it("can create {-x1}", [&]() {
+        std::vector<int> vars = { -1 };
+
+        bdd res = bdd_and(vars.rbegin(), vars.rend());
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
+                                                terminal_T,
+                                                terminal_F)));
+
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(bdd_iscanonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
       it("can create {x1, x2, x5}", [&]() {
         std::vector<int> vars = { 1, 2, 5 };
 
@@ -438,34 +787,103 @@ go_bandit([]() {
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
-      it("can create {} as trivially true", [&]() {
-        std::vector<int> vars;
+      it("can create {-x1, -x2, x5}", [&]() {
+        std::vector<int> vars = { -1, -2, 5 };
 
         bdd res = bdd_and(vars.rbegin(), vars.rend());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(true)));
+        AssertThat(ns.pull(), Is().EqualTo(node(5, node::max_id,
+                                                terminal_F,
+                                                terminal_T)));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id,
+                                                ptr_uint64(5, ptr_uint64::max_id),
+                                                terminal_F)));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
+                                                ptr_uint64(2, ptr_uint64::max_id),
+                                                terminal_F)));
+
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(5,1u)));
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(res->width, Is().EqualTo(0u));
+        AssertThat(res->width, Is().EqualTo(1u));
 
-        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(0u));
-        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(3u));
         AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(4u));
 
-        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(0u));
-        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(3u));
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(4u));
 
         AssertThat(bdd_iscanonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(3u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      it("can create {x1, -x2}", [&]() {
+        std::vector<int> vars = { 1, -2 };
+
+        bdd res = bdd_and(vars.rbegin(), vars.rend());
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id,
+                                                terminal_T,
+                                                terminal_F)));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
+                                                terminal_F,
+                                                ptr_uint64(2, ptr_uint64::max_id))));
+
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(2u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(3u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(3u));
+
+        AssertThat(bdd_iscanonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(2u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
@@ -530,8 +948,250 @@ go_bandit([]() {
       });
     });
 
-    describe("bdd_or(vars)", [&]() {
-      // TODO
+    describe("bdd_or(generator<pair<bdd::label_type, bool>>)", [&]() {
+      it("creates F from empty generator", [&]() {
+        const auto gen = []() -> pair<bdd::label_type, bool> {
+          return make_pair(bdd::max_label+1, false);
+        };
+
+        bdd res = bdd_or(gen);
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(false)));
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(0u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(bdd_iscanonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
+      });
+
+      it("can create x1", [&]() {
+        int calls = 0;
+
+        const auto gen = [&calls]() -> pair<bdd::label_type, bool> {
+          return calls++ > 0
+            ? make_pair(bdd::max_label+1, false)
+            : make_pair(1u, false);
+        };
+
+        bdd res = bdd_or(gen);
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
+                                                terminal_F,
+                                                terminal_T)));
+
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(bdd_iscanonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      it("can create -x1", [&]() {
+        int calls = 0;
+
+        const auto gen = [&calls]() -> pair<bdd::label_type, bool> {
+          return calls++ > 0
+            ? make_pair(bdd::max_label+1, true)
+            : make_pair(1u, true);
+        };
+
+        bdd res = bdd_or(gen);
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
+                                                terminal_T,
+                                                terminal_F)));
+
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(bdd_iscanonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      // TODO: more tests independent of iterators (and differentiating it from bdd_and)
+    });
+
+    describe("bdd_or(generator<int>)", [&]() {
+      it("creates F from empty generator", [&]() {
+        const auto gen = []() -> int {
+          return bdd::max_label+1;
+        };
+
+        bdd res = bdd_or(gen);
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(false)));
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(0u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(bdd_iscanonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
+      });
+
+      it("can create x1", [&]() {
+        int calls = 0;
+
+        const auto gen = [&calls]() -> int {
+          return calls++ > 0 ? bdd::max_label+1 : 1;
+        };
+
+        bdd res = bdd_or(gen);
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
+                                                terminal_F,
+                                                terminal_T)));
+
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(bdd_iscanonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      it("can create -x1", [&]() {
+        int calls = 0;
+
+        const auto gen = [&calls]() -> int {
+          return calls++ > 0 ? bdd::max_label+1 : -1;
+        };
+
+        bdd res = bdd_or(gen);
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
+                                                terminal_T,
+                                                terminal_F)));
+
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(bdd_iscanonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      // TODO: more tests independent of iterators (and differentiating it from bdd_and)
     });
 
     describe("bdd_or(begin, end)", [&]() {
@@ -613,6 +1273,98 @@ go_bandit([]() {
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
+      });
+
+      it("can create {x1, -x3}", [&]() {
+        std::vector<int> vars = { 1, -3 };
+
+        bdd res = bdd_or(vars.rbegin(), vars.rend());
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id,
+                                                terminal_T,
+                                                terminal_F)));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
+                                                ptr_uint64(3, ptr_uint64::max_id),
+                                                terminal_T)));
+
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(3,1u)));
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(2u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(3u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(3u));
+
+        AssertThat(bdd_iscanonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
+      });
+
+      it("can create {-x2, x4}", [&]() {
+        std::vector<int> vars = { -2, 4 };
+
+        bdd res = bdd_or(vars.rbegin(), vars.rend());
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(4, node::max_id,
+                                                terminal_F,
+                                                terminal_T)));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id,
+                                                terminal_T,
+                                                ptr_uint64(4, ptr_uint64::max_id))));
+
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(4,1u)));
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(2u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(3u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(3u));
+
+        AssertThat(bdd_iscanonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("skips duplicates", [&]() {

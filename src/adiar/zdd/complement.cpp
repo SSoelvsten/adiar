@@ -33,7 +33,9 @@ namespace adiar
 
       inline
       bdd::node_type
-      make_node(const zdd::label_type &l, const zdd::pointer_type &r) const
+      make_node(const zdd::label_type &l,
+                const zdd::pointer_type &r,
+                const bool/*negated*/) const
       {
         if (r.is_terminal()) {
           adiar_assert(r.value() == false, "Root should be Ø");

@@ -39,11 +39,15 @@ namespace adiar
   template<>
   struct generator_end<pair<bdd::label_type, bool>>
   {
+    // TODO: use `generator_end<bdd::label_type>::value` instead of code duplication.
+  private:
+    static constexpr bdd::label_type max_label =
+      std::numeric_limits<bdd::label_type>::max();
+
+  public:
     using value_type = pair<bdd::label_type, bool>;
 
-    // TODO: use `generator_end<bdd::label_type>::value` instead of code duplication.
-    static constexpr value_type value =
-      make_pair(static_cast<bdd::label_type>(-1), false);
+    static constexpr value_type value{max_label, false};
   };
   /// \endcond
 
@@ -124,8 +128,11 @@ namespace adiar
   bdd bdd_nithvar(bdd::label_type var);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief       The BDD representing the logical 'and' of all the given
-  ///              variables, i.e. a *term* of variables.
+  /// \brief      The BDD representing the logical 'and' of all the given
+  ///             variables, i.e. a *term* of variables.
+  ///
+  /// \details    Any negative labels provided by the generator are interpreted
+  ///             as the negation of said variable.
   ///
   /// \param vars Generator of labels of variables in \em descending order. When
   ///             none are left it must return a value greater than
@@ -135,11 +142,28 @@ namespace adiar
   ///
   /// \throws invalid_argument If `vars` are not in descending order.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_and(const generator<bdd::label_type> &vars);
+  bdd bdd_and(const generator<int> &vars);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief      The BDD representing the logical 'and' of all the given
+  ///             variables, i.e. a *term* of variables.
+  ///
+  /// \param vars Generator of pairs (label, negated) in \em descending order.
+  ///             When none are left it must return a value greater than
+  ///             `(bdd::max_label, _)`.
+  ///
+  /// \returns    \f$ \bigwedge_{x \in \mathit{vars}} x \f$
+  ///
+  /// \throws invalid_argument If `vars` are not in descending order.
+  //////////////////////////////////////////////////////////////////////////////
+  bdd bdd_and(const generator<pair<bdd::label_type, bool>> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The BDD representing the logical 'and' of all the given
   ///              variables, i.e. a *term* of variables.
+  ///
+  /// \details     Any negative labels provided by the generator are interpreted
+  ///              as the negation of said variable.
   ///
   /// \param begin Single-pass forward iterator that provides the variables in
   ///              \em descending order.
@@ -159,8 +183,8 @@ namespace adiar
   /// \brief      The BDD representing the logical 'or' of all the given
   ///             variables, i.e. a *clause* of variables.
   ///
-  /// \details    Creates a BDD with a chain of nodes on the 'low' arc to the
-  ///             true child, and false otherwise.
+  /// \details    Any negative labels provided by the generator are interpreted
+  ///             as the negation of said variable.
   ///
   /// \param vars Generator of labels of variables in \em descending order. When
   ///             none are left it must return a value greater than
@@ -170,11 +194,28 @@ namespace adiar
   ///
   /// \throws invalid_argument If `vars` are not in descending order.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_or(const generator<bdd::label_type> &vars);
+  bdd bdd_or(const generator<int> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      The BDD representing the logical 'or' of all the given
   ///             variables, i.e. a *clause* of variables.
+  ///
+  /// \param vars Generator of pairs (label, negated) in \em descending order.
+  ///             When none are left it must return a value greater than
+  ///             `(bdd::max_label, _)`.
+  ///
+  /// \returns    \f$ \bigvee_{x \in \mathit{vars}} x \f$
+  ///
+  /// \throws invalid_argument If `vars` are not in descending order.
+  //////////////////////////////////////////////////////////////////////////////
+  bdd bdd_or(const generator<pair<bdd::label_type, bool>> &vars);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief       The BDD representing the logical 'or' of all the given
+  ///              variables, i.e. a *clause* of variables.
+  ///
+  /// \details     Any negative labels provided by the generator are interpreted
+  ///              as the negation of said variable.
   ///
   /// \param begin Single-pass forward iterator that provides the variables in
   ///              \em descending order.

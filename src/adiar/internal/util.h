@@ -4,6 +4,7 @@
 #include <type_traits>
 
 #include <adiar/functional.h>
+#include <adiar/types.h>
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/dd.h>
@@ -151,6 +152,27 @@ namespace adiar::internal
     // Sort internal arcs by their target
     af->sort<arc_target_lt>(file_traits<arc>::idx__internal);
     return af;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Wrap a `generator<int>` into a `generator<pair<label_type, bool>>`
+  ///        where the boolean value is true if the value is negative.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename DdPolicy, typename Generator>
+  generator<pair<typename DdPolicy::label_type, bool>>
+  wrap_signed_generator(const Generator &g)
+  {
+    using signed_type = typename Generator::result_type;
+    using label_type  = typename DdPolicy::label_type;
+
+    return [&g]() -> pair<label_type, bool> {
+      const signed_type next = g();
+
+      const label_type x = static_cast<label_type>(std::abs(next));
+      const bool negated = next < 0;
+
+      return pair<label_type, bool>{ x, negated };
+    };
   }
 }
 

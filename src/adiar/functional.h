@@ -2,6 +2,7 @@
 #define ADIAR_FUNCTIONAL_H
 
 #include <functional>
+#include <limits>
 #include <type_traits>
 
 #include <adiar/exception.h>
@@ -101,10 +102,15 @@ namespace adiar
   template <typename RetType>
   struct generator_end
   {
+    static_assert(std::is_integral<RetType>::value);
+
+  private:
+    static constexpr RetType max_value = std::numeric_limits<RetType>::max();
+
+  public:
     using value_type = RetType;
 
-    static_assert(std::is_integral<RetType>::value);
-    static constexpr value_type value = static_cast<value_type>(-1);
+    static constexpr RetType value{max_value};
   };
 
   // TODO: Specialize for DDs (Both BDDs and ZDDs) to return an empty file.

@@ -44,7 +44,9 @@ namespace adiar
     { return false; }
 
     inline zdd_policy::node_type
-    make_node(const zdd_policy::label_type &l, const zdd_policy::pointer_type &r) const
+    make_node(const zdd_policy::label_type &l,
+              const zdd_policy::pointer_type &r,
+              const bool/*negated*/) const
     {
       if (l == var) {
         return zdd_policy::node_type(l, zdd_policy::max_id, zdd_policy::pointer_type(false), r);
@@ -89,7 +91,9 @@ namespace adiar
     { return l == var; }
 
     inline zdd_policy::node_type
-    make_node(const zdd_policy::label_type &l, const zdd_policy::pointer_type &r) const
+    make_node(const zdd_policy::label_type &l,
+              const zdd_policy::pointer_type &r,
+              const bool/*negated*/) const
     { return zdd_policy::node_type(l, zdd_policy::max_id, r, r); }
   };
 
