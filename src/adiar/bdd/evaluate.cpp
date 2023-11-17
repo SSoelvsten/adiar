@@ -122,39 +122,20 @@ namespace adiar
 
     void operator() (bdd::label_type x, bool v)
     {
-      _stack.push({x, v});
+      _stack.push({x, !v});
     }
 
     bdd get_bdd()
     {
       adiar_assert(!_stack.empty());
 
-      // TODO: generalise into `bdd_cube(generator<label_type, bool>)` (#533)
+      return bdd_cube([this]() {
+        if (this->_stack.empty()) { return make_optional<value_type>(); }
 
-      internal::shared_levelized_file<bdd::node_type> nf;
-      internal::node_writer nw(nf);
-
-      bdd::pointer_type latest = bdd::pointer_type(true);
-      while (!_stack.empty()) {
-        const value_type& b = _stack.top();
-
-        const bdd::node_type n(b.first, bdd::max_id,
-                               b.second ? bdd::pointer_type(false) : latest,
-                               b.second ? latest : bdd::pointer_type(false));
-
-        nw.unsafe_push(n);
-        nw.unsafe_push(internal::level_info(b.first, 1u));
-
-        latest = n.uid();
-        _stack.pop();
-      }
-
-      nf->max_1level_cut[internal::cut::Internal]       = 1u;
-      nf->max_1level_cut[internal::cut::Internal_False] = nf->number_of_terminals[false];
-      nf->max_1level_cut[internal::cut::Internal_True]  = 1u; // == nf->number_of_terminals[true]
-      nf->max_1level_cut[internal::cut::All]            = nf->number_of_terminals[false] + 1u;
-
-      return nf;
+        const value_type top = this->_stack.top();
+        this->_stack.pop();
+        return make_optional<value_type>(top);
+      });
     }
   };
 
