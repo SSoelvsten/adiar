@@ -1014,7 +1014,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     bool has_sweep(const typename quantify_policy::label_type l)
     {
-      return has_next_level() && l == next_level(l)
+      return l == next_level(l)
         ? quantify_policy::quantify_onset
         : !quantify_policy::quantify_onset;
     }
