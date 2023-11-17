@@ -168,9 +168,10 @@ namespace adiar::internal
       const typename Generator::result_type next_opt = g();
 
       if (next_opt) {
-        const pair<label_type, bool> ret_value = make_pair(std::abs(next_opt.value()),
-                                                           next_opt.value() < 0);
-        return make_optional(ret_value);
+        const label_type x = std::abs(next_opt.value());
+        const bool negated = next_opt.value() < 0;
+
+        return make_pair(x, negated);
       }
       return make_optional<pair<label_type, bool>>();
     };
