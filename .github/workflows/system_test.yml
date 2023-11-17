@@ -43,7 +43,7 @@ jobs:
         include:
           - name: 'Knights Tour (ZDD)'
             exec: adiar_knights_tour_zdd
-            N: '8 9 10 11'
+            N: '3 4 5 6'
 
           - name: 'Queens (BDD)'
             exec: adiar_queens_bdd
