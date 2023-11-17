@@ -17,6 +17,7 @@ var classadiar_1_1internal_1_1dd =
     [ "number_of_terminals", "classadiar_1_1internal_1_1dd.html#aa97722d01a0549b7ee27d9e9a1798e55", null ],
     [ "operator->", "classadiar_1_1internal_1_1dd.html#a088788c99e9b13c426b387cf7d89d01b", null ],
     [ "size", "classadiar_1_1internal_1_1dd.html#adc08e814ccd31b2c213cae02421a7856", null ],
+    [ "width", "classadiar_1_1internal_1_1dd.html#ae50a9dc1b8fcd0a6a907e4b1e3f22ac3", null ],
     [ "__dd", "classadiar_1_1internal_1_1dd.html#a73a1f3919e8a94357fba089164fcdbdf", null ],
     [ "comparison_check", "classadiar_1_1internal_1_1dd.html#af533cf25e5656fe4773d179b09d5fa2f", null ],
     [ "convert_dd_policy", "classadiar_1_1internal_1_1dd.html#ac603297de2949a5029075382d9be33d4", null ],

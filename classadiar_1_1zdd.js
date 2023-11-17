@@ -24,6 +24,7 @@ var classadiar_1_1zdd =
     [ "operator=", "classadiar_1_1zdd.html#ae8cfa4b2465ee05d94a88ee7a22051ee", null ],
     [ "operator|=", "classadiar_1_1zdd.html#afd2bff4462b212467f2245b3479cbd16", null ],
     [ "size", "classadiar_1_1zdd.html#adc08e814ccd31b2c213cae02421a7856", null ],
+    [ "width", "classadiar_1_1zdd.html#ae50a9dc1b8fcd0a6a907e4b1e3f22ac3", null ],
     [ "zdd_disjoint", "classadiar_1_1zdd.html#a9f6acca46c09c144a77d5c6ef22baa7e", null ],
     [ "zdd_nodecount", "classadiar_1_1zdd.html#a28e09b085cb2a73dee336defc2019ab7", null ],
     [ "zdd_subseteq", "classadiar_1_1zdd.html#a68f0031807f08383fff89fd111ace451", null ],

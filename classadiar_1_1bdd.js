@@ -24,6 +24,7 @@ var classadiar_1_1bdd =
     [ "operator^=", "classadiar_1_1bdd.html#a1ccd22bde3c2541e5000a8fd100cf99a", null ],
     [ "operator|=", "classadiar_1_1bdd.html#a09927a3b6d7acedc355f5a4ce8698a1f", null ],
     [ "size", "classadiar_1_1bdd.html#adc08e814ccd31b2c213cae02421a7856", null ],
+    [ "width", "classadiar_1_1bdd.html#ae50a9dc1b8fcd0a6a907e4b1e3f22ac3", null ],
     [ "apply_prod2_policy", "classadiar_1_1bdd.html#a5d31df8b95c73a79fc6e16b01db620a0", null ],
     [ "bdd_ite", "classadiar_1_1bdd.html#a27912dac242552a6c0b6cc13a52b3f8c", null ],
     [ "bdd_nodecount", "classadiar_1_1bdd.html#a467df9b676300170cb751965d4d9556a", null ],
