@@ -13,8 +13,9 @@
 
 namespace adiar
 {
-  template<typename Generator>
-  using bdd_chain_converter = internal::chain_converter<bdd_policy, Generator>;
+  template<typename Generator, bool negate>
+  using bdd_chain_converter =
+    internal::chain_converter<bdd_policy, Generator, negate>;
 
   //////////////////////////////////////////////////////////////////////////////
   bdd bdd_const(bool value)
@@ -74,7 +75,7 @@ namespace adiar
   bdd bdd_and(const generator<pair<bdd::label_type, bool>> &vars)
   {
     bdd_and_policy p;
-    bdd_chain_converter<decltype(vars)> vars_wrapper(vars);
+    bdd_chain_converter<decltype(vars), false> vars_wrapper(vars);
 
     return internal::build_chain<>(p, vars_wrapper);
   }
@@ -82,49 +83,25 @@ namespace adiar
   bdd bdd_and(const generator<int> &vars)
   {
     bdd_and_policy p;
-    bdd_chain_converter<decltype(vars)> vars_wrapper(vars);
+    bdd_chain_converter<decltype(vars), false> vars_wrapper(vars);
 
     return internal::build_chain<>(p, vars_wrapper);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  // TODO: Remove `bdd_or_policy` in favour of using De Morgan's law with
-  //       `bdd_and`
-  class bdd_or_policy : public bdd_policy
-  {
-  public:
-    static constexpr bool init_terminal = false;
-
-    constexpr bool
-    skip(const bdd::label_type &) const
-    { return false; }
-
-    inline typename bdd::node_type
-    make_node(const bdd::label_type &l,
-              const bdd::pointer_type &r,
-              const bool negated) const
-    {
-      const bdd::pointer_type low  = negated ? bdd::pointer_type(true) : r;
-      const bdd::pointer_type high = negated ? r : bdd::pointer_type(true);
-
-      return typename bdd::node_type(l, bdd::max_id, low, high);
-    }
-  };
-
-
   bdd bdd_or(const generator<pair<bdd::label_type, bool>> &vars)
   {
-    bdd_or_policy p;
-    bdd_chain_converter<decltype(vars)> vars_wrapper(vars);
+    bdd_and_policy p;
+    bdd_chain_converter<decltype(vars), true> vars_wrapper(vars);
 
-    return internal::build_chain<>(p, vars_wrapper);
+    return bdd_not(internal::build_chain<>(p, vars_wrapper));
   }
 
   bdd bdd_or(const generator<int> &vars)
   {
-    bdd_or_policy p;
-    bdd_chain_converter<decltype(vars)> vars_wrapper(vars);
+    bdd_and_policy p;
+    bdd_chain_converter<decltype(vars), true> vars_wrapper(vars);
 
-    return internal::build_chain<>(p, vars_wrapper);
+    return bdd_not(internal::build_chain<>(p, vars_wrapper));
   }
 }
