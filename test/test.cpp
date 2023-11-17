@@ -60,6 +60,7 @@ go_bandit([]() {
 #include "adiar/internal/data_types/test_convert.cpp"
 
 #include "adiar/test_exec_policy.cpp"
+#include "adiar/test_functional.cpp"
 
 #include "adiar/internal/io/test_file.cpp"
 #include "adiar/internal/io/test_levelized_file.cpp"
