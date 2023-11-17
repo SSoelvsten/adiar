@@ -31,6 +31,7 @@ namespace adiar
   make_pair(const T1 &t1, const T2 &t2)
   { return std::make_pair(t1, t2); }
 
+  /*
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create an `adiar::pair`, deducing the target type based on the
   ///        types of the arguments.
@@ -39,6 +40,7 @@ namespace adiar
   constexpr pair<T1, T2>
   make_pair(T1 &&t1, T2 &&t2)
   { return std::make_pair(std::move(t1), std::move(t2)); }
+  */
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief An optional value, i.e. a possibly existent value.
@@ -65,6 +67,7 @@ namespace adiar
   make_optional(const T &t)
   { return std::make_optional(t); }
 
+  /*
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create an `adiar::optional` with *Some* value.
   //////////////////////////////////////////////////////////////////////////////
@@ -72,6 +75,7 @@ namespace adiar
   constexpr optional<T>
   make_optional(T &&t)
   { return std::make_optional(std::move(t)); }
+  */
 }
 
 #endif // ADIAR_TYPES_H
