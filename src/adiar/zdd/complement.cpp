@@ -61,12 +61,20 @@ namespace adiar
       // TODO: remove
       internal::file_stream<zdd::label_type, true> ls(universe);
 
+      const generator<zdd::label_type> universe_generator = make_generator(ls);
+
+      using complement_chain_converter =
+        internal::chain_converter<zdd_policy, generator<zdd::label_type>>;
+
+      const complement_chain_converter wrapped_universe(universe_generator);
+
       if (terminal_value) { // Include everything but Ø
         on_true_terminal_chain_policy p;
-        return internal::build_chain<>(p, make_generator(ls));
+
+        return internal::build_chain<>(p, wrapped_universe);
       } else { // The complement of nothing is everything
         internal::chain_both<zdd_policy> p;
-        return internal::build_chain<>(p, make_generator(ls));
+        return internal::build_chain<>(p, wrapped_universe);
       }
     }
 

@@ -153,29 +153,6 @@ namespace adiar::internal
     af->sort<arc_target_lt>(file_traits<arc>::idx__internal);
     return af;
   }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Wrap a `generator<int>` into a `generator<pair<label_type, bool>>`
-  ///        where the boolean value is true if the value is negative.
-  //////////////////////////////////////////////////////////////////////////////
-  template<typename DdPolicy, typename Generator>
-  generator<pair<typename DdPolicy::label_type, bool>>
-  wrap_signed_generator(const Generator &g)
-  {
-    using label_type  = typename DdPolicy::label_type;
-
-    return [&g]() -> optional<pair<label_type, bool>> {
-      const typename Generator::result_type next_opt = g();
-
-      if (next_opt) {
-        const label_type x = std::abs(next_opt.value());
-        const bool negated = next_opt.value() < 0;
-
-        return make_pair(x, negated);
-      }
-      return make_optional<pair<label_type, bool>>();
-    };
-  }
 }
 
 #endif // ADIAR_INTERNAL_UTIL_H
