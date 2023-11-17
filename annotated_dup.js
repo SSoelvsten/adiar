@@ -30,7 +30,6 @@ var annotated_dup =
         [ "__uid", "classadiar_1_1internal_1_1____uid.html", "classadiar_1_1internal_1_1____uid" ]
       ] ],
       [ "exec_policy", "classadiar_1_1exec__policy.html", "classadiar_1_1exec__policy" ],
-      [ "generator_end", "structadiar_1_1generator__end.html", "structadiar_1_1generator__end" ],
       [ "__bdd", "classadiar_1_1____bdd.html", "classadiar_1_1____bdd" ],
       [ "bdd", "classadiar_1_1bdd.html", "classadiar_1_1bdd" ],
       [ "__zdd", "classadiar_1_1____zdd.html", "classadiar_1_1____zdd" ],

@@ -1,4 +1,7 @@
 var searchData=
 [
-  ['outer_5ft_439',['outer_t',['../structadiar_1_1statistics_1_1nested__sweeping__t_1_1outer__t.html',1,'adiar::statistics::nested_sweeping_t']]]
+  ['pq_5ft_440',['pq_t',['../structadiar_1_1statistics_1_1prod2__t_1_1pq__t.html',1,'adiar::statistics::prod2_t']]],
+  ['prod2_5ft_441',['prod2_t',['../structadiar_1_1statistics_1_1prod2__t.html',1,'adiar::statistics']]],
+  ['prod3_5ft_442',['prod3_t',['../structadiar_1_1statistics_1_1prod3__t.html',1,'adiar::statistics']]],
+  ['ptr_5fuint64_443',['ptr_uint64',['../classadiar_1_1internal_1_1ptr__uint64.html',1,'adiar::internal']]]
 ];

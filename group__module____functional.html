@@ -91,8 +91,6 @@ $(document).ready(function(){initNavTree('group__module____functional.html','');
 </div>
 
 <div class="header">
-  <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
   <div class="headertitle">
 <div class="title">Function Objects</div>  </div>
 </div><!--header-->
@@ -101,12 +99,6 @@ $(document).ready(function(){initNavTree('group__module____functional.html','');
 <p>The bridge between you and Adiar.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structadiar_1_1generator__end.html">adiar::generator_end&lt; RetType &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Template specialization to derive the <code>end</code> (similar to <code>EOF</code>) return-value for a generator function.  <a href="structadiar_1_1generator__end.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader">Function Objects</h2></td></tr>
 <tr><td class="ititle" colspan="2"><p><a class="anchor" id="amgrp3bc1a0f1fb050d095430ca9906c4d525"></a>To bridge the gap between your algorithms and their data structures and the algorithms of Adiar, we use the abstract notion of <em>predicate</em>, <em>consumer</em>, and <em>generator</em> functions. </p>
 </td></tr>
@@ -122,24 +114,38 @@ Classes</h2></td></tr>
 <tr class="memitem:ga99494f283acb45d89d508b47a9e7b4b5"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____functional.html#ga99494f283acb45d89d508b47a9e7b4b5">adiar::consumer</a> = <a class="el" href="group__module____functional.html#ga7cedafe2a659228db84b6dc3c35fb0ca">function</a>&lt; void(Args...)&gt;</td></tr>
 <tr class="memdesc:ga99494f283acb45d89d508b47a9e7b4b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Consumer function of value(s) of type(s) <code>Args</code>.  <a href="group__module____functional.html#ga99494f283acb45d89d508b47a9e7b4b5">More...</a><br /></td></tr>
 <tr class="separator:ga99494f283acb45d89d508b47a9e7b4b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gafc1dc465a57ff35315eefcd90fbd3e34"><td class="memTemplParams" colspan="2">template&lt;typename RetType &gt; </td></tr>
-<tr class="memitem:gafc1dc465a57ff35315eefcd90fbd3e34"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____functional.html#gafc1dc465a57ff35315eefcd90fbd3e34">adiar::generator</a> = <a class="el" href="group__module____functional.html#ga7cedafe2a659228db84b6dc3c35fb0ca">function</a>&lt; RetType()&gt;</td></tr>
-<tr class="memdesc:gafc1dc465a57ff35315eefcd90fbd3e34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generator function that <em>produces</em> a new value of <code>RetType</code> for each call.  <a href="group__module____functional.html#gafc1dc465a57ff35315eefcd90fbd3e34">More...</a><br /></td></tr>
-<tr class="separator:gafc1dc465a57ff35315eefcd90fbd3e34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga73cb424aed6cb6d7e9e6c7d9d85132d7"><td class="memTemplParams" colspan="2">template&lt;typename RetType &gt; </td></tr>
+<tr class="memitem:ga73cb424aed6cb6d7e9e6c7d9d85132d7"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____functional.html#ga73cb424aed6cb6d7e9e6c7d9d85132d7">adiar::generator</a> = <a class="el" href="group__module____functional.html#ga7cedafe2a659228db84b6dc3c35fb0ca">function</a>&lt; <a class="el" href="namespaceadiar.html#ac00584c842920c2e4fd92d13b5112746">optional</a>&lt; RetType &gt;()&gt;</td></tr>
+<tr class="memdesc:ga73cb424aed6cb6d7e9e6c7d9d85132d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generator function that <em>produces</em> a new value of <code>RetType</code> for each call.  <a href="group__module____functional.html#ga73cb424aed6cb6d7e9e6c7d9d85132d7">More...</a><br /></td></tr>
+<tr class="separator:ga73cb424aed6cb6d7e9e6c7d9d85132d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga923a64580e0b6124c8e9c9bafb27f7e0"><td class="memTemplParams" colspan="2">template&lt;typename ForwardIt &gt; </td></tr>
 <tr class="memitem:ga923a64580e0b6124c8e9c9bafb27f7e0"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="group__module____functional.html#ga99494f283acb45d89d508b47a9e7b4b5">consumer</a>&lt; typename ForwardIt::value_type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____functional.html#ga923a64580e0b6124c8e9c9bafb27f7e0">adiar::make_consumer</a> (ForwardIt &amp;begin, ForwardIt &amp;end)</td></tr>
 <tr class="memdesc:ga923a64580e0b6124c8e9c9bafb27f7e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrap a <code>begin</code> and <code>end</code> iterator pair into a consumer function.  <a href="group__module____functional.html#ga923a64580e0b6124c8e9c9bafb27f7e0">More...</a><br /></td></tr>
 <tr class="separator:ga923a64580e0b6124c8e9c9bafb27f7e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa70413032ba90587f737f9b84d98430c"><td class="memTemplParams" colspan="2">template&lt;typename ForwardIt &gt; </td></tr>
+<tr class="memitem:gaa70413032ba90587f737f9b84d98430c"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="group__module____functional.html#ga99494f283acb45d89d508b47a9e7b4b5">consumer</a>&lt; typename ForwardIt::value_type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____functional.html#gaa70413032ba90587f737f9b84d98430c">adiar::make_consumer</a> (ForwardIt &amp;&amp;begin, ForwardIt &amp;&amp;end)</td></tr>
+<tr class="memdesc:gaa70413032ba90587f737f9b84d98430c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrap a <code>begin</code> and <code>end</code> iterator pair into a consumer function.  <a href="group__module____functional.html#gaa70413032ba90587f737f9b84d98430c">More...</a><br /></td></tr>
+<tr class="separator:gaa70413032ba90587f737f9b84d98430c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga0bb6ca574a1999bd9895ed6517e92972"><td class="memTemplParams" colspan="2"><a id="ga0bb6ca574a1999bd9895ed6517e92972"></a>
 template&lt;typename ForwardIt &gt; </td></tr>
-<tr class="memitem:ga0bb6ca574a1999bd9895ed6517e92972"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="group__module____functional.html#gafc1dc465a57ff35315eefcd90fbd3e34">generator</a>&lt; typename ForwardIt::value_type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____functional.html#ga0bb6ca574a1999bd9895ed6517e92972">adiar::make_generator</a> (ForwardIt &amp;begin, ForwardIt &amp;end)</td></tr>
+<tr class="memitem:ga0bb6ca574a1999bd9895ed6517e92972"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="group__module____functional.html#ga73cb424aed6cb6d7e9e6c7d9d85132d7">generator</a>&lt; typename ForwardIt::value_type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____functional.html#ga0bb6ca574a1999bd9895ed6517e92972">adiar::make_generator</a> (ForwardIt &amp;begin, ForwardIt &amp;end)</td></tr>
 <tr class="memdesc:ga0bb6ca574a1999bd9895ed6517e92972"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrap a <code>begin</code> and <code>end</code> iterator pair into a generator function. <br /></td></tr>
 <tr class="separator:ga0bb6ca574a1999bd9895ed6517e92972"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0242daaba794c8c685d66e8f87d14074"><td class="memTemplParams" colspan="2"><a id="ga0242daaba794c8c685d66e8f87d14074"></a>
+template&lt;typename ForwardIt &gt; </td></tr>
+<tr class="memitem:ga0242daaba794c8c685d66e8f87d14074"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="group__module____functional.html#ga73cb424aed6cb6d7e9e6c7d9d85132d7">generator</a>&lt; typename ForwardIt::value_type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____functional.html#ga0242daaba794c8c685d66e8f87d14074">adiar::make_generator</a> (ForwardIt &amp;&amp;begin, ForwardIt &amp;&amp;end)</td></tr>
+<tr class="memdesc:ga0242daaba794c8c685d66e8f87d14074"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrap a <code>begin</code> and <code>end</code> iterator pair into a generator function. <br /></td></tr>
+<tr class="separator:ga0242daaba794c8c685d66e8f87d14074"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga10b08b986192013581d64d25d3dd622b"><td class="memTemplParams" colspan="2"><a id="ga10b08b986192013581d64d25d3dd622b"></a>
 template&lt;typename Stream &gt; </td></tr>
-<tr class="memitem:ga10b08b986192013581d64d25d3dd622b"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="group__module____functional.html#gafc1dc465a57ff35315eefcd90fbd3e34">generator</a>&lt; typename Stream::value_type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____functional.html#ga10b08b986192013581d64d25d3dd622b">adiar::make_generator</a> (Stream &amp;s)</td></tr>
+<tr class="memitem:ga10b08b986192013581d64d25d3dd622b"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="group__module____functional.html#ga73cb424aed6cb6d7e9e6c7d9d85132d7">generator</a>&lt; typename Stream::value_type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____functional.html#ga10b08b986192013581d64d25d3dd622b">adiar::make_generator</a> (Stream &amp;s)</td></tr>
 <tr class="memdesc:ga10b08b986192013581d64d25d3dd622b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrap an <code>adiar::internal::file_stream</code> into a generator function. <br /></td></tr>
 <tr class="separator:ga10b08b986192013581d64d25d3dd622b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga837f233a1c35085481f6a10892ff6010"><td class="memTemplParams" colspan="2"><a id="ga837f233a1c35085481f6a10892ff6010"></a>
+template&lt;typename RetType &gt; </td></tr>
+<tr class="memitem:ga837f233a1c35085481f6a10892ff6010"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="group__module____functional.html#ga73cb424aed6cb6d7e9e6c7d9d85132d7">generator</a>&lt; RetType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____functional.html#ga837f233a1c35085481f6a10892ff6010">adiar::make_generator</a> (const RetType &amp;r)</td></tr>
+<tr class="memdesc:ga837f233a1c35085481f6a10892ff6010"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrap a single value into a generator. <br /></td></tr>
+<tr class="separator:ga837f233a1c35085481f6a10892ff6010"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>The bridge between you and Adiar. </p>
@@ -193,8 +199,8 @@ template&lt;typename TypeSignature &gt; </div>
 
 </div>
 </div>
-<a id="gafc1dc465a57ff35315eefcd90fbd3e34"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gafc1dc465a57ff35315eefcd90fbd3e34">&#9670;&nbsp;</a></span>generator</h2>
+<a id="ga73cb424aed6cb6d7e9e6c7d9d85132d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga73cb424aed6cb6d7e9e6c7d9d85132d7">&#9670;&nbsp;</a></span>generator</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -202,13 +208,13 @@ template&lt;typename TypeSignature &gt; </div>
 template&lt;typename RetType &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="group__module____functional.html#gafc1dc465a57ff35315eefcd90fbd3e34">adiar::generator</a> = typedef <a class="el" href="group__module____functional.html#ga7cedafe2a659228db84b6dc3c35fb0ca">function</a>&lt;RetType ()&gt;</td>
+          <td class="memname">using <a class="el" href="group__module____functional.html#ga73cb424aed6cb6d7e9e6c7d9d85132d7">adiar::generator</a> = typedef <a class="el" href="group__module____functional.html#ga7cedafe2a659228db84b6dc3c35fb0ca">function</a>&lt;<a class="el" href="namespaceadiar.html#ac00584c842920c2e4fd92d13b5112746">optional</a>&lt;RetType&gt; ()&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Generator function that <em>produces</em> a new value of <code>RetType</code> for each call. </p>
-<dl class="section remark"><dt>Remarks</dt><dd>Most functions that take a generator as the input expect it (1) to produce values in a specific order and (2) to provide a certain type of value to mark having reached the <em>end</em>. For (1), please see the documentation of each respective function, while for (2) use <code><a class="el" href="structadiar_1_1generator__end.html" title="Template specialization to derive the end (similar to EOF) return-value for a generator function.">generator_end</a></code>.</dd></dl>
+<dl class="section remark"><dt>Remarks</dt><dd>Most functions that take a generator as the input expect it (1) to produce values in a specific order and (2) to provide a certain type of value to mark having reached the <em>end</em>. For (1), please see the documentation of each respective function, while for (2) use <code>make_optional&lt;T&gt;()</code>.</dd></dl>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">RetType</td><td>Type of each yielded value from the generator. </td></tr>
@@ -243,8 +249,49 @@ template&lt;typename... Args&gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="gaa70413032ba90587f737f9b84d98430c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaa70413032ba90587f737f9b84d98430c">&#9670;&nbsp;</a></span>make_consumer() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ForwardIt &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__module____functional.html#ga99494f283acb45d89d508b47a9e7b4b5">consumer</a>&lt;typename ForwardIt::value_type&gt; adiar::make_consumer </td>
+          <td>(</td>
+          <td class="paramtype">ForwardIt &amp;&amp;&#160;</td>
+          <td class="paramname"><em>begin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ForwardIt &amp;&amp;&#160;</td>
+          <td class="paramname"><em>end</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Wrap a <code>begin</code> and <code>end</code> iterator pair into a consumer function. </p>
+<dl class="section remark"><dt>Remarks</dt><dd>The resulting <em>consumer</em> function will throw an <code>out_of_range</code> if <code>end</code> is reached but more values are to be added, i.e. if the given range is not large enough for all values to be consumed. </dd></dl>
+
+</div>
+</div>
 <a id="ga923a64580e0b6124c8e9c9bafb27f7e0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga923a64580e0b6124c8e9c9bafb27f7e0">&#9670;&nbsp;</a></span>make_consumer()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ga923a64580e0b6124c8e9c9bafb27f7e0">&#9670;&nbsp;</a></span>make_consumer() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">

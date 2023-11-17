@@ -1,3 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structadiar_1_1generator__end.html" title="Template specialization to derive the end (similar to EOF) return&#45;value for a generator function." alt="" coords="5,5,163,47"/>
+<area shape="rect" id="node1" href="$classadiar_1_1internal_1_1____dd.html" title=" " alt="" coords="5,31,156,57"/>
+<area shape="rect" id="node2" href="$classadiar_1_1____bdd.html" title="A (possibly) unreduced Binary Decision Diagram." alt="" coords="204,5,305,32"/>
+<area shape="rect" id="node3" href="$classadiar_1_1____zdd.html" title="A (possibly unreduced) Zero&#45;suppressed Decision Diagram." alt="" coords="205,56,305,83"/>
 </map>

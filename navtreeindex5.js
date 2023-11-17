@@ -1,5 +1,15 @@
 var NAVTREEINDEX5 =
 {
+"structadiar_1_1statistics_1_1node__file__t.html#a4391476b5bc3ec1dbc1f50512b0473c9":[5,6,0,7,1],
+"structadiar_1_1statistics_1_1node__file__t.html#ab2987bf9926b0e9a85acc47390bb4a94":[5,6,0,7,0],
+"structadiar_1_1statistics_1_1prod2__t.html":[5,6,0,8],
+"structadiar_1_1statistics_1_1prod2__t.html#a3fb3fbf6dce52ee96fac9d9f183fb5fb":[5,6,0,8,5],
+"structadiar_1_1statistics_1_1prod2__t.html#a6d3f4d0066639dda6b702f51d3bdff09":[5,6,0,8,6],
+"structadiar_1_1statistics_1_1prod2__t.html#a8bb9d4f8332175f125fc51b413f1d996":[5,6,0,8,3],
+"structadiar_1_1statistics_1_1prod2__t.html#ab769667ff5ecea10ecd9e2589b7e72bf":[5,6,0,8,2],
+"structadiar_1_1statistics_1_1prod2__t.html#abfe9703ad33905349780ae5c43ad69f2":[5,6,0,8,4],
+"structadiar_1_1statistics_1_1prod2__t_1_1pq__t.html":[5,6,0,8,0],
+"structadiar_1_1statistics_1_1prod2__t_1_1pq__t.html#a7d7a34d314eeced01bedd1670cb1ec7b":[5,6,0,8,0,1],
 "structadiar_1_1statistics_1_1prod2__t_1_1pq__t.html#ad43d4178a837bb263f5f2d2f2e528dbc":[5,6,0,8,0,0],
 "structadiar_1_1statistics_1_1prod2__t_1_1ra__t.html":[5,6,0,8,1],
 "structadiar_1_1statistics_1_1prod2__t_1_1ra__t.html#a31ecbf582eeb29fbde200e7b3b77051f":[5,6,0,8,1,4],

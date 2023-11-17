@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['level_5finfo_434',['level_info',['../classadiar_1_1internal_1_1level__info.html',1,'adiar::internal']]],
-  ['levelized_5fpriority_5fqueue_5ft_435',['levelized_priority_queue_t',['../structadiar_1_1statistics_1_1levelized__priority__queue__t.html',1,'adiar::statistics']]]
+  ['nested_5fsweeping_5ft_436',['nested_sweeping_t',['../structadiar_1_1statistics_1_1nested__sweeping__t.html',1,'adiar::statistics']]],
+  ['node_437',['node',['../classadiar_1_1internal_1_1node.html',1,'adiar::internal']]],
+  ['node_5ffile_5ft_438',['node_file_t',['../structadiar_1_1statistics_1_1node__file__t.html',1,'adiar::statistics']]]
 ];
