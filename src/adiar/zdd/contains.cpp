@@ -40,12 +40,13 @@ namespace adiar
           return zdd::pointer_type::nil();
         }
 
-        // Obtain the next to-be visited level (if node was in the set)
+        // Forward once (if node was in the set) to hold onto the next to-be
+        // visited level.
         if (l.value() == visited_label) {
           l = gen();
         }
 
-        // Will we the next to-be visited level?
+        // Will we miss the next to-be visited level?
         if (next_ptr.is_node() && l.has_value()
             && visited_label < l.value() && l.value() < next_ptr.label()) {
           return zdd::pointer_type::nil();
