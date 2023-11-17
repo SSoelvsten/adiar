@@ -37,6 +37,17 @@ namespace adiar
     return zdd_istrue(A);
   }
 
+  bool zdd_ispoint(const zdd &A)
+  {
+    // Assuming the ZDD is fully reduced (which it should be), then it can only
+    // be a point if:
+    //
+    // 1. Its width is exactly 1 (but also allow 0 for the terminal cases)
+    //
+    // 2. It has exactly one arc to `true` (which must be at the bottom).
+    return A.width() <= 1 && A.number_of_terminals(true) == 1u;
+  }
+
   bool zdd_equal(const exec_policy &ep, const zdd &A, const zdd &B)
   {
     return internal::is_isomorphic(ep, A, B);
