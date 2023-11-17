@@ -111,6 +111,9 @@ namespace adiar
     };
   }
 
+  // TODO: Add make_generator(begin, end) for rvalue iterators; they go out of
+  //       scope at return!
+
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Wrap an `adiar::internal::file_stream` into a generator function.
   ////////////////////////////////////////////////////////////////////////////
@@ -125,6 +128,21 @@ namespace adiar
         return make_optional<value_type>();
       }
       return make_optional<value_type>(s.pull());
+    };
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Wrap a single value into a generator.
+  ////////////////////////////////////////////////////////////////////////////
+  template<typename RetType>
+  inline generator<RetType>
+  make_generator(const RetType &r)
+  {
+    return [=, end = false]() mutable {
+      if (end) { return make_optional<RetType>(); }
+
+      end = true;
+      return make_optional(r);
     };
   }
 
