@@ -71,11 +71,34 @@ namespace adiar
   inline consumer<typename ForwardIt::value_type>
   make_consumer(ForwardIt &begin, ForwardIt &end)
   {
-    return [&begin, &end](const typename ForwardIt::value_type x) {
+    using value_type = typename ForwardIt::value_type;
+
+    return [&begin, &end](const value_type &x) {
       if (begin == end) {
         throw out_of_range("Iterator range unable to contain all generated values");
       }
       *(begin++) = x;
+    };
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief  Wrap a `begin` and `end` iterator pair into a consumer function.
+  ///
+  /// \remark The resulting *consumer* function will throw an `out_of_range`
+  ///         if `end` is reached but more values are to be added, i.e. if
+  ///         the given range is not large enough for all values to be consumed.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename ForwardIt>
+  inline consumer<typename ForwardIt::value_type>
+  make_consumer(ForwardIt &&begin, ForwardIt &&end)
+  {
+    using value_type = typename ForwardIt::value_type;
+
+    return [_begin = begin, _end = end](const value_type &x) mutable {
+      if (_begin == _end) {
+        throw out_of_range("Iterator range unable to contain all generated values");
+      }
+      *(_begin++) = x;
     };
   }
 
@@ -111,8 +134,22 @@ namespace adiar
     };
   }
 
-  // TODO: Add make_generator(begin, end) for rvalue iterators; they go out of
-  //       scope at return!
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Wrap a `begin` and `end` iterator pair into a generator function.
+  ////////////////////////////////////////////////////////////////////////////
+  template<typename ForwardIt>
+  inline generator<typename ForwardIt::value_type>
+  make_generator(ForwardIt &&begin, ForwardIt &&end)
+  {
+    using value_type = typename ForwardIt::value_type;
+
+    return [_begin = begin, _end = end]() mutable {
+      if (_begin == _end) {
+        return make_optional<value_type>();
+      }
+      return make_optional<value_type>(*(_begin++));
+    };
+  }
 
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Wrap an `adiar::internal::file_stream` into a generator function.
@@ -138,10 +175,10 @@ namespace adiar
   inline generator<RetType>
   make_generator(const RetType &r)
   {
-    return [=, end = false]() mutable {
-      if (end) { return make_optional<RetType>(); }
+    return [=, _end = false]() mutable {
+      if (_end) { return make_optional<RetType>(); }
 
-      end = true;
+      _end = true;
       return make_optional(r);
     };
   }
