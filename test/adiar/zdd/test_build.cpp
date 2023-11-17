@@ -805,7 +805,7 @@ go_bandit([]() {
     });
 
     describe("zdd_vars(vars)", [&]() {
-      // TODO
+      // TODO: tests independent of std::vector<int>
     });
 
     describe("zdd_vars(begin, end)", [&]() {
@@ -926,6 +926,161 @@ go_bandit([]() {
       });
     });
 
+    describe("zdd_point(vars)", [&]() {
+      it("can create { {3} }", [&]() {
+        zdd res = zdd_point(make_generator(3));
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id, terminal_F, terminal_T)));
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(3,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(zdd_iscanonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      // TODO: more tests independent of std::vector<int>
+    });
+
+    describe("zdd_point(begin, end)", [&]() {
+      it("can create { Ø } on empty list", [&]() {
+        std::vector<int> vars;
+
+        zdd res = zdd_point(vars.rbegin(), vars.rend());
+
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(true)));
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(0u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(zdd_iscanonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      it("can create { {4} }", [&]() {
+        std::vector<int> vars = { 4 };
+
+        zdd res = zdd_point(vars.rbegin(), vars.rend());
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(4, node::max_id, terminal_F, terminal_T)));
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(4,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(zdd_iscanonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      it("can create { {0,2,4} }", [&]() {
+        std::vector<int> vars = { 0, 2, 4 };
+
+        zdd res = zdd_point(vars.rbegin(), vars.rend());
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(4, node::max_id, terminal_F, terminal_T)));
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id, terminal_F, ptr_uint64(4, ptr_uint64::max_id))));
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(0, node::max_id, terminal_F, ptr_uint64(2, ptr_uint64::max_id))));
+
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(4,1u)));
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(3u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(4u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(3u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(4u));
+
+        AssertThat(zdd_iscanonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(3u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      it("throws exception when domain is not in ascending order", [&]() {
+        std::vector<int> vars = { 6, 4, 2, 0 };
+
+        AssertThrows(invalid_argument, zdd_point(vars.rbegin(), vars.rend()));
+      });
+    });
+
     describe("zdd_singleton(i)", [&]() {
       it("can create { {0} }", [&]() {
         zdd res = zdd_singleton(0);
@@ -997,6 +1152,10 @@ go_bandit([]() {
     });
 
     describe("zdd_singletons(vars)", [&]() {
+      // TODO: tests independent of std::vector<int>
+    });
+
+    describe("zdd_singletons(begin, end)", [&]() {
       it("can create Ø on empty list", [&]() {
         std::vector<int> vars;
 

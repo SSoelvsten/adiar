@@ -189,6 +189,35 @@ namespace adiar
   { return zdd_vars(make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief     The family { { 1, 2, ..., k } } with a single bit-vector.
+  ///
+  /// \details   Creates the ZDD for a set with a single bit-vector, i.e. a
+  ///            *point*.
+  ///
+  /// \param vars Generator function of the variables in \em descending order.
+  ///             The variables may not exceed `zdd::max_label`.
+  ///
+  /// \throws invalid_argument If `vars` are not in \em descending order.
+  //////////////////////////////////////////////////////////////////////////////
+  zdd zdd_point(const generator<zdd::label_type> &vars);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief       The family { { 1, 2, ..., k } } with a single bit-vector.
+  ///
+  /// \param begin Single-pass forward iterator that provides the variables
+  ///              in \em descending order. The variables may not exceed
+  ///              `zdd::max_label`.
+  ///
+  /// \param end   Marks the end for `begin`.
+  ///
+  /// \throws invalid_argument If the iterator does not provide values in
+  ///                          \em descending order.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename ForwardIt>
+  zdd zdd_point(ForwardIt begin, ForwardIt end)
+  { return zdd_point(make_generator(begin, end)); }
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief     The family { {i} } .
   ///
   /// \details   Creates a ZDD of a single node with label `var` and the
