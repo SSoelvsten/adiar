@@ -8,19 +8,6 @@
 
 namespace adiar
 {
-  // TODO: Merge with the generator in `bdd_restrict(f, var, val)`.
-  inline auto make_generator(const zdd::label_type &var, bool &gen_called)
-  {
-    adiar_assert(!gen_called);
-    return [&gen_called, &var]() -> optional<zdd::label_type> {
-      if (gen_called) {
-        return make_optional<zdd::label_type>();
-      }
-      gen_called = true;
-      return var;
-    };
-  }
-
   template<assignment FIX_VALUE>
   class zdd_subset_labels
   {
@@ -152,8 +139,7 @@ namespace adiar
 
   __zdd zdd_offset(const exec_policy &ep, const zdd &A, zdd::label_type var)
   {
-    bool gen_called = false;
-    return zdd_offset(ep, A, make_generator(var, gen_called));
+    return zdd_offset(ep, A, make_generator(var));
   }
 
   __zdd zdd_offset(const zdd &A, zdd::label_type var)
@@ -251,8 +237,7 @@ namespace adiar
 
   __zdd zdd_onset(const exec_policy &ep, const zdd &A, zdd::label_type var)
   {
-    bool gen_called = false;
-    return zdd_onset(ep, A, make_generator(var, gen_called));
+    return zdd_onset(ep, A, make_generator(var));
   }
 
   __zdd zdd_onset(const zdd &A, zdd::label_type var)
