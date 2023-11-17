@@ -53,11 +53,11 @@ namespace adiar::internal
     return nf;
   }
 
-  template<typename dd_policy, bool INIT_TERMINAL = false, bool HIGH_VAL = true>
+  template<typename dd_policy, bool InitTerminal = false, bool HighValue = true>
   class chain_low : public dd_policy
   {
   public:
-    static constexpr bool init_terminal = INIT_TERMINAL;
+    static constexpr bool init_terminal = InitTerminal;
 
     constexpr bool
     skip(const typename dd_policy::label_type &) const
@@ -71,15 +71,15 @@ namespace adiar::internal
       return typename dd_policy::node_type(l,
                                            dd_policy::max_id,
                                            r,
-                                           typename dd_policy::pointer_type(HIGH_VAL));
+                                           typename dd_policy::pointer_type(HighValue));
     }
   };
 
-  template<typename dd_policy, bool INIT_TERMINAL = true, bool LOW_VAL = false>
+  template<typename dd_policy, bool InitTerminal = true, bool LowValue = false>
   class chain_high : public dd_policy
   {
   public:
-    static constexpr bool init_terminal = INIT_TERMINAL;
+    static constexpr bool init_terminal = InitTerminal;
 
     constexpr bool
     skip(const typename dd_policy::label_type &) const
@@ -92,16 +92,16 @@ namespace adiar::internal
     {
       return typename dd_policy::node_type(l,
                                            dd_policy::max_id,
-                                           typename dd_policy::pointer_type(LOW_VAL),
+                                           typename dd_policy::pointer_type(LowValue),
                                            r);
     }
   };
 
-  template<typename dd_policy, bool INIT_TERMINAL = true>
+  template<typename dd_policy, bool InitTerminal = true>
   class chain_both : public dd_policy
   {
   public:
-    static constexpr bool init_terminal = INIT_TERMINAL;
+    static constexpr bool init_terminal = InitTerminal;
 
     constexpr bool
     skip(const typename dd_policy::label_type &) const
