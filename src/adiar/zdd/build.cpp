@@ -127,6 +127,12 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
+  zdd zdd_point(const generator<zdd::label_type> &vars)
+  {
+    return zdd_vars(vars);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
   zdd zdd_singleton(const zdd::label_type label)
   {
     return internal::build_ithvar<zdd_policy>(label);
