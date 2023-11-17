@@ -73,8 +73,49 @@ go_bandit([]() {
     { // Garbage collect writer to free write-lock
       node_writer nw(bdd_0and2);
 
-      nw << node(2, node::max_id, terminal_F, terminal_T)
-         << node(0, node::max_id, terminal_F, ptr_uint64(2, ptr_uint64::max_id));
+      const node n2(2, node::max_id, terminal_F, terminal_T);
+      const node n1(0, node::max_id, terminal_F, n2.uid());
+
+      nw << n2 << n1;
+    }
+
+    shared_levelized_file<bdd::node_type> bdd_0or2;
+    /*
+    //         1      ---- x0
+    //        / \
+    //        2 T     ---- x2
+    //       / \
+    //       F T
+    */
+
+    { // Garbage collect writer to free write-lock
+      node_writer nw(bdd_0or2);
+
+      const node n2(2, node::max_id, terminal_F, terminal_T);
+      const node n1(0, node::max_id, n2.uid(), terminal_T);
+
+      nw << n2 << n1;
+    }
+
+    shared_levelized_file<bdd::node_type> bdd_23_13;
+    /*
+    //         1      ---- x0
+    //        / \
+    //        2 |     ---- x1
+    //       / \|
+    //       F  3     ---- x2
+    //         / \
+    //         F T
+    */
+
+    { // Garbage collect writer to free write-lock
+      node_writer nw(bdd_23_13);
+
+      const node n3(2, node::max_id, terminal_F, terminal_T);
+      const node n2(1, node::max_id, terminal_F, n3.uid());
+      const node n1(0, node::max_id, n2.uid(), n3.uid());
+
+      nw << n3 << n2 << n1;
     }
 
     // -------------------------------------------------------------------------
@@ -198,6 +239,56 @@ go_bandit([]() {
 
       it("rejects x0 & x2", [&]() {
         AssertThat(bdd_isnithvar(bdd_0and2), Is().False());
+      });
+    });
+
+    describe("bdd_iscube", [&]() {
+      it("rejects F terminal", [&]() {
+        AssertThat(bdd_iscube(bdd_F), Is().False());
+      });
+
+      it("accepts T terminal", [&]() {
+        AssertThat(bdd_iscube(bdd_T), Is().True());
+      });
+
+      it("accepts  x0 [file content]", [&]() {
+        AssertThat(bdd_iscube(bdd_x0), Is().True());
+      });
+
+      it("accepts  x0 [complement flag]", [&]() {
+        AssertThat(bdd_iscube(bdd(bdd_not_x0, true)), Is().True());
+      });
+
+      it("accepts ~x0 [file content]", [&]() {
+        AssertThat(bdd_iscube(bdd_not_x0), Is().True());
+      });
+
+      it("accepts ~x0 [complement flag]", [&]() {
+        AssertThat(bdd_iscube(bdd(bdd_x0, true)), Is().True());
+      });
+
+      it("accepts  x1 [file content]", [&]() {
+        AssertThat(bdd_iscube(bdd_x1), Is().True());
+      });
+
+      it("accepts ~x1 [complement flag]", [&]() {
+        AssertThat(bdd_iscube(bdd(bdd_x1, true)), Is().True());
+      });
+
+      it("accepts x0 & x2", [&]() {
+        AssertThat(bdd_iscube(bdd_0and2), Is().True());
+      });
+
+      it("rejects x0 | x2", [&]() {
+        AssertThat(bdd_iscube(bdd_0or2), Is().False());
+      });
+
+      it("accepts ~(x0 | x2) [complement flag]", [&]() {
+        AssertThat(bdd_iscube(bdd(bdd_0or2, true)), Is().True());
+      });
+
+      it("rejects (x0 | x1) & x2", [&]() {
+        AssertThat(bdd_iscube(bdd_23_13), Is().False());
       });
     });
   });
