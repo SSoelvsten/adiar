@@ -1,5 +1,10 @@
 var NAVTREEINDEX5 =
 {
+"structadiar_1_1statistics_1_1levelized__priority__queue__t.html#a844804602d4c05ae87cef7f40c10371d":[5,6,0,5,1],
+"structadiar_1_1statistics_1_1levelized__priority__queue__t.html#acbc2d26c2cafb41e66a1965679dfbc78":[5,6,0,5,5],
+"structadiar_1_1statistics_1_1levelized__priority__queue__t.html#ae485ef1f9462d3c8106dc37a519ca896":[5,6,0,5,2],
+"structadiar_1_1statistics_1_1nested__sweeping__t.html":[5,6,0,6],
+"structadiar_1_1statistics_1_1nested__sweeping__t.html#a3d4818c458f2ed19e3e5569ab132af82":[5,6,0,6,3],
 "structadiar_1_1statistics_1_1nested__sweeping__t.html#ae8c1acf5960f2530c10b7b8df5147664":[5,6,0,6,2],
 "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t.html":[5,6,0,6,0],
 "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t.html#a768dcc8edcd311f7526a57eb77a11a82":[5,6,0,6,0,3],
@@ -55,5 +60,6 @@ var NAVTREEINDEX5 =
 "uid_8h.html#a2cfcb0f86047e2341fafabc88563dfb8":[6,0,0,0,27],
 "uid_8h_source.html":[8,0,0,0,1,0,7],
 "zdd_2zdd_8h_source.html":[8,0,0,0,2,0],
-"zdd_8h_source.html":[8,0,0,0,13]
+"zdd_8h_source.html":[8,0,0,0,13],
+"":[6,0,0,0]
 };
