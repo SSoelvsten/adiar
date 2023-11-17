@@ -210,6 +210,61 @@ namespace adiar
   bdd bdd_or(ForwardIt begin, ForwardIt end)
   { return bdd_or(make_generator(begin, end)); }
 
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief      The BDD representing the cube of all the given variables.
+  ///
+  /// \details    Any negative labels provided by the generator are interpreted
+  ///             as the negation of said variable.
+  ///
+  /// \param vars Generator of labels of variables in \em descending order.
+  ///             These values can at most be `bdd::max_label`.
+  ///
+  /// \returns    \f$ \bigwedge_{x \in \mathit{vars}} x \f$
+  ///
+  /// \throws invalid_argument If `vars` are not in descending order.
+  ///
+  /// \see bdd_and
+  //////////////////////////////////////////////////////////////////////////////
+  bdd bdd_cube(const generator<int> &vars);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief      The BDD representing the cube of all the given variables.
+  ///
+  /// \param vars Generator of pairs (label, negated) in \em descending order.
+  ///             These values can at most be `bdd::max_label`.
+  ///
+  /// \returns    \f$ \bigwedge_{x \in \mathit{vars}} x \f$
+  ///
+  /// \throws invalid_argument If `vars` are not in descending order.
+  ///
+  /// \see bdd_and
+  //////////////////////////////////////////////////////////////////////////////
+  bdd bdd_cube(const generator<pair<bdd::label_type, bool>> &vars);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief       The BDD representing the cube of all the given variables.
+  ///
+  /// \details     Any negative labels provided by the generator are interpreted
+  ///              as the negation of said variable.
+  ///
+  /// \param begin Single-pass forward iterator that provides the variables in
+  ///              \em descending order. All its values should be smaller than
+  ///              or equals to `bdd::max_label`.
+  ///
+  /// \param end   Marks the end for `begin`.
+  ///
+  /// \returns    \f$ \bigwedge_{x \in \mathit{begin} \dots \mathit{end}} x \f$
+  ///
+  /// \throws invalid_argument If the iterator does not provide values in
+  ///                          descending order.
+  ///
+  /// \see bdd_and
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename ForwardIt>
+  bdd bdd_cube(ForwardIt begin, ForwardIt end)
+  { return bdd_cube(make_generator(begin, end)); }
+
   /// \}
   //////////////////////////////////////////////////////////////////////////////
 

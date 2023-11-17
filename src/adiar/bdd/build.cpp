@@ -104,4 +104,15 @@ namespace adiar
 
     return bdd_not(internal::build_chain<>(p, vars_wrapper));
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+  bdd bdd_cube(const generator<pair<bdd::label_type, bool>> &vars)
+  {
+    return bdd_and(vars);
+  }
+
+  bdd bdd_cube(const generator<int> &vars)
+  {
+    return bdd_and(vars);
+  }
 }
