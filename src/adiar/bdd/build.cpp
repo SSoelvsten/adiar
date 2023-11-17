@@ -13,6 +13,9 @@
 
 namespace adiar
 {
+  template<typename Generator>
+  using bdd_chain_converter = internal::chain_converter<bdd_policy, Generator>;
+
   //////////////////////////////////////////////////////////////////////////////
   bdd bdd_const(bool value)
   {
@@ -71,12 +74,17 @@ namespace adiar
   bdd bdd_and(const generator<pair<bdd::label_type, bool>> &vars)
   {
     bdd_and_policy p;
-    return internal::build_chain<>(p, vars);
+    bdd_chain_converter<decltype(vars)> vars_wrapper(vars);
+
+    return internal::build_chain<>(p, vars_wrapper);
   }
 
   bdd bdd_and(const generator<int> &vars)
   {
-    return bdd_and(internal::wrap_signed_generator<bdd_policy>(vars));
+    bdd_and_policy p;
+    bdd_chain_converter<decltype(vars)> vars_wrapper(vars);
+
+    return internal::build_chain<>(p, vars_wrapper);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -107,11 +115,16 @@ namespace adiar
   bdd bdd_or(const generator<pair<bdd::label_type, bool>> &vars)
   {
     bdd_or_policy p;
-    return internal::build_chain<>(p, vars);
+    bdd_chain_converter<decltype(vars)> vars_wrapper(vars);
+
+    return internal::build_chain<>(p, vars_wrapper);
   }
 
   bdd bdd_or(const generator<int> &vars)
   {
-    return bdd_or(internal::wrap_signed_generator<bdd_policy>(vars));
+    bdd_or_policy p;
+    bdd_chain_converter<decltype(vars)> vars_wrapper(vars);
+
+    return internal::build_chain<>(p, vars_wrapper);
   }
 }

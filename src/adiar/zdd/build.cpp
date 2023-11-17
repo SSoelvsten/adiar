@@ -10,6 +10,8 @@
 
 namespace adiar
 {
+  using zdd_chain_converter = internal::chain_converter<zdd_policy, generator<zdd::label_type>>;
+
   //////////////////////////////////////////////////////////////////////////////
   zdd zdd_terminal(bool value)
   {
@@ -59,10 +61,12 @@ namespace adiar
   {
     // TODO: Move empty dom edge-case inside of `internal::build_chain<>`?
 
-    zdd_ithvar_policy p(var);
-    const zdd res = internal::build_chain<>(p, dom);
+    const zdd_ithvar_policy p(var);
+    const zdd_chain_converter dom_wrapper(dom);
 
-    return zdd_istrue(res) ? zdd_empty() : res;
+    const zdd res = internal::build_chain<>(p, dom_wrapper);
+
+    return zdd_isnull(res) ? zdd_empty() : res;
   }
 
   zdd zdd_ithvar(const zdd::label_type var)
@@ -99,8 +103,10 @@ namespace adiar
 
   zdd zdd_nithvar(const zdd::label_type var, const generator<zdd::label_type> &dom)
   {
-    zdd_nithvar_policy p(var);
-    return internal::build_chain<>(p, dom);
+    const zdd_nithvar_policy p(var);
+    const zdd_chain_converter dom_wrapper(dom);
+
+    return internal::build_chain<>(p, dom_wrapper);
   }
 
   zdd zdd_nithvar(const zdd::label_type var)
@@ -114,8 +120,10 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   zdd zdd_vars(const generator<zdd::label_type> &vars)
   {
-    internal::chain_high<zdd_policy> p;
-    return internal::build_chain<>(p, vars);
+    const internal::chain_high<zdd_policy> p;
+    const zdd_chain_converter vars_wrapper(vars);
+
+    return internal::build_chain<>(p, vars_wrapper);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -128,14 +136,18 @@ namespace adiar
   zdd zdd_singletons(const generator<zdd::label_type> &vars)
   {
     internal::chain_low<zdd_policy> p;
-    return internal::build_chain<>(p, vars);
+    zdd_chain_converter vars_wrapper(vars);
+
+    return internal::build_chain<>(p, vars_wrapper);
   }
 
   //////////////////////////////////////////////////////////////////////////////
   zdd zdd_powerset(const generator<zdd::label_type> &vars)
   {
-    internal::chain_both<zdd_policy> p;
-    return internal::build_chain<>(p, vars);
+    const internal::chain_both<zdd_policy> p;
+    const zdd_chain_converter vars_wrapper(vars);
+
+    return internal::build_chain<>(p, vars_wrapper);
   }
 
   //////////////////////////////////////////////////////////////////////////////

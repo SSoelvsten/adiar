@@ -13,12 +13,15 @@
 
 namespace adiar::internal
 {
-  template<typename dd_policy>
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Builder for a terminal value
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename DdPolicy>
   inline
-  shared_levelized_file<typename dd_policy::node_type>
+  shared_levelized_file<typename DdPolicy::node_type>
   build_terminal(bool value)
   {
-    using node_type = typename dd_policy::node_type;
+    using node_type = typename DdPolicy::node_type;
     shared_levelized_file<node_type> nf;
     {
       node_writer nw(nf);
@@ -30,12 +33,15 @@ namespace adiar::internal
     return nf;
   }
 
-  template<typename dd_policy>
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Builder for a single-node with children (`false`, `true`).
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename DdPolicy>
   inline
-  shared_levelized_file<typename dd_policy::node_type>
-  build_ithvar(typename dd_policy::label_type label)
+  shared_levelized_file<typename DdPolicy::node_type>
+  build_ithvar(typename DdPolicy::label_type label)
   {
-    using node_type = typename dd_policy::node_type;
+    using node_type = typename DdPolicy::node_type;
     using pointer_type = typename node_type::pointer_type;
 
     if (node_type::max_label < label) {
@@ -53,83 +59,22 @@ namespace adiar::internal
     return nf;
   }
 
-  template<typename dd_policy, bool InitTerminal = false, bool HighValue = true>
-  class chain_low : public dd_policy
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Builds a chain of nodes bottom-up.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename Policy, typename Generator>
+  inline typename Policy::dd_type
+  build_chain(const Policy &policy, const Generator &vars)
   {
-  public:
-    static constexpr bool init_terminal = InitTerminal;
-
-    constexpr bool
-    skip(const typename dd_policy::label_type &) const
-    { return false; }
-
-    inline typename dd_policy::node_type
-    make_node(const typename dd_policy::label_type &l,
-              const typename dd_policy::pointer_type &r,
-              const bool/*negated*/) const
-    {
-      return typename dd_policy::node_type(l,
-                                           dd_policy::max_id,
-                                           r,
-                                           typename dd_policy::pointer_type(HighValue));
-    }
-  };
-
-  template<typename dd_policy, bool InitTerminal = true, bool LowValue = false>
-  class chain_high : public dd_policy
-  {
-  public:
-    static constexpr bool init_terminal = InitTerminal;
-
-    constexpr bool
-    skip(const typename dd_policy::label_type &) const
-    { return false; }
-
-    inline typename dd_policy::node_type
-    make_node(const typename dd_policy::label_type &l,
-              const typename dd_policy::pointer_type &r,
-              const bool/*negated*/) const
-    {
-      return typename dd_policy::node_type(l,
-                                           dd_policy::max_id,
-                                           typename dd_policy::pointer_type(LowValue),
-                                           r);
-    }
-  };
-
-  template<typename dd_policy, bool InitTerminal = true>
-  class chain_both : public dd_policy
-  {
-  public:
-    static constexpr bool init_terminal = InitTerminal;
-
-    constexpr bool
-    skip(const typename dd_policy::label_type &) const
-    { return false; }
-
-    inline typename dd_policy::node_type
-    make_node(const typename dd_policy::label_type &l,
-              const typename dd_policy::pointer_type &r,
-              const bool/*negated*/) const
-    {
-      return typename dd_policy::node_type(l, dd_policy::max_id, r, r);
-    }
-  };
-
-  template<typename chain_policy>
-  inline typename chain_policy::dd_type
-  build_chain(const chain_policy &policy,
-              const generator<pair<typename chain_policy::label_type, bool>> &vars)
-  {
-    using label_type = typename chain_policy::label_type;
+    using label_type = typename Policy::label_type;
 
     optional<pair<label_type, bool>> next = vars();
 
     if (!next) {
-      return build_terminal<chain_policy>(chain_policy::init_terminal);
+      return build_terminal<Policy>(Policy::init_terminal);
     }
 
-    shared_levelized_file<typename chain_policy::node_type> nf;
+    shared_levelized_file<typename Policy::node_type> nf;
     node_writer nw(nf);
 
     size_t max_internal_cut      = 1;
@@ -138,7 +83,7 @@ namespace adiar::internal
     bool   terminal_at_bottom[2] = {false, false};
     size_t terminals[2]          = {0u, 0u};
 
-    typename chain_policy::pointer_type root(chain_policy::init_terminal);
+    typename Policy::pointer_type root(Policy::init_terminal);
     adiar_assert(root.is_terminal());
 
     do {
@@ -165,7 +110,7 @@ namespace adiar::internal
       // TODO: throw exception for too large labels
 
       // Create node on chain.
-      using node_type = typename chain_policy::node_type;
+      using node_type = typename Policy::node_type;
 
       const node_type n = policy.make_node(next_var, root, next_negated);
 
@@ -205,7 +150,7 @@ namespace adiar::internal
 
     // If all values have been skipped by the policy, then collapse to a terminal
     if (nw.size() == 0u) {
-      return build_terminal<chain_policy>(chain_policy::init_terminal);
+      return build_terminal<Policy>(Policy::init_terminal);
     }
 
     // Canonicity (assuming the policies are correct)
@@ -239,21 +184,131 @@ namespace adiar::internal
     return nf;
   }
 
-  template<typename chain_policy>
-  inline typename chain_policy::dd_type
-  build_chain(const chain_policy &policy,
-              const generator<typename chain_policy::label_type> &vars)
-  {
-    using label_type = typename chain_policy::label_type;
+  //////////////////////////////////////////////////////////////////////////////
 
-    return build_chain<chain_policy>(policy, [&vars]() -> optional<pair<label_type, bool>> {
-        optional<label_type> var = vars();
-        if (var) {
-          return make_pair<label_type, bool>(var.value(), false);
-        }
-        return make_optional<pair<label_type, bool>>();
-      });
-  }
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Policy for `build_chain` where the chain goes up the *low* arcs.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename DdPolicy, bool InitTerminal = false, bool HighValue = true>
+  class chain_low : public DdPolicy
+  {
+  public:
+    static constexpr bool init_terminal = InitTerminal;
+
+    constexpr bool
+    skip(const typename DdPolicy::label_type &) const
+    { return false; }
+
+    inline typename DdPolicy::node_type
+    make_node(const typename DdPolicy::label_type &l,
+              const typename DdPolicy::pointer_type &r,
+              const bool/*negated*/) const
+    {
+      return typename DdPolicy::node_type(l,
+                                           DdPolicy::max_id,
+                                           r,
+                                           typename DdPolicy::pointer_type(HighValue));
+    }
+  };
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Policy for `build_chain` where the chain goes up the *high* arcs.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename DdPolicy, bool InitTerminal = true, bool LowValue = false>
+  class chain_high : public DdPolicy
+  {
+  public:
+    static constexpr bool init_terminal = InitTerminal;
+
+    constexpr bool
+    skip(const typename DdPolicy::label_type &) const
+    { return false; }
+
+    inline typename DdPolicy::node_type
+    make_node(const typename DdPolicy::label_type &l,
+              const typename DdPolicy::pointer_type &r,
+              const bool/*negated*/) const
+    {
+      return typename DdPolicy::node_type(l,
+                                           DdPolicy::max_id,
+                                           typename DdPolicy::pointer_type(LowValue),
+                                           r);
+    }
+  };
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Policy for `build_chain` where the chain goes up both the *low* and
+  ///        the *high* arcs.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename DdPolicy, bool InitTerminal = true>
+  class chain_both : public DdPolicy
+  {
+  public:
+    static constexpr bool init_terminal = InitTerminal;
+
+    constexpr bool
+    skip(const typename DdPolicy::label_type &) const
+    { return false; }
+
+    inline typename DdPolicy::node_type
+    make_node(const typename DdPolicy::label_type &l,
+              const typename DdPolicy::pointer_type &r,
+              const bool/*negated*/) const
+    {
+      return typename DdPolicy::node_type(l, DdPolicy::max_id, r, r);
+    }
+  };
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Wrapper for a generator to map its output to fit the `build_chain`
+  ///        algorithm.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename DdPolicy, typename Generator, bool negate = false>
+  class chain_converter
+  {
+  private:
+    const Generator &_gen;
+
+  public:
+    using value_type  = pair<typename DdPolicy::label_type, bool>;
+    using result_type = optional<value_type>;
+
+  private:
+    inline value_type map(const value_type &x) const
+    {
+      return make_pair(x.first, negate ^ x.second);
+    }
+
+    inline value_type map(const typename DdPolicy::label_type &x) const
+    {
+      return make_pair(x, negate);
+    }
+
+    inline value_type map(const int &x) const
+    {
+      return make_pair(std::abs(x), negate ? 0 < x : x < 0);
+    }
+
+  public:
+    chain_converter(const Generator &gen)
+      : _gen(gen)
+    { }
+
+    inline result_type operator()() const
+    {
+      // NOTE: This is similar to a monadic 'bind'/'map'.
+
+      // NOTE: The type of '_gen()' should be 'typename Generator::result_type',
+      //       but declaring it to be exactly this results in an error. Hence,
+      //       we break the style guide with an 'auto'.
+      const auto next_opt = _gen();
+      if (next_opt) {
+        const value_type next_val = this->map(next_opt.value());
+        return make_optional<value_type>(next_val);
+      }
+      return make_optional<value_type>();
+    }
+  };
 }
 
 #endif // ADIAR_INTERNAL_ALGORITHMS_BUILD_H
