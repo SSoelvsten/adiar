@@ -1533,8 +1533,8 @@ go_bandit([]() {
         AssertThat(res.number_of_terminals(true),  Is().EqualTo(3u));
       });
 
-      it("works with ForwardIt::value_type == 'ssize_t'", [&]() {
-        std::vector<ssize_t> vars = { 1, -2, 3, 5 };
+      it("works with ForwardIt::value_type == 'int64_t'", [&]() {
+        std::vector<int64_t> vars = { 1, -2, 3, 5 };
 
         bdd res = bdd_or(vars.rbegin(), vars.rend());
         node_test_stream ns(res);
