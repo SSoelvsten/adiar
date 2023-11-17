@@ -668,14 +668,17 @@ namespace adiar::internal
     // -------------------------------------------------------------------------
     // Case: Do the product construction (with random access)
 
-    // TODO: lower the functionality of this
-    // This function should only determine the cases (base, ra, pq)
-    // and then another function should handle memory setup for the pq's and
-    // order of inputs
+    // TODO: Lower the functionality of this:
+    //
+    //   This function should only determine the cases (base, ra, pq) and then
+    //   another function should handle memory setup for the pq's and order of
+    //   inputs
 
-    // TODO: we do not need to check on the decision diagram being 'canonical'.
-    // It merely suffices, that it is 'indexable', i.e. the one half of being
-    // 'canonical'.
+    // TODO: Optimisation!
+    //
+    //   We do not need to check on the decision diagram being 'canonical'. It
+    //   merely suffices, that it is 'indexable', i.e. the one half of being
+    //   'canonical'.
 
     const size_t pq_1_bound = std::min({__prod2_ilevel_upper_bound<prod_policy, get_2level_cut, 2u>(in_0, in_1, op),
                                         __prod2_2level_upper_bound<prod_policy>(in_0, in_1, op),
@@ -684,16 +687,15 @@ namespace adiar::internal
     const bool internal_only = ep.memory_mode() == exec_policy::memory::Internal;
     const bool external_only = ep.memory_mode() == exec_policy::memory::External;
 
-    // TODO: define this otherwise
-    // 2 mega byte
-    constexpr size_t ra_thresshold = 2 * 1024 * 1024 / sizeof(typename prod_policy::node_type);
+    // TODO: Move this threshold into `exec_policy`
+    constexpr size_t ra_thresshold = 2 * 1024 * 1024 / sizeof(typename prod_policy::node_type); // <-- 2 MiB / node-size
 
     if (ep.access_mode() == exec_policy::access::Random_Access
         || (ep.access_mode() == exec_policy::access::Auto
             // The smallest of the canonical inputs, must be under the thresshold
-            && (   (in_0->canonical && in_1->canonical && std::min(in_0->width, in_1->width) <= ra_thresshold)
-                || (in_0->canonical && in_0->width <= ra_thresshold)
-                || (in_1->canonical && in_1->width <= ra_thresshold)
+            && (   (in_0->canonical && in_1->canonical && std::min(in_0.width(), in_1.width()) <= ra_thresshold)
+                || (in_0->canonical && in_0.width() <= ra_thresshold)
+                || (in_1->canonical && in_1.width() <= ra_thresshold)
                ))) {
 #ifdef ADIAR_STATS
       stats_prod2.ra.runs += 1u;
@@ -703,18 +705,18 @@ namespace adiar::internal
 
       // Determine if to flip the inputs
       // TODO: is the smallest or widest the best to random access on?
-      const bool ra_0 = in_0->canonical && (!in_1->canonical || in_0->width <= in_1->width);
+      const bool ra_0 = in_0->canonical && (!in_1->canonical || in_0.width() <= in_1.width());
       const typename prod_policy::dd_type& ra_in_0 = ra_0 ? in_0 : in_1;
       const typename prod_policy::dd_type& ra_in_1 = ra_0 ? in_1 : in_0;
       const bool_op& ra_op = ra_0 ? op : flip(op);
 
 #ifdef ADIAR_STATS
       stats_prod2.ra.used_narrowest +=
-        static_cast<size_t>(ra_in_0->width == std::min(in_0->width, in_1->width));
+        static_cast<size_t>(ra_in_0.width() == std::min(in_0.width(), in_1.width()));
 
-      stats_prod2.ra.acc_width += ra_in_0->width;
-      stats_prod2.ra.min_width = std::min(stats_prod2.ra.min_width, ra_in_0->width);
-      stats_prod2.ra.max_width = std::max(stats_prod2.ra.max_width, ra_in_0->width);
+      stats_prod2.ra.acc_width += ra_in_0.width();
+      stats_prod2.ra.min_width = std::min(stats_prod2.ra.min_width, ra_in_0.width());
+      stats_prod2.ra.max_width = std::max(stats_prod2.ra.max_width, ra_in_0.width());
 #endif
 
       const size_t pq_available_memory = memory_available()
