@@ -162,16 +162,17 @@ namespace adiar::internal
   generator<pair<typename DdPolicy::label_type, bool>>
   wrap_signed_generator(const Generator &g)
   {
-    using signed_type = typename Generator::result_type;
     using label_type  = typename DdPolicy::label_type;
 
-    return [&g]() -> pair<label_type, bool> {
-      const signed_type next = g();
+    return [&g]() -> optional<pair<label_type, bool>> {
+      const typename Generator::result_type next_opt = g();
 
-      const label_type x = static_cast<label_type>(std::abs(next));
-      const bool negated = next < 0;
-
-      return pair<label_type, bool>{ x, negated };
+      if (next_opt) {
+        const pair<label_type, bool> ret_value = make_pair(std::abs(next_opt.value()),
+                                                           next_opt.value() < 0);
+        return make_optional(ret_value);
+      }
+      return make_optional<pair<label_type, bool>>();
     };
   }
 }

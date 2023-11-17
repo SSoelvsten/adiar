@@ -998,7 +998,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Buffer for to hold onto the generated next level.
     ////////////////////////////////////////////////////////////////////////////
-    typename quantify_policy::label_type _next_level;
+    optional<typename quantify_policy::label_type> _next_level;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -1012,9 +1012,9 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the generator wants to sweep on the given level.
     ////////////////////////////////////////////////////////////////////////////
-    bool has_sweep(const node::pointer_type::label_type l)
+    bool has_sweep(const typename quantify_policy::label_type l)
     {
-      return l == next_level(l)
+      return has_next_level() && l == next_level(l)
         ? quantify_policy::quantify_onset
         : !quantify_policy::quantify_onset;
     }
@@ -1022,15 +1022,17 @@ namespace adiar::internal
   private:
     bool
     has_next_level() const
-    { return _next_level <= quantify_policy::max_label; }
-
-    const node::pointer_type::label_type&
-    next_level(const node::pointer_type::label_type l)
     {
-      while (has_next_level() && l < _next_level) {
+      return _next_level.has_value();
+    }
+
+    typename quantify_policy::label_type
+    next_level(const typename quantify_policy::label_type l)
+    {
+      while (_next_level.has_value() && l < _next_level.value()) {
         _next_level = _lvls();
       }
-      return _next_level;
+      return _next_level.value_or(quantify_policy::max_label+1);
     }
   };
 
@@ -1038,17 +1040,19 @@ namespace adiar::internal
   //       - initial cheap check on is_terminal.
   //       - initial 'quantify__get_deepest' should not terminate early but
   //         determine whether any variable may "survive".
+  //       clean up
+  //       - Make return type 'optional' rather than larger than 'max_label'
   template<typename quantify_policy>
   inline typename quantify_policy::label_type
   quantify__get_deepest(const typename quantify_policy::dd_type &dd,
                         const typename quantify_policy::label_type bot_level,
-                        const typename quantify_policy::label_type top_level)
+                        const optional<typename quantify_policy::label_type> top_level)
   {
     level_info_stream<true /* bottom-up */> lis(dd);
 
     while (lis.can_pull()) {
       const typename quantify_policy::label_type l = lis.pull().label();
-      if ((top_level < l || quantify_policy::max_label < top_level) && l < bot_level) {
+      if ((!top_level || top_level.value() < l) && l < bot_level) {
         return l;
       }
     }
@@ -1072,30 +1076,30 @@ namespace adiar::internal
       { // -------------------------------------------------------------------
         // Case: Repeated single variable quantification
         // TODO: correctly handle quantify_policy::quantify_onset
-        typename quantify_policy::label_type on_level = lvls();
+        optional<typename quantify_policy::label_type> on_level = lvls();
 
         if (quantify_policy::quantify_onset) {
-          if (quantify_policy::max_label < on_level) { return dd; }
+          if (!on_level) { return dd; }
 
-          typename quantify_policy::label_type next_on_level = lvls();
-          while (next_on_level <= quantify_policy::max_label) {
-            dd = quantify<quantify_policy>(ep, dd, on_level, op);
+          optional<typename quantify_policy::label_type> next_on_level = lvls();
+          while (next_on_level) {
+            dd = quantify<quantify_policy>(ep, dd, on_level.value(), op);
             if (dd_isterminal(dd)) { return dd; }
 
             on_level = next_on_level;
             next_on_level = lvls();
           }
-          return quantify<quantify_policy>(ep, dd, on_level, op);
+          return quantify<quantify_policy>(ep, dd, on_level.value(), op);
         } else { // !quantify_policy::quantify_onset
           // TODO: only designed for 'OR' at this point in time
-          if (quantify_policy::max_label < on_level) {
+          if (!on_level) {
             return typename quantify_policy::dd_type(dd->number_of_terminals[true] > 0);
           }
 
           // Quantify everything below 'label'
           for (;;) {
             const typename quantify_policy::label_type off_level =
-              quantify__get_deepest<quantify_policy>(dd, quantify_policy::max_label, on_level);
+              quantify__get_deepest<quantify_policy>(dd, quantify_policy::max_label, on_level.value());
 
             if (quantify_policy::max_label < off_level) { break; }
 
@@ -1104,13 +1108,13 @@ namespace adiar::internal
           }
 
           // Quantify everything strictly in between 'bot_level' and 'top_level'
-          typename quantify_policy::label_type bot_level = on_level;
-          typename quantify_policy::label_type top_level = lvls();
+          optional<typename quantify_policy::label_type> bot_level = on_level;
+          optional<typename quantify_policy::label_type> top_level = lvls();
 
-          while (bot_level <= quantify_policy::max_label) {
+          while (bot_level) {
             for (;;) {
               const typename quantify_policy::label_type off_level =
-                quantify__get_deepest<quantify_policy>(dd, bot_level, top_level);
+                quantify__get_deepest<quantify_policy>(dd, bot_level.value(), top_level);
 
               if (quantify_policy::max_label < off_level) { break; }
 
@@ -1135,8 +1139,8 @@ namespace adiar::internal
         //       bottom-most level to transpose the DAG.
         if constexpr (quantify_policy::quantify_onset) {
           // Obtain the bottom-most onset level that exists in the diagram.
-          typename quantify_policy::label_type transposition_level = lvls();
-          if (quantify_policy::max_label < transposition_level) { return dd; }
+          optional<typename quantify_policy::label_type> transposition_level = lvls();
+          if (!transposition_level) { return dd; }
 
           {
             level_info_stream<true> in_meta(dd);
@@ -1145,35 +1149,34 @@ namespace adiar::internal
             for (;;) {
               // Go forward in the diagram's levels, until we are at or above
               // the current candidate
-              while (in_meta.can_pull() && transposition_level < dd_level) {
+              while (in_meta.can_pull() && transposition_level.value() < dd_level) {
                 dd_level = in_meta.pull().level();
               }
               // There is no onset level in the diagram? If so, then nothing is
               // going to change and we may just return the input.
-              if (!in_meta.can_pull() && transposition_level < dd_level) {
+              if (!in_meta.can_pull() && transposition_level.value() < dd_level) {
                 return dd;
               }
 
-              adiar_assert(dd_level <= transposition_level,
+              adiar_assert(dd_level <= transposition_level.value(),
                            "Must be at or above candidate level");
 
               // Did we find the current candidate or skipped past it?
-              if (dd_level == transposition_level) {
+              if (dd_level == transposition_level.value()) {
                 break;
               } else { // dd_level < transposition_level
                 transposition_level = lvls();
 
                 // Did we run out of 'onset' levels?
-                if (quantify_policy::max_label < transposition_level) {
-                  return dd;
-                }
+                if (!transposition_level) { return dd; }
               }
             }
           }
+          adiar_assert(transposition_level.has_value());
 
           // Quantify the 'transposition_level' as part of the initial transposition step
           multi_quantify_policy__generator<quantify_policy> inner_impl(op, lvls);
-          return nested_sweep<>(ep, quantify<quantify_policy>(ep, dd, transposition_level, op), inner_impl);
+          return nested_sweep<>(ep, quantify<quantify_policy>(ep, dd, transposition_level.value(), op), inner_impl);
         } else { // !quantify_policy::quantify_onset
           multi_quantify_policy__generator<quantify_policy> inner_impl(op, lvls);
           return nested_sweep<>(ep, dd, inner_impl);

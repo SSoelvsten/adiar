@@ -197,8 +197,8 @@ namespace adiar::internal
     shared_file<typename intercut_policy::label_type> hit_levels;
     {
       file_writer<typename intercut_policy::label_type> lw(hit_levels);
-      for (auto x = xs(); x <= intercut_policy::max_label; x = xs()) {
-        lw << x;
+      for (auto x = xs(); x; x = xs()) {
+        lw << x.value();
       }
 
       if (lw.size() == 0) {

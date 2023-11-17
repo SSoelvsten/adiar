@@ -36,7 +36,7 @@ namespace adiar
   class restrict_generator_mgr
   {
     const generator<pair<bdd::label_type, bool>> &_generator;
-    pair<bdd::label_type, bool> _next_pair;
+    optional<pair<bdd::label_type, bool>> _next_pair;
 
   public:
     restrict_generator_mgr(const generator<pair<bdd::label_type, bool>> &g)
@@ -47,20 +47,19 @@ namespace adiar
 
     bool empty() const
     {
-      return bdd::max_label < _next_pair.first;
+      return !_next_pair.has_value();
     }
 
     assignment assignment_for_level(bdd::label_type level)
     {
-      while (_next_pair.first < level) {
+      while (_next_pair && _next_pair.value().first < level) {
         _next_pair = _generator();
       }
-      return _next_pair.first == level
-        ? static_cast<assignment>(_next_pair.second)
+      return _next_pair && _next_pair.value().first == level
+        ? static_cast<assignment>(_next_pair.value().second)
         : assignment::None;
     }
   };
-
 
   __bdd bdd_restrict(const exec_policy &ep,
                      const bdd &f,
@@ -86,12 +85,12 @@ namespace adiar
                      const bdd &f, bdd::label_type var, bool val)
   {
     bool gen_called = false;
-    auto gen = [&gen_called, &var, &val]() -> pair<bdd::label_type, bool> {
+    auto gen = [&gen_called, &var, &val]() -> optional<pair<bdd::label_type, bool>> {
       if (gen_called) {
-        return generator_end<pair<bdd::label_type, bool>>::value;
+        return make_optional<pair<bdd::label_type, bool>>();
       }
       gen_called = true;
-      return {var, val};
+      return make_pair<bdd::label_type, bool>(var, val);
     };
 
     return bdd_restrict(ep, f, gen);

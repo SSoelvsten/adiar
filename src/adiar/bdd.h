@@ -32,20 +32,6 @@ namespace adiar
   ///
   /// \{
 
-  /// \cond
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief End marker for the BDD assignment generators.
-  //////////////////////////////////////////////////////////////////////////////
-  template<>
-  struct generator_end<pair<bdd::label_type, bool>>
-  {
-  public:
-    using value_type = pair<bdd::label_type, bool>;
-
-    static constexpr value_type value{generator_end<bdd::label_type>::value, false};
-  };
-  /// \endcond
-
   //////////////////////////////////////////////////////////////////////////////
   /// \name Basic BDD Constructors
   ///
@@ -129,9 +115,8 @@ namespace adiar
   /// \details    Any negative labels provided by the generator are interpreted
   ///             as the negation of said variable.
   ///
-  /// \param vars Generator of labels of variables in \em descending order. When
-  ///             none are left it must return a value greater than
-  ///             `bdd::max_label`.
+  /// \param vars Generator of labels of variables in \em descending order.
+  ///             These values can at most be `bdd::max_label`.
   ///
   /// \returns    \f$ \bigwedge_{x \in \mathit{vars}} x \f$
   ///
@@ -144,8 +129,7 @@ namespace adiar
   ///             variables, i.e. a *term* of variables.
   ///
   /// \param vars Generator of pairs (label, negated) in \em descending order.
-  ///             When none are left it must return a value greater than
-  ///             `(bdd::max_label, _)`.
+  ///             These values can at most be `bdd::max_label`.
   ///
   /// \returns    \f$ \bigwedge_{x \in \mathit{vars}} x \f$
   ///
@@ -161,7 +145,8 @@ namespace adiar
   ///              as the negation of said variable.
   ///
   /// \param begin Single-pass forward iterator that provides the variables in
-  ///              \em descending order.
+  ///              \em descending order. All its values should be smaller than
+  ///              or equals to `bdd::max_label`.
   ///
   /// \param end   Marks the end for `begin`.
   ///
@@ -182,8 +167,7 @@ namespace adiar
   ///             as the negation of said variable.
   ///
   /// \param vars Generator of labels of variables in \em descending order. When
-  ///             none are left it must return a value greater than
-  ///             `bdd::max_label`.
+  ///             These values can at most be `bdd::max_label`.
   ///
   /// \returns    \f$ \bigvee_{x \in \mathit{vars}} x \f$
   ///
@@ -196,8 +180,7 @@ namespace adiar
   ///             variables, i.e. a *clause* of variables.
   ///
   /// \param vars Generator of pairs (label, negated) in \em descending order.
-  ///             When none are left it must return a value greater than
-  ///             `(bdd::max_label, _)`.
+  ///             These values can at most be `bdd::max_label`.
   ///
   /// \returns    \f$ \bigvee_{x \in \mathit{vars}} x \f$
   ///
@@ -213,7 +196,8 @@ namespace adiar
   ///              as the negation of said variable.
   ///
   /// \param begin Single-pass forward iterator that provides the variables in
-  ///              \em descending order.
+  ///              \em descending order. All its values should be smaller than
+  ///              or equals to `bdd::max_label`.
   ///
   /// \param end   Marks the end for `begin`.
   ///
@@ -575,7 +559,8 @@ namespace adiar
   /// \param f     BDD to restrict
   ///
   /// \param begin Single-pass forward iterator that provides the to-be
-  ///              restricted variables in \em ascending order.
+  ///              restricted variables in \em ascending order. All variables
+  ///              should be smaller than or equals to `bdd::max_label`.
   ///
   /// \param end   Marks the end for `begin`.
   ///
@@ -703,8 +688,8 @@ namespace adiar
   /// \param f   BDD to be quantified.
   ///
   /// \param vars Generator function, that produces variables to be quantified in
-  ///             \em descending order. When none are left to-be quantified, it
-  ///             returns a value larger than `bdd::max_label`.
+  ///             \em descending order. These values have to be smaller than or
+  ///             equals to `bdd::max_label`.
   ///
   /// \returns   \f$ \exists x_i \in \texttt{gen()} : f \f$
   //////////////////////////////////////////////////////////////////////////////
@@ -736,7 +721,8 @@ namespace adiar
   /// \param f     BDD to be quantified.
   ///
   /// \param begin Single-pass forward iterator that provides the to-be
-  ///              quantified variables in \em descending order.
+  ///              quantified variables in \em descending order. All variables
+  ///              should be smaller than or equals to `bdd::max_label`.
   ///
   /// \param end   Marks the end for `begin`.
   ///
@@ -814,7 +800,7 @@ namespace adiar
   ///             ascending/descending order of the levels in `f` (but,
   ///             with retraversals).
   ///
-  /// \returns    \f$ \exists x_i \in \texttt{vars} : f \f$
+  /// \returns    \f$ \forall x_i \in \texttt{vars} : f \f$
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_forall(const bdd &f, const predicate<bdd::label_type> &vars);
 
@@ -844,8 +830,8 @@ namespace adiar
   /// \param f   BDD to be quantified.
   ///
   /// \param gen Generator function, that produces variables to be quantified in
-  ///            \em descending order. When none are left to-be quantified, it
-  ///            returns a value larger than `bdd::max_label`, e.g. -1.
+  ///            \em descending order. These values have to be smaller than or
+  ///             equals to `bdd::max_label`.
   ///
   /// \returns   \f$ \forall x_i \in \texttt{gen()} : f \f$
   //////////////////////////////////////////////////////////////////////////////
@@ -877,7 +863,8 @@ namespace adiar
   /// \param f     BDD to be quantified.
   ///
   /// \param begin Single-pass forward iterator that provides the to-be
-  ///              quantified variables in \em descending order.
+  ///              quantified variables in \em descending order. All values
+  ///              should be smaller than or equals to `bdd::max_label`.
   ///
   /// \param end   Marks the end for `begin`.
   ///
@@ -1284,8 +1271,7 @@ namespace adiar
   /// \param A   Family of a set (within the given domain)
   ///
   /// \param dom Generator function of domain variables in \em ascending order.
-  ///            When none are left it must return a value greater than
-  ///            `bdd::max_label`.
+  ///            These values may not exceed `bdd::max_label`.
   ///
   /// \returns   BDD that is true for the exact same assignments to variables in
   ///            the given domain.
@@ -1304,10 +1290,11 @@ namespace adiar
   /// \brief       Obtains the BDD that represents the same function/set as the
   ///              given ZDD within the given domain.
   ///
-  /// \param A     amily of a set (within the given domain)
+  /// \param A     Family of a set (within the given domain)
   ///
   /// \param begin Single-pass forward iterator that provides the domain's
-  ///              variables in \em ascending order.
+  ///              variables in \em ascending order. These values may not exceed
+  ///              `bdd::max_label`.
   ///
   /// \param end   Marks the end for `begin`.
   ///

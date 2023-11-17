@@ -12,10 +12,9 @@ namespace adiar
   inline auto make_generator(const zdd::label_type &var, bool &gen_called)
   {
     adiar_assert(!gen_called);
-
-    return [&gen_called, &var]() -> zdd::label_type {
+    return [&gen_called, &var]() -> optional<zdd::label_type> {
       if (gen_called) {
-        return generator_end<zdd::label_type>::value;
+        return make_optional<zdd::label_type>();
       }
       gen_called = true;
       return var;
@@ -28,10 +27,10 @@ namespace adiar
     const generator<zdd::label_type> &gen;
 
     /// \brief The current level (including the current algorithm level)
-    zdd::label_type l_incl = zdd::max_label+1;
+    optional<zdd::label_type> l_incl = make_optional<zdd::label_type>();
 
     /// \brief The next level (definitely excluding the current level)
-    zdd::label_type l_excl = zdd::max_label+1;
+    optional<zdd::label_type> l_excl = make_optional<zdd::label_type>();
 
     /// We will rememeber how far the algorithm in substitution.h has got
     zdd::label_type alg_level = 0;
@@ -45,7 +44,7 @@ namespace adiar
       : gen(g)
     {
       l_incl = gen();
-      if (l_incl <= zdd::max_label) { l_excl = gen(); }
+      if (l_incl) { l_excl = gen(); }
     }
 
   private:
@@ -57,9 +56,9 @@ namespace adiar
 
       alg_level = new_level;
 
-      while (l_incl <= zdd::max_label && l_incl < new_level) {
+      while (l_incl && l_incl.value() < new_level) {
         l_incl = std::move(l_excl);
-        if (l_incl <= zdd::max_label) { l_excl = gen(); };
+        if (l_incl) { l_excl = gen(); };
       }
     }
 
@@ -69,7 +68,7 @@ namespace adiar
     {
       forward_to_level(new_level);
 
-      const bool level_matches = l_incl == new_level;
+      const bool level_matches = l_incl && l_incl.value() == new_level;
       l_match |= level_matches;
 
       return level_matches ? FIX_VALUE : assignment::None;
@@ -79,26 +78,28 @@ namespace adiar
     /// \brief Whether the manager has a next level (including the current)
     bool has_level_incl()
     {
-      return l_incl <= zdd::max_label && alg_level <= l_incl;
+      return l_incl && alg_level <= l_incl.value();
     }
 
     /// \brief Get the current level (including the current algorithm level)
     zdd::label_type level_incl()
     {
-      return l_incl;
+      adiar_assert(has_level_incl());
+      return l_incl.value();
     }
 
     /// \brief Whether the manager has a level ahead of the current
     bool has_level_excl()
     {
-      return (l_incl <= zdd::max_label && alg_level < l_incl) || l_excl <= zdd::max_label;
+      return (l_incl && alg_level < l_incl.value()) || l_excl;
     }
 
     /// \brief Get the next level (excluding the current one)
     zdd::label_type level_excl()
     {
-      if (alg_level < l_incl) { return l_incl; }
-      return l_excl;
+      adiar_assert(has_level_excl());
+      if (alg_level < l_incl.value()) { return l_incl.value(); }
+      return l_excl.value();
     }
   };
 
