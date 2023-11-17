@@ -1081,6 +1081,8 @@ namespace adiar::internal
         if (quantify_policy::quantify_onset) {
           if (!on_level) { return dd; }
 
+          // Quantify all but the last 'on_level'. Hence, look one ahead with
+          // 'next_on_level' to see whether it is the last one.
           optional<typename quantify_policy::label_type> next_on_level = lvls();
           while (next_on_level) {
             dd = quantify<quantify_policy>(ep, dd, on_level.value(), op);
