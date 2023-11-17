@@ -2,8 +2,8 @@
 
 go_bandit([]() {
   describe("adiar/zdd/pred.cpp", [&]() {
-    ptr_uint64 terminal_T = ptr_uint64(true);
-    ptr_uint64 terminal_F = ptr_uint64(false);
+    const ptr_uint64 terminal_T = ptr_uint64(true);
+    const ptr_uint64 terminal_F = ptr_uint64(false);
 
     // Ø
     shared_levelized_file<zdd::node_type> zdd_empty_nf;
@@ -11,10 +11,7 @@ go_bandit([]() {
       nw << node(false);
     }
 
-    shared_levelized_file<zdd::node_type> zdd_empty_nf_copy;
-    { node_writer nw(zdd_empty_nf_copy);
-      nw << node(false);
-    }
+    auto zdd_empty_nf_copy = shared_levelized_file<zdd::node_type>::copy(zdd_empty_nf);
 
     // { Ø }
     shared_levelized_file<zdd::node_type> zdd_null_nf;
@@ -22,10 +19,7 @@ go_bandit([]() {
       nw << node(true);
     }
 
-    shared_levelized_file<zdd::node_type> zdd_null_nf_copy;
-    { node_writer nw(zdd_null_nf_copy);
-      nw << node(true);
-    }
+    auto zdd_null_nf_copy = shared_levelized_file<zdd::node_type>::copy(zdd_null_nf);
 
     // { {1} }
     shared_levelized_file<zdd::node_type> zdd_A_nf;
@@ -33,10 +27,7 @@ go_bandit([]() {
       nw << node(1, node::max_id, terminal_F, terminal_T);
     }
 
-    shared_levelized_file<zdd::node_type> zdd_A_nf_copy;
-    { node_writer nw(zdd_A_nf_copy);
-      nw << node(1, node::max_id, terminal_F, terminal_T);
-    }
+    auto zdd_A_nf_copy = shared_levelized_file<zdd::node_type>::copy(zdd_A_nf);
 
     // { {1}, {1,2} }
     shared_levelized_file<zdd::node_type> zdd_B_nf;
@@ -54,12 +45,7 @@ go_bandit([]() {
         ;
     }
 
-    shared_levelized_file<zdd::node_type> zdd_C_nf_copy;
-    { node_writer nw(zdd_C_nf_copy);
-      nw << node(2, node::max_id, terminal_T,                    terminal_T)
-         << node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id))
-        ;
-    }
+    auto zdd_C_nf_copy = shared_levelized_file<zdd::node_type>::copy(zdd_C_nf);
 
     // { {1}, {1,2}, {0,1,3} }
     shared_levelized_file<zdd::node_type> zdd_D_nf;
@@ -72,15 +58,7 @@ go_bandit([]() {
         ;
     }
 
-    shared_levelized_file<zdd::node_type> zdd_D_nf_copy;
-    { node_writer nw(zdd_D_nf_copy);
-      nw << node(3, node::max_id,   terminal_F,                      terminal_T)
-         << node(2, node::max_id,   terminal_T,                      terminal_T)
-         << node(1, node::max_id,   terminal_F,                      ptr_uint64(3, ptr_uint64::max_id))
-         << node(1, node::max_id-1, terminal_F,                      ptr_uint64(2, ptr_uint64::max_id))
-         << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id))
-        ;
-    }
+    auto zdd_D_nf_copy = shared_levelized_file<zdd::node_type>::copy(zdd_D_nf);
 
     // { Ø, {0,3} }
     shared_levelized_file<zdd::node_type> zdd_E_nf;
@@ -90,12 +68,7 @@ go_bandit([]() {
         ;
     }
 
-    shared_levelized_file<zdd::node_type> zdd_E_nf_copy;
-    { node_writer nw(zdd_E_nf_copy);
-      nw << node(3, node::max_id, terminal_F, terminal_T)
-         << node(0, node::max_id, terminal_T, ptr_uint64(3, ptr_uint64::max_id))
-        ;
-    }
+    auto zdd_E_nf_copy = shared_levelized_file<zdd::node_type>::copy(zdd_E_nf);
 
     // { {2} }
     shared_levelized_file<zdd::node_type> zdd_F_nf;
@@ -103,8 +76,61 @@ go_bandit([]() {
       nw << node(2, node::max_id, terminal_F, terminal_T);
     }
 
-    // Equal and unequal will not be tested, since it merely is a call to
-    // is_isomorphic.
+    // { {0,2,4} }
+    shared_levelized_file<zdd::node_type> zdd_G_nf;
+    { node_writer nw(zdd_G_nf);
+      nw << node(4, node::max_id, terminal_F, terminal_T)
+         << node(2, node::max_id, terminal_F, ptr_uint64(4, ptr_uint64::max_id))
+         << node(0, node::max_id, terminal_F, ptr_uint64(2, ptr_uint64::max_id));
+    }
+
+    // -------------------------------------------------------------------------
+    // NOTE: For the overloads from <adiar/internal/dd_func.h>, please look in
+    //       'test/adiar/internal/test_dd_func.cpp'.
+    //
+    // NOTE: For `zdd_equal` and `zdd_unequal` look at
+    //       'test/adiar/internal/algorithms/test_pred.cpp'
+    //
+    // TODO: Move ZDD variants over here?
+    // -------------------------------------------------------------------------
+
+    describe("zdd_ispoint", [&]() {
+      it("rejects Ø", [&]() {
+        AssertThat(zdd_ispoint(zdd_empty_nf), Is().False());
+      });
+
+      it("accepts { Ø }", [&]() {
+        AssertThat(zdd_ispoint(zdd_null_nf), Is().True());
+      });
+
+      it("accepts { {1} }", [&]() {
+        AssertThat(zdd_ispoint(zdd_A_nf), Is().True());
+      });
+
+      it("accepts { {2} }", [&]() {
+        AssertThat(zdd_ispoint(zdd_E_nf), Is().False());
+      });
+
+      it("rejects { {1}, {1,2} }", [&]() {
+        AssertThat(zdd_ispoint(zdd_B_nf), Is().False());
+      });
+
+      it("rejects { Ø, {1}, {2}, {1,2} }", [&]() {
+        AssertThat(zdd_ispoint(zdd_C_nf), Is().False());
+      });
+
+      it("rejects { {1}, {1,2}, {0,1,3} }", [&]() {
+        AssertThat(zdd_ispoint(zdd_D_nf), Is().False());
+      });
+
+      it("rejects { Ø, {0,3} }", [&]() {
+        AssertThat(zdd_ispoint(zdd_D_nf), Is().False());
+      });
+
+      it("accepts { {0,2,4} }", [&]() {
+        AssertThat(zdd_ispoint(zdd_G_nf), Is().True());
+      });
+    });
 
     describe("zdd_subseteq", [&]() {
       it("accepts same file", [&]() {
