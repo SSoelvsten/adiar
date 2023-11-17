@@ -41,14 +41,16 @@ namespace adiar
   { return std::make_pair(std::move(t1), std::move(t2)); }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief A pair of values.
+  /// \brief An optional value, i.e. a possibly existent value.
+  ///
+  /// \details Not having a value is for example used to indicate the end of
+  ///          streams and generators.
   //////////////////////////////////////////////////////////////////////////////
   template<typename T>
   using optional = std::optional<T>;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Create an `adiar::option`, deducing the target type based on the
-  ///        types of the argument.
+  /// \brief Create an empty `adiar::optional`, i.e. *None*.
   //////////////////////////////////////////////////////////////////////////////
   template<typename T>
   constexpr optional<T>
@@ -56,8 +58,7 @@ namespace adiar
   { return optional<T>(); }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Create an `adiar::option`, deducing the target type based on the
-  ///        types of the argument.
+  /// \brief Create an `adiar::optional` with *Some* value.
   //////////////////////////////////////////////////////////////////////////////
   template<typename T>
   constexpr optional<T>
@@ -65,8 +66,7 @@ namespace adiar
   { return std::make_optional(t); }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Create an `adiar::pair`, deducing the target type based on the
-  ///        types of the arguments.
+  /// \brief Create an `adiar::optional` with *Some* value.
   //////////////////////////////////////////////////////////////////////////////
   template<typename T>
   constexpr optional<T>
