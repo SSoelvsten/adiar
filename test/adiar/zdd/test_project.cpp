@@ -1501,21 +1501,29 @@ go_bandit([]() {
         zdd::label_type var = 6;
 
         const zdd in = zdd_empty;
-        zdd out = zdd_project(in, [&var]() {
+        zdd out = zdd_project(in, [&var]() -> optional<zdd::label_type> {
+          if (var == 42) {
+            return make_optional<zdd::label_type>();
+          }
+
           const zdd::label_type ret = var;
-          var -= 2;
+          var = ret == 1 ? 42 : var-2;
           return ret;
         });
 
         AssertThat(out.file_ptr(), Is().EqualTo(in.file_ptr()));
       });
 
-      it("returns same file for { Ø } with dom = {1,3,5} [&&]", [&](){
-        zdd::label_type var = 6;
+      it("returns same file for { Ø } with dom = {5,3,1} [&&]", [&](){
+        zdd::label_type var = 5;
 
-        zdd out = zdd_project(zdd(zdd_null), [&var]() {
+        zdd out = zdd_project(zdd(zdd_null), [&var]() -> optional<zdd::label_type> {
+          if (var == 42) {
+            return make_optional<zdd::label_type>();
+          }
+
           const zdd::label_type ret = var;
-          var -= 2;
+          var = ret == 1 ? 42 : var-2;
           return ret;
         });
 
@@ -1523,13 +1531,19 @@ go_bandit([]() {
       });
 
       it("returns same file for Ø with dom = Ø [&&]", [&](){
-        zdd out = zdd_project(zdd(zdd_empty), []() { return -1; });
+        zdd out = zdd_project(zdd(zdd_empty), []() {
+          return make_optional<zdd::label_type>();
+        });
+
         AssertThat(out.file_ptr(), Is().EqualTo(zdd_empty));
       });
 
       it("returns same file for { Ø } with dom = Ø [const &]", [&](){
         const zdd in = zdd_null;
-        zdd out = zdd_project(in, []() { return -1; });
+        zdd out = zdd_project(in, []() {
+          return make_optional<zdd::label_type>();
+        });
+
         AssertThat(out.file_ptr(), Is().EqualTo(in.file_ptr()));
       });
 
@@ -1538,7 +1552,9 @@ go_bandit([]() {
 
         it("collapses zdd_1 with dom = Ø into { Ø } [const &]", [&](){
           const zdd in = zdd_1;
-          zdd out = zdd_project(in, []() { return -1; });
+          zdd out = zdd_project(in, []() {
+            return make_optional<zdd::label_type>();
+          });
 
           node_test_stream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
@@ -1559,7 +1575,9 @@ go_bandit([]() {
         });
 
         it("collapses zdd_2 with dom = Ø into { Ø } [&&]", [&](){
-          zdd out = zdd_project(ep, zdd(zdd_2), []() { return -1; });
+          zdd out = zdd_project(ep, zdd(zdd_2), []() {
+            return make_optional<zdd::label_type>();
+          });
 
           node_test_stream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
@@ -1581,7 +1599,9 @@ go_bandit([]() {
 
         it("collapses zdd_3 with dom = Ø into { Ø } [const &]", [&](){
           const zdd in = zdd_3;
-          zdd out = zdd_project(ep, in, []() { return -1; });
+          zdd out = zdd_project(ep, in, []() {
+            return make_optional<zdd::label_type>();
+          });
 
           node_test_stream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
@@ -1605,9 +1625,14 @@ go_bandit([]() {
           zdd::label_type var = 1;
 
           const zdd in = zdd_2;
-          zdd out = zdd_project(ep, in, [&var]() {
+
+          zdd out = zdd_project(ep, in, [&var]() -> optional<zdd::label_type> {
+            if (var == 0) {
+              return make_optional<zdd::label_type>();
+            }
+
             const zdd::label_type ret = var;
-            var -= 2;
+            var--;
             return ret;
           });
 
@@ -1631,9 +1656,11 @@ go_bandit([]() {
 
         it("computes with disjoint dom to be { Ø } [zdd_3] [&&]", [&](){
           zdd::label_type var = 5;
-          zdd out = zdd_project(ep, zdd(zdd_3), [&var]() {
-            return 3 <= var && var <= 5 ? var-- : -1;
-          });
+          zdd out = zdd_project(ep, zdd(zdd_3), [&var]() -> optional<zdd::label_type> {
+              return 3 <= var && var <= 5
+                ? make_optional<zdd::label_type>(var--)
+                : make_optional<zdd::label_type>();
+            });
 
           node_test_stream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
@@ -1676,7 +1703,9 @@ go_bandit([]() {
 
           zdd::label_type var = 0;
           zdd out = zdd_project(ep, in, [&var]() {
-            return var == 0 ? var--: var;
+            return var == 0
+              ? make_optional<zdd::label_type>(var--)
+              : make_optional<zdd::label_type>();
           });
 
           node_test_stream out_nodes(out);
@@ -1713,12 +1742,16 @@ go_bandit([]() {
            */
           zdd::label_type var = 1;
           zdd out = zdd_project(ep, in, [&var]() {
-            return var <= 1 ? var--: var;
+            return var <= 1
+              ? make_optional<zdd::label_type>(var--)
+              : make_optional<zdd::label_type>();
           });
 
           node_test_stream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id, zdd::pointer_type(false), zdd::pointer_type(true))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
+                                                         zdd::pointer_type(false),
+                                                         zdd::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1753,7 +1786,9 @@ go_bandit([]() {
           */
           zdd::label_type var = 4;
           zdd out = zdd_project(ep, in, [&var]() {
-            return 2 <= var && var <= 4 ? var-- : -1;
+            return 2 <= var && var <= 4
+              ? make_optional<zdd::label_type>(var--)
+              : make_optional<zdd::label_type>();
           });
 
           node_test_stream out_nodes(out);
@@ -1811,7 +1846,9 @@ go_bandit([]() {
           */
           zdd::label_type var = 4;
           zdd out = zdd_project(ep, zdd_2, [&var]() {
-            return 2 <= var && var <= 4 ? var-- : -1;
+            return 2 <= var && var <= 4
+              ? make_optional<zdd::label_type>(var--)
+              : make_optional<zdd::label_type>();
           });
 
           node_test_stream out_nodes(out);
@@ -1868,9 +1905,13 @@ go_bandit([]() {
           //        T T
           */
           zdd::label_type var = 4;
-          zdd out = zdd_project(ep, zdd_3, [&var]() {
+          zdd out = zdd_project(ep, zdd_3, [&var]() -> optional<zdd::label_type> {
+            if (var == 42) {
+              return make_optional<zdd::label_type>();
+            }
+
             const zdd::label_type ret = var;
-            var -= 2;
+            var = ret == 0 ? 42 : var-2;
             return ret;
           });
 
@@ -1919,11 +1960,15 @@ go_bandit([]() {
           //    F T T T
           */
           zdd::label_type var = 4;
-          zdd out = zdd_project(ep, zdd_4, [&var]() {
-            const zdd::label_type ret = var;
-            var -= 4;
-            return ret;
-          });
+          zdd out = zdd_project(ep, zdd_4, [&var]() -> optional<zdd::label_type> {
+              if (var == 42) {
+                return make_optional<zdd::label_type>();
+              }
+
+              const zdd::label_type ret = var;
+              var = ret == 0 ? 42 : var-4;
+              return ret;
+            });
 
           node_test_stream out_nodes(out);
 
@@ -1973,10 +2018,14 @@ go_bandit([]() {
           //     F  T
           */
           zdd::label_type var = 4;
-          zdd out = zdd_project(ep, zdd_4, [&var]() {
+          zdd out = zdd_project(ep, zdd_4, [&var]() -> optional<zdd::label_type> {
+            if (var == 42) {
+              return make_optional<zdd::label_type>();
+            }
+
             const zdd::label_type res = var;
             if (var == 4) { var -= 2; }
-            else          { var = -1; }
+            else          { var = 42; }
             return res;
           });
 
@@ -2024,7 +2073,9 @@ go_bandit([]() {
 
         it("collapses zdd_1 with dom = Ø into { Ø } [const &]", [&](){
           const zdd in = zdd_1;
-          zdd out = zdd_project(ep, in, []() { return -1; });
+          zdd out = zdd_project(ep, in, []() {
+            return make_optional<zdd::label_type>();
+          });
 
           node_test_stream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
@@ -2045,7 +2096,9 @@ go_bandit([]() {
         });
 
         it("collapses zdd_2 with dom = Ø into { Ø } [&&]", [&](){
-          zdd out = zdd_project(ep, zdd(zdd_2), []() { return -1; });
+          zdd out = zdd_project(ep, zdd(zdd_2), []() {
+            return make_optional<zdd::label_type>();
+          });
 
           node_test_stream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
@@ -2067,7 +2120,9 @@ go_bandit([]() {
 
         it("collapses zdd_3 with dom = Ø into { Ø } [const &]", [&](){
           const zdd in = zdd_3;
-          zdd out = zdd_project(ep, in, []() { return -1; });
+          zdd out = zdd_project(ep, in, []() {
+            return make_optional<zdd::label_type>();
+          });
 
           node_test_stream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
@@ -2091,11 +2146,12 @@ go_bandit([]() {
           zdd::label_type var = 1;
 
           const zdd in = zdd_2;
-          zdd out = zdd_project(ep, in, [&var]() {
-            const zdd::label_type ret = var;
-            var -= 2;
-            return ret;
-          });
+          zdd out = zdd_project(ep, in, [&var]() -> optional<zdd::label_type> {
+              if (var != 1) {
+                return make_optional<zdd::label_type>();
+              }
+              return var--;
+            });
 
           node_test_stream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
@@ -2118,7 +2174,9 @@ go_bandit([]() {
         it("computes with disjoint dom to be { Ø } [zdd_3] [&&]", [&](){
           zdd::label_type var = 5;
           zdd out = zdd_project(ep, zdd(zdd_3), [&var]() {
-            return 3 <= var && var <= 5 ? var-- : -1;
+            return 3 <= var && var <= 5
+              ? make_optional<zdd::label_type>(var--)
+              : make_optional<zdd::label_type>();
           });
 
           node_test_stream out_nodes(out);
@@ -2164,7 +2222,9 @@ go_bandit([]() {
 
           zdd::label_type var = 0;
           zdd out = zdd_project(ep, in, [&var]() {
-            return var == 0 ? var--: var;
+            return var == 0
+              ? make_optional<zdd::label_type>(var--)
+              : make_optional<zdd::label_type>();
           });
 
           node_test_stream out_nodes(out);
@@ -2201,7 +2261,9 @@ go_bandit([]() {
            */
           zdd::label_type var = 1;
           zdd out = zdd_project(ep, in, [&var]() {
-            return var <= 1 ? var--: var;
+            return var <= 1
+              ? make_optional<zdd::label_type>(var--)
+              : make_optional<zdd::label_type>(var);
           });
 
           node_test_stream out_nodes(out);
@@ -2241,7 +2303,9 @@ go_bandit([]() {
           */
           zdd::label_type var = 4;
           zdd out = zdd_project(ep, in, [&var]() {
-            return 2 <= var && var <= 4 ? var-- : -1;
+            return 2 <= var && var <= 4
+              ? make_optional<zdd::label_type>(var--)
+              : make_optional<zdd::label_type>();
           });
 
           node_test_stream out_nodes(out);
@@ -2299,7 +2363,9 @@ go_bandit([]() {
           */
           zdd::label_type var = 4;
           zdd out = zdd_project(ep, zdd_2, [&var]() {
-            return 2 <= var && var <= 4 ? var-- : -1;
+            return 2 <= var && var <= 4
+              ? make_optional<zdd::label_type>(var--)
+              : make_optional<zdd::label_type>();
           });
 
           node_test_stream out_nodes(out);
@@ -2356,9 +2422,13 @@ go_bandit([]() {
           //        T T
           */
           zdd::label_type var = 4;
-          zdd out = zdd_project(ep, zdd_3, [&var]() {
+          zdd out = zdd_project(ep, zdd_3, [&var]() -> optional<zdd::label_type> {
+            if (var == 42) {
+              return make_optional<zdd::label_type>();
+            }
+
             const zdd::label_type ret = var;
-            var -= 2;
+            var = ret == 0 ? 42 : var-2;
             return ret;
           });
 
@@ -2407,9 +2477,13 @@ go_bandit([]() {
           //    F T T T
           */
           zdd::label_type var = 4;
-          zdd out = zdd_project(ep, zdd_4, [&var]() {
+          zdd out = zdd_project(ep, zdd_4, [&var]() -> optional<zdd::label_type> {
+              if (var == 42) {
+                return make_optional<zdd::label_type>();
+              }
+
             const zdd::label_type ret = var;
-            var -= 4;
+            var = ret == 0 ? 42 : var-4;
             return ret;
           });
 
@@ -2461,10 +2535,14 @@ go_bandit([]() {
           //     F  T
           */
           zdd::label_type var = 4;
-          zdd out = zdd_project(ep, zdd_4, [&var]() {
+          zdd out = zdd_project(ep, zdd_4, [&var]() -> optional<zdd::label_type> {
+            if (var == 42) {
+              return make_optional<zdd::label_type>();
+            }
+
             const zdd::label_type res = var;
             if (var == 4) { var -= 2; }
-            else          { var = -1; }
+            else          { var = 42; }
             return res;
           });
 
@@ -2520,9 +2598,13 @@ go_bandit([]() {
           //      T T
           */
           zdd::label_type var = 8;
-          zdd out = zdd_project(ep, in, [&var]() {
+          zdd out = zdd_project(ep, in, [&var]() -> optional<zdd::label_type> {
+            if (var == 42) {
+              return make_optional<zdd::label_type>();
+            }
+
             const zdd::label_type res = var;
-            var -= 2;
+            var = var == 0 ? 42 : var-2;
             return res;
           });
 

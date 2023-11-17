@@ -150,7 +150,9 @@ go_bandit([]() {
           x = y;
           y = z;
 
-          return x > 13 ?  domain_max+1 : x;
+          return x > 13
+            ? make_optional<domain_var>()
+            : make_optional<domain_var>(x);
         };
 
         domain_set(gen);

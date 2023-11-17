@@ -381,8 +381,8 @@ go_bandit([]() {
 
     describe("bdd_and(generator<pair<bdd::label_type, bool>>)", [&]() {
       it("creates T from empty generator", [&]() {
-        const auto gen = []() -> pair<bdd::label_type, bool> {
-          return make_pair(bdd::max_label+1, false);
+        const auto gen = []() {
+          return make_optional<pair<bdd::label_type, bool>>();
         };
 
         bdd res = bdd_and(gen);
@@ -416,10 +416,11 @@ go_bandit([]() {
       it("can create x1", [&]() {
         int calls = 0;
 
-        const auto gen = [&calls]() -> pair<bdd::label_type, bool> {
-          return calls++ > 0
-            ? make_pair(bdd::max_label+1, false)
-            : make_pair(1u, false);
+        const auto gen = [&calls]() -> optional<pair<bdd::label_type, bool>> {
+          if (calls++ > 0) {
+            return make_optional<pair<bdd::label_type, bool>>();
+          }
+          return make_pair(1u, false);
         };
 
         bdd res = bdd_and(gen);
@@ -460,10 +461,11 @@ go_bandit([]() {
       it("can create -x1", [&]() {
         int calls = 0;
 
-        const auto gen = [&calls]() -> pair<bdd::label_type, bool> {
-          return calls++ > 0
-            ? make_pair(bdd::max_label+1, true)
-            : make_pair(1u, true);
+        const auto gen = [&calls]() -> optional<pair<bdd::label_type, bool>> {
+          if (calls++ > 0) {
+            return make_optional<pair<bdd::label_type, bool>>();
+          }
+          return make_pair(1u, true);
         };
 
         bdd res = bdd_and(gen);
@@ -506,8 +508,8 @@ go_bandit([]() {
 
     describe("bdd_and(generator<int>)", [&]() {
       it("creates T from empty generator", [&]() {
-        const auto gen = []() -> int {
-          return bdd::max_label+1;
+        const auto gen = []() {
+          return make_optional<int>();
         };
 
         bdd res = bdd_and(gen);
@@ -541,8 +543,8 @@ go_bandit([]() {
       it("can create x1", [&]() {
         int calls = 0;
 
-        const auto gen = [&calls]() -> int {
-          return calls++ > 0 ? bdd::max_label+1 : 1;
+        const auto gen = [&calls]() {
+          return calls++ == 0 ? make_optional<int>(1) : make_optional<int>();
         };
 
         bdd res = bdd_and(gen);
@@ -583,8 +585,8 @@ go_bandit([]() {
       it("can create -x1", [&]() {
         int calls = 0;
 
-        const auto gen = [&calls]() -> int {
-          return calls++ > 0 ? bdd::max_label+1 : -1;
+        const auto gen = [&calls]() {
+          return calls++ == 0 ? make_optional<int>(-1) : make_optional<int>();
         };
 
         bdd res = bdd_and(gen);
@@ -987,6 +989,68 @@ go_bandit([]() {
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
+      it("works with ForwardIt::value_type == 'char'", [&]() {
+        std::vector<char> vars = { 'a', 'b', 'c', 'd' };
+
+        bdd res = bdd_and(vars.rbegin(), vars.rend());
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node('d', node::max_id,
+                                                terminal_F,
+                                                terminal_T)));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node('c', node::max_id,
+                                                terminal_F,
+                                                ptr_uint64('d', ptr_uint64::max_id))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node('b', node::max_id,
+                                                terminal_F,
+                                                ptr_uint64('c', ptr_uint64::max_id))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node('a', node::max_id,
+                                                terminal_F,
+                                                ptr_uint64('b', ptr_uint64::max_id))));
+
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info('d',1u)));
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info('c',1u)));
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info('b',1u)));
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info('a',1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(4u));
+        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(5u));
+
+        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(4u));
+        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(5u));
+
+        AssertThat(bdd_iscanonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(4u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
       it("throws exception for non-ascending list", []() {
         std::vector<int> vars = { 3, 2 };
 
@@ -996,8 +1060,8 @@ go_bandit([]() {
 
     describe("bdd_or(generator<pair<bdd::label_type, bool>>)", [&]() {
       it("creates F from empty generator", [&]() {
-        const auto gen = []() -> pair<bdd::label_type, bool> {
-          return make_pair(bdd::max_label+1, false);
+        const auto gen = []() {
+          return make_optional<pair<bdd::label_type, bool>>();
         };
 
         bdd res = bdd_or(gen);
@@ -1031,10 +1095,11 @@ go_bandit([]() {
       it("can create x1", [&]() {
         int calls = 0;
 
-        const auto gen = [&calls]() -> pair<bdd::label_type, bool> {
-          return calls++ > 0
-            ? make_pair(bdd::max_label+1, false)
-            : make_pair(1u, false);
+        const auto gen = [&calls]() -> optional<pair<bdd::label_type, bool>> {
+          if (calls++ > 0) {
+            return make_optional<pair<bdd::label_type, bool>>();
+          }
+          return make_pair(1u, false);
         };
 
         bdd res = bdd_or(gen);
@@ -1075,10 +1140,11 @@ go_bandit([]() {
       it("can create -x1", [&]() {
         int calls = 0;
 
-        const auto gen = [&calls]() -> pair<bdd::label_type, bool> {
-          return calls++ > 0
-            ? make_pair(bdd::max_label+1, true)
-            : make_pair(1u, true);
+        const auto gen = [&calls]() -> optional<pair<bdd::label_type, bool>> {
+          if (calls++ > 0) {
+            return make_optional<pair<bdd::label_type, bool>>();
+          }
+          return make_pair(1u, true);
         };
 
         bdd res = bdd_or(gen);
@@ -1121,8 +1187,8 @@ go_bandit([]() {
 
     describe("bdd_or(generator<int>)", [&]() {
       it("creates F from empty generator", [&]() {
-        const auto gen = []() -> int {
-          return bdd::max_label+1;
+        const auto gen = []() {
+          return make_optional<int>();
         };
 
         bdd res = bdd_or(gen);
@@ -1156,8 +1222,8 @@ go_bandit([]() {
       it("can create x1", [&]() {
         int calls = 0;
 
-        const auto gen = [&calls]() -> int {
-          return calls++ > 0 ? bdd::max_label+1 : 1;
+        const auto gen = [&calls]() {
+          return calls++ == 0 ? make_optional<int>(1) : make_optional<int>();
         };
 
         bdd res = bdd_or(gen);
@@ -1198,8 +1264,8 @@ go_bandit([]() {
       it("can create -x1", [&]() {
         int calls = 0;
 
-        const auto gen = [&calls]() -> int {
-          return calls++ > 0 ? bdd::max_label+1 : -1;
+        const auto gen = [&calls]() {
+          return calls++ == 0 ? make_optional<int>(-1) : make_optional<int>();
         };
 
         bdd res = bdd_or(gen);

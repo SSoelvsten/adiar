@@ -51,6 +51,9 @@ namespace adiar
   class bdd_eval_generator_visitor
   {
     const generator<pair<bdd::label_type, bool>> &_generator;
+
+    // The `_next_pair` value is only queried if there actually are BDD nodes.
+    // Hence, we may as well unwrap the `optional<...>`.
     pair<bdd::label_type, bool> _next_pair;
 
     bool result = false;
@@ -59,7 +62,8 @@ namespace adiar
     bdd_eval_generator_visitor(const generator<pair<bdd::label_type, bool>>& g)
       : _generator(g)
     {
-      _next_pair = _generator();
+      const optional<pair<bdd::label_type, bool>> p = _generator();
+      if (p) { _next_pair = p.value(); }
     }
 
     inline bdd::pointer_type visit(const bdd::node_type &n)
@@ -67,16 +71,17 @@ namespace adiar
       const bdd::label_type level = n.label();
 
       while (_next_pair.first < level) {
-        const pair<bdd::label_type, bool> p = _generator();
+        const optional<pair<bdd::label_type, bool>> p = _generator();
 
-        if (bdd::max_label < p.first) {
+        if (!p) {
           throw out_of_range("Labels are insufficient to traverse BDD");
         }
-        if (p.first <= _next_pair.first) {
+
+        if (p.value().first <= _next_pair.first) {
           throw invalid_argument("Labels are not in ascending order");
         }
 
-        _next_pair = p;
+        _next_pair = p.value();
       }
 
       if (_next_pair.first != level) {

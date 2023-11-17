@@ -6,6 +6,7 @@
 #include <type_traits>
 
 #include <adiar/exception.h>
+#include <adiar/types.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \defgroup module__functional Function Objects
@@ -86,34 +87,12 @@ namespace adiar
   ///         produce values in a specific order and (2) to provide a certain
   ///         type of value to mark having reached the \em end. For (1), please
   ///         see the documentation of each respective function, while for (2)
-  ///         use `generator_end`.
+  ///         use `make_optional<T>()`.
   ///
   /// \tparam RetType Type of each yielded value from the generator.
   //////////////////////////////////////////////////////////////////////////////
   template<typename RetType>
-  using generator = function<RetType ()>;
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Template specialization to derive the `end` (similar to `EOF`)
-  ///        return-value for a generator function.
-  ///
-  /// \details By default, we provide the integer implementation of -1.
-  //////////////////////////////////////////////////////////////////////////////
-  template <typename RetType>
-  struct generator_end
-  {
-    static_assert(std::is_integral<RetType>::value);
-
-  private:
-    static constexpr RetType max_value = std::numeric_limits<int>::max();
-
-  public:
-    using value_type = RetType;
-
-    static constexpr RetType value{max_value};
-  };
-
-  // TODO: Specialize for DDs (Both BDDs and ZDDs) to return an empty file.
+  using generator = function<optional<RetType> ()>;
 
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Wrap a `begin` and `end` iterator pair into a generator function.
@@ -122,11 +101,13 @@ namespace adiar
   inline generator<typename ForwardIt::value_type>
   make_generator(ForwardIt &begin, ForwardIt &end)
   {
+    using value_type = typename ForwardIt::value_type;
+
     return [&begin, &end]() {
       if (begin == end) {
-        return generator_end<typename ForwardIt::value_type>::value;
+        return make_optional<value_type>();
       }
-      return *(begin++);
+      return make_optional<value_type>(*(begin++));
     };
   }
 
@@ -137,11 +118,13 @@ namespace adiar
   inline generator<typename Stream::value_type>
   make_generator(Stream &s)
   {
+    using value_type = typename Stream::value_type;
+
     return [&s]() {
       if (!s.can_pull()) {
-        return generator_end<typename Stream::value_type>::value;
+        return make_optional<value_type>();
       }
-      return s.pull();
+      return make_optional<value_type>(s.pull());
     };
   }
 

@@ -10,8 +10,7 @@ namespace adiar
   {
     const generator<zdd::label_type> &gen;
 
-    bool has_l = false;
-    zdd::label_type l;
+    optional<zdd::label_type> l;
 
     // First visit is for the root
     bool is_first_visit = true;
@@ -26,22 +25,29 @@ namespace adiar
       : gen(a)
     {
       l = gen();
-      has_l = l <= zdd::max_label;
     }
 
     inline zdd::pointer_type visit(const zdd::node_type &n)
     {
       visited_label = n.label();
 
-      const zdd::pointer_type next_ptr = has_l && l == visited_label ? n.high() : n.low();
+      const zdd::pointer_type next_ptr =
+        l.has_value() && l.value() == visited_label ? n.high() : n.low();
 
-      if (has_l) {
+      if (l) {
         // Did we miss a label before the root?
-        if (is_first_visit && l < visited_label) { return zdd::pointer_type::nil(); }
+        if (is_first_visit && l.value() < visited_label) {
+          return zdd::pointer_type::nil();
+        }
 
-        // Will we miss a label?
-        if (l == visited_label && l <= zdd::max_label) { l = gen(); }
-        if (next_ptr.is_node() && visited_label < l && l < next_ptr.label()) {
+        // Obtain the next to-be visited level (if node was in the set)
+        if (l.value() == visited_label) {
+          l = gen();
+        }
+
+        // Will we the next to-be visited level?
+        if (next_ptr.is_node() && l.has_value()
+            && visited_label < l.value() && l.value() < next_ptr.label()) {
           return zdd::pointer_type::nil();
         }
       }
@@ -54,7 +60,7 @@ namespace adiar
     { terminal_val = s; }
 
     inline bool get_result()
-    { return terminal_val && zdd::max_label < l; }
+    { return terminal_val && !l.has_value(); }
   };
 
   bool zdd_contains(const zdd &zdd, const generator<zdd::label_type> &a)

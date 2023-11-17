@@ -1,8 +1,8 @@
 #ifndef ADIAR_TYPES_H
 #define ADIAR_TYPES_H
 
+#include <optional>
 #include <utility>
-//#include <adiar/internal/memory.h>
 
 namespace adiar
 {
@@ -39,6 +39,39 @@ namespace adiar
   constexpr pair<T1, T2>
   make_pair(T1 &&t1, T2 &&t2)
   { return std::make_pair(std::move(t1), std::move(t2)); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief A pair of values.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename T>
+  using optional = std::optional<T>;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Create an `adiar::option`, deducing the target type based on the
+  ///        types of the argument.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename T>
+  constexpr optional<T>
+  make_optional()
+  { return optional<T>(); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Create an `adiar::option`, deducing the target type based on the
+  ///        types of the argument.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename T>
+  constexpr optional<T>
+  make_optional(const T &t)
+  { return std::make_optional(t); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Create an `adiar::pair`, deducing the target type based on the
+  ///        types of the arguments.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename T>
+  constexpr optional<T>
+  make_optional(T &&t)
+  { return std::make_optional(std::move(t)); }
 }
 
 #endif // ADIAR_TYPES_H

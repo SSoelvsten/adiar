@@ -2496,8 +2496,6 @@ go_bandit([]() {
         });
 
         it("kills intermediate dead partial solutions multiple times", [&]() {
-          bdd::label_type var = 7;
-
           /* expected
           //
           //         _1_
@@ -2511,10 +2509,8 @@ go_bandit([]() {
           //        |
           //        T
           */
-          bdd out = bdd_exists(ep, bdd_6, [&var]() -> bdd::label_type {
-            const bdd::label_type ret = var;
-            var -= 2;
-            return ret;
+          bdd out = bdd_exists(ep, bdd_6, [](const bdd::label_type x) -> bool {
+            return (x % 2);
           });
 
           node_test_stream out_nodes(out);
@@ -3708,22 +3704,29 @@ go_bandit([]() {
     });
 
     describe("bdd_exists(const bdd&, const generator<bdd::label_type>&)", [&]() {
-      it("returns input on -1 generator BDD 1 [&&]", [&]() {
-        __bdd out = bdd_exists(bdd_1, []() -> bdd::label_type { return -1; });
+      it("returns input on 'optional::none' generator BDD 1 [&&]", [&]() {
+        __bdd out = bdd_exists(bdd_1, []() {
+          return make_optional<bdd::label_type>();
+        });
+
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
       });
 
       describe("quantify_alg == Singleton", [&]() {
         const exec_policy ep = exec_policy::quantify::Singleton;
 
-        it("quantifies 3, 1, -1 in BDD 4 [&&]", [&]() {
+        it("quantifies 3, 1 in BDD 4 [&&]", [&]() {
           bdd::label_type var = 3;
 
-          bdd out = bdd_exists(ep, bdd_4, [&var]() -> bdd::label_type {
-            const bdd::label_type ret = var;
-            var -= 2;
-            return ret;
-          });
+          bdd out = bdd_exists(ep, bdd_4, [&var]() -> optional<bdd::label_type> {
+              if (var == 42) {
+                return make_optional<bdd::label_type>();
+              }
+
+              const bdd::label_type ret = var;
+              var = ret == 1 ? 42 : var-2;
+              return ret;
+            });
 
           node_test_stream out_nodes(out);
 
@@ -3750,16 +3753,20 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
-        it("quantifies 2, 0, -2 in BDD 4 [const &]", [&]() {
+        it("quantifies 2, 0 in BDD 4 [const &]", [&]() {
           const bdd in = bdd_4;
 
           bdd::label_type var = 2;
 
-          bdd out = bdd_exists(ep, in, [&var]() -> bdd::label_type {
-            const bdd::label_type ret = var;
-            var -= 2;
-            return ret;
-          });
+          bdd out = bdd_exists(ep, in, [&var]() -> optional<bdd::label_type> {
+              if (var == 42) {
+                return make_optional<bdd::label_type>();
+              }
+
+              const bdd::label_type res = var;
+              var = res == 0 ? 42 : var-2;
+              return res;
+            });
 
           node_test_stream out_nodes(out);
 
@@ -3786,14 +3793,15 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
-        it("quantifies 1, -1 variables in BDD 1 [&&]", [&]() {
+        it("quantifies 1 in BDD 1 [&&]", [&]() {
           bdd::label_type var = 1;
 
-          bdd out = bdd_exists(ep, bdd_1, [&var]() -> bdd::label_type {
-            const bdd::label_type ret = var;
-            var -= 2;
-            return ret;
-          });
+          bdd out = bdd_exists(ep, bdd_1, [&var]() -> optional<bdd::label_type> {
+              if (var == 0) {
+                return make_optional<bdd::label_type>();
+              }
+              return var--;
+            });
 
           node_test_stream out_nodes(out);
 
@@ -3814,7 +3822,7 @@ go_bandit([]() {
             return 2 - 2*(calls++);
           });
 
-          // What could be expected is 3 calls: 2, 0, -2 . But, here it terminates early.
+          // What could be expected is 3 calls: 2, 0 . But, here it terminates early.
           AssertThat(calls, Is().EqualTo(2));
 
           node_test_stream out_nodes(out);
@@ -3833,14 +3841,18 @@ go_bandit([]() {
       describe("quantify_alg == Nested", [&]() {
         const exec_policy ep = exec_policy::quantify::Nested;
 
-        it("quantifies 3, 1, -1 in BDD 4 [&&]", [&]() {
+        it("quantifies 3, 1 in BDD 4 [&&]", [&]() {
           bdd::label_type var = 3;
 
-          bdd out = bdd_exists(ep, bdd_4, [&var]() -> bdd::label_type {
-            const bdd::label_type ret = var;
-            var -= 2;
-            return ret;
-          });
+          bdd out = bdd_exists(ep, bdd_4, [&var]() -> optional<bdd::label_type> {
+              if (var == 42) {
+                return make_optional<bdd::label_type>();
+              }
+
+              const bdd::label_type ret = var;
+              var = ret == 1 ? 42 : var-2;
+              return ret;
+            });
 
           node_test_stream out_nodes(out);
 
@@ -3867,13 +3879,14 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
-        it("quantifies 1, -1 variables in BDD 1 [&&]", [&]() {
+        it("quantifies 1 in BDD 1 [&&]", [&]() {
           bdd::label_type var = 1;
 
-          bdd out = bdd_exists(ep, bdd_1, [&var]() -> bdd::label_type {
-            const bdd::label_type ret = var;
-            var -= 2;
-            return ret;
+          bdd out = bdd_exists(ep, bdd_1, [&var]() -> optional<bdd::label_type> {
+            if (var == 0) {
+              return make_optional<zdd::label_type>();
+            }
+            return var--;
           });
 
           node_test_stream out_nodes(out);
@@ -3890,11 +3903,15 @@ go_bandit([]() {
 
         it("bails out on a level that only shortcuts", [&]() {
           bdd::label_type var = 6;
-          bdd out = bdd_exists(ep, bdd_9T, [&var]() -> bdd::label_type {
-            const bdd::label_type res = var;
-            var -= 2;
-            return res;
-          });
+          bdd out = bdd_exists(ep, bdd_9T, [&var]() -> optional<bdd::label_type> {
+              if (var == 42) {
+                return make_optional<bdd::label_type>();
+              }
+
+              const bdd::label_type res = var;
+              var = res == 0 ? 42 : var-2;
+              return res;
+            });
 
           node_test_stream out_nodes(out);
 
@@ -3933,11 +3950,15 @@ go_bandit([]() {
 
         it("bails out on a level that only is irrelevant", [&]() {
           bdd::label_type var = 6;
-          bdd out = bdd_exists(ep, bdd_9F, [&var]() -> bdd::label_type {
-            const bdd::label_type res = var;
-            var -= 2;
-            return res;
-          });
+          bdd out = bdd_exists(ep, bdd_9F, [&var]() -> optional<bdd::label_type> {
+              if (var == 42) {
+                return make_optional<bdd::label_type>();
+              }
+
+              const bdd::label_type res = var;
+              var = res == 0 ? 42 : var-2;
+              return res;
+            });
 
           node_test_stream out_nodes(out);
 
@@ -3968,12 +3989,15 @@ go_bandit([]() {
 
         it("bails out on a level that both shortcuts and is irrelevant", [&]() {
           bdd::label_type var = 4;
-          bdd out = bdd_exists(ep, bdd_6_x4T, [&var]() -> bdd::label_type {
+          bdd out = bdd_exists(ep, bdd_6_x4T, [&var]() -> optional<bdd::label_type> {
+            if (var == 42) {
+              return make_optional<bdd::label_type>();
+            }
             const bdd::label_type res = var;
-            switch (var) {
+            switch (res) {
             case 4:  { var = 2;  break; } // <-- 4: transposing
             case 2:  { var = 1;  break; } // <-- 2: shortuctting / irrelevant
-            default: { var = -1; break; } // <-- 1: final sweep
+            default: { var = 42; break; } // <-- 1: final sweep
             }
             return res;
           });
@@ -3994,13 +4018,17 @@ go_bandit([]() {
         });
 
         it("kills intermediate dead partial solution", [&]() {
-          bdd::label_type var = 3;
-          bdd out = bdd_exists(ep, bdd_10, [&var]() -> bdd::label_type {
-            const bdd::label_type res = var;
-            if (2 < var) { var -= 1; }
-            else         { var = -1; }
-            return res;
-          });
+          optional<bdd::label_type> var = 3;
+
+          bdd out = bdd_exists(ep, bdd_10, [&var]() -> optional<bdd::label_type> {
+              if (!var) { return var; }
+
+              const optional<bdd::label_type> res = var;
+              if (2 < var.value()) { var = var.value()-1; }
+              else                 { var = make_optional<bdd::label_type>(); }
+
+              return res;
+            });
 
           node_test_stream out_nodes(out);
 
@@ -4037,9 +4065,13 @@ go_bandit([]() {
           //        |
           //        T
           */
-          bdd out = bdd_exists(ep, bdd_6, [&var]() -> bdd::label_type {
+          bdd out = bdd_exists(ep, bdd_6, [&var]() -> optional<bdd::label_type> {
+            if (var == 42) {
+              return make_optional<bdd::label_type>();
+            }
+
             const bdd::label_type ret = var;
-            var -= 2;
+            var = ret == 1 ? 42 : var-2;
             return ret;
           });
 
@@ -4680,24 +4712,27 @@ go_bandit([]() {
     });
 
     describe("bdd_forall(const bdd&, const generator<bdd::label_type>&)", [&]() {
-      it("returns input on -1 geneator in BDD 1 [&&]", [&]() {
-        __bdd out = bdd_forall(bdd_1, []() -> bdd::label_type { return -1; });
+      it("returns input on 'optional::none' generator in BDD 1 [&&]", [&]() {
+        __bdd out = bdd_forall(bdd_1, []() {
+          return make_optional<bdd::label_type>();
+        });
+
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
       });
 
       describe("quantify_alg == Singleton", [&]() {
         const exec_policy ep = exec_policy::quantify::Singleton;
 
-        it("quantifies 0, -2 in BDD 1 [const &]", [&]() {
+        it("quantifies 0 in BDD 1 [const &]", [&]() {
           const bdd in = bdd_1;
 
           bdd::label_type var = 0;
-
-          const bdd out = bdd_forall(ep, in, [&var]() -> bdd::label_type {
-            const bdd::label_type ret = var;
-            var -= 2;
-            return ret;
-          });
+          const bdd out = bdd_forall(ep, in, [&var]() -> optional<bdd::label_type> {
+              if (var > 0) {
+                return make_optional<bdd::label_type>();
+              }
+              return var++;
+            });
 
           node_test_stream out_nodes(out);
 
@@ -4716,14 +4751,18 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
-        it("quantifies 1, -1 in BDD 1 [&&]", [&]() {
+        it("quantifies 1 in BDD 1 [&&]", [&]() {
           bdd::label_type var = 1;
 
-          const bdd out = bdd_forall(ep, bdd_1, [&var]() -> bdd::label_type {
-            const bdd::label_type ret = var;
-            var -= 2;
-            return ret;
-          });
+          const bdd out = bdd_forall(ep, bdd_1, [&var]() -> optional<bdd::label_type> {
+              if (var == 0) {
+                return make_optional<bdd::label_type>();
+              }
+
+              const bdd::label_type ret = var;
+              var = 0;
+              return ret;
+            });
 
           node_test_stream out_nodes(out);
 
@@ -4742,14 +4781,14 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
-        it("terminates early when quantifying to a terminal in BDD 3 [&&]", [&]() {
+        it("terminates early when quantifying 2, 0 to a terminal in BDD 3 [&&]", [&]() {
           int calls = 0;
 
-          const bdd out = bdd_forall(ep, bdd_3, [&calls]() -> bdd::label_type {
-            return 2 - 2*(calls++);
+          const bdd out = bdd_forall(ep, bdd_3, [&calls]() {
+            return make_optional<bdd::label_type>(2 - 2*(calls++));
           });
 
-          // What could be expected is 3 calls: 2, 0, -2 . But, here it terminates early.
+          // What could be expected is 3 calls: 2, 0, none . But, here it terminates early.
           AssertThat(calls, Is().EqualTo(2));
 
           node_test_stream out_nodes(out);
@@ -4768,14 +4807,15 @@ go_bandit([]() {
       describe("quantify_alg == Nested", [&]() {
         const exec_policy ep = exec_policy::quantify::Nested;
 
-        it("quantifies 0, -2 in BDD 1", [&]() {
+        it("quantifies 0 in BDD 1", [&]() {
           bdd::label_type var = 0;
 
-          const bdd out = bdd_forall(ep, bdd_1, [&var]() -> bdd::label_type {
-            const bdd::label_type ret = var;
-            var -= 2;
-            return ret;
-          });
+          const bdd out = bdd_forall(ep, bdd_1, [&var]() -> optional<bdd::label_type> {
+              if (var == 1) {
+                return make_optional<bdd::label_type>();
+              }
+              return var++;
+            });
 
           node_test_stream out_nodes(out);
 
@@ -4794,14 +4834,18 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
-        it("quantifies 1, -1 in BDD 1", [&]() {
+        it("quantifies 1 in BDD 1", [&]() {
           bdd::label_type var = 1;
 
-          const bdd out = bdd_forall(ep, bdd_1, [&var]() -> bdd::label_type {
-            const bdd::label_type ret = var;
-            var -= 2;
-            return ret;
-          });
+          const bdd out = bdd_forall(ep, bdd_1, [&var]() -> optional<bdd::label_type> {
+              if (var == 0) {
+                return make_optional<bdd::label_type>();
+              }
+
+              const bdd::label_type ret = var;
+              var--;
+              return ret;
+            });
 
           node_test_stream out_nodes(out);
 
@@ -4822,11 +4866,15 @@ go_bandit([]() {
 
         it("bails out on a level that only shortcuts", [&]() {
           bdd::label_type var = 6;
-          bdd out = bdd_forall(ep, bdd_not(bdd_9T), [&var]() -> bdd::label_type {
-            const bdd::label_type res = var;
-            var -= 2;
-            return res;
-          });
+          bdd out = bdd_forall(ep, bdd_not(bdd_9T), [&var]() -> optional<bdd::label_type> {
+              if (var == 42) {
+                return make_optional<bdd::label_type>();
+              }
+
+              const bdd::label_type res = var;
+              var = res == 0 ? 42 : var-2;
+              return res;
+            });
 
           node_test_stream out_nodes(out);
 
@@ -4865,11 +4913,15 @@ go_bandit([]() {
 
         it("bails out on a level that only is irrelevant", [&]() {
           bdd::label_type var = 6;
-          bdd out = bdd_forall(ep, bdd_not(bdd_9F), [&var]() -> bdd::label_type {
-            const bdd::label_type res = var;
-            var -= 2;
-            return res;
-          });
+          bdd out = bdd_forall(ep, bdd_not(bdd_9F), [&var]() -> optional<bdd::label_type> {
+              if (var == 42) {
+                return make_optional<bdd::label_type>();
+              }
+
+              const bdd::label_type res = var;
+              var = res == 0 ? 42 : var-2;
+              return res;
+            });
 
           node_test_stream out_nodes(out);
 

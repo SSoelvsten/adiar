@@ -1359,7 +1359,7 @@ go_bandit([]() {
 
     describe("zdd_top(...)", [&]() {
       it("is { Ø } with empty generator", [&]() {
-        const auto dom = []() { return -1; };
+        const auto dom = []() { return make_optional<zdd::label_type>(); };
 
         zdd res = zdd_top(dom);
         node_test_stream ns(res);
@@ -1391,7 +1391,10 @@ go_bandit([]() {
 
       it("creates { Ø, {0}, ..., {3}, {0,1}, ..., {2,3}, {0,1,2}, ..., {0,1,2,3} } from generator", [&]() {
         int x = 3;
-        const auto dom = [&x]() { return x--; };
+        const auto dom = [&x]() -> optional<zdd::label_type> {
+          if (x < 0) { return make_optional<zdd::label_type>(); }
+          return x--;
+        };
 
         zdd res = zdd_top(dom);
         node_test_stream ns(res);

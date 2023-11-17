@@ -67,9 +67,8 @@ namespace adiar
   ///
   /// \param var The variable to be forced to true.
   ///
-  /// \param dom Generator function of the domain in \em descending order. When
-  ///            none are left, it must return a value greater than
-  ///            `zdd::max_label`.
+  /// \param dom Generator function of the domain in \em descending order. These
+  ///            variables should be smaller than or equals to `zdd::max_label`.
   ///
   /// \pre       The variable `var` should occur in `dom`.
   ///
@@ -84,7 +83,8 @@ namespace adiar
   /// \param var   The variable to be forced to true.
   ///
   /// \param begin Single-pass forward iterator that provides the domain's
-  ///              variables in \em descending order.
+  ///              variables in \em descending order. The variables may not
+  ///              exceed `zdd::max_label`.
   ///
   /// \param end   Marks the end for `begin`.
   ///
@@ -118,9 +118,8 @@ namespace adiar
   ///
   /// \param var The variable to be forced to false.
   ///
-  /// \param dom Generator function of the domain in \em descending order. When
-  ///            none are left, it must return a value greater than
-  ///            `zdd::max_label`.
+  /// \param dom Generator function of the domain in \em descending order. The
+  ///            variables should be smaller than or equals to `zdd::max_label`.
   ///
   /// \pre       The variable `var` should occur in `dom`.
   ///
@@ -135,7 +134,8 @@ namespace adiar
   /// \param var   The variable to be forced to false.
   ///
   /// \param begin Single-pass forward iterator that provides the domain's
-  ///              variables in \em descending order.
+  ///              variables in \em descending order. The variables may not
+  ///              exceed `zdd::max_label`.
   ///
   /// \param end   Marks the end for `begin`.
   ///
@@ -166,8 +166,7 @@ namespace adiar
   ///            true child, and false otherwise.
   ///
   /// \param vars Generator function of the variables in \em descending order.
-  ///             When none are left, it must return a value greater than
-  ///             `zdd::max_label`.
+  ///             The variables may not exceed `zdd::max_label`.
   ///
   /// \throws invalid_argument If `vars` are not in \em descending order.
   //////////////////////////////////////////////////////////////////////////////
@@ -177,7 +176,8 @@ namespace adiar
   /// \brief       The family { { 1, 2, ..., k } }.
   ///
   /// \param begin Single-pass forward iterator that provides the variables
-  ///              in \em descending order.
+  ///              in \em descending order. The variables may not exceed
+  ///              `zdd::max_label`.
   ///
   /// \param end   Marks the end for `begin`.
   ///
@@ -208,8 +208,7 @@ namespace adiar
   ///            true child, and false otherwise.
   ///
   /// \param vars Generator function of the variables in \em descending order.
-  ///             When none are left, it must return a value greater than
-  ///             `zdd::max_label`.
+  ///             The variables may not exceed `zdd::max_label`.
   ///
   /// \throws invalid_argument If `vars` are not in \em descending order.
   //////////////////////////////////////////////////////////////////////////////
@@ -219,7 +218,8 @@ namespace adiar
   /// \brief       The family { {1}, {2}, ..., {k} }.
   ///
   /// \param begin Single-pass forward iterator that provides the variables
-  ///              in \em descending order.
+  ///              in \em descending order. The variables may not exceed
+  ///              `zdd::max_label`.
   ///
   /// \param end   Marks the end for `begin`.
   ///
@@ -237,8 +237,7 @@ namespace adiar
   ///            child.
   ///
   /// \param vars Generator function of the variables in \em descending order.
-  ///             When none are left, it must return a value greater than
-  ///             `zdd::max_label`.
+  ///             These values may not exceed `zdd::max_label`.
   ///
   /// \throws invalid_argument If `vars` are not in \em ascending order.
   //////////////////////////////////////////////////////////////////////////////
@@ -248,7 +247,8 @@ namespace adiar
   /// \brief       The powerset of all given variables.
   ///
   /// \param begin Single-pass forward iterator that provides the variables
-  ///              in \em descending order.
+  ///              in \em descending order. The variables may not exceed
+  ///              `zdd::max_label`
   ///
   /// \param end   Marks the end for `begin`.
   ///
@@ -260,11 +260,10 @@ namespace adiar
   { return zdd_powerset(make_generator(begin, end)); }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief      Bottom of the powerset lattice.
+  /// \brief     Bottom of the powerset lattice.
   ///
   /// \param dom Generator function of the variables in \em descending order.
-  ///            When none are left, it must return a value greater than
-  ///            `zdd::max_label`.
+  ///            These values may not exceed `zdd::max_label`.
   ///
   /// \see zdd_empty
   //////////////////////////////////////////////////////////////////////////////
@@ -274,7 +273,8 @@ namespace adiar
   /// \brief       Bottom of the powerset lattice.
   ///
   /// \param begin Single-pass forward iterator that provides the domain's
-  ///              variables in \em descending order.
+  ///              variables in \em descending order. The variables may not
+  ///              exceed `zdd::max_label`.
   ///
   /// \param end   Marks the end for `begin`.
   ///
@@ -294,7 +294,8 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Top of the powerset lattice.
   ///
-  /// \param dom Generator function of the variables in \em descending order.
+  /// \param dom Generator of the variables in \em descending order. These
+  ///            values may not exceed `zdd::max_label`.
   ///
   /// \see zdd_powerset, zdd_null
   //////////////////////////////////////////////////////////////////////////////
@@ -304,7 +305,8 @@ namespace adiar
   /// \brief       Top of the powerset lattice.
   ///
   /// \param begin Single-pass forward iterator that provides the domain's
-  ///              variables in \em descending order.
+  ///              variables in \em descending order. These values may not
+  ///              exceed `zdd::max_label`.
   ///
   /// \param end   Marks the end for `begin`.
   ///
@@ -346,7 +348,7 @@ namespace adiar
   __zdd zdd_binop(const zdd &A, const zdd &B, const bool_op &op);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief     Apply a binary operator between the sets of two families.
+  /// \brief Apply a binary operator between the sets of two families.
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_binop(const exec_policy &ep,
                   const zdd &A,
@@ -354,7 +356,7 @@ namespace adiar
                   const bool_op &op);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief   The union of two families of sets.
+  /// \brief The union of two families of sets.
   ///
   /// \returns
   /// \f$ A \cup B \f$
@@ -432,8 +434,7 @@ namespace adiar
   /// \param A    ZDD to apply with the other.
   ///
   /// \param vars Generator function of labels to flip in \em ascending order.
-  ///             When none are left, it must return a value greater than
-  ///             `zdd::max_label`.
+  ///             These values may not exceed `zdd::max_label`.
   ///
   /// \returns
   /// \f$ \{ \mathit{vars} \Delta a \mid a \in A \} \f$
@@ -455,7 +456,8 @@ namespace adiar
   /// \param A    ZDD to apply with the other.
   ///
   /// \param begin Single-pass forward iterator that provides the to-be
-  ///              flipped variables in \em ascending order.
+  ///              flipped variables in \em ascending order. These values may
+  ///              not exceed `zdd::max_label`.
   ///
   /// \param end   Marks the end for `begin`.
   ///
@@ -488,7 +490,6 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_complement(const zdd &A, const generator<zdd::label_type> &dom);
 
-
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Complement of A within the given domain.
   //////////////////////////////////////////////////////////////////////////////
@@ -502,7 +503,8 @@ namespace adiar
   /// \param A     family of sets to complement
   ///
   /// \param begin Single-pass forward iterator that provides the domain's
-  ///              variables in \em ascending order.
+  ///              variables in \em ascending order. These values may not exceed
+  ///              `zdd::max_label`.
   ///
   /// \param end   Marks the end for `begin`.
   ///
@@ -561,9 +563,8 @@ namespace adiar
   /// \param A    Family of set to expand.
   ///
   /// \param vars Generator function of labels to unproject in \em ascending
-  ///             order. No variables it generates may already exist in `A`.
-  ///             When no more variables are left, it must return a value
-  ///             greater than `zdd::max_label`.
+  ///             order. No variables it generates may already exist in `A` or
+  ///             exceed `zdd::max_label`.
   ///
   /// \returns
   /// \f$ \bigcup_{a \in A, i \in 2^{vars}} (a \cup i) \f$
@@ -588,7 +589,7 @@ namespace adiar
   ///
   /// \param begin Single-pass forward iterator that provides the to-be
   ///              unprojected variables in \em ascending order. These may \em not
-  ///              be present in `A`.
+  ///              be present in `A` or exceed `zdd::max_label`.
   ///
   /// \param end   Marks the end for `begin`.
   ///
@@ -652,8 +653,8 @@ namespace adiar
   /// \param A    Family of set
   ///
   /// \param vars Generator function of the variable labels to filter on in
-  ///             \em ascending order. When none are left, it must return a value
-  ///             greater than `zdd::max_label`.
+  ///             \em ascending order. The values generated should not exceed
+  ///             `zdd::max_label`.
   ///
   /// \returns
   /// \f$ \{ a \in A \mid \forall i \in \mathit{vars} : i \not\in a \} \f$
@@ -673,7 +674,8 @@ namespace adiar
   /// \param A    Family of set
   ///
   /// \param begin Single-pass forward iterator that provides the variables to
-  ///              filter out in \em ascending order.
+  ///              filter out in \em ascending order. These values may not
+  ///              exceed `zdd::max_label`.
   ///
   /// \param end   Marks the end for `begin`.
   ///
@@ -734,8 +736,8 @@ namespace adiar
   /// \param A    Family of set
   ///
   /// \param vars Generator function of the variable labels to filter on in
-  ///             \em ascending order. When none are left, it must return a value
-  ///             greater than `zdd::max_label`.
+  ///             \em ascending order. The values generated may not exceed
+  ///             `zdd::max_label`
   ///
   /// \returns
   /// \f$ \{ a \in A \mid \forall i \in \mathit{vars} : i \in a \} \f$
@@ -755,7 +757,8 @@ namespace adiar
   /// \param A    Family of set
   ///
   /// \param begin Single-pass forward iterator that provides the variables to
-  ///              filter out in \em ascending order.
+  ///              filter out in \em ascending order. These values may not
+  ///              exceed `zdd::max_label`
   ///
   /// \param end   Marks the end for `begin`.
   ///
@@ -816,8 +819,7 @@ namespace adiar
   /// \param A   Family of sets to project
   ///
   /// \param dom Generator function, that produces the variables of the domain in
-  ///            \em descending order. When none are left to-be quantified, it
-  ///            returns a value larger than `zdd::max_label`, e.g. -1.
+  ///            \em descending order. They should not exceed `zdd::max_label`.
   ///
   /// \returns
   /// \f$ \prod_{\mathit{dom}}(A) = \{ a \setminus \mathit{dom}^c \mid a \in A \} \f$
@@ -851,7 +853,8 @@ namespace adiar
   /// \param A     Family of sets to project
   ///
   /// \param begin Single-pass forward iterator that provides the domain in
-  ///              \em descending order.
+  ///              \em descending order. Its values should not exceed
+  ///              `zdd::max_label`
   ///
   /// \param end   Marks the end for `begin`.
   ///
@@ -1142,8 +1145,8 @@ namespace adiar
   ///
   /// \param A Set of interest
   ///
-  /// \param a Generator of a bit-vector in \em ascending order. When none are
-  ///          left, it must return a value greater than `zdd::max_label`.
+  /// \param a Generator of a bit-vector in \em ascending order. All variables
+  ///          geneated should be smaller than or equal to `zdd::max_label`.
   ///
   /// \returns Whether \f$ a \in A \f$
   //////////////////////////////////////////////////////////////////////////////
@@ -1155,7 +1158,8 @@ namespace adiar
   /// \param A     Set of interest
   ///
   /// \param begin Single-pass forward iterator of the set of labels in
-  ///              \em ascending order.
+  ///              \em ascending order. All its values should be smaller than
+  ///              or equals to `zdd::max_label`.
   ///
   /// \param end   Marks the end for `begin`.
   ///
@@ -1237,8 +1241,8 @@ namespace adiar
   ///
   /// \param f   Boolean function with the given domain
   ///
-  /// \param dom Domain of all variables in \em ascending order. When none are
-  ///            left it must return a value greater than `zdd::max_label`.
+  /// \param dom Domain of all variables in \em ascending order. All generated
+  ///            values should be smaller than or equals to `zdd::max_label`.
   ///
   /// \returns   ZDD that is true for the exact same assignments to variables in
   ///            the given domain.
@@ -1260,7 +1264,8 @@ namespace adiar
   /// \param f     Boolean function with the given domain
   ///
   /// \param begin Single-pass forward iterator that provides the domain's
-  ///              variables in \em ascending order.
+  ///              variables in \em ascending order. None of its values may
+  ///              exceed `zdd::max_label`.
   ///
   /// \param end   Marks the end for `begin`.
   ///

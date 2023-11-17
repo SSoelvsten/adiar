@@ -121,9 +121,11 @@ namespace adiar::internal
   build_chain(const chain_policy &policy,
               const generator<pair<typename chain_policy::label_type, bool>> &vars)
   {
-    pair<typename chain_policy::label_type, bool> next = vars();
+    using label_type = typename chain_policy::label_type;
 
-    if (chain_policy::max_label < next.first) {
+    optional<pair<label_type, bool>> next = vars();
+
+    if (!next) {
       return build_terminal<chain_policy>(chain_policy::init_terminal);
     }
 
@@ -136,31 +138,39 @@ namespace adiar::internal
     bool   terminal_at_bottom[2] = {false, false};
     size_t terminals[2]          = {0u, 0u};
 
-    node::pointer_type root = node::pointer_type(chain_policy::init_terminal);
+    typename chain_policy::pointer_type root(chain_policy::init_terminal);
+    adiar_assert(root.is_terminal());
 
-    while(next.first <= chain_policy::max_label) {
+    do {
+      const label_type next_var      = next.value().first;
+      const label_type next_negated  = next.value().second;
+
       // Fail if generator is increasing.
-      if (!root.is_terminal() && root.label() < next.first) {
+      if (!root.is_terminal() && root.label() < next_var) {
         throw invalid_argument("Labels not given in decreasing order");
       }
 
       // Skip value if generator provides the same (legal) value twice.
-      if (!root.is_terminal() && root.label() == next.first) {
+      if (!root.is_terminal() && root.label() == next_var) {
         next = vars();
         continue;
       }
 
       // Skip value, if policy calls for it.
-      if (policy.skip(next.first)) {
+      if (policy.skip(next_var)) {
         next = vars();
         continue;
       }
 
-      // Create node on chain.
-      const node n = policy.make_node(next.first, root, next.second);
+      // TODO: throw exception for too large labels
 
-      adiar_assert(n.label() == next.first, "Policy ought to make a node for this level node");
-      adiar_assert(n.id() == node::max_id,  "Policy ought to make a canonical node");
+      // Create node on chain.
+      using node_type = typename chain_policy::node_type;
+
+      const node_type n = policy.make_node(next_var, root, next_negated);
+
+      adiar_assert(n.label() == next_var,       "Policy ought to make a node for this level node");
+      adiar_assert(n.id() == node_type::max_id, "Policy ought to make a canonical node");
 
       max_internal_cut = std::max<size_t>(max_internal_cut,
                                           n.low().is_node() + n.high().is_node());
@@ -180,18 +190,18 @@ namespace adiar::internal
       }
 
       if (root.is_terminal()) {
-        terminal_at_bottom[n.low().value()] = true;
+        terminal_at_bottom[n.low().value()]  = true;
         terminal_at_bottom[n.high().value()] = true;
       }
 
       nw.unsafe_push(n);
-      nw.unsafe_push(level_info(next.first, 1u));
+      nw.unsafe_push(level_info(next_var, 1u));
 
       root = n.uid();
 
       // Get next label
       next = vars();
-    }
+    } while (next);
 
     // If all values have been skipped by the policy, then collapse to a terminal
     if (nw.size() == 0u) {
@@ -236,8 +246,12 @@ namespace adiar::internal
   {
     using label_type = typename chain_policy::label_type;
 
-    return build_chain<chain_policy>(policy, [&vars]() -> pair<label_type, bool> {
-        return { vars(), false };
+    return build_chain<chain_policy>(policy, [&vars]() -> optional<pair<label_type, bool>> {
+        optional<label_type> var = vars();
+        if (var) {
+          return make_pair<label_type, bool>(var.value(), false);
+        }
+        return make_optional<pair<label_type, bool>>();
       });
   }
 }
