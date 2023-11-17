@@ -64,6 +64,22 @@ namespace adiar
     return root.low()  == bdd::node_type::pointer_type(true);
   }
 
+  bool bdd_iscube(const bdd& f)
+  {
+    // Assuming the BDD is fully reduced (which it should be), then it can only
+    // be a cube if:
+    //
+    // 1. Its width is exactly 1 (but also allow 0 for the terminal cases)
+    //
+    // 2. It has only one arc to `true` (this accepts `true` terminal)
+    //
+    // 3. The number of arcs to `false` is the same as the number of levels
+    //    (this rejects `false` terminal).
+    return f.width() <= 1u
+        && f.number_of_terminals(true)  == 1u
+        && f.number_of_terminals(false) == bdd_varcount(f);
+  }
+
   bool bdd_equal(const exec_policy &ep, const bdd &f, const bdd &g)
   {
     return internal::is_isomorphic(ep, f, g);
