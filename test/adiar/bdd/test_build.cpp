@@ -1076,20 +1076,20 @@ go_bandit([]() {
 
         AssertThat(res->width, Is().EqualTo(0u));
 
-        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(0u));
-        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
-        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::Internal), Is().EqualTo(0u));
+        AssertThat(res.max_1level_cut(cut::Internal_False), Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::Internal_True), Is().EqualTo(0u));
+        AssertThat(res.max_1level_cut(cut::All), Is().EqualTo(1u));
 
-        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(0u));
-        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
-        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(1u));
+        AssertThat(res.max_2level_cut(cut::Internal), Is().EqualTo(0u));
+        AssertThat(res.max_2level_cut(cut::Internal_False), Is().EqualTo(1u));
+        AssertThat(res.max_2level_cut(cut::Internal_True), Is().EqualTo(0u));
+        AssertThat(res.max_2level_cut(cut::All), Is().EqualTo(1u));
 
         AssertThat(bdd_iscanonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
+        AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
+        AssertThat(res.number_of_terminals(true),  Is().EqualTo(0u));
       });
 
       it("can create x1", [&]() {
@@ -1121,20 +1121,20 @@ go_bandit([]() {
 
         AssertThat(res->width, Is().EqualTo(1u));
 
-        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(2u));
+        AssertThat(res.max_1level_cut(cut::Internal), Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::Internal_False), Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::Internal_True), Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::All), Is().EqualTo(2u));
 
-        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
+        AssertThat(res.max_2level_cut(cut::Internal), Is().EqualTo(1u));
+        AssertThat(res.max_2level_cut(cut::Internal_False), Is().EqualTo(1u));
+        AssertThat(res.max_2level_cut(cut::Internal_True), Is().EqualTo(1u));
+        AssertThat(res.max_2level_cut(cut::All), Is().EqualTo(2u));
 
         AssertThat(bdd_iscanonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
+        AssertThat(res.number_of_terminals(true),  Is().EqualTo(1u));
       });
 
       it("can create -x1", [&]() {
@@ -1166,20 +1166,20 @@ go_bandit([]() {
 
         AssertThat(res->width, Is().EqualTo(1u));
 
-        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(2u));
+        AssertThat(res.max_1level_cut(cut::Internal), Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::Internal_False), Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::Internal_True), Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::All), Is().EqualTo(2u));
 
-        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
+        AssertThat(res.max_2level_cut(cut::Internal), Is().EqualTo(1u));
+        AssertThat(res.max_2level_cut(cut::Internal_False), Is().EqualTo(1u));
+        AssertThat(res.max_2level_cut(cut::Internal_True), Is().EqualTo(1u));
+        AssertThat(res.max_2level_cut(cut::All), Is().EqualTo(2u));
 
         AssertThat(bdd_iscanonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
+        AssertThat(res.number_of_terminals(true),  Is().EqualTo(1u));
       });
 
       // TODO: more tests independent of iterators (and differentiating it from bdd_and)
@@ -1203,20 +1203,20 @@ go_bandit([]() {
 
         AssertThat(res->width, Is().EqualTo(0u));
 
-        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(0u));
-        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
-        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::Internal), Is().EqualTo(0u));
+        AssertThat(res.max_1level_cut(cut::Internal_False), Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::Internal_True), Is().EqualTo(0u));
+        AssertThat(res.max_1level_cut(cut::All), Is().EqualTo(1u));
 
-        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(0u));
-        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
-        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(1u));
+        AssertThat(res.max_2level_cut(cut::Internal), Is().EqualTo(0u));
+        AssertThat(res.max_2level_cut(cut::Internal_False), Is().EqualTo(1u));
+        AssertThat(res.max_2level_cut(cut::Internal_True), Is().EqualTo(0u));
+        AssertThat(res.max_2level_cut(cut::All), Is().EqualTo(1u));
 
         AssertThat(bdd_iscanonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
+        AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
+        AssertThat(res.number_of_terminals(true),  Is().EqualTo(0u));
       });
 
       it("can create x1", [&]() {
@@ -1245,20 +1245,20 @@ go_bandit([]() {
 
         AssertThat(res->width, Is().EqualTo(1u));
 
-        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(2u));
+        AssertThat(res.max_1level_cut(cut::Internal), Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::Internal_False), Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::Internal_True), Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::All), Is().EqualTo(2u));
 
-        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
+        AssertThat(res.max_2level_cut(cut::Internal), Is().EqualTo(1u));
+        AssertThat(res.max_2level_cut(cut::Internal_False), Is().EqualTo(1u));
+        AssertThat(res.max_2level_cut(cut::Internal_True), Is().EqualTo(1u));
+        AssertThat(res.max_2level_cut(cut::All), Is().EqualTo(2u));
 
         AssertThat(bdd_iscanonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
+        AssertThat(res.number_of_terminals(true),  Is().EqualTo(1u));
       });
 
       it("can create -x1", [&]() {
@@ -1287,20 +1287,20 @@ go_bandit([]() {
 
         AssertThat(res->width, Is().EqualTo(1u));
 
-        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(2u));
+        AssertThat(res.max_1level_cut(cut::Internal), Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::Internal_False), Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::Internal_True), Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::All), Is().EqualTo(2u));
 
-        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
+        AssertThat(res.max_2level_cut(cut::Internal), Is().EqualTo(1u));
+        AssertThat(res.max_2level_cut(cut::Internal_False), Is().EqualTo(1u));
+        AssertThat(res.max_2level_cut(cut::Internal_True), Is().EqualTo(1u));
+        AssertThat(res.max_2level_cut(cut::All), Is().EqualTo(2u));
 
         AssertThat(bdd_iscanonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
+        AssertThat(res.number_of_terminals(true),  Is().EqualTo(1u));
       });
 
       // TODO: more tests independent of iterators (and differentiating it from bdd_and)
@@ -1345,20 +1345,20 @@ go_bandit([]() {
 
         AssertThat(res->width, Is().EqualTo(1u));
 
-        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(3u));
-        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(4u));
+        AssertThat(res.max_1level_cut(cut::Internal), Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::Internal_False), Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::Internal_True), Is().EqualTo(3u));
+        AssertThat(res.max_1level_cut(cut::All), Is().EqualTo(4u));
 
-        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(3u));
-        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(4u));
+        AssertThat(res.max_2level_cut(cut::Internal), Is().EqualTo(1u));
+        AssertThat(res.max_2level_cut(cut::Internal_False), Is().EqualTo(1u));
+        AssertThat(res.max_2level_cut(cut::Internal_True), Is().EqualTo(3u));
+        AssertThat(res.max_2level_cut(cut::All), Is().EqualTo(4u));
 
         AssertThat(bdd_iscanonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(3u));
+        AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
+        AssertThat(res.number_of_terminals(true),  Is().EqualTo(3u));
       });
 
       it("can create {} as trivially false", [&]() {
@@ -1376,15 +1376,15 @@ go_bandit([]() {
 
         AssertThat(res->width, Is().EqualTo(0u));
 
-        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(0u));
-        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(res.max_1level_cut(cut::Internal), Is().EqualTo(0u));
+        AssertThat(res.max_1level_cut(cut::Internal_False), Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::Internal_True), Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(1u));
 
         AssertThat(bdd_iscanonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
+        AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
+        AssertThat(res.number_of_terminals(true),  Is().EqualTo(0u));
       });
 
       it("can create {x1, -x3}", [&]() {
@@ -1417,20 +1417,20 @@ go_bandit([]() {
 
         AssertThat(res->width, Is().EqualTo(1u));
 
-        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(2u));
-        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(3u));
+        AssertThat(res.max_1level_cut(cut::Internal), Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::Internal_False), Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::Internal_True), Is().EqualTo(2u));
+        AssertThat(res.max_1level_cut(cut::All), Is().EqualTo(3u));
 
-        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(2u));
-        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(3u));
+        AssertThat(res.max_2level_cut(cut::Internal), Is().EqualTo(1u));
+        AssertThat(res.max_2level_cut(cut::Internal_False), Is().EqualTo(1u));
+        AssertThat(res.max_2level_cut(cut::Internal_True), Is().EqualTo(2u));
+        AssertThat(res.max_2level_cut(cut::All), Is().EqualTo(3u));
 
         AssertThat(bdd_iscanonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
+        AssertThat(res.number_of_terminals(true),  Is().EqualTo(2u));
       });
 
       it("can create {-x2, x4}", [&]() {
@@ -1463,20 +1463,20 @@ go_bandit([]() {
 
         AssertThat(res->width, Is().EqualTo(1u));
 
-        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(2u));
-        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(3u));
+        AssertThat(res.max_1level_cut(cut::Internal), Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::Internal_False), Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::Internal_True), Is().EqualTo(2u));
+        AssertThat(res.max_1level_cut(cut::All), Is().EqualTo(3u));
 
-        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(2u));
-        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(3u));
+        AssertThat(res.max_2level_cut(cut::Internal), Is().EqualTo(1u));
+        AssertThat(res.max_2level_cut(cut::Internal_False), Is().EqualTo(1u));
+        AssertThat(res.max_2level_cut(cut::Internal_True), Is().EqualTo(2u));
+        AssertThat(res.max_2level_cut(cut::All), Is().EqualTo(3u));
 
         AssertThat(bdd_iscanonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
+        AssertThat(res.number_of_terminals(true),  Is().EqualTo(2u));
       });
 
       it("skips duplicates", [&]() {
@@ -1517,20 +1517,20 @@ go_bandit([]() {
 
         AssertThat(res->width, Is().EqualTo(1u));
 
-        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(3u));
-        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(4u));
+        AssertThat(res.max_1level_cut(cut::Internal), Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::Internal_False), Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::Internal_True), Is().EqualTo(3u));
+        AssertThat(res.max_1level_cut(cut::All), Is().EqualTo(4u));
 
-        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(3u));
-        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(4u));
+        AssertThat(res.max_2level_cut(cut::Internal), Is().EqualTo(1u));
+        AssertThat(res.max_2level_cut(cut::Internal_False), Is().EqualTo(1u));
+        AssertThat(res.max_2level_cut(cut::Internal_True), Is().EqualTo(3u));
+        AssertThat(res.max_2level_cut(cut::All), Is().EqualTo(4u));
 
         AssertThat(bdd_iscanonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(3u));
+        AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
+        AssertThat(res.number_of_terminals(true),  Is().EqualTo(3u));
       });
 
       it("works with ForwardIt::value_type == 'ssize_t'", [&]() {
@@ -1579,20 +1579,20 @@ go_bandit([]() {
 
         AssertThat(res->width, Is().EqualTo(1u));
 
-        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(4u));
-        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(5u));
+        AssertThat(res.max_1level_cut(cut::Internal), Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::Internal_False), Is().EqualTo(1u));
+        AssertThat(res.max_1level_cut(cut::Internal_True), Is().EqualTo(4u));
+        AssertThat(res.max_1level_cut(cut::All), Is().EqualTo(5u));
 
-        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(4u));
-        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(5u));
+        AssertThat(res.max_2level_cut(cut::Internal), Is().EqualTo(1u));
+        AssertThat(res.max_2level_cut(cut::Internal_False), Is().EqualTo(1u));
+        AssertThat(res.max_2level_cut(cut::Internal_True), Is().EqualTo(4u));
+        AssertThat(res.max_2level_cut(cut::All), Is().EqualTo(5u));
 
         AssertThat(bdd_iscanonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(4u));
+        AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
+        AssertThat(res.number_of_terminals(true),  Is().EqualTo(4u));
       });
 
       it("throws exception for non-ascending list", []() {
