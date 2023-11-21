@@ -7,6 +7,7 @@
 #include <adiar/internal/algorithms/count.h>
 #include <adiar/internal/algorithms/intercut.h>
 #include <adiar/internal/algorithms/nested_sweeping.h>
+#include "adiar/internal/algorithms/optmin.h"
 #include <adiar/internal/algorithms/pred.h>
 #include <adiar/internal/algorithms/prod2.h>
 #include <adiar/internal/algorithms/quantify.h>
@@ -40,6 +41,7 @@ namespace adiar
              internal::stats_count,
              internal::stats_equality,
              internal::stats_intercut,
+             internal::stats_optmin,
              internal::stats_prod2,
              stats_prod3,
              internal::stats_quantify,
@@ -67,6 +69,7 @@ namespace adiar
     internal::stats_count    = {};
     internal::stats_equality = {};
     internal::stats_intercut = {};
+    internal::stats_optmin                   = {};
     internal::stats_prod2    = {};
     stats_prod3              = {};
     internal::stats_quantify = {};
@@ -373,6 +376,22 @@ namespace adiar
     o << indent << "see 'Comparison Check'" << endl;
 
     indent_level -= 2;
+  }
+
+  void __printstat_optmin(std::ostream &o)
+  {
+    uintwide total_runs = internal::stats_optmin.lpq.total();
+    o << indent << bold_on << label << "Optmin" << bold_off << total_runs << endl;
+
+    indent_level++;
+    if (total_runs == 0u) {
+      o << indent << "Not used" << endl;
+      indent_level--;
+      return;
+    }
+
+    __printstat_alg_base(o, internal::stats_optmin);
+    indent_level--;
   }
 
   void
