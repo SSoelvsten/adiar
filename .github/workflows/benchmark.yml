@@ -6,8 +6,8 @@ on:
 
 jobs:
   fetch-branch:
-    name: 'Fetch branch name'
-    runs-on: ubuntu-latest  
+    name: 'Fetch branch'
+    runs-on: ubuntu-latest
 
     steps:
     - id: identify
@@ -42,8 +42,8 @@ jobs:
     outputs:
       should_skip: ${{ steps.skip_check.outputs.should_skip }}
 
-  run_benchmark:
-    name: 'Benchmark: ${{ matrix.N }}-Queens'
+  run_qbf:
+    name: 'Performance Regression: QBF ${{ matrix.category }}/${{ matrix.circuit }}'
     runs-on: ubuntu-latest
 
     needs: [fetch-branch, fetch-remote, skip_duplicate]
@@ -53,34 +53,111 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - N: '9'
-          - N: '12'
-          - N: '14'
+          - { category: breakthrough, circuit: 3x4_19_bwnib }
+          - { category: breakthrough, circuit: 3x5_11_bwnib }
+          - { category: domineering,  circuit: 5x5_13_bwnib }
+          - { category: ep,           circuit: 8x8_7_e-8-1_p-3-4_bwnib }
 
     steps:
       - uses: actions/checkout@v2
         with:
+          repository: 'ssoelvsten/bdd-benchmark'
           submodules: 'recursive'
+          fetch-depth: '0'
 
-      - name: 'Apt install'
+      - name: 'apt install'
         run: |
           sudo apt update
           sudo apt install libboost-all-dev
 
-      - name: 'Run benchmark.py'
+      - name: 'pip install'
         run: |
-          python3 ./.github/workflows/benchmark.py ${{ matrix.N }} origin main ${{ needs.fetch-remote.outputs.remote }} ${{ needs.fetch-branch.outputs.branch }}
+          sudo pip install wget
 
-      - name: 'Post benchmark.out on PR'
+      - name: 'python3 regression.py'
+        run: |
+          python3 ./regression.py <<< "qbf
+          yes
+          ${{ matrix.category }}
+          ${{ matrix.circuit }}
+          adiar
+          8192
+          origin
+          main
+          ${{ needs.fetch-remote.outputs.remote }}
+          ${{ needs.fetch-branch.outputs.branch }}
+          no
+          no
+          3
+          5
+          "
+
+      - name: 'post regression_adiar.out'
         if: always()
         uses: machine-learning-apps/pr-comment@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          path: ./benchmark.out
+          path: ./regression_adiar.out
+
+  run_picotrav:
+    name: 'Performance Regression: Picotrav ${{ matrix.circuit }}'
+    runs-on: ubuntu-latest
+
+    needs: [fetch-branch, fetch-remote, skip_duplicate]
+    if: ${{ needs.skip_duplicate.outputs.should_skip != 'true' }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { circuit: adder }
+          - { circuit: arbiter }
+          - { circuit: mem_ctrl }
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: 'ssoelvsten/bdd-benchmark'
+          submodules: 'recursive'
+          fetch-depth: '0'
+
+      - name: 'apt install'
+        run: |
+          sudo apt update
+          sudo apt install libboost-all-dev
+
+      - name: 'pip install'
+        run: |
+          sudo pip install wget
+
+      - name: 'python3 regression.py'
+        run: |
+          python3 ./regression.py <<< "picotrav
+          yes
+          ${{ matrix.circuit }}
+          adiar
+          8192
+          origin
+          main
+          ${{ needs.fetch-remote.outputs.remote }}
+          ${{ needs.fetch-branch.outputs.branch }}
+          no
+          no
+          3
+          10
+          "
+
+      - name: 'post regression_adiar.out'
+        if: always()
+        uses: machine-learning-apps/pr-comment@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          path: ./regression_adiar.out
 
   run_dummy:
-    name: 'Benchmark: ${{ matrix.N }}-Queens'
+    name: 'Performance Regression: ${{ matrix.title }}'
     runs-on: ubuntu-latest
 
     needs: [skip_duplicate]
@@ -89,12 +166,15 @@ jobs:
     strategy:
       matrix:
         include:
-          - N: '9'
-          - N: '12'
-          - N: '14'
+          - title: 'QBF breakthrough/3x4_19_bwnib'
+          - title: 'QBF breakthrough/3x5_11_bwnib'
+          - title: 'QBF domineering/5x5_13_bwnib'
+          - title: 'QBF ep/8x8_7_e-8-1_p-3-4_bwnib'
+          - title: 'Picotrav adder'
+          - title: 'Picotrav arbiter'
+          - title: 'Picotrav mem_ctrl'
 
     steps:
     - name: Echo skip
       run: |
         echo "Running benchmarks is skipped"
-
