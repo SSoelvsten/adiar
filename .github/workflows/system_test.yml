@@ -63,11 +63,12 @@ jobs:
 
     steps:
     - name: Git | checkout SSoelvsten/BDD-Benchmark
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         repository: 'ssoelvsten/bdd-benchmark'
         submodules: 'recursive'
         fetch-depth: '0'
+
     - name: Git | checkout pull request
       run: |
         cd external/adiar
@@ -111,12 +112,17 @@ jobs:
             order: 'INPUT'
 
     steps:
-    - name: Git | checkout SSoelvsten/BDD-Benchmark
-      uses: actions/checkout@v2
+    - name: Git | checkout ssoelvsten/bdd-benchmark
+      uses: actions/checkout@v4
       with:
         repository: 'ssoelvsten/bdd-benchmark'
         submodules: 'recursive'
         fetch-depth: '0'
+
+    - name: Git | clone lsils/benchmarks
+      run: |
+        git clone https://github.com/lsils/benchmarks.git ../epfl
+
     - name: Git | checkout pull request
       run: |
         cd external/adiar
@@ -140,8 +146,8 @@ jobs:
     - name: Run Benchmarks
       run: |
         for spec in ${{ matrix.circuits }} ; do \
-          for opt in benchmarks/epfl/best_results/**/$spec* ; do \
-            build/src/adiar_picotrav_bdd -f benchmarks/epfl/${{ matrix.name }}/$spec.blif -f $opt -o ${{ matrix.order }} -M 1024 ; \
+          for opt in ../epfl/best_results/**/$spec* ; do \
+            build/src/adiar_picotrav_bdd -f ../epfl/${{ matrix.name }}/$spec.blif -f $opt -o ${{ matrix.order }} -M 1024 ; \
           done ; \
         done
 
