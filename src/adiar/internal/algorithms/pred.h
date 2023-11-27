@@ -205,10 +205,6 @@ namespace adiar::internal
   /// This 'comp_policy' also should inherit (or provide) the general policy for
   /// the decision_diagram used (i.e. bdd_policy in bdd/bdd.h, zdd_policy in
   /// zdd/zdd.h and so on). This provides the following functions
-  ///
-  /// - compute_cofactor:
-  ///   Used to change the low and high children retrieved from the input during
-  ///   the product construction.
   //////////////////////////////////////////////////////////////////////////////
   template<typename comp_policy>
   bool comparison_check(const exec_policy &ep,

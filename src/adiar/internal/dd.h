@@ -568,13 +568,10 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// Function declaration
   public:
-
     //////////////////////////////////////////////////////////////////////////////
-    /// \brief Provides the pointer to the node that is the result of applying
-    ///        the specific reduction rule of this decision diagram.
+    /// \brief Result of applying the suppression rule.
     ///
-    /// \details This function is expected to return a pointer to the given node
-    ///          or one of its children.
+    /// \returns A pointer to the node itself or one of its children.
     //////////////////////////////////////////////////////////////////////////////
     static inline pointer_type
     reduction_rule(const node_type &n);
@@ -582,25 +579,11 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Provides the children of a node that was suppressed.
     ///
-    /// \details While the label and the .
+    /// \details This is the inverse of `reduction_rule`; to fully reconstruct the
+    ///          node, add the variable label next to these children.
     //////////////////////////////////////////////////////////////////////////////
     static inline children_type
     reduction_rule_inv(const pointer_type &child);
-
-    //////////////////////////////////////////////////////////////////////////////
-    /// Please use `reduction_rule_inv` instead!
-    //////////////////////////////////////////////////////////////////////////////
-    static inline void
-    compute_cofactor(const bool on_curr_level,
-                     pointer_type &low,
-                     pointer_type &high);
-
-    //////////////////////////////////////////////////////////////////////////////
-    /// Please use `reduction_rule_inv` instead!
-    //////////////////////////////////////////////////////////////////////////////
-    static inline children_type
-    compute_cofactor(const bool on_curr_level,
-                     const children_type &children);
   };
   /// \endcond
 }
