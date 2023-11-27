@@ -1227,10 +1227,25 @@ namespace adiar
   void zdd_minelem(const zdd &A, const consumer<zdd::label_type> &cb);
 
   //////////////////////////////////////////////////////////////////////////////
-  // TODO: Iterator-based output
-  //
-  // template<typename ForwardIt>
-  // zdd_minelem(const zdd &A, ForwardIt begin, ForwardIt end)
+  /// \brief       Retrieves the lexicographically smallest set a in A.
+  ///
+  /// \param A     Set of sets of interest.
+  ///
+  /// \param begin Single-pass forward iterator for where to place the output.
+  ///
+  /// \param end   Marks the end for `begin`.
+  ///
+  /// \returns     An iterator to the first entry that still is left empty.
+  ///
+  /// \throws out_of_range If the distance between `begin` and `end` is not big
+  ///                      enough to contain all variables in `f`.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename ForwardIt>
+  ForwardIt zdd_minelem(const zdd &A, ForwardIt begin, ForwardIt end)
+  {
+    zdd_minelem(A, make_consumer(begin, end));
+    return begin;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Retrieves the lexicographically largest set a in A.
@@ -1256,10 +1271,25 @@ namespace adiar
   void zdd_maxelem(const zdd &A, const consumer<zdd::label_type> &cb);
 
   //////////////////////////////////////////////////////////////////////////////
-  // TODO: Iterator-based output
-  //
-  // template<typename ForwardIt>
-  // zdd_maxelem(const zdd &A, ForwardIt begin, ForwardIt end)
+  /// \brief       Retrieves the lexicographically largest set a in A.
+  ///
+  /// \param A     Set of sets of interest.
+  ///
+  /// \param begin Single-pass forward iterator for where to place the output.
+  ///
+  /// \param end   Marks the end for `begin`.
+  ///
+  /// \returns     An iterator to the first entry that still is left empty.
+  ///
+  /// \throws out_of_range If the distance between `begin` and `end` is not big
+  ///                      enough to contain all variables in `f`.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename ForwardIt>
+  ForwardIt zdd_maxelem(const zdd &A, ForwardIt begin, ForwardIt end)
+  {
+    zdd_maxelem(A, make_consumer(begin, end));
+    return begin;
+  }
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////
