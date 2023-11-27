@@ -106,8 +106,12 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  class bdd_sat_bdd_callback
+  template<typename Visitor>
+  class bdd_satX__stack
   {
+  private:
+    Visitor _visitor;
+
     // Reserve an internal memory vector (of up to 8 MiB) for the result.
     // TODO: Abstract the stack into <adiar/internal/data_structures/stack.h>.
     using value_type = pair<bdd::label_type, bool>;
@@ -116,19 +120,29 @@ namespace adiar
     stack_type _stack;
 
   public:
-    bdd_sat_bdd_callback(const size_t stack_size)
-      : _stack(std::min<size_t>(stack_size, bdd::max_label+1))
+    bdd_satX__stack(const size_t stack_size)
+      : _stack(stack_size)
     { }
 
-    void operator() (bdd::label_type x, bool v)
+    bdd::pointer_type visit(const bdd::node_type &n)
     {
-      _stack.push({x, !v});
+      const bdd::pointer_type next_ptr = _visitor.visit(n);
+      _stack.push({n.label(), next_ptr == n.low()});
+      return next_ptr;
     }
 
-    bdd get_bdd()
+    void visit(const bool s)
+    {
+      _visitor.visit(s);
+    }
+
+  public:
+    bdd build_bdd()
     {
       adiar_assert(!_stack.empty());
 
+      // TODO (optimisation): Use 'internal::build_chain' directly to inline
+      //                      popping values from the stack.
       return bdd_cube([this]() {
         if (this->_stack.empty()) { return make_optional<value_type>(); }
 
@@ -139,108 +153,66 @@ namespace adiar
     }
   };
 
-  class bdd_sat_lambda_callback
-  {
-    const consumer<bdd::label_type, bool> &_c;
-
-  public:
-    bdd_sat_lambda_callback(const consumer<bdd::label_type, bool> &lambda)
-      : _c(lambda)
-    { }
-
-    void operator() (bdd::label_type x, bool v) const
-    { _c(x,v); }
-  };
-
-  template<typename visitor_t, typename callback_t, typename lvl_stream_t, typename lvl_t>
-  class bdd_sat_visitor
+  template<typename Visitor>
+  class bdd_satX__functional
   {
   private:
-    visitor_t   _visitor;
-    callback_t& _callback;
-
-    bdd::label_type _lvl = bdd::max_label+1u;
-    lvl_stream_t _lvls;
+    Visitor _visitor;
+    const consumer<bdd::label_type, bool> &_consumer;
 
   public:
-    bdd_sat_visitor() = delete;
-    bdd_sat_visitor(const bdd_sat_visitor&) = delete;
-    bdd_sat_visitor(bdd_sat_visitor&&) = delete;
-
-    bdd_sat_visitor(callback_t &cb, const lvl_t &lvl)
-      : _callback(cb), _lvls(lvl)
+    bdd_satX__functional(const consumer<bdd::label_type, bool> &c)
+      : _consumer(c)
     { }
 
     bdd::pointer_type visit(const bdd::node_type &n)
     {
       const bdd::pointer_type next_ptr = _visitor.visit(n);
-      _lvl = n.label();
-
-      // set default to all skipped levels
-      while (_lvls.can_pull() && internal::level_of(_lvls.peek()) < _lvl) {
-        _callback(internal::level_of(_lvls.pull()), visitor_t::default_direction);
-      }
-      // skip visited level (if exists)
-      if (_lvls.can_pull() && internal::level_of(_lvls.peek()) == _lvl) {
-        _lvls.pull();
-      }
-
-      _callback(_lvl, next_ptr == n.high());
+      _consumer(n.label(), next_ptr == n.high());
       return next_ptr;
     }
 
     void visit(const bool s)
     {
       _visitor.visit(s);
-
-      while (_lvls.can_pull()) {
-        if (internal::level_of(_lvls.peek()) <= _lvl) { _lvls.pull(); continue; };
-        _callback(internal::level_of(_lvls.pull()), visitor_t::default_direction);
-      }
     }
   };
 
-  template<typename visitor_t, typename callback_t>
-  inline void __bdd_satX(const bdd &f, callback_t &_cb)
+  template<typename Visitor>
+  bdd __bdd_satX(const bdd &f)
   {
-    if (domain_isset()) {
-      bdd_sat_visitor<visitor_t, callback_t, internal::file_stream<domain_var>, internal::shared_file<domain_var>>
-        v(_cb, domain_get());
-      internal::traverse(f,v);
-    } else {
-      bdd_sat_visitor<visitor_t, callback_t, internal::level_info_stream<>, bdd>
-        v(_cb, f);
-      internal::traverse(f,v);
-    }
+    if (bdd_isterminal(f)) { return f; }
+
+    bdd_satX__stack<Visitor> v(f->levels());
+    internal::traverse(f, v);
+
+    return v.build_bdd();
+  }
+
+  template<typename Visitor>
+  void __bdd_satX(const bdd &f, const consumer<bdd::label_type, bool> &c)
+  {
+    bdd_satX__functional<Visitor> v(c);
+    internal::traverse(f, v);
   }
 
   bdd bdd_satmin(const bdd &f)
   {
-    if (bdd_isterminal(f)) { return f; }
-
-    bdd_sat_bdd_callback _cb(f->levels() + domain_size());
-    __bdd_satX<internal::traverse_satmin_visitor>(f, _cb);
-    return _cb.get_bdd();
+    return __bdd_satX<internal::traverse_satmin_visitor>(f);
   }
 
-  void bdd_satmin(const bdd &f, const consumer<bdd::label_type, bool> &cb)
+  void bdd_satmin(const bdd &f, const consumer<bdd::label_type, bool> &c)
   {
-    bdd_sat_lambda_callback _cb(cb);
-    __bdd_satX<internal::traverse_satmin_visitor>(f, _cb);
+    return __bdd_satX<internal::traverse_satmin_visitor>(f, c);
   }
 
   bdd bdd_satmax(const bdd &f)
   {
-    if (bdd_isterminal(f)) { return f; }
-
-    bdd_sat_bdd_callback _cb(f->levels() + domain_size());
-    __bdd_satX<internal::traverse_satmax_visitor>(f, _cb);
-    return _cb.get_bdd();
+    return __bdd_satX<internal::traverse_satmax_visitor>(f);
   }
 
-  void bdd_satmax(const bdd &f, const consumer<bdd::label_type, bool> &cb)
+  void bdd_satmax(const bdd &f, const consumer<bdd::label_type, bool> &c)
   {
-    bdd_sat_lambda_callback _cb(cb);
-    __bdd_satX<internal::traverse_satmax_visitor>(f, _cb);
+    return __bdd_satX<internal::traverse_satmax_visitor>(f, c);
   }
 }
