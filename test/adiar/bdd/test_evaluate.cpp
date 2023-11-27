@@ -984,7 +984,7 @@ go_bandit([]() {
       describe("bdd_satmin(f, c)", [&]() {
         it("never calls consumer for true terminal", [&]() {
           size_t calls = 0u;
-          const auto cb = [&calls](bdd::label_type, bool) { calls++; };
+          const auto cb = [&calls](pair<bdd::label_type, bool>) { calls++; };
 
           bdd_satmin(bdd_T, cb);
           AssertThat(calls, Is().EqualTo(0u));
@@ -992,7 +992,7 @@ go_bandit([]() {
 
         it("never calls consumer for false terminal", [&]() {
           size_t calls = 0u;
-          const auto cb = [&calls](bdd::label_type, bool) { calls++; };
+          const auto cb = [&calls](pair<bdd::label_type, bool>) { calls++; };
 
           bdd_satmin(bdd_F, cb);
           AssertThat(calls, Is().EqualTo(0u));
@@ -1000,10 +1000,10 @@ go_bandit([]() {
 
         it("calls consumer once with 'x0 == true' for [0]", [&]() {
           size_t calls = 0u;
-          const auto cb = [&calls](bdd::label_type x, bool v) {
+          const auto cb = [&calls](pair<bdd::label_type, bool> xv) {
             AssertThat(calls, Is().EqualTo(0u));
-            AssertThat(x, Is().EqualTo(0u));
-            AssertThat(v, Is().EqualTo(true));
+            AssertThat(xv.first,  Is().EqualTo(0u));
+            AssertThat(xv.second, Is().EqualTo(true));
 
             calls++;
           };
@@ -1014,10 +1014,10 @@ go_bandit([]() {
 
         it("calls consumer once with 'x0 == false' for [~0]", [&]() {
           size_t calls = 0u;
-          const auto cb = [&calls](bdd::label_type x, bool v) {
+          const auto cb = [&calls](pair<bdd::label_type, bool> xv) {
             AssertThat(calls, Is().EqualTo(0u));
-            AssertThat(x, Is().EqualTo(0u));
-            AssertThat(v, Is().EqualTo(true));
+            AssertThat(xv.first,  Is().EqualTo(0u));
+            AssertThat(xv.second, Is().EqualTo(true));
 
             calls++;
           };
@@ -1031,10 +1031,10 @@ go_bandit([]() {
           std::vector<std::pair<bdd::label_type, bool>> expected =
             { {0, false}, {1, false}, {2, true}, {3, true} };
 
-          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
+          const auto cb = [&calls, &expected](pair<bdd::label_type, bool> xv) {
             AssertThat(calls, Is().LessThan(expected.size()));
-            AssertThat(x, Is().EqualTo(expected.at(calls).first));
-            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            AssertThat(xv.first,  Is().EqualTo(expected.at(calls).first));
+            AssertThat(xv.second, Is().EqualTo(expected.at(calls).second));
             calls++;
           };
 
@@ -1047,10 +1047,10 @@ go_bandit([]() {
           std::vector<std::pair<bdd::label_type, bool>> expected =
             { {0, false}, {1, false}, {2, false}, {3, false} };
 
-          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
+          const auto cb = [&calls, &expected](pair<bdd::label_type, bool> xv) {
             AssertThat(calls, Is().LessThan(expected.size()));
-            AssertThat(x, Is().EqualTo(expected.at(calls).first));
-            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            AssertThat(xv.first,  Is().EqualTo(expected.at(calls).first));
+            AssertThat(xv.second, Is().EqualTo(expected.at(calls).second));
             calls++;
           };
 
@@ -1063,10 +1063,10 @@ go_bandit([]() {
           std::vector<std::pair<bdd::label_type, bool>> expected =
             { {0, false}, {1, false}, {2, true}, {3, false} };
 
-          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
+          const auto cb = [&calls, &expected](pair<bdd::label_type, bool> xv) {
             AssertThat(calls, Is().LessThan(expected.size()));
-            AssertThat(x, Is().EqualTo(expected.at(calls).first));
-            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            AssertThat(xv.first,  Is().EqualTo(expected.at(calls).first));
+            AssertThat(xv.second, Is().EqualTo(expected.at(calls).second));
 
             calls++;
           };
@@ -1080,10 +1080,10 @@ go_bandit([]() {
           std::vector<std::pair<bdd::label_type, bool>> expected =
             { {0, false}, {1, false}, {2, false} };
 
-          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
+          const auto cb = [&calls, &expected](pair<bdd::label_type, bool> xv) {
             AssertThat(calls, Is().LessThan(expected.size()));
-            AssertThat(x, Is().EqualTo(expected.at(calls).first));
-            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            AssertThat(xv.first,  Is().EqualTo(expected.at(calls).first));
+            AssertThat(xv.second, Is().EqualTo(expected.at(calls).second));
 
             calls++;
           };
@@ -1097,10 +1097,10 @@ go_bandit([]() {
           std::vector<std::pair<bdd::label_type, bool>> expected =
             { {1, false}, {3, false}, {5, false} };
 
-          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
+          const auto cb = [&calls, &expected](pair<bdd::label_type, bool> xv) {
             AssertThat(calls, Is().LessThan(expected.size()));
-            AssertThat(x, Is().EqualTo(expected.at(calls).first));
-            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            AssertThat(xv.first,  Is().EqualTo(expected.at(calls).first));
+            AssertThat(xv.second, Is().EqualTo(expected.at(calls).second));
             calls++;
           };
 
@@ -1113,10 +1113,10 @@ go_bandit([]() {
           std::vector<std::pair<bdd::label_type, bool>> expected =
             { {1, false}, {3, false}, {5, true} };
 
-          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
+          const auto cb = [&calls, &expected](pair<bdd::label_type, bool> xv) {
             AssertThat(calls, Is().LessThan(expected.size()));
-            AssertThat(x, Is().EqualTo(expected.at(calls).first));
-            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            AssertThat(xv.first,  Is().EqualTo(expected.at(calls).first));
+            AssertThat(xv.second, Is().EqualTo(expected.at(calls).second));
             calls++;
           };
 
@@ -1129,10 +1129,10 @@ go_bandit([]() {
           std::vector<std::pair<bdd::label_type, bool>> expected =
             { {0, false}, {2, false} };
 
-          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
+          const auto cb = [&calls, &expected](pair<bdd::label_type, bool> xv) {
             AssertThat(calls, Is().LessThan(expected.size()));
-            AssertThat(x, Is().EqualTo(expected.at(calls).first));
-            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            AssertThat(xv.first,  Is().EqualTo(expected.at(calls).first));
+            AssertThat(xv.second, Is().EqualTo(expected.at(calls).second));
             calls++;
           };
 
@@ -1145,10 +1145,10 @@ go_bandit([]() {
           std::vector<std::pair<bdd::label_type, bool>> expected =
             { {0, false}, {2, true}, {3, true} };
 
-          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
+          const auto cb = [&calls, &expected](pair<bdd::label_type, bool> xv) {
             AssertThat(calls, Is().LessThan(expected.size()));
-            AssertThat(x, Is().EqualTo(expected.at(calls).first));
-            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            AssertThat(xv.first,  Is().EqualTo(expected.at(calls).first));
+            AssertThat(xv.second, Is().EqualTo(expected.at(calls).second));
             calls++;
           };
 
@@ -1613,7 +1613,7 @@ go_bandit([]() {
       describe("bdd_satmax(f, c)", [&]() {
         it("never calls consumer for true terminal", [&]() {
           size_t calls = 0u;
-          const auto cb = [&calls](bdd::label_type, bool) { calls++; };
+          const auto cb = [&calls](pair<bdd::label_type, bool>) { calls++; };
 
           bdd_satmax(bdd_T, cb);
           AssertThat(calls, Is().EqualTo(0u));
@@ -1621,7 +1621,7 @@ go_bandit([]() {
 
         it("never calls consumer for false terminal", [&]() {
           size_t calls = 0u;
-          const auto cb = [&calls](bdd::label_type, bool) { calls++; };
+          const auto cb = [&calls](pair<bdd::label_type, bool>) { calls++; };
 
           bdd_satmax(bdd_F, cb);
           AssertThat(calls, Is().EqualTo(0u));
@@ -1629,10 +1629,10 @@ go_bandit([]() {
 
         it("calls consumer once with 'x0 == true' for [0]", [&]() {
           size_t calls = 0u;
-          const auto cb = [&calls](bdd::label_type x, bool v) {
+          const auto cb = [&calls](pair<bdd::label_type, bool> xv) {
             AssertThat(calls, Is().EqualTo(0u));
-            AssertThat(x, Is().EqualTo(0u));
-            AssertThat(v, Is().EqualTo(true));
+            AssertThat(xv.first,  Is().EqualTo(0u));
+            AssertThat(xv.second, Is().EqualTo(true));
 
             calls++;
           };
@@ -1643,10 +1643,10 @@ go_bandit([]() {
 
         it("calls consumer once with 'x0 == false' for [~0]", [&]() {
           size_t calls = 0u;
-          const auto cb = [&calls](bdd::label_type x, bool v) {
+          const auto cb = [&calls](pair<bdd::label_type, bool> xv) {
             AssertThat(calls, Is().EqualTo(0u));
-            AssertThat(x, Is().EqualTo(0u));
-            AssertThat(v, Is().EqualTo(true));
+            AssertThat(xv.first,  Is().EqualTo(0u));
+            AssertThat(xv.second, Is().EqualTo(true));
 
             calls++;
           };
@@ -1660,10 +1660,10 @@ go_bandit([]() {
           std::vector<std::pair<bdd::label_type, bool>> expected =
             { {0, true}, {2, false} };
 
-          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
+          const auto cb = [&calls, &expected](pair<bdd::label_type, bool> xv) {
             AssertThat(calls, Is().LessThan(expected.size()));
-            AssertThat(x, Is().EqualTo(expected.at(calls).first));
-            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            AssertThat(xv.first,  Is().EqualTo(expected.at(calls).first));
+            AssertThat(xv.second, Is().EqualTo(expected.at(calls).second));
             calls++;
           };
 
@@ -1676,10 +1676,10 @@ go_bandit([]() {
           std::vector<std::pair<bdd::label_type, bool>> expected =
             { {0, true}, {2, true} };
 
-          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
+          const auto cb = [&calls, &expected](pair<bdd::label_type, bool> xv) {
             AssertThat(calls, Is().LessThan(expected.size()));
-            AssertThat(x, Is().EqualTo(expected.at(calls).first));
-            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            AssertThat(xv.first,  Is().EqualTo(expected.at(calls).first));
+            AssertThat(xv.second, Is().EqualTo(expected.at(calls).second));
             calls++;
           };
 
@@ -1692,10 +1692,10 @@ go_bandit([]() {
           std::vector<std::pair<bdd::label_type, bool>> expected =
             { {0, true}, {2, true} };
 
-          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
+          const auto cb = [&calls, &expected](pair<bdd::label_type, bool> xv) {
             AssertThat(calls, Is().LessThan(expected.size()));
-            AssertThat(x, Is().EqualTo(expected.at(calls).first));
-            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            AssertThat(xv.first,  Is().EqualTo(expected.at(calls).first));
+            AssertThat(xv.second, Is().EqualTo(expected.at(calls).second));
             calls++;
           };
 
@@ -1708,10 +1708,10 @@ go_bandit([]() {
           std::vector<std::pair<bdd::label_type, bool>> expected =
             { {0, true}, {2, false}, {3, true} };
 
-          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
+          const auto cb = [&calls, &expected](pair<bdd::label_type, bool> xv) {
             AssertThat(calls, Is().LessThan(expected.size()));
-            AssertThat(x, Is().EqualTo(expected.at(calls).first));
-            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            AssertThat(xv.first,  Is().EqualTo(expected.at(calls).first));
+            AssertThat(xv.second, Is().EqualTo(expected.at(calls).second));
             calls++;
           };
 
@@ -1724,10 +1724,10 @@ go_bandit([]() {
           std::vector<std::pair<bdd::label_type, bool>> expected =
             { {1, true}, {5, true} };
 
-          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
+          const auto cb = [&calls, &expected](pair<bdd::label_type, bool> xv) {
             AssertThat(calls, Is().LessThan(expected.size()));
-            AssertThat(x, Is().EqualTo(expected.at(calls).first));
-            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            AssertThat(xv.first,  Is().EqualTo(expected.at(calls).first));
+            AssertThat(xv.second, Is().EqualTo(expected.at(calls).second));
             calls++;
           };
 
@@ -1740,10 +1740,10 @@ go_bandit([]() {
           std::vector<std::pair<bdd::label_type, bool>> expected =
             { {1, true}, {5, false} };
 
-          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
+          const auto cb = [&calls, &expected](pair<bdd::label_type, bool> xv) {
             AssertThat(calls, Is().LessThan(expected.size()));
-            AssertThat(x, Is().EqualTo(expected.at(calls).first));
-            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            AssertThat(xv.first,  Is().EqualTo(expected.at(calls).first));
+            AssertThat(xv.second, Is().EqualTo(expected.at(calls).second));
             calls++;
           };
 
@@ -1756,10 +1756,10 @@ go_bandit([]() {
           std::vector<std::pair<bdd::label_type, bool>> expected =
             { {0, true}, {1, true}, {2, true} };
 
-          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
+          const auto cb = [&calls, &expected](pair<bdd::label_type, bool> xv) {
             AssertThat(calls, Is().LessThan(expected.size()));
-            AssertThat(x, Is().EqualTo(expected.at(calls).first));
-            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            AssertThat(xv.first,  Is().EqualTo(expected.at(calls).first));
+            AssertThat(xv.second, Is().EqualTo(expected.at(calls).second));
             calls++;
           };
 
@@ -1772,10 +1772,10 @@ go_bandit([]() {
           std::vector<std::pair<bdd::label_type, bool>> expected =
             { {0, true}, {1, true}, {2, false}, {3, true} };
 
-          const auto cb = [&calls, &expected](bdd::label_type x, bool v) {
+          const auto cb = [&calls, &expected](pair<bdd::label_type, bool> xv) {
             AssertThat(calls, Is().LessThan(expected.size()));
-            AssertThat(x, Is().EqualTo(expected.at(calls).first));
-            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            AssertThat(xv.first,  Is().EqualTo(expected.at(calls).first));
+            AssertThat(xv.second, Is().EqualTo(expected.at(calls).second));
             calls++;
           };
 

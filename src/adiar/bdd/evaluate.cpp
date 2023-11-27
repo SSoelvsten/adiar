@@ -127,9 +127,9 @@ namespace adiar
 
     bdd::pointer_type visit(const bdd::node_type &n)
     {
-      const bdd::pointer_type next_ptr = _visitor.visit(n);
-      _stack.push({n.label(), next_ptr == n.low()});
-      return next_ptr;
+      const bdd::pointer_type next = _visitor.visit(n);
+      _stack.push({n.label(), next == n.low()});
+      return next;
     }
 
     void visit(const bool t)
@@ -159,18 +159,18 @@ namespace adiar
   {
   private:
     Visitor _visitor;
-    const consumer<bdd::label_type, bool> &_consumer;
+    const consumer<pair<bdd::label_type, bool>> &_consumer;
 
   public:
-    bdd_satX__functional(const consumer<bdd::label_type, bool> &c)
+    bdd_satX__functional(const consumer<pair<bdd::label_type, bool>> &c)
       : _consumer(c)
     { }
 
     bdd::pointer_type visit(const bdd::node_type &n)
     {
-      const bdd::pointer_type next_ptr = _visitor.visit(n);
-      _consumer(n.label(), next_ptr == n.high());
-      return next_ptr;
+      const bdd::pointer_type next = _visitor.visit(n);
+      _consumer({n.label(), next == n.high()});
+      return next;
     }
 
     void visit(const bool t)
@@ -191,7 +191,7 @@ namespace adiar
   }
 
   template<typename Visitor>
-  void __bdd_satX(const bdd &f, const consumer<bdd::label_type, bool> &c)
+  void __bdd_satX(const bdd &f, const consumer<pair<bdd::label_type, bool>> &c)
   {
     bdd_satX__functional<Visitor> v(c);
     internal::traverse(f, v);
@@ -202,7 +202,7 @@ namespace adiar
     return __bdd_satX<internal::traverse_satmin_visitor>(f);
   }
 
-  void bdd_satmin(const bdd &f, const consumer<bdd::label_type, bool> &c)
+  void bdd_satmin(const bdd &f, const consumer<pair<bdd::label_type, bool>> &c)
   {
     return __bdd_satX<internal::traverse_satmin_visitor>(f, c);
   }
@@ -212,7 +212,7 @@ namespace adiar
     return __bdd_satX<internal::traverse_satmax_visitor>(f);
   }
 
-  void bdd_satmax(const bdd &f, const consumer<bdd::label_type, bool> &c)
+  void bdd_satmax(const bdd &f, const consumer<pair<bdd::label_type, bool>> &c)
   {
     return __bdd_satX<internal::traverse_satmax_visitor>(f, c);
   }
