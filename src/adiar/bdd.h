@@ -1219,7 +1219,8 @@ namespace adiar
   void bdd_satmin(const bdd &f, const consumer<bdd::label_type, bool> &cb);
 
   //////////////////////////////////////////////////////////////////////////////
-  // TODO: Iterator-based output
+  // TODO: Iterator-based output (fix: ForwardIt::value_type does not match with
+  //       consumer<...> argument types)
   //
   // template<typename ForwardIt>
   // bdd_satmin(const bdd &f, ForwardIt begin, ForwardIt end)
@@ -1245,7 +1246,8 @@ namespace adiar
   void bdd_satmax(const bdd &f, const consumer<bdd::label_type, bool> &cb);
 
   //////////////////////////////////////////////////////////////////////////////
-  // TODO: Iterator-based output
+  // TODO: Iterator-based output (fix: ForwardIt::value_type does not match with
+  //       consumer<...> argument types)
   //
   // template<typename ForwardIt>
   // bdd_satmax(const bdd &f, ForwardIt begin, ForwardIt end)
