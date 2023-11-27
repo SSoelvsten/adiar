@@ -268,11 +268,11 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
 
       // Obtain the lexicographically minimal true assignment. Well, only one
       // exists, so we get the only one left.
-      adiar::bdd_satmin(restricted_constraints, [&N, &partial_assignment](adiar::bdd::label_type x, bool v) {
+      adiar::bdd_satmin(restricted_constraints, [&N, &partial_assignment](adiar::pair<adiar::bdd::label_type, bool> xv) {
         // Skip all empty (false) locations
-        if (!v) { return; }
+        if (!xv.second) { return; }
 
-        partial_assignment.at(j_of_label(N, x)) = i_of_label(N, x);
+        partial_assignment.at(j_of_label(N, xv.first)) = i_of_label(N, xv.first);
       });
 
       n_queens_print_solution(partial_assignment);
