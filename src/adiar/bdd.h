@@ -1213,10 +1213,10 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically smallest x such that f(x) is true.
   ///
-  /// \param cb Callback function that is called in ascending order of the bdd's
-  ///           levels with the (var, value) pairs of the assignment.
+  /// \param c Consumer that is called in ascending order of the bdd's levels
+  ///          with the (var, value) pairs of the assignment.
   //////////////////////////////////////////////////////////////////////////////
-  void bdd_satmin(const bdd &f, const consumer<bdd::label_type, bool> &cb);
+  void bdd_satmin(const bdd &f, const consumer<pair<bdd::label_type, bool>> &c);
 
   //////////////////////////////////////////////////////////////////////////////
   // TODO: Iterator-based output (fix: ForwardIt::value_type does not match with
@@ -1240,10 +1240,10 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically largest x such that f(x) is true.
   ///
-  /// \param cb Callback function that is called in ascending order of the bdd's
-  ///           levels with the (var, value) pairs of the assignment.
+  /// \param c Consumer that is called in ascending order of the bdd's levels
+  ///          with the (var, value) pairs of the assignment.
   //////////////////////////////////////////////////////////////////////////////
-  void bdd_satmax(const bdd &f, const consumer<bdd::label_type, bool> &cb);
+  void bdd_satmax(const bdd &f, const consumer<pair<bdd::label_type, bool>> &c);
 
   //////////////////////////////////////////////////////////////////////////////
   // TODO: Iterator-based output (fix: ForwardIt::value_type does not match with

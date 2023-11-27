@@ -57,8 +57,8 @@ namespace adiar
   /// \tparam Args List of the argument's type in the order, they are supposed
   ///              to be given.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename... Args>
-  using consumer = function<void (Args...)>;
+  template<typename Arg>
+  using consumer = function<void (Arg)>;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief  Wrap a `begin` and `end` iterator pair into a consumer function.
