@@ -291,14 +291,14 @@ go_bandit([]() {
       });
     });
 
-    describe("zdd_minelem(A, cb)", [&]() {
+    describe("zdd_minelem(A, c)", [&]() {
       it("makes no calls for { Ø } on { Ø }", [&]() {
         size_t calls = 0u;
-        const auto cb = [&calls](zdd::label_type) {
+        const auto c = [&calls](zdd::label_type) {
           calls++;
         };
 
-        zdd_minelem(zdd_T, cb);
+        zdd_minelem(zdd_T, c);
         AssertThat(calls, Is().EqualTo(0u));
       });
 
@@ -306,22 +306,22 @@ go_bandit([]() {
         size_t calls = 0u;
         std::vector<zdd::label_type> expected { 1 };
 
-        const auto cb = [&calls, &expected](zdd::label_type x) {
+        const auto c = [&calls, &expected](zdd::label_type x) {
           AssertThat(x, Is().EqualTo(expected.at(calls)));
           calls++;
         };
 
-        zdd_minelem(zdd_1, cb);
+        zdd_minelem(zdd_1, c);
         AssertThat(calls, Is().EqualTo(1u));
       });
 
       it("makes no calls for { Ø } on [2]", [&]() {
         size_t calls = 0u;
-        const auto cb = [&calls](zdd::label_type) {
+        const auto c = [&calls](zdd::label_type) {
           calls++;
         };
 
-        zdd_minelem(zdd_2, cb);
+        zdd_minelem(zdd_2, c);
         AssertThat(calls, Is().EqualTo(0u));
       });
 
@@ -329,12 +329,12 @@ go_bandit([]() {
         size_t calls = 0u;
         std::vector<zdd::label_type> expected { 2,4 };
 
-        const auto cb = [&calls, &expected](zdd::label_type x) {
+        const auto c = [&calls, &expected](zdd::label_type x) {
           AssertThat(x, Is().EqualTo(expected.at(calls)));
           calls++;
         };
 
-        zdd_minelem(zdd_3, cb);
+        zdd_minelem(zdd_3, c);
         AssertThat(calls, Is().EqualTo(2u));
       });
 
@@ -342,13 +342,104 @@ go_bandit([]() {
         size_t calls = 0u;
         std::vector<zdd::label_type> expected { 1 };
 
-        const auto cb = [&calls, &expected](zdd::label_type x) {
+        const auto c = [&calls, &expected](zdd::label_type x) {
           AssertThat(x, Is().EqualTo(expected.at(calls)));
           calls++;
         };
 
-        zdd_minelem(zdd_4, cb);
+        zdd_minelem(zdd_4, c);
         AssertThat(calls, Is().EqualTo(1u));
+      });
+    });
+
+    describe("zdd_minelem(A, begin, end)", [&]() {
+      using buffer_type = std::vector<zdd::label_type>;
+
+      const buffer_type::value_type buffer_default(zdd::max_label+1);
+      const size_t buffer_size = 4;
+
+      it("outputs { } in buffer for { Ø }", [&]() {
+        buffer_type buffer(buffer_size, buffer_default);
+
+        auto ret = zdd_minelem(zdd_T, buffer.begin(), buffer.end());
+
+        AssertThat(ret, Is().EqualTo(buffer.begin()+0));
+
+        buffer_type expected(buffer_size, buffer_default);
+
+        for (size_t i = 0; i < buffer_size; ++i) {
+          AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
+        }
+      });
+
+      it("outputs { 1 } in buffer for [1]", [&]() {
+        buffer_type buffer(buffer_size, buffer_default);
+
+        auto ret = zdd_minelem(zdd_1, buffer.begin(), buffer.end());
+
+        AssertThat(ret, Is().EqualTo(buffer.begin()+1));
+
+        buffer_type expected(buffer_size, buffer_default);
+        expected.at(0) = 1;
+
+        for (size_t i = 0; i < buffer_size; ++i) {
+          AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
+        }
+      });
+
+      it("throws 'out_of_range' if buffer is too small [1]", [&]() {
+        buffer_type buffer(0, buffer_default);
+        AssertThrows(out_of_range, zdd_minelem(zdd_1, buffer.begin(), buffer.end()));
+      });
+
+      it("outputs { } in buffer for [2]", [&]() {
+        buffer_type buffer(buffer_size, buffer_default);
+
+        auto ret = zdd_minelem(zdd_2, buffer.begin(), buffer.end());
+
+        AssertThat(ret, Is().EqualTo(buffer.begin()+0));
+
+        buffer_type expected(buffer_size, buffer_default);
+
+        for (size_t i = 0; i < buffer_size; ++i) {
+          AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
+        }
+      });
+
+      it("outputs { 2,4 } in buffer for [3]", [&]() {
+        buffer_type buffer(buffer_size, buffer_default);
+
+        auto ret = zdd_minelem(zdd_3, buffer.begin(), buffer.end());
+
+        AssertThat(ret, Is().EqualTo(buffer.begin()+2));
+
+        buffer_type expected(buffer_size, buffer_default);
+        expected.at(0) = 2;
+        expected.at(1) = 4;
+
+        for (size_t i = 0; i < buffer_size; ++i) {
+          AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
+        }
+      });
+
+      it("throws 'out_of_range' if buffer is too small [3]", [&]() {
+        buffer_type buffer(1, buffer_default);
+        AssertThrows(out_of_range, zdd_minelem(zdd_3, buffer.begin(), buffer.end()));
+      });
+
+      it("outputs { 1 } in buffer for [4]", [&]() {
+        buffer_type buffer(buffer_size, buffer_default);
+
+        auto ret = zdd_minelem(zdd_4, buffer.begin(), buffer.end());
+
+        AssertThat(ret, Is().EqualTo(buffer.begin()+1));
+
+        buffer_type expected(buffer_size, buffer_default);
+        expected.at(0) = 1;
+
+        for (size_t i = 0; i < buffer_size; ++i) {
+          AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
+        }
       });
     });
 
@@ -528,15 +619,14 @@ go_bandit([]() {
       });
     });
 
-
-    describe("zdd_maxelem(A, cb)", [&]() {
+    describe("zdd_maxelem(A, c)", [&]() {
       it("makes no calls for { Ø } on { Ø }", [&]() {
         size_t calls = 0u;
-        const auto cb = [&calls](zdd::label_type) {
+        const auto c = [&calls](zdd::label_type) {
           calls++;
         };
 
-        zdd_maxelem(zdd_T, cb);
+        zdd_maxelem(zdd_T, c);
         AssertThat(calls, Is().EqualTo(0u));
 
         zdd out = zdd_maxelem(zdd_T);
@@ -546,12 +636,12 @@ go_bandit([]() {
         size_t calls = 0u;
         std::vector<zdd::label_type> expected { 0,2 };
 
-        const auto cb = [&calls, &expected](zdd::label_type x) {
+        const auto c = [&calls, &expected](zdd::label_type x) {
           AssertThat(x, Is().EqualTo(expected.at(calls)));
           calls++;
         };
 
-        zdd_maxelem(zdd_1, cb);
+        zdd_maxelem(zdd_1, c);
         AssertThat(calls, Is().EqualTo(2u));
       });
 
@@ -559,12 +649,12 @@ go_bandit([]() {
         size_t calls = 0u;
         std::vector<zdd::label_type> expected { 1 };
 
-        const auto cb = [&calls, &expected](zdd::label_type x) {
+        const auto c = [&calls, &expected](zdd::label_type x) {
           AssertThat(x, Is().EqualTo(expected.at(calls)));
           calls++;
         };
 
-        zdd_maxelem(zdd_2, cb);
+        zdd_maxelem(zdd_2, c);
         AssertThat(calls, Is().EqualTo(1u));
       });
 
@@ -572,13 +662,96 @@ go_bandit([]() {
         size_t calls = 0u;
         std::vector<zdd::label_type> expected { 0,1 };
 
-        const auto cb = [&calls, &expected](zdd::label_type x) {
+        const auto c = [&calls, &expected](zdd::label_type x) {
           AssertThat(x, Is().EqualTo(expected.at(calls)));
           calls++;
         };
 
-        zdd_maxelem(zdd_4, cb);
+        zdd_maxelem(zdd_4, c);
         AssertThat(calls, Is().EqualTo(2u));
+      });
+    });
+
+    describe("zdd_maxelem(A, begin, end)", [&]() {
+      using buffer_type = std::vector<zdd::label_type>;
+
+      const buffer_type::value_type buffer_default(zdd::max_label+1);
+      const size_t buffer_size = 4;
+
+      it("outputs { } in buffer for { Ø }", [&]() {
+        buffer_type buffer(buffer_size, buffer_default);
+
+        auto ret = zdd_maxelem(zdd_T, buffer.begin(), buffer.end());
+
+        AssertThat(ret, Is().EqualTo(buffer.begin()+0));
+
+        buffer_type expected(buffer_size, buffer_default);
+
+        for (size_t i = 0; i < buffer_size; ++i) {
+          AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
+        }
+      });
+
+      it("outputs { 0,2 } in buffer for [1]", [&]() {
+        buffer_type buffer(buffer_size, buffer_default);
+
+        auto ret = zdd_maxelem(zdd_1, buffer.begin(), buffer.end());
+
+        AssertThat(ret, Is().EqualTo(buffer.begin()+2));
+
+        buffer_type expected(buffer_size, buffer_default);
+        expected.at(0) = 0;
+        expected.at(1) = 2;
+
+        for (size_t i = 0; i < buffer_size; ++i) {
+          AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
+        }
+      });
+
+      it("throws 'out_of_range' if buffer is too small [1]", [&]() {
+        buffer_type buffer(1, buffer_default);
+        AssertThrows(out_of_range, zdd_maxelem(zdd_1, buffer.begin(), buffer.end()));
+      });
+
+      it("outputs { 1 } in buffer for [2]", [&]() {
+        buffer_type buffer(buffer_size, buffer_default);
+
+        auto ret = zdd_maxelem(zdd_2, buffer.begin(), buffer.end());
+
+        AssertThat(ret, Is().EqualTo(buffer.begin()+1));
+
+        buffer_type expected(buffer_size, buffer_default);
+        expected.at(0) = 1;
+
+        for (size_t i = 0; i < buffer_size; ++i) {
+          AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
+        }
+      });
+
+      it("throws 'out_of_range' if buffer is too small [2]", [&]() {
+        buffer_type buffer(0, buffer_default);
+        AssertThrows(out_of_range, zdd_maxelem(zdd_2, buffer.begin(), buffer.end()));
+      });
+
+      it("outputs { 0,1 } in buffer for [4]", [&]() {
+        buffer_type buffer(buffer_size, buffer_default);
+
+        auto ret = zdd_maxelem(zdd_4, buffer.begin(), buffer.end());
+
+        AssertThat(ret, Is().EqualTo(buffer.begin()+2));
+
+        buffer_type expected(buffer_size, buffer_default);
+        expected.at(0) = 0;
+        expected.at(1) = 1;
+
+        for (size_t i = 0; i < buffer_size; ++i) {
+          AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
+        }
+      });
+
+      it("throws 'out_of_range' if buffer is too small [4]", [&]() {
+        buffer_type buffer(1, buffer_default);
+        AssertThrows(out_of_range, zdd_maxelem(zdd_4, buffer.begin(), buffer.end()));
       });
     });
   });
