@@ -1199,16 +1199,11 @@ namespace adiar
   bdd::label_type bdd_maxvar(const bdd &f);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief   The lexicographically smallest x such that f(x) is true.
+  /// \brief   The lexicographically smallest cube x such that f(x) is true.
   ///
   /// \details Outputs the trace of the low-most path to the true terminal. The
   ///          resulting assignment is lexicographically smallest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
-  ///
-  /// \remark  If `domain_isset() == true` then the assignment is to the
-  ///          domain variables (and the visited bdd variables). If only the
-  ///          variables that exist within `f` is of interest, please unset the
-  ///          domain first.
   ///
   /// \returns A bdd whos only path to the `true` terminal reflects the minimal
   ///          assignment.
@@ -1217,11 +1212,6 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically smallest x such that f(x) is true.
-  ///
-  /// \remark  If `domain_isset() == true` then the assignment is to the
-  ///          domain variables (and the visited bdd variables). If only the
-  ///          variables that exist within `f` is of interest, please unset the
-  ///          domain first.
   ///
   /// \param cb Callback function that is called in ascending order of the bdd's
   ///           levels with the (var, value) pairs of the assignment.
@@ -1235,16 +1225,11 @@ namespace adiar
   // bdd_satmin(const bdd &f, ForwardIt begin, ForwardIt end)
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief   The lexicographically largest x such that f(x) is true.
+  /// \brief   The lexicographically largest cube x such that f(x) is true.
   ///
   /// \details Outputs the trace of the high-most path to the true terminal. The
   ///          resulting assignment is lexicographically largest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
-  ///
-  /// \remark  If `domain_isset() == true` then the assignment is to the
-  ///          domain variables (and the visited bdd variables). If only the
-  ///          variables that exist within `f` is of interest, please unset the
-  ///          domain first.
   ///
   /// \returns A bdd whos only path to the `true` terminal reflects the maximal
   ///          assignment.
@@ -1253,11 +1238,6 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically largest x such that f(x) is true.
-  ///
-  /// \remark  If `domain_isset() == true` then the assignment is to the
-  ///          domain variables (and the visited bdd variables). If only the
-  ///          variables that exist within `f` is of interest, please unset the
-  ///          domain first.
   ///
   /// \param cb Callback function that is called in ascending order of the bdd's
   ///           levels with the (var, value) pairs of the assignment.
