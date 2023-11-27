@@ -5,5 +5,6 @@ add_test(adiar-exec_policy test_exec_policy.cpp)
 add_test(adiar-functional  test_functional.cpp)
 
 add_subdirectory (bdd)
+add_subdirectory (tbdd)
 add_subdirectory (internal)
 add_subdirectory (zdd)

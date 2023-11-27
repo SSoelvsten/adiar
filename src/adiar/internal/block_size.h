@@ -5,6 +5,8 @@
 
 namespace adiar::internal
 {
+  // TODO: Change name to be without `get_` and `set_` (more similar to *std*).
+
   // TODO: Make part of the public API?
 
   //////////////////////////////////////////////////////////////////////////////

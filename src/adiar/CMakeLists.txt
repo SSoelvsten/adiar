@@ -22,6 +22,9 @@ set(HEADERS
   bdd/bdd_policy.h
   bdd/if_then_else.h
 
+  # adiar/tbdd
+  tbdd/ostream.h
+
   # adiar/zdd
   zdd.h
   zdd/zdd.h
