@@ -73,35 +73,6 @@ namespace adiar::internal
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Special dd_policy for `isomorphism_policy` to be used within the
-  ///        level merger logic.
-  ///
-  /// \see isomorphism_policy
-  //////////////////////////////////////////////////////////////////////////////
-  // TODO (Decision Diagrams with other kinds of pointers):
-  // template<class dd_policy>
-  class isomorphism_dd_policy : public dd_policy<dd, __dd>
-  {
-  public:
-    // Since we guarantee to be on the same level, then we merely provide a noop
-    // (similar to the bdd_policy) for the cofactor.
-    static inline void compute_cofactor([[maybe_unused]] const bool on_curr_level,
-                                        dd::pointer_type &/*low*/,
-                                        dd::pointer_type &/*high*/)
-    { adiar_assert(on_curr_level, "No request have mixed levels"); }
-
-    // Since we guarantee to be on the same level, then we merely provide a noop
-    // (similar to the bdd_policy) for the cofactor.
-    static inline dd::node_type::children_type
-    compute_cofactor([[maybe_unused]] const bool on_curr_level,
-                     const dd::node_type::children_type &children)
-    {
-      adiar_assert(on_curr_level, "No request have mixed levels");
-      return children;
-    }
-  };
-
-  //////////////////////////////////////////////////////////////////////////////
   /// \brief Policy for isomorphism checking with `comparison_check`.
   ///
   /// \pre To use this operation, the following should be satisfied.
@@ -112,8 +83,7 @@ namespace adiar::internal
   // TODO (Decision Diagrams with other kinds of pointers):
   // template<class dd_policy>
   class isomorphism_policy
-    : public dd_policy<dd, __dd>
-    , public prod2_same_level_merger<isomorphism_dd_policy>
+    : public dd_policy<dd, __dd>, public prod2_same_level_merger<dd_policy<dd, __dd>>
   {
   public:
     using level_check_t = input_bound_levels<false>;

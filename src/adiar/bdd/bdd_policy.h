@@ -31,19 +31,6 @@ namespace adiar
   {
     return { child, child };
   }
-
-  // TODO: stop using these in favour of 'reduction_rule_inv' above
-  template<>
-  inline void
-  bdd_policy::compute_cofactor(const bool /*on_level*/,
-                               /*const*/ bdd::pointer_type &,
-                               /*const*/ bdd::pointer_type &)
-  { /* do nothing */ }
-
-  template<>
-  inline bdd_policy::children_type
-  bdd_policy::compute_cofactor(const bool /*on_level*/, const bdd_policy::children_type &children)
-  { return children; }
 }
 
 #endif // ADIAR_BDD_BDD_POLICY_H

@@ -621,10 +621,6 @@ namespace adiar::internal
   /// decision_diagram used (i.e. bdd_policy in bdd/bdd.h, zdd_policy in
   /// zdd/zdd.h and so on). This provides the following functions
   ///
-  /// - compute_cofactor:
-  ///   Used to change the low and high children retrieved from the input during
-  ///   the product construction.
-  ///
   /// Other parameters are:
   ///
   /// \param in_i  DAGs to combine into one.
