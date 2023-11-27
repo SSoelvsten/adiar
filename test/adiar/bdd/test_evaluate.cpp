@@ -490,14 +490,14 @@ go_bandit([]() {
       }
 
       describe("bdd_satmin(f)", [&]() {
-        it("returns same file for true terminal", [&]() {
-          bdd out = bdd_satmin(bdd_T);
-          AssertThat(out.file_ptr(), Is().EqualTo(bdd_T));
-        });
-
         it("returns same file for false terminal", [&]() {
           bdd out = bdd_satmin(bdd_F);
           AssertThat(out.file_ptr(), Is().EqualTo(bdd_F));
+        });
+
+        it("returns same file for true terminal", [&]() {
+          bdd out = bdd_satmin(bdd_T);
+          AssertThat(out.file_ptr(), Is().EqualTo(bdd_T));
         });
 
         it("returns minimal BDD cube [0]", [&]() {
@@ -982,19 +982,19 @@ go_bandit([]() {
       });
 
       describe("bdd_satmin(f, c)", [&]() {
-        it("never calls consumer for true terminal", [&]() {
-          size_t calls = 0u;
-          const auto cb = [&calls](pair<bdd::label_type, bool>) { calls++; };
-
-          bdd_satmin(bdd_T, cb);
-          AssertThat(calls, Is().EqualTo(0u));
-        });
-
         it("never calls consumer for false terminal", [&]() {
           size_t calls = 0u;
           const auto cb = [&calls](pair<bdd::label_type, bool>) { calls++; };
 
           bdd_satmin(bdd_F, cb);
+          AssertThat(calls, Is().EqualTo(0u));
+        });
+
+        it("never calls consumer for true terminal", [&]() {
+          size_t calls = 0u;
+          const auto cb = [&calls](pair<bdd::label_type, bool>) { calls++; };
+
+          bdd_satmin(bdd_T, cb);
           AssertThat(calls, Is().EqualTo(0u));
         });
 
@@ -1045,7 +1045,7 @@ go_bandit([]() {
         it("calls consumer with minimal truth assignment [~1]", [&]() {
           size_t calls = 0;
           std::vector<std::pair<bdd::label_type, bool>> expected =
-            { {0, false}, {1, false}, {2, false}, {3, false} };
+            { {0, false}, {1, false}, {2, false} };
 
           const auto cb = [&calls, &expected](pair<bdd::label_type, bool> xv) {
             AssertThat(calls, Is().LessThan(expected.size()));
@@ -1158,18 +1158,162 @@ go_bandit([]() {
       });
 
       describe("bdd_satmin(f, begin, end)", [&]() {
-        // TODO
+        using buffer_type = std::vector<pair<bdd::label_type, bool>>;
+
+        const buffer_type::value_type buffer_default(bdd::max_label+1, false);
+        const size_t buffer_size = 4;
+
+        it("outputs nothing in buffer for false terminal", [&]() {
+          buffer_type buffer(buffer_size, buffer_default);
+
+          auto ret = bdd_satmin(bdd_F, buffer.begin(), buffer.end());
+
+          AssertThat(ret, Is().EqualTo(buffer.begin()+0));
+
+          buffer_type expected(buffer_size, buffer_default);
+
+          for (size_t i = 0; i < buffer_size; ++i) {
+            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
+          }
+        });
+
+        it("outputs nothing in buffer for true terminal", [&]() {
+          buffer_type buffer(buffer_size, buffer_default);
+
+          auto ret = bdd_satmin(bdd_T, buffer.begin(), buffer.end());
+
+          AssertThat(ret, Is().EqualTo(buffer.begin()+0));
+
+          buffer_type expected(buffer_size, buffer_default);
+
+          for (size_t i = 0; i < buffer_size; ++i) {
+            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
+          }
+        });
+
+        it("outputs {x0, true} for [0]", [&]() {
+          buffer_type buffer(buffer_size, buffer_default);
+
+          auto ret = bdd_satmin(bdd_0, buffer.begin(), buffer.end());
+
+          AssertThat(ret, Is().EqualTo(buffer.begin()+1));
+
+          buffer_type expected(buffer_size, buffer_default);
+          expected.at(0) = {0, true};
+
+          for (size_t i = 0; i < buffer_size; ++i) {
+            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
+          }
+        });
+
+        it("outputs {x0, false} for [~0]", [&]() {
+          buffer_type buffer(buffer_size, buffer_default);
+
+          auto ret = bdd_satmin(bdd_not(bdd_0), buffer.begin(), buffer.end());
+
+          AssertThat(ret, Is().EqualTo(buffer.begin()+1));
+
+          buffer_type expected(buffer_size, buffer_default);
+          expected.at(0) = {0, false};
+
+          for (size_t i = 0; i < buffer_size; ++i) {
+            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
+          }
+        });
+
+        it("throws 'out_of_range' if buffer is too small [0]", [&]() {
+          buffer_type buffer(0, buffer_default);
+          AssertThrows(out_of_range, bdd_satmin(bdd_0, buffer.begin(), buffer.end()));
+        });
+
+        it("outputs expected values into buffer for [1]", [&]() {
+          buffer_type buffer(buffer_size, buffer_default);
+
+          auto ret = bdd_satmin(bdd_1, buffer.begin(), buffer.end());
+
+          AssertThat(ret, Is().EqualTo(buffer.begin()+4));
+
+          buffer_type expected(buffer_size, buffer_default);
+          expected.at(0) = {0, false};
+          expected.at(1) = {1, false};
+          expected.at(2) = {2, true};
+          expected.at(3) = {3, true};
+
+          for (size_t i = 0; i < buffer_size; ++i) {
+            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
+          }
+        });
+
+        it("outputs expected values into buffer for [~1]", [&]() {
+          buffer_type buffer(buffer_size, buffer_default);
+
+          auto ret = bdd_satmin(bdd_not(bdd_1), buffer.begin(), buffer.end());
+
+          AssertThat(ret, Is().EqualTo(buffer.begin()+3));
+
+          buffer_type expected(buffer_size, buffer_default);
+          expected.at(0) = {0, false};
+          expected.at(1) = {1, false};
+          expected.at(2) = {2, false};
+
+          for (size_t i = 0; i < buffer_size; ++i) {
+            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
+          }
+        });
+
+        it("throws 'out_of_range' if buffer is too small [1]", [&]() {
+          buffer_type buffer(1, buffer_default);
+          AssertThrows(out_of_range, bdd_satmin(bdd_1, buffer.begin(), buffer.end()));
+        });
+
+        it("outputs expected values into buffer for [4]", [&]() {
+          buffer_type buffer(buffer_size, buffer_default);
+
+          auto ret = bdd_satmin(bdd_4, buffer.begin(), buffer.end());
+
+          AssertThat(ret, Is().EqualTo(buffer.begin()+2));
+
+          buffer_type expected(buffer_size, buffer_default);
+          expected.at(0) = {0, false};
+          expected.at(1) = {2, false};
+
+          for (size_t i = 0; i < buffer_size; ++i) {
+            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
+          }
+        });
+
+        it("outputs expected values into buffer for [~4]", [&]() {
+          buffer_type buffer(buffer_size, buffer_default);
+
+          auto ret = bdd_satmin(bdd_not(bdd_4), buffer.begin(), buffer.end());
+
+          AssertThat(ret, Is().EqualTo(buffer.begin()+3));
+
+          buffer_type expected(buffer_size, buffer_default);
+          expected.at(0) = {0, false};
+          expected.at(1) = {2, true};
+          expected.at(2) = {3, true};
+
+          for (size_t i = 0; i < buffer_size; ++i) {
+            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
+          }
+        });
+
+        it("throws 'out_of_range' if buffer is too small [~4]", [&]() {
+          buffer_type buffer(2, buffer_default);
+          AssertThrows(out_of_range, bdd_satmin(bdd_not(bdd_4), buffer.begin(), buffer.end()));
+        });
       });
 
       describe("bdd_satmax(f)", [&]() {
-        it("returns same file for true terminal", [&]() {
-          bdd out = bdd_satmax(bdd_T);
-          AssertThat(out.file_ptr(), Is().EqualTo(bdd_T));
-        });
-
         it("returns same file for false terminal", [&]() {
           bdd out = bdd_satmax(bdd_F);
           AssertThat(out.file_ptr(), Is().EqualTo(bdd_F));
+        });
+
+        it("returns same file for true terminal", [&]() {
+          bdd out = bdd_satmax(bdd_T);
+          AssertThat(out.file_ptr(), Is().EqualTo(bdd_T));
         });
 
         it("returns maximal BDD cube [0]", [&]() {
@@ -1611,19 +1755,19 @@ go_bandit([]() {
       });
 
       describe("bdd_satmax(f, c)", [&]() {
-        it("never calls consumer for true terminal", [&]() {
-          size_t calls = 0u;
-          const auto cb = [&calls](pair<bdd::label_type, bool>) { calls++; };
-
-          bdd_satmax(bdd_T, cb);
-          AssertThat(calls, Is().EqualTo(0u));
-        });
-
         it("never calls consumer for false terminal", [&]() {
           size_t calls = 0u;
           const auto cb = [&calls](pair<bdd::label_type, bool>) { calls++; };
 
           bdd_satmax(bdd_F, cb);
+          AssertThat(calls, Is().EqualTo(0u));
+        });
+
+        it("never calls consumer for true terminal", [&]() {
+          size_t calls = 0u;
+          const auto cb = [&calls](pair<bdd::label_type, bool>) { calls++; };
+
+          bdd_satmax(bdd_T, cb);
           AssertThat(calls, Is().EqualTo(0u));
         });
 
@@ -1785,7 +1929,156 @@ go_bandit([]() {
       });
 
       describe("bdd_satmax(f, begin, end)", [&]() {
-        // TODO
+        using buffer_type = std::vector<pair<bdd::label_type, bool>>;
+
+        const buffer_type::value_type buffer_default(bdd::max_label+1, false);
+        const size_t buffer_size = 4;
+
+        it("outputs nothing in buffer for false terminal", [&]() {
+          buffer_type buffer(buffer_size, buffer_default);
+
+          auto ret = bdd_satmax(bdd_F, buffer.begin(), buffer.end());
+
+          AssertThat(ret, Is().EqualTo(buffer.begin()+0));
+
+          buffer_type expected(buffer_size, buffer_default);
+
+          for (size_t i = 0; i < buffer_size; ++i) {
+            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
+          }
+        });
+
+        it("outputs nothing in buffer for true terminal", [&]() {
+          buffer_type buffer(buffer_size, buffer_default);
+
+          auto ret = bdd_satmax(bdd_T, buffer.begin(), buffer.end());
+
+          AssertThat(ret, Is().EqualTo(buffer.begin()+0));
+
+          buffer_type expected(buffer_size, buffer_default);
+
+          for (size_t i = 0; i < buffer_size; ++i) {
+            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
+          }
+        });
+
+        it("outputs {x0, true} for [0]", [&]() {
+          buffer_type buffer(buffer_size, buffer_default);
+
+          auto ret = bdd_satmax(bdd_0, buffer.begin(), buffer.end());
+
+          AssertThat(ret, Is().EqualTo(buffer.begin()+1));
+
+          buffer_type expected(buffer_size, buffer_default);
+          expected.at(0) = {0, true};
+
+          for (size_t i = 0; i < buffer_size; ++i) {
+            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
+          }
+        });
+
+        it("outputs {x0, false} for [~0]", [&]() {
+          buffer_type buffer(buffer_size, buffer_default);
+
+          auto ret = bdd_satmax(bdd_not(bdd_0), buffer.begin(), buffer.end());
+
+          AssertThat(ret, Is().EqualTo(buffer.begin()+1));
+
+          buffer_type expected(buffer_size, buffer_default);
+          expected.at(0) = {0, false};
+
+          for (size_t i = 0; i < buffer_size; ++i) {
+            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
+          }
+        });
+
+        it("throws 'out_of_range' if buffer is too small [0]", [&]() {
+          buffer_type buffer(0, buffer_default);
+          AssertThrows(out_of_range, bdd_satmax(bdd_0, buffer.begin(), buffer.end()));
+        });
+
+        it("outputs expected values into buffer for [2]", [&]() {
+          buffer_type buffer(buffer_size, buffer_default);
+
+          auto ret = bdd_satmax(bdd_2, buffer.begin(), buffer.end());
+
+          AssertThat(ret, Is().EqualTo(buffer.begin()+2));
+
+          buffer_type expected(buffer_size, buffer_default);
+          expected.at(0) = {0, true};
+          expected.at(1) = {2, true};
+
+          for (size_t i = 0; i < buffer_size; ++i) {
+            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
+          }
+        });
+
+        it("outputs expected values into buffer for [~2]", [&]() {
+          buffer_type buffer(buffer_size, buffer_default);
+
+          auto ret = bdd_satmax(bdd_not(bdd_2), buffer.begin(), buffer.end());
+
+          AssertThat(ret, Is().EqualTo(buffer.begin()+3));
+
+          buffer_type expected(buffer_size, buffer_default);
+          expected.at(0) = {0, true};
+          expected.at(1) = {2, false};
+          expected.at(2) = {3, true};
+
+          for (size_t i = 0; i < buffer_size; ++i) {
+            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
+          }
+        });
+
+        it("throws 'out_of_range' if buffer is too small [2]", [&]() {
+          buffer_type buffer(1, buffer_default);
+          AssertThrows(out_of_range, bdd_satmax(bdd_2, buffer.begin(), buffer.end()));
+        });
+
+        it("throws 'out_of_range' if buffer is too small [~2]", [&]() {
+          buffer_type buffer(2, buffer_default);
+          AssertThrows(out_of_range, bdd_satmax(bdd_not(bdd_2), buffer.begin(), buffer.end()));
+        });
+
+        it("outputs expected values into buffer for [4]", [&]() {
+          buffer_type buffer(buffer_size, buffer_default);
+
+          auto ret = bdd_satmax(bdd_4, buffer.begin(), buffer.end());
+
+          AssertThat(ret, Is().EqualTo(buffer.begin()+3));
+
+          buffer_type expected(buffer_size, buffer_default);
+          expected.at(0) = {0, true};
+          expected.at(1) = {1, true};
+          expected.at(2) = {2, true};
+
+          for (size_t i = 0; i < buffer_size; ++i) {
+            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
+          }
+        });
+
+        it("outputs expected values into buffer for [~4]", [&]() {
+          buffer_type buffer(buffer_size, buffer_default);
+
+          auto ret = bdd_satmax(bdd_not(bdd_4), buffer.begin(), buffer.end());
+
+          AssertThat(ret, Is().EqualTo(buffer.begin()+4));
+
+          buffer_type expected(buffer_size, buffer_default);
+          expected.at(0) = {0, true};
+          expected.at(1) = {1, true};
+          expected.at(2) = {2, false};
+          expected.at(3) = {3, true};
+
+          for (size_t i = 0; i < buffer_size; ++i) {
+            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
+          }
+        });
+
+        it("throws 'out_of_range' if buffer is too small [~4]", [&]() {
+          buffer_type buffer(2, buffer_default);
+          AssertThrows(out_of_range, bdd_satmax(bdd_not(bdd_4), buffer.begin(), buffer.end()));
+        });
       });
     } // bdd_satmin, bdd_satmax
   });

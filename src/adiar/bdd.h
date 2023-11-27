@@ -1219,11 +1219,25 @@ namespace adiar
   void bdd_satmin(const bdd &f, const consumer<pair<bdd::label_type, bool>> &c);
 
   //////////////////////////////////////////////////////////////////////////////
-  // TODO: Iterator-based output (fix: ForwardIt::value_type does not match with
-  //       consumer<...> argument types)
-  //
-  // template<typename ForwardIt>
-  // bdd_satmin(const bdd &f, ForwardIt begin, ForwardIt end)
+  /// \brief   The lexicographically smallest x such that f(x) is true.
+  ///
+  /// \param f     BDD of interest.
+  ///
+  /// \param begin Single-pass forward iterator for where to place the output.
+  ///
+  /// \param end   Marks the end for `begin`.
+  ///
+  /// \returns     An iterator to the first entry that still is left empty.
+  ///
+  /// \throws out_of_range If the distance between `begin` and `end` is not big
+  ///                      enough to contain all variables in `f`.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename ForwardIt>
+  ForwardIt bdd_satmin(const bdd &f, ForwardIt begin, ForwardIt end)
+  {
+    bdd_satmin(f, make_consumer(begin, end));
+    return begin;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically largest cube x such that f(x) is true.
@@ -1245,12 +1259,27 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   void bdd_satmax(const bdd &f, const consumer<pair<bdd::label_type, bool>> &c);
 
+
   //////////////////////////////////////////////////////////////////////////////
-  // TODO: Iterator-based output (fix: ForwardIt::value_type does not match with
-  //       consumer<...> argument types)
-  //
-  // template<typename ForwardIt>
-  // bdd_satmax(const bdd &f, ForwardIt begin, ForwardIt end)
+  /// \brief   The lexicographically largest x such that f(x) is true.
+  ///
+  /// \param f     BDD of interest.
+  ///
+  /// \param begin Single-pass forward iterator for where to place the output.
+  ///
+  /// \param end   Marks the end for `begin`.
+  ///
+  /// \returns     An iterator to the first entry that still is left empty.
+  ///
+  /// \throws out_of_range If the distance between `begin` and `end` is not big
+  ///                      enough to contain all variables in `f`.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename ForwardIt>
+  ForwardIt bdd_satmax(const bdd &f, ForwardIt begin, ForwardIt end)
+  {
+    bdd_satmax(f, make_consumer(begin, end));
+    return begin;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Evaluate a BDD according to an assignment to its variables.
