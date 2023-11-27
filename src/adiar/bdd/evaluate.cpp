@@ -3,8 +3,9 @@
 #include <tpie/tpie.h>
 #include <tpie/internal_stack.h>
 
-#include <adiar/domain.h>
 #include <adiar/exception.h>
+#include <adiar/functional.h>
+
 #include <adiar/internal/cut.h>
 #include <adiar/internal/assert.h>
 #include <adiar/internal/util.h>
@@ -131,9 +132,9 @@ namespace adiar
       return next_ptr;
     }
 
-    void visit(const bool s)
+    void visit(const bool t)
     {
-      _visitor.visit(s);
+      _visitor.visit(t);
     }
 
   public:
@@ -172,9 +173,9 @@ namespace adiar
       return next_ptr;
     }
 
-    void visit(const bool s)
+    void visit(const bool t)
     {
-      _visitor.visit(s);
+      _visitor.visit(t);
     }
   };
 
