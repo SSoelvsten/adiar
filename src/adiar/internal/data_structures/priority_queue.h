@@ -93,7 +93,7 @@ namespace adiar::internal
     pq_type pq;
 
   public:
-    priority_queue(size_t memory_bytes, size_t /*max_size*/) 
+    priority_queue(size_t memory_bytes, size_t /*max_size*/)
       : pq(memory_bytes)
     {}
 
