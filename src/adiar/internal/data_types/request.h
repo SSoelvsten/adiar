@@ -356,7 +356,7 @@ namespace adiar::internal
   // TODO: request_lt without `idx` for a pure lexicographical ordering...
   //  - Flip parameters, make `idx = 0` default.
   //  - Optimise for default case.
-  template<typename Request, size_t idx>
+  template<typename Request, size_t idx = 0>
   struct request_lt
   {
     /// \copydoc request_lt
@@ -523,7 +523,7 @@ namespace adiar::internal
   /// \brief Level/Lexicographical ordering on a request's target(s). Ties are
   ///        (potentially) broken on the data.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename Request, size_t idx>
+  template<typename Request, size_t idx = 0>
   struct request_data_lt
   {
     /// \copydoc request_data_lt
