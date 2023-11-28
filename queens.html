@@ -268,11 +268,11 @@ Printing each Solution</h1>
 <div class="line"> </div>
 <div class="line">      <span class="comment">// Obtain the lexicographically minimal true assignment. Well, only one</span></div>
 <div class="line">      <span class="comment">// exists, so we get the only one left.</span></div>
-<div class="line">      <a class="code" href="group__module____bdd.html#ga82d50901064486da23984c7dfac196c0">adiar::bdd_satmin</a>(restricted_constraints, [&amp;N, &amp;partial_assignment](adiar::bdd::label_t x, <span class="keywordtype">bool</span> v) {</div>
+<div class="line">      <a class="code" href="group__module____bdd.html#ga82d50901064486da23984c7dfac196c0">adiar::bdd_satmin</a>(restricted_constraints, [&amp;N, &amp;partial_assignment](<a class="code" href="namespaceadiar.html#a0bd43cb068187d7c464b6547ba6585d5">adiar::pair&lt;adiar::bdd::label_t, bool&gt;</a> xv) {</div>
 <div class="line">        <span class="comment">// Skip all empty (false) locations</span></div>
-<div class="line">        <span class="keywordflow">if</span> (!v) { <span class="keywordflow">return</span>; }</div>
+<div class="line">        <span class="keywordflow">if</span> (!xv.second) { return; }</div>
 <div class="line"> </div>
-<div class="line">        partial_assignment.at(j_of_label(N, x)) = i_of_label(N, x);</div>
+<div class="line">        partial_assignment.at(j_of_label(N, xv.first)) = i_of_label(N, xv.first);</div>
 <div class="line">      });</div>
 <div class="line"> </div>
 <div class="line">      n_queens_print_solution(partial_assignment);</div>
@@ -313,9 +313,10 @@ Printing each Solution</h1>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">return</span> n_queens_list(N, 0, partial_assignment, board);</div>
 <div class="line">}</div>
-<div class="ttc" id="agroup__module____bdd_html_ga82d50901064486da23984c7dfac196c0"><div class="ttname"><a href="group__module____bdd.html#ga82d50901064486da23984c7dfac196c0">adiar::bdd_satmin</a></div><div class="ttdeci">bdd bdd_satmin(const bdd &amp;f)</div><div class="ttdoc">The lexicographically smallest x such that f(x) is true.</div></div>
+<div class="ttc" id="agroup__module____bdd_html_ga82d50901064486da23984c7dfac196c0"><div class="ttname"><a href="group__module____bdd.html#ga82d50901064486da23984c7dfac196c0">adiar::bdd_satmin</a></div><div class="ttdeci">bdd bdd_satmin(const bdd &amp;f)</div><div class="ttdoc">The lexicographically smallest cube x such that f(x) is true.</div></div>
 <div class="ttc" id="agroup__module____bdd_html_gadd0becff66aaae9313c29248bc33750e"><div class="ttname"><a href="group__module____bdd.html#gadd0becff66aaae9313c29248bc33750e">adiar::bdd_pathcount</a></div><div class="ttdeci">uint64_t bdd_pathcount(const bdd &amp;f)</div><div class="ttdoc">Count all unique (but not necessarily disjoint) paths to the true terminal.</div></div>
 <div class="ttc" id="agroup__module____bdd_html_gafbf9600fb919ec4d16144c8744ee276e"><div class="ttname"><a href="group__module____bdd.html#gafbf9600fb919ec4d16144c8744ee276e">adiar::bdd_restrict</a></div><div class="ttdeci">__bdd bdd_restrict(const bdd &amp;f, bdd::label_type var, bool val)</div><div class="ttdoc">Restrict a single variable to a constant value.</div></div>
+<div class="ttc" id="anamespaceadiar_html_a0bd43cb068187d7c464b6547ba6585d5"><div class="ttname"><a href="namespaceadiar.html#a0bd43cb068187d7c464b6547ba6585d5">adiar::pair</a></div><div class="ttdeci">std::pair&lt; T1, T2 &gt; pair</div><div class="ttdoc">A pair of values.</div><div class="ttdef"><b>Definition:</b> types.h:23</div></div>
 <div class="ttc" id="anamespaceadiar_html_a723cfcc9239dfdc3cf4cdc74df0265c2"><div class="ttname"><a href="namespaceadiar.html#a723cfcc9239dfdc3cf4cdc74df0265c2">adiar::assignment</a></div><div class="ttdeci">assignment</div><div class="ttdoc">Possible values to assign a variable.</div><div class="ttdef"><b>Definition:</b> types.h:13</div></div>
 </div><!-- fragment --><p>where <code>n_queens_print_solutions</code> is a function that prints out the assignment file.</p>
 <div class="fragment"><div class="line"><span class="keywordtype">void</span> n_queens_print_solution(std::vector&lt;uint64_t&gt;&amp; assignment)</div>

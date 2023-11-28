@@ -1,5 +1,13 @@
 var NAVTREEINDEX5 =
 {
+"structadiar_1_1statistics_1_1equality__t_1_1slow__t.html#ac1b3858c751afb0e90cab795cc10b5e8":[5,6,0,3,1,3],
+"structadiar_1_1statistics_1_1equality__t_1_1slow__t.html#ae69010f63979fd0b372a009ef51290d6":[5,6,0,3,1,0],
+"structadiar_1_1statistics_1_1equality__t_1_1slow__t.html#ae905650314d06a09934bdcb6a41b95e1":[5,6,0,3,1,1],
+"structadiar_1_1statistics_1_1intercut__t.html":[5,6,0,4],
+"structadiar_1_1statistics_1_1intercut__t.html#ab769667ff5ecea10ecd9e2589b7e72bf":[5,6,0,4,0],
+"structadiar_1_1statistics_1_1levelized__priority__queue__t.html":[5,6,0,5],
+"structadiar_1_1statistics_1_1levelized__priority__queue__t.html#a18db66cef68fc1e68532347a86bd3d2b":[5,6,0,5,3],
+"structadiar_1_1statistics_1_1levelized__priority__queue__t.html#a6cbf004655dd759cc729fad62a47321d":[5,6,0,5,4],
 "structadiar_1_1statistics_1_1levelized__priority__queue__t.html#a704d98578648ed0b0daf834b92b21fe7":[5,6,0,5,0],
 "structadiar_1_1statistics_1_1levelized__priority__queue__t.html#a844804602d4c05ae87cef7f40c10371d":[5,6,0,5,1],
 "structadiar_1_1statistics_1_1levelized__priority__queue__t.html#acbc2d26c2cafb41e66a1965679dfbc78":[5,6,0,5,5],
