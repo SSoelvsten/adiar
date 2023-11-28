@@ -359,23 +359,15 @@ namespace adiar::internal
   template<typename Request, size_t idx = 0>
   struct request_lt
   {
+    static_assert(idx == 0, "Non-lexicographical ordering not (yet) supported.");
+
     /// \copydoc request_lt
     inline bool operator()(const Request &a, const Request &b)
     {
       const typename Request::label_type label_a = a.target.first().label();
       const typename Request::label_type label_b = b.target.first().label();
 
-      if constexpr (Request::cardinality == 2) {
-        constexpr size_t o_idx = 1u - idx;
-
-        return label_a < label_b
-          || (label_a == label_b && a.target[idx] < b.target[idx])
-          || (label_a == label_b && a.target[idx] == b.target[idx] && a.target[o_idx] < b.target[o_idx]);
-      }
-
-      return label_a < label_b
-        || (label_a == label_b && a.target[idx] < b.target[idx])
-        || (label_a == label_b && a.target[idx] == b.target[idx] && a.target < b.target);
+      return label_a < label_b || (label_a == label_b && a.target < b.target);
     }
   };
 
