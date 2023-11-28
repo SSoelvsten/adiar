@@ -51,7 +51,7 @@ namespace adiar::internal
 
   template<size_t look_ahead, memory_mode mem_mode>
   using prod_priority_queue_t =
-    levelized_node_priority_queue<prod2_request<0>, request_data_lt<1, prod2_request<0>>,
+    levelized_node_priority_queue<prod2_request<0>, request_data_lt<0, prod2_request<0>>,
                                   look_ahead,
                                   mem_mode,
                                   2,
@@ -319,24 +319,27 @@ namespace adiar::internal
   template<typename Policy, typename PriorityQueue_1>
   typename Policy::__dd_type
   __prod2_ra(const exec_policy &ep,
-             const typename Policy::dd_type &in_ra,
              const typename Policy::dd_type &in_pq,
+             const typename Policy::dd_type &in_ra,
              const bool_op &op,
              const size_t pq_memory, const size_t max_pq_size)
   {
+    constexpr size_t pq_idx = 0;
+    constexpr size_t ra_idx = 1;
+
     // Set up output
     shared_levelized_file<arc> out_arcs;
     arc_writer aw(out_arcs);
 
     // Set up input
-    node_random_access<> in_nodes_ra(in_ra);
     node_stream<> in_nodes_pq(in_pq);
+    node_random_access<> in_nodes_ra(in_ra);
 
     node v_pq = in_nodes_pq.pull();
 
     // Set up cross-level priority queue
-    PriorityQueue_1 prod_pq({in_ra, in_pq}, pq_memory, max_pq_size, stats_prod2.lpq);
-    prod_pq.push({ { in_nodes_ra.root(), v_pq.uid() }, {}, { ptr_uint64::nil() } });
+    PriorityQueue_1 prod_pq({in_pq, in_ra}, pq_memory, max_pq_size, stats_prod2.lpq);
+    prod_pq.push({ { v_pq.uid(), in_nodes_ra.root() }, {}, { ptr_uint64::nil() } });
 
     out_arcs->max_1level_cut = prod_pq.size();
 
@@ -357,9 +360,6 @@ namespace adiar::internal
       while (!prod_pq.empty_level()) {
         const prod2_request<0> req = prod_pq.top();
 
-        constexpr size_t ra_idx = 0;
-        constexpr size_t pq_idx = 1;
-
         // Seek request partially in stream
         if (req.target[pq_idx].is_node() && req.target[pq_idx].label() == out_label) {
           while (v_pq.uid() < req.target[pq_idx] && in_nodes_pq.can_pull()) {
@@ -367,26 +367,26 @@ namespace adiar::internal
           }
 
           adiar_assert(v_pq.uid() == req.target[pq_idx],
-                       "Must have found correct node in `in_1`");
+                       "Must have found correct node in `in_pq`");
         }
 
         // Recreate/Obtain children of req.target (possibly of suppressed node)
-        const typename Policy::children_type children_ra =
-          req.target[ra_idx].on_level(out_label)
-              ? in_nodes_ra.at(req.target[ra_idx]).children()
-              : Policy::reduction_rule_inv(req.target[ra_idx]);
-
         const typename Policy::children_type children_pq =
           req.target[pq_idx].on_level(out_label)
               ? v_pq.children()
               : Policy::reduction_rule_inv(req.target[pq_idx]);
 
+        const typename Policy::children_type children_ra =
+          req.target[ra_idx].on_level(out_label)
+          ? in_nodes_ra.at(req.target[ra_idx]).children()
+          : Policy::reduction_rule_inv(req.target[ra_idx]);
+
         // Create pairing of product children
         const tuple<typename Policy::pointer_type> rec_pair_0 =
-          { children_ra[false], children_pq[false] };
+          { children_pq[false], children_ra[false] };
 
         const tuple<typename Policy::pointer_type> rec_pair_1 =
-          { children_ra[true], children_pq[true] };
+          { children_pq[true], children_ra[true] };
 
         // Obtain new recursion targets
         const prod2_rec rec_res =
@@ -683,37 +683,40 @@ namespace adiar::internal
     const bool internal_only = ep.memory_mode() == exec_policy::memory::Internal;
     const bool external_only = ep.memory_mode() == exec_policy::memory::External;
 
-    const size_t pq_1_bound = std::min({__prod2_ilevel_upper_bound<Policy, get_2level_cut, 2u>(in_0, in_1, op),
-        __prod2_2level_upper_bound<Policy>(in_0, in_1, op),
-        __prod2_ilevel_upper_bound<Policy>(in_0, in_1, op)});
+    const size_t pq_bound = std::min({__prod2_ilevel_upper_bound<Policy, get_2level_cut, 2u>(in_0, in_1, op),
+                                      __prod2_2level_upper_bound<Policy>(in_0, in_1, op),
+                                      __prod2_ilevel_upper_bound<Policy>(in_0, in_1, op)});
 
-    // Flip inputs such that 'ra_in_0' is the one to use random-access on.
-    const bool ra_0 = in_0->canonical && (!in_1->canonical || in_0.width() <= in_1.width());
-    const typename Policy::dd_type& ra_in_0 = ra_0 ? in_0 : in_1;
-    const typename Policy::dd_type& ra_in_1 = ra_0 ? in_1 : in_0;
-    const bool_op& ra_op = ra_0 ? op : flip(op);
+    // Possibly flip inputs (and operator) such that 'in_ra' is always the
+    // second argument to `__prod2_ra(...)` algorithm.
+    const bool flip_in = in_0->canonical && (!in_1->canonical || in_0.width() <= in_1.width());
+
+    const typename Policy::dd_type& in_pq = flip_in ? in_1 : in_0;
+    const typename Policy::dd_type& in_ra = flip_in ? in_0 : in_1;
+
+    const bool_op& ra_op = flip_in ? flip(op) : op;
 
 #ifdef ADIAR_STATS
     stats_prod2.ra.used_narrowest +=
-      static_cast<size_t>(ra_in_0.width() == std::min(in_0.width(), in_1.width()));
+      static_cast<size_t>(in_ra.width() == std::min(in_pq.width(), in_ra.width()));
 
-    stats_prod2.ra.acc_width += ra_in_0.width();
-    stats_prod2.ra.min_width = std::min(stats_prod2.ra.min_width, ra_in_0.width());
-    stats_prod2.ra.max_width = std::max(stats_prod2.ra.max_width, ra_in_0.width());
+    stats_prod2.ra.acc_width += in_ra.width();
+    stats_prod2.ra.min_width = std::min(stats_prod2.ra.min_width, in_ra.width());
+    stats_prod2.ra.max_width = std::max(stats_prod2.ra.max_width, in_ra.width());
 #endif
 
     const size_t pq_available_memory = memory_available()
       // Input stream
       - node_stream<>::memory_usage()
       // Random access
-      - node_random_access<>::memory_usage(ra_in_0)
+      - node_random_access<>::memory_usage(in_ra)
       // Output stream
       - arc_writer::memory_usage();
 
     const size_t pq_memory_fits =
       prod_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(pq_available_memory);
 
-    const size_t max_pq_size = internal_only ? std::min(pq_memory_fits, pq_1_bound) : pq_1_bound;
+    const size_t max_pq_size = internal_only ? std::min(pq_memory_fits, pq_bound) : pq_bound;
 
     if(!external_only && max_pq_size <= no_lookahead_bound(2)) {
 #ifdef ADIAR_STATS
@@ -721,21 +724,21 @@ namespace adiar::internal
 #endif
       return __prod2_ra<Policy,
                         prod_priority_queue_t<0, memory_mode::Internal>>
-        (ep, ra_in_0, ra_in_1, ra_op, pq_available_memory, max_pq_size);
+        (ep, in_pq, in_ra, ra_op, pq_available_memory, max_pq_size);
     } else if (!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
       stats_prod2.lpq.internal += 1u;
 #endif
       return __prod2_ra<Policy,
                         prod_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>>
-        (ep, ra_in_0, ra_in_1, ra_op, pq_available_memory, max_pq_size);
+        (ep, in_pq, in_ra, ra_op, pq_available_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
       stats_prod2.lpq.external += 1u;
 #endif
       return __prod2_ra<Policy,
                         prod_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::External>>
-        (ep, ra_in_0, ra_in_1, ra_op, pq_available_memory, max_pq_size);
+        (ep, in_pq, in_ra, ra_op, pq_available_memory, max_pq_size);
     }
   }
 
