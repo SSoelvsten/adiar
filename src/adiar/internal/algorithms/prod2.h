@@ -6,6 +6,7 @@
 #include <adiar/exec_policy.h>
 
 #include <adiar/internal/assert.h>
+#include <adiar/internal/block_size.h>
 #include <adiar/internal/bool_op.h>
 #include <adiar/internal/cnl.h>
 #include <adiar/internal/cut.h>
@@ -663,13 +664,13 @@ namespace adiar::internal
 
     // -------------------------------------------------------------------------
     // Case: Do the product construction (with random access)
-
-    // TODO: Lower the functionality of this:
+    //
+    // TODO: Lower the responsibilities of this function:
     //
     //   This function should only determine the cases (base, ra, pq) and then
     //   another function should handle memory setup for the pq's and order of
     //   inputs
-
+    //
     // TODO: Optimisation!
     //
     //   We do not need to check on the decision diagram being 'canonical'. It
@@ -683,15 +684,15 @@ namespace adiar::internal
     const bool internal_only = ep.memory_mode() == exec_policy::memory::Internal;
     const bool external_only = ep.memory_mode() == exec_policy::memory::External;
 
-    // TODO: Move this threshold into `exec_policy`
-    constexpr size_t ra_thresshold = 2 * 1024 * 1024 / sizeof(typename prod_policy::node_type); // <-- 2 MiB / node-size
+    // Use random access if requested or the width fits into a single block
+    const size_t nodes_per_block = get_block_size() / sizeof(typename prod_policy::node_type);
 
     if (ep.access_mode() == exec_policy::access::Random_Access
         || (ep.access_mode() == exec_policy::access::Auto
-            // The smallest of the canonical inputs, must be under the thresshold
-            && (   (in_0->canonical && in_1->canonical && std::min(in_0.width(), in_1.width()) <= ra_thresshold)
-                || (in_0->canonical && in_0.width() <= ra_thresshold)
-                || (in_1->canonical && in_1.width() <= ra_thresshold)
+            // The smallest of the canonical inputs, must be below the threshold
+            && (   (in_0->canonical && in_1->canonical && std::min(in_0.width(), in_1.width()) <= nodes_per_block)
+                || (in_0->canonical && in_0.width() <= nodes_per_block)
+                || (in_1->canonical && in_1.width() <= nodes_per_block)
                ))) {
 #ifdef ADIAR_STATS
       stats_prod2.ra.runs += 1u;
@@ -699,7 +700,7 @@ namespace adiar::internal
 
       adiar_assert(in_0->canonical || in_1->canonical, "At least one input must be canonical");
 
-      // Determine if to flip the inputs
+      // Determine whether to flip the inputs
       // TODO: is the smallest or widest the best to random access on?
       const bool ra_0 = in_0->canonical && (!in_1->canonical || in_0.width() <= in_1.width());
       const typename prod_policy::dd_type& ra_in_0 = ra_0 ? in_0 : in_1;
