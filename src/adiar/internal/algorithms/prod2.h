@@ -49,7 +49,6 @@ namespace adiar::internal
   template<uint8_t nodes_carried>
   using prod2_request = request_data<2, with_parent, nodes_carried>;
 
-  // TODO: move this definition down to __prod2_ra, as it is only used here?
   template<size_t look_ahead, memory_mode mem_mode>
   using prod_priority_queue_t =
     levelized_node_priority_queue<prod2_request<0>, request_data_lt<1, prod2_request<0>>,
@@ -58,7 +57,6 @@ namespace adiar::internal
                                   2,
                                   0>;
 
-  // TODO: move this definition down to __prod2_pq, as it is only used here?
   template<size_t look_ahead, memory_mode mem_mode>
   using prod_priority_queue_1_t =
     levelized_node_priority_queue<prod2_request<0>, request_data_first_lt<prod2_request<0>>,
@@ -246,8 +244,15 @@ namespace adiar::internal
   };
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief Primary 2-ary Product Construction using Random Access to get nodes
+  ///        from the one of the two decision diagrams; this removes the need
+  ///        for the secondary priority queue in `__prod2_pq`.
+  ///
   /// \pre `in_0` is the input to random access
   //////////////////////////////////////////////////////////////////////////////
+  // TODO (Optimiation): Flip 'in_1' to be the one to do Random Access on. This
+  //                     simplifies the request ordering by merging the `idx`
+  //                     comparison with the final lexicographical tie-breaker.
   template<typename prod_policy, typename pq_1_t>
   typename prod_policy::__dd_type
   __prod2_ra(const exec_policy &ep,
@@ -362,6 +367,10 @@ namespace adiar::internal
     return typename prod_policy::__dd_type(out_arcs, ep);
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Primary 2-ary Product Construction using a secondary Priority Queue
+  ///        to access two separate nodes on the same level.
+  //////////////////////////////////////////////////////////////////////////////
   template<typename prod_policy, typename pq_1_t, typename pq_2_t>
   typename prod_policy::__dd_type
   __prod2_pq(const exec_policy &ep,
@@ -592,172 +601,87 @@ namespace adiar::internal
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// Creates the product construction of the given two DAGs.
-  ///
-  /// Behaviour of the product construction is controlled with the 'prod_policy'
-  /// class, which exposes static void strategy functions.
-  ///
-  /// - resolve_same_file:
-  ///   Creates the output based on knowing both inputs refer to the same
-  ///   underlying file.
-  ///
-  /// - resolve_terminal_root:
-  ///   Resolves (if possible) the cases for one of the two DAGs only being a
-  ///   terminal. Uses the _union in the 'out_t' to trigger an early termination. If
-  ///   it holds an 'adiar::no_file', then the algorithm proceeds to the actual
-  ///   product construction.
-  ///
-  /// - resolve_request:
-  ///   Given all information collected for the two nodes (both children, if
-  ///   they are on the same level. Otherwise, only the first-seen node),
-  ///   returns whether (a) a node should be output and its two children to
-  ///   recurse to or (b) no node should be output (i.e. it is skipped) and what
-  ///   child to forward the request to.
-  ///
-  /// - no_skip:
-  ///   Constexpr boolean whether the strategy guarantees never to skip a level.
-  ///   This shortcuts some boolean conditions at compile-time.
-  ///
-  /// This 'prod_policy' also should inherit the general policy for the
-  /// decision_diagram used (i.e. bdd_policy in bdd/bdd.h, zdd_policy in
-  /// zdd/zdd.h and so on). This provides the following functions
-  ///
-  /// Other parameters are:
-  ///
-  /// \param in_i  DAGs to combine into one.
-  ///
-  /// \param op    Binary boolean operator to be applied. See data.h for the
-  ///              ones directly provided by Adiar.
-  ///
-  /// \return      A class that inherits from __dd and describes
-  ///              the product of the two given DAGs.
-  //////////////////////////////////////////////////////////////////////////////
   template<typename prod_policy>
   typename prod_policy::__dd_type
-  prod2(const exec_policy &ep,
-        const typename prod_policy::dd_type &in_0,
-        const typename prod_policy::dd_type &in_1,
-        const bool_op &op)
+  __prod2_ra(const exec_policy &ep,
+             const typename prod_policy::dd_type &in_0,
+             const typename prod_policy::dd_type &in_1,
+             const bool_op &op)
   {
-    // -------------------------------------------------------------------------
-    // Case: Same file, i.e. exactly the same DAG.
-    if (in_0.file_ptr() == in_1.file_ptr()) {
-#ifdef ADIAR_STATS
-      stats_prod2.trivial_file += 1u;
-#endif
-      return prod_policy::resolve_same_file(in_0, in_1, op);
-    }
-
-    // -------------------------------------------------------------------------
-    // Case: At least one terminal.
-    if (dd_isterminal(in_0) || dd_isterminal(in_1)) {
-      typename prod_policy::__dd_type maybe_resolved =
-        prod_policy::resolve_terminal_root(in_0, in_1, op);
-
-      if (!(maybe_resolved.template has<no_file>())) {
-#ifdef ADIAR_STATS
-        stats_prod2.trivial_terminal += 1u;
-#endif
-        return maybe_resolved;
-      }
-    }
-
-    // -------------------------------------------------------------------------
-    // Case: Do the product construction (with random access)
-    //
-    // TODO: Lower the responsibilities of this function:
-    //
-    //   This function should only determine the cases (base, ra, pq) and then
-    //   another function should handle memory setup for the pq's and order of
-    //   inputs
-    //
-    // TODO: Optimisation!
-    //
-    //   We do not need to check on the decision diagram being 'canonical'. It
-    //   merely suffices, that it is 'indexable', i.e. the one half of being
-    //   'canonical'.
-
-    const size_t pq_1_bound = std::min({__prod2_ilevel_upper_bound<prod_policy, get_2level_cut, 2u>(in_0, in_1, op),
-                                        __prod2_2level_upper_bound<prod_policy>(in_0, in_1, op),
-                                        __prod2_ilevel_upper_bound<prod_policy>(in_0, in_1, op)});
+    adiar_assert(in_0->canonical || in_1->canonical, "At least one input must be canonical");
 
     const bool internal_only = ep.memory_mode() == exec_policy::memory::Internal;
     const bool external_only = ep.memory_mode() == exec_policy::memory::External;
 
-    // Use random access if requested or the width fits into a single block
-    const size_t nodes_per_block = get_block_size() / sizeof(typename prod_policy::node_type);
+    const size_t pq_1_bound = std::min({__prod2_ilevel_upper_bound<prod_policy, get_2level_cut, 2u>(in_0, in_1, op),
+        __prod2_2level_upper_bound<prod_policy>(in_0, in_1, op),
+        __prod2_ilevel_upper_bound<prod_policy>(in_0, in_1, op)});
 
-    if (ep.access_mode() == exec_policy::access::Random_Access
-        || (ep.access_mode() == exec_policy::access::Auto
-            // The smallest of the canonical inputs, must be below the threshold
-            && (   (in_0->canonical && in_1->canonical && std::min(in_0.width(), in_1.width()) <= nodes_per_block)
-                || (in_0->canonical && in_0.width() <= nodes_per_block)
-                || (in_1->canonical && in_1.width() <= nodes_per_block)
-               ))) {
-#ifdef ADIAR_STATS
-      stats_prod2.ra.runs += 1u;
-#endif
-
-      adiar_assert(in_0->canonical || in_1->canonical, "At least one input must be canonical");
-
-      // Determine whether to flip the inputs
-      // TODO: is the smallest or widest the best to random access on?
-      const bool ra_0 = in_0->canonical && (!in_1->canonical || in_0.width() <= in_1.width());
-      const typename prod_policy::dd_type& ra_in_0 = ra_0 ? in_0 : in_1;
-      const typename prod_policy::dd_type& ra_in_1 = ra_0 ? in_1 : in_0;
-      const bool_op& ra_op = ra_0 ? op : flip(op);
+    // Flip inputs such that 'ra_in_0' is the one to use random-access on.
+    const bool ra_0 = in_0->canonical && (!in_1->canonical || in_0.width() <= in_1.width());
+    const typename prod_policy::dd_type& ra_in_0 = ra_0 ? in_0 : in_1;
+    const typename prod_policy::dd_type& ra_in_1 = ra_0 ? in_1 : in_0;
+    const bool_op& ra_op = ra_0 ? op : flip(op);
 
 #ifdef ADIAR_STATS
-      stats_prod2.ra.used_narrowest +=
-        static_cast<size_t>(ra_in_0.width() == std::min(in_0.width(), in_1.width()));
+    stats_prod2.ra.used_narrowest +=
+      static_cast<size_t>(ra_in_0.width() == std::min(in_0.width(), in_1.width()));
 
-      stats_prod2.ra.acc_width += ra_in_0.width();
-      stats_prod2.ra.min_width = std::min(stats_prod2.ra.min_width, ra_in_0.width());
-      stats_prod2.ra.max_width = std::max(stats_prod2.ra.max_width, ra_in_0.width());
+    stats_prod2.ra.acc_width += ra_in_0.width();
+    stats_prod2.ra.min_width = std::min(stats_prod2.ra.min_width, ra_in_0.width());
+    stats_prod2.ra.max_width = std::max(stats_prod2.ra.max_width, ra_in_0.width());
 #endif
 
-      const size_t pq_available_memory = memory_available()
-        // Input stream
-        - node_stream<>::memory_usage()
-        // Random access
-        - node_random_access<>::memory_usage(ra_in_0)
-        // Output stream
-        - arc_writer::memory_usage();
+    const size_t pq_available_memory = memory_available()
+      // Input stream
+      - node_stream<>::memory_usage()
+      // Random access
+      - node_random_access<>::memory_usage(ra_in_0)
+      // Output stream
+      - arc_writer::memory_usage();
 
-      const size_t pq_memory_fits =
-        prod_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(pq_available_memory);
+    const size_t pq_memory_fits =
+      prod_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(pq_available_memory);
 
-      const size_t max_pq_size = internal_only ? std::min(pq_memory_fits, pq_1_bound) : pq_1_bound;
+    const size_t max_pq_size = internal_only ? std::min(pq_memory_fits, pq_1_bound) : pq_1_bound;
 
-      if(!external_only && max_pq_size <= no_lookahead_bound(2)) {
+    if(!external_only && max_pq_size <= no_lookahead_bound(2)) {
 #ifdef ADIAR_STATS
-        stats_prod2.lpq.unbucketed += 1u;
+      stats_prod2.lpq.unbucketed += 1u;
 #endif
-        return __prod2_ra<prod_policy,
-                          prod_priority_queue_t<0, memory_mode::Internal>>
-          (ep, ra_in_0, ra_in_1, ra_op, pq_available_memory, max_pq_size);
-      } else if (!external_only && max_pq_size <= pq_memory_fits) {
+      return __prod2_ra<prod_policy,
+                        prod_priority_queue_t<0, memory_mode::Internal>>
+        (ep, ra_in_0, ra_in_1, ra_op, pq_available_memory, max_pq_size);
+    } else if (!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
-        stats_prod2.lpq.internal += 1u;
+      stats_prod2.lpq.internal += 1u;
 #endif
-        return __prod2_ra<prod_policy,
-                          prod_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>>
-          (ep, ra_in_0, ra_in_1, ra_op, pq_available_memory, max_pq_size);
-      } else {
+      return __prod2_ra<prod_policy,
+                        prod_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>>
+        (ep, ra_in_0, ra_in_1, ra_op, pq_available_memory, max_pq_size);
+    } else {
 #ifdef ADIAR_STATS
-        stats_prod2.lpq.external += 1u;
+      stats_prod2.lpq.external += 1u;
 #endif
-        return __prod2_ra<prod_policy,
-                          prod_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::External>>
-          (ep, ra_in_0, ra_in_1, ra_op, pq_available_memory, max_pq_size);
-      }
+      return __prod2_ra<prod_policy,
+                        prod_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::External>>
+        (ep, ra_in_0, ra_in_1, ra_op, pq_available_memory, max_pq_size);
     }
+  }
 
-    // -------------------------------------------------------------------------
-    // Case: Do the product construction (with priority queues)
-#ifdef ADIAR_STATS
-    stats_prod2.pq.runs += 1u;
-#endif
+  template<typename prod_policy>
+  typename prod_policy::__dd_type
+  __prod2_pq(const exec_policy &ep,
+             const typename prod_policy::dd_type &in_0,
+             const typename prod_policy::dd_type &in_1,
+             const bool_op &op)
+  {
+    const bool internal_only = ep.memory_mode() == exec_policy::memory::Internal;
+    const bool external_only = ep.memory_mode() == exec_policy::memory::External;
+
+    const size_t pq_1_bound = std::min({__prod2_ilevel_upper_bound<prod_policy, get_2level_cut, 2u>(in_0, in_1, op),
+        __prod2_2level_upper_bound<prod_policy>(in_0, in_1, op),
+        __prod2_ilevel_upper_bound<prod_policy>(in_0, in_1, op)});
 
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.
@@ -803,7 +727,7 @@ namespace adiar::internal
                         prod_priority_queue_2_t<memory_mode::Internal>>
         (ep, in_0, in_1, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
     } else if(!external_only && max_pq_1_size <= pq_1_memory_fits
-                             && max_pq_2_size <= pq_2_memory_fits) {
+              && max_pq_2_size <= pq_2_memory_fits) {
 #ifdef ADIAR_STATS
       stats_prod2.lpq.internal += 1u;
 #endif
@@ -823,6 +747,76 @@ namespace adiar::internal
                         prod_priority_queue_2_t<memory_mode::External>>
         (ep, in_0, in_1, op, pq_1_memory, max_pq_1_size, pq_2_memory, max_pq_2_size);
     }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief  2-ary Product Construction algorithm
+  ///
+  /// \return A class that inherits from `__dd` and describes the product the
+  ///         two given DAGs.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename prod_policy>
+  typename prod_policy::__dd_type
+  prod2(const exec_policy &ep,
+        const typename prod_policy::dd_type &in_0,
+        const typename prod_policy::dd_type &in_1,
+        const bool_op &op)
+  {
+    // -------------------------------------------------------------------------
+    // Case: Same file, i.e. exactly the same DAG.
+    if (in_0.file_ptr() == in_1.file_ptr()) {
+#ifdef ADIAR_STATS
+      stats_prod2.trivial_file += 1u;
+#endif
+      return prod_policy::resolve_same_file(in_0, in_1, op);
+    }
+
+    // -------------------------------------------------------------------------
+    // Case: At least one terminal.
+    if (dd_isterminal(in_0) || dd_isterminal(in_1)) {
+      typename prod_policy::__dd_type maybe_resolved =
+        prod_policy::resolve_terminal_root(in_0, in_1, op);
+
+      if (!(maybe_resolved.template has<no_file>())) {
+#ifdef ADIAR_STATS
+        stats_prod2.trivial_terminal += 1u;
+#endif
+        return maybe_resolved;
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // Case: Do the product construction (with random access)
+    //
+    // TODO: Optimisation!
+    //
+    //   We do not need to check on the decision diagram being 'canonical'. It
+    //   merely suffices, that it is 'indexable', i.e. the one half of being
+    //   'canonical'.
+
+    // Use random access if requested or the width fits into a single block
+    const size_t nodes_per_block = get_block_size() / sizeof(typename prod_policy::node_type);
+
+    const size_t width_0 = in_0->canonical ? in_0.width() : prod_policy::max_id;
+    const size_t width_1 = in_1->canonical ? in_1.width() : prod_policy::max_id;
+    const size_t min_width = std::min(width_0, width_1);
+
+    if (// Use `__prod2_ra` if user has forced Random Access
+        ep.access_mode() == exec_policy::access::Random_Access
+        || (// Heuristically, if the narrowest canonical fits
+            ep.access_mode() == exec_policy::access::Auto && (min_width <= nodes_per_block))) {
+#ifdef ADIAR_STATS
+      stats_prod2.ra.runs += 1u;
+#endif
+      return __prod2_ra<prod_policy>(ep, in_0, in_1, op);
+    }
+
+    // -------------------------------------------------------------------------
+    // Case: Do the product construction (with priority queues)
+#ifdef ADIAR_STATS
+    stats_prod2.pq.runs += 1u;
+#endif
+    return __prod2_pq<prod_policy>(ep, in_0, in_1, op);
   }
 }
 
