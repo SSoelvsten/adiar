@@ -52,11 +52,11 @@ var hierarchy =
       [ "adiar::internal::request_data< Cardinality, Data, NodeCarrySize, Inputs >", "classadiar_1_1internal_1_1request__data.html", null ]
     ] ],
     [ "adiar::internal::request_data_first_lt< Request >", "structadiar_1_1internal_1_1request__data__first__lt.html", null ],
-    [ "adiar::internal::request_data_lt< idx, Request >", "structadiar_1_1internal_1_1request__data__lt.html", null ],
+    [ "adiar::internal::request_data_lt< Request, idx >", "structadiar_1_1internal_1_1request__data__lt.html", null ],
     [ "adiar::internal::request_data_second_lt< Request >", "structadiar_1_1internal_1_1request__data__second__lt.html", null ],
     [ "adiar::internal::request_data_third_lt< Request >", "structadiar_1_1internal_1_1request__data__third__lt.html", null ],
     [ "adiar::internal::request_first_lt< Request >", "structadiar_1_1internal_1_1request__first__lt.html", null ],
-    [ "adiar::internal::request_lt< idx, Request >", "structadiar_1_1internal_1_1request__lt.html", null ],
+    [ "adiar::internal::request_lt< Request, idx >", "structadiar_1_1internal_1_1request__lt.html", null ],
     [ "adiar::internal::request_second_lt< Request >", "structadiar_1_1internal_1_1request__second__lt.html", null ],
     [ "adiar::internal::request_third_lt< Request >", "structadiar_1_1internal_1_1request__third__lt.html", null ],
     [ "adiar::statistics::equality_t::slow_t", "structadiar_1_1statistics_1_1equality__t_1_1slow__t.html", null ],
