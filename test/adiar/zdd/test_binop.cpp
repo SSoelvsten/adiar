@@ -28,6 +28,24 @@ go_bandit([]() {
       nw_x1 << node(1, node::max_id, terminal_F, terminal_T);
     }
 
+    /*
+    //            1          ---- x0
+    //           / \
+    //           \ /
+    //            2          ---- x1
+    //           / \
+    //           F T
+    */
+    shared_levelized_file<zdd::node_type> zdd_x0x1_x1;
+
+    { // Garbage collect writers early
+      const node n2(1, node::max_id, terminal_F, terminal_T);
+      const node n1(0, node::max_id, n2.uid(), n2.uid());
+
+      node_writer nw(zdd_x0x1_x1);
+      nw << n2 << n1;
+    }
+
     describe("simple cases without access mode requirements", [&]() {
       describe("zdd_union", [&]() {
         it("should shortcut Ø on same file", [&]() {
@@ -815,25 +833,7 @@ go_bandit([]() {
         });
 
         it("computes (and skip to terminal) { {0}, {1}, {0,1} } ∩ { Ø }", [&]() {
-          /*
-          //            1        T          F     ---- x0
-          //           / \
-          //           \ /            ==>
-          //            2                         ---- x1
-          //           / \
-          //           F T
-          */
-
-          shared_levelized_file<zdd::node_type> zdd_a;
-
-          { // Garbage collect writers early
-            node_writer nw_a(zdd_a);
-            nw_a << node(1, node::max_id, terminal_F, terminal_T)
-                 << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id))
-              ;
-          }
-
-          __zdd out = zdd_intsec(ep, zdd_a, zdd_T);
+          __zdd out = zdd_intsec(ep, zdd_x0x1_x1, zdd_T);
 
           node_test_stream out_nodes(out);
 
@@ -2668,6 +2668,27 @@ go_bandit([]() {
 
             AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false], Is().EqualTo(1u));
             AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],  Is().EqualTo(1u));
+        });
+
+        it("computes (and skip to terminal) { {0}, {1}, {0,1} } ∩ { Ø }", [&]() {
+          __zdd out = zdd_intsec(ep, zdd_x0x1_x1, zdd_T);
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->levels(), Is().EqualTo(0u));
+
+          AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+          AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+          AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+          AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+          AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[false], Is().EqualTo(1u));
+          AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(0u));
         });
       });
 
