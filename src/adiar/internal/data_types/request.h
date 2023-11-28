@@ -351,10 +351,11 @@ namespace adiar::internal
   // TODO: turn it into only having the cardinality
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Ordering based on level, then specific index, and finally
-  ///        lexicographical ordering
+  /// \brief Level/Index/Lexicographical ordering on a request' target(s).
   //////////////////////////////////////////////////////////////////////////////
   // TODO: request_lt without `idx` for a pure lexicographical ordering...
+  //  - Flip parameters, make `idx = 0` default.
+  //  - Optimise for default case.
   template<size_t idx, typename Request>
   struct request_lt
   {
@@ -519,8 +520,8 @@ namespace adiar::internal
   // Priority queue functions
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Lexicographical ordering on a request's targets. Ties are
-  ///        (potentially) broken on the data.
+  /// \brief Level/Index/Lexicographical ordering on a request's target(s). Ties
+  ///        are (potentially) broken on the data.
   //////////////////////////////////////////////////////////////////////////////
   template<size_t idx, typename Request>
   struct request_data_lt

@@ -1590,7 +1590,7 @@ go_bandit([]() {
           //           F T
           */
 
-          __zdd out = zdd_union(ep, zdd_x0, zdd_x1);
+          __zdd out = zdd_union(ep, zdd_x1, zdd_x0);
 
           arc_test_stream arcs(out);
 
@@ -1635,7 +1635,7 @@ go_bandit([]() {
           //           F T
           */
 
-          __zdd out = zdd_union(ep, zdd_x1, zdd_x0);
+          __zdd out = zdd_union(ep, zdd_x0, zdd_x1);
 
           arc_test_stream arcs(out);
 
@@ -2175,8 +2175,6 @@ go_bandit([]() {
           //           second ZDD, to compensate for the omitted nodes.
           */
 
-
-
           shared_levelized_file<zdd::node_type> zdd_a;
           shared_levelized_file<zdd::node_type> zdd_b;
 
@@ -2381,7 +2379,7 @@ go_bandit([]() {
 
           { // Garbage collect writers early
             node_writer nw_a(zdd_a);
-nw_a << na_3 << na_2 << na_1;
+            nw_a << na_3 << na_2 << na_1;
             }
 
             // zdd_a->width == 1u
@@ -2675,36 +2673,15 @@ nw_a << na_3 << na_2 << na_1;
 
       describe("zdd_diff", [&]() {
         it("should flip non-commutative operator", [&]() {
-            // As the first input is non-canonical, the input order is swapped
-            // Therefore the operator should be flipped to achieve the same behavior
-            // This can be seen, as difference is a non-commutative operator
+            // Note, one of the inputs (`zdd_non_ra`) is not indexable (and
+            // hence not canonical). Hence, random access should be done on the
+            // other one (`zdd_ra`) by flipping the arguments. Therefore, the
+            // operator should be flipped too; otherwise the result would not be
+            // correct. We can see this on the (non-commutative) '-' operator.
 
-            shared_levelized_file<zdd::node_type> zdd_a;
+            shared_levelized_file<zdd::node_type> zdd_ra;
             /*
-            //          { Ø, {1}, {0, 1} }
-            //
-            //                  1          ---- x0
-            //                 / \
-            //                2   3        ---- x1
-            //               / \ / \
-            //               T T F T
-            */
-
-            node na_3 = node(1, node::max_id, terminal_F, terminal_T);
-            node na_2 = node(1, node::max_id - 1, terminal_T, terminal_T);
-            node na_1 = node(0, node::max_id, na_2, na_3);
-
-            { // Garbage collect early and free write-lock
-              node_writer nw_a(zdd_a);
-              nw_a << na_3 << na_2 << na_1;
-            }
-
-            // zdd_a->canonical == false
-            // zdd_a->width == 2u
-
-            shared_levelized_file<zdd::node_type> zdd_b;
-            /*
-            //         { {0}, {1}, {0, 1} }
+            //          { {0}, {1}, {0, 1} }
             //
             //                  1          ---- x0
             //                 / \
@@ -2713,46 +2690,69 @@ nw_a << na_3 << na_2 << na_1;
             //               F T T T
             */
 
-            node nb_3 = node(1, node::max_id, terminal_T, terminal_T);
-            node nb_2 = node(1, node::max_id - 1, terminal_F, terminal_T);
-            node nb_1 = node(0, node::max_id, nb_2, nb_3);
+            { // Garbage collect early and free write-lock
+              const node n3 = node(1, node::max_id, terminal_T, terminal_T);
+              const node n2 = node(1, node::max_id - 1, terminal_F, terminal_T);
+              const node n1 = node(0, node::max_id, n2.uid(), n3.uid());
+
+              node_writer nw(zdd_ra);
+              nw << n3 << n2 << n1;
+            }
+
+            // zdd_a->canonical == false
+            // zdd_a->width == 2u
+
+            shared_levelized_file<zdd::node_type> zdd_non_ra;
+            /*
+            //         { Ø, {1}, {0, 1} }
+            //
+            //                  1          ---- x0
+            //                 / \
+            //                2   3        ---- x1
+            //               / \ / \
+            //               T T F T
+            */
 
             { // Garbage collect early and free write-lock
-              node_writer nw_b(zdd_b);
-              nw_b << nb_3 << nb_2 << nb_1;
+              const node n3 = node(1, node::max_id, terminal_F, terminal_T);
+              const node n2 = node(1, node::max_id - 1, terminal_T, terminal_T);
+              const node n1 = node(0, node::max_id, n2.uid(), n3.uid());
+
+              node_writer nw(zdd_non_ra);
+              nw << n3 << n2 << n1;
             }
 
             // zdd_b->canonical == true
             // zdd_b->width == 2u
 
             /*
-            // Result of { Ø, {1}, {0, 1} } \ { {0}, {1}, {0, 1} }
+            // { {0}, {1}, {0, 1} } \ { Ø, {1}, {0, 1} } = { Ø, {0} }
             //
             //                      (1,1)               ---- x0
             //                    __/   \__
             //                   /         \
             //               (2,2)         (3,3)        ---- x1
             //               /   \         /   \
-            //            (T,F) (T,T)   (F,T) (T,T)
+            //            (F,T) (T,T)   (T,F) (T,T)
             //
             // As T \ T = F, then layer x1 is skipped, to the following figure
             //
             //                      (1,1)               ---- x0
             //                      /   \
-            //                  (T,F)   (F,T)
+            //                      F   T
             */
 
-            __zdd out = zdd_diff(ep, zdd_a, zdd_b);
+            __zdd out = zdd_diff(ep, zdd_ra, zdd_non_ra);
 
             arc_test_stream arcs(out);
 
             AssertThat(arcs.can_pull_internal(), Is().False());
 
             AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), false, terminal_T }));
+            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), false, terminal_F }));
 
             AssertThat(arcs.can_pull_terminal(), Is().True());
-            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), true, terminal_F }));
+            AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), true, terminal_T }));
 
             AssertThat(arcs.can_pull_terminal(), Is().False());
 

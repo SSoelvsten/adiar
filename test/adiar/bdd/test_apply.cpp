@@ -158,8 +158,8 @@ go_bandit([]() {
       nw_t << nt_5 << nt_4 << nt_3 << nt_2 << nt_1;
     }
 
-    AssertThat(bdd_thin->canonical, Is().EqualTo(true));
-    AssertThat(bdd_thin->width, Is().EqualTo(2u));
+    // bdd_thin->canonical == true
+    // bdd_thin->width == 2u
 
     shared_levelized_file<bdd::node_type> bdd_wide;
     /*
@@ -190,6 +190,20 @@ go_bandit([]() {
 
     // bdd_wide->canonical == true
     // bdd_wide->width == 3u
+
+    /* Result of [thin] ^ [wide]
+    //
+    //                      (1,1)                   ---- x0
+    //                      /   \
+    //                  (2,2)   (3,3)               ---- x1
+    //                    X       X
+    //              _____/ \     / \_____
+    //          (4,4)       (5,5)       (4,6)       ---- x2
+    //          /   \       /   \       /   \
+    //       (T,F) (F,7) (F,T) (T,F) (T,F) (F,T)    ---- x3
+    //             /   \
+    //          (F,F) (F,T)
+    */
 
     shared_levelized_file<bdd::node_type> bdd_canon;
     /*
@@ -252,6 +266,22 @@ go_bandit([]() {
 
     // bdd_non_canon->canonical == false
     // bdd_non_canon->width == 3u
+
+    /* Result of [canon] ^ [non_canon]
+    //
+    //                         (1,1)                              ---- x0
+    //                   ______/   \______
+    //                  /                 \
+    //              (2,2)                 (3,3)                   ---- x1
+    //              /   \________ __________X
+    //            _/          ___X___        \___
+    //           /           /       \           \
+    //       (4,4)       (7,4)       (6,5)       (5,6)            ---- x2
+    //       /   \       /   \       /   \       /   \
+    //    (F,T) (8,F) (F,T) (T,F) (T,7) (F,F) (F,F) (9,T)         ---- x3
+    //          /   \             /   \             /   \
+    //      (T,F)   (F,F)     (T,T)   (T,F)     (F,T)   (T,T)
+    */
 
     describe("simple cases without access mode requirements", [&]() {
       // Cases with the same file (same DAG) or at least one terminal does not need to run complicated algorithm
@@ -1761,7 +1791,7 @@ go_bandit([]() {
           //        F T T F
           */
 
-          __bdd out = bdd_xor(ep, bdd_x0, bdd_x1);
+          __bdd out = bdd_xor(ep, bdd_x1, bdd_x0);
 
           arc_test_stream arcs(out);
 
@@ -1814,7 +1844,7 @@ go_bandit([]() {
           //        F T T F
           */
 
-          __bdd out = bdd_xor(ep, bdd_x1, bdd_x0);
+          __bdd out = bdd_xor(ep, bdd_x0, bdd_x1);
 
           arc_test_stream arcs(out);
 
@@ -1877,7 +1907,8 @@ go_bandit([]() {
             nw_ra << nra_3 << nra_2 << nra_1;
           }
 
-          // Since 'bdd_ra' is the thinnest, random access will be run on this one.
+          // Since 'bdd_ra' is the thinnest, the arguments will be flipped to
+          // have random access run on this one.
           //
           // If one always scans ahead to the requests scanning index (which is
           // reasonable to do due to the comparator), then one gets a bug in the
@@ -1895,7 +1926,7 @@ go_bandit([]() {
           //      T F   F F    F T
           */
 
-          __bdd out = bdd_xor(bdd_0xnor2, bdd_ra);
+          __bdd out = bdd_xor(bdd_ra, bdd_0xnor2);
 
 
           arc_test_stream arcs(out);
@@ -2087,22 +2118,21 @@ go_bandit([]() {
           AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],  Is().EqualTo(3u));
         });
 
-        /*  TODO: Same is used in imp, move one level out?
-        // Result of [thin] ^ [wide]
-        //
-        //                      (1,1)                   ---- x0
-        //                      /   \
-        //                  (2,2)   (3,3)               ---- x1
-        //                    X       X
-        //              _____/ \     / \_____
-        //          (4,4)       (5,5)       (4,6)       ---- x2
-        //          /   \       /   \       /   \
-        //       (T,F) (F,7) (F,T) (T,F) (T,F) (F,T)    ---- x3
-        //             /   \
-        //          (F,F) (F,T)
-        */
-
         it("should random access on the thinnest ([thin] ^ [wide])", [&]() {
+          /* Result of [thin] ^ [wide]
+          //
+          //                      (1,1)                   ---- x0
+          //                      /   \
+          //                  (2,2)   (3,3)               ---- x1
+          //                    X       X
+          //              _____/ \     / \_____
+          //          (4,4)       (5,5)       (4,6)       ---- x2
+          //          /   \       /   \       /   \
+          //         T   (F,7)    T   T       T   T    ---- x3
+          //             /   \
+          //             F   T
+          */
+
           __bdd out = bdd_xor(ep, bdd_thin, bdd_wide);
 
           arc_test_stream arcs(out);
@@ -2176,6 +2206,20 @@ go_bandit([]() {
         });
 
         it("should random access on the thinnest ([wide] ^ [thin])", [&]() {
+          /* Result of [wide] ^ [thin]
+          //
+          //                      (1,1)                   ---- x0
+          //                      /   \
+          //                  (2,2)   (3,3)               ---- x1
+          //                    X       X
+          //              _____/ \     / \_____
+          //          (4,4)       (5,5)       (6,4)       ---- x2
+          //          /   \       /   \       /   \
+          //         T   (7,F)    T   T       T   T    ---- x3
+          //             /   \
+          //             F   T
+          */
+
           __bdd out = bdd_xor(ep, bdd_wide, bdd_thin);
 
           arc_test_stream arcs(out);
@@ -2247,23 +2291,6 @@ go_bandit([]() {
           AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false], Is().EqualTo(1u));
           AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],  Is().EqualTo(6u));
         });
-
-        /*
-        // Result of [canon] ^ [non_canon]
-        //
-        //                         (1,1)                              ---- x0
-        //                   ______/   \______
-        //                  /                 \
-        //              (2,2)                 (3,3)                   ---- x1
-        //              /   \________ __________X
-        //            _/          ___X___        \___
-        //           /           /       \           \
-        //       (4,4)       (7,4)       (6,5)       (5,6)            ---- x2
-        //       /   \       /   \       /   \       /   \
-        //    (F,T) (8,F) (F,T) (T,F) (T,7) (F,F) (F,F) (9,T)         ---- x3
-        //          /   \             /   \             /   \
-        //      (T,F)   (F,F)     (T,T)   (T,F)     (F,T)   (T,T)
-        */
 
         it("should random access on canonical ([canon] ^ [non_canon])", [&]() {
           __bdd out = bdd_xor(ep, bdd_canon, bdd_non_canon);
@@ -2449,12 +2476,20 @@ go_bandit([]() {
       });
 
       describe("bdd_imp(f,g)", [&]() {
-        // TODO: smaller example?
-        it("should flip non-commutative operator", [&]() {
-          // As the first input is wider than the second, the input order is swapped
-          // Therefore the operator should be flipped to achieve the same behavior
-          // This can be seen, as implication is a non-commutative operator
-
+        it("Uses random access on the thinnest ([wide] -> [thin])", [&]() {
+          /* Result of [wide] ^ [thin]
+          //
+          //                      (1,1)                   ---- x0
+          //                      /   \
+          //                  (2,2)   (3,3)               ---- x1
+          //                    X       X
+          //              _____/ \     / \_____
+          //          (4,4)       (5,5)       (6,4)       ---- x2
+          //          /   \       /   \       /   \
+          //          T  (7,F)    F   T       T   F       ---- x3
+          //             /   \
+          //             T   F
+          */
           __bdd out = bdd_imp(ep, bdd_wide, bdd_thin);
 
           arc_test_stream arcs(out);
@@ -2525,6 +2560,83 @@ go_bandit([]() {
 
           AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false], Is().EqualTo(3u));
           AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],  Is().EqualTo(4u));
+        });
+
+        it("uses random access on thinnest ([thin] -> [wide] : flips non-commutative operator)", [&]() {
+          /* Result of [thin] -> [wide]
+          //
+          //                      (1,1)                   ---- x0
+          //                      /   \
+          //                  (2,2)   (3,3)               ---- x1
+          //                    X       X
+          //              _____/ \     / \_____
+          //          (4,4)       (5,5)       (4,6)       ---- x2
+          //          /   \       /   \       /   \
+          //          F   T*      T   F       F   T
+          //
+          // * Shortcut due to '->' operator
+          */
+          __bdd out = bdd_imp(ep, bdd_thin, bdd_wide);
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true, ptr_uint64(1,1) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true, ptr_uint64(2,0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,1) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), true, ptr_uint64(2,1) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), false, ptr_uint64(2,2) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), false, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), true, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,2), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,2), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2,3u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
+
+          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false], Is().EqualTo(3u));
+          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],  Is().EqualTo(3u));
         });
       });
     });
