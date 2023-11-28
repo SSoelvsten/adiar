@@ -311,7 +311,7 @@ namespace adiar::internal
   ///        get nodes from the one of the two decision diagrams; this removes
   ///        the need for the secondary priority queue in `__prod2_pq`.
   ///
-  /// \pre `in_0` is the input to random access
+  /// \pre `in_ra` is the input to random access
   //////////////////////////////////////////////////////////////////////////////
   // TODO (Optimiation): Flip 'in_1' to be the one to do Random Access on. This
   //                     simplifies the request ordering by merging the `idx`
@@ -319,8 +319,8 @@ namespace adiar::internal
   template<typename Policy, typename PriorityQueue_1>
   typename Policy::__dd_type
   __prod2_ra(const exec_policy &ep,
-             const typename Policy::dd_type &in_0,
-             const typename Policy::dd_type &in_1,
+             const typename Policy::dd_type &in_ra,
+             const typename Policy::dd_type &in_pq,
              const bool_op &op,
              const size_t pq_memory, const size_t max_pq_size)
   {
@@ -329,14 +329,14 @@ namespace adiar::internal
     arc_writer aw(out_arcs);
 
     // Set up input
-    node_random_access<> in_nodes_0(in_0);
-    node_stream<> in_nodes_1(in_1);
+    node_random_access<> in_nodes_ra(in_ra);
+    node_stream<> in_nodes_pq(in_pq);
 
-    node v1 = in_nodes_1.pull();
+    node v_pq = in_nodes_pq.pull();
 
     // Set up cross-level priority queue
-    PriorityQueue_1 prod_pq({in_0, in_1}, pq_memory, max_pq_size, stats_prod2.lpq);
-    prod_pq.push({ { in_nodes_0.root(), v1.uid() }, {}, { ptr_uint64::nil() } });
+    PriorityQueue_1 prod_pq({in_ra, in_pq}, pq_memory, max_pq_size, stats_prod2.lpq);
+    prod_pq.push({ { in_nodes_ra.root(), v_pq.uid() }, {}, { ptr_uint64::nil() } });
 
     out_arcs->max_1level_cut = prod_pq.size();
 
@@ -344,41 +344,49 @@ namespace adiar::internal
     while (!prod_pq.empty()){
       // Set up level
       prod_pq.setup_next_level();
+
       typename Policy::label_type out_label = prod_pq.current_level();
       typename Policy::id_type out_id = 0;
 
-      in_nodes_0.setup_next_level(out_label);
+      in_nodes_ra.setup_next_level(out_label);
+
+      // Update maximum 1-level cut
+      out_arcs->max_1level_cut = std::max(out_arcs->max_1level_cut, prod_pq.size());
 
       // Process all requests for this level
       while (!prod_pq.empty_level()) {
         const prod2_request<0> req = prod_pq.top();
 
+        constexpr size_t ra_idx = 0;
+        constexpr size_t pq_idx = 1;
+
         // Seek request partially in stream
-        if (req.target[1].is_node() && req.target[1].label() == out_label) {
-          while (v1.uid() < req.target[1] && in_nodes_1.can_pull()) {
-            v1 = in_nodes_1.pull();
+        if (req.target[pq_idx].is_node() && req.target[pq_idx].label() == out_label) {
+          while (v_pq.uid() < req.target[pq_idx] && in_nodes_pq.can_pull()) {
+            v_pq = in_nodes_pq.pull();
           }
 
-          adiar_assert(v1.uid() == req.target[1],
+          adiar_assert(v_pq.uid() == req.target[pq_idx],
                        "Must have found correct node in `in_1`");
         }
 
-        const typename Policy::children_type children_0 =
-          req.target[0].on_level(out_label)
-              ? in_nodes_0.at(req.target[0]).children()
-              : Policy::reduction_rule_inv(req.target[0]);
+        // Recreate/Obtain children of req.target (possibly of suppressed node)
+        const typename Policy::children_type children_ra =
+          req.target[ra_idx].on_level(out_label)
+              ? in_nodes_ra.at(req.target[ra_idx]).children()
+              : Policy::reduction_rule_inv(req.target[ra_idx]);
 
-        const typename Policy::children_type children_1 =
-          req.target[1].on_level(out_label)
-              ? v1.children()
-              : Policy::reduction_rule_inv(req.target[1]);
+        const typename Policy::children_type children_pq =
+          req.target[pq_idx].on_level(out_label)
+              ? v_pq.children()
+              : Policy::reduction_rule_inv(req.target[pq_idx]);
 
         // Create pairing of product children
         const tuple<typename Policy::pointer_type> rec_pair_0 =
-          { children_0[false], children_1[false] };
+          { children_ra[false], children_pq[false] };
 
         const tuple<typename Policy::pointer_type> rec_pair_1 =
-          { children_0[true], children_1[true] };
+          { children_ra[true], children_pq[true] };
 
         // Obtain new recursion targets
         const prod2_rec rec_res =
@@ -417,8 +425,6 @@ namespace adiar::internal
       if (Policy::no_skip || out_id > 0) {
         aw.push(level_info(out_label, out_id));
       }
-
-      out_arcs->max_1level_cut = std::max(out_arcs->max_1level_cut, prod_pq.size());
     }
 
     // Ensure the edge case, where the in-going edge from nil to the root pair
