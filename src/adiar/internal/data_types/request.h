@@ -351,8 +351,10 @@ namespace adiar::internal
   // TODO: turn it into only having the cardinality
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Lexicographical ordering of the request's targets.
+  /// \brief Ordering based on level, then specific index, and finally
+  ///        lexicographical ordering
   //////////////////////////////////////////////////////////////////////////////
+  // TODO: request_lt without `idx` for a pure lexicographical ordering...
   template<size_t idx, typename Request>
   struct request_lt
   {
