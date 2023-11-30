@@ -1,0 +1,43 @@
+cff-version: 1.2.0
+message: >-
+  If you use this software, please cite it as below together with the relevant
+  paper(s).
+title: Adiar
+abstract: >-
+  An I/O-efficient implementation of (Binary) Decision
+  Diagrams
+keywords:
+  - Binary Decision Diagrams
+  - Zero-suppressed Decision Diagrams
+  - External Memory Algorithms
+  - Time-forward Processing
+type: software
+license: MIT
+url: 'https://ssoelvsten.github.io/adiar'
+version: 2.0.0
+authors:
+  - given-names: Steffan Christ
+    family-names: Sølvsten
+    email: soelvsten@cs.au.dk
+    affiliation: Aarhus University
+    orcid: 'https://orcid.org/0000-0003-0963-6569'
+  - given-names: Jaco
+    name-particle: Van de
+    family-names: Pol
+    email: jaco@cs.au.dk
+    affiliation: Aarhus University
+    orcid: 'https://orcid.org/0000-0003-4305-0625'
+  - given-names: Anna Blume
+    family-names: Jakobsen
+    affiliation: Aarhus University
+  - given-names: Casper Moldrup
+    family-names: Rysgaard
+    email: rysgaard@cs.au.dk
+    affiliation: Aarhus University
+  - given-names: Mathias Weller Berg
+    family-names: Thomasen
+    affiliation: Aarhus University
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.4718218
+    description: Zenodo Artifact
