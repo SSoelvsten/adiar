@@ -24,7 +24,7 @@ given machine.
        style="max-width:32rem; width:32rem;" />
 </div>
 <div align="center">
-  <p style="margin-bottom:1rem;">Figure: Running time solving *N*-Queens (lower is better).</p>
+  <p style="margin-bottom:1rem;">Figure: Running time solving *N* Queens (lower is better).</p>
 </div>
 
 
@@ -36,7 +36,8 @@ group at [Aarhus University](https://cs.au.dk).
 - [Documentation](#documentation)
 - [Dependencies](#dependencies)
 - [Usage](#usage)
-    - [Makefile targets](#makefile-targets)
+    - [Makefile Targets](#makefile-targets)
+    - [Playground](#playground)
     - [Examples](#examples)
 - [Contributions](#contributions)
 - [License](#license)
@@ -45,35 +46,37 @@ group at [Aarhus University](https://cs.au.dk).
 
 
 ## Documentation
-The documentation is available on [Github Pages](https://ssoelvsten.github.io/adiar/).
+The documentation is available on [Github
+Pages](https://ssoelvsten.github.io/adiar/). To compile it locally, you need
+*CMake* and *Doxygen* (see [Dependencies](#dependencies) and [Usage](#usage)).
 
 ## Dependencies
-The implementation is dependant on the the following external libraries
+The implementation is dependant on the following external libraries
 
 - [**TPIE**](https://github.com/thomasmoelhave/tpie):
 
-  Framework for implementation of I/O efficient algorithms. It directly provides
-  sorting algorithms and a priotity queue. Both are much faster than the
-  algorithms in the _C++_ standard library
-  [[Vengroff94](#references), [Mølhave12](#references)].
+  Framework for implementation of I/O efficient algorithms. Among other things,
+  it provides an implementation of files, streams, sorting algorithms and
+  priotity queues. Both are much faster than the algorithms in the *C++*
+  standard library [[Vengroff94](#references), [Mølhave12](#references)].
 
 - [**Bandit**](https://github.com/banditcpp/bandit):
 
-  Unit testing framework that is easy-to-read and write.
+  Unit testing framework that is both easy to read and write.
 
 - [**CNL**](https://github.com/johnmcfarlane/cnl):
 
   Templated and efficient implementation of fixed-precision numbers.
 
-These are directly imported as submodules. If you have not cloned the repository
-recursively, then run the following command
+All of these are included within the repository as submodules. If you have not
+cloned the repository recursively, then run the following command
 
 ```bash
 git submodule update --init --recursive
 ```
 
 Other dependencies that we cannot provide as a submodule are shown below. The
-_ticked_ dependencies are mandatory to have installed.
+*ticked* dependencies are mandatory to have installed.
 
 - [x] **CMake** (3.21+) and a **C++ compiler** (C++17)
 
@@ -97,9 +100,9 @@ _ticked_ dependencies are mandatory to have installed.
   output as
   [DOT](https://en.wikipedia.org/wiki/DOT_(graph_description_language)) files.
   These can then be turned into a graphical representation by use of a number of
-  tools, such as _graphviz_ (2.40+).
+  tools, such as *graphviz* (2.40+).
 
-To install all of the above then run the respective below.
+To install all of the above, run the respective command below.
 
 | Operating System | Shell command                                                        |
 |------------------|----------------------------------------------------------------------|
@@ -109,62 +112,60 @@ To install all of the above then run the respective below.
 
 ## Usage
 
-### Makefile targets
+For how to use Adiar in your project, see the [Getting
+Started](https://ssoelvsten.github.io/adiar/page__getting_started.html) page in
+the documentation.
+
+### Makefile Targets
 
 The project is build with *CMake*, though for convenience I have simplified the
-*CMake* interactions to a single *Makefile* which works on a local machine. This
-script is continuously tested on *Ubuntu 22.04 LTS* and *Fedora 36+*.
+*CMake* interactions to a single *Makefile* which works on a local machine.
 
 The *Makefile* provides the following targets
 
-| target         | effect                                                               |
-|----------------|----------------------------------------------------------------------|
-| `build`        | Build the source files                                               |
-| `docs`         | Build the documentation files                                        |
-| `clean`        | Remove all build files                                               |
-|                |                                                                      |
-| `test`         | Run all unit tests (with _O2_ optimisations)                         |
-| `coverage`     | Run all unit tests (with no optimisations) and create _lcov_ report  |
-|                |                                                                      |
-| `main M=<MiB>` | Run the _main_ function in `src/main.cpp` with `<MiB>` MiB of memory |
+| target     | effect                                                |
+|------------|-------------------------------------------------------|
+| `build`    | Build the source files                                |
+| `docs`     | Build the documentation files                         |
+| `clean`    | Remove all build files                                |
+|            |                                                       |
+| `test`     | Build and run all unit tests                          |
+| `test/...` | Build and run a subset of the unit tests              |
+|            |                                                       |
+| `coverage` | Build and run all unit tests and create *lcov* report |
+
+### Playground
+
+To quickly get started running small pieces of code, we provide in
+*src/playground.cpp* a tiny program where all of the boiler-plate is taken care
+of. This can be useful for trying out a feature, creating a minimal example for
+a bug report, and to guide development of new features.
+
+To build and run *src/playground.cpp* with `<MiB>` MiB of
+memory (default: 1024 MiB), just run the following make command.
+```bash
+make playground M=<MiB>
+```
 
 ### Examples
-The *example/* folder contains examples for using the data structures in Adiar.
-The *README.md* file in said folder contains a more in-depth description of each
-of the examples. Even more examples and benchmarks are provided in a separate
-[BDD Benchmarking repository](https://github.com/SSoelvsten/bdd-benchmark).
 
-Each example takes a set of arguments as input, which can be parsed to the
-program as a makefile variable. That is, to change the value of *N* to to value
-follow the `make <target>` with `N=<value>`.
+The *example/* folder contains larger examples for how to use Adiar. The
+*README.md* file in said folder contains a more in-depth description of each of
+the examples. For benchmarking Adiar against other BDD packages, see the [BDD
+Benchmarking repository](https://github.com/SSoelvsten/bdd-benchmark).
 
-**example/queens**
-
-| variable | description                   |
-|----------|-------------------------------|
-| _N_      | Board size (default: 8)       |
-| _M_      | Memory in MiB (default: 1024) |
-
-**example/knights-tour/[T]**
-
-The value **T** can either be *all* or *closed*.
-
-| variable | description                                      |
-|----------|--------------------------------------------------|
-| _N_      | Board size (default: 8)                          |
-| _M_      | Memory in MiB (default: 1024)                    |
-
+You can use `make examples/<name>` to compile and run them.
 
 ## Contributions
 
-Adiar is not yet feature complete. If you feel anything is missing, please open
-an [issue](https://github.com/SSoelvsten/adiar/issues/new/choose).
+Adiar is not yet feature complete. If you notice anything is missing, please
+open an [issue](https://github.com/SSoelvsten/adiar/issues/new).
 
-Your contribution to the project is also very welcome! Our
-[issues](https://github.com/SSoelvsten/adiar/issues) list larger student
-projects but also many smaller things for *you* to help us with. Please read our
-[Contribution Guidelines](/CONTRIBUTING.md) before you start working on
-something.
+Your contribution to the project is also very welcome! We list multiple
+“[issues](https://github.com/SSoelvsten/adiar/issues)” where you can help -
+these tasks range from the smallest of tasks to entire student projects. Please
+get familiar with our [Contribution Guidelines](/CONTRIBUTING.md) before you
+start to work on something.
 
 
 ## License
@@ -189,20 +190,20 @@ or more of the papers in [docs/cite.md](https://ssoelvsten.github.io/adiar/page_
 ## References
 
 - [[Arge96](https://tidsskrift.dk/brics/article/view/20010/17643)]
-  Lars Arge. “_The I/O-complexity of Ordered Binary-Decision Diagram
-  Manipulation_”. In: _Efficient External-Memory Data Structures and
-  Applications_. (1996)
+  Lars Arge. “*The I/O-complexity of Ordered Binary-Decision Diagram
+  Manipulation*”. In: *Efficient External-Memory Data Structures and
+  Applications*. (1996)
 
 - [[Bryant86](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=1676819)]
-  Randal E. Bryant. “_Graph-Based Algorithms for Boolean Function Manipulation_”.
-  In: _IEEE Transactions on Computers_. (1986)
+  Randal E. Bryant. “*Graph-Based Algorithms for Boolean Function Manipulation*”.
+  In: *IEEE Transactions on Computers*. (1986)
 
 - [[Mølhave12](https://dl.acm.org/doi/pdf/10.1145/2367574.2367579)]
-  Thomas Mølhave. “_Using TPIE for Processing Massive Data Sets in C++_”. (2012)
+  Thomas Mølhave. “*Using TPIE for Processing Massive Data Sets in C++*”. (2012)
 
 - [[Vengroff94](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.38.3030)]
-  D.E. Vengroff. “_A transparent parallel I/O environment_”. In: _In Proc. 1994
-  DAGS Symposium on Parallel Computation_. pp. 117–134 (1994)
+  D.E. Vengroff. “*A transparent parallel I/O environment*”. In: *In Proc. 1994
+  DAGS Symposium on Parallel Computation*. pp. 117–134 (1994)
 
 ## Footnotes
 
