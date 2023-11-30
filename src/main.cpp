@@ -12,9 +12,11 @@ int main(int argc, char* argv[]) {
       M = std::stoi(argv[1]);
     }
   } catch (std::invalid_argument const &ex) {
-    std::cout << "Invalid number: " << argv[1] << std::endl;
+    std::cerr << "Invalid number: " << argv[1] << "\n";
+    return -1;
   } catch (std::out_of_range const &ex) {
-    std::cout << "Number out of range: " << argv[1] << std::endl;
+    std::cerr << "Number out of range: " << argv[1] << "\n";
+    return -1;
   }
 
   adiar::adiar_init(M * 1024 * 1024);
