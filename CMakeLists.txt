@@ -2,9 +2,6 @@ cmake_minimum_required(VERSION 3.21)
 cmake_policy(SET CMP0048 NEW)
 cmake_policy(SET CMP0063 NEW)
 
-# Parts of this CMakeLists.txt is derived from the files of the tpie, lace and
-# sylvan projects.
-
 project (adiar
   VERSION 2.0.0
   DESCRIPTION "Adiar, an external memory decision diagram library"
