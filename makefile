@@ -245,20 +245,23 @@ docs:
 	@cd build/ && $(MAKE) adiar_docs
 
 # ============================================================================ #
-#  MAIN program for small tests
+#  PLAYGROUND
 # ============================================================================ #
 M = 1024
 
-main:
+playground:
 	@mkdir -p build/
 	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Debug \
                       -D CMAKE_C_FLAGS=$(O2_FLAGS) \
                       -D CMAKE_CXX_FLAGS=$(O2_FLAGS) \
                       -D ADIAR_STATS=ON \
                 ..
-	@cd build/ && make $(MAKE_FLAGS) adiar_main
+	@cd build/ && $(MAKE) $(MAKE_FLAGS) adiar_playground
 	@echo "" && echo ""
-	@./build/src/adiar_main ${M}
+	@./build/src/adiar_playground ${M}
+
+play:
+	@$(MAKE) playground
 
 # ============================================================================ #
 #  EXAMPLES
