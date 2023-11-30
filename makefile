@@ -45,7 +45,7 @@ test:
                       -D ADIAR_STATS=ON \
                 ..
 
-	@cd build/ && make $(MAKE_FLAGS) $(subst /,-,$(TEST_FOLDER))-$(TEST_NAME)
+	@cd build/ && $(MAKE) $(MAKE_FLAGS) $(subst /,-,$(TEST_FOLDER))-$(TEST_NAME)
 
 	$(MAKE) clean/files
 	@./build/$(TEST_FOLDER)/$(subst /,-,$(TEST_FOLDER))-$(TEST_NAME) \
@@ -55,154 +55,154 @@ test:
 	$(MAKE) clean/files
 
 test/all:
-	make $(MAKE_FLAGS) test
+	$(MAKE) $(MAKE_FLAGS) test
 
 test/adiar:
-	make $(MAKE_FLAGS) test
+	$(MAKE) $(MAKE_FLAGS) test
 
 test/adiar/bool_op:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar TEST_NAME=bool_op
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar TEST_NAME=bool_op
 
 test/adiar/builder:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar TEST_NAME=builder
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar TEST_NAME=builder
 
 test/adiar/domain:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar TEST_NAME=domain
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar TEST_NAME=domain
 
 test/adiar/exec_policy:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar TEST_NAME=exec_policy
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar TEST_NAME=exec_policy
 
 test/adiar/functional:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar TEST_NAME=functional
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar TEST_NAME=functional
 
 test/adiar/bdd/apply:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=apply
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=apply
 
 test/adiar/bdd/bdd:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=bdd
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=bdd
 
 test/adiar/bdd/build:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=build
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=build
 
 test/adiar/bdd/count:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=count
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=count
 
 test/adiar/bdd/evaluate:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=evaluate
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=evaluate
 
 test/adiar/bdd/if_then_else:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=if_then_else
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=if_then_else
 
 test/adiar/bdd/pred:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=pred
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=pred
 
 test/adiar/bdd/negate:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=negate
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=negate
 
 test/adiar/bdd/quantify:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=quantify
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=quantify
 
 test/adiar/bdd/restrict:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=restrict
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=restrict
 
 test/adiar/internal/dd_func:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal TEST_NAME=dd_func
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal TEST_NAME=dd_func
 
 test/adiar/internal/dot:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal TEST_NAME=dot
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal TEST_NAME=dot
 
 test/adiar/internal/util:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal TEST_NAME=util
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal TEST_NAME=util
 
 test/adiar/internal/algorithms/convert:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/algorithms TEST_NAME=convert
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/algorithms TEST_NAME=convert
 
 test/adiar/internal/algorithms/isomorphism:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/algorithms TEST_NAME=isomorphism
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/algorithms TEST_NAME=isomorphism
 
 test/adiar/internal/algorithms/nested_sweeping:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/algorithms TEST_NAME=nested_sweeping
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/algorithms TEST_NAME=nested_sweeping
 
 test/adiar/internal/algorithms/reduce:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/algorithms TEST_NAME=reduce
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/algorithms TEST_NAME=reduce
 
 test/adiar/internal/data_structures/level_merger:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_structures TEST_NAME=level_merger
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_structures TEST_NAME=level_merger
 
 test/adiar/internal/data_structures/levelized_priority_queue:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_structures TEST_NAME=levelized_priority_queue
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_structures TEST_NAME=levelized_priority_queue
 
 test/adiar/internal/data_types/arc:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_types TEST_NAME=arc
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_types TEST_NAME=arc
 
 test/adiar/internal/data_types/convert:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_types TEST_NAME=convert
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_types TEST_NAME=convert
 
 test/adiar/internal/data_types/node:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_types TEST_NAME=node
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_types TEST_NAME=node
 
 test/adiar/internal/data_types/ptr:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_types TEST_NAME=ptr
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_types TEST_NAME=ptr
 
 test/adiar/internal/data_types/request:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_types TEST_NAME=request
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_types TEST_NAME=request
 
 test/adiar/internal/data_types/tuple:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_types TEST_NAME=tuple
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_types TEST_NAME=tuple
 
 test/adiar/internal/data_types/uid:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_types TEST_NAME=uid
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_types TEST_NAME=uid
 
 test/adiar/internal/io/arc_file:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/io TEST_NAME=arc_file
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/io TEST_NAME=arc_file
 
 test/adiar/internal/io/file:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/io TEST_NAME=file
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/io TEST_NAME=file
 
 test/adiar/internal/io/levelized_file:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/io TEST_NAME=levelized_file
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/io TEST_NAME=levelized_file
 
 test/adiar/internal/io/node_file:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/io TEST_NAME=node_file
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/io TEST_NAME=node_file
 
 test/adiar/internal/io/shared_file_ptr:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/io TEST_NAME=shared_file_ptr
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/io TEST_NAME=shared_file_ptr
 
 test/adiar/zdd/binop:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/zdd TEST_NAME=binop
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/zdd TEST_NAME=binop
 
 test/adiar/zdd/build:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/zdd TEST_NAME=build
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/zdd TEST_NAME=build
 
 test/adiar/zdd/change:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/zdd TEST_NAME=change
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/zdd TEST_NAME=change
 
 test/adiar/zdd/complement:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/zdd TEST_NAME=complement
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/zdd TEST_NAME=complement
 
 test/adiar/zdd/contains:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/zdd TEST_NAME=contains
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/zdd TEST_NAME=contains
 
 test/adiar/zdd/count:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/zdd TEST_NAME=count
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/zdd TEST_NAME=count
 
 test/adiar/zdd/elem:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/zdd TEST_NAME=elem
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/zdd TEST_NAME=elem
 
 test/adiar/zdd/expand:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/zdd TEST_NAME=expand
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/zdd TEST_NAME=expand
 
 test/adiar/zdd/pred:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/zdd TEST_NAME=pred
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/zdd TEST_NAME=pred
 
 test/adiar/zdd/project:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/zdd TEST_NAME=project
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/zdd TEST_NAME=project
 
 test/adiar/zdd/subset:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/zdd TEST_NAME=subset
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/zdd TEST_NAME=subset
 
 test/adiar/zdd/zdd:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/zdd TEST_NAME=zdd
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/zdd TEST_NAME=zdd
 
 # ============================================================================ #
 #  LCOV COVERAGE REPORT
@@ -218,7 +218,7 @@ coverage:
                       -D CMAKE_EXE_LINKER_FLAGS=$(COV_EXE_LINKER_FLAGS) \
                       -D ADIAR_STATS=ON \
                 ..
-	@cd build/ && make $(MAKE_FLAGS) test-adiar
+	@cd build/ && $(MAKE) $(MAKE_FLAGS) test-adiar
 
 	@lcov --directory build/src/adiar/ --zerocounters
 	$(MAKE) clean/files
@@ -273,7 +273,7 @@ example/queens:
 	@mkdir -p build/
 	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Release ..
 
-	@cd build/ && make $(MAKE_FLAGS) queens
+	@cd build/ && $(MAKE) $(MAKE_FLAGS) queens
 
   # Run
 	@echo ""
@@ -287,7 +287,7 @@ example/knights_tour/all:
 	@mkdir -p build/
 	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Release ..
 
-	@cd build/ && make $(MAKE_FLAGS) knights_tour
+	@cd build/ && $(MAKE) $(MAKE_FLAGS) knights_tour
 
   # Run
 	@echo ""
@@ -300,7 +300,7 @@ example/knights_tour/closed:
 	@mkdir -p build/
 	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Release ..
 
-	@cd build/ && make $(MAKE_FLAGS) knights_tour
+	@cd build/ && $(MAKE) $(MAKE_FLAGS) knights_tour
 
   # Run
 	@echo ""
