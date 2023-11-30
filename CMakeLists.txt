@@ -2,8 +2,12 @@ cmake_minimum_required(VERSION 3.21)
 cmake_policy(SET CMP0048 NEW)
 cmake_policy(SET CMP0063 NEW)
 
+set(ADIAR_VERSION_MAJOR 2)
+set(ADIAR_VERSION_MINOR 0)
+set(ADIAR_VERSION_PATCH 0)
+
 project (adiar
-  VERSION 2.0.0
+  VERSION ${ADIAR_VERSION_MAJOR}.${ADIAR_VERSION_MINOR}.${ADIAR_VERSION_PATCH}
   DESCRIPTION "Adiar, an external memory decision diagram library"
   HOMEPAGE_URL "https://ssoelvsten.github.io/adiar/"
   LANGUAGES CXX
@@ -14,6 +18,8 @@ enable_language(CXX)
 # ============================================================================ #
 # Settings
 # ============================================================================ #
+
+message(STATUS "")
 
 message(STATUS "CMake build configuration for Adiar ${PROJECT_VERSION}")
 

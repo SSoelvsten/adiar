@@ -3,6 +3,8 @@ set_property(GLOBAL PROPERTY USE_FOLDERS On)
 # ============================================================================ #
 # Link up files for the library
 
+configure_file(version.h.in version.h)
+
 set(HEADERS
   # adiar
   adiar.h
@@ -15,6 +17,7 @@ set(HEADERS
   functional.h
   statistics.h
   types.h
+  version.h
 
   # adiar/bdd
   bdd.h
