@@ -33,6 +33,6 @@ int main(int argc, char* argv[]) {
   adiar::statistics_print();
 
   adiar::adiar_deinit();
-  exit(0);
+  return 0;
 }
 
