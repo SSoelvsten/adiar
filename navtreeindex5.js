@@ -1,5 +1,6 @@
 var NAVTREEINDEX5 =
 {
+"structadiar_1_1statistics_1_1equality__t_1_1slow__t.html#ac1b3858c751afb0e90cab795cc10b5e8":[5,6,0,3,1,3],
 "structadiar_1_1statistics_1_1equality__t_1_1slow__t.html#ae69010f63979fd0b372a009ef51290d6":[5,6,0,3,1,0],
 "structadiar_1_1statistics_1_1equality__t_1_1slow__t.html#ae905650314d06a09934bdcb6a41b95e1":[5,6,0,3,1,1],
 "structadiar_1_1statistics_1_1intercut__t.html":[5,6,0,4],
@@ -68,6 +69,5 @@ var NAVTREEINDEX5 =
 "uid_8h.html#a2cfcb0f86047e2341fafabc88563dfb8":[6,0,0,0,27],
 "uid_8h_source.html":[8,0,0,0,1,0,7],
 "zdd_2zdd_8h_source.html":[8,0,0,0,2,0],
-"zdd_8h_source.html":[8,0,0,0,13],
-"":[6,0,0,0]
+"zdd_8h_source.html":[8,0,0,0,13]
 };
