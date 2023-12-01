@@ -192,9 +192,8 @@ file of Adiar is covered by the very same license.
 ## Bug Fixes
 
 - `zdd_project(A, dom)`
-  An accidental swapping of arguments for a helper function resulted in the
-  generated recursion requests are for the wrong elements and hence the wrong
-  ZDD was constructed.
+  does not generate recursions for the wrong ZDD node due to an unfortunate
+  swapping of arguments.
 
 - Fixes C++ and CMake such that Adiar compiles and runs on Mac computers with
   default Clang.
@@ -204,20 +203,9 @@ file of Adiar is covered by the very same license.
 
 **Date: 14th of September, 2022**
 
-## Bug Fixes
+## New Features
 
-- `adiar_printstats()`
-  Makes sure to print levelized priority queue statistics, when only the
-  unbucketed priority queue has been used.
-
-## Deprecations
-
-- *adiar/bdd.h*
-  - `output_dot(bdd f, std::string file_name)` -> `bdd_printdot(bdd f, std::string file_name)`
-- *adiar/zdd.h*
-  - `output_dot(zdd A, std::string file_name)` -> `zdd_printdot(zdd A, std::string file_name)`
-
-## Binary Decision Diagrams
+### Binary Decision Diagrams
 
 - `bdd_satcount(bdd f)`
   If the global domain is set, then that value will take precedence over the
@@ -227,109 +215,80 @@ file of Adiar is covered by the very same license.
 - `bdd_printdot(bdd f, std::ostream out)`
   Added to allow more flexibility when outputting DOT files.
 
-## Zero-suppressed Decision Diagrams
+### Zero-suppressed Decision Diagrams
 
 - `zdd_printdot(zdd A, std::ostream out)`
   Added to allow more flexibility when outputting DOT files.
 
-## Documentation
+### Documentation
 
 Instead of separate Markdown files, the documentation is generated directly from
 the C++ codebase with Doxygen. You can generate the documentation (assuming
 Doxygen is intalled) with the `docs` Makefile target.
+
+## Bug Fixes
+
+- `adiar_printstats()`
+  now prints levelized priority queue statistics even if only the unbucketed
+  priority queue has been used.
+
+## Deprecations
+
+- *adiar/bdd.h*
+  - `output_dot(bdd f, std::string file_name)` -> `bdd_printdot(bdd f, std::string file_name)`
+- *adiar/zdd.h*
+  - `output_dot(zdd A, std::string file_name)` -> `zdd_printdot(zdd A, std::string file_name)`
 
 
 # v1.2.0
 
 **Date: 29th of July, 2022**
 
-## Performance
+## New Features
 
-This new release's primary focus is to drastically improve performance for
-smaller instances. To this end, we still use the very same algorithms, but if
-the input is small enough then we can safely use purely internal memory
-auxiliary data structures within each algorithm. Prior to this version we could
-only guarantee up to a 4x performance difference compared to other BDD libraries
-when the largest constructed decision diagram is 113 MiB or larger (for
-benchmarks where the base cases are manually constructed, i.e. also have some
-considerable size). Now, we are able to now guarantee the same when the largest
-is only 3.2 MiB or larger!
+- A *file<label_t>* can globally be set as the problem domain, i.e. the set of
+  variables you are using.
 
-## Domain
+  - `adiar_set_domain(file<label_t> dom)`
+     sets the global domain variable.
+  - `adiar_has_domain()`
+     checks whether a global domain already is set.
+  - `domain_get()`
+     provides the current *file<label_t>* that acts as the global domain
+     (assuming `adiar_has_domain()` evaluates to `true`).
 
-A *file<label_t>* can globally be set as the problem domain, i.e. the set of
-variables you are using.
-
-- `adiar_set_domain(file<label_t> dom)`
-  sets the global domain variable.
-- `adiar_has_domain()`
-  checks whether a global domain already is set.
-- `domain_get()`
-  provides the current *file<label_t>* that acts as the global domain (assuming
-  `adiar_has_domain()` evaluates to `true`).
-
-## Binary Decision Diagrams
-
-### New Features
-
-- `bdd_builder`
+- `bdd_builder` and `zdd_builder`
   is a new class to replace using the *node_writer* directly. This enables a
-  much more natural construction of BDDs bottom-up by hiding away several
-  details. Furthermore, it makes use of exceptions rather than immediately
-  terminating assertions.
+  much more natural construction of BDDs and ZDDs bottom-up by hiding away
+  several details. Furthermore, it makes use of exceptions rather than
+  immediately terminating assertions.
 
-- `bdd_from(zdd A)`
+### Binary Decision Diagrams
+
+- `bdd_from(A)`
   converts from a ZDD to a BDD using the global domain.
 
-- `bdd_equal(bdd f, bdd g)`
+- `bdd_equal(f, g)`
   is an alternative to using the `==` operator.
 
-- `bdd_unequal(bdd f, bdd g)`
+- `bdd_unequal(f, g)`
   is an alternative to using the `!=` operator.
 
-- `bdd_varprofile(bdd f)`
+- `bdd_varprofile(f)`
    obtains a *file<label_t>* containing all of the variables present in a BDD.
 
-### Bug Fixes
+### Zero-suppressed Decision Diagrams
 
-- Results from `bdd_nithvar(label_t i)` and `bdd_ithvar(label_t i)` are now
-  marked as *canonical* and so can be used with the linear-scan equality
-  checking.
+- `zdd_complement(A)`
+  computes the complement within the global domain.
 
-- Fixed the reduction phase may use 2 MiB more memory than is available.
+- `zdd_from(f)`
+  converts from a BDD to a ZDD using the global domain.
 
-## Zero-suppressed Decision Diagrams
+- `zdd_varprofile(A)`
+  obtains a *file<label_t>* containing all of the variables present in a ZDD.
 
-### New Features
-
-- `zdd_builder`
-  is a new class to replace using the *node_writer* directly. This enables a
-  much more natural construction of ZDDs bottom-up by hiding away several
-  details. Furthermore, it makes use of exceptions rather than immediately
-  terminating assertions.
-
-- `zdd_complement(zdd A)`
-  Complementation within the global domain.
-
-- `zdd_from(bdd f)`
-  Converts from a BDD to a ZDD using the global domain.
-
-- `zdd_varprofile(zdd A)`
-  Obtain a *file<label_t>* containing all of the variables present in a ZDD.
-
-### Bug Fixes
-
-- `zdd_ithvar(label_t i)`
-  Is now marked as *canonical* and so can be used with the linear-scan equality
-  checking.
-
-- Fixed the reduction phase may use 2 MiB more memory than is available.
-
-- DOT files are now with the terminals properly printed as *Ø* and *{Ø}*.
-
-## Statistics
-
-### New Features
+### Statistics
 
 - Statistics have been heavily extended with information on how often each type
   of auxiliary data structures (internal or external) have been used.
@@ -341,10 +300,29 @@ variables you are using.
 - `adiar_statsreset()`
   resets all statistics values back to 0.
 
-### Bug Fixes
+## Optimisations
+
+The primary focus of this release is to drastically improve performance for
+smaller instances. To this end, we still use the very same algorithms, but if
+the input is small enough then we can safely use purely internal memory
+auxiliary data structures within each algorithm.
+
+Prior to this, we could only guarantee up to a comparable performance to other
+BDD packages when they involve lots of large decision diagrams. Now, we can
+lower the threshold for Adiar being useful by several orders of magnitude!
+
+## Bug Fixes
+
+- Results from `bdd_nithvar(label_t i)`, `bdd_ithvar(label_t i)`, and
+  `zdd_ithvar(label_t i)` are now marked as *canonical* and so can be used with
+  the linear-scan equality checking.
+
+- Fixed the reduction phase may use 2 MiB more memory than is available.
 
 - Fixed fine grained statistics (`ADIAR_STATS_EXTRA`) are turned on even though
   only the coarse-grained statistics (`ADIAR_STATS`) was desired.
+
+- DOT files of ZDDs now print terminals as *Ø* and *{Ø}*.
 
 ## Deprecations
 
@@ -386,13 +364,15 @@ below.
 
 **Date: 25th of January, 2022**
 
-## Zero-suppressed Decision Diagrams
+## New Features
+
+### Zero-suppressed Decision Diagrams
 
 Adds support for *zero-suppressed* decision diagrams with the `zdd` class. All
 operations on *ZDD*s are based on the family of sets semantics as in the
 original paper by Minato.
 
-### Constructors
+#### Constructors
 - `zdd zdd_sink(bool v)` (and `zdd_empty()` and `zdd_null()` as alternatives)
 
 - `zdd zdd_ithvar(label_t i)`
@@ -405,7 +385,7 @@ original paper by Minato.
   of variables in *vars* whose size satisfies the given predicate in relation to
   *k*.
 
-### Basic Manipulation
+#### Basic Manipulation
 - `zdd zdd_binop(zdd A, zdd B, bool_op op)` to apply a binary operator to two
   families of sets (also includes aliases for the _or_, _and_, and _diff_
   operators).
@@ -426,14 +406,14 @@ original paper by Minato.
 
 - `zdd zdd_project(zdd A, file<label_t> is)` to project onto a (smaller) domain.
 
-### Counting Operations
+#### Counting Operations
 - `uint64_t zdd_nodecount(zdd A)` the number of (non-terminal) nodes.
 
 - `uint64_t zdd_varcount(zdd A)` the number of levels present (i.e. variables).
 
 - `uint64_t bdd_size(bdd A)` the number of elements in the family of sets.
 
-### Predicates
+#### Predicates
 - `bool zdd_equal(zdd A, zdd B)` to check for set equality.
 
 - `bool zdd_unequal(zdd A, zdd B)` to check set inequality.
@@ -444,14 +424,14 @@ original paper by Minato.
 
 - `bool zdd_disjoint(zdd A, zdd B)` to check for the sets being disjoint.
 
-### Set Elements
+#### Set Elements
 - `bool zdd_contains(zdd A, file<label_t> a)`
 
 - `std::optional<file<label_t>> zdd_minelem(zdd A)`
 
 - `std::optional<file<label_t>> zdd_maxelem(zdd A)`
 
-### Other Functions
+#### Other Functions
 - `output_dot(bdd f, std::string filename)` to output a visualizable _*.dot*
   file.
 
@@ -459,7 +439,7 @@ original paper by Minato.
   file<label_t> dom)` to convert between *BDD*s and *ZDD*s interpreted in the
   given domain.
 
-## Statistics
+### Statistics
 
 Compile Adiar with `ADIAR_STATS` or `ADIAR_STATS_EXTRA` to gather statistics
 about the execution of the internal algorithms. With `ADIAR_STATS`, Adiar will
@@ -477,55 +457,53 @@ introduce a linear-time overhead to every operation.
 
 **Date: 6th of September, 2021**
 
+## Optimisations
+
+The *Equality Checking* algorithm (`==`) has been improved from its initial
+*O(N<sup>2</sup> log N<sup>2</sup>)* time complexity.
+
+- If both given BDDs are *canonical* (definition: as it would be output by
+  Adiar's *Reduce* algorithm) and have the same value in their *negation
+  flag*, then equality checking is done with a simple (and much faster) linear
+  scan.
+
+- In all other cases the prior time-forward processing algorithm is used. But
+  this one has been improved to be an *O(N log N)* time comparison algorithm.
+  That is, equality checking is not only a constant improvement computing `~(f ^
+  g) == bdd_true()` but it is provably faster (both in terms of time and I/Os).
+
 ## Bug fixes
 
-- `bdd_apply`:
-  - Fix tuples have their ties on `std::min` or `std::max` not broken correctly.
-    This resulted in that the same recursion request could potentially be
-    handled multiple times independently, since all its "calls" ended up
-    interleaving with other tied requests in the priority queues. This bug fix
-    ensures the algorithm runs in quadratic time.
+- `bdd_apply` has the comparator on recursion tuples break ties correctly. Prior
+   to this, the same recursion request could potentially be handled multiple
+   times independently, since all its "calls" ended up interleaving with other
+   tied requests in the priority queues. This bug fix ensures the algorithm runs
+   in quadratic time.
 
-  - Slightly improve performance of some boolean operators. Most likely this is
-    negligible.
+- `bdd_counter` now returns trivially false cases as such.
 
-- `bdd_counter`:
-  - Fix returns trivially false cases as *true*.
+- *CMake* is now properly set up, such that Adiar compiles with C++17 regardless
+   of its parent project. This allows the user to omit the use of
+   `set_target_properties(<target> PROPERTIES CXX_STANDARD 17)` in their own
+   CMake settings.
 
-- *CMake*
-  - Now Adiar compiles with C++17 regardless of its parent project. This allows
-    the user to omit the use of `set_target_properties(<target> PROPERTIES
-    CXX_STANDARD 17)` in their own CMake settings.
+## Breaking Changes
 
-## Changes
-
-- `adiar_init`:
-  - It now takes its memory argument in *bytes* rather than in *MiB*.
-
-- *Equality Checking* (`==`): Improved performance from its prior
-  *O(N<sup>2</sup> log N<sup>2</sup>)* time comparison.
-  - If both given BDDs are *canonical* (definition: as it would be output by
-    Adiar's *reduce* algorithm) and have the same value in their *negation
-    flag*, then equality checking is done with a simple (and much faster) linear
-    scan.
-
-  - In all other cases the prior time-forward processing algorithm is used. But
-    this one has been improved to be an *O(N log N)* time comparison algorithm.
-    That is, equality checking is not only a constant improvement computing `~(f
-    ^ g) == bdd_true()` but it is provably faster (both in terms of time and
-    I/Os).
-
+- `adiar_init(memory)` now takes its memory argument in *bytes* rather than in
+  *MiB*.
 
 # v1.0.0
 
 **Date: 25th of April, 2021**
 
-## Binary Decision Diagrams
+## Features
+
+### Binary Decision Diagrams
 
 `bdd` class to hide away management of files and running the _reduce_ algorithm.
 This takes care of reference counting and optimal garbage collection.
 
-### Constructors
+#### Constructors
 - `bdd_sink(bool v)` (and `bdd_true()` and `bdd_false()` as alternatives)
 
 - `bdd_ithvar(label_t i)` and `bdd_nithvar(label_t i)`
@@ -540,7 +518,7 @@ This takes care of reference counting and optimal garbage collection.
 Furthermore, the `node_writer` class is also provided as a means to construct a
 BDD manually bottom-up.
 
-### Basic Manipulation
+#### Basic Manipulation
 - `bdd_apply(bdd f, bdd g, bool_op op)` to combine two BDDs with a binary
   operator (also includes aliases for every possible *op*)
 
@@ -555,7 +533,7 @@ BDD manually bottom-up.
   existentially or forall quantify a single variable (also includes versions
   with the second argument being multiple labels in a `file<label_t>`).
 
-### Counting Operations
+#### Counting Operations
 - `bdd_nodecount(bdd f)` the number of (non-terminal) nodes.
 
 - `bdd_varcount(bdd f)` the number of levels present (i.e. variables).
@@ -564,13 +542,13 @@ BDD manually bottom-up.
 
 - `bdd_satcount(bdd f, size_t varcount)` the number of satisfying assignments.
 
-### Input variables
+#### Input variables
 - `bdd_eval(bdd f, assignment_file x)` computes *f(x)*.
 
 - `bdd_satmin(bdd f)`, resp. `bdd_satmax(bdd f)`, to find the lexicographical
   smallest, resp. largest, satisfying assignment.
 
-### Other Functions
+#### Other Functions
 - `output_dot(bdd f, std::string filename)` to output a visualizable *.dot*
   file.
 
