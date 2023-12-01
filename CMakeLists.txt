@@ -13,6 +13,8 @@ project (adiar
   LANGUAGES CXX
 )
 
+configure_file(CITATION.cff.in ${PROJECT_SOURCE_DIR}/CITATION.cff)
+
 enable_language(CXX)
 
 # ============================================================================ #
