@@ -41,9 +41,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: 'Knights Tour (ZDD)'
-            exec: adiar_knights_tour_zdd
-            N: '3 4 5 6'
+          - name: 'Hamiltonian (ZDD)'
+            exec: adiar_hamiltonian_zdd
+            N: '1 2 3 4 5 6 7 8'
 
           - name: 'Queens (BDD)'
             exec: adiar_queens_bdd
@@ -54,11 +54,11 @@ jobs:
             N: '8 9 10 11 12 13 14'
 
           - name: 'Tic-Tac-Toe (BDD)'
-            exec: adiar_tic_tac_toe_bdd
+            exec: adiar_tic-tac-toe_bdd
             N: '18 19 20 21 22'
 
           - name: 'Tic-Tac-Toe (ZDD)'
-            exec: adiar_tic_tac_toe_zdd
+            exec: adiar_tic-tac-toe_zdd
             N: '18 19 20 21 22'
 
     steps:
