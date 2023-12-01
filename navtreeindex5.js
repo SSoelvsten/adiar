@@ -1,5 +1,17 @@
 var NAVTREEINDEX5 =
 {
+"structadiar_1_1statistics_1_1equality__t.html#a603f0b976f8b963c9558dccfda7e5663":[5,6,0,3,7],
+"structadiar_1_1statistics_1_1equality__t.html#a6875d1f6447096850add31577688ffbf":[5,6,0,3,8],
+"structadiar_1_1statistics_1_1equality__t.html#a889424f58afa95ef6f985763fcd1674e":[5,6,0,3,10],
+"structadiar_1_1statistics_1_1equality__t.html#a9a5d35f2b16ef22b566cba539ee6c44c":[5,6,0,3,3],
+"structadiar_1_1statistics_1_1equality__t.html#ab769667ff5ecea10ecd9e2589b7e72bf":[5,6,0,3,9],
+"structadiar_1_1statistics_1_1equality__t.html#abe195d0a5e34af3d03c6937f0b1f7084":[5,6,0,3,4],
+"structadiar_1_1statistics_1_1equality__t.html#acfad6b0365652afc6c232497f94e28c9":[5,6,0,3,5],
+"structadiar_1_1statistics_1_1equality__t_1_1fast__t.html":[5,6,0,3,0],
+"structadiar_1_1statistics_1_1equality__t_1_1fast__t.html#a277e63cf7570f0573a2f1d68a96faff1":[5,6,0,3,0,0],
+"structadiar_1_1statistics_1_1equality__t_1_1fast__t.html#af379e3362c9f7c2fc35366145b3d5f5b":[5,6,0,3,0,1],
+"structadiar_1_1statistics_1_1equality__t_1_1slow__t.html":[5,6,0,3,1],
+"structadiar_1_1statistics_1_1equality__t_1_1slow__t.html#a2a489d0667029e79f29bbb39a90dd977":[5,6,0,3,1,2],
 "structadiar_1_1statistics_1_1equality__t_1_1slow__t.html#ac1b3858c751afb0e90cab795cc10b5e8":[5,6,0,3,1,3],
 "structadiar_1_1statistics_1_1equality__t_1_1slow__t.html#ae69010f63979fd0b372a009ef51290d6":[5,6,0,3,1,0],
 "structadiar_1_1statistics_1_1equality__t_1_1slow__t.html#ae905650314d06a09934bdcb6a41b95e1":[5,6,0,3,1,1],
@@ -64,10 +76,12 @@ var NAVTREEINDEX5 =
 "tuple_8h.html#a8fb088d19e27a845dad95c3e5ecf3f00":[6,0,0,0,51],
 "tuple_8h.html#aa487003a7249bf07c82a621d9bc05ad8":[6,0,0,0,32],
 "tuple_8h.html#af86758d0d89c172edda96dc6f01ffbca":[6,0,0,0,34],
-"tuple_8h_source.html":[8,0,0,0,1,0,6],
-"types_8h_source.html":[8,0,0,0,12],
+"tuple_8h_source.html":[8,0,1,0,1,0,6],
+"types_8h_source.html":[8,0,1,0,12],
 "uid_8h.html#a2cfcb0f86047e2341fafabc88563dfb8":[6,0,0,0,27],
-"uid_8h_source.html":[8,0,0,0,1,0,7],
-"zdd_2zdd_8h_source.html":[8,0,0,0,2,0],
-"zdd_8h_source.html":[8,0,0,0,13]
+"uid_8h_source.html":[8,0,1,0,1,0,7],
+"version_8h_source.html":[8,0,0,0,0],
+"zdd_2zdd_8h_source.html":[8,0,1,0,2,0],
+"zdd_8h_source.html":[8,0,1,0,13],
+"":[6,0,0,0]
 };

@@ -376,6 +376,11 @@ var namespaceadiar =
     [ "nand_op", "namespaceadiar.html#ab8229eb0cb1d012e1f6ce0ad3f8ef6db", null ],
     [ "nor_op", "namespaceadiar.html#ae9b3689b3adcb95bc273404fca58b21f", null ],
     [ "or_op", "namespaceadiar.html#aeaa9d1d4a583e160d9db913598b1c827", null ],
+    [ "version", "group__module____adiar.html#gaecb0c967c2f53bb1700c2e6f01fc64c5", null ],
+    [ "version_major", "group__module____adiar.html#ga470bef8262702a036e8da5b8f83b1f16", null ],
+    [ "version_minor", "group__module____adiar.html#ga0769c8ffe7eff8a5bd9c0c19803f27eb", null ],
+    [ "version_patch", "group__module____adiar.html#gaaab9926b93b85f6010cbe053ba977047", null ],
+    [ "version_string", "group__module____adiar.html#ga20907cb6855b4e605b25bd15a9c860fd", null ],
     [ "xnor_op", "namespaceadiar.html#ae956ef704feace706586a391d3cc0d91", null ],
     [ "xor_op", "namespaceadiar.html#af4f487e39dded71f30fc122939acdbdd", null ]
 ];
