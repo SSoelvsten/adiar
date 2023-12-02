@@ -2,97 +2,235 @@
 
 go_bandit([]() {
   describe("adiar/internal/data_types/uid.h", []() {
-    describe("flag", []() {
-      it("should strip away flag when copying from 'false' pointer", [&]() {
-        const ptr_uint64 p(false);
-        const uid_uint64 u = flag(p);
+    it("has same size as the underlying 'ptr_uint64'", []() {
+      AssertThat(sizeof(uid_uint64), Is().EqualTo(sizeof(ptr_uint64)));
+    });
 
-        AssertThat(p.is_flagged(), Is().False());
-        AssertThat(u, Is().EqualTo(p));
+    describe("reexposure of underlying pointer (without auxiliary data)", [](){
+      it("wraps compile-time constants", []() {
+        // Nil constants
+        AssertThat(ptr_uint64::nil_level, Is().EqualTo(ptr_uint64::nil_level));
+
+        // Terminal constants
+        AssertThat(ptr_uint64::terminal_level, Is().EqualTo(ptr_uint64::terminal_level));
+
+        // Internal Node constants
+        AssertThat(ptr_uint64::max_label, Is().EqualTo(ptr_uint64::max_label));
+        AssertThat(ptr_uint64::max_id, Is().EqualTo(ptr_uint64::max_id));
       });
 
-      it("should strip away flag when copying from 'true' pointer", [&]() {
-        const ptr_uint64 p(true);
-        const uid_uint64 u = flag(p);
+      describe(".level()", []() {
+        it("is 'terminal_level' for 'false' terminal", []() {
+          const uid_uint64 u = ptr_uint64(false);
 
-        AssertThat(p.is_flagged(), Is().False());
-        AssertThat(u, Is().EqualTo(p));
+          AssertThat(u.level(), Is().EqualTo(uid_uint64::terminal_level));
+        });
+
+        it("is 'terminal_level' for 'true' terminal", []() {
+          const uid_uint64 u = ptr_uint64(true);
+
+          AssertThat(u.level(), Is().EqualTo(uid_uint64::terminal_level));
+        });
+
+        it("is 'max_label' for (max_label,42)", []() {
+          const uid_uint64 u = ptr_uint64(ptr_uint64::max_label, 42);
+
+          AssertThat(u.level(), Is().EqualTo(uid_uint64::max_label));
+        });
+
+        it("is 0 for (0,0)", []() {
+          const uid_uint64 u = ptr_uint64(0,0);
+
+          AssertThat(u.level(), Is().EqualTo(0u));
+        });
       });
 
-      it("should strip away flag when copying from 'internal node' pointer", [&]() {
-        const ptr_uint64 p(53, 4);
-        const uid_uint64 u = flag(p);
+      describe(".is_terminal()", []() {
+        it("accept 'false' terminal", []() {
+          const uid_uint64 u = ptr_uint64(false);
 
-        AssertThat(p.is_flagged(), Is().False());
-        AssertThat(u, Is().EqualTo(p));
+          AssertThat(u.is_terminal(), Is().True());
+        });
+
+        it("accept 'true' terminal", []() {
+          const uid_uint64 u = ptr_uint64(true);
+
+          AssertThat(u.is_terminal(), Is().True());
+        });
+
+        it("rejects minimal Node Uid", []() {
+          const uid_uint64 u = ptr_uint64(0,0,0);
+
+          AssertThat(u.is_terminal(), Is().False());
+        });
+
+        it("rejects maximal Node Uid", []() {
+          const uid_uint64 u = ptr_uint64(ptr_uint64::max_label,
+                                          ptr_uint64::max_id,
+                                          ptr_uint64::max_out_idx);
+
+          AssertThat(u.is_terminal(), Is().False());
+        });
+      });
+
+      describe(".value()", []() {
+        it("returns 'false' terminal value", []() {
+          const uid_uint64 u = ptr_uint64(false);
+
+          AssertThat(u.value(), Is().False());
+        });
+
+        it("returns 'true' terminal value", []() {
+          const uid_uint64 u = ptr_uint64(true);
+
+          AssertThat(u.value(), Is().True());
+        });
+      });
+
+      describe(".is_false()", []() {
+        it("accepts 'false' terminal", []() {
+          const uid_uint64 u = ptr_uint64(false);
+
+          AssertThat(u.is_false(), Is().True());
+        });
+
+        it("rejects 'true' terminal", []() {
+          const uid_uint64 u = ptr_uint64(true);
+
+          AssertThat(u.is_false(), Is().False());
+        });
+
+        it("rejects minimal Node Uid", []() {
+          const uid_uint64 u = ptr_uint64(0,0,0);
+
+          AssertThat(u.is_false(), Is().False());
+        });
+
+        it("rejects maximal Node Uid", []() {
+          const uid_uint64 u = ptr_uint64(ptr_uint64::max_label,
+                                          ptr_uint64::max_id,
+                                          ptr_uint64::max_out_idx);
+
+          AssertThat(u.is_false(), Is().False());
+        });
+      });
+
+      describe(".is_true()", []() {
+        it("rejects 'false' terminal", []() {
+          const uid_uint64 u = ptr_uint64(false);
+
+          AssertThat(u.is_true(), Is().False());
+        });
+
+        it("accepts 'true' terminal", []() {
+          const uid_uint64 u = ptr_uint64(true);
+
+          AssertThat(u.is_true(), Is().True());
+        });
+
+        it("rejects minimal Node Uid", []() {
+          const uid_uint64 u = ptr_uint64(0,0,0);
+
+          AssertThat(u.is_true(), Is().False());
+        });
+
+        it("rejects maximal Node Uid", []() {
+          const uid_uint64 u = ptr_uint64(ptr_uint64::max_label,
+                                          ptr_uint64::max_id,
+                                          ptr_uint64::max_out_idx);
+
+          AssertThat(u.is_true(), Is().False());
+        });
+      });
+
+      describe(".is_node()", []() {
+        it("rejects 'false' terminal", []() {
+          const uid_uint64 u = ptr_uint64(false);
+
+          AssertThat(u.is_node(), Is().False());
+        });
+
+        it("rejects 'true' terminal", []() {
+          const uid_uint64 u = ptr_uint64(true);
+
+          AssertThat(u.is_node(), Is().False());
+        });
+
+        it("accepts minimal Node Uid", []() {
+          const uid_uint64 u = ptr_uint64(0,0,0);
+
+          AssertThat(u.is_node(), Is().True());
+        });
+
+        it("accepts maximal Node Uid", []() {
+          const uid_uint64 u = ptr_uint64(ptr_uint64::max_label,
+                                          ptr_uint64::max_id,
+                                          ptr_uint64::max_out_idx);
+
+          AssertThat(u.is_node(), Is().True());
+        });
       });
     });
 
-    describe("out-index", []() {
-      it("should strip away out-index from 'internal node' pointer [1]", [&]() {
-        const ptr_uint64 p1(53, 4, false);
-        const uid_uint64 u1 = p1;
+    describe("removal of auxiliary data", []() {
+      describe(".is_flagged(), flag(...)", []() {
+        it("should strip away flag when copying from 'false' pointer", []() {
+          const ptr_uint64 p(false);
+          const uid_uint64 u = flag(p);
 
-        const ptr_uint64 p2(53, 4, true);
-        const uid_uint64 u2 = p2;
+          AssertThat(p.is_flagged(), Is().False());
+          AssertThat(u, Is().EqualTo(p));
+        });
 
-        AssertThat(u1, Is().EqualTo(u2));
+        it("should strip away flag when copying from 'true' pointer", []() {
+          const ptr_uint64 p(true);
+          const uid_uint64 u = flag(p);
+
+          AssertThat(p.is_flagged(), Is().False());
+          AssertThat(u, Is().EqualTo(p));
+        });
+
+        it("should strip away flag when copying from 'internal node' pointer", []() {
+          const ptr_uint64 p(53, 4);
+          const uid_uint64 u = flag(p);
+
+          AssertThat(p.is_flagged(), Is().False());
+          AssertThat(u, Is().EqualTo(p));
+        });
       });
 
-      it("should strip away out-index 'internal node' pointer [2]", [&]() {
-        const ptr_uint64 p1(42, 0, false);
-        const uid_uint64 u1 = p1;
+      describe(".out_idx()", []() {
+        it("should strip away out-index from 'internal node' pointer [1]", []() {
+          const ptr_uint64 p1(53, 4, false);
+          const uid_uint64 u1 = p1;
 
-        const ptr_uint64 p2(42, 0, true);
-        const uid_uint64 u2 = p2;
+          const ptr_uint64 p2(53, 4, true);
+          const uid_uint64 u2 = p2;
 
-        AssertThat(u1, Is().EqualTo(u2));
+          AssertThat(u1, Is().EqualTo(u2));
+        });
+
+        it("should strip away out-index 'internal node' pointer [2]", []() {
+          const ptr_uint64 p1(42, 0, false);
+          const uid_uint64 u1 = p1;
+
+          const ptr_uint64 p2(42, 0, true);
+          const uid_uint64 u2 = p2;
+
+          AssertThat(u1, Is().EqualTo(u2));
+        });
       });
 
-      it("can provide a pointer with out-index 0", [&]() {
-        const uid_uint64 u(42, 0);
-        AssertThat(u.with(false), Is().EqualTo(ptr_uint64(42, 0, false)));
-      });
+      describe(".with(...)", []() {
+        it("can provide a pointer with out-index 0", []() {
+          const uid_uint64 u(42, 0);
+          AssertThat(u.with(false), Is().EqualTo(ptr_uint64(42, 0, false)));
+        });
 
-      it("can provide a pointer with out-index 1", [&]() {
-        const uid_uint64 u(42, 0);
-        AssertThat(u.with(true), Is().EqualTo(ptr_uint64(42, 0, true)));
-      });
-    });
-
-    describe("terminals", [&](){
-      it("should take up 8 bytes of memory", [&]() {
-        AssertThat(sizeof(uid_uint64(false)), Is().EqualTo(8u));
-        AssertThat(sizeof(uid_uint64(true)),  Is().EqualTo(8u));
-      });
-
-      describe("is_terminal", []() {
-      });
-
-      describe("value", []() {
-      });
-
-      describe("is_false", []() {
-      });
-
-      describe("is_true", []() {
-      });
-    });
-
-    describe("internal nodes", [&](){
-      it("should take up 8 bytes of memory", [&]() {
-        AssertThat(sizeof(uid_uint64(0,0)),               Is().EqualTo(8u));
-        AssertThat(sizeof(uid_uint64(42,21)),             Is().EqualTo(8u));
-        AssertThat(sizeof(uid_uint64(uid_uint64::max_label, uid_uint64::max_id)), Is().EqualTo(8u));
-      });
-
-      describe("is_node", []() {
-      });
-
-      describe("label", []() {
-      });
-
-      describe("id", []() {
+        it("can provide a pointer with out-index 1", []() {
+          const uid_uint64 u(42, 0);
+          AssertThat(u.with(true), Is().EqualTo(ptr_uint64(42, 0, true)));
+        });
       });
     });
   });

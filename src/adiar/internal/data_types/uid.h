@@ -101,6 +101,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the `ptr` for this node uid with the given `out_idx`.
     ////////////////////////////////////////////////////////////////////////////
+    // TODO: rename into 'as_ptr(...)' where the arguments are auxiliary
+    //       information to be included.
     inline pointer_type
     with(const typename pointer_type::out_idx_type out_idx) const
     {
@@ -145,8 +147,9 @@ namespace adiar::internal
   __uid<ptr_uint64>::with(const ptr_uint64::out_idx_type out_idx) const
   {
     // Based on the bit-layout, we can do this much faster than the one above.
-    constexpr uint64_t out_idx_mask = ~(max_out_idx << pointer_type::flag_bits);
-    return ptr_uint64((_raw & out_idx_mask) | pointer_type::encode_out_idx(out_idx));
+    constexpr pointer_type::raw_type out_idx_mask = ~(max_out_idx << pointer_type::data_shift);
+    return pointer_type((this->_raw & out_idx_mask) |
+                        (static_cast<pointer_type::raw_type>(out_idx) << pointer_type::data_shift));
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -157,8 +160,10 @@ namespace adiar::internal
   __uid<ptr_uint64>::is_terminal() const
   {
     // Since uid never is nil, then this is a slightly a faster logic than the
-    // one in 'ptr' itself.
-    return _raw >= pointer_type::terminal_bit;
+    // one in 'ptr_uint64' itself. Here, we exploit the fact that if it cannot
+    // be nil, then terminals are the largest values. This skips the right-shift
+    // instruction.
+    return pointer_type::min_terminal <= this->_raw;
   }
 
   using uid_uint64 = __uid<ptr_uint64>;

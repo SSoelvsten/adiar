@@ -265,12 +265,6 @@ namespace adiar::internal
       return uid().id();
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether a node is on a given level, i.e. has the given label.
-    ////////////////////////////////////////////////////////////////////////////
-    inline bool on_level(const label_type level) const
-    { return uid().on_level(level); }
-
     /* ================================= CHILDREN =========================== */
   public:
     ////////////////////////////////////////////////////////////////////////////

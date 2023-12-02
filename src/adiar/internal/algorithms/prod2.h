@@ -372,12 +372,12 @@ namespace adiar::internal
 
         // Recreate/Obtain children of req.target (possibly of suppressed node)
         const typename Policy::children_type children_pq =
-          req.target[pq_idx].on_level(out_label)
+          req.target[pq_idx].level() == out_label
               ? v_pq.children()
               : Policy::reduction_rule_inv(req.target[pq_idx]);
 
         const typename Policy::children_type children_ra =
-          req.target[ra_idx].on_level(out_label)
+          req.target[ra_idx].level() == out_label
           ? in_nodes_ra.at(req.target[ra_idx]).children()
           : Policy::reduction_rule_inv(req.target[ra_idx]);
 

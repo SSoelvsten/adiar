@@ -3,18 +3,12 @@
 
 #include <limits>
 #include <stdint.h>
+#include <type_traits>
 
 #include <adiar/internal/assert.h>
 
 namespace adiar::internal
 {
-  ////////////////////////////////////////////////////////////////////////////
-  /// \brief Compute (at compile-time) the (ceiling) log2 of a number.
-  ////////////////////////////////////////////////////////////////////////////
-  constexpr uint8_t log2(size_t n)
-  {
-    return n == 0u ? 0u : log2(n / 2u) + 1u;
-  }
 
   // TODO (ADD (32-bit)):
   //   Template 'ptr_uint64' with 'terminal_t' of how to interpret the bits of a
@@ -41,6 +35,14 @@ namespace adiar::internal
   //   Furthermore, template the `outdegree` to use an extra bit for the out
   //   index.
 
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Compute (at compile-time) the (ceiling) log2 of a number.
+  ////////////////////////////////////////////////////////////////////////////
+  constexpr uint8_t log2(size_t n)
+  {
+    return n == 0u ? 0u : log2(n / 2u) + 1u;
+  }
+
   //////////////////////////////////////////////////////////////////////////////
   /// \brief A (possibly flagged) unique identifier of a terminal, an internal
   ///        node, or nothing (`nil`).
@@ -56,43 +58,57 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   class ptr_uint64
   {
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Underlying unsigned integer.
+    ////////////////////////////////////////////////////////////////////////////
+    // TODO (128 bit integers):
+    //   Template with the desired uint type and the number of label bits. Or
+    //   better is to use `std::conditional_type` to derive the smallest type
+    //   that can fit all the requested number of bits.
+    using raw_type = uint64_t;
+
   protected:
     ////////////////////////////////////////////////////////////////////////////
     /// To condense almost everything down to mere integer comparisons we
     /// reserve specific parts of a single 64 bit unsigned integer to different
     /// variables.
     ///
-    ///    `S______________________________________________________________F`
+    ///    `LLLLLLLLLLL____________________________________________________F`
     ///
     /// Where these three parts represent the following variables:
     ///
-    ///  - `S` : the is_terminal flag. If the terminal flag is set, the contents
-    ///          of the middle areas differ (see below).
+    ///  - `L` : These uppermost 24 bits reflect the level. Here, we assign
+    ///          special meaning to the two maximal levels.
     ///
-    ///  - `_` : The layout of these 62 bits change based on whether it
-    ///          describes a terminal, an internal node, or nil.
+    ///  - `_` : These bits change based on whether it describes a terminal, an
+    ///          internal node, or nil.
     ///
-    ///  - `F` : A boolean flag. This is currently only used in arcs to identify
-    ///          high and low arcs (see below).
+    ///  - `F` : A boolean flag. This is currently only used in Reduce on an
+    ///          arc's target to mark taints by reduction rules and in Nested
+    ///          Sweeping on arc's source to mark the originating sweep of an
+    ///          arc's source.
     ///
-    /// We ensure, that the S and ? areas combined uniquely identify all
-    /// terminals and nodes. We also notice, that sorting these pointers
-    /// directly enforce terminal pointers are sorted after nodes. Finally, two
-    /// pointers for the same uid will finally be sorted by the flag.
+    /// We ensure, that the ? areas combined uniquely identify all terminals and
+    /// nodes. We also ensure, that sorting these pointers directly enforce
+    /// terminal pointers are sorted after nodes. Finally, two pointers for the
+    /// same uid will finally be sorted by the flag.
     ////////////////////////////////////////////////////////////////////////////
-    // TODO (128 bit integers):
-    //   Template with the desired uint type and the number of label bits.
-    uint64_t _raw;
+    raw_type _raw;
+
+    ////////////////////////////////////////////////////////////////////////////
+    // befriend functions and classes that need access to 'raw'...
+    template <typename dd_t>
+    friend void __print_dot(const dd_t&, std::ostream &);
+
+    template<typename pointer_type>
+    friend class __uid;
+    ////////////////////////////////////////////////////////////////////////////
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Total number of bits.
     ////////////////////////////////////////////////////////////////////////////
     static constexpr uint8_t total_bits = sizeof(uint64_t)*8u;
-
-    // --------------------------------------------------
-    // befriend other functions that need access to 'raw'
-    template <typename dd_t>
-    friend void __print_dot(const dd_t&, std::ostream &);
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -148,131 +164,229 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Reinterpret an unsigned 64 bit integer as a `ptr`.
     ////////////////////////////////////////////////////////////////////////////
-    constexpr ptr_uint64(const uint64_t raw) : _raw(raw)
+    constexpr ptr_uint64(const raw_type raw)
+      : _raw(raw)
     { }
 
-    template<typename pointer_type>
-    friend class __uid;
+    /* ============================ LEVEL FIELD ============================= */
 
-    /* ============================= ATTRIBUTES ============================= */
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief The number of bits for the level.
+    ////////////////////////////////////////////////////////////////////////////
+    static constexpr uint8_t level_bits = 24u;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief The number of bits to shift into the level field.
+    ////////////////////////////////////////////////////////////////////////////
+    static constexpr uint8_t level_shift = total_bits - level_bits;
+
   public:
-    friend ptr_uint64 flag(const ptr_uint64 &p);
-    friend ptr_uint64 unflag(const ptr_uint64 &p);
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type able to hold the node's level.
+    ////////////////////////////////////////////////////////////////////////////
+    // TODO:
+    //   Template with 'label bits' and derive with `std::conditional_type` the
+    //   smallest type that can fit all the requested number of bits.
+    using level_type = uint32_t;
 
   protected:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Number of flags
+    /// \brief The maximal possible value for a level.
+    ////////////////////////////////////////////////////////////////////////////
+    static constexpr level_type max_level =
+      (static_cast<raw_type>(1) << level_bits) - 1u;
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Extract the level of the node in question.
+    ////////////////////////////////////////////////////////////////////////////
+    inline level_type
+    level() const
+    {
+      return this->_raw >> level_shift;
+    }
+
+    /* ============================ BOOLEAN FLAG ============================ */
+
+    ////////////////////////////////////////////////////////////////////////////
+    // befriend flag modifying functions that need access to protected values.
+    friend ptr_uint64 flag(const ptr_uint64 &p);
+    friend ptr_uint64 unflag(const ptr_uint64 &p);
+    ////////////////////////////////////////////////////////////////////////////
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of the Boolean flag to store auxiliary information.
+    ////////////////////////////////////////////////////////////////////////////
+    using flag_type = bool;
+
+  protected:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Number of bits used for the Boolean bit flag.
     ////////////////////////////////////////////////////////////////////////////
     static constexpr uint8_t flag_bits = 1u;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Generic bit-flag.
+    /// \brief Number of bits to shift into the flag field.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr uint64_t flag_mask = 0x0000000000000001ull;
+    static constexpr uint8_t flag_shift = 0u;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Generic bit-flag.
+    /// \brief Bit-mask and placement for bit flag.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr uint64_t flag_bit = flag_mask;
+    static constexpr raw_type flag_bit = static_cast<raw_type>(true);
 
   public:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Retrieve the value of the bit-flag within a pointer.
+    /// \brief Retrieve the value of the bit flag within a pointer.
     ////////////////////////////////////////////////////////////////////////////
-    inline bool is_flagged() const
+    inline flag_type is_flagged() const
     {
-      return _raw & ptr_uint64::flag_mask;
+      return this->_raw & flag_bit;
+    }
+
+    /* ================================ DATA ================================ */
+
+  protected:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Number of bits remaining for data values.
+    ////////////////////////////////////////////////////////////////////////////
+    static constexpr uint8_t data_bits = total_bits - (level_bits + flag_bits);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Number of bits to shift into the data area.
+    ////////////////////////////////////////////////////////////////////////////
+    static constexpr uint8_t data_shift = flag_shift + 1u;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain the raw data values.
+    ////////////////////////////////////////////////////////////////////////////
+    inline raw_type
+    data() const
+    {
+      constexpr raw_type data_mask = (static_cast<raw_type>(1) << data_bits) - 1;
+      return (this->_raw >> data_shift) & data_mask;
     }
 
     /* ================================= nil ================================ */
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// In some algorithms, we need to store pointers to `null` (e.g. if there
+    /// does not exist a source of an edge). Due to how we create the
+    /// identifiers for all nodes and terminals, we cannot use the common null
+    /// with value 0. So, instead we provide a special value that works with
+    /// this specific setup.
+    ///
+    /// Furthermore, it turns out that it is beneficial if the `nil` value comes
+    /// *after* all other values, i.e. it is at level 'infinity'.
+    ////////////////////////////////////////////////////////////////////////////
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief The (maximal) level is reserved for `nil` pointers.
+    ////////////////////////////////////////////////////////////////////////////
+    static constexpr level_type nil_level = max_level;
+    static_assert(nil_level <= max_level);
+
   protected:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Compile-time derived value for `nil`.
+    /// \brief Compile-time derived minimal raw value for `nil`.
     ///
     /// \see nil
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr uint64_t nil_val =
-      std::numeric_limits<uint64_t>::max() ^ flag_mask;
+    static constexpr raw_type min_nil =
+      static_cast<raw_type>(nil_level) << level_shift;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   A pointer to nothing.
     ///
-    /// \details Due to how we create the identifiers for all nodes and
-    ///          terminals, we cannot use the common null with value 0. So,
-    ///          instead we provide a special value that works with this
-    ///          specific setup.
-    ///
     /// \remark  A nil value always comes after all other types of pointers.
     ////////////////////////////////////////////////////////////////////////////
     static inline constexpr ptr_uint64 nil()
-    { return ptr_uint64{ nil_val }; }
+    { return ptr_uint64{ min_nil }; }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether a pointer is nil.
     ////////////////////////////////////////////////////////////////////////////
     inline bool is_nil() const
     {
-      // Check for flagged and unflagged nil
-      return _raw >= nil_val;
+      // Since `nil_level` is maximal and the level bits are most significant,
+      // then we can implement `is_nil()` as a simple comparison to quickly
+      // obtain the result without having to deal with flags and other pieces
+      // data stored within the pointer.
+      return min_nil <= this->_raw;
     }
 
     /* ================================ NODES =============================== */
-  public:
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Type of the out-degree.
-    ////////////////////////////////////////////////////////////////////////////
-    using out_idx_type = uint64_t;
 
-  public:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Number of out-going edges from a node
+    /// When the `is_node` flag is true, then it is a pointer to a node, which
+    /// next to its level (i.e. its variable label) also must be identified by
+    /// its 'level identifier'
     ///
-    /// \details As this 'ptr' class is used within the `arc` class, we need to
-    ///          store somewhere which index the arc is part of the node. To
-    ///          save on space, we reserve some of the bits.
+    /// If used as part of an arc's source, then we also will store extra
+    /// information about the out-degree.
+    ///
+    /// Hence, a node poitner has its bits laid out as follows (out-degree: 1)
+    ///
+    ///    `LLLLLLLLLLLLLLLLLLLIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIOF`
+    ///
+    /// That means that nodes are to be sorted first by their label, then by
+    /// their level-identifier, and finally by their .
     ////////////////////////////////////////////////////////////////////////////
-    // TODO (QMDD):
-    //   Make into a template parameter
-    static constexpr size_t outdegree = 2u;
-
-  public:
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief The maximal possible value for the out index.
-    ////////////////////////////////////////////////////////////////////////////
-    static constexpr out_idx_type max_out_idx = outdegree - 1;
-
-  public:
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Number of bits used to store the out0index.
-    ////////////////////////////////////////////////////////////////////////////
-    static constexpr uint8_t out_idx_bits = log2(max_out_idx);
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type able to hold the label of a variable.
     ////////////////////////////////////////////////////////////////////////////
-    using label_type = uint32_t;
+    using label_type = level_type;
 
-  private:
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief The number of bits for a label.
-    ////////////////////////////////////////////////////////////////////////////
-    static constexpr uint8_t label_bits = 24u;
-
-  public:
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief The maximal possible value for a unique identifier's label.
-    ////////////////////////////////////////////////////////////////////////////
-    static constexpr label_type max_label = (1ull << label_bits) - 1;
-
-  public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of a level identifier.
     ////////////////////////////////////////////////////////////////////////////
-    using id_type = uint64_t;
+    // TODO: Find the smallest integer that can fit `(data_bits - out_idx_bits)`
+    using id_type = raw_type;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of the out-degree.
+    ////////////////////////////////////////////////////////////////////////////
+    using out_idx_type = uint8_t;
 
   private:
+    ////////////////////////////////////////////////////////////////////////////
+    // befriend flag modifying functions that need access to protected values.
+    friend ptr_uint64
+    essential(const ptr_uint64 &p);
+
+    friend ptr_uint64
+    with_out_idx(const ptr_uint64 &p, const out_idx_type out_idx);
+    ////////////////////////////////////////////////////////////////////////////
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Number of out-going edges from a node
+    ///
+    /// \details As this 'ptr' class is used within the `arc` class, we need to
+    ///          store somewhere which index the arc is part of the node. To
+    ///          save on space, we reserve some of the least significant bits.
+    ////////////////////////////////////////////////////////////////////////////
+    // TODO (QMDD):
+    //   Make into a template parameter
+    static constexpr size_t outdegree = 2u;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief The maximal possible value for the out index.
+    ////////////////////////////////////////////////////////////////////////////
+    static constexpr out_idx_type max_out_idx = outdegree - 1;
+
+  protected:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Number of bits used to store the out-index.
+    ////////////////////////////////////////////////////////////////////////////
+    static constexpr uint8_t out_idx_bits = log2(max_out_idx);
+    static_assert(out_idx_bits <= 8*sizeof(out_idx_type));
+
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The number of bits for a level identifier.
     ///
@@ -281,7 +395,7 @@ namespace adiar::internal
     ///          exceed \$2^{id_bits} \cdot 3 \cdot 8\$ bytes.
     ////////////////////////////////////////////////////////////////////////////
     static constexpr uint8_t id_bits =
-      total_bits - 1u - label_bits - out_idx_bits - flag_bits;
+      total_bits - level_bits - out_idx_bits - flag_bits;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -289,81 +403,43 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     static constexpr id_type max_id = (1ull << id_bits) - 1;
 
-  private:
-    friend ptr_uint64
-    essential(const ptr_uint64 &p);
-
-    friend ptr_uint64
-    with_out_idx(const ptr_uint64 &p, const out_idx_type out_idx);
-
+  public:
     ////////////////////////////////////////////////////////////////////////////
-    /// When the <tt>is_node</tt> flag is true, then it is a pointer to a node,
-    /// which is identifiable by two variables:
-    ///
-    ///  - `L` : the variable label. For nodes n1 and n2 with n1.label <
-    ///          n2.label, we guarantee that n1 comes before n2 in the stream
-    ///          reading order.
-    ///
-    ///  - `I` : a unique identifier for the nodes on the same level. For nodes
-    ///          n1 and n2 with n1.label == n2.label but n1.id < n2.id, we
-    ///          guarantee that n1 comes before n2 in the stream reading order.
-    ///
-    ///  - `O` : bit with the out-index (used in `arc`).
-    ///
-    /// These are spaced out in the middle area as follows (out-degree: 1)
-    ///
-    ///    `SLLLLLLLLLLLLLLLLLLLLLLLLIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIOF`
-    ///
-    /// That means that nodes are to be sorted first by their label, then by
-    /// their level-identifier, and finally by their .
+    /// \brief  The maximal possible value for a unique identifier's label.
     ////////////////////////////////////////////////////////////////////////////
-  protected:
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Bit manipulation needed to encode the variable label.
-    ////////////////////////////////////////////////////////////////////////////
-    static uint64_t
-    encode_label(const label_type label)
-    {
-      adiar_assert(label <= max_label, "Cannot represent given label");
-      return (uint64_t) label << (id_bits + out_idx_bits + flag_bits);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Bit manipulation needed to encode the level id.
-    ////////////////////////////////////////////////////////////////////////////
-    static uint64_t
-    encode_id(const id_type id)
-    {
-      adiar_assert(id <= max_id, "Cannot represent given id");
-      return (uint64_t) id << (out_idx_bits + flag_bits);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Bit manipulation needed to encode the outdegree index.
-    ////////////////////////////////////////////////////////////////////////////
-    static uint64_t
-    encode_out_idx(const out_idx_type out_idx)
-    {
-      return (uint64_t) out_idx << (flag_bits);
-    }
+    static constexpr label_type max_label = max_level - 2u;
+    static_assert(max_label < max_level);
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a pointer to an internal node (label, id) with
     ///        weight 0.
     ////////////////////////////////////////////////////////////////////////////
-    ptr_uint64(const label_type label, const id_type id)
-      : _raw(encode_label(label) | encode_id(id))
-    { }
+    constexpr ptr_uint64(const label_type label, const id_type id)
+      : _raw((static_cast<raw_type>(label) << level_shift) |
+             (static_cast<raw_type>(id) << (data_shift + out_idx_bits)))
+    {
+      // TODO: Add Debug checks for non-constexpr context
+      // adiar_assert(label <= max_label, "Cannot represent given label");
+      // adiar_assert(id    <= max_id,    "Cannot represent given id");
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a pointer to an internal node (label, id) with
     ///        given weight.
     ////////////////////////////////////////////////////////////////////////////
-    ptr_uint64(const label_type label, const id_type id, const out_idx_type out_idx)
-      : _raw(encode_label(label) | encode_id(id) | encode_out_idx(out_idx))
-    { }
+    constexpr ptr_uint64(const label_type label,
+                         const id_type id,
+                         const out_idx_type out_idx)
+      : _raw((static_cast<raw_type>(label) << level_shift) |
+             (static_cast<raw_type>(id) << (data_shift + out_idx_bits)) |
+             (static_cast<raw_type>(out_idx) << data_shift))
+    {
+      // TODO: Add Debug checks for non-constexpr context
+      // adiar_assert(label   <= max_label,   "Cannot represent given label");
+      // adiar_assert(id      <= max_id,      "Cannot represent given id");
+      // adiar_assert(out_idx <= max_out_idx, "Cannot represent given id");
+    }
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -372,7 +448,14 @@ namespace adiar::internal
     inline bool
     is_node() const
     {
-      return _raw <= ~terminal_bit;
+      // Derive at compile-time the maximal internal node pointer value.
+      constexpr raw_type max_node = ptr_uint64(max_label, max_id, max_out_idx)._raw
+                                  | ptr_uint64::flag_bit;
+
+      // Since nodes' levels are the smallest ones and the level bits are most
+      // significant, then we can implement `is_node()` as a simple comparison
+      // with a value where all values are maximal.
+      return this->_raw <= max_node;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -383,7 +466,7 @@ namespace adiar::internal
     inline label_type
     label() const
     {
-      return _raw >> (id_bits + out_idx_bits + flag_bits);
+      return this->level();
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -394,7 +477,7 @@ namespace adiar::internal
     inline id_type
     id() const
     {
-      return (_raw >> (out_idx_bits + flag_bits)) & max_id;
+      return this->data() >> out_idx_bits;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -407,24 +490,17 @@ namespace adiar::internal
     inline out_idx_type
     out_idx() const
     {
-      return (_raw >> flag_bits) & max_out_idx;
+      return this->data() & static_cast<raw_type>(max_out_idx);
     }
 
     /* ============================== TERMINALS ============================= */
-  public:
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Type of terminal values.
-    ////////////////////////////////////////////////////////////////////////////
-    using terminal_type = bool;
 
   public:
-    friend inline ptr_uint64 negate(ptr_uint64 p);
-
     ////////////////////////////////////////////////////////////////////////////
     /// When the terminal flag is set, then we interpret the middle bits as the
     /// value of the terminal.
     ///
-    ///    `SVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVF`
+    ///    `LLLLLLLLLLVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVF`
     ///
     /// Notice, that this means we will never have to actually visit the
     /// terminal node to retrieve its value. That is, the only time a terminal
@@ -432,22 +508,52 @@ namespace adiar::internal
     /// of said terminal.
     ////////////////////////////////////////////////////////////////////////////
 
+    ////////////////////////////////////////////////////////////////////////////
+    // befriend terminal functions that need access to protected values.
+    friend inline ptr_uint64 negate(ptr_uint64 p);
+    ////////////////////////////////////////////////////////////////////////////
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of terminal values.
+    ////////////////////////////////////////////////////////////////////////////
+    // TODO (32-bit ADD):
+    //   Template 'terminal_type'
+    using terminal_type = bool;
+
+    static_assert(8*sizeof(terminal_type) <= data_bits,
+                  "Type for terminal values may overflow data field");
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Terminal level.
+    ///
+    /// \remark Since terminals come after all internal nodes, but the maximal
+    ///         level is reserved for `nil`, we reserve the second-maximal level
+    ///         for terminals.
+    ////////////////////////////////////////////////////////////////////////////
+    static constexpr level_type terminal_level = max_level - 1u;
+    static_assert(terminal_level < max_level);
+
   protected:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Terminal bit-flag.
+    /// \brief Minimal possible raw value for a terminal.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr uint64_t terminal_bit = 0x8000000000000000ull;
+    static constexpr raw_type min_terminal =
+      static_cast<raw_type>(terminal_level) << level_shift;
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Terminal bit-flag mask.
-    ////////////////////////////////////////////////////////////////////////////
-    static constexpr uint64_t value_mask = 0x0000000000000002ull;
+    // TODO (32-bit ADD):
+    //   Add `max_terminal` at compile-time. Note, we are interested in the raw
+    //   unsigned encoding (probably by bit-wise oring the minimum and the
+    //   maximum).
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a pointer to a terminal node (v).
     ////////////////////////////////////////////////////////////////////////////
-    ptr_uint64(const terminal_type v) : _raw(terminal_bit | (v << flag_bits))
+    constexpr ptr_uint64(const terminal_type v)
+      : _raw((static_cast<raw_type>(terminal_level) << level_shift) |
+             (static_cast<raw_type>(v) << data_shift))
     { }
 
   public:
@@ -457,7 +563,13 @@ namespace adiar::internal
     inline bool
     is_terminal() const
     {
-      return !is_nil() && _raw >= ptr_uint64::terminal_bit;
+      // We could check whether the raw value is in the interval [min_terminal,
+      // min_nil), i.e. `min_terminal <= this->_raw && this->_raw < min_nil`.
+      // But, doing so would include branching with `&&` and two comparisons.
+      //
+      // The test below only requires a single right-shift together with a
+      // comparison.
+      return this->level() == terminal_level;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -474,7 +586,7 @@ namespace adiar::internal
       //   Negate resulting value based on 'is_flagged()'? It might actually be
       //   better to completely ditch the flag for terminals; this will
       //   simplify quite a lot of the logic.
-      return (_raw & ~terminal_bit) >> flag_bits;
+      return static_cast<terminal_type>(this->data());
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -493,15 +605,6 @@ namespace adiar::internal
     is_true() const
     {
       return is_terminal() && value();
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether a pointer is for a node on a given level.
-    ////////////////////////////////////////////////////////////////////////////
-    inline bool
-    on_level(const label_type level) const
-    {
-      return is_terminal() ? false : label() == level;
     }
 
     /* ============================== COMPARATOR ============================ */
@@ -560,12 +663,19 @@ namespace adiar::internal
     ptr_uint64 operator~ () const
     {
       adiar_assert(this->is_terminal());
+
+      // TODO: generalise for non-boolean terminals
+      constexpr terminal_type max_value = true;
+
+      constexpr raw_type value_mask =
+        static_cast<raw_type>(max_value) << data_shift;
+
       return ptr_uint64(value_mask ^ _raw);
     }
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain a pointer to the terminal with the XOR value of both
-    ///        pointers. The 'flag' is also XORed.
+    ///        pointers' value. The 'flag' is also XORed.
     ///
     /// \pre `is_terminal()` evaluates to `true`.
     //////////////////////////////////////////////////////////////////////////////
@@ -574,7 +684,11 @@ namespace adiar::internal
       adiar_assert(this->is_terminal());
       adiar_assert(o.is_terminal());
 
-      return ptr_uint64(terminal_bit | (this->_raw ^ o._raw));
+      // Since both are terminals, they have the same level. Hence, when XORing
+      // their raw values, the entire level field will be gone. Yet, we have in
+      // 'ptr_uint64::min_terminal' the terminal level pre-shifted at
+      // compile-time.
+      return ptr_uint64(ptr_uint64::min_terminal | (this->_raw ^ o._raw));
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -588,6 +702,8 @@ namespace adiar::internal
       adiar_assert(this->is_terminal());
       adiar_assert(o.is_terminal());
 
+      // Since both are terminals, they have the same level. Hence, when ANDing
+      // their raw values, the entire level field will stay as-is.
       return ptr_uint64(this->_raw & o._raw);
     }
 
@@ -602,11 +718,13 @@ namespace adiar::internal
       adiar_assert(this->is_terminal());
       adiar_assert(o.is_terminal());
 
+      // Since both are terminals, they have the same level. Hence, when ORing
+      // their raw values, the entire level field will stay as-is.
       return ptr_uint64(this->_raw | o._raw);
     }
   };
 
-  /* ============================== ATTRIBUTES ============================== */
+  /* ============================= BOOLEAN FLAG ============================= */
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The pointer with its flag set to true.
@@ -621,28 +739,25 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   inline ptr_uint64 unflag(const ptr_uint64 &p)
   {
-    return p._raw & (~ptr_uint64::flag_mask);
+    return p._raw & (~ptr_uint64::flag_bit);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief The pointer with its flag set to false and out-index set to 0.
+  /// \brief The *essential* pointer, i.e. one without any auxiliary data, e.g.
+  ///        the Boolean flag and the out-index.
   //////////////////////////////////////////////////////////////////////////////
   inline ptr_uint64 essential(const ptr_uint64 &p)
   {
+    // Assuming 'max_out_idx' is consecutive 1s.
+    constexpr ptr_uint64::raw_type out_idx_mask =
+      static_cast<ptr_uint64::raw_type>(ptr_uint64::max_out_idx) << ptr_uint64::data_shift;
+
     // We can abuse the bit-layout to boil everything down to a bit mask, and a
-    // conditional move instruction. This should be optimisable to
-    // 'std::min<size_t>' into very few cpu instructions.
-    const uint64_t _raw = p._raw;
-
-    constexpr uint64_t main_mask =
-      ~((1ull << ptr_uint64::flag_bits) - 1u);
-
-    constexpr uint64_t node_mask =
-      ~(((1ull << ptr_uint64::out_idx_bits) - 1u) << ptr_uint64::flag_bits) & main_mask;
-
-    return _raw > ptr_uint64::terminal_bit
-      ? (_raw & main_mask)
-      : (_raw & node_mask);
+    // conditional move instruction (see `ptr_uint64::is_node()`). This should
+    // be optimisable into very few CPU instructions similar to 'std::min<>'.
+    return p.is_node()
+      ? (p._raw & ~(out_idx_mask | ptr_uint64::flag_bit))
+      : (p._raw & ~ptr_uint64::flag_bit);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -650,15 +765,16 @@ namespace adiar::internal
   ///
   /// \pre `p.is_node() == true`
   //////////////////////////////////////////////////////////////////////////////
+  // TODO: remove (used only in test/.../algorithms/nested_sweeping)
   inline ptr_uint64 with_out_idx(const ptr_uint64 &p,
                                  const ptr_uint64::out_idx_type out_idx)
   {
     adiar_assert(p.is_node());
 
-    constexpr uint64_t out_idx_mask =
-      ~(((1ull << ptr_uint64::out_idx_bits) - 1u) << ptr_uint64::flag_bits);
+    constexpr ptr_uint64::raw_type out_idx_mask =
+      static_cast<ptr_uint64::raw_type>(ptr_uint64::max_out_idx) << ptr_uint64::data_shift;
 
-    return (p._raw & out_idx_mask) | ptr_uint64::encode_out_idx(out_idx);
+    return (p._raw & ~out_idx_mask) | (static_cast<ptr_uint64::raw_type>(out_idx) << ptr_uint64::data_shift);
   }
 
   /* ============================ TERMINAL NODES ============================ */
@@ -666,12 +782,14 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Negate the value of a terminal.
   //////////////////////////////////////////////////////////////////////////////
+  // TODO: Deprecate in favour of '~'
   inline ptr_uint64 negate(ptr_uint64 p)
   {
     return ~p;
   }
 
   /* ============================== CONVERSION ============================== */
+
   // TODO: Conversion constructor from node
 }
 
