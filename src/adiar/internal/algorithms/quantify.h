@@ -254,7 +254,7 @@ namespace adiar::internal
           req.empty_carry() ? v.children() : req.node_carry[0];
 
         const node::children_type children1 =
-          req.target.second().on_level(out_label)
+          req.target.second().level() == out_label
           ? v.children()
           : quantify_policy::reduction_rule_inv(req.target.second());
 

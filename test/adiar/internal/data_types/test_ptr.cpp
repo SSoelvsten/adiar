@@ -3,494 +3,855 @@
 go_bandit([]() {
   describe("adiar/internal/data_types/ptr.h", []() {
     describe("ptr_uint64", []() {
-      it("should recognise nil (unflagged)", [&]() {
-        const ptr_uint64 some_value = ptr_uint64::nil();
-        AssertThat(some_value.is_nil(), Is().True());
+      it("should take up same amount of space as a 'uint64_t'", [&]() {
+        AssertThat(sizeof(ptr_uint64), Is().EqualTo(sizeof(uint64_t)));
       });
 
       describe("nil", [&](){
-        it("should recognise nil (unflagged)", [&]() {
-          const ptr_uint64 some_value = ptr_uint64::nil();
-          AssertThat(some_value.is_nil(), Is().True());
+        describe(".is_flagged() and flag(...)/unflag(...)", []() {
+          it("is not flagged by default", [&]() {
+            AssertThat(ptr_uint64::nil().is_flagged(), Is().False());
+          });
+
+          it("can be flagged", [&]() {
+            AssertThat(flag(ptr_uint64::nil()).is_flagged(), Is().True());
+          });
+
+          it("can be unflagged", [&]() {
+            AssertThat(unflag(flag(ptr_uint64::nil())).is_flagged(), Is().False());
+          });
         });
 
-        it("should recognise nil (flagged)", [&]() {
-          const ptr_uint64 some_value = flag(ptr_uint64::nil());
-          AssertThat(some_value.is_nil(), Is().True());
+        it("level for Nil is larger than Terminals and Labels", [&]() {
+          AssertThat(ptr_uint64::nil_level, Is().GreaterThan(ptr_uint64::terminal_level));
+          AssertThat(ptr_uint64::nil_level, Is().GreaterThan(ptr_uint64::max_label));
         });
 
-        it("can see whether the flag is set", [&]() {
-          AssertThat(flag(ptr_uint64::nil()).is_flagged(), Is().True());
+        it(".level() is 'nil_level'", [&]() {
+          const ptr_uint64 p = ptr_uint64::nil();
+
+          AssertThat(p.level(), Is().EqualTo(ptr_uint64::nil_level));
+          AssertThat(flag(p).level(), Is().EqualTo(ptr_uint64::nil_level));
         });
 
-        it("can see whether the flag is not set", [&]() {
-          AssertThat(ptr_uint64::nil().is_flagged(), Is().False());
+        it(".is_nil() accepts Nil", [&]() {
+          const ptr_uint64 p = ptr_uint64::nil();
+
+          AssertThat(p.is_nil(), Is().True());
+          AssertThat(flag(p).is_nil(), Is().True());
+        });
+
+        it(".is_terminal() rejects Nil", [&]() {
+          const ptr_uint64 p = ptr_uint64::nil();
+
+          AssertThat(p.is_terminal(), Is().False());
+          AssertThat(flag(p).is_terminal(), Is().False());
+        });
+
+        it(".is_false() rejects Nil", [&]() {
+          const ptr_uint64 p = ptr_uint64::nil();
+
+          AssertThat(p.is_false(), Is().False());
+          AssertThat(flag(p).is_false(), Is().False());
+        });
+
+        it(".is_true() rejects Nil", [&]() {
+          const ptr_uint64 p = ptr_uint64::nil();
+
+          AssertThat(p.is_true(), Is().False());
+          AssertThat(flag(p).is_true(), Is().False());
+        });
+
+        it(".is_node() rejects Nil", [&]() {
+          const ptr_uint64 p = ptr_uint64::nil();
+
+          AssertThat(p.is_node(), Is().False());
+          AssertThat(flag(p).is_node(), Is().False());
+        });
+
+        it("has essential(Nil) return Nil with the flag set to 'false'", [&]() {
+          const ptr_uint64 p = ptr_uint64::nil();
+
+          AssertThat(essential(p), Is().EqualTo(p));
+          AssertThat(essential(flag(p)), Is().EqualTo(p));
         });
       });
 
-      describe("terminals", [&](){
-        it("should take up 8 bytes of memory", [&]() {
-          const ptr_uint64 terminal = ptr_uint64(false);
-          AssertThat(sizeof(terminal), Is().EqualTo(8u));
+      describe("terminal", [&](){
+        it("level for Terminals is larger than Labels", [&]() {
+          AssertThat(ptr_uint64::terminal_level, Is().GreaterThan(ptr_uint64::max_label));
         });
 
-        describe("flag, unflag, is_flagged", []() {
-          it("is unflagged by default", [&]() {
-            ptr_uint64 p = ptr_uint64(true);
-            AssertThat(p.is_flagged(), Is().False());
-
-            p = ptr_uint64(true);
+        describe(".is_flagged() and flag(...), unflag(...)", []() {
+          it("'false' terminal is unflagged by default", [&]() {
+            const ptr_uint64 p = ptr_uint64(false);
             AssertThat(p.is_flagged(), Is().False());
           });
 
-          it("can set the flag", [&]() {
-            ptr_uint64 p = flag(ptr_uint64(false));
-            AssertThat(p.is_flagged(), Is().True());
-
-            p = flag(ptr_uint64(true));
-            AssertThat(p.is_flagged(), Is().True());
-          });
-
-          it("can unset the flag", [&]() {
-            ptr_uint64 p = flag(ptr_uint64(false));
-            p = unflag(p);
-            AssertThat(p.is_flagged(), Is().False());
-
-            p = flag(ptr_uint64(true));
-            p = unflag(p);
+          it("'true' terminal is unflagged by default", [&]() {
+            const ptr_uint64 p = ptr_uint64(true);
             AssertThat(p.is_flagged(), Is().False());
           });
-        });
 
-        describe("is_terminal", []() {
-          it("should recognise Sinks as such", [&]() {
-            const ptr_uint64 terminal_F = ptr_uint64(false);
-            const ptr_uint64 terminal_T = ptr_uint64(true);
-
-            AssertThat(terminal_F.is_terminal(), Is().True());
-            AssertThat(terminal_T.is_terminal(), Is().True());
+          it("can set the flag on 'false' terminal", [&]() {
+            const ptr_uint64 p = flag(ptr_uint64(false));
+            AssertThat(flag(p).is_flagged(), Is().True());
           });
 
-          it("should not be confused with Node Ptr (unflagged)", [&]() {
-            ptr_uint64 arc_node_max = ptr_uint64(ptr_uint64::max_label,
-                                                 ptr_uint64::max_id);
-
-            AssertThat(arc_node_max.is_terminal(), Is().False());
-            AssertThat(arc_node_max.is_false(), Is().False());
-            AssertThat(arc_node_max.is_true(), Is().False());
-
-            ptr_uint64 arc_node_min = ptr_uint64(0,0);
-            AssertThat(arc_node_min.is_terminal(), Is().False());
-            AssertThat(arc_node_min.is_false(), Is().False());
-            AssertThat(arc_node_min.is_true(), Is().False());
-
-            ptr_uint64 arc_node = ptr_uint64(42,18);
-            AssertThat(arc_node.is_terminal(), Is().False());
-            AssertThat(arc_node.is_false(), Is().False());
-            AssertThat(arc_node.is_true(), Is().False());
+          it("can set the flag on 'true' terminal", [&]() {
+            const ptr_uint64 p = flag(ptr_uint64(true));
+            AssertThat(flag(p).is_flagged(), Is().True());
           });
 
-          it("should not be confused with Node Ptr (flagged)", [&]() {
-            ptr_uint64 arc_node_max = flag(ptr_uint64(ptr_uint64::max_label,
-                                                      ptr_uint64::max_id));
-
-            AssertThat(arc_node_max.is_terminal(), Is().False());
-            AssertThat(arc_node_max.is_false(), Is().False());
-            AssertThat(arc_node_max.is_true(), Is().False());
-
-            ptr_uint64 arc_node_min = flag(ptr_uint64(0,0));
-            AssertThat(arc_node_min.is_terminal(), Is().False());
-            AssertThat(arc_node_min.is_false(), Is().False());
-            AssertThat(arc_node_min.is_true(), Is().False());
-
-            ptr_uint64 arc_node = flag(ptr_uint64(42,18));
-            AssertThat(arc_node.is_terminal(), Is().False());
-            AssertThat(arc_node.is_false(), Is().False());
-            AssertThat(arc_node.is_true(), Is().False());
+          it("can unset the flag on 'false' terminal", [&]() {
+            const ptr_uint64 p = flag(ptr_uint64(false));
+            AssertThat(unflag(flag(p)).is_flagged(), Is().False());
           });
 
-          it("should not be confused with Nil (unflagged)", [&]() {
-            AssertThat(ptr_uint64::nil().is_terminal(), Is().False());
-          });
-
-          it("should not be confused with Nil (flagged)", [&]() {
-            AssertThat(flag(ptr_uint64::nil()).is_terminal(), Is().False());
+          it("can unset the flag on 'true' terminal", [&]() {
+            const ptr_uint64 p = flag(ptr_uint64(true));
+            AssertThat(unflag(flag(p)).is_flagged(), Is().False());
           });
         });
 
-        describe("value", []() {
-          it("retrieves value from false terminal", [&]() {
+        describe(".is_nil()", []() {
+          it("rejects 'false' terminal", [&]() {
+            const ptr_uint64 p = ptr_uint64(false);
+
+            AssertThat(p.is_nil(), Is().False());
+            AssertThat(flag(p).is_nil(), Is().False());
+          });
+
+          it("rejects 'true' terminal", [&]() {
+            const ptr_uint64 p = ptr_uint64(true);
+
+            AssertThat(p.is_nil(), Is().False());
+            AssertThat(flag(p).is_nil(), Is().False());
+          });
+        });
+
+        describe(".level()", []() {
+          it("is 'terminal_level' for 'false' terminal", [&]() {
+            const ptr_uint64 p = ptr_uint64(false);
+
+            AssertThat(p.level(), Is().EqualTo(ptr_uint64::terminal_level));
+            AssertThat(flag(p).level(), Is().EqualTo(ptr_uint64::terminal_level));
+          });
+
+          it("is 'terminal_level' for 'true' terminal", [&]() {
+            const ptr_uint64 p = ptr_uint64(true);
+
+            AssertThat(p.level(), Is().EqualTo(ptr_uint64::terminal_level));
+            AssertThat(flag(p).level(), Is().EqualTo(ptr_uint64::terminal_level));
+          });
+        });
+
+        describe(".is_terminal()", []() {
+          it("accepts 'false' terminal", [&]() {
+            const ptr_uint64 p = ptr_uint64(false);
+
+            AssertThat(p.is_terminal(), Is().True());
+            AssertThat(flag(p).is_terminal(), Is().True());
+          });
+
+          it("accepts 'true' terminal", [&]() {
+            const ptr_uint64 p = ptr_uint64(true);
+
+            AssertThat(p.is_terminal(), Is().True());
+            AssertThat(flag(p).is_terminal(), Is().True());
+          });
+        });
+
+        describe(".value()", []() {
+          it("retrieves value from 'false' terminal", [&]() {
             ptr_uint64 p = ptr_uint64(false);
+
             AssertThat(p.value(), Is().False());
+            AssertThat(flag(p).value(), Is().False());
           });
 
-          it("retrieves value from true terminal", [&]() {
+          it("retrieves value from 'true' terminal", [&]() {
             ptr_uint64 p = ptr_uint64(true);
+
             AssertThat(p.value(), Is().True());
+            AssertThat(flag(p).value(), Is().True());
           });
         });
 
-        describe("is_false", []() {
-          it("should accept false terminal", [&]() {
-            ptr_uint64 terminal_F = ptr_uint64(false);
-            AssertThat(terminal_F.is_false(), Is().True());
+        describe(".is_false()", []() {
+          it("accepts 'false' terminal", [&]() {
+            const ptr_uint64 p = ptr_uint64(false);
+
+            AssertThat(p.is_false(), Is().True());
+            AssertThat(flag(p).is_false(), Is().True());
           });
 
-          it("should accept false terminal (flagged)", [&]() {
-            ptr_uint64 terminal_F = flag(ptr_uint64(false));
-            AssertThat(terminal_F.is_false(), Is().True());
-          });
+          it("rejects 'true' terminal", [&]() {
+            const ptr_uint64 p = ptr_uint64(true);
 
-          it("should reject terminal", [&]() {
-            ptr_uint64 terminal_T = ptr_uint64(true);
-            AssertThat(terminal_T.is_false(), Is().False());
-          });
-
-          it("should reject non-terminal", [&]() {
-            ptr_uint64 p = ptr_uint64(0,0);
             AssertThat(p.is_false(), Is().False());
-          });
-
-          it("should reject nil", [&]() {
-            ptr_uint64 p = ptr_uint64::nil();
-            AssertThat(p.is_false(), Is().False());
+            AssertThat(flag(p).is_false(), Is().False());
           });
         });
 
-        describe("is_true", []() {
-          it("should reject false terminal", [&]() {
-            ptr_uint64 terminal_F = ptr_uint64(false);
-            AssertThat(terminal_F.is_true(), Is().False());
-          });
+        describe(".is_true()", []() {
+          it("rejects 'false' terminal", [&]() {
+            const ptr_uint64 p = ptr_uint64(false);
 
-          it("should accept true terminal", [&]() {
-            ptr_uint64 terminal_T = ptr_uint64(true);
-            AssertThat(terminal_T.is_true(), Is().True());
-          });
-
-          it("should accept true terminal (flagged)", [&]() {
-            ptr_uint64 terminal_T = flag(ptr_uint64(true));
-            AssertThat(terminal_T.is_true(), Is().True());
-          });
-
-          it("should reject non-terminal", [&]() {
-            ptr_uint64 p = ptr_uint64(0,1);
             AssertThat(p.is_true(), Is().False());
+            AssertThat(flag(p).is_true(), Is().False());
           });
 
-          it("should reject nil", [&]() {
-            ptr_uint64 p = ptr_uint64::nil();
-            AssertThat(p.is_true(), Is().False());
+          it("accepts 'true' terminal", [&]() {
+            const ptr_uint64 p = ptr_uint64(true);
+
+            AssertThat(p.is_true(), Is().True());
+            AssertThat(flag(p).is_true(), Is().True());
           });
         });
 
-        describe("negate", []() {
-          it("should negate terminal (unflagged)", [&]() {
-            ptr_uint64 p1 = ptr_uint64(false);
-            AssertThat(negate(p1), Is().EqualTo(ptr_uint64(true)));
+        describe(".is_node()", []() {
+          it("rejects 'false' terminal", [&]() {
+            const ptr_uint64 p = ptr_uint64(false);
 
-            ptr_uint64 p2 = ptr_uint64(true);
-            AssertThat(negate(p2), Is().EqualTo(ptr_uint64(false)));
+            AssertThat(p.is_node(), Is().False());
+            AssertThat(flag(p).is_node(), Is().False());
           });
 
-          it("should negate terminal into terminal (flagged)", [&]() {
-            ptr_uint64 p1 = flag(ptr_uint64(false));
-            AssertThat(negate(p1), Is().EqualTo(flag(ptr_uint64(true))));
+          it("rejects 'true' terminal", [&]() {
+            const ptr_uint64 p = ptr_uint64(true);
 
-            ptr_uint64 p2 = flag(ptr_uint64(true));
-            AssertThat(negate(p2), Is().EqualTo(flag(ptr_uint64(false))));
+            AssertThat(p.is_node(), Is().False());
+            AssertThat(flag(p).is_node(), Is().False());
+          });
+        });
+
+        describe("operator '~' (negate)", []() {
+          it("should negate 'false' into 'true' terminal", [&]() {
+            const ptr_uint64 p = ptr_uint64(false);
+
+            AssertThat(~p, Is().EqualTo(ptr_uint64(true)));
+            AssertThat(negate(p), Is().EqualTo(ptr_uint64(true)));
+          });
+
+          it("should negate 'true' into 'false' terminal", [&]() {
+            const ptr_uint64 p = ptr_uint64(true);
+
+            AssertThat(~p, Is().EqualTo(ptr_uint64(false)));
+            AssertThat(negate(p), Is().EqualTo(ptr_uint64(false)));
+          });
+
+          it("preserves flag when negating 'false' terminal", [&]() {
+            const ptr_uint64 p = flag(ptr_uint64(false));
+
+            AssertThat(~p, Is().EqualTo(flag(ptr_uint64(true))));
+            AssertThat(negate(p), Is().EqualTo(flag(ptr_uint64(true))));
+          });
+
+          it("preserves flag when negating 'true' terminal", [&]() {
+            const ptr_uint64 p = flag(ptr_uint64(true));
+
+            AssertThat(~p, Is().EqualTo(flag(ptr_uint64(false))));
+            AssertThat(negate(p), Is().EqualTo(flag(ptr_uint64(false))));
+          });
+        });
+
+        describe("xor ( ^ )", []() {
+          it("computes 'false' for 'false' ^ 'false' terminals", [&]() {
+            const ptr_uint64 p_false = ptr_uint64(false);
+
+            AssertThat(p_false ^ p_false, Is().EqualTo(ptr_uint64(false)));
+          });
+
+          it("computes 'true' for 'false' ^ 'true' terminals", [&]() {
+            const ptr_uint64 p_false = ptr_uint64(false);
+            const ptr_uint64 p_true  = ptr_uint64(true);
+
+            AssertThat(p_false ^ p_true,  Is().EqualTo(ptr_uint64(true)));
+            AssertThat(p_true  ^ p_false, Is().EqualTo(ptr_uint64(true)));
+          });
+
+          it("computes 'false' for 'true' ^ 'true' terminals", [&]() {
+            const ptr_uint64 p_true = ptr_uint64(true);
+
+            AssertThat(p_true ^ p_true, Is().EqualTo(ptr_uint64(false)));
+          });
+
+          it("also combines flags with XOR", [&]() {
+            const ptr_uint64 p_false = ptr_uint64(false);
+            const ptr_uint64 p_true  = ptr_uint64(true);
+
+            AssertThat(p_false ^ p_true,             Is().EqualTo(p_true));
+            AssertThat(flag(p_false) ^ p_true,       Is().EqualTo(flag(p_true)));
+            AssertThat(p_true ^ flag(p_true),        Is().EqualTo(flag(p_false)));
+            AssertThat(flag(p_false) ^ flag(p_true), Is().EqualTo(p_true));
+          });
+        });
+
+        describe("and ( & )", []() {
+          it("computes 'false' for 'false' ^ 'false' terminals", [&]() {
+            const ptr_uint64 p_false = ptr_uint64(false);
+
+            AssertThat(p_false & p_false, Is().EqualTo(ptr_uint64(false)));
+          });
+
+          it("computes 'false' for 'false' ^ 'true' terminals", [&]() {
+            const ptr_uint64 p_false = ptr_uint64(false);
+            const ptr_uint64 p_true  = ptr_uint64(true);
+
+            AssertThat(p_false & p_true,  Is().EqualTo(ptr_uint64(false)));
+            AssertThat(p_true  & p_false, Is().EqualTo(ptr_uint64(false)));
+          });
+
+          it("computes 'true' for 'true' ^ 'true' terminals", [&]() {
+            const ptr_uint64 p_true = ptr_uint64(true);
+
+            AssertThat(p_true & p_true, Is().EqualTo(ptr_uint64(true)));
+          });
+
+          it("also combines flags with AND", [&]() {
+            const ptr_uint64 p_false = ptr_uint64(false);
+            const ptr_uint64 p_true  = ptr_uint64(true);
+
+            AssertThat(p_false & p_true,             Is().EqualTo(p_false));
+            AssertThat(flag(p_false) & p_true,       Is().EqualTo(p_false));
+            AssertThat(p_true & flag(p_true),        Is().EqualTo(p_true));
+            AssertThat(flag(p_false) & flag(p_true), Is().EqualTo(flag(p_false)));
+          });
+        });
+
+        describe("or ( | )", []() {
+          it("computes 'false' for 'false' ^ 'false' terminals", [&]() {
+            const ptr_uint64 p_false = ptr_uint64(false);
+
+            AssertThat(p_false | p_false, Is().EqualTo(ptr_uint64(false)));
+          });
+
+          it("computes 'true' for 'false' ^ 'true' terminals", [&]() {
+            const ptr_uint64 p_false = ptr_uint64(false);
+            const ptr_uint64 p_true  = ptr_uint64(true);
+
+            AssertThat(p_false | p_true,  Is().EqualTo(ptr_uint64(true)));
+            AssertThat(p_true  | p_false, Is().EqualTo(ptr_uint64(true)));
+          });
+
+          it("computes 'true' for 'true' ^ 'true' terminals", [&]() {
+            const ptr_uint64 p_true = ptr_uint64(true);
+
+            AssertThat(p_true | p_true, Is().EqualTo(ptr_uint64(true)));
+          });
+
+          it("also combines flags with OR", [&]() {
+            const ptr_uint64 p_false = ptr_uint64(false);
+            const ptr_uint64 p_true  = ptr_uint64(true);
+
+            AssertThat(p_false | p_true,             Is().EqualTo(p_true));
+            AssertThat(flag(p_false) | p_true,       Is().EqualTo(flag(p_true)));
+            AssertThat(p_false | flag(p_false),      Is().EqualTo(flag(p_false)));
+            AssertThat(flag(p_false) | flag(p_true), Is().EqualTo(flag(p_true)));
+          });
+        });
+
+        describe("essential(...)", []() {
+          it("strips off flag from 'false' terminal", [&]() {
+            const ptr_uint64 p = ptr_uint64(false);
+
+            AssertThat(essential(p), Is().EqualTo(p));
+            AssertThat(essential(flag(p)), Is().EqualTo(p));
+          });
+
+          it("strips off flag from 'true' terminal", [&]() {
+            const ptr_uint64 p = ptr_uint64(true);
+
+            AssertThat(essential(p), Is().EqualTo(p));
+            AssertThat(essential(flag(p)), Is().EqualTo(p));
           });
         });
       });
 
       describe("internal nodes", [&]() {
-        const ptr_uint64 terminal_F = ptr_uint64(false);
-        const ptr_uint64 terminal_T = ptr_uint64(true);
+        describe(".is_flagged() and flag(...), unflag(...)", [&]() {
+          it("is unflagged by default for minimal Node Ptr", [&]() {
+            const ptr_uint64 p = ptr_uint64(0,0,0);
 
-        it("should take up 8 bytes of memory", [&]() {
-          const ptr_uint64 node_ptr = ptr_uint64(42,2);
-          AssertThat(sizeof(node_ptr), Is().EqualTo(8u));
-        });
-
-        describe("flag, unflag, is_flagged", [&]() {
-          it("can recognise the flag is set", [&]() {
-            ptr_uint64 p = flag(ptr_uint64(42,2));
-            AssertThat(p.is_flagged(), Is().True());
-
-            p = flag(ptr_uint64(17,3));
-            AssertThat(p.is_flagged(), Is().True());
-          });
-
-          it("can recognise the flag is not set", [&]() {
-            ptr_uint64 p = ptr_uint64(42,2);
-            AssertThat(p.is_flagged(), Is().False());
-
-            p = ptr_uint64(17,3);
             AssertThat(p.is_flagged(), Is().False());
           });
-        });
 
-        describe("is_node", [&]() {
-          it("should recognise Node Ptr (unflagged)", [&]() {
-            const ptr_uint64 p_node_max = ptr_uint64(ptr_uint64::max_label,
-                                                     ptr_uint64::max_id);
+          it("is unflagged by default for maximal Node Ptr", [&]() {
+            const ptr_uint64 p = ptr_uint64(ptr_uint64::max_label,
+                                            ptr_uint64::max_id,
+                                            ptr_uint64::max_out_idx);
 
-            AssertThat(p_node_max.is_node(), Is().True());
-
-            const ptr_uint64 p_node_min = ptr_uint64(0,0);
-            AssertThat(p_node_min.is_node(), Is().True());
-
-            const ptr_uint64 p_node_min_max = ptr_uint64(0, ptr_uint64::max_id);
-            AssertThat(p_node_min_max.is_node(), Is().True());
-
-            const ptr_uint64 p_node = ptr_uint64(42,18);
-            AssertThat(p_node.is_node(), Is().True());
+            AssertThat(p.is_flagged(), Is().False());
           });
 
-          it("should recognise Node Ptr (flagged)", [&]() {
-            const ptr_uint64 p_node_max = flag(ptr_uint64(ptr_uint64::max_label,
-                                                          ptr_uint64::max_id));
+          it("accepts flagged minimal Node Ptr", [&]() {
+            const ptr_uint64 p = flag(ptr_uint64(0,0,0));
 
-            AssertThat(p_node_max.is_node(), Is().True());
-
-            const ptr_uint64 p_node_min = flag(ptr_uint64(0,0));
-            AssertThat(p_node_min.is_node(), Is().True());
-
-            const ptr_uint64 p_node_min_max = ptr_uint64(0, ptr_uint64::max_id);
-            AssertThat(p_node_min_max.is_node(), Is().True());
-
-            const ptr_uint64 p_node = flag(ptr_uint64(42,18));
-            AssertThat(p_node.is_node(), Is().True());
+            AssertThat(p.is_flagged(), Is().True());
           });
 
-          it("should not be confused with Terminals", [&]() {
-            const ptr_uint64 terminal_F = ptr_uint64(false);
-            const ptr_uint64 terminal_T = ptr_uint64(true);
-
-            AssertThat(terminal_F.is_node(), Is().False());
-            AssertThat(terminal_T.is_node(), Is().False());
+          it("accepts some flagged Node Ptr", [&]() {
+            const ptr_uint64 p = flag(ptr_uint64(42,2, true));
+            AssertThat(p.is_flagged(), Is().True());
           });
 
-          it("should not be confused with Nil (unflagged)", [&]() {
-            AssertThat(ptr_uint64::nil().is_node(), Is().False());
+          it("accepts flagged maximal Node Ptr", [&]() {
+            const ptr_uint64 p = flag(ptr_uint64(ptr_uint64::max_label,
+                                                 ptr_uint64::max_id,
+                                                 ptr_uint64::max_out_idx));
+
+            AssertThat(p.is_flagged(), Is().True());
           });
 
-          it("should not be confused with Nil (flagged)", [&]() {
-            AssertThat(flag(ptr_uint64::nil()).is_node(), Is().False());
+          it("rejects unflagged minimal Node Ptr", [&]() {
+            const ptr_uint64 p = unflag(flag(ptr_uint64(0,0,0)));
+
+            AssertThat(p.is_flagged(), Is().False());
+          });
+
+          it("rejects some unflagged Node Ptr", [&]() {
+            const ptr_uint64 p = unflag(flag(ptr_uint64(17, 3, false)));
+            AssertThat(p.is_flagged(), Is().False());
+          });
+
+          it("rejects unflagged maximal Node Ptr", [&]() {
+            const ptr_uint64 p = unflag(flag(ptr_uint64(ptr_uint64::max_label,
+                                                        ptr_uint64::max_id,
+                                                        ptr_uint64::max_out_idx)));
+
+            AssertThat(p.is_flagged(), Is().False());
           });
         });
 
-        describe("label", [&]() {
-          it("should store and retrieve label for Ptr with maximal id (unflagged)", [&]() {
-            const ptr_uint64 p = ptr_uint64(12, ptr_uint64::max_id);
+        describe(".is_nil()", []() {
+          it("rejects minimal Node Ptr", [&]() {
+            const ptr_uint64 p = ptr_uint64(0,0,0);
+
+            AssertThat(p.is_nil(), Is().False());
+            AssertThat(flag(p).is_nil(), Is().False());
+          });
+
+          it("rejects some Node Ptr", [&]() {
+            const ptr_uint64 p = ptr_uint64(42, 7);
+
+            AssertThat(p.is_nil(), Is().False());
+            AssertThat(flag(p).is_nil(), Is().False());
+          });
+
+          it("rejects maximal Node Ptr", [&]() {
+            const ptr_uint64 p = ptr_uint64(ptr_uint64::max_label,
+                                            ptr_uint64::max_id,
+                                            ptr_uint64::max_out_idx);
+
+            AssertThat(p.is_nil(), Is().False());
+            AssertThat(flag(p).is_nil(), Is().False());
+          });
+        });
+
+        describe(".is_terminal()", []() {
+          it("rejects minimal Node Ptr", [&]() {
+            const ptr_uint64 p = ptr_uint64(0,0,0);
+
+            AssertThat(p.is_terminal(), Is().False());
+            AssertThat(flag(p).is_terminal(), Is().False());
+          });
+
+          it("rejects maximal Node Ptr", [&]() {
+            const ptr_uint64 p = ptr_uint64(ptr_uint64::max_label,
+                                            ptr_uint64::max_id,
+                                            ptr_uint64::max_out_idx);
+
+            AssertThat(p.is_terminal(), Is().False());
+            AssertThat(flag(p).is_terminal(), Is().False());
+          });
+        });
+
+        describe(".is_false()", []() {
+          it("rejects minimal Node Ptr", [&]() {
+            const ptr_uint64 p = ptr_uint64(0,0,0);
+
+            AssertThat(p.is_false(), Is().False());
+            AssertThat(flag(p).is_false(), Is().False());
+          });
+
+          it("rejects maximal Node Ptr", [&]() {
+            const ptr_uint64 p = ptr_uint64(ptr_uint64::max_label,
+                                            ptr_uint64::max_id,
+                                            ptr_uint64::max_out_idx);
+
+            AssertThat(p.is_false(), Is().False());
+            AssertThat(flag(p).is_false(), Is().False());
+          });
+        });
+
+        describe(".is_true()", []() {
+          it("rejects minimal Node Ptr", [&]() {
+            const ptr_uint64 p = ptr_uint64(0,0,0);
+
+            AssertThat(p.is_true(), Is().False());
+            AssertThat(flag(p).is_true(), Is().False());
+          });
+
+          it("rejects maximal Node Ptr", [&]() {
+            const ptr_uint64 p = ptr_uint64(ptr_uint64::max_label,
+                                            ptr_uint64::max_id,
+                                            ptr_uint64::max_out_idx);
+
+            AssertThat(p.is_true(), Is().False());
+            AssertThat(flag(p).is_true(), Is().False());
+          });
+        });
+
+        describe(".is_node()", [&]() {
+          it("accepts minimal Node Ptr", [&]() {
+            const ptr_uint64 p = ptr_uint64(0,0,0);
+
+            AssertThat(p.is_node(), Is().True());
+            AssertThat(flag(p).is_node(), Is().True());
+          });
+
+          it("accepts some Node Ptr", [&]() {
+            const ptr_uint64 p = ptr_uint64(42, 18, false);
+
+            AssertThat(p.is_node(), Is().True());
+            AssertThat(flag(p).is_node(), Is().True());
+          });
+
+          it("accepts maximal Node Ptr", [&]() {
+            const ptr_uint64 p = ptr_uint64(ptr_uint64::max_label,
+                                            ptr_uint64::max_id,
+                                            ptr_uint64::max_out_idx);
+
+            AssertThat(p.is_node(), Is().True());
+            AssertThat(flag(p).is_node(), Is().True());
+          });
+        });
+
+        describe(".label(), .level()", [&]() {
+          it("should store and retrieve label for (0, max_id, false) Ptr", [&]() {
+            // This checks overflow of ids/out_idx into labels
+            const ptr_uint64 p = ptr_uint64(0, ptr_uint64::max_id, true);
+
+            AssertThat(p.label(), Is().EqualTo(0u));
+            AssertThat(flag(p).label(), Is().EqualTo(0u));
+
+            AssertThat(p.label(), Is().EqualTo(p.level()));
+          });
+
+          it("should store and retrieve label for (12, max_id, false) Ptr", [&]() {
+            const ptr_uint64 p = ptr_uint64(12, ptr_uint64::max_id, false);
+
             AssertThat(p.label(), Is().EqualTo(12u));
+            AssertThat(flag(p).label(), Is().EqualTo(12u));
+
+            AssertThat(p.label(), Is().EqualTo(p.level()));
           });
 
-          it("should store and retrieve 42 label Ptr (unflagged)", [&]() {
+          it("should store and retrieve for (42, 2) Ptr", [&]() {
             const ptr_uint64 p = ptr_uint64(42,2);
+
             AssertThat(p.label(), Is().EqualTo(42u));
+            AssertThat(flag(p).label(), Is().EqualTo(42u));
+
+            AssertThat(p.label(), Is().EqualTo(p.level()));
           });
 
-          it("should store and retrieve 21 label Ptr (unflagged)", [&]() {
-            const ptr_uint64 p = ptr_uint64(21,2);
+          it("should store and retrieve for (21, 0, true) Ptr", [&]() {
+            const ptr_uint64 p = ptr_uint64(21, 0, true);
+
             AssertThat(p.label(), Is().EqualTo(21u));
+            AssertThat(flag(p).label(), Is().EqualTo(21u));
+
+            AssertThat(p.label(), Is().EqualTo(p.level()));
           });
 
-          it("should store and retrieve MAX label Ptr (unflagged)", [&]() {
+          it("should store and retrieve for (max_label, max_id) Ptr", [&]() {
             const ptr_uint64 p = ptr_uint64(ptr_uint64::max_label,
                                             ptr_uint64::max_id);
 
             AssertThat(p.label(), Is().EqualTo(ptr_uint64::max_label));
+            AssertThat(flag(p).label(), Is().EqualTo(ptr_uint64::max_label));
+
+            AssertThat(p.label(), Is().EqualTo(p.level()));
           });
 
-          it("should store and retrieve label for Ptr with maximal id (flagged)", [&]() {
-            const ptr_uint64 p = flag(ptr_uint64(12, ptr_uint64::max_id));
-            AssertThat(p.label(), Is().EqualTo(12u));
-          });
-
-          it("should store and retrieve 42 label Ptr (flagged)", [&]() {
-            const ptr_uint64 p = flag(ptr_uint64(42,2));
-            AssertThat(p.label(), Is().EqualTo(42u));
-          });
-
-          it("should store and retrieve 21 label Ptr (flagged)", [&]() {
-            const ptr_uint64 p = flag(ptr_uint64(21,2));
-            AssertThat(p.label(), Is().EqualTo(21u));
-          });
-
-          it("should store and retrieve MAX label Ptr (flagged)", [&]() {
+          it("should store and retrieve for (max_label, max_id, max_out_idx) Ptr", [&]() {
             const ptr_uint64 p = ptr_uint64(ptr_uint64::max_label,
-                                            ptr_uint64::max_id);
+                                            ptr_uint64::max_id,
+                                            ptr_uint64::max_out_idx);
 
             AssertThat(p.label(), Is().EqualTo(ptr_uint64::max_label));
+            AssertThat(flag(p).label(), Is().EqualTo(ptr_uint64::max_label));
+
+            AssertThat(p.label(), Is().EqualTo(p.level()));
           });
         });
 
-        describe("id", [&]() {
-          it("should store and retrieve 42 id (unflagged)", [&]() {
-            const ptr_uint64 p = ptr_uint64(2,42);
-            AssertThat(p.id(), Is().EqualTo(42u));
-          });
-
-          it("should store and retrieve 21 id (unflagged)", [&]() {
-            const ptr_uint64 p = ptr_uint64(2,21);
-            AssertThat(p.id(), Is().EqualTo(21u));
-          });
-
-          it("should store and retrieve MAX id (unflagged)", [&]() {
-            const ptr_uint64 p = ptr_uint64(ptr_uint64::max_label,
-                                            ptr_uint64::max_id);
-
-            AssertThat(p.id(), Is().EqualTo(ptr_uint64::max_id));
-          });
-
-          it("should store and retrieve 42 id (flagged)", [&]() {
-            const  ptr_uint64 p = flag(ptr_uint64(2,42));
-            AssertThat(p.id(), Is().EqualTo(42u));
-          });
-
-          it("should store and retrieve 21 id (flagged)", [&]() {
-            const ptr_uint64 p = flag(ptr_uint64(2,21));
-            AssertThat(p.id(), Is().EqualTo(21u));
-          });
-
-          it("should store and retrieve MAX id (flagged)", [&]() {
-            const ptr_uint64 p = ptr_uint64(ptr_uint64::max_label,
-                                            ptr_uint64::max_id);
-
-            AssertThat(p.id(), Is().EqualTo(ptr_uint64::max_id));
-          });
-        });
-
-        describe("out-index", [&]() {
-          it("has default value of 0 (unflagged)", [&]() {
-            const ptr_uint64 p = ptr_uint64(2,42);
-            AssertThat(p.out_idx(), Is().EqualTo(0u));
-          });
-
-          it("has default value of 0 (flagged)", [&]() {
-            const ptr_uint64 p = flag(ptr_uint64(2,42));
-            AssertThat(p.out_idx(), Is().EqualTo(0u));
-          });
-
-          it("has default value of 0 (max-id)", [&]() {
-            const ptr_uint64 p = flag(ptr_uint64(2,ptr_uint64::max_id));
-            AssertThat(p.out_idx(), Is().EqualTo(0u));
-          });
-
+        describe(".out_idx()", [&]() {
           it("has maximum out-index be 1", [&]() {
             AssertThat(ptr_uint64::max_out_idx, Is().EqualTo(1u));
           });
 
-          it("should store and retrieve 'false' out-index (unflagged)", [&]() {
+          it("has default value of 0 in (0,0)", [&]() {
+            const ptr_uint64 p = ptr_uint64(2,42);
+
+            AssertThat(p.out_idx(), Is().EqualTo(0u));
+            AssertThat(flag(p).out_idx(), Is().EqualTo(0u));
+          });
+
+          it("has default value of 0 in (2,42)", [&]() {
+            const ptr_uint64 p = ptr_uint64(2,42);
+
+            AssertThat(p.out_idx(), Is().EqualTo(0u));
+            AssertThat(flag(p).out_idx(), Is().EqualTo(0u));
+          });
+
+          it("has default value of 0 in (0,max_id)", [&]() {
+            // This checks the id does not flow into the out_idx
+            const ptr_uint64 p = ptr_uint64(0, ptr_uint64::max_id);
+
+            AssertThat(p.out_idx(), Is().EqualTo(0u));
+            AssertThat(flag(p).out_idx(), Is().EqualTo(0u));
+          });
+
+          it("retrieves 0 from (2,42,false)", [&]() {
             const ptr_uint64 p = ptr_uint64(2,42,false);
+
             AssertThat(p.out_idx(), Is().EqualTo(0u));
+            AssertThat(flag(p).out_idx(), Is().EqualTo(0u));
           });
 
-          it("should store and retrieve 'false' out-index (flagged)", [&]() {
-            const ptr_uint64 p = flag(ptr_uint64(2,42,false));
+          it("retrieves 0 from (max_label,max_id,false)", [&]() {
+            const ptr_uint64 p = ptr_uint64(ptr_uint64::max_label,
+                                            ptr_uint64::max_id,
+                                            false);
+
             AssertThat(p.out_idx(), Is().EqualTo(0u));
+            AssertThat(flag(p).out_idx(), Is().EqualTo(0u));
           });
 
-          it("should store and retrieve 'true' out-index (unflagged)", [&]() {
+          it("retrieves 1 from (0,0,true)", [&]() {
+            const ptr_uint64 p = ptr_uint64(0,0,true);
+
+            AssertThat(p.out_idx(), Is().EqualTo(1u));
+            AssertThat(flag(p).out_idx(), Is().EqualTo(1u));
+          });
+
+          it("retrieves 1 from (2,42,true)", [&]() {
             const ptr_uint64 p = ptr_uint64(2,42,true);
+
             AssertThat(p.out_idx(), Is().EqualTo(1u));
+            AssertThat(flag(p).out_idx(), Is().EqualTo(1u));
           });
 
-          it("should store and retrieve 'true' out-index (flagged)", [&]() {
-            const ptr_uint64 p = flag(ptr_uint64(2,42,true));
+          it("retrieves 1 from (max_label,max_id,true)", [&]() {
+            const ptr_uint64 p = ptr_uint64(ptr_uint64::max_label,
+                                            ptr_uint64::max_id,
+                                            true);
+
             AssertThat(p.out_idx(), Is().EqualTo(1u));
+            AssertThat(flag(p).out_idx(), Is().EqualTo(1u));
           });
         });
 
-        describe("ordering ( < )", [&]() {
-          it("should sort by label, then by id", [&]() {
-            const ptr_uint64 node_1_2 = ptr_uint64(1,2);
-            const ptr_uint64 node_2_1 = ptr_uint64(2,1);
-            const ptr_uint64 node_2_2 = ptr_uint64(2,2);
+        describe(".id()", [&]() {
+          it("retrieve 0 from (0,0)", [&]() {
+            const ptr_uint64 p = ptr_uint64(0,0);
 
-            AssertThat(node_1_2 < node_2_1, Is().True());
-            AssertThat(node_2_1 < node_2_2, Is().True());
+            AssertThat(p.id(), Is().EqualTo(0u));
+            AssertThat(flag(p).id(), Is().EqualTo(0u));
           });
 
-          it("should sort by label and id independent of the flag", [&]() {
-            const ptr_uint64 node_1_2 = ptr_uint64(1,2);
-            const ptr_uint64 node_2_1 = ptr_uint64(2,1);
+          it("retrieve 0 from (0,0,0)", [&]() {
+            const ptr_uint64 p = ptr_uint64(0,0,0);
 
-            AssertThat(node_1_2 < flag(node_2_1), Is().True());
-            AssertThat(flag(node_1_2) < node_2_1, Is().True());
-            AssertThat(flag(node_1_2) < flag(node_2_1), Is().True());
+            AssertThat(p.id(), Is().EqualTo(0u));
+            AssertThat(flag(p).id(), Is().EqualTo(0u));
           });
 
-          it("should sort by id, then by out-index", [&]() {
-            const ptr_uint64 node_1_T = ptr_uint64(0,1,true);
-            const ptr_uint64 node_2_F = ptr_uint64(0,2,false);
-            const ptr_uint64 node_2_T = ptr_uint64(0,2,true);
+          it("retrieves 0 from (0,0,max_out_idx)", [&]() {
+            const ptr_uint64 p = ptr_uint64(0,0, ptr_uint64::max_out_idx);
 
-            AssertThat(node_1_T < node_2_F, Is().True());
-            AssertThat(node_2_F < node_2_T, Is().True());
+            AssertThat(p.id(), Is().EqualTo(0u));
+            AssertThat(flag(p).id(), Is().EqualTo(0u));
           });
 
-          it("should sort by id and out-index independent of the flag", [&]() {
-            const ptr_uint64 node_1_T = ptr_uint64(0,1,true);
-            const ptr_uint64 node_2_F = ptr_uint64(0,2,false);
+          it("retrieve max_id from (0,max_id)", [&]() {
+            const ptr_uint64 p = ptr_uint64(0,ptr_uint64::max_id);
 
-            AssertThat(node_1_T < flag(node_2_F), Is().True());
-            AssertThat(flag(node_1_T) < node_2_F, Is().True());
-            AssertThat(flag(node_1_T) < flag(node_2_F), Is().True());
+            AssertThat(p.id(), Is().EqualTo(ptr_uint64::max_id));
+            AssertThat(flag(p).id(), Is().EqualTo(ptr_uint64::max_id));
           });
 
-          it("should sort by label, then id, and finally out-index", [&]() {
-            const ptr_uint64 node_a = ptr_uint64(0,3,true);
-            const ptr_uint64 node_b = ptr_uint64(1,2,false);
+          it("retrieves max_id from (0,max_id,max_out_idx)", [&]() {
+            const ptr_uint64 p = ptr_uint64(0,
+                                            ptr_uint64::max_id,
+                                            ptr_uint64::max_out_idx);
 
-            AssertThat(node_a < node_b, Is().True());
-
-            const ptr_uint64 node_c = ptr_uint64(2,0,false);
-            const ptr_uint64 node_d = ptr_uint64(2,0,true);
-
-            AssertThat(node_c < node_d, Is().True());
+            AssertThat(p.id(), Is().EqualTo(ptr_uint64::max_id));
+            AssertThat(flag(p).id(), Is().EqualTo(ptr_uint64::max_id));
           });
 
-          it("should sort by label id, and out-index independent of the flag", [&]() {
-            const ptr_uint64 node_a = ptr_uint64(0,3,true);
-            const ptr_uint64 node_b = ptr_uint64(1,2,false);
+          it("retrieves max_id from (max_label,max_id,max_out_idx)", [&]() {
+            const ptr_uint64 p = ptr_uint64(ptr_uint64::max_label,
+                                            ptr_uint64::max_id,
+                                            ptr_uint64::max_out_idx);
 
-            AssertThat(node_a < flag(node_b), Is().True());
-            AssertThat(flag(node_a) < node_b, Is().True());
-            AssertThat(flag(node_a) < flag(node_b), Is().True());
-
-            const ptr_uint64 node_c = ptr_uint64(2,0,false);
-            const ptr_uint64 node_d = ptr_uint64(2,0,true);
-
-            AssertThat(flag(node_c) < node_d, Is().True());
-            AssertThat(node_c < flag(node_d), Is().True());
-            AssertThat(flag(node_c) < flag(node_d), Is().True());
+            AssertThat(p.id(), Is().EqualTo(ptr_uint64::max_id));
+            AssertThat(flag(p).id(), Is().EqualTo(ptr_uint64::max_id));
           });
 
-          it("should sort F terminal after (largest) internal node", [&]() {
-            // Create a node pointer with the highest possible raw value
-            const ptr_uint64 p_node = flag(ptr_uint64(ptr_uint64::max_label,
-                                                      ptr_uint64::max_id,
-                                                      ptr_uint64::max_out_idx));
+          it("retrieves 0 from (max_label,0,max_out_idx)", [&]() {
+            const ptr_uint64 p = ptr_uint64(ptr_uint64::max_label,
+                                            0,
+                                            ptr_uint64::max_out_idx);
 
-            AssertThat(p_node < terminal_F, Is().True());
-            AssertThat(flag(p_node) < terminal_F, Is().True());
-            AssertThat(p_node < flag(terminal_F), Is().True());
-            AssertThat(flag(p_node) < flag(terminal_F), Is().True());
+            AssertThat(p.id(), Is().EqualTo(0u));
+            AssertThat(flag(p).id(), Is().EqualTo(0u));
           });
 
-          it("should sort T terminal after (largest) internal node", [&]() {
-            // Create a node pointer with the highest possible raw value
-            const ptr_uint64 p_node = ptr_uint64(ptr_uint64::max_label,
-                                                 ptr_uint64::max_id,
-                                                 ptr_uint64::max_out_idx);
+          it("retrieves 42 from (2,42)", [&]() {
+            const ptr_uint64 p = ptr_uint64(2,42);
 
-            AssertThat(p_node < terminal_T, Is().True());
-            AssertThat(flag(p_node) < terminal_T, Is().True());
-            AssertThat(p_node < flag(terminal_T), Is().True());
-            AssertThat(flag(p_node) < flag(terminal_T), Is().True());
+            AssertThat(p.id(), Is().EqualTo(42u));
+            AssertThat(flag(p).id(), Is().EqualTo(42u));
           });
+
+          it("retrieve 21 from (2,21)", [&]() {
+            const ptr_uint64 p = ptr_uint64(2,21);
+
+            AssertThat(p.id(), Is().EqualTo(21u));
+            AssertThat(flag(p).id(), Is().EqualTo(21u));
+          });
+        });
+
+        describe("essential(...)", []() {
+          it("strips off flag from minimal Node Ptr", [&]() {
+            const ptr_uint64 p = ptr_uint64(0,0,0);
+
+            AssertThat(essential(p), Is().EqualTo(p));
+            AssertThat(essential(flag(p)), Is().EqualTo(p));
+          });
+
+          it("keeps out_idx as 0 for minimal Node Ptr", [&]() {
+            const ptr_uint64 p = ptr_uint64(0,0,0);
+
+            AssertThat(essential(p).out_idx(), Is().EqualTo(0u));
+          });
+
+          it("strips off flag from maximal Node Ptr", [&]() {
+            // Use '.is_flagged()' to test it independently of '.out_idx()'
+            const ptr_uint64 p = ptr_uint64(ptr_uint64::max_label,
+                                            ptr_uint64::max_id,
+                                            ptr_uint64::max_out_idx);
+
+            AssertThat(essential(p).is_flagged(), Is().False());
+            AssertThat(essential(flag(p)).is_flagged(), Is().False());
+          });
+
+          it("strips off out_idx from maximal Node Ptr", [&]() {
+            // Use '.out_idx()' to test it independently of '.out_idx()'
+            const ptr_uint64 p = ptr_uint64(ptr_uint64::max_label,
+                                            ptr_uint64::max_id,
+                                            ptr_uint64::max_out_idx);
+
+            AssertThat(essential(p).out_idx(), Is().EqualTo(0u));
+          });
+        });
+      });
+
+      describe("ordering ( < )", [&]() {
+        it("should sort by label, then by id", [&]() {
+          const ptr_uint64 node_1_2 = ptr_uint64(1,2);
+          const ptr_uint64 node_2_1 = ptr_uint64(2,1);
+          const ptr_uint64 node_2_2 = ptr_uint64(2,2);
+
+          AssertThat(node_1_2 < node_2_1, Is().True());
+          AssertThat(node_2_1 < node_2_2, Is().True());
+        });
+
+        it("should sort by label and id independent of the flag", [&]() {
+          const ptr_uint64 node_1_2 = ptr_uint64(1,2);
+          const ptr_uint64 node_2_1 = ptr_uint64(2,1);
+
+          AssertThat(node_1_2 < flag(node_2_1), Is().True());
+          AssertThat(flag(node_1_2) < node_2_1, Is().True());
+          AssertThat(flag(node_1_2) < flag(node_2_1), Is().True());
+        });
+
+        it("should sort by id, then by out-index", [&]() {
+          const ptr_uint64 node_1_T = ptr_uint64(0,1,true);
+          const ptr_uint64 node_2_F = ptr_uint64(0,2,false);
+          const ptr_uint64 node_2_T = ptr_uint64(0,2,true);
+
+          AssertThat(node_1_T < node_2_F, Is().True());
+          AssertThat(node_2_F < node_2_T, Is().True());
+        });
+
+        it("should sort by id and out-index independent of the flag", [&]() {
+          const ptr_uint64 node_1_T = ptr_uint64(0,1,true);
+          const ptr_uint64 node_2_F = ptr_uint64(0,2,false);
+
+          AssertThat(node_1_T < flag(node_2_F), Is().True());
+          AssertThat(flag(node_1_T) < node_2_F, Is().True());
+          AssertThat(flag(node_1_T) < flag(node_2_F), Is().True());
+        });
+
+        it("should sort by label, then id, and finally out-index", [&]() {
+          const ptr_uint64 node_a = ptr_uint64(0,3,true);
+          const ptr_uint64 node_b = ptr_uint64(1,2,false);
+
+          AssertThat(node_a < node_b, Is().True());
+
+          const ptr_uint64 node_c = ptr_uint64(2,0,false);
+          const ptr_uint64 node_d = ptr_uint64(2,0,true);
+
+          AssertThat(node_c < node_d, Is().True());
+        });
+
+        it("should sort by label id, and out-index independent of the flag", [&]() {
+          const ptr_uint64 node_a = ptr_uint64(0,3,true);
+          const ptr_uint64 node_b = ptr_uint64(1,2,false);
+
+          AssertThat(node_a < flag(node_b), Is().True());
+          AssertThat(flag(node_a) < node_b, Is().True());
+          AssertThat(flag(node_a) < flag(node_b), Is().True());
+
+          const ptr_uint64 node_c = ptr_uint64(2,0,false);
+          const ptr_uint64 node_d = ptr_uint64(2,0,true);
+
+          AssertThat(flag(node_c) < node_d, Is().True());
+          AssertThat(node_c < flag(node_d), Is().True());
+          AssertThat(flag(node_c) < flag(node_d), Is().True());
+        });
+
+        it("should sort 'false' terminal after (largest) internal node", [&]() {
+          const ptr_uint64 p_terminal = ptr_uint64(false);
+
+          // Create a node pointer with the highest possible raw value
+          const ptr_uint64 p_node = flag(ptr_uint64(ptr_uint64::max_label,
+                                                    ptr_uint64::max_id,
+                                                    ptr_uint64::max_out_idx));
+
+          AssertThat(p_node < p_terminal, Is().True());
+          AssertThat(flag(p_node) < p_terminal, Is().True());
+          AssertThat(p_node < flag(p_terminal), Is().True());
+          AssertThat(flag(p_node) < flag(p_terminal), Is().True());
+        });
+
+        it("should sort 'true' terminal after (largest) internal node", [&]() {
+          const ptr_uint64 p_terminal = ptr_uint64(true);
+
+          // Create a node pointer with the highest possible raw value
+          const ptr_uint64 p_node = ptr_uint64(ptr_uint64::max_label,
+                                               ptr_uint64::max_id,
+                                               ptr_uint64::max_out_idx);
+
+          AssertThat(p_node < p_terminal, Is().True());
+          AssertThat(flag(p_node) < p_terminal, Is().True());
+          AssertThat(p_node < flag(p_terminal), Is().True());
+          AssertThat(flag(p_node) < flag(p_terminal), Is().True());
         });
       });
     });
