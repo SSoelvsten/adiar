@@ -32,7 +32,9 @@ namespace adiar::internal
   //   For ADDs it should furthermore be templated with 'terminal_t'.
 
   // TODO (LDD):
+  // TODO (EVBDD):
   //   Extend 'pointer_type' to a 'weighted_ptr' with a templated `weight_t`.
+  //   Specialize for 'bool' to just use the 'flag'.
 
   // TODO (QMDD):
   //   Same as for LDD but with the weight specifically being complex values.
@@ -370,7 +372,7 @@ namespace adiar::internal
     inline bool
     is_node() const
     {
-      return _raw <= ~ptr_uint64::terminal_bit;
+      return _raw <= ~terminal_bit;
     }
 
     ////////////////////////////////////////////////////////////////////////////
