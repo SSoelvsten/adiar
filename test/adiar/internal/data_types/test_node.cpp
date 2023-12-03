@@ -357,28 +357,31 @@ go_bandit([]() {
         });
       });
 
-      describe("negate (~)", [&]() {
+      describe("not ( ~ )", [&]() {
         it("should leave node_ptr children unchanged", [&]() {
           const node n = node(2u,2u, ptr_uint64(42,3), ptr_uint64(8,2));
 
-          AssertThat(~n, Is().EqualTo(n));
+          AssertThat(!n, Is().EqualTo(n));
         });
 
         it("should negate terminal_ptr child", [&]() {
           const node n = node(2u,2u, terminal_F, ptr_uint64(8,2));
 
-          AssertThat(~n, Is().EqualTo(node(2,2, terminal_T, ptr_uint64(8,2))));
+          AssertThat(!n, Is().EqualTo(node(2,2, terminal_T, ptr_uint64(8,2))));
         });
 
         it("should negate terminal_ptr children while preserving flags", [&]() {
           const node n = node(2u,2u, terminal_F, flag(terminal_T));
 
-          AssertThat(~n, Is().EqualTo(node(2,2, terminal_T, flag(terminal_F))));
+          AssertThat(!n, Is().EqualTo(node(2,2, terminal_T, flag(terminal_F))));
         });
 
-        it("should negate terminal node", [&]() {
-          AssertThat(~node(true),  Is().EqualTo(node(false)));
-          AssertThat(~node(false), Is().EqualTo(node(true)));
+        it("should negate 'false' terminal node", [&]() {
+          AssertThat(!node(false), Is().EqualTo(node(true)));
+        });
+
+        it("should negate 'true' terminal node", [&]() {
+          AssertThat(!node(true),  Is().EqualTo(node(false)));
         });
       });
     });

@@ -371,8 +371,7 @@ namespace adiar::internal
     ///        pointers to terminal children are negated while pointers to other
     ///        nodes are left unchanged.
     ////////////////////////////////////////////////////////////////////////////
-    // TODO: Replace with '!' operator
-    node operator~ () const
+    node operator! () const
     {
       if (this->is_terminal()) {
         return node(!this->_uid, pointer_type::nil(), pointer_type::nil());
