@@ -654,24 +654,20 @@ namespace adiar::internal
 
   public:
     //////////////////////////////////////////////////////////////////////////////
-    /// \brief Obtain a pointer to the terminal with the negated value of this
-    ///        pointer. The 'flag' is kept as-is.
-    ///
-    /// \pre   `is_terminal()` evaluates to `true`.
+    /// \brief Obtain a pointer where terminal values (if any) are negated. The
+    ///        'flag' is kept as-is.
     //////////////////////////////////////////////////////////////////////////////
     ptr_uint64 operator! () const
     {
-      adiar_assert(this->is_terminal());
-
       // TODO (32-bit ADD):
       //   Make this only a specialization for `ptr_uint64<bool>`. Generic version
       //   must use '!' from `terminal_type`.
-      return ptr_uint64(_raw ^ ptr_uint64::value_mask);
+      return this->is_terminal() ? _raw ^ ptr_uint64::value_mask : this->_raw;
     }
 
     //////////////////////////////////////////////////////////////////////////////
-    /// \brief Obtain a pointer to the terminal with the negated value of this
-    ///        pointer. The 'flag' is also flipped.
+    /// \brief Obtain a pointer to the terminal with the bit-wise negated value
+    ///        of this pointer. The 'flag' is also flipped.
     ///
     /// \pre   `is_terminal()` evaluates to `true`.
     //////////////////////////////////////////////////////////////////////////////
@@ -683,8 +679,8 @@ namespace adiar::internal
     }
 
     //////////////////////////////////////////////////////////////////////////////
-    /// \brief Obtain a pointer to the terminal with the XOR value of both
-    ///        pointers' value. The 'flag' is also XORed.
+    /// \brief Obtain a pointer to the terminal with the bit-wise XOR value of
+    ///        both pointers' value. The 'flag' is also XORed.
     ///
     /// \pre `is_terminal()` evaluates to `true`.
     //////////////////////////////////////////////////////////////////////////////
@@ -701,8 +697,8 @@ namespace adiar::internal
     }
 
     //////////////////////////////////////////////////////////////////////////////
-    /// \brief Obtain a pointer to the terminal with the AND value of both
-    ///        pointers. The 'flag' is also ANDed.
+    /// \brief Obtain a pointer to the terminal with the bit-wise AND value of
+    ///        both pointers. The 'flag' is also ANDed.
     ///
     /// \pre `is_terminal()` evaluates to `true`.
     //////////////////////////////////////////////////////////////////////////////
@@ -717,8 +713,8 @@ namespace adiar::internal
     }
 
     //////////////////////////////////////////////////////////////////////////////
-    /// \brief Obtain a pointer to the terminal with the OR value of both
-    ///        pointers. The 'flag' is also ORed.
+    /// \brief Obtain a pointer to the terminal with the bit-wise OR value of
+    ///        both pointers. The 'flag' is also ORed.
     ///
     /// \pre `is_terminal()` evaluates to `true`.
     //////////////////////////////////////////////////////////////////////////////

@@ -186,8 +186,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     arc operator! () const
     {
-      return arc(this->_source,
-                 this->_target.is_terminal() ? !this->_target : this->_target);
+      return arc(this->_source, !this->_target);
     }
   };
 

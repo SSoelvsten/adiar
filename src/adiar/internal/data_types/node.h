@@ -376,16 +376,7 @@ namespace adiar::internal
       if (this->is_terminal()) {
         return node(!this->_uid, pointer_type::nil(), pointer_type::nil());
       }
-
-      const pointer_type low  = this->_children[0].is_terminal()
-        ? !this->_children[0]
-        :  this->_children[0];
-
-      const pointer_type high = this->_children[1].is_terminal()
-        ? !this->_children[1]
-        :  this->_children[1];
-
-      return node(this->_uid, low, high);
+      return node(this->_uid, !this->_children[false], !this->_children[true]);
     }
   };
 
