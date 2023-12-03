@@ -43,9 +43,6 @@ var namespaceadiar =
       [ "log2", "ptr_8h.html#a1e7d17135b9684551c9506df494f1a4d", null ],
       [ "low_arc_of", "convert_8h.html#aebe3dd20b1c72569a8f74701f7dc4ad4", null ],
       [ "memory_available", "memory_8h.html#a9441f27a0e7251988e8385d9e4058603", null ],
-      [ "negate", "arc_8h.html#a3ad6d7c548c4aa62105c5f530fabb558", null ],
-      [ "negate", "node_8h.html#a6de0d5b39f567076872e07593cb27bc5", null ],
-      [ "negate", "ptr_8h.html#ab8eb17aee2164d0e11fd1350616beeeb", null ],
       [ "node_of", "convert_8h.html#a52f6706fadd91165262384d8d372ed4c", null ],
       [ "operator<", "node_8h.html#ad8d5cf6fca809899eca36201944ad3a7", null ],
       [ "operator<", "node_8h.html#a28918039db65ca7dd535d0c3812293c9", null ],
@@ -60,8 +57,7 @@ var namespaceadiar =
       [ "second", "tuple_8h.html#a702f6a8ddfc41bb8bd4877ef95197b4f", null ],
       [ "third", "tuple_8h.html#a8e831590cbc4fc49d1b63305f788bcba", null ],
       [ "third", "tuple_8h.html#a2867616a2aec6365f67767af802ac5a6", null ],
-      [ "unflag", "ptr_8h.html#af09edad6e6c95c411b1b691ea5db8c9d", null ],
-      [ "with_out_idx", "ptr_8h.html#a276fa48bfac28ee90f7d315542c0b769", null ]
+      [ "unflag", "ptr_8h.html#af09edad6e6c95c411b1b691ea5db8c9d", null ]
     ] ],
     [ "exec_policy", "classadiar_1_1exec__policy.html", "classadiar_1_1exec__policy" ],
     [ "__bdd", "classadiar_1_1____bdd.html", "classadiar_1_1____bdd" ],

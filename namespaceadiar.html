@@ -1344,7 +1344,7 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= [](<span class="keyword">const</span> internal::ptr_uint64 &amp;a, <span class="keyword">const</span> internal::ptr_uint64 &amp;b) -&gt; internal::ptr_uint64</div>
 <div class="line">  {</div>
-<div class="line">    <span class="keywordflow">return</span> <a class="code" href="namespaceadiar.html#a12fffe1fcfe8d8beb664f37ff3d65fa5">and_op</a>(a, negate(b));</div>
+<div class="line">    <span class="keywordflow">return</span> <a class="code" href="namespaceadiar.html#a12fffe1fcfe8d8beb664f37ff3d65fa5">and_op</a>(a, !b);</div>
 <div class="line">  }</div>
 <div class="ttc" id="anamespaceadiar_html_a12fffe1fcfe8d8beb664f37ff3d65fa5"><div class="ttname"><a href="namespaceadiar.html#a12fffe1fcfe8d8beb664f37ff3d65fa5">adiar::and_op</a></div><div class="ttdeci">const bool_op and_op</div><div class="ttdoc">Logical 'and' operator, i.e. the truth table: [1,0,0,0].</div><div class="ttdef"><b>Definition:</b> bool_op.h:26</div></div>
 </div><!-- fragment -->
@@ -1405,7 +1405,7 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= [](<span class="keyword">const</span> internal::ptr_uint64 &amp;a, <span class="keyword">const</span> internal::ptr_uint64 &amp;b) -&gt; internal::ptr_uint64</div>
 <div class="line">  {</div>
-<div class="line">    <span class="keywordflow">return</span> <a class="code" href="namespaceadiar.html#a12fffe1fcfe8d8beb664f37ff3d65fa5">and_op</a>(negate(a), b);</div>
+<div class="line">    <span class="keywordflow">return</span> <a class="code" href="namespaceadiar.html#a12fffe1fcfe8d8beb664f37ff3d65fa5">and_op</a>(!a, b);</div>
 <div class="line">  }</div>
 </div><!-- fragment -->
 <p>Logical 'less' operator, i.e. the truth table [0,0,1,0]. </p>
@@ -1425,7 +1425,7 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= [](<span class="keyword">const</span> internal::ptr_uint64 &amp;a, <span class="keyword">const</span> internal::ptr_uint64 &amp;b) -&gt; internal::uid_uint64</div>
 <div class="line">  {</div>
-<div class="line">    <span class="keywordflow">return</span> negate(<a class="code" href="namespaceadiar.html#a12fffe1fcfe8d8beb664f37ff3d65fa5">and_op</a>(a, b));</div>
+<div class="line">    <span class="keywordflow">return</span> !(<a class="code" href="namespaceadiar.html#a12fffe1fcfe8d8beb664f37ff3d65fa5">and_op</a>(a, b));</div>
 <div class="line">  }</div>
 </div><!-- fragment -->
 <p>Logical 'not and' operator, i.e. the truth table: [0,1,1,1]. </p>
@@ -1445,7 +1445,7 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= [](<span class="keyword">const</span> internal::ptr_uint64 &amp;a, <span class="keyword">const</span> internal::ptr_uint64 &amp;b) -&gt; internal::uid_uint64</div>
 <div class="line">  {</div>
-<div class="line">    <span class="keywordflow">return</span> negate(<a class="code" href="namespaceadiar.html#aeaa9d1d4a583e160d9db913598b1c827">or_op</a>(a, b));</div>
+<div class="line">    <span class="keywordflow">return</span> !(<a class="code" href="namespaceadiar.html#aeaa9d1d4a583e160d9db913598b1c827">or_op</a>(a, b));</div>
 <div class="line">  }</div>
 <div class="ttc" id="anamespaceadiar_html_aeaa9d1d4a583e160d9db913598b1c827"><div class="ttname"><a href="namespaceadiar.html#aeaa9d1d4a583e160d9db913598b1c827">adiar::or_op</a></div><div class="ttdeci">const bool_op or_op</div><div class="ttdoc">Logical 'or' operator, i.e. the truth table: [1,1,1,0].</div><div class="ttdef"><b>Definition:</b> bool_op.h:42</div></div>
 </div><!-- fragment -->
@@ -1486,7 +1486,7 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= [](<span class="keyword">const</span> internal::ptr_uint64 &amp;a, <span class="keyword">const</span> internal::ptr_uint64 &amp;b) -&gt; internal::uid_uint64</div>
 <div class="line">  {</div>
-<div class="line">    <span class="keywordflow">return</span> negate(<a class="code" href="namespaceadiar.html#af4f487e39dded71f30fc122939acdbdd">xor_op</a>(a, b));</div>
+<div class="line">    <span class="keywordflow">return</span> !(<a class="code" href="namespaceadiar.html#af4f487e39dded71f30fc122939acdbdd">xor_op</a>(a, b));</div>
 <div class="line">  }</div>
 <div class="ttc" id="anamespaceadiar_html_af4f487e39dded71f30fc122939acdbdd"><div class="ttname"><a href="namespaceadiar.html#af4f487e39dded71f30fc122939acdbdd">adiar::xor_op</a></div><div class="ttdeci">const bool_op xor_op</div><div class="ttdoc">Logical 'xor' operator, i.e. the truth table: [0,1,1,0].</div><div class="ttdef"><b>Definition:</b> bool_op.h:58</div></div>
 </div><!-- fragment -->
