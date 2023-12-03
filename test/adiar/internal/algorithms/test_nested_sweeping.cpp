@@ -120,7 +120,7 @@ private:
                    const node::uid_type &uid, const node::pointer_type &c)
   {
     if (c.is_terminal()) {
-      aw.push_terminal({ uid, is_high, ~c });
+      aw.push_terminal({ uid, is_high, !c });
     } else {
       inner_pq.push({{c, node::pointer_type::nil()}, {}, {uid.as_ptr(is_high)}});
     }

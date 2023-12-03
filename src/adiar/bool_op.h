@@ -33,7 +33,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   const bool_op nand_op = [](const internal::ptr_uint64 &a, const internal::ptr_uint64 &b) -> internal::uid_uint64
   {
-    return ~(and_op(a, b));
+    return !(and_op(a, b));
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -49,7 +49,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   const bool_op nor_op = [](const internal::ptr_uint64 &a, const internal::ptr_uint64 &b) -> internal::uid_uint64
   {
-    return ~(or_op(a, b));
+    return !(or_op(a, b));
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -65,7 +65,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   const bool_op xnor_op  = [](const internal::ptr_uint64 &a, const internal::ptr_uint64 &b) -> internal::uid_uint64
   {
-    return ~(xor_op(a, b));
+    return !(xor_op(a, b));
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -94,7 +94,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   const bool_op diff_op = [](const internal::ptr_uint64 &a, const internal::ptr_uint64 &b) -> internal::ptr_uint64
   {
-    return and_op(a, ~b);
+    return and_op(a, !b);
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -102,7 +102,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   const bool_op less_op = [](const internal::ptr_uint64 &a, const internal::ptr_uint64 &b) -> internal::ptr_uint64
   {
-    return and_op(~a, b);
+    return and_op(!a, b);
   };
 }
 

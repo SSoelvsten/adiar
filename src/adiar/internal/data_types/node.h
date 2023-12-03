@@ -371,18 +371,19 @@ namespace adiar::internal
     ///        pointers to terminal children are negated while pointers to other
     ///        nodes are left unchanged.
     ////////////////////////////////////////////////////////////////////////////
+    // TODO: Replace with '!' operator
     node operator~ () const
     {
       if (this->is_terminal()) {
-        return node(~this->_uid, pointer_type::nil(), pointer_type::nil());
+        return node(!this->_uid, pointer_type::nil(), pointer_type::nil());
       }
 
       const pointer_type low  = this->_children[0].is_terminal()
-        ? ~this->_children[0]
+        ? !this->_children[0]
         :  this->_children[0];
 
       const pointer_type high = this->_children[1].is_terminal()
-        ? ~this->_children[1]
+        ? !this->_children[1]
         :  this->_children[1];
 
       return node(this->_uid, low, high);
@@ -392,6 +393,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \copydoc node::operator~
   //////////////////////////////////////////////////////////////////////////////
+  // TODO: Remove in favour of 'operator~'
   inline node negate(const node &n)
   { return ~n; }
 
