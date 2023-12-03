@@ -227,6 +227,29 @@ go_bandit([]() {
         });
 
         describe("not ( ! )", []() {
+          it("returns 'nil' as-is", [&]() {
+            const ptr_uint64 p = ptr_uint64::nil();
+
+            AssertThat(!p, Is().EqualTo(p));
+            AssertThat(!flag(p), Is().EqualTo(flag(p)));
+          });
+
+          it("returns minimal Node ptr as-is", [&]() {
+            const ptr_uint64 p = ptr_uint64(0,0,0);
+
+            AssertThat(!p, Is().EqualTo(p));
+            AssertThat(!flag(p), Is().EqualTo(flag(p)));
+          });
+
+          it("returns maximal Node ptr as-is", [&]() {
+            const ptr_uint64 p = ptr_uint64(ptr_uint64::max_label,
+                                            ptr_uint64::max_id,
+                                            ptr_uint64::max_out_idx);
+
+            AssertThat(!p, Is().EqualTo(p));
+            AssertThat(!flag(p), Is().EqualTo(flag(p)));
+          });
+
           it("negates 'false' into 'true' terminal", [&]() {
             const ptr_uint64 p = ptr_uint64(false);
 
