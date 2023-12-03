@@ -226,33 +226,33 @@ go_bandit([]() {
           });
         });
 
-        describe("operator '~' (negate)", []() {
+        describe("not ( ! )", []() {
+          // TODO
+        });
+
+        describe("bit-not ( ~ )", []() {
           it("should negate 'false' into 'true' terminal", [&]() {
             const ptr_uint64 p = ptr_uint64(false);
 
             AssertThat(~p, Is().EqualTo(ptr_uint64(true)));
-            AssertThat(negate(p), Is().EqualTo(ptr_uint64(true)));
           });
 
           it("should negate 'true' into 'false' terminal", [&]() {
             const ptr_uint64 p = ptr_uint64(true);
 
             AssertThat(~p, Is().EqualTo(ptr_uint64(false)));
-            AssertThat(negate(p), Is().EqualTo(ptr_uint64(false)));
           });
 
           it("preserves flag when negating 'false' terminal", [&]() {
             const ptr_uint64 p = flag(ptr_uint64(false));
 
             AssertThat(~p, Is().EqualTo(flag(ptr_uint64(true))));
-            AssertThat(negate(p), Is().EqualTo(flag(ptr_uint64(true))));
           });
 
           it("preserves flag when negating 'true' terminal", [&]() {
             const ptr_uint64 p = flag(ptr_uint64(true));
 
             AssertThat(~p, Is().EqualTo(flag(ptr_uint64(false))));
-            AssertThat(negate(p), Is().EqualTo(flag(ptr_uint64(false))));
           });
         });
 

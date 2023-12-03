@@ -505,11 +505,6 @@ namespace adiar::internal
     /// of said terminal.
     ////////////////////////////////////////////////////////////////////////////
 
-    ////////////////////////////////////////////////////////////////////////////
-    // befriend terminal functions that need access to protected values.
-    friend inline ptr_uint64 negate(ptr_uint64 p);
-    ////////////////////////////////////////////////////////////////////////////
-
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of terminal values.
@@ -756,17 +751,6 @@ namespace adiar::internal
     return p.is_node()
       ? (p._raw & ~(out_idx_mask | ptr_uint64::flag_bit))
       : (p._raw & ~ptr_uint64::flag_bit);
-  }
-
-  /* ============================ TERMINAL NODES ============================ */
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Negate the value of a terminal.
-  //////////////////////////////////////////////////////////////////////////////
-  // TODO: Deprecate in favour of '~'
-  inline ptr_uint64 negate(ptr_uint64 p)
-  {
-    return ~p;
   }
 
   /* ============================== CONVERSION ============================== */
