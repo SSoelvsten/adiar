@@ -202,7 +202,7 @@ namespace adiar::internal
       } else {
         v = _stream.read();
       }
-      return _negate ? ~v : v;
+      return _negate ? !v : v;
     }
 
   public:

@@ -184,8 +184,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain an arc where the target's value (if any) is negated.
     ////////////////////////////////////////////////////////////////////////////
-    // TODO: Replace with '!' operator
-    arc operator~ () const
+    arc operator! () const
     {
       return arc(this->_source,
                  this->_target.is_terminal() ? !this->_target : this->_target);

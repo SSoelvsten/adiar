@@ -180,15 +180,20 @@ go_bandit([]() {
         });
       });
 
-      describe("negation (~)", [&] {
+      describe("not ( ! )", [&] {
         it("should leave node_ptr target unchanged", [&]() {
           const arc a = { ptr_uint64(1,0), ptr_uint64(2,0) };
-          AssertThat(~a, Is().EqualTo(a));
+          AssertThat(!a, Is().EqualTo(a));
         });
 
-        it("should negate terminal_ptr target", [&]() {
+        it("should negate 'false' terminal target", [&]() {
+          const arc a = { ptr_uint64(1,0), terminal_F };
+          AssertThat(!a, Is().EqualTo(arc { ptr_uint64(1,0), terminal_T }));
+        });
+
+        it("should negate 'true' terminal target", [&]() {
           const arc a = { ptr_uint64(1,0), terminal_T };
-          AssertThat(~a, Is().EqualTo(arc { ptr_uint64(1,0), terminal_F }));
+          AssertThat(!a, Is().EqualTo(arc { ptr_uint64(1,0), terminal_F }));
         });
       });
     });
