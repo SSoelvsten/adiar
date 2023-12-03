@@ -132,7 +132,7 @@ namespace adiar::internal
     arc(const uid_type &source,
         const pointer_type::out_idx_type &out_idx,
         const pointer_type &target)
-      : _source(source.with(out_idx))
+      : _source(source.as_ptr(out_idx))
       , _target(target)
     {
       adiar_assert(!target.is_node() || target.out_idx() == 0u);
