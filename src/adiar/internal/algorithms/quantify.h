@@ -294,11 +294,11 @@ namespace adiar::internal
 
               quantify_request<0>::target_t rec0(rec_all[0], rec_all[1]);
 
-              __quantify_forward_request<quantify_policy>(quantify_pq_1, aw, out_uid.with(false), rec0);
+              __quantify_forward_request<quantify_policy>(quantify_pq_1, aw, out_uid.as_ptr(false), rec0);
 
               quantify_request<0>::target_t rec1(rec_all[2], rec_all[3]);
 
-              __quantify_forward_request<quantify_policy>(quantify_pq_1, aw, out_uid.with(true), rec1);
+              __quantify_forward_request<quantify_policy>(quantify_pq_1, aw, out_uid.as_ptr(true), rec1);
 
               if (!req.data.source.is_nil()) {
                 do {
@@ -325,11 +325,11 @@ namespace adiar::internal
         quantify_request<0>::target_t rec0 =
           __quantify_resolve_request<quantify_policy, 2>(op, {children0[false], children1[false]});
 
-        __quantify_forward_request<quantify_policy>(quantify_pq_1, aw, out_uid.with(false), rec0);
+        __quantify_forward_request<quantify_policy>(quantify_pq_1, aw, out_uid.as_ptr(false), rec0);
 
         quantify_request<0>::target_t rec1 =
           __quantify_resolve_request<quantify_policy, 2>(op, {children0[true], children1[true]});
-        __quantify_forward_request<quantify_policy>(quantify_pq_1, aw, out_uid.with(true), rec1);
+        __quantify_forward_request<quantify_policy>(quantify_pq_1, aw, out_uid.as_ptr(true), rec1);
 
         if (!req.data.source.is_nil()) {
           do {

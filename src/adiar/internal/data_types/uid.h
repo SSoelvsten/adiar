@@ -99,15 +99,23 @@ namespace adiar::internal
     typename pointer_type::out_idx_type out_idx() = delete;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Obtain the `ptr` for this node uid with the given `out_idx`.
+    /// \brief Obtain the `ptr` for this node uid with no auxiliary information.
     ////////////////////////////////////////////////////////////////////////////
-    // TODO: rename into 'as_ptr(...)' where the arguments are auxiliary
-    //       information to be included.
     inline pointer_type
-    with(const typename pointer_type::out_idx_type out_idx) const
+    as_ptr() const
     {
-      adiar_assert(pointer_type::is_node());
-      return pointer_type(pointer_type::label(), pointer_type::id(), out_idx);
+      return *this;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain the `ptr` for this node uid with the given `out_idx` as
+    ///        auxiliary information.
+    ////////////////////////////////////////////////////////////////////////////
+    inline pointer_type
+    as_ptr(const typename pointer_type::out_idx_type out_idx) const
+    {
+      adiar_assert(this->is_node());
+      return pointer_type(this->label(), this->id(), out_idx);
     }
 
   public:
@@ -132,22 +140,31 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether this uid identifies a terminal node.
     ////////////////////////////////////////////////////////////////////////////
+    // This functions is overwritten, such that we can provide a specialization
+    // for '__uid<ptr_uint64>'.
     inline bool is_terminal() const
-    { return pointer_type::is_terminal(); }
+    {
+      return this->is_terminal();
+    }
   };
 
   //////////////////////////////////////////////////////////////////////////////
   // Specialization for the single-integer pointer `ptr_uint64`.
 
   ////////////////////////////////////////////////////////////////////////////
-  /// \brief Obtain the `ptr` for this node uid with the given `out_idx`.
+  /// \brief Obtain the `ptr` for this node uid with the given `out_idx` as
+  ///        auxiliary information.
   ////////////////////////////////////////////////////////////////////////////
   template<>
   inline ptr_uint64
-  __uid<ptr_uint64>::with(const ptr_uint64::out_idx_type out_idx) const
+  __uid<ptr_uint64>::as_ptr(const ptr_uint64::out_idx_type out_idx) const
   {
-    // Based on the bit-layout, we can do this much faster than the one above.
+    adiar_assert(pointer_type::is_node());
+
+    // Based on the bit-layout, we can do this much faster than decode and
+    // re-encode all three values.
     constexpr pointer_type::raw_type out_idx_mask = ~(max_out_idx << pointer_type::data_shift);
+
     return pointer_type((this->_raw & out_idx_mask) |
                         (static_cast<pointer_type::raw_type>(out_idx) << pointer_type::data_shift));
   }

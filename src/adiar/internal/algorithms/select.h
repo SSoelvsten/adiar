@@ -138,8 +138,8 @@ namespace adiar::internal
           output_changes |= rec_node != n;
 
           // Output/Forward outgoing arcs
-          __select_recurse_out(select_pq, aw, n.uid().with(false), rec_node.low());
-          __select_recurse_out(select_pq, aw, n.uid().with(true),  rec_node.high());
+          __select_recurse_out(select_pq, aw, n.uid().as_ptr(false), rec_node.low());
+          __select_recurse_out(select_pq, aw, n.uid().as_ptr(true),  rec_node.high());
 
           // Output ingoing arcs
           while(select_pq.can_pull() && select_pq.top().target == rec_node.uid()) {

@@ -283,10 +283,10 @@ namespace adiar::internal
           const node::uid_type out_uid(out_label, out_id++);
 
           intercut_out__pq<intercut_policy>::forward
-            (aw, intercut_pq, out_uid.with(false), ro.low, out_label, l);
+            (aw, intercut_pq, out_uid.as_ptr(false), ro.low, out_label, l);
 
           intercut_out__pq<intercut_policy>::forward
-            (aw, intercut_pq, out_uid.with(true),  ro.high, out_label, l);
+            (aw, intercut_pq, out_uid.as_ptr(true),  ro.high, out_label, l);
 
           intercut_in__pq<intercut_policy, intercut_out__writer>
             (aw, intercut_pq, out_label, n.uid(), out_uid, l);
@@ -303,10 +303,10 @@ namespace adiar::internal
         const node::uid_type out_uid(out_label, out_id++);
 
         intercut_out__pq<intercut_policy>::forward
-          (aw, intercut_pq, out_uid.with(false), ro.low, out_label, l);
+          (aw, intercut_pq, out_uid.as_ptr(false), ro.low, out_label, l);
 
         intercut_out__pq<intercut_policy>::forward
-          (aw, intercut_pq, out_uid.with(true),  ro.high, out_label, l);
+          (aw, intercut_pq, out_uid.as_ptr(true),  ro.high, out_label, l);
 
         intercut_in__pq<intercut_policy, intercut_out__writer>
           (aw, intercut_pq, out_label, request.target(), out_uid, l);

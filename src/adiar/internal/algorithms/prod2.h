@@ -399,8 +399,8 @@ namespace adiar::internal
           adiar_assert(out_id < Policy::max_id, "Has run out of ids");
           const node::uid_type out_uid(out_label, out_id++);
 
-          __prod2_recurse_out(prod_pq, aw, op, out_uid.with(false), r.low);
-          __prod2_recurse_out(prod_pq, aw, op, out_uid.with(true),  r.high);
+          __prod2_recurse_out(prod_pq, aw, op, out_uid.as_ptr(false), r.low);
+          __prod2_recurse_out(prod_pq, aw, op, out_uid.as_ptr(true),  r.high);
 
           __prod2_recurse_in<__prod2_recurse_in__output_node>
             (prod_pq, aw, out_uid, req.target);
@@ -550,8 +550,8 @@ namespace adiar::internal
           adiar_assert(out_id < Policy::max_id, "Has run out of ids");
           const node::uid_type out_uid(out_label, out_id++);
 
-          __prod2_recurse_out(prod_pq_1, aw, op, out_uid.with(false), r.low);
-          __prod2_recurse_out(prod_pq_1, aw, op, out_uid.with(true),  r.high);
+          __prod2_recurse_out(prod_pq_1, aw, op, out_uid.as_ptr(false), r.low);
+          __prod2_recurse_out(prod_pq_1, aw, op, out_uid.as_ptr(true),  r.high);
 
           __prod2_recurse_in<__prod2_recurse_in__output_node>
             (prod_pq_1, prod_pq_2, aw, out_uid, req.target);

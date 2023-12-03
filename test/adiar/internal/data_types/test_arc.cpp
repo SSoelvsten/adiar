@@ -101,7 +101,7 @@ go_bandit([]() {
 
       describe(".out_idx()", [&] {
         it("should have the out-index stored in source [{ ptr, ptr }]", [&]() {
-          const arc arc_low = { uid_uint64(0,0).with(false), ptr_uint64(3,2) };
+          const arc arc_low = { uid_uint64(0,0).as_ptr(false), ptr_uint64(3,2) };
           AssertThat(arc_low.out_idx(), Is().False());
         });
 
@@ -111,7 +111,7 @@ go_bandit([]() {
         });
 
         it("should have the out-index stored in source [{ ptr, ptr }]", [&]() {
-          const arc arc_high = { uid_uint64(3,2).with(true), ptr_uint64(4,3) };
+          const arc arc_high = { uid_uint64(3,2).as_ptr(true), ptr_uint64(4,3) };
           AssertThat(arc_high.out_idx(), Is().True());
         });
 
@@ -160,8 +160,8 @@ go_bandit([]() {
           const uid_uint64 u1 = ptr_uint64(4,2);
           const uid_uint64 u2 = ptr_uint64(4,3);
 
-          const arc arc_1 = { u1.with(false), u2 };
-          const arc arc_2 = { u1.with(true), u2 };
+          const arc arc_1 = { u1.as_ptr(false), u2 };
+          const arc arc_2 = { u1.as_ptr(true), u2 };
 
           AssertThat(arc_1 == arc_2, Is().False());
           AssertThat(arc_1 != arc_2, Is().True());

@@ -122,7 +122,7 @@ private:
     if (c.is_terminal()) {
       aw.push_terminal({ uid, is_high, ~c });
     } else {
-      inner_pq.push({{c, node::pointer_type::nil()}, {}, {uid.with(is_high)}});
+      inner_pq.push({{c, node::pointer_type::nil()}, {}, {uid.as_ptr(is_high)}});
     }
   }
 
@@ -2920,8 +2920,8 @@ go_bandit([]() {
           inner_roots_t inner_roots(1024, 8);
           const node::uid_type u1 = node::uid_type(0,0);
 
-          inner_roots.push({{n2.uid()}, {}, {u1.with(false)}});
-          inner_roots.push({{n3.uid()}, {}, {u1.with(true)}});
+          inner_roots.push({{n2.uid()}, {}, {u1.as_ptr(false)}});
+          inner_roots.push({{n3.uid()}, {}, {u1.as_ptr(true)}});
 
           const shared_levelized_file<arc> out =
             nested_sweeping::inner::down(exec_policy(), test_policy, outer_file, inner_roots, memory_available())
@@ -2930,10 +2930,10 @@ go_bandit([]() {
           arc_test_stream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True()); // From sorter
-          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(u1.with(false)), n2.uid() }));
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(u1.as_ptr(false)), n2.uid() }));
 
           AssertThat(arcs.can_pull_internal(), Is().True()); // From sorter
-          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(u1.with(true)),  n3.uid() }));
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(u1.as_ptr(true)),  n3.uid() }));
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n3.uid(), true,  n5.uid() }));
@@ -2994,11 +2994,11 @@ go_bandit([]() {
           const node::uid_type u0 = node::uid_type(0,0);
           const node::uid_type u1 = node::uid_type(0,1);
 
-          inner_roots.push({{n2.uid()}, {}, {u0.with(false)}});
-          inner_roots.push({{n3.uid()}, {}, {u0.with(true)}});
+          inner_roots.push({{n2.uid()}, {}, {u0.as_ptr(false)}});
+          inner_roots.push({{n3.uid()}, {}, {u0.as_ptr(true)}});
 
-          inner_roots.push({{n2.uid()}, {}, {u1.with(false)}});
-          inner_roots.push({{n5.uid()}, {}, {u1.with(true)}});
+          inner_roots.push({{n2.uid()}, {}, {u1.as_ptr(false)}});
+          inner_roots.push({{n5.uid()}, {}, {u1.as_ptr(true)}});
 
           const shared_levelized_file<arc> out =
             nested_sweeping::inner::down(exec_policy(), test_policy, outer_file, inner_roots, memory_available())
@@ -3007,16 +3007,16 @@ go_bandit([]() {
           arc_test_stream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True()); // From sorter
-          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(u0.with(false)), n2.uid() }));
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(u0.as_ptr(false)), n2.uid() }));
 
           AssertThat(arcs.can_pull_internal(), Is().True()); // From sorter
-          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(u1.with(false)), n2.uid() }));
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(u1.as_ptr(false)), n2.uid() }));
 
           AssertThat(arcs.can_pull_internal(), Is().True()); // From sorter
-          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(u0.with(true)),  n3.uid() }));
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(u0.as_ptr(true)),  n3.uid() }));
 
           AssertThat(arcs.can_pull_internal(), Is().True()); // From sorter
-          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(u1.with(true)),  n5.uid() }));
+          AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(u1.as_ptr(true)),  n5.uid() }));
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n3.uid(), true,  n5.uid() }));

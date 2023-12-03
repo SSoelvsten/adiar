@@ -221,15 +221,20 @@ go_bandit([]() {
         });
       });
 
-      describe(".with(...)", []() {
+      describe(".as_ptr(...)", []() {
+        it("by default provides itself with out-index 0", []() {
+          const uid_uint64 u(42, 0);
+          AssertThat(u.as_ptr(), Is().EqualTo(ptr_uint64(42, 0, false)));
+        });
+
         it("can provide a pointer with out-index 0", []() {
           const uid_uint64 u(42, 0);
-          AssertThat(u.with(false), Is().EqualTo(ptr_uint64(42, 0, false)));
+          AssertThat(u.as_ptr(false), Is().EqualTo(ptr_uint64(42, 0, false)));
         });
 
         it("can provide a pointer with out-index 1", []() {
           const uid_uint64 u(42, 0);
-          AssertThat(u.with(true), Is().EqualTo(ptr_uint64(42, 0, true)));
+          AssertThat(u.as_ptr(true), Is().EqualTo(ptr_uint64(42, 0, true)));
         });
       });
     });
