@@ -227,33 +227,57 @@ go_bandit([]() {
         });
 
         describe("not ( ! )", []() {
-          // TODO
-        });
-
-        describe("bit-not ( ~ )", []() {
-          it("should negate 'false' into 'true' terminal", [&]() {
+          it("negates 'false' into 'true' terminal", [&]() {
             const ptr_uint64 p = ptr_uint64(false);
 
-            AssertThat(~p, Is().EqualTo(ptr_uint64(true)));
+            AssertThat(!p, Is().EqualTo(ptr_uint64(true)));
           });
 
-          it("should negate 'true' into 'false' terminal", [&]() {
+          it("negates 'true' into 'false' terminal", [&]() {
             const ptr_uint64 p = ptr_uint64(true);
 
-            AssertThat(~p, Is().EqualTo(ptr_uint64(false)));
+            AssertThat(!p, Is().EqualTo(ptr_uint64(false)));
           });
 
           it("preserves flag when negating 'false' terminal", [&]() {
             const ptr_uint64 p = flag(ptr_uint64(false));
 
-            AssertThat(~p, Is().EqualTo(flag(ptr_uint64(true))));
+            AssertThat(!p, Is().EqualTo(flag(ptr_uint64(true))));
           });
 
           it("preserves flag when negating 'true' terminal", [&]() {
             const ptr_uint64 p = flag(ptr_uint64(true));
 
+            AssertThat(!p, Is().EqualTo(flag(ptr_uint64(false))));
+          });
+        });
+
+        describe("bit-not ( ~ )", []() {
+          /*
+          it("negates unflagged 'false' into flagged 'true' terminal", [&]() {
+            const ptr_uint64 p = ptr_uint64(false);
+
+            AssertThat(~p, Is().EqualTo((flag(ptr_uint64(true)))));
+          });
+
+          it("negates unflagged 'true' into flagged 'false' terminal", [&]() {
+            const ptr_uint64 p = ptr_uint64(true);
+
             AssertThat(~p, Is().EqualTo(flag(ptr_uint64(false))));
           });
+
+          it("negates flagged 'false' terminal into unflagged 'true' terminal", [&]() {
+            const ptr_uint64 p = flag(ptr_uint64(false));
+
+            AssertThat(~p, Is().EqualTo(ptr_uint64(true)));
+          });
+
+          it("negates flagged 'true' terminal into unflagged 'false' terminal", [&]() {
+            const ptr_uint64 p = flag(ptr_uint64(true));
+
+            AssertThat(~p, Is().EqualTo(ptr_uint64(false)));
+          });
+          */
         });
 
         describe("xor ( ^ )", []() {

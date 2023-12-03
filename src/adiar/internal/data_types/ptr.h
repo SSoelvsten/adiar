@@ -652,8 +652,7 @@ namespace adiar::internal
     ///
     /// \pre   `is_terminal()` evaluates to `true`.
     //////////////////////////////////////////////////////////////////////////////
-    // TODO: Rename into 'operator!' and make 'operator~' also flip the flag.
-    ptr_uint64 operator~ () const
+    ptr_uint64 operator! () const
     {
       adiar_assert(this->is_terminal());
 
@@ -665,6 +664,8 @@ namespace adiar::internal
 
       return ptr_uint64(value_mask ^ _raw);
     }
+
+    // TODO: Add 'operator~' that also flips the flag.
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain a pointer to the terminal with the XOR value of both

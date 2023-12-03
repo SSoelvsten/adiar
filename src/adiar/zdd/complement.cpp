@@ -91,8 +91,8 @@ namespace adiar
     // shortcutting in branch-prediction probably offsets this?
     static internal::intercut_rec_output hit_existing(const zdd::node_type &n)
     {
-      const zdd::pointer_type low  = n.low().is_terminal()  ? ~n.low()  : n.low();
-      const zdd::pointer_type high = n.high().is_terminal() ? ~n.high() : n.high();
+      const zdd::pointer_type low  = n.low().is_terminal()  ? !n.low()  : n.low();
+      const zdd::pointer_type high = n.high().is_terminal() ? !n.high() : n.high();
 
       return internal::intercut_rec_output { low, high };
     }
