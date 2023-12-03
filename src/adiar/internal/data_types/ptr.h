@@ -644,8 +644,15 @@ namespace adiar::internal
     { return !(*this == o); }
 
     /* ================================ OPERATORS ============================= */
-  public:
+  private:
+    // HACK: We here assume that either 'min' or 'max' touches every value bit.
+    //
+    // This is indeed the case for `bool` and unsigned and signed integers.
+    static constexpr raw_type value_mask =
+      (static_cast<raw_type>(std::numeric_limits<terminal_type>::max()) |
+       static_cast<raw_type>(std::numeric_limits<terminal_type>::min())) << data_shift;
 
+  public:
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain a pointer to the terminal with the negated value of this
     ///        pointer. The 'flag' is kept as-is.
@@ -656,16 +663,24 @@ namespace adiar::internal
     {
       adiar_assert(this->is_terminal());
 
-      // TODO: generalise for non-boolean terminals
-      constexpr terminal_type max_value = true;
-
-      constexpr raw_type value_mask =
-        static_cast<raw_type>(max_value) << data_shift;
-
-      return ptr_uint64(value_mask ^ _raw);
+      // TODO (32-bit ADD):
+      //   Make this only a specialization for `ptr_uint64<bool>`. Generic version
+      //   must use '!' from `terminal_type`.
+      return ptr_uint64(_raw ^ ptr_uint64::value_mask);
     }
 
-    // TODO: Add 'operator~' that also flips the flag.
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain a pointer to the terminal with the negated value of this
+    ///        pointer. The 'flag' is also flipped.
+    ///
+    /// \pre   `is_terminal()` evaluates to `true`.
+    //////////////////////////////////////////////////////////////////////////////
+    ptr_uint64 operator~ () const
+    {
+      adiar_assert(this->is_terminal());
+
+      return ptr_uint64(_raw ^ (ptr_uint64::value_mask | ptr_uint64::flag_bit));
+    }
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain a pointer to the terminal with the XOR value of both
