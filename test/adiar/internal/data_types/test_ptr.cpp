@@ -253,7 +253,6 @@ go_bandit([]() {
         });
 
         describe("bit-not ( ~ )", []() {
-          /*
           it("negates unflagged 'false' into flagged 'true' terminal", [&]() {
             const ptr_uint64 p = ptr_uint64(false);
 
@@ -277,7 +276,6 @@ go_bandit([]() {
 
             AssertThat(~p, Is().EqualTo(ptr_uint64(false)));
           });
-          */
         });
 
         describe("xor ( ^ )", []() {
