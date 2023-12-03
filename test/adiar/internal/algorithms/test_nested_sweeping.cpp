@@ -310,14 +310,14 @@ go_bandit([]() {
     //          F T
     */
 
-    const ptr_uint64 terminal_F(false);
-    const ptr_uint64 terminal_T(true);
+    const uid_uint64 terminal_F(false);
+    const uid_uint64 terminal_T(true);
 
-    const ptr_uint64 outer_n1 = ptr_uint64(0,0);
-    const ptr_uint64 outer_n2 = ptr_uint64(1,0);
-    const ptr_uint64 outer_n3 = ptr_uint64(2,0);
-    const ptr_uint64 outer_n4 = ptr_uint64(3,0);
-    const ptr_uint64 outer_n5 = ptr_uint64(4,0);
+    const uid_uint64 outer_n1(0,0);
+    const uid_uint64 outer_n2(1,0);
+    const uid_uint64 outer_n3(2,0);
+    const uid_uint64 outer_n4(3,0);
+    const uid_uint64 outer_n5(4,0);
 
     shared_levelized_file<arc> outer_dag;
 
@@ -958,7 +958,7 @@ go_bandit([]() {
           test_decorator d(pq, sorter, 2);
 
           // internal at threshold
-          d.push(test_request_t({outer_n5}, {}, {with_out_idx(outer_n1, true)}));
+          d.push(test_request_t({outer_n5}, {}, {outer_n1.as_ptr(true)}));
 
           AssertThat(pq.size(), Is().EqualTo(0u));
           AssertThat(sorter.size(), Is().EqualTo(1u));
@@ -1794,7 +1794,7 @@ go_bandit([]() {
           AssertThat(outer_pq.size(), Is().EqualTo(0u));
           AssertThat(inner_pq.size(), Is().EqualTo(0u));
 
-          dec.push(arc(flag(with_out_idx(outer_n4, false)), terminal_F));
+          dec.push(arc(flag(outer_n4.as_ptr(false)), terminal_F));
 
           AssertThat(outer_pq.size(), Is().EqualTo(1u));
           AssertThat(inner_pq.size(), Is().EqualTo(0u));
@@ -1809,7 +1809,7 @@ go_bandit([]() {
           AssertThat(outer_pq.size(), Is().EqualTo(0u));
           AssertThat(inner_pq.size(), Is().EqualTo(0u));
 
-          dec.push(arc(flag(with_out_idx(outer_n4, true)), outer_n5));
+          dec.push(arc(flag(outer_n4.as_ptr(true)), outer_n5));
 
           AssertThat(outer_pq.size(), Is().EqualTo(1u));
           AssertThat(inner_pq.size(), Is().EqualTo(0u));
@@ -1820,7 +1820,7 @@ go_bandit([]() {
           inner_test_pq_t inner_pq({inner_dag}, pq_mem, 16);
 
           test_decorator dec(inner_pq, outer_pq);
-          dec.push(arc(flag(with_out_idx(outer_n4, true)), outer_n5));
+          dec.push(arc(flag(outer_n4.as_ptr(true)), outer_n5));
 
           AssertThat(outer_pq.size(), Is().EqualTo(1u));
           outer_pq.setup_next_level();
@@ -1835,9 +1835,9 @@ go_bandit([]() {
 
           test_decorator dec(inner_pq, outer_pq);
 
-          dec.push(arc(with_out_idx(outer_n3, false),      terminal_F)); // inner (x2)
-          dec.push(arc(flag(with_out_idx(outer_n4, true)), outer_n5));   // outer (x3)
-          dec.push(arc(with_out_idx(outer_n3, true),       outer_n5));   // inner (x2)
+          dec.push(arc(outer_n3.as_ptr(false),      terminal_F)); // inner (x2)
+          dec.push(arc(flag(outer_n4.as_ptr(true)), outer_n5));   // outer (x3)
+          dec.push(arc(outer_n3.as_ptr(true),       outer_n5));   // inner (x2)
 
           dec.setup_next_level();
 
@@ -1851,9 +1851,9 @@ go_bandit([]() {
 
           test_decorator dec(inner_pq, outer_pq);
 
-          dec.push(arc(with_out_idx(outer_n4, false),      terminal_F)); // inner (x3)
-          dec.push(arc(flag(with_out_idx(outer_n4, true)), outer_n5));   // outer (x3)
-          dec.push(arc(with_out_idx(outer_n4, true),       outer_n5));   // inner (x3)
+          dec.push(arc(outer_n4.as_ptr(false),      terminal_F)); // inner (x3)
+          dec.push(arc(flag(outer_n4.as_ptr(true)), outer_n5));   // outer (x3)
+          dec.push(arc(outer_n4.as_ptr(true),       outer_n5));   // inner (x3)
 
           AssertThat(outer_pq.size(), Is().EqualTo(1u));
 
@@ -1880,8 +1880,8 @@ go_bandit([]() {
           AssertThat(dec.size(), Is().EqualTo(1u));
           AssertThat(dec.empty(), Is().True());
 
-          dec.push(arc(flag(with_out_idx(outer_n3, false)), terminal_F)); // outer
-          dec.push(arc(with_out_idx(outer_n3, true),        outer_n5));   // inner
+          dec.push(arc(flag(outer_n3.as_ptr(false)), terminal_F)); // outer
+          dec.push(arc(outer_n3.as_ptr(true),        outer_n5));   // inner
 
           AssertThat(dec.empty_level(), Is().True());
           AssertThat(dec.size(), Is().EqualTo(3u));
@@ -1894,7 +1894,7 @@ go_bandit([]() {
 
           test_decorator dec(inner_pq, outer_pq);
 
-          dec.push(arc(flag(with_out_idx(outer_n4, true)), outer_n5));  // outer (x3)
+          dec.push(arc(flag(outer_n4.as_ptr(true)), outer_n5));  // outer (x3)
 
           AssertThat(dec.size(), Is().EqualTo(1u));
           AssertThat(dec.empty(), Is().True());
@@ -3133,16 +3133,16 @@ go_bandit([]() {
           //          / \
           //          T F
            */
-          const ptr_uint64 terminal_F(false);
-          const ptr_uint64 terminal_T(true);
+          const uid_uint64 terminal_F(false);
+          const uid_uint64 terminal_T(true);
 
-          const ptr_uint64 n0(0,0);
-          const ptr_uint64 n1(1,0);
-          const ptr_uint64 n2(1,1);
-          const ptr_uint64 n3(2,0);
-          const ptr_uint64 n4(2,1);
-          const ptr_uint64 n5(2,2);
-          const ptr_uint64 n6(3,0);
+          const uid_uint64 n0(0,0);
+          const uid_uint64 n1(1,0);
+          const uid_uint64 n2(1,1);
+          const uid_uint64 n3(2,0);
+          const uid_uint64 n4(2,1);
+          const uid_uint64 n5(2,2);
+          const uid_uint64 n6(3,0);
 
           shared_levelized_file<arc> in_outer;
           { // Garbage collect writer to free write-lock
@@ -3164,18 +3164,18 @@ go_bandit([]() {
           { // Garbage collect writer to free write-lock
             arc_writer aw(in_inner);
 
-            aw.push_internal({ flag(with_out_idx(n1, true)), n3 });
-            aw.push_internal({ flag(with_out_idx(n2, false)), n4 });
-            aw.push_internal({ flag(with_out_idx(n2, true)),  n5 });
-            aw.push_internal({ with_out_idx(n3, true), n6 });
-            aw.push_internal({ with_out_idx(n4, true), n6 });
+            aw.push_internal({ flag(n1.as_ptr(true)),  n3 });
+            aw.push_internal({ flag(n2.as_ptr(false)), n4 });
+            aw.push_internal({ flag(n2.as_ptr(true)),  n5 });
+            aw.push_internal({ n3.as_ptr(true), n6 });
+            aw.push_internal({ n4.as_ptr(true), n6 });
 
-            aw.push_terminal({ n3, false, terminal_T });
-            aw.push_terminal({ n4, false, terminal_T });
-            aw.push_terminal({ n5, false, terminal_F });
-            aw.push_terminal({ n5, true,  terminal_T });
-            aw.push_terminal({ n6, false, terminal_T });
-            aw.push_terminal({ n6, true,  terminal_F });
+            aw.push_terminal({ n3.as_ptr(false), terminal_T });
+            aw.push_terminal({ n4.as_ptr(false), terminal_T });
+            aw.push_terminal({ n5.as_ptr(false), terminal_F });
+            aw.push_terminal({ n5.as_ptr(true),  terminal_T });
+            aw.push_terminal({ n6.as_ptr(false), terminal_T });
+            aw.push_terminal({ n6.as_ptr(true),  terminal_F });
 
             // NOTE: 'level_info(0,1u)' is not a processable part of the forest;
             // NOTE: 'level_info(1,2u)' is not a processable part of the forest;
@@ -3277,11 +3277,11 @@ go_bandit([]() {
           //    |  / \
           //    F  F T
            */
-          const ptr_uint64 terminal_F(false);
-          const ptr_uint64 terminal_T(true);
+          const uid_uint64 terminal_F(false);
+          const uid_uint64 terminal_T(true);
 
-          const ptr_uint64 n1(1,0);
-          const ptr_uint64 n2(3,0);
+          const uid_uint64 n1(1,0);
+          const uid_uint64 n2(3,0);
 
           shared_levelized_file<arc> in_outer;
           { // Garbage collect writer to free write-lock
@@ -3300,10 +3300,10 @@ go_bandit([]() {
           { // Garbage collect writer to free write-lock
             arc_writer aw(in_inner);
 
-            aw.push_internal({ flag(with_out_idx(n1, true)), n2 });
+            aw.push_internal({ flag(n1.as_ptr(true)), n2 });
 
-            aw.push_terminal({ n2, false, terminal_F });
-            aw.push_terminal({ n2, true, terminal_T });
+            aw.push_terminal({ n2.as_ptr(false), terminal_F });
+            aw.push_terminal({ n2.as_ptr(true), terminal_T });
 
             // NOTE: 'level_info(1,1u)' is not a processable part of the forest;
             aw.push(level_info(3,1u));
@@ -3384,11 +3384,11 @@ go_bandit([]() {
           //       / \
           //       F T
            */
-          const ptr_uint64 terminal_F(false);
-          const ptr_uint64 terminal_T(true);
+          const uid_uint64 terminal_F(false);
+          const uid_uint64 terminal_T(true);
 
-          const ptr_uint64 n1(1,0);
-          const ptr_uint64 n2(3,0);
+          const uid_uint64 n1(1,0);
+          const uid_uint64 n2(3,0);
 
           shared_levelized_file<arc> in_outer;
           { // Garbage collect writer to free write-lock
@@ -3410,10 +3410,10 @@ go_bandit([]() {
           { // Garbage collect writer to free write-lock
             arc_writer aw(in_inner);
 
-            aw.push_internal({ flag(with_out_idx(n1, true)), n2 });
+            aw.push_internal({ flag(n1.as_ptr(true)), n2 });
 
-            aw.push_terminal({ n2, false, terminal_F });
-            aw.push_terminal({ n2, true,  terminal_T });
+            aw.push_terminal({ n2.as_ptr(false), terminal_F });
+            aw.push_terminal({ n2.as_ptr(true),  terminal_T });
 
             // NOTE: 'level_info(1,1u)' is not a processable part of the forest;
             // NOTE: 'level_info(2,?u)' is not a processable part of the forest;
@@ -3492,12 +3492,12 @@ go_bandit([]() {
           //        / \
           //        T T
           */
-          const ptr_uint64 terminal_F(false);
-          const ptr_uint64 terminal_T(true);
+          const uid_uint64 terminal_F(false);
+          const uid_uint64 terminal_T(true);
 
-          const ptr_uint64 n1(1,0);
-          const ptr_uint64 n2(3,0);
-          const ptr_uint64 n3(4,0);
+          const uid_uint64 n1(1,0);
+          const uid_uint64 n2(3,0);
+          const uid_uint64 n3(4,0);
 
           shared_levelized_file<arc> in_outer;
           { // Garbage collect writer to free write-lock
@@ -3515,12 +3515,12 @@ go_bandit([]() {
           { // Garbage collect writer to free write-lock
             arc_writer aw(in_inner);
 
-            aw.push_internal({ flag(with_out_idx(n1, true)), n2 });
-            aw.push_internal({ n2, true, n3 });
+            aw.push_internal({ flag(n1.as_ptr(true)), n2 });
+            aw.push_internal({ n2.as_ptr(true), n3 });
 
-            aw.push_terminal({ n2, false, terminal_F });
-            aw.push_terminal({ n3, false, terminal_T });
-            aw.push_terminal({ n3, true,  terminal_T });
+            aw.push_terminal({ n2.as_ptr(false), terminal_F });
+            aw.push_terminal({ n3.as_ptr(false), terminal_T });
+            aw.push_terminal({ n3.as_ptr(true),  terminal_T });
 
             // NOTE: 'level_info(1,1u)' is not a processable part of the forest;
             aw.push(level_info(3,1u));
@@ -3597,11 +3597,11 @@ go_bandit([]() {
           //       / \
           //       T T
           */
-          const ptr_uint64 terminal_F(false);
-          const ptr_uint64 terminal_T(true);
+          const uid_uint64 terminal_F(false);
+          const uid_uint64 terminal_T(true);
 
-          const ptr_uint64 n1(1,0);
-          const ptr_uint64 n2(3,0);
+          const uid_uint64 n1(1,0);
+          const uid_uint64 n2(3,0);
 
           shared_levelized_file<arc> in_outer;
           { // Garbage collect writer to free write-lock
@@ -3619,10 +3619,10 @@ go_bandit([]() {
           { // Garbage collect writer to free write-lock
             arc_writer aw(in_inner);
 
-            aw.push_internal({ flag(with_out_idx(n1, true)), n2 });
+            aw.push_internal({ flag(n1.as_ptr(true)), n2 });
 
-            aw.push_terminal({ n2, false, terminal_T });
-            aw.push_terminal({ n2, true,  terminal_T });
+            aw.push_terminal({ n2.as_ptr(false), terminal_T });
+            aw.push_terminal({ n2.as_ptr(true),  terminal_T });
 
             // NOTE: 'level_info(1,1u)' is not a processable part of the forest;
             aw.push(level_info(3,1u));
@@ -3688,11 +3688,11 @@ go_bandit([]() {
           //    |  / \
           //    F  F T
           */
-          const ptr_uint64 terminal_F(false);
-          const ptr_uint64 terminal_T(true);
+          const uid_uint64 terminal_F(false);
+          const uid_uint64 terminal_T(true);
 
-          const ptr_uint64 n1(1,0);
-          const ptr_uint64 n2(3,0);
+          const uid_uint64 n1(1,0);
+          const uid_uint64 n2(3,0);
 
           shared_levelized_file<arc> in_outer;
           { // Garbage collect writer to free write-lock
@@ -3710,11 +3710,11 @@ go_bandit([]() {
           { // Garbage collect writer to free write-lock
             arc_writer aw(in_inner);
 
-            aw.push_internal({ flag(with_out_idx(n1, true)), n2 });
+            aw.push_internal({ flag(n1.as_ptr(true)), n2 });
 
-            aw.push_terminal({ flag(with_out_idx(n1, false)), terminal_F });
-            aw.push_terminal({ n2, false, terminal_F });
-            aw.push_terminal({ n2, true,  terminal_T });
+            aw.push_terminal({ flag(n1.as_ptr(false)), terminal_F });
+            aw.push_terminal({ n2.as_ptr(false), terminal_F });
+            aw.push_terminal({ n2.as_ptr(true),  terminal_T });
 
             // NOTE: 'level_info(1,1u)' is not a processable part of the forest;
             aw.push(level_info(3,1u));

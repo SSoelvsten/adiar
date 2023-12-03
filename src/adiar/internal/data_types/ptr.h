@@ -358,9 +358,6 @@ namespace adiar::internal
     // befriend flag modifying functions that need access to protected values.
     friend ptr_uint64
     essential(const ptr_uint64 &p);
-
-    friend ptr_uint64
-    with_out_idx(const ptr_uint64 &p, const out_idx_type out_idx);
     ////////////////////////////////////////////////////////////////////////////
 
   public:
@@ -660,6 +657,7 @@ namespace adiar::internal
     ///
     /// \pre   `is_terminal()` evaluates to `true`.
     //////////////////////////////////////////////////////////////////////////////
+    // TODO: Rename into 'operator!' and make 'operator~' also flip the flag.
     ptr_uint64 operator~ () const
     {
       adiar_assert(this->is_terminal());
@@ -758,23 +756,6 @@ namespace adiar::internal
     return p.is_node()
       ? (p._raw & ~(out_idx_mask | ptr_uint64::flag_bit))
       : (p._raw & ~ptr_uint64::flag_bit);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief The pointer with the out-index changed to the given value.
-  ///
-  /// \pre `p.is_node() == true`
-  //////////////////////////////////////////////////////////////////////////////
-  // TODO: remove (used only in test/.../algorithms/nested_sweeping)
-  inline ptr_uint64 with_out_idx(const ptr_uint64 &p,
-                                 const ptr_uint64::out_idx_type out_idx)
-  {
-    adiar_assert(p.is_node());
-
-    constexpr ptr_uint64::raw_type out_idx_mask =
-      static_cast<ptr_uint64::raw_type>(ptr_uint64::max_out_idx) << ptr_uint64::data_shift;
-
-    return (p._raw & ~out_idx_mask) | (static_cast<ptr_uint64::raw_type>(out_idx) << ptr_uint64::data_shift);
   }
 
   /* ============================ TERMINAL NODES ============================ */
