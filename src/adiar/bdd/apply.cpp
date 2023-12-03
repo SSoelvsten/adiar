@@ -22,8 +22,8 @@ namespace adiar
       bdd::pointer_type terminal_2_F = bdd::pointer_type(bdd_2.negate);
 
       // Compute the results on all children.
-      bdd::pointer_type op_F = op(terminal_1_F, terminal_2_F);
-      bdd::pointer_type op_T = op(negate(terminal_1_F), negate(terminal_2_F));
+      bdd::pointer_type op_F = op( terminal_1_F,  terminal_2_F);
+      bdd::pointer_type op_T = op(~terminal_1_F, ~terminal_2_F);
 
       // Does it collapse to a terminal?
       if (op_F == op_T) {
