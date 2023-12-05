@@ -84,7 +84,7 @@ namespace adiar::internal
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief   Obtain the first node past the seeked value.
+    /// \brief   Obtain the first node "greater than" or "equal" the seeked uid.
     ///
     /// \param u Unique Identifier to seek for.
     ///
