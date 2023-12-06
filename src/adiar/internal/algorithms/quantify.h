@@ -218,7 +218,7 @@ namespace adiar::internal
             && req.target.second().is_node()
             && req.target.first().label() == req.target.second().label()) {
           adiar_assert(!req.target.second().is_nil(),
-                       "req.target.second().is_node ==> !req.target.second().is_nil()");
+                       "req.target.second().is_node() ==> !req.target.second().is_nil()");
 
           quantify_pq_2.push({ req.target, {v.children()}, req.data });
 
@@ -646,8 +646,11 @@ namespace adiar::internal
         quantify_priority_queue_2_t<memory_mode::Internal>::memory_fits(inner_remaining_memory);
 
       const size_t pq_2_bound =
+        // Obtain 1-level cut from subset
         __quantify_ilevel_upper_bound<quantify_policy, get_1level_cut, 0u>
-          (typename quantify_policy::dd_type(outer_file), _op);
+          (typename quantify_policy::dd_type(outer_file), _op)
+        // Add crossing arcs
+        + (inner_pq_1.size());
 
       const size_t max_pq_2_size = ep.memory_mode() == exec_policy::memory::Internal
         ? std::min(pq_2_memory_fits, pq_2_bound)
