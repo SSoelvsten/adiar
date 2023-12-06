@@ -729,6 +729,56 @@ go_bandit([]() {
         ;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    // BDD 16
+    //
+    // Designed to make outer root arcs dominate the 1-level cut within Nested Sweeping.
+    //
+    // NOTE: Designing this counter-example such that it is fully reduced is not easy to do (nor
+    //       easy to understand). So, we "cheat" by making x4 a level full of duplicates.
+    /*
+    //               _1_              ---- x0
+    //              /   \
+    //            _2_    \            ---- x1
+    //           /   \    \
+    //          3     4    \          ---- x2
+    //         / \   / \    \
+    //         5 6   7 8     \        ---- x3
+    //        /| |\ /| |\     \
+    //        ---- 9 ----     |       ---- x4   <--- nodes for x6 having 1-level cut = 1
+    //        \.|./  \.|./    |
+    //          a      b      |       ---- x5   <--- forwarding of all in-going arcs of (a) to (b/c)
+    //         / \    / \     |
+    //         T F    F T     c       ---- x6   <--- transposition quantification
+    //                       / \
+    //                       F T
+    */
+    shared_levelized_file<bdd::node_type> bdd_16;
+
+    {
+      const node nc   = node(6, node::max_id,   ptr_uint64(false), ptr_uint64(true));
+      const node nb   = node(5, node::max_id,   ptr_uint64(false), ptr_uint64(true));
+      const node na   = node(5, node::max_id-1, ptr_uint64(true),  ptr_uint64(false));
+
+      const node n9_3 = node(4, node::max_id,   na.uid(),          nb.uid());
+      const node n9_2 = node(4, node::max_id-1, na.uid(),          nb.uid());
+      const node n9_1 = node(4, node::max_id-2, na.uid(),          nb.uid());
+
+      const node n8   = node(3, node::max_id,   n9_2.uid(),        n9_3.uid());
+      const node n7   = node(3, node::max_id-1, n9_1.uid(),        n9_3.uid());
+      const node n6   = node(3, node::max_id-2, n9_2.uid(),        n9_1.uid());
+      const node n5   = node(3, node::max_id-3, n9_1.uid(),        n9_2.uid());
+      const node n4   = node(2, node::max_id,   n7.uid(),          n8.uid());
+      const node n3   = node(2, node::max_id-1, n5.uid(),          n6.uid());
+      const node n2   = node(1, node::max_id,   n3.uid(),          n4.uid());
+      const node n1   = node(0, node::max_id,   n2.uid(),          nc.uid());
+
+      node_writer nw(bdd_16);
+      nw << nc << nb << na
+         << n9_3 << n9_2 << n9_1
+         << n8 << n7 << n6 << n5 << n4 << n3 << n2 << n1;
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     describe("bdd_exists(const bdd&, bdd::label_type)", [&]() {
       it("should quantify T terminal-only BDD as itself", [&]() {
@@ -2731,6 +2781,27 @@ go_bandit([]() {
 
           // TODO: meta variables...
         });
+
+        it("accounts for number of root arcs from Outer Sweep [&&]", [&]() {
+          /* expected
+          //
+          //        T
+          */
+          bdd out = bdd_exists(ep, bdd_16, [](int x) -> bool { return x != 5; });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
       });
 
       describe("quantify_alg == Auto", [&]() {
@@ -4088,6 +4159,39 @@ go_bandit([]() {
 
           // TODO: meta variables
         });
+
+        it("accounts for number of root arcs from Outer Sweep [&]", [&]() {
+          int var = 6;
+
+          /* expected
+          //
+          //        T
+          */
+          bdd out = bdd_exists(ep, bdd_16, [&var]() -> optional<bdd::label_type> {
+              var -= 1;
+
+              if (var < 0) {
+                return make_optional<bdd::label_type>();
+              }
+              if (var == 5) {
+                var -= 1;
+              }
+              return var;
+            });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
       });
     });
 
@@ -4682,6 +4786,27 @@ go_bandit([]() {
 
           // TODO: meta variables
         });
+
+        it("accounts for number of root arcs from Outer Sweep [&&]", [&]() {
+          /* expected
+          //
+          //        F
+          */
+          bdd out = bdd_forall(ep, bdd_16, [](int x) -> bool { return x != 5; });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
       });
 
       describe("quantify_alg == Auto", [&]() {
@@ -4944,6 +5069,39 @@ go_bandit([]() {
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
+
+        it("accounts for number of root arcs from Outer Sweep [&]", [&]() {
+          int var = 6;
+
+          /* expected
+          //
+          //        F
+          */
+          bdd out = bdd_forall(ep, bdd_16, [&var]() -> optional<bdd::label_type> {
+              var -= 1;
+
+              if (var < 0) {
+                return make_optional<bdd::label_type>();
+              }
+              if (var == 5) {
+                var -= 1;
+              }
+              return var;
+            });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().False());
 

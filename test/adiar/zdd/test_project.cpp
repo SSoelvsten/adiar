@@ -240,6 +240,52 @@ go_bandit([]() {
         ;
     }
 
+    // { ... }
+    //
+    // See BDD 16 in test/adiar/bdd/test_quantify.cpp for more details.
+    /*
+    //               _1_              ---- x0
+    //              /   \
+    //            _2_    \            ---- x1
+    //           /   \    \
+    //          3     4    \          ---- x2
+    //         / \   / \    \
+    //         5 6   7 8     \        ---- x3
+    //        /| |\ /| |\     \
+    //        ---- 9 ----     |       ---- x4
+    //        \.|./  \.|./    |
+    //          a      b      |       ---- x5
+    //         / \    / \     |
+    //         F T    T T     c       ---- x6
+    //                       / \
+    //                       F T
+    */
+    shared_levelized_file<zdd::node_type> zdd_6;
+
+    {
+      const node nc   = node(6, node::max_id,   ptr_uint64(false), ptr_uint64(true));
+      const node nb   = node(5, node::max_id,   ptr_uint64(true),  ptr_uint64(true));
+      const node na   = node(5, node::max_id-1, ptr_uint64(false), ptr_uint64(true));
+
+      const node n9_3 = node(4, node::max_id,   na.uid(),          nb.uid());
+      const node n9_2 = node(4, node::max_id-1, na.uid(),          nb.uid());
+      const node n9_1 = node(4, node::max_id-2, na.uid(),          nb.uid());
+
+      const node n8   = node(3, node::max_id,   n9_2.uid(),        n9_3.uid());
+      const node n7   = node(3, node::max_id-1, n9_1.uid(),        n9_3.uid());
+      const node n6   = node(3, node::max_id-2, n9_2.uid(),        n9_1.uid());
+      const node n5   = node(3, node::max_id-3, n9_1.uid(),        n9_2.uid());
+      const node n4   = node(2, node::max_id,   n7.uid(),          n8.uid());
+      const node n3   = node(2, node::max_id-1, n5.uid(),          n6.uid());
+      const node n2   = node(1, node::max_id,   n3.uid(),          n4.uid());
+      const node n1   = node(0, node::max_id,   n2.uid(),          nc.uid());
+
+      node_writer nw(zdd_6);
+      nw << nc << nb << na
+         << n9_3 << n9_2 << n9_1
+         << n8 << n7 << n6 << n5 << n4 << n3 << n2 << n1;
+    }
+
     // TODO: Turn 'GreaterThanOrEqualTo' in max 1-level cuts below into an
     // 'EqualTo'.
 
@@ -939,6 +985,42 @@ go_bandit([]() {
 
           AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
           AssertThat(out->number_of_terminals[true],  Is().EqualTo(4u));
+        });
+
+        it("accounts for number of root arcs from Outer Sweep [const &]", [&](){
+          const zdd in = zdd_6;
+
+          /* Expected: { Ø, {5} }
+          //
+          //         1       ---- x5
+          //        / \
+          //        T T
+          */
+          zdd out = zdd_project(ep, in, [](const zdd::label_type x) { return x == 5; });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
+                                                         terminal_T,
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream ms(out);
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(5,1u)));
+
+          AssertThat(ms.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(0u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(2u));
+          AssertThat(out->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(2u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
         });
       });
 
@@ -2647,6 +2729,42 @@ go_bandit([]() {
 
           AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
           AssertThat(out->number_of_terminals[true],  Is().EqualTo(4u));
+        });
+
+        it("accounts for number of root arcs from Outer Sweep [const &]", [&](){
+          const zdd in = zdd_6;
+
+          /* Expected: { Ø, {5} }
+          //
+          //         1       ---- x5
+          //        / \
+          //        T T
+          */
+          zdd out = zdd_project(ep, in, [](const zdd::label_type x) { return x == 5; });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
+                                                         terminal_T,
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream ms(out);
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(5,1u)));
+
+          AssertThat(ms.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(0u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(2u));
+          AssertThat(out->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(2u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
         });
       });
     });
