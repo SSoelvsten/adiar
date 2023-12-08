@@ -28,7 +28,9 @@ Quick Access
    - `adiar::builder` class
 4. \ref module__statistics module
 5. \ref page__examples
-6. \ref page__cite
+6. \ref page__papers
+   - \ref page__cite
+   - \ref page__amend
 
 About the Project
 ========================
