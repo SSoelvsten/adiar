@@ -35,19 +35,8 @@ var NAVTREE =
       [ "Building with CMake", "page__getting_started.html#autotoc_md4", null ],
       [ "Usage", "page__getting_started.html#autotoc_md5", null ]
     ] ],
-    [ "Manual Construction", "page__builder.html", [
-      [ "Builder", "page__builder.html#autotoc_md6", null ],
-      [ "Example", "page__builder.html#autotoc_md7", null ]
-    ] ],
     [ "Examples", "page__examples.html", "page__examples" ],
-    [ "Citing this Project", "page__cite.html", [
-      [ "Lars Arge", "page__cite.html#autotoc_md19", null ],
-      [ "Adiar", "page__cite.html#autotoc_md20", [
-        [ "v1.0", "page__cite.html#autotoc_md21", null ],
-        [ "v1.1", "page__cite.html#autotoc_md22", null ],
-        [ "v1.2", "page__cite.html#autotoc_md23", null ]
-      ] ]
-    ] ],
+    [ "Papers", "page__papers.html", "page__papers" ],
     [ "Modules", "modules.html", "modules" ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
@@ -80,12 +69,12 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"adiar_8h_source.html",
-"classadiar_1_1internal_1_1node.html#a54a2982e55702b8264ac2f2737e5f546",
-"functions_~.html",
+"",
+"classadiar_1_1internal_1_1node.html#a516ffbac2c415dd6dc1f4848a077ecaa",
+"functions_z.html",
 "group__module____bdd.html#gafabb8fe9644393e18843eb1f1d466ef2",
-"group__module____zdd.html#gab8a0dc959d8efd4220f951aa4e5400ee",
-"structadiar_1_1statistics_1_1equality__t.html#a6875d1f6447096850add31577688ffbf"
+"group__module____zdd.html#gab7863b28f82235447c61f11ad7ae31ca",
+"structadiar_1_1statistics_1_1equality__t_1_1fast__t.html#af379e3362c9f7c2fc35366145b3d5f5b"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
