@@ -4,11 +4,6 @@ In some cases, one may already know the shape of a `adiar::bdd` and/or as a
 `adiar::zdd` for a more complex function. In those cases, it is much cheaper to
 construct them by hand than to manipulate logic formulas
 
-[TOC]
-
-Builder
-========================
-
 The `adiar::builder` class allows one to construct decision diagrams. To this
 end, they provide “pointers” to constructed nodes such that they can be
 referenced by other nodes.
@@ -21,11 +16,8 @@ decision diagram, but we provide type definitions to hide it away
 | `adiar::bdd`     | `adiar::bdd_builder` | `adiar::bdd_ptr` |
 | `adiar::zdd`     | `adiar::zdd_builder` | `adiar::zdd_ptr` |
 
-Example
-========================
-
-Consider the following BDD consisting of 3 nodes that represents the formula
-\f$ (x_0 \land x_1) \lor x_2 \f$.
+For example, consider the following BDD consisting of 3 nodes that represents
+the formula \f$ (x_0 \land x_1) \lor x_2 \f$.
 
 \dot
 digraph builder_example {
@@ -44,7 +36,7 @@ digraph builder_example {
 
   n2 -> t0 [style=dashed]
   n2 -> t1 [style=solid]
-  
+
   { rank=same; n0 }
   { rank=same; n1 }
   { rank=same; n2 }

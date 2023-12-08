@@ -24,8 +24,6 @@ Quick Access
 2. Decision Diagrams
    - \ref module__bdd module
    - \ref module__zdd module
-3. \ref page__builder
-   - `adiar::builder` class
 4. \ref module__statistics module
 5. \ref page__examples
 6. \ref page__papers
