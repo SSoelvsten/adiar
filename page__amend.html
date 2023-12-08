@@ -98,7 +98,6 @@ $(document).ready(function(){initNavTree('page__amend.html',''); initResizable()
 <div class="toc"><h3>Table of Contents</h3>
 <ul><li class="level1"><a href="#autotoc_md6">64-bit Encoding of Pointers</a><ul><li class="level2"><a href="#autotoc_md7">v1.2</a></li>
 <li class="level2"><a href="#autotoc_md8">v2.0</a></li>
-<li class="level2"><a href="#autotoc_md9">v2.0</a></li>
 </ul>
 </li>
 </ul>
@@ -121,9 +120,7 @@ v2.0</h2>
 <td class="markdownTableBodyNone"><code>0</code>   </td><td class="markdownTableBodyNone"><code>. . . . . label. . . . .</code>   </td><td class="markdownTableBodyNone"><code>. . . . . . . identifier. . . . . . .</code>   </td><td class="markdownTableBodyNone"><code>o</code>   </td><td class="markdownTableBodyNone"><code>f</code>   </td></tr>
 </table>
 <p>At this point, <em>o</em> only uses 1 bit, but in the case of <em>Quantum Multi-valued Decision Diagrams</em> this would use 2 bits to handle the 4-ary outdegree.</p>
-<h2><a class="anchor" id="autotoc_md9"></a>
-v2.0</h2>
-<p>The above introduction of the out-index, <em>o</em>, removes a bit from the number of <em>level identifiers</em>. This decreases the maximum width without an overflow downto only 3 TiB. Hence, the maximum size of a BDD without possible overflow is only 6 TiB.</p>
+<p>Yet, the above introduction of the out-index, <em>o</em>, removes a bit from the number of <em>level identifiers</em>. This decreases the maximum width without an overflow downto only 3 TiB. Hence, the maximum size of a BDD without possible overflow is only 6 TiB.</p>
 <p>To get the maximum width safe from overflows back up to 6 TiB, we have removed the most significant <em>terminal bit flag</em>. Instead, now all pointers dedicate the ℓ most significant bits to its <em>level</em>. The largest level is dedicated to <em>null</em> and the second-largest to <em>terminals</em>. This decreases the number of BDD labels by 2 and also restricts <em>terminal</em> values to fit into 64-ℓ-1-1 = 62-ℓ bits. Yet, this is fine for <code>bool</code>, <code>char</code>, <code>int</code>, and <code>float</code>.</p>
 <p><b>Figure 10 (a):</b></p>
 <table class="markdownTable">
