@@ -112,7 +112,7 @@ v1.2</h2>
 <p>It was always the intention that the <em>flag</em> bit on children should be used for the addition of <em>complement edges</em> in BDDs. Yet, up to this point it was left unused. Hence, we reassigned the meaning of this bit to instead propagate an edge being <em>tainted</em> by the decision diagram's reduction rule [<a href="https://link.springer.com/chapter/10.1007/978-3-031-45332-8_4">ATVA 23</a>].</p>
 <h2><a class="anchor" id="autotoc_md8"></a>
 v2.0</h2>
-<p>For <em>Nested Sweeping</em>, we need to mark an arc's <em>source</em> to be originating from the <em>outer sweep</em>. Yet, the <em>flag</em> was up to this point used to store the <em>out-index</em> of the source. Hence, for <em>internal nodes</em> we introduce the out-index (<em>p</em>) on the second least-significant bit - essentially adding a second (possibly non-Boolean) <em>flag</em>.</p>
+<p>For <em>Nested Sweeping</em>, we need to <em>taint</em> an arc's <em>source</em> to be originating from the <em>outer sweep</em>. Yet, the <em>flag</em> was up to this point used to store the <em>out-index</em> of the source. Hence, for <em>internal nodes</em> we introduce the out-index (<em>p</em>) on the second least-significant bit - essentially adding a second (possibly non-Boolean) <em>flag</em>.</p>
 <p><b>Figure 10 (b):</b></p>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -124,7 +124,7 @@ v2.0</h2>
 <h2><a class="anchor" id="autotoc_md9"></a>
 v2.0</h2>
 <p>The above introduction of the out-index, <em>o</em>, removes a bit from the number of <em>level identifiers</em>. This decreases the maximum width without an overflow downto only 3 TiB. Hence, the maximum size of a BDD without possible overflow is only 6 TiB.</p>
-<p>To get the maximum width safe from overflows back up to 6 TiB, we have removed the most significant <em>terminal bit flag</em>. Instead, now all pointers dedicate the ℓ most significant bits to its <em>level</em>. The largest level is dedicated to <em>null</em> and the second-largest to <em>terminals</em>. This decreases the number of BDD labels by 2 and also restricts <em>terminal</em> values to it into 64-ℓ-1-1 = 62-ℓ bits. Yet, this is fine for <code>bool</code>, <code>char</code>, <code>int</code>, and <code>float</code>.</p>
+<p>To get the maximum width safe from overflows back up to 6 TiB, we have removed the most significant <em>terminal bit flag</em>. Instead, now all pointers dedicate the ℓ most significant bits to its <em>level</em>. The largest level is dedicated to <em>null</em> and the second-largest to <em>terminals</em>. This decreases the number of BDD labels by 2 and also restricts <em>terminal</em> values to fit into 64-ℓ-1-1 = 62-ℓ bits. Yet, this is fine for <code>bool</code>, <code>char</code>, <code>int</code>, and <code>float</code>.</p>
 <p><b>Figure 10 (a):</b></p>
 <table class="markdownTable">
 <tr class="markdownTableHead">
