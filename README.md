@@ -11,11 +11,11 @@
 &nbsp;
 [![codecov](https://img.shields.io/codecov/c/github/ssoelvsten/adiar?logo=codecov&logoColor=white&token=106RCIR4DJ)](https://codecov.io/gh/SSoelvsten/adiar)
 
-Based on the work of Lars Arge [[Arge96](#references)], Adiar<sup>[1](#footnotes)</sup>
-is a BDD package [[Bryant86](#references)] that makes use of time-forward processing
-to improve the I/O complexity of BDD manipulation. This makes it able to achieve
-efficient manipulation of BDDs, even when they outgrow the memory limit of the
-given machine.
+Based on the work of Lars Arge [[Arge96](#references)],
+Adiar[&#185;](#footnotes) is a BDD package [[Bryant86](#references)] that makes
+use of time-forward processing to improve the I/O complexity of BDD
+manipulation. This makes it able to achieve efficient manipulation of BDDs, even
+when they outgrow the memory limit of the given machine.
 
 
 <div align="center">
@@ -28,8 +28,9 @@ given machine.
 </div>
 
 
-This project has been developed at the [Logic and Semantics](https://logsem.github.io/)
-group at [Aarhus University](https://cs.au.dk).
+This project has been developed at the
+[Logic and Semantics](https://logsem.github.io/) group at
+[Aarhus University](https://cs.au.dk).
 
 **Table of Contents**
 
@@ -46,9 +47,10 @@ group at [Aarhus University](https://cs.au.dk).
 
 
 ## Documentation
-The documentation is available on [Github
-Pages](https://ssoelvsten.github.io/adiar/). To compile it locally, you need
-*CMake* and *Doxygen* (see [Dependencies](#dependencies) and [Usage](#usage)).
+The documentation is available on
+[Github Pages](https://ssoelvsten.github.io/adiar/). To compile it locally, you
+need *CMake* and *Doxygen* (see [Dependencies](#dependencies) and
+[Usage](#usage)).
 
 ## Dependencies
 The implementation is dependant on the following external libraries
@@ -98,7 +100,7 @@ Other dependencies that we cannot provide as a submodule are shown below. The
 
   As a visual aid, the internal representation of the Decision Diagrams can be
   output as
-  [DOT](https://en.wikipedia.org/wiki/DOT_(graph_description_language)) files.
+  [.dot](https://en.wikipedia.org/wiki/DOT_(graph_description_language)) files.
   These can then be turned into a graphical representation by use of a number of
   tools, such as *graphviz* (2.40+).
 
@@ -112,9 +114,9 @@ To install all of the above, run the respective command below.
 
 ## Usage
 
-For how to use Adiar in your project, see the [Getting
-Started](https://ssoelvsten.github.io/adiar/page__getting_started.html) page in
-the documentation.
+For how to use Adiar in your project, see the
+[Getting Started](https://ssoelvsten.github.io/adiar/page__getting_started.html)
+page in the documentation.
 
 ### Makefile Targets
 
@@ -151,8 +153,8 @@ make playground M=<MiB>
 
 The *example/* folder contains larger examples for how to use Adiar. The
 *README.md* file in said folder contains a more in-depth description of each of
-the examples. For benchmarking Adiar against other BDD packages, see the [BDD
-Benchmarking repository](https://github.com/SSoelvsten/bdd-benchmark).
+the examples. For benchmarking Adiar against other BDD packages, see the
+[BDD Benchmarking repository](https://github.com/SSoelvsten/bdd-benchmark).
 
 You can use `make examples/<name>` to compile and run them.
 
@@ -184,7 +186,8 @@ library or have it use an alternative to TPIE, such as
 ## Citing this project
 
 If you use Adiar in some of your academic work, then please consider to cite one
-or more of the papers in [docs/cite.md](https://ssoelvsten.github.io/adiar/page__cite.html).
+or more of the papers in
+[docs/cite.md](https://ssoelvsten.github.io/adiar/page__cite.html).
 
 
 ## References
