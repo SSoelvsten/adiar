@@ -27,44 +27,41 @@ edge being *tainted* by the decision diagram's reduction rule [[ATVA
 v2.0
 ------------------------
 
-For *Nested Sweeping*, we need to mark an arc's *source* to be originating from
-the *outer sweep*. Yet, the *flag* was up to this point used to store the
+For *Nested Sweeping*, we need to *taint* an arc's *source* to be originating
+from the *outer sweep*. Yet, the *flag* was up to this point used to store the
 *out-index* of the source. Hence, for *internal nodes* we introduce the
 out-index (*p*) on the second least-significant bit - essentially adding a
 second (possibly non-Boolean) *flag*.
 
 **Figure 10 (b):**
 
-|   |                          |                                       |   |   |
-|---|--------------------------|---------------------------------------|---|---|
-|`0`|`. . . . . label. . . . .`|`. . . . . . . identifier. . . . . . .`|`o`|`f`|
+|     |                            |                                         |     |     |
+|-----|----------------------------|-----------------------------------------|-----|-----|
+| `0` | `. . . . . label. . . . .` | `. . . . . . . identifier. . . . . . .` | `o` | `f` |
 
 At this point, *o* only uses 1 bit, but in the case of *Quantum Multi-valued
 Decision Diagrams* this would use 2 bits to handle the 4-ary outdegree.
 
-v2.0
-------------------------
-
-The above introduction of the out-index, *o*, removes a bit from the number of
-*level identifiers*. This decreases the maximum width without an overflow downto
-only 3 TiB. Hence, the maximum size of a BDD without possible overflow is only 6
-TiB.
+Yet, the above introduction of the out-index, *o*, removes a bit from the number
+of *level identifiers*. This decreases the maximum width without an overflow
+downto only 3 TiB. Hence, the maximum size of a BDD without possible overflow is
+only 6 TiB.
 
 To get the maximum width safe from overflows back up to 6 TiB, we have removed
 the most significant *terminal bit flag*. Instead, now all pointers dedicate the
 ℓ most significant bits to its *level*. The largest level is dedicated to *null*
 and the second-largest to *terminals*. This decreases the number of BDD labels
-by 2 and also restricts *terminal* values to it into 64-ℓ-1-1 = 62-ℓ bits. Yet,
+by 2 and also restricts *terminal* values to fit into 64-ℓ-1-1 = 62-ℓ bits. Yet,
 this is fine for `bool`, `char`, `int`, and `float`.
 
 **Figure 10 (a):**
 
-|                          |                                        |   |
-|--------------------------|----------------------------------------|---|
-|`. . . . . level. . . . .`|`. . . . . . . . . v. . . . . . . . . .`|`f`|
+|                            |                                          |     |
+|----------------------------|------------------------------------------|-----|
+| `. . . . . level. . . . .` | `. . . . . . . . . v. . . . . . . . . .` | `f` |
 
 **Figure 10 (b):**
 
-|                          |                                       |   |   |
-|--------------------------|---------------------------------------|---|---|
-|`. . . . . level. . . . .`|`. . . . . . . identifier. . . . . . .`|`o`|`f`|
+|                            |                                          |     |     |
+|----------------------------|------------------------------------------|-----|-----|
+| `. . . . . level. . . . .` | `. . . . . . . identifier . . . . . . .` | `o` | `f` |
