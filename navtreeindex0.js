@@ -1,6 +1,5 @@
 var NAVTREEINDEX0 =
 {
-"":[5,0,0,0],
 "adiar_8h_source.html":[7,0,1,0,3],
 "annotated.html":[6,0],
 "arc_8h_source.html":[7,0,1,0,1,0,0],
@@ -249,5 +248,6 @@ var NAVTREEINDEX0 =
 "classadiar_1_1internal_1_1node.html#a3201c8d8dce64464319b25e48598cd6c":[6,0,0,0,6,34],
 "classadiar_1_1internal_1_1node.html#a40b7c23ab8a6b269e1f10e141c7fcd00":[6,0,0,0,6,6],
 "classadiar_1_1internal_1_1node.html#a45b087bfcba1c92dd5b5b628df46a3da":[6,0,0,0,6,2],
-"classadiar_1_1internal_1_1node.html#a506b816dc70a3d621ecc3dee2ff0a722":[6,0,0,0,6,10]
+"classadiar_1_1internal_1_1node.html#a506b816dc70a3d621ecc3dee2ff0a722":[6,0,0,0,6,10],
+"classadiar_1_1internal_1_1node.html#a516ffbac2c415dd6dc1f4848a077ecaa":[6,0,0,0,6,28]
 };
