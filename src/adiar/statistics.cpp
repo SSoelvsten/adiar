@@ -681,8 +681,14 @@ namespace adiar
 
   void __printstat_quantify(std::ostream &o)
   {
-    uintwide total_runs = internal::stats_quantify.lpq.total();
-    o << indent << bold_on << label << "Quantification" << bold_off << total_runs << endl;
+    const uintwide total_runs = internal::stats_quantify.skipped
+                              + internal::stats_quantify.singleton_sweeps
+                              + internal::stats_quantify.partial_sweeps
+                              + internal::stats_quantify.nested_sweeps;
+
+    o << indent << bold_on << label << "Quantification" << bold_off
+      << total_runs
+      << endl;
 
     indent_level++;
     if (total_runs == 0u) {
@@ -691,7 +697,133 @@ namespace adiar
       return;
     }
 
+    {
+      o << indent << bold_on << label << "case [skipped]" << bold_off
+        << internal::stats_quantify.skipped
+        << " = " << internal::percent_frac(internal::stats_quantify.skipped, total_runs) << percent
+        << endl;
+    }
+
+    {
+      o << indent << endl;
+
+      o << indent << bold_on << label << "case [singleton sweep]" << bold_off
+        << internal::stats_quantify.singleton_sweeps
+        << " = " << internal::percent_frac(internal::stats_quantify.singleton_sweeps, total_runs) << percent
+        << endl;
+    }
+
+    {
+      o << indent << endl;
+
+      o << indent << bold_on << label << "case [partial sweep]" << bold_off
+        << internal::stats_quantify.partial_sweeps
+        << " = " << internal::percent_frac(internal::stats_quantify.partial_sweeps, total_runs) << percent
+        << endl;
+
+      indent_level++;
+
+      o << indent << label << "termination"
+        << internal::stats_quantify.partial_termination
+        << endl;
+
+      indent_level--;
+    }
+
+    {
+      o << indent << endl;
+
+      o << indent << bold_on << label << "case [nested sweep]" << bold_off
+        << internal::stats_quantify.nested_sweeps
+        << " = " << internal::percent_frac(internal::stats_quantify.nested_sweeps, total_runs) << percent
+        << endl;
+
+      indent_level++;
+
+      const uintwide total_roots = internal::stats_quantify.nested_policy.shortcut_terminal
+                                 + internal::stats_quantify.nested_policy.shortcut_node
+                                 + internal::stats_quantify.nested_policy.products;
+
+      o << indent << label << "root requests"
+        << total_roots
+        << endl;
+
+      indent_level++;
+
+      o << indent << label << "shortcut (terminal)"
+        << internal::stats_quantify.nested_policy.shortcut_terminal
+        << " = " << internal::percent_frac(internal::stats_quantify.nested_policy.shortcut_terminal, total_roots) << percent
+        << endl;
+
+      o << indent << label << "shortcut (node)"
+        << internal::stats_quantify.nested_policy.shortcut_node
+        << " = " << internal::percent_frac(internal::stats_quantify.nested_policy.shortcut_node, total_roots) << percent
+        << endl;
+
+      o << indent << label << "products"
+        << internal::stats_quantify.nested_policy.products
+        << " = " << internal::percent_frac(internal::stats_quantify.nested_policy.products, total_roots) << percent
+        << endl;
+
+      indent_level -= 2;
+    }
+
+    o << indent << endl;
     __printstat_alg_base(o, internal::stats_quantify);
+
+    o << indent << endl;
+    {
+      o << indent << bold_on << label << "requests" << bold_off
+        << endl;
+
+      indent_level++;
+      {
+        const uintwide total_requests = internal::stats_quantify.requests[0]
+                                      + internal::stats_quantify.requests[1];
+
+        o << indent << label << "incl. duplicates"
+          << total_requests
+          << endl;
+
+        indent_level++;
+        for (int arity_idx = 0; arity_idx < 2; ++arity_idx) {
+          std::string t;
+          t += static_cast<char>('1'+arity_idx);
+          t += "-ary";
+
+          o << indent << label << t
+            << internal::stats_quantify.requests[arity_idx]
+            << " = " << internal::percent_frac(internal::stats_quantify.requests[arity_idx], total_requests) << percent
+            << endl;
+        }
+        indent_level--;
+      }
+
+      o << indent << endl;
+
+      {
+        const uintwide total_unique = internal::stats_quantify.requests_unique[0]
+                                    + internal::stats_quantify.requests_unique[1];
+
+        o << indent << label << "excl. duplicates"
+          << total_unique
+          << endl;
+
+        indent_level++;
+        for (int arity_idx = 0; arity_idx < 2; ++arity_idx) {
+          std::string t;
+          t += static_cast<char>('1'+arity_idx);
+          t += "-ary";
+
+          o << indent << label << t
+            << internal::stats_quantify.requests_unique[arity_idx]
+            << " = " << internal::percent_frac(internal::stats_quantify.requests_unique[arity_idx], total_unique) << percent
+            << endl;
+        }
+        indent_level--;
+      }
+      indent_level--;
+    }
     indent_level--;
   }
 
