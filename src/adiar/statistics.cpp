@@ -762,7 +762,7 @@ namespace adiar
 
     o << indent << endl;
     {
-      o << indent << bold_on << label << "requests" << bold_off
+      o << indent << bold_on << label << "requests (excluding roots)" << bold_off
         << endl;
 
       indent_level++;
