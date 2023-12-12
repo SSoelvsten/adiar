@@ -187,8 +187,6 @@ namespace adiar::internal
       const typename quantify_policy::label_type out_label = quantify_pq_1.current_level();
       typename quantify_policy::id_type out_id = 0;
 
-      // TODO: move quantification test out here instead
-
       const bool should_quantify = policy_impl.should_quantify(out_label);
 
       while (!quantify_pq_1.empty_level() || !quantify_pq_2.empty()) {
