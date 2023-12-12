@@ -702,7 +702,7 @@ namespace adiar::internal
           const size_t inner_memory) const
     {
       return nested_sweeping::inner::down__sweep_switch
-        (ep, *this, outer_file, outer_roots, inner_memory);
+        (ep, *this, outer_file, outer_roots, inner_memory, stats_quantify.lpq);
     }
 
     //////////////////////////////////////////////////////////////////////////////

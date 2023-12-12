@@ -20,7 +20,8 @@
 ///                 subtree but (presumably) not changing it.
 ////////////////////////////////////////////////////////////////////////////////
 template<nested_sweeping::reduce_strategy reduce_strat, bool only_gc = false>
-class test_not_sweep : public bdd_policy
+class test_not_sweep
+  : public bdd_policy, public statistics::__alg_base::__lpq_t
 {
 private:
   const size_t _nesting_modulo;
@@ -143,7 +144,10 @@ public:
         outer_roots_t &outer_roots,
         const size_t inner_memory)
   {
-    return nested_sweeping::inner::down__sweep_switch(ep, *this, outer_file, outer_roots, inner_memory);
+    return nested_sweeping::inner::down__sweep_switch(ep, *this,
+                                                      outer_file, outer_roots,
+                                                      inner_memory,
+                                                      *this);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -163,7 +167,8 @@ public:
 };
 
 template<nested_sweeping::reduce_strategy reduce_strat>
-class test_terminal_sweep : public bdd_policy
+class test_terminal_sweep
+  : public bdd_policy, public statistics::__alg_base::__lpq_t
 {
 private:
   const size_t _nesting_modulo;
@@ -275,7 +280,10 @@ public:
         outer_roots_t &outer_roots,
         const size_t inner_memory)
   {
-    return nested_sweeping::inner::down__sweep_switch(ep, *this, outer_file, outer_roots, inner_memory);
+    return nested_sweeping::inner::down__sweep_switch(ep, *this,
+                                                      outer_file, outer_roots,
+                                                      inner_memory,
+                                                      *this);
   }
 
   //////////////////////////////////////////////////////////////////////////////
