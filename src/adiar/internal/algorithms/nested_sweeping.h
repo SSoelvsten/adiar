@@ -1344,7 +1344,7 @@ namespace adiar::internal
                                          inner_pq_memory, inner_pq_max_size, inner_sorters_memory,
                                          is_last_inner);
 
-        } else if(!external_only && inner_pq_max_size <= inner_pq_memory_fits) {
+        } else if (!external_only && inner_pq_max_size <= inner_pq_memory_fits) {
 #ifdef ADIAR_STATS
           stats.inner.up.lpq.internal += 1u;
 #endif
