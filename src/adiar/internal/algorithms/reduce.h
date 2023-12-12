@@ -88,8 +88,15 @@ namespace adiar::internal
   public:
     reduce_priority_queue(const shared_levelized_file<arc> (&files) [1u],
                           size_t memory_given,
+                          size_t max_size,
+                          statistics::levelized_priority_queue_t &stats)
+      : inner_lpq(files, memory_given, max_size, stats)
+    { }
+
+    reduce_priority_queue(const shared_levelized_file<arc> (&files) [1u],
+                          size_t memory_given,
                           size_t max_size)
-      : inner_lpq(files, memory_given, max_size, stats_reduce.lpq)
+      : reduce_priority_queue(files, memory_given, max_size, stats_reduce.lpq)
     { }
 
     ////////////////////////////////////////////////////////////////////////////

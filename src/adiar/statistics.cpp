@@ -366,6 +366,161 @@ namespace adiar
     indent_level -= 2;
   }
 
+  void __printstat_nested_sweeping(std::ostream &o)
+  {
+    const uintwide total_runs = internal::nested_sweeping::stats.skips
+                              + internal::nested_sweeping::stats.runs;
+
+    if (total_runs == 0u) {
+      o << indent << "Not used" << endl;
+      return;
+    }
+
+    // stats.outer
+    o << indent << label << "skips" << internal::nested_sweeping::stats.skips << endl
+      << indent << label << "runs"  << internal::nested_sweeping::stats.runs << endl;
+
+    // stats.outer.up
+    {
+      o << indent << endl;
+      o << indent << bold_on << "outer sweeps" << bold_off << endl;
+
+      indent_level++;
+
+      o << indent << bold_on << "up sweep" << bold_off << endl;
+      indent_level++;
+
+      o << indent << bold_on << label << "reduced levels" << bold_off
+        << internal::nested_sweeping::stats.outer.up.reduced_levels
+        << endl;
+
+      indent_level++;
+
+      const uintwide canonical_levels = internal::nested_sweeping::stats.outer.up.reduced_levels
+                                      - internal::nested_sweeping::stats.outer.up.reduced_levels__fast;
+
+      o << indent << label << "canonical"
+        << internal::nested_sweeping::stats.outer.up.reduced_levels__fast
+        << " = " << internal::percent_frac(canonical_levels,
+                                           internal::nested_sweeping::stats.outer.up.reduced_levels) << percent
+        << endl;
+
+      o << indent << label << "fast"
+        << internal::nested_sweeping::stats.outer.up.reduced_levels__fast
+        << " = " << internal::percent_frac(internal::nested_sweeping::stats.outer.up.reduced_levels__fast,
+                                           internal::nested_sweeping::stats.outer.up.reduced_levels) << percent
+        << endl;
+      indent_level--;
+
+      const uintwide total_nested = internal::nested_sweeping::stats.outer.up.nested_levels
+                                  + internal::nested_sweeping::stats.outer.up.skipped_nested_levels;
+
+      o << indent << endl;
+      o << indent << bold_on << label << "nested levels" << bold_off << total_nested << endl;
+
+      indent_level++;
+      o << indent << label << "executed"
+        << internal::nested_sweeping::stats.outer.up.nested_levels
+        << " = " << internal::percent_frac(internal::nested_sweeping::stats.outer.up.nested_levels, total_nested) << percent
+        << endl;
+
+      const uintwide unpruned_skipped = internal::nested_sweeping::stats.outer.up.skipped_nested_levels
+                                      - internal::nested_sweeping::stats.outer.up.skipped_nested_levels__prune;
+
+      o << indent << label << "skipped (non-pruning)"
+        << unpruned_skipped
+        << " = " << internal::percent_frac(unpruned_skipped, total_nested) << percent
+        << endl;
+
+      o << indent << label << "skipped (pruning)"
+        << internal::nested_sweeping::stats.outer.up.skipped_nested_levels__prune
+        << " = " << internal::percent_frac(internal::nested_sweeping::stats.outer.up.skipped_nested_levels__prune, total_nested) << percent
+        << endl;
+
+      indent_level--;
+
+      o << indent << endl;
+      o << indent << label << "collapse to terminal"
+        << internal::nested_sweeping::stats.outer.up.collapse_to_terminal
+        << endl;
+
+      o << indent << endl;
+      __printstat_alg_base(o, internal::nested_sweeping::stats.outer.up);
+
+      indent_level--;
+    }
+    {
+      o << indent << endl;
+      o << indent << bold_on << "root requests" << bold_off << endl;
+      indent_level++;
+
+      o << indent << label << "terminals (skipped)"
+        << internal::nested_sweeping::stats.outer.roots.terminals_skipped
+        << endl;
+
+      o << indent << label << "preserving"
+        << internal::nested_sweeping::stats.outer.roots.preserving
+        << endl;
+
+      o << indent << label << "suppressed"
+        << internal::nested_sweeping::stats.outer.roots.suppressed
+        << endl;
+
+      o << indent << label << "modifying"
+        << internal::nested_sweeping::stats.outer.roots.modifying
+        << endl;
+
+      indent_level--;
+    }
+    indent_level--;
+
+    // stats.inner.down
+    o << indent << endl;
+    o << indent << bold_on << "inner sweeps" << bold_off << endl;
+    indent_level++;
+
+    {
+      o << indent << bold_on << "down sweep" << bold_off << endl;
+
+      indent_level++;
+      __printstat_alg_base(o, internal::nested_sweeping::stats.inner.down);
+      indent_level--;
+    }
+
+    // stats.inner.up
+    {
+      o << indent << endl;
+      o << indent << bold_on << "up sweep" << bold_off << endl;
+
+      indent_level++;
+
+      o << indent << bold_on << label << "reduced levels" << bold_off
+        << internal::nested_sweeping::stats.inner.up.reduced_levels
+        << endl;
+
+      indent_level++;
+
+      const uintwide canonical_levels = internal::nested_sweeping::stats.inner.up.reduced_levels
+                                      - internal::nested_sweeping::stats.inner.up.reduced_levels__fast;
+
+      o << indent << label << "canonical"
+        << canonical_levels
+        << " = " << internal::percent_frac(canonical_levels, internal::nested_sweeping::stats.inner.up.reduced_levels) << percent
+        << endl;
+
+      o << indent << label << "fast"
+        << internal::nested_sweeping::stats.inner.up.reduced_levels__fast
+        << " = " << internal::percent_frac(internal::nested_sweeping::stats.inner.up.reduced_levels__fast,
+                                           internal::nested_sweeping::stats.inner.up.reduced_levels) << percent
+        << endl;
+
+      indent_level--;
+
+      o << indent << endl;
+      __printstat_alg_base(o, internal::nested_sweeping::stats.inner.up);
+    }
+    indent_level -= 2;
+  }
 
   void __printstat_prod2(std::ostream &o)
   {
@@ -578,6 +733,11 @@ namespace adiar
     o << bold_on << "--== Data Structures ==--" << bold_off << endl << endl;
 
     __printstat_lpq(o, internal::stats_levelized_priority_queue);
+    o << endl;
+
+    o << bold_on << "--== Nested Sweeping Framework ==--" << bold_off << endl << endl;
+
+    __printstat_nested_sweeping(o);
     o << endl;
 
     o << bold_on << "--== Top-Down Sweep Algorithms ==--" << bold_off << endl << endl;
