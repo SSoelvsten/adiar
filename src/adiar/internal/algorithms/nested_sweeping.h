@@ -284,7 +284,7 @@ namespace adiar::internal
           //       target to nil?
 
           if constexpr (value_type::cardinality == 1u) {
-            push(value_type({a.target()}, {}, {flag(a.source())}));
+            push(value_type({a.target()}, {}, {a.source()}));
           } else if constexpr (value_type::cardinality == 2u) {
             push(value_type({a.target(), value_type::pointer_type::nil()}, {}, {a.source()}));
           } else {
