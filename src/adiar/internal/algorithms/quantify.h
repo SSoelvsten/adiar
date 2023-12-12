@@ -230,6 +230,11 @@ namespace adiar::internal
         adiar_assert(req.target.first().label() == out_label,
                      "Level of requests always ought to match the one currently processed");
 
+#ifdef ADIAR_STATS
+        const int arity_idx = req.targets()-1;
+        stats_quantify.requests_unique[arity_idx] += 1;
+#endif
+
         // ---------------------------------------------------------------------
         // CASE: Quantification of Singleton f into (f[0], f[1]).
         if (should_quantify &&
@@ -238,6 +243,9 @@ namespace adiar::internal
             __quantify_resolve_request<quantify_policy, 2>(op, v.children().data());
 
           do {
+#ifdef ADIAR_STATS
+            stats_quantify.requests[arity_idx] += 1;
+#endif
             __quantify_forward_request<quantify_policy>(quantify_pq_1, aw, req.data.source, rec);
           } while (!__quantify_update_source_or_break(quantify_pq_1, quantify_pq_2,
                                                       req.data.source,
@@ -279,6 +287,9 @@ namespace adiar::internal
               quantify_request<0>::target_t rec(rec_all[0], rec_all[1]);
 
               do {
+#ifdef ADIAR_STATS
+                stats_quantify.requests[arity_idx] += 1;
+#endif
                 __quantify_forward_request<quantify_policy>(quantify_pq_1, aw, req.data.source, rec);
               } while (!__quantify_update_source_or_break(quantify_pq_1, quantify_pq_2,
                                                           req.data.source,
@@ -300,6 +311,9 @@ namespace adiar::internal
 
               if (!req.data.source.is_nil()) {
                 do {
+#ifdef ADIAR_STATS
+                  stats_quantify.requests[arity_idx] += 1;
+#endif
                   aw.push_internal(arc(req.data.source, out_uid));
                 } while (!__quantify_update_source_or_break(quantify_pq_1, quantify_pq_2,
                                                             req.data.source,
@@ -331,6 +345,9 @@ namespace adiar::internal
 
         if (!req.data.source.is_nil()) {
           do {
+#ifdef ADIAR_STATS
+            stats_quantify.requests[arity_idx] += 1;
+#endif
             aw.push_internal(arc(req.data.source, out_uid));
           } while (!__quantify_update_source_or_break(quantify_pq_1, quantify_pq_2,
                                                       req.data.source,
@@ -354,7 +371,6 @@ namespace adiar::internal
 
     return typename quantify_policy::__dd_type(out_arcs, ep);
   }
-
 
   //////////////////////////////////////////////////////////////////////////////
   /// Derives an upper bound on the output's maximum i-level cut given its
@@ -558,11 +574,17 @@ namespace adiar::internal
            const typename quantify_policy::label_type label,
            const bool_op &op)
   {
-
     // Trivial cases, where there is no need to do any computation
     if (dd_isterminal(in) || !has_level(in, label)) {
-      return in;
+#ifdef ADIAR_STATS
+      stats_quantify.skipped += 1u;
+#endif
+     return in;
     }
+
+#ifdef ADIAR_STATS
+    stats_quantify.singleton_sweeps += 1u;
+#endif
 
     // Set up policy and run sweep
     single_quantify_policy<quantify_policy> policy_impl(label);
@@ -694,11 +716,19 @@ namespace adiar::internal
       const typename quantify_policy::pointer_type result =
         quantify_policy::resolve_root(n, _op);
 
-      typename request_t::target_t tgt = result != n.uid()
+      const bool shortcut = result != n.uid();
+
+      typename request_t::target_t tgt = shortcut
         // If able to shortcut, preserve result.
         ? request_t::target_t{ result, quantify_policy::pointer_type::nil() }
         // Otherwise, create product of children
         : request_t::target_t{ first(n.low(), n.high()), second(n.low(), n.high()) };
+
+#ifdef ADIAR_STATS
+      stats_quantify.nested_policy.shortcut_terminal += static_cast<int>(shortcut && result.is_terminal());
+      stats_quantify.nested_policy.shortcut_node     += static_cast<int>(shortcut && result.is_node());
+      stats_quantify.nested_policy.products          += static_cast<int>(!shortcut);
+#endif
 
       return request_t(tgt, {}, {parent});
     }
@@ -834,7 +864,7 @@ namespace adiar::internal
 
     if (quantify_policy::max_label < label) {
 #ifdef ADIAR_STATS
-      // TODO
+      stats_quantify.skipped += 1u;
 #endif
       return dd;
     }
@@ -844,14 +874,14 @@ namespace adiar::internal
       { // ---------------------------------------------------------------------
         // Case: Repeated partial quantification
 #ifdef ADIAR_STATS
-        // TODO
+        stats_quantify.partial_sweeps += 1u;
 #endif
         partial_quantify_policy<quantify_policy> partial_impl(pred);
         unreduced_t res = __quantify(ep, std::move(dd), partial_impl, op);
 
         while (partial_impl.remaining_nodes > 0) {
 #ifdef ADIAR_STATS
-          // TODO
+          stats_quantify.partial_sweeps += 1u;
 #endif
           partial_impl.reset();
           res = __quantify(ep, res, partial_impl, op);
@@ -863,7 +893,7 @@ namespace adiar::internal
       { // ---------------------------------------------------------------------
         // Case: Repeated single variable quantification
 #ifdef ADIAR_STATS
-        // TODO
+        stats_quantify.singleton_sweeps += 1u;
 #endif
         while (label <= quantify_policy::max_label) {
           dd = quantify<quantify_policy>(ep, dd, label, op);
@@ -878,7 +908,7 @@ namespace adiar::internal
       { // ---------------------------------------------------------------------
         // Case: Nested Sweeping
 #ifdef ADIAR_STATS
-        // TODO
+        stats_quantify.nested_sweeps += 1u;
 #endif
         multi_quantify_policy__pred<quantify_policy> inner_impl(op, pred);
         return nested_sweep<>(ep,
@@ -918,20 +948,20 @@ namespace adiar::internal
         if (dd.number_of_terminals() < partial__terminal_threshold) {
           // Singleton Quantification of bottom-most level
 #ifdef ADIAR_STATS
-          // TODO
+          stats_quantify.singleton_sweeps += 1u;
 #endif
           transposed = quantify<quantify_policy>(ep, std::move(dd), label, op);
         } else {
           // Partial Quantification
 #ifdef ADIAR_STATS
-          // TODO
+          stats_quantify.partial_sweeps += 1u;
 #endif
           partial_quantify_policy<quantify_policy> partial_impl(pred);
           transposed = __quantify(ep, std::move(dd), partial_impl, op);
 
           if (partial_impl.remaining_nodes == 0) {
 #ifdef ADIAR_STATS
-            // TODO
+            stats_quantify.partial_termination += 1u;
 #endif
             return transposed;
           }
@@ -943,26 +973,28 @@ namespace adiar::internal
             if (transposed.number_of_terminals() < partial__terminal_threshold) {
               break;
             }
-#ifdef ADIAR_STATS
-            // TODO
-#endif
+
             // Reset policy and rerun partial quantification
             partial_impl.reset();
+
+#ifdef ADIAR_STATS
+            stats_quantify.partial_sweeps += 1u;
+#endif
             transposed = __quantify(ep, transposed, partial_impl, op);
 
             // Reduce result, if no work is left to be done.
             if (partial_impl.remaining_nodes == 0) {
 #ifdef ADIAR_STATS
-              // TODO
+              stats_quantify.partial_termination += 1u;
 #endif
               return transposed;
             }
           }
         }
-#ifdef ADIAR_STATS
-        // TODO
-#endif
         { // Nested Sweeping
+#ifdef ADIAR_STATS
+          stats_quantify.nested_sweeps += 1u;
+#endif
           multi_quantify_policy__pred<quantify_policy> inner_impl(op, pred);
           return nested_sweep<>(ep, std::move(transposed), inner_impl);
         }
@@ -1080,12 +1112,20 @@ namespace adiar::internal
         optional<typename quantify_policy::label_type> on_level = lvls();
 
         if (quantify_policy::quantify_onset) {
-          if (!on_level) { return dd; }
+          if (!on_level) {
+#ifdef ADIAR_STATS
+            stats_quantify.skipped += 1u;
+#endif
+            return dd;
+          }
 
           // Quantify all but the last 'on_level'. Hence, look one ahead with
           // 'next_on_level' to see whether it is the last one.
           optional<typename quantify_policy::label_type> next_on_level = lvls();
           while (next_on_level) {
+#ifdef ADIAR_STATS
+            stats_quantify.singleton_sweeps += 1u;
+#endif
             dd = quantify<quantify_policy>(ep, dd, on_level.value(), op);
             if (dd_isterminal(dd)) { return dd; }
 
@@ -1106,6 +1146,9 @@ namespace adiar::internal
 
             if (quantify_policy::max_label < off_level) { break; }
 
+#ifdef ADIAR_STATS
+            stats_quantify.singleton_sweeps += 1u;
+#endif
             dd = quantify<quantify_policy>(ep, dd, off_level, op);
             if (dd_isterminal(dd)) { return dd; }
           }
@@ -1121,6 +1164,9 @@ namespace adiar::internal
 
               if (quantify_policy::max_label < off_level) { break; }
 
+#ifdef ADIAR_STATS
+              stats_quantify.singleton_sweeps += 1u;
+#endif
               dd = quantify<quantify_policy>(ep, dd, off_level, op);
               if (dd_isterminal(dd)) { return dd; }
             }
@@ -1143,7 +1189,12 @@ namespace adiar::internal
         if constexpr (quantify_policy::quantify_onset) {
           // Obtain the bottom-most onset level that exists in the diagram.
           optional<typename quantify_policy::label_type> transposition_level = lvls();
-          if (!transposition_level) { return dd; }
+          if (!transposition_level) {
+#ifdef ADIAR_STATS
+            stats_quantify.skipped += 1u;
+#endif
+            return dd;
+          }
 
           {
             level_info_stream<true> in_meta(dd);
@@ -1158,6 +1209,9 @@ namespace adiar::internal
               // There is no onset level in the diagram? If so, then nothing is
               // going to change and we may just return the input.
               if (!in_meta.can_pull() && transposition_level.value() < dd_level) {
+#ifdef ADIAR_STATS
+                stats_quantify.skipped += 1u;
+#endif
                 return dd;
               }
 
@@ -1171,16 +1225,33 @@ namespace adiar::internal
                 transposition_level = lvls();
 
                 // Did we run out of 'onset' levels?
-                if (!transposition_level) { return dd; }
+                if (!transposition_level) {
+#ifdef ADIAR_STATS
+                  stats_quantify.skipped += 1u;
+#endif
+                  return dd;
+                }
               }
             }
           }
           adiar_assert(transposition_level.has_value());
 
           // Quantify the 'transposition_level' as part of the initial transposition step
+#ifdef ADIAR_STATS
+          stats_quantify.singleton_sweeps += 1u;
+#endif
+          typename quantify_policy::__dd_type transposed =
+            quantify<quantify_policy>(ep, dd, transposition_level.value(), op);
+
+#ifdef ADIAR_STATS
+          stats_quantify.nested_sweeps += 1u;
+#endif
           multi_quantify_policy__generator<quantify_policy> inner_impl(op, lvls);
-          return nested_sweep<>(ep, quantify<quantify_policy>(ep, dd, transposition_level.value(), op), inner_impl);
+          return nested_sweep<>(ep, std::move(transposed), inner_impl);
         } else { // !quantify_policy::quantify_onset
+#ifdef ADIAR_STATS
+          stats_quantify.nested_sweeps += 1u;
+#endif
           multi_quantify_policy__generator<quantify_policy> inner_impl(op, lvls);
           return nested_sweep<>(ep, dd, inner_impl);
         }
