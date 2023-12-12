@@ -1324,7 +1324,9 @@ namespace adiar::internal
         const tpie::memory_size_type inner_pq_memory_fits =
           up__pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(inner_pq_memory);
 
-        const size_t inner_pq_bound = inner_arcs_file->max_1level_cut;
+        // TODO (optimization):
+        //   Resolve `inner_arcs_file->max_1level_cut == 0` in a separate while-loop.
+        const size_t inner_pq_bound = std::max<size_t>(inner_arcs_file->max_1level_cut, 1);
 
         const size_t inner_pq_max_size = ep.memory_mode() == exec_policy::memory::Internal
           ? std::min(inner_pq_memory_fits, inner_pq_bound)
