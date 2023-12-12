@@ -97,7 +97,7 @@ namespace adiar
   }
 
   inline std::ostream& endl(std::ostream &os)
-  { return os << std::endl; }
+  { return os << '\n'; }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Convert a wide integer to a string and push it to an output stream.
