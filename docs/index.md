@@ -26,7 +26,7 @@ Quick Access
    - \ref module__zdd module
 3. \ref module__builder module
 4. \ref module__statistics module
-5. \ref page__examples
+5. \ref page__tutorial
 6. \ref page__papers
    - \ref page__cite
    - \ref page__amend
