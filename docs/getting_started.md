@@ -1,4 +1,4 @@
-\page page__getting_started Getting started
+\page page__getting_started Getting Started
 
 [TOC]
 
