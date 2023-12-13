@@ -105,31 +105,43 @@ namespace adiar::internal
 
           while (optmin_pq.can_pull() && optmin_pq.top().target == best.target) {
             const optmin_request next = optmin_pq.pull();
-            if (next.data.cost < best.data.cost) {
-              best = next;
-            }
+            if (next.data.cost < best.data.cost) { best = next; }
           }
 
+          // The accumulated costs to be passed on if this variable is unset or set respectively
           double cost_low = best.data.cost;
           double cost_high = best.data.cost + c;
 
+          // We can safely bully before finding the node and putting it in our back edges if none of
+          // it's children can ever be part of the result
           if constexpr (Policy::bullying) {
-            if (cost_low >= min_so_far) {
-              continue;
-            }
+            if (cost_low >= min_so_far) { continue; }
           }
 
           const node n = ns.seek(best.target[0]);
-          std::cout << "seek " << n.uid().label() << ", id: " << n.id() << std::endl;
+
+          // As all targets in pq comes from children from nodes in ns, this is just a debug
+          // assertion that we didn't screw up and skip a node somehow. As we only seek to the last
+          // node we saw in pq, and those are sorted after target, something need to be very wrong
+          // for this to fail.
           adiar_assert(n.uid() == best.target[0]);
 
-          if (!best.data.source.is_nil()) {
-            aw.push_internal({best.data.source, n.uid()});
-          }
+          // This check is just making sure the node "before" the root is not added to back_edges.
+          // This check could be changed to depending on iteration of the outer loop, making it
+          // possible for the compiler to unroll it. That would complicate the code, so should be
+          // mesured before changed.
+          if (!best.data.source.is_nil()) { aw.push_internal({best.data.source, n.uid()}); }
 
+          // As only children can be terminals (we cannot have a node which is a terminal itself),
+          // we have to check if we have found a solution for each of the children, and only
+          // continue work on them if they are not terminals.
           if (n.low().is_terminal()) {
             if (n.low().is_true() && cost_low < min_so_far) {
               min_so_far = cost_low;
+
+              // Note that we save in the copy of the uid which path we took to get to true. This is
+              // important for recreating the path back to the root. We use the same trick on the
+              // source node when pushing a forward proccessing request onto the pq.
               min_so_far_end = n.uid().with(false);
             }
           } else {
@@ -137,9 +149,7 @@ namespace adiar::internal
           }
 
           if constexpr (Policy::bullying) {
-            if (cost_high >= min_so_far) {
-              continue;
-            }
+            if (cost_high >= min_so_far) { continue; }
           }
 
           if (n.high().is_terminal()) {
@@ -153,8 +163,14 @@ namespace adiar::internal
         }
       }
     }
+
+    // TODO: Figure out how best to notify the caller if no result was found. Maybe return an
+    // option? This would also allow us to gracefully handle if the input is a terminal.
     adiar_assert(min_so_far_end.is_node(), "No result found");
 
+    // We are running through our best_parent_graph in reverse, continuously finding and outputting
+    // the previous node which pointed to the last node we outputted, together with whether it was
+    // enabled or not in the solution.
     {
       arc_stream ns(best_parent_graph);
       arc next = {min_so_far_end, node::pointer_type(true)};
@@ -162,7 +178,6 @@ namespace adiar::internal
       while (ns.can_pull_internal()) {
         arc n = ns.pull_internal();
         if (n.target() == essential(next.source())) {
-          std::cout << n.target().label() << ", " << n.target().id() << std::endl;
           next = n;
           policy.out(next.source().label(), next.source().out_idx());
         }
