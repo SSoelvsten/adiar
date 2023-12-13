@@ -1,15 +1,14 @@
 \page page__builder Manual Construction
 
 In some cases, one may already know the shape of a `adiar::bdd` and/or as a
-`adiar::zdd` for a more complex function. In those cases, it is much cheaper to
-construct them by hand than to manipulate logic formulas
+`adiar::zdd` for a more complex function. In those cases, it is much cheaper
+to construct them by hand than to manipulate logic formulas.
 
-The `adiar::builder` class allows one to construct decision diagrams. To this
-end, they provide “pointers” to constructed nodes such that they can be
-referenced by other nodes.
-
-The templated argument carries with it the logic related to each type of
-decision diagram, but we provide type definitions to hide it away
+The templated `adiar::builder` class allows one to construct decision diagrams.
+To this end, they provide “pointers” to constructed nodes such that they can be
+referenced by other nodes. The template argument carries with it the logic
+related to each type of decision diagram, but we provide type definitions to
+hide it away
 
 | Decision Diagram | Builder              | Pointer          |
 |------------------|----------------------|------------------|
@@ -48,11 +47,11 @@ This can be created manually using an `adiar::bdd_builder` (see `adiar::builder`
 for all its member functions) as follows.
 
 ```cpp
-bdd_builder b;
+adiar::bdd_builder b;
 
-const bdd_ptr p2 = b.add_node(2, false, true);
-const bdd_ptr p1 = b.add_node(1, p2, true);
-const bdd_ptr p0 = b.add_node(0, p2, p1);
+const adiar::bdd_ptr p2 = b.add_node(2, false, true);
+const adiar::bdd_ptr p1 = b.add_node(1, p2, true);
+const adiar::bdd_ptr p0 = b.add_node(0, p2, p1);
 
-bdd example_a = b.build();
+adiar::bdd example_a = b.build();
 ```
