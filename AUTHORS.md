@@ -8,24 +8,24 @@ group at [Aarhus University](https://cs.au.dk).
 - **[Steffan Sølvsten](https://ssoelvsten.github.io/)**:
   [soelvsten@cs.au.dk](mailto:soelvsten@cs.au.dk)
 
-  PhD-student
+  PhD student, Aarhus University
 
 - **[Jaco van de Pol](https://cs.au.dk/~jaco/)**:
   [jaco@cs.au.dk](mailto:jaco@cs.au.dk)
 
-  PhD Supervisor
+  PhD Supervisor, Aarhus University
 
 - **[Anna Blume Jakobsen](https://github.com/AnnaBlume99)**:
 
-  Bachelor's Student and later Student Programmer
+  Bachelor's Student and later Student Programmer, Aarhus University
 
 - **[Casper Moldrup Rysgaard](https://github.com/Crowton)**:
 
-  PhD-student
+  PhD student, Aarhus University
 
 - **[Mathias Weller Berg Thomasen](https://github.com/MathiasWeller42)**:
 
-  Bachelor's Student
+  Bachelor's Student, Aarhus University
 
 ## Minor Contributors
 
