@@ -866,8 +866,8 @@ WARN_LOGFILE           =
 
 INPUT                  = @CMAKE_SOURCE_DIR@/docs/index.md \
                          @CMAKE_SOURCE_DIR@/docs/getting_started.md \
-                         @CMAKE_SOURCE_DIR@/docs/builder.md \
                          @CMAKE_SOURCE_DIR@/docs/examples/ \
+                         @CMAKE_SOURCE_DIR@/docs/examples/builder.md \
                          @CMAKE_SOURCE_DIR@/docs/examples.md \
                          @CMAKE_SOURCE_DIR@/docs/papers/ \
                          @CMAKE_SOURCE_DIR@/docs/papers.md \
