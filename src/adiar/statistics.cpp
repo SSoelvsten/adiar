@@ -947,8 +947,12 @@ namespace adiar
     __printstat_isomorphism(o);
     o << endl;
 
+    __printstat_optmin(o);
+    o << endl;
+
     __printstat_prod2(o);
     o << endl;
+    
 
     __printstat_prod3(o);
     o << endl;
