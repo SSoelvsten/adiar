@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['value_5ftype_841',['value_type',['../classadiar_1_1internal_1_1tuple.html#aaeb819e4c00408d3322b901e911d5f40',1,'adiar::internal::tuple']]]
+  ['zdd_5fbuilder_622',['zdd_builder',['../group__module____builder.html#ga0b9034da68843a3fff87b408e2c2b4fe',1,'adiar']]],
+  ['zdd_5fptr_623',['zdd_ptr',['../group__module____builder.html#ga6aae72cb62fa2daf7cf69950931dcceb',1,'adiar']]]
 ];

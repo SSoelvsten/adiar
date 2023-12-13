@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['quantify_5falg_623',['quantify_alg',['../classadiar_1_1exec__policy.html#a1ccd217dde14a99e31a2ad9f78f7fd20',1,'adiar::exec_policy']]]
+  ['total_464',['total',['../structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html#a5528e809829233a8f28065318e4c06ae',1,'adiar::statistics::__alg_base::__lpq_t']]]
 ];

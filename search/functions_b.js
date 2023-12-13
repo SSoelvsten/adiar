@@ -1,12 +1,4 @@
 var searchData=
 [
-  ['make_5fconsumer_587',['make_consumer',['../group__module____functional.html#ga923a64580e0b6124c8e9c9bafb27f7e0',1,'adiar::make_consumer(ForwardIt &amp;begin, ForwardIt &amp;end)'],['../group__module____functional.html#gaa70413032ba90587f737f9b84d98430c',1,'adiar::make_consumer(ForwardIt &amp;&amp;begin, ForwardIt &amp;&amp;end)']]],
-  ['make_5fgenerator_588',['make_generator',['../group__module____functional.html#ga0bb6ca574a1999bd9895ed6517e92972',1,'adiar::make_generator(ForwardIt &amp;begin, ForwardIt &amp;end)'],['../group__module____functional.html#ga0242daaba794c8c685d66e8f87d14074',1,'adiar::make_generator(ForwardIt &amp;&amp;begin, ForwardIt &amp;&amp;end)'],['../group__module____functional.html#ga10b08b986192013581d64d25d3dd622b',1,'adiar::make_generator(Stream &amp;s)'],['../group__module____functional.html#ga837f233a1c35085481f6a10892ff6010',1,'adiar::make_generator(const RetType &amp;r)']]],
-  ['make_5foptional_589',['make_optional',['../namespaceadiar.html#aa91ded045045dc2a2986d5d9ae87801d',1,'adiar::make_optional()'],['../namespaceadiar.html#a4fd9ed34ea64378f1d7648bc54f45ce8',1,'adiar::make_optional(const T &amp;t)']]],
-  ['make_5fpair_590',['make_pair',['../namespaceadiar.html#aae8217b473611a32308016804c24e6f3',1,'adiar']]],
-  ['make_5fshared_591',['make_shared',['../namespaceadiar.html#a6fcf0e1da0d4d2f38aa2c66b7e2564bc',1,'adiar']]],
-  ['make_5funique_592',['make_unique',['../namespaceadiar.html#ad471e76461365e2c558f243869ffc7bf',1,'adiar']]],
-  ['max_5f1level_5fcut_593',['max_1level_cut',['../classadiar_1_1internal_1_1____dd.html#abf98f6daf805cee9a5d996660a1747f5',1,'adiar::internal::__dd']]],
-  ['max_5f2level_5fcut_594',['max_2level_cut',['../classadiar_1_1internal_1_1____dd.html#a8a1d14325ab214d7303c3ba2631503ad',1,'adiar::internal::__dd']]],
-  ['memory_5fmode_595',['memory_mode',['../classadiar_1_1exec__policy.html#afd18c4a65cf97751e01622fb42626ac0',1,'adiar::exec_policy']]]
+  ['number_5fof_5fterminals_440',['number_of_terminals',['../classadiar_1_1internal_1_1____dd.html#afbef57f343dbd466d9300bd282640058',1,'adiar::internal::__dd::number_of_terminals(const bool value) const'],['../classadiar_1_1internal_1_1____dd.html#a9269b183c9faf9a654aae8d0aef7e651',1,'adiar::internal::__dd::number_of_terminals() const'],['../classadiar_1_1internal_1_1dd.html#aa97722d01a0549b7ee27d9e9a1798e55',1,'adiar::internal::dd::number_of_terminals(const bool value) const'],['../classadiar_1_1internal_1_1dd.html#aef2f8cbd3631a1e42e6554eac2d7e132',1,'adiar::internal::dd::number_of_terminals() const']]]
 ];
