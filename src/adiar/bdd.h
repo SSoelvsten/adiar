@@ -1438,57 +1438,53 @@ namespace adiar
   /// \brief obtain the satisfying assignment that is minimal for the given linear
   ///        cost function over the global domain.
   ///
-  /// \param f  The BDD of feasible solutions
-  ///
-  /// \param c  A (pure) function that provides the cost function's coefficient.
-  ///
-  /// \param cb  A callback function that is called in \em descending order.
-  ///
-  /// \returns The cost of the satisfying cost.
-  ///
-  /// \see     domain_set domain_isset
-  ////////////////////////////////////////////////////////////////////////////////
-  double
-  bdd_optmin(const bdd &f,
-             const cost<bdd::label_type> &c,
-             const consumer<bdd::label_type, bool> &cb);
-  
-  ////////////////////////////////////////////////////////////////////////////////
-  /// \brief obtain the satisfying assignment that is minimal for the given linear
-  ///        cost function over the global domain.
-  ////////////////////////////////////////////////////////////////////////////////
-  double
-  bdd_optmin(const exec_policy &ep,
-             const bdd &f,
-             const cost<bdd::label_type> &c,
-             const consumer<bdd::label_type, bool> &cb);
-  
-  ////////////////////////////////////////////////////////////////////////////////
-  /// \brief obtain the satisfying assignment that is minimal for the given linear
-  ///        cost function over the global domain.
-  ///
   /// \param f The BDD of feasible solutions
   ///
   /// \param c A (pure) function that provides the cost function's coefficient.
   ///
-  /// \returns A pair of a BDD with the assignment and its cost.
-  ///
-  /// \see     domain_set domain_isset
-  ///
-  /// \pre     The global \ref module__domain is set to a set of variables
-  ///          that is equals to or a superset of the variables in `A`.
+  /// \returns A pair of a BDD cube with the best satisfying assignment and its
+  ///          cost. If no solution was found, returns the false constant and NaN
   ////////////////////////////////////////////////////////////////////////////////
-  std::pair<bdd, double>
+  pair<bdd, double>
   bdd_optmin(const bdd &f, const cost<bdd::label_type> &c);
   
   ////////////////////////////////////////////////////////////////////////////////
   /// \brief obtain the satisfying assignment that is minimal for the given linear
   ///        cost function over the global domain.
   ////////////////////////////////////////////////////////////////////////////////
-  std::pair<bdd, double>
+  pair<bdd, double>
   bdd_optmin(const exec_policy &ep,
              const bdd &f,
              const cost<bdd::label_type> &c);
+
+  ////////////////////////////////////////////////////////////////////////////////
+  /// \brief obtain the satisfying assignment that is minimal for the given linear
+  ///        cost function over the global domain.
+  ///
+  /// \param f  The BDD of feasible solutions
+  ///
+  /// \param c  A (pure) function that provides the cost function's coefficient.
+  ///
+  /// \param cb  A callback function that is called in \em descending order.
+  ///
+  /// \returns The cost of the satisfying solution if any, otherwise NaN.
+  ///
+  /// \remark If `f` is a terminal, `cb` will never be called
+  ////////////////////////////////////////////////////////////////////////////////
+  double
+  bdd_optmin(const bdd &f,
+             const cost<bdd::label_type> &c,
+             const consumer<pair<bdd::label_type, bool>> &cb);
+  
+  ////////////////////////////////////////////////////////////////////////////////
+  /// \brief obtain the satisfying assignment that is minimal for the given linear
+  ///        cost function over the global domain.
+  ////////////////////////////////////////////////////////////////////////////////
+  double
+  bdd_optmin(const exec_policy &ep,
+             const bdd &f,
+             const cost<bdd::label_type> &c,
+             const consumer<pair<bdd::label_type, bool>> &cb);
   
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Evaluate a BDD according to an assignment to its variables.

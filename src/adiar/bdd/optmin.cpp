@@ -22,7 +22,11 @@ namespace adiar
   {
   public:
     static constexpr bool bullying = true;
-    const consumer<bdd::label_type, bool>& out;
+    void
+    out(bdd::label_type label, bool value)
+    {
+      this->out_fn({label, value});
+    }
 
     double
     cost_fn(bdd::label_type label)
@@ -34,11 +38,13 @@ namespace adiar
       return cost;
     };
 
-    bdd_optmin_policy(const consumer<bdd::label_type, bool>& o, const cost<bdd::label_type>& c)
-        : out(o), get_cost(c)
+    bdd_optmin_policy(const consumer<pair<bdd::label_type, bool>>& o,
+                      const cost<bdd::label_type>& c)
+        : out_fn(o), get_cost(c)
     {}
 
   private:
+    const consumer<pair<bdd::label_type, bool>>& out_fn;
     const cost<bdd::label_type>& get_cost;
   };
 
@@ -46,7 +52,7 @@ namespace adiar
   bdd_optmin(const exec_policy& ep,
              const bdd& f,
              const cost<bdd::label_type>& c,
-             const consumer<bdd::label_type, bool>& cb)
+             const consumer<pair<bdd::label_type, bool>>& cb)
   {
     const bdd_optmin_policy omp(cb, c);
     return internal::optmin<bdd_optmin_policy>(ep, omp, f);
@@ -55,7 +61,7 @@ namespace adiar
   double
   bdd_optmin(const bdd& f,
              const cost<bdd::label_type>& c,
-             const consumer<bdd::label_type, bool>& cb)
+             const consumer<pair<bdd::label_type, bool>>& cb)
   {
     return bdd_optmin(exec_policy(), f, c, cb);
   }
@@ -64,14 +70,24 @@ namespace adiar
   bdd_optmin(const exec_policy& ep, const bdd& f, const cost<bdd::label_type>& c)
   {
     bdd::shared_node_file_type nf;
+
+    if (f->is_terminal()) {
+      // As f is already the cube we want to return, we'll just return that
+      return pair<bdd, double>(f, bdd_optmin(ep, f, c, [](pair<bdd::label_type, bool>) {}));
+    }
+
     internal::node_writer nw(nf);
     bdd::pointer_type root = bdd::pointer_type(true);
-    double value = bdd_optmin(ep, f, c, [&nw, &root](bdd::label_type lt, bool value) {
-      bdd::node_type next(lt, bdd::max_id, value ? bdd::pointer_type(false) : root,
+    double value           = bdd_optmin(ep, f, c, [&nw, &root](pair<bdd::label_type, bool> pair) {
+      const auto [lt, value] = pair;
+      bdd::node_type next(lt,
+                          bdd::max_id,
+                          value ? bdd::pointer_type(false) : root,
                           value ? root : bdd::pointer_type(false));
       nw << next;
       root = next.uid();
     });
+
     return {nf, value};
   }
 

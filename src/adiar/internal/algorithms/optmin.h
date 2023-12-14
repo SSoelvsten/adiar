@@ -8,6 +8,7 @@
 #include "adiar/internal/io/arc_stream.h"
 #include "adiar/types.h"
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <iostream>
 #include <limits>
@@ -74,7 +75,7 @@ namespace adiar::internal
     // Set up temporary outputs
     shared_levelized_file<arc> best_parent_graph;
 
-    double min_so_far = std::numeric_limits<double>::infinity();
+    double min_so_far                 = std::numeric_limits<double>::infinity();
     node::pointer_type min_so_far_end = node::pointer_type::nil();
 
     {
@@ -96,7 +97,7 @@ namespace adiar::internal
         optmin_pq.setup_next_level();
 
         typename Policy::label_type label = optmin_pq.current_level();
-        double c = policy.cost_fn(label);
+        double c                          = policy.cost_fn(label);
 
         while (!optmin_pq.empty_level()) {
           // Merge requests for the next target, finding the request with the
@@ -109,7 +110,7 @@ namespace adiar::internal
           }
 
           // The accumulated costs to be passed on if this variable is unset or set respectively
-          double cost_low = best.data.cost;
+          double cost_low  = best.data.cost;
           double cost_high = best.data.cost + c;
 
           // We can safely bully before finding the node and putting it in our back edges if none of
@@ -142,10 +143,10 @@ namespace adiar::internal
               // Note that we save in the copy of the uid which path we took to get to true. This is
               // important for recreating the path back to the root. We use the same trick on the
               // source node when pushing a forward proccessing request onto the pq.
-              min_so_far_end = n.uid().with(false);
+              min_so_far_end = n.uid().as_ptr(false);
             }
           } else {
-            optmin_pq.push({{n.low()}, {}, {cost_low, n.uid().with(false)}});
+            optmin_pq.push({{n.low()}, {}, {cost_low, n.uid().as_ptr(false)}});
           }
 
           if constexpr (Policy::bullying) {
@@ -154,19 +155,18 @@ namespace adiar::internal
 
           if (n.high().is_terminal()) {
             if (n.high().is_true() && cost_high < min_so_far) {
-              min_so_far = cost_high;
-              min_so_far_end = n.uid().with(true);
+              min_so_far     = cost_high;
+              min_so_far_end = n.uid().as_ptr(true);
             }
           } else {
-            optmin_pq.push({{n.high()}, {}, {cost_high, n.uid().with(true)}});
+            optmin_pq.push({{n.high()}, {}, {cost_high, n.uid().as_ptr(true)}});
           }
         }
       }
     }
 
-    // TODO: Figure out how best to notify the caller if no result was found. Maybe return an
-    // option? This would also allow us to gracefully handle if the input is a terminal.
-    adiar_assert(min_so_far_end.is_node(), "No result found");
+    // Unreachable - this is handled in our caller "optmin"
+    adiar_assert(min_so_far_end.is_node());
 
     // We are running through our best_parent_graph in reverse, continuously finding and outputting
     // the previous node which pointed to the last node we outputted, together with whether it was
@@ -191,7 +191,9 @@ namespace adiar::internal
   double
   optmin(const exec_policy& ep, Policy policy, const typename Policy::dd_type& dd)
   {
-    adiar_assert(!dd_isterminal(dd), "Count algorithm does not work on terminal-only edge case");
+    if (dd_istrue(dd)) { return 0.0; }
+    if (dd_isfalse(dd)) { return NAN; }
+    // adiar_assert(!dd_isterminal(dd), "Count algorithm does not work on terminal-only edge case");
 
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.
@@ -220,19 +222,28 @@ namespace adiar::internal
       stats_optmin.lpq.unbucketed += 1u;
 #endif
       return __optmin<Policy, optmin_priority_queue_t<0, memory_mode::Internal>>(
-          policy, dd, aux_available_memory, max_pq_size);
+          policy,
+          dd,
+          aux_available_memory,
+          max_pq_size);
     } else if (!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
       stats_optmin.lpq.internal += 1u;
 #endif
       return __optmin<Policy, optmin_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>>(
-          policy, dd, aux_available_memory, max_pq_size);
+          policy,
+          dd,
+          aux_available_memory,
+          max_pq_size);
     } else {
 #ifdef ADIAR_STATS
       stats_optmin.lpq.external += 1u;
 #endif
       return __optmin<Policy, optmin_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::External>>(
-          policy, dd, aux_available_memory, max_pq_size);
+          policy,
+          dd,
+          aux_available_memory,
+          max_pq_size);
     }
   }
 }
