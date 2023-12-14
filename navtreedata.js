@@ -30,12 +30,12 @@ var NAVTREE =
       [ "About the Project", "index.html#autotoc_md1", null ],
       [ "License", "index.html#autotoc_md2", null ]
     ] ],
-    [ "Getting started", "page__getting_started.html", [
+    [ "Getting Started", "page__getting_started.html", [
       [ "Dependencies", "page__getting_started.html#autotoc_md3", null ],
       [ "Building with CMake", "page__getting_started.html#autotoc_md4", null ],
       [ "Usage", "page__getting_started.html#autotoc_md5", null ]
     ] ],
-    [ "Examples", "page__examples.html", "page__examples" ],
+    [ "Tutorial", "page__tutorial.html", "page__tutorial" ],
     [ "Papers", "page__papers.html", "page__papers" ],
     [ "Modules", "modules.html", "modules" ],
     [ "Namespaces", "namespaces.html", [
@@ -73,7 +73,7 @@ var NAVTREEINDEX =
 "group__module____adiar.html#ga9501bb9e871253964682b7ac1942f911",
 "group__module____builder.html#gacd91e76ef56facef01409c952e0ec8ef",
 "group__module____zdd.html#gac2c8d020bfc236117d3bf9151646bcde",
-"zdd_8h_source.html"
+"structadiar_1_1statistics_1_1prod2__t.html#ab769667ff5ecea10ecd9e2589b7e72bf"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

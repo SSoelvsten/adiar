@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['citing_20this_20project_652',['Citing this Project',['../page__cite.html',1,'page__papers']]]
+  ['basic_20usage_653',['Basic Usage',['../page__basic.html',1,'page__tutorial']]]
 ];

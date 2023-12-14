@@ -5,5 +5,5 @@ var searchData=
   ['file_122',['file',['../classadiar_1_1internal_1_1dd.html#a8de1d3d1e39f7e61b1fd1e2be4dfd336',1,'adiar::internal::dd']]],
   ['file_5fptr_123',['file_ptr',['../classadiar_1_1internal_1_1dd.html#a55fb5c181a44b622f5fc43e6030121aa',1,'adiar::internal::dd']]],
   ['function_124',['function',['../group__module____functional.html#ga7cedafe2a659228db84b6dc3c35fb0ca',1,'adiar']]],
-  ['function_20objects_125',['Function Objects',['../group__module____functional.html',1,'']]]
+  ['function_20objects_125',['Function Objects',['../group__module____functional.html',1,'(Global Namespace)'],['../page__functional.html',1,'page__tutorial']]]
 ];
