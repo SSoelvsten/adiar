@@ -125,12 +125,11 @@ The following branch prefixes are reserved.
 
 Most of Adiar has been developed with the
 [Spacemacs](https://www.spacemacs.org/) extension of the Emacs editor. Hence,
-code in Adiar is (for the most part) indented as dictated by Emacs (version 28
-or later). There are exceptions to the rule, but if two people disagree, Emacs
-gets the last word.
+code in Adiar is indented as dictated by Emacs (version 28 or later). We have
+set up *Clang Format* to follow the same style (together with other formatting
+requirements).
 
-The most basic parts of these formatting rules are also reflected in the
-*editorconfig* that most editors can be set up to follow.
+Before committing anything, please ensure it is properly formatted.
 
 ## Design Principles
 
