@@ -396,7 +396,7 @@ namespace adiar
                                       - internal::nested_sweeping::stats.outer_up.reduced_levels__fast;
 
       o << indent << label << "canonical"
-        << internal::nested_sweeping::stats.outer_up.reduced_levels__fast
+        << internal::nested_sweeping::stats.outer_up.reduced_levels
         << " = " << internal::percent_frac(canonical_levels,
                                            internal::nested_sweeping::stats.outer_up.reduced_levels) << percent
         << endl;
