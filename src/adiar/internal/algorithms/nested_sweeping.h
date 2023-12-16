@@ -74,7 +74,8 @@ namespace adiar::internal
     __reduce_level__fast(arc_stream_t &arcs,
                          const typename dd_policy::label_type label,
                          pq_t &pq,
-                         node_writer &out_writer)
+                         node_writer &out_writer,
+                         statistics::reduce_t &stats = internal::stats_reduce)
     {
       // Count number of arcs that cross this level (including tainted ones)
       // TODO: move into helper function
@@ -106,7 +107,7 @@ namespace adiar::internal
         const node::pointer_type reduction_rule_ret = dd_policy::reduction_rule(n);
         if (reduction_rule_ret != n.uid()) {
 #ifdef ADIAR_STATS
-          stats_reduce.removed_by_rule_1 += 1u;
+          stats.removed_by_rule_1 += 1u;
 #endif
           // Forward child
           // Tell the parents this arc is tainted by Reduction Rule 1.
@@ -1233,6 +1234,11 @@ namespace adiar::internal
          const size_t inner_sorters_memory,
          const bool   is_last_inner)
       {
+#ifdef ADIAR_STATS
+        stats.inner_up.sum_node_arcs += inner_arcs_file->size(0);
+        stats.inner_up.sum_terminal_arcs += inner_arcs_file->size(1) + inner_arcs_file->size(2);
+#endif
+
         // Set up input
         arc_stream<> inner_arcs(inner_arcs_file);
         up__arc_stream__decorator decorated_arcs(inner_arcs, outer_arcs);
@@ -1271,15 +1277,15 @@ namespace adiar::internal
 #endif
 
             nested_sweeping::__reduce_level__fast<nesting_policy>
-              (decorated_arcs, level, decorated_pq, outer_writer);
+              (decorated_arcs, level, decorated_pq, outer_writer, stats.inner_up);
           } else {
             const size_t unreduced_width = inner_level_info.width();
             if(unreduced_width <= internal_sorter_can_fit) {
              __reduce_level<nesting_policy, internal_sorter>
-                (decorated_arcs, level, decorated_pq, outer_writer, inner_sorters_memory, unreduced_width);
+               (decorated_arcs, level, decorated_pq, outer_writer, inner_sorters_memory, unreduced_width, stats.inner_up);
             } else {
              __reduce_level<nesting_policy, external_sorter>
-                (decorated_arcs, level, decorated_pq, outer_writer, inner_sorters_memory, unreduced_width);
+               (decorated_arcs, level, decorated_pq, outer_writer, inner_sorters_memory, unreduced_width, stats.inner_up);
             }
           }
         }
@@ -1496,17 +1502,19 @@ namespace adiar::internal
 #endif
 
           nested_sweeping::__reduce_level__fast<nesting_policy>
-            (outer_arcs, outer_level.level(), outer_pq, outer_writer);
+            (outer_arcs, outer_level.level(), outer_pq, outer_writer, nested_sweeping::stats.outer_up);
         } else {
           const size_t unreduced_width = outer_level.width();
           if(unreduced_width <= outer_internal_sorter_can_fit) {
             __reduce_level<nesting_policy, internal_sorter>
               (outer_arcs, outer_level.level(), outer_pq, outer_writer,
-               outer_sorters_memory, unreduced_width);
+               outer_sorters_memory, unreduced_width,
+               nested_sweeping::stats.outer_up);
           } else {
             __reduce_level<nesting_policy, external_sorter>
               (outer_arcs, outer_level.level(), outer_pq, outer_writer,
-               outer_sorters_memory, unreduced_width);
+               outer_sorters_memory, unreduced_width,
+               nested_sweeping::stats.outer_up);
           }
         }
 
@@ -1531,7 +1539,8 @@ namespace adiar::internal
 #endif
 
           nested_sweeping::__reduce_level__fast<nesting_policy>
-            (outer_arcs, outer_level.level(), outer_pq_decorator, outer_writer);
+            (outer_arcs, outer_level.level(), outer_pq_decorator, outer_writer,
+             nested_sweeping::stats.outer_up);
         } else {
           const size_t unreduced_width = outer_level.width();
           size_t reduced_width;
@@ -1539,11 +1548,13 @@ namespace adiar::internal
           if(unreduced_width <= outer_internal_sorter_can_fit) {
             reduced_width = __reduce_level<nesting_policy, internal_sorter>
               (outer_arcs, outer_level.level(), outer_pq_decorator, outer_writer,
-               outer_sorters_memory, unreduced_width);
+               outer_sorters_memory, unreduced_width,
+               nested_sweeping::stats.outer_up);
           } else {
             reduced_width = __reduce_level<nesting_policy, external_sorter>
               (outer_arcs, outer_level.level(), outer_pq_decorator, outer_writer,
-               outer_sorters_memory, unreduced_width);
+               outer_sorters_memory, unreduced_width,
+               nested_sweeping::stats.outer_up);
           }
 
           //  Strategy: Use the fast reduce from the next level (until next

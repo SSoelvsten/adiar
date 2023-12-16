@@ -272,7 +272,8 @@ namespace adiar::internal
                  pq_t &reduce_pq,
                  node_writer &out_writer,
                  const size_t sorters_memory,
-                 const size_t unreduced_width)
+                 const size_t unreduced_width,
+                 statistics::reduce_t &stats = stats_reduce)
   {
     // Temporary file for Reduction Rule 1 mappings (opened later if need be)
     tpie::file_stream<mapping> red1_mapping;
@@ -304,7 +305,7 @@ namespace adiar::internal
         // element is written to it.
         if (!red1_mapping.is_open()) { red1_mapping.open(); }
 #ifdef ADIAR_STATS
-        stats_reduce.removed_by_rule_1 += 1u;
+        stats.removed_by_rule_1 += 1u;
 #endif
         red1_mapping.write({ n.uid(), reduction_rule_ret });
       } else {
@@ -341,7 +342,7 @@ namespace adiar::internal
                          out_node.high());
       } else {
 #ifdef ADIAR_STATS
-        stats_reduce.removed_by_rule_2 += 1u;
+        stats.removed_by_rule_2 += 1u;
 #endif
       }
 
