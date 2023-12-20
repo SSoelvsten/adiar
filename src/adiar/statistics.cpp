@@ -697,8 +697,6 @@ namespace adiar
 
   void __printstat_nested_sweeping(std::ostream &o)
   {
-    // TODO: Merge code duplication with `__printstat_reduce(...)`
-
     const uintwide total_runs = internal::nested_sweeping::stats.skips
                               + internal::nested_sweeping::stats.runs;
 
@@ -784,6 +782,31 @@ namespace adiar
     {
       o << indent << bold_on << "inner down sweep" << bold_off << endl;
       indent_level++;
+
+      const uintwide total_arcs = internal::nested_sweeping::stats.inner_up.outer_arcs
+                                + internal::nested_sweeping::stats.inner_up.inner_arcs;
+
+      o << indent << bold_on << label << "arc types" << bold_off
+        << total_arcs
+        << endl;
+
+      indent_level++;
+
+      o << indent << label << "outer"
+        << internal::nested_sweeping::stats.inner_up.outer_arcs
+        << " = "  << internal::percent_frac(internal::nested_sweeping::stats.inner_up.outer_arcs,
+                                            total_arcs) << percent
+        << endl;
+
+      o << indent << label << "inner"
+        << internal::nested_sweeping::stats.inner_up.inner_arcs
+        << " = "  << internal::percent_frac(internal::nested_sweeping::stats.inner_up.inner_arcs,
+                                            total_arcs) << percent
+        << endl;
+
+      indent_level--;
+
+      o << indent << endl;
 
       o << indent << bold_on << "root requests" << bold_off << endl;
 

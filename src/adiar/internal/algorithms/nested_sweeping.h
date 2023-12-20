@@ -1053,8 +1053,14 @@ namespace adiar::internal
         void push(const value_type& v)
         {
           if (v.source().is_flagged()) {
+#ifdef ADIAR_STATS
+            stats.inner_up.outer_arcs += 1;
+#endif
             _outer_pq.push(arc(unflag(v.source()), v.target()));
           } else {
+#ifdef ADIAR_STATS
+            stats.inner_up.inner_arcs += 1;
+#endif
             _inner_pq.push(v);
           }
         }
