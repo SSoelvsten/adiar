@@ -59,22 +59,41 @@ var group__module____statistics =
         [ "sum_predicted_max_size", "structadiar_1_1statistics_1_1levelized__priority__queue__t.html#acbc2d26c2cafb41e66a1965679dfbc78", null ]
       ] ],
       [ "nested_sweeping_t", "structadiar_1_1statistics_1_1nested__sweeping__t.html", [
-        [ "inner_t", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t.html", [
-          [ "down_t", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t_1_1down__t.html", [
-            [ "lpq", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t_1_1down__t.html#ab769667ff5ecea10ecd9e2589b7e72bf", null ]
-          ] ],
-          [ "up_t", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t_1_1up__t.html", [
-            [ "lpq", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t_1_1up__t.html#ab769667ff5ecea10ecd9e2589b7e72bf", null ]
-          ] ],
-          [ "down", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t.html#aff5827395cd9179ba6e638827983105e", null ],
-          [ "up", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__t.html#a768dcc8edcd311f7526a57eb77a11a82", null ]
+        [ "inner_down_t", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__down__t.html", [
+          [ "modifying", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__down__t.html#ac89b96922876ddbc0e4615c4b34c73f9", null ],
+          [ "preserving", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__down__t.html#a0cc35ff0c13df56d064e33c0120c1d9d", null ],
+          [ "suppressed", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__down__t.html#a126a37ac29ad2bb78411545189052942", null ],
+          [ "terminals_skipped", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__down__t.html#a145799e1fd498c76340b7c980bb91bb9", null ]
         ] ],
-        [ "outer_t", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1outer__t.html", [
-          [ "up_t", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1outer__t_1_1up__t.html", null ],
-          [ "up", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1outer__t.html#ad3532ffe0bf5f444d916a80bd290b0e8", null ]
+        [ "inner_up_t", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__up__t.html", [
+          [ "inner_arcs", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__up__t.html#a48e1ddfb869669074e7fc899fceaf540", null ],
+          [ "lpq", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__up__t.html#ab769667ff5ecea10ecd9e2589b7e72bf", null ],
+          [ "outer_arcs", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__up__t.html#af3d619f835bc9c5be4a2ea80e6f3f3cf", null ],
+          [ "reduced_levels", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__up__t.html#a7ffa3dd6b940a8c67e542ea250e3e5dd", null ],
+          [ "reduced_levels__fast", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__up__t.html#a22739debc49cf19d7798487c7e42d013", null ],
+          [ "removed_by_rule_1", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__up__t.html#a8f89cf0d7b85be177d529be8dbbcef5c", null ],
+          [ "removed_by_rule_2", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__up__t.html#a5f8c1dab667836c226b3c4cf7debca22", null ],
+          [ "sum_node_arcs", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__up__t.html#a2519ee24c18aafb9177078b92d6c338d", null ],
+          [ "sum_terminal_arcs", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__up__t.html#a624cd625bf7ff160e3625ddf65cca558", null ]
         ] ],
-        [ "inner", "structadiar_1_1statistics_1_1nested__sweeping__t.html#ae8c1acf5960f2530c10b7b8df5147664", null ],
-        [ "outer", "structadiar_1_1statistics_1_1nested__sweeping__t.html#a3d4818c458f2ed19e3e5569ab132af82", null ]
+        [ "outer_up_t", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1outer__up__t.html", [
+          [ "collapse_to_terminal", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1outer__up__t.html#a8d27227da38ca7db0621c6fd99692680", null ],
+          [ "lpq", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1outer__up__t.html#ab769667ff5ecea10ecd9e2589b7e72bf", null ],
+          [ "nested_levels", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1outer__up__t.html#a7b05971e3b90ec3c2c0c168c8ace9e92", null ],
+          [ "reduced_levels", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1outer__up__t.html#a6409addda33e8883a3b7d66205799f4b", null ],
+          [ "reduced_levels__fast", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1outer__up__t.html#a7362543adb14aea509e3e208da19d1b3", null ],
+          [ "removed_by_rule_1", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1outer__up__t.html#a8f89cf0d7b85be177d529be8dbbcef5c", null ],
+          [ "removed_by_rule_2", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1outer__up__t.html#a5f8c1dab667836c226b3c4cf7debca22", null ],
+          [ "skipped_nested_levels", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1outer__up__t.html#a3f0f3ab638ad49231511326be31623ef", null ],
+          [ "skipped_nested_levels__prune", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1outer__up__t.html#a0aa378a3b17746ab7ef73a9ad62f2f7d", null ],
+          [ "sum_node_arcs", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1outer__up__t.html#a2519ee24c18aafb9177078b92d6c338d", null ],
+          [ "sum_terminal_arcs", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1outer__up__t.html#a624cd625bf7ff160e3625ddf65cca558", null ]
+        ] ],
+        [ "inner_down", "structadiar_1_1statistics_1_1nested__sweeping__t.html#ab5f4b829b0a3293ebacd923b3c4b9f51", null ],
+        [ "inner_up", "structadiar_1_1statistics_1_1nested__sweeping__t.html#ae5c07ce09ef0fbdc29bac7d3c78f64c8", null ],
+        [ "outer_up", "structadiar_1_1statistics_1_1nested__sweeping__t.html#ae91fa7abacf13846767bad63fa9dd5a4", null ],
+        [ "runs", "structadiar_1_1statistics_1_1nested__sweeping__t.html#af0f83478f27d24605ad894d4cfed965c", null ],
+        [ "skips", "structadiar_1_1statistics_1_1nested__sweeping__t.html#ab65a101f1a7e13f44cf62108759fc600", null ]
       ] ],
       [ "node_file_t", "structadiar_1_1statistics_1_1node__file__t.html", [
         [ "push_level", "structadiar_1_1statistics_1_1node__file__t.html#ab2987bf9926b0e9a85acc47390bb4a94", null ],
@@ -102,7 +121,20 @@ var group__module____statistics =
         [ "lpq", "structadiar_1_1statistics_1_1prod3__t.html#ab769667ff5ecea10ecd9e2589b7e72bf", null ]
       ] ],
       [ "quantify_t", "structadiar_1_1statistics_1_1quantify__t.html", [
-        [ "lpq", "structadiar_1_1statistics_1_1quantify__t.html#ab769667ff5ecea10ecd9e2589b7e72bf", null ]
+        [ "nested_policy_t", "structadiar_1_1statistics_1_1quantify__t_1_1nested__policy__t.html", [
+          [ "products", "structadiar_1_1statistics_1_1quantify__t_1_1nested__policy__t.html#a4c62db97a5f491ab701e72aed519bfcb", null ],
+          [ "shortcut_node", "structadiar_1_1statistics_1_1quantify__t_1_1nested__policy__t.html#a58cac48e49bf084fc380b282367864b8", null ],
+          [ "shortcut_terminal", "structadiar_1_1statistics_1_1quantify__t_1_1nested__policy__t.html#a560cb1ac0c40e59b78f5e8a3213758e3", null ]
+        ] ],
+        [ "lpq", "structadiar_1_1statistics_1_1quantify__t.html#ab769667ff5ecea10ecd9e2589b7e72bf", null ],
+        [ "nested_policy", "structadiar_1_1statistics_1_1quantify__t.html#acdab6396310009ce02b8140f83c7897a", null ],
+        [ "nested_sweeps", "structadiar_1_1statistics_1_1quantify__t.html#a1db4cee9d4faed5901af5aa9f357661f", null ],
+        [ "partial_sweeps", "structadiar_1_1statistics_1_1quantify__t.html#a149ccd7f6bb303a9ee09d8b5d9305155", null ],
+        [ "partial_termination", "structadiar_1_1statistics_1_1quantify__t.html#ac620fd365bbf468b69ffea4ca07d8069", null ],
+        [ "requests", "structadiar_1_1statistics_1_1quantify__t.html#af86357e35cc58af036a062f42e444f48", null ],
+        [ "requests_unique", "structadiar_1_1statistics_1_1quantify__t.html#a294ea61947714f95c53f97e5fdd65ddf", null ],
+        [ "singleton_sweeps", "structadiar_1_1statistics_1_1quantify__t.html#af6fc70be36a5f085a3a3d5c2bf25d6cc", null ],
+        [ "skipped", "structadiar_1_1statistics_1_1quantify__t.html#aed21498989035cea7b934901862fa37f", null ]
       ] ],
       [ "reduce_t", "structadiar_1_1statistics_1_1reduce__t.html", [
         [ "lpq", "structadiar_1_1statistics_1_1reduce__t.html#ab769667ff5ecea10ecd9e2589b7e72bf", null ],
