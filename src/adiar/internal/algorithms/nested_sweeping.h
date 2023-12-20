@@ -1416,6 +1416,9 @@ namespace adiar::internal
     }
 #ifdef ADIAR_STATS
     nested_sweeping::stats.runs += 1;
+
+    nested_sweeping::stats.outer_up.sum_node_arcs += dag->size(0);
+    nested_sweeping::stats.outer_up.sum_terminal_arcs += dag->size(1) + dag->size(2);
 #endif
 
     // Set up input
