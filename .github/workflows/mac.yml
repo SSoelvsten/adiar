@@ -86,11 +86,11 @@ jobs:
       working-directory: ${{runner.workspace}}
       run: |
         if [ "${{ matrix.cc.cc }}" = "gcc" ]; then
-          export CC=/usr/bin/${{matrix.cc.cc}}
-          export CXX=/usr/bin/${{matrix.cc.cxx}}
+          export CC=${{ matrix.cc.cc }}-${{ matrix.cc.v }}
+          export CXX=${{ matrix.cc.cxx }}-${{ matrix.cc.v }}
         else
-          export CC=${{matrix.cc.cc}}
-          export CXX=${{matrix.cc.cxx}}
+          export CC=${{ matrix.cc.cc }}
+          export CXX=${{ matrix.cc.cxx }}
         fi
 
         cmake -E make_directory ${{github.workspace}}/build
