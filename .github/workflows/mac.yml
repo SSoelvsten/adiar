@@ -67,8 +67,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        if ["${{matrix.cc.cc}}" == "gcc"];
-        then
+        if [ "${{matrix.cc.cc}}" = "gcc" ]; then
           echo "================================"
           echo "Compiler"
           brew install ${{matrix.cc.cc}}@${{matrix.cc.v}}
@@ -86,8 +85,7 @@ jobs:
     - name: Build tests
       working-directory: ${{runner.workspace}}
       run: |
-        if [ "${{ matrix.cc.cc }}" == "gcc" ] ;
-        then
+        if [ "${{ matrix.cc.cc }}" = "gcc" ]; then
           export CC=/usr/bin/${{matrix.cc.cc}}
           export CXX=/usr/bin/${{matrix.cc.cxx}}
         else
