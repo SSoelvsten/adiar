@@ -54,6 +54,12 @@ jobs:
         submodules: 'recursive'
 
     # Install dependencies
+    - name: Set up Homebrew
+      uses: Homebrew/actions/setup-homebrew@master
+      with:
+        cask: false # remove this if you need `brew install --cask`
+        test-bot: false # remove this if you need `brew test-bot`
+
     - name: Install xcode
       uses: maxim-lobanov/setup-xcode@v1
       with:
@@ -61,8 +67,6 @@ jobs:
 
     - name: Install dependencies
       run: |
-        brew update
-
         if ["${{matrix.cc.cc}}" == "gcc"];
         then
           echo "================================"
