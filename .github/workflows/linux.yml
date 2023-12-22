@@ -76,11 +76,8 @@ jobs:
     - name: Build tests
       working-directory: ${{runner.workspace}}
       run: |
-        export CC=${{env.cc}}
-        if [ "${{ matrix.cc.cc }}" != "gcc" ] ;
-        then
-          export CXX=${{env.cxx}}
-        fi
+        export CC=${{ env.cc }}
+        export CXX=${{ env.cxx }}
 
         cmake -E make_directory ${{github.workspace}}/build
         cd ${{github.workspace}}/build
