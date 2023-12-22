@@ -36,7 +36,6 @@ jobs:
         os: [macos-latest]
         cc:
           # GNU Compiler
-          - { cc: gcc,   v: 7,  cxx: g++, xcode: latest }
           - { cc: gcc,   v: 10, cxx: g++, xcode: latest }
           - { cc: gcc,   v: 12, cxx: g++, xcode: latest }
 
