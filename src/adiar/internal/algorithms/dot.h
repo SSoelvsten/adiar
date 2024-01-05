@@ -41,8 +41,6 @@ namespace adiar::internal
       out << "\t// Nodes" << "\n";
       out << "\tnode [shape=" << (include_id ? "box" : "circle") << "];" << "\n";
 
-      std::string node_style = "";
-
       while (ns.can_pull()) {
         const node n = ns.pull();
 
