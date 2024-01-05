@@ -43,14 +43,13 @@ namespace adiar::internal
       std::string node_style = "";
 
       while (ns.can_pull()) {
-        const node node = ns.pull();
+        const node n = ns.pull();
 
-        out << "\tn" << node.uid()._raw << " [";
-        out << "label=<x<SUB>" << node.label() << "</SUB>";
+        out << "\tn" << n.uid()._raw << " [label=<x<SUB>" << n.label();
         if (include_id) {
-          out << ", id<SUB>" << node.id() << "</SUB>";
+          out << ", " << n.id();
         }
-        out  << ">, style=rounded];\n";
+        out  << "</SUB>>, style=rounded];\n";
       }
 
       out << "\tnode [shape=box];" << "\n";
