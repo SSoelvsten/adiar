@@ -72,10 +72,10 @@ go_bandit([]() {
 #include "adiar/internal/data_structures/test_levelized_priority_queue.cpp"
 
 #include "adiar/internal/test_dd_func.cpp"
-#include "adiar/internal/test_dot.cpp"
 #include "adiar/internal/test_util.cpp"
 
 #include "adiar/internal/algorithms/test_convert.cpp"
+#include "adiar/internal/algorithms/test_dot.cpp"
 #include "adiar/internal/algorithms/test_isomorphism.cpp"
 #include "adiar/internal/algorithms/test_nested_sweeping.cpp"
 #include "adiar/internal/algorithms/test_reduce.cpp"

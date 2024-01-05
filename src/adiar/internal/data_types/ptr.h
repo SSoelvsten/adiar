@@ -99,7 +99,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     // befriend functions and classes that need access to 'raw'...
     template <typename dd_t>
-    friend void __print_dot(const dd_t&, std::ostream &);
+    friend void __print_dot(const dd_t&, std::ostream &, bool);
 
     template<typename pointer_type>
     friend class __uid;

@@ -1422,12 +1422,16 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Output a DOT drawing of a BDD to the given output stream.
   //////////////////////////////////////////////////////////////////////////////
-  void bdd_printdot(const bdd &f, std::ostream &out = std::cout);
+  void bdd_printdot(const bdd &f,
+                    std::ostream &out = std::cout,
+                    bool include_id = false);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Output a DOT drawing of a BDD to the file with the given name.
   //////////////////////////////////////////////////////////////////////////////
-  void bdd_printdot(const bdd &f, const std::string &file_name);
+  void bdd_printdot(const bdd &f,
+                    const std::string &file_name,
+                    bool include_id = false);
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////

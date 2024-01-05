@@ -1,7 +1,7 @@
-#include "../../test.h"
+#include "../../../test.h"
 
 #include <fstream>
-#include <adiar/internal/dot.h>
+#include <adiar/internal/algorithms/dot.h>
 
 go_bandit([]() {
   describe("adiar/dot.h", [&]() {
@@ -13,7 +13,7 @@ go_bandit([]() {
       AssertThat(exit_value, Is().EqualTo(0));
     });
 
-    it("can output .dot for a BDD with internal nodes", [&]() {
+    it("can output .dot for a BDD with internal nodes (excl. their ids)", [&]() {
       shared_levelized_file<bdd::node_type> reduced_bdd;
 
       { // Garbage collect writer early
@@ -26,8 +26,25 @@ go_bandit([]() {
           ;
       }
 
-      bdd_printdot(reduced_bdd, "dot_test_bdd.dot");
-      int exit_value = system("dot -O -Tpng dot_test_bdd.dot");
+      bdd_printdot(reduced_bdd, "dot_test_bdd__without_ids.dot"/*, false*/);
+      int exit_value = system("dot -O -Tpng dot_test_bdd__without_ids.dot");
+      AssertThat(exit_value, Is().EqualTo(0));
+    });
+
+    it("can output .dot for a BDD with internal nodes (incl. their ids)", [&]() {
+      shared_levelized_file<bdd::node_type> reduced_bdd;
+
+      { // Garbage collect writer early
+        node_writer rw(reduced_bdd);
+
+        rw << node(1,1, ptr_uint64(false), ptr_uint64(true))
+           << node(1,0, ptr_uint64(true),  ptr_uint64(false))
+           << node(0,0, ptr_uint64(1,0),   ptr_uint64(1,1))
+          ;
+      }
+
+      bdd_printdot(reduced_bdd, "dot_test_bdd__with_ids.dot", true);
+      int exit_value = system("dot -O -Tpng dot_test_bdd__with_ids.dot");
       AssertThat(exit_value, Is().EqualTo(0));
     });
 

@@ -108,14 +108,14 @@ test/adiar/bdd/restrict:
 test/adiar/internal/dd_func:
 	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal TEST_NAME=dd_func
 
-test/adiar/internal/dot:
-	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal TEST_NAME=dot
-
 test/adiar/internal/util:
 	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal TEST_NAME=util
 
 test/adiar/internal/algorithms/convert:
 	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/algorithms TEST_NAME=convert
+
+test/adiar/internal/algorithms/dot:
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/algorithms TEST_NAME=dot
 
 test/adiar/internal/algorithms/isomorphism:
 	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/algorithms TEST_NAME=isomorphism
