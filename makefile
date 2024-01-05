@@ -51,7 +51,6 @@ test:
 	@./build/$(TEST_FOLDER)/$(subst /,-,$(TEST_FOLDER))-$(TEST_NAME) \
       --reporter=info --colorizer=light
 
-#	@./build/test/$(TEST_NAME) --reporter=info --colorizer=light
 	$(MAKE) clean/files
 
 test/all:
