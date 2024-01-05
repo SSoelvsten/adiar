@@ -70,7 +70,7 @@ namespace adiar::internal
         out << "\tn" << node.uid()._raw
             << " -> "
             << "n" << node.high()._raw
-            << "[style=solid];"  << "\n";
+            << " [style=solid];"  << "\n";
       }
 
       out << "\n" << "\t// Ranks" << "\n";
