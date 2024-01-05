@@ -1,5 +1,5 @@
-#ifndef ADIAR_INTERNAL_DOT_H
-#define ADIAR_INTERNAL_DOT_H
+#ifndef ADIAR_INTERNAL_ALGORITHMS_DOT_H
+#define ADIAR_INTERNAL_ALGORITHMS_DOT_H
 
 #include <string.h>
 
@@ -174,4 +174,4 @@ namespace adiar::internal
   // TODO: generalize for non-sharing arc files and std::ostream
 }
 
-#endif // ADIAR_INTERNAL_DOT_H
+#endif // ADIAR_INTERNAL_ALGORITHMS_DOT_H
