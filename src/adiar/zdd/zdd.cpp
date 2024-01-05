@@ -7,7 +7,6 @@
 #include <adiar/domain.h>
 #include <adiar/exception.h>
 #include <adiar/internal/io/file_stream.h>
-#include <adiar/internal/dot.h>
 #include <adiar/internal/algorithms/convert.h>
 #include <adiar/internal/algorithms/intercut.h>
 #include <adiar/internal/algorithms/reduce.h>
@@ -239,17 +238,5 @@ namespace adiar
   __zdd zdd_from(const bdd &f)
   {
     return zdd_from(exec_policy(), f);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  // Debug
-  void zdd_printdot(const zdd &A, std::ostream &out)
-  {
-    internal::print_dot<zdd>(A, out);
-  }
-
-  void zdd_printdot(const zdd &A, const std::string &file_name)
-  {
-    internal::print_dot<zdd>(A, file_name);
   }
 }

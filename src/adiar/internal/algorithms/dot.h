@@ -12,13 +12,21 @@
 
 namespace adiar::internal
 {
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief       Output a container of nodes to a given output stream.
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief            Output a container of nodes to a given output stream.
   ///
-  /// \tparam File Type of the node container.
-  //////////////////////////////////////////////////////////////////////////////
+  /// \tparam File      Type of the node container.
+  ///
+  /// \param nodes      Container with nodes which can be read with a
+  ///                   `node_stream<>`.
+  ///
+  /// \param out        Output stream.
+  ///
+  /// \param include_id Whether the DOT output ought to include the id. This is only relevant for
+  ///                   debugging purposes.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename File>
-  inline void __print_dot(const File& nodes, std::ostream &out)
+  inline void __print_dot(const File& nodes, std::ostream &out, bool include_id)
   {
     out << "digraph DD {" << std::endl;
 
@@ -27,29 +35,31 @@ namespace adiar::internal
     if (nodes->is_terminal()) {
       out << "\t"
           << ns.pull().value()
-          << " [shape=box];" << std::endl;
+          << " [shape=box];" << "\n";
     } else {
-      out << "\t// Nodes" << std::endl;
-      out << "\tnode [shape=box];" << std::endl;
+      out << "\t// Nodes" << "\n";
+      out << "\tnode [shape=" << (include_id ? "box" : "circle") << "];" << "\n";
+
+      std::string node_style = "";
 
       while (ns.can_pull()) {
         const node node = ns.pull();
 
-        out << "\tn"
-            << node.uid()._raw
-            << " [label=<x<SUB>"
-            << node.label()
-            << "</SUB>, id<SUB>"
-            << node.id() << "</SUB>>, style=rounded];"
-            << std::endl;
+        out << "\tn" << node.uid()._raw << " [";
+        out << "label=<x<SUB>" << node.label() << "</SUB>";
+        if (include_id) {
+          out << ", id<SUB>" << node.id() << "</SUB>";
+        }
+        out  << ">, style=rounded];\n";
       }
 
+      out << "\tnode [shape=box];" << "\n";
       out << "\tn" << ptr_uint64(false)._raw
-          << " [label=\"" << File::false_print << "\"];" << std::endl;
+          << " [label=\"" << File::false_print << "\"];" << "\n";
       out << "\tn" << ptr_uint64(true)._raw
-          << " [label=\"" << File::true_print << "\"];" << std::endl;
+          << " [label=\"" << File::true_print << "\"];" << "\n";
 
-      out <<  std::endl << "\t// Arcs" << std::endl;
+      out <<  std::endl << "\t// Arcs" << "\n";
 
       ns.reset();
       while (ns.can_pull()) {
@@ -58,17 +68,17 @@ namespace adiar::internal
         out << "\tn" << node.uid()._raw
             << " -> "
             << "n" << node.low()._raw
-            << " [style=dashed];" << std::endl;
+            << " [style=dashed];" << "\n";
         out << "\tn" << node.uid()._raw
             << " -> "
             << "n" << node.high()._raw
-            << "[style=solid];"  << std::endl;
+            << "[style=solid];"  << "\n";
       }
 
-      out <<  std::endl << "\t// Ranks" << std::endl;
+      out << "\n" << "\t// Ranks" << "\n";
 
       ns.reset();
-      out << "\t{ rank=same; " << "n" << ns.pull().uid()._raw << " }" << std::endl;
+      out << "\t{ rank=same; " << "n" << ns.pull().uid()._raw << " }" << "\n";
 
       while (ns.can_pull()) {
         const node current_node = ns.pull();
@@ -78,7 +88,7 @@ namespace adiar::internal
         while(ns.can_pull() && current_node.label() == ns.peek().label()) {
           out << "n" << ns.pull().uid()._raw << " ";
         }
-        out << "}" << std::endl;
+        out << "}" << "\n";
       }
     }
     out << "}" << std::endl;
@@ -88,14 +98,16 @@ namespace adiar::internal
   /// \brief Output a container of nodes to a given file name
   //////////////////////////////////////////////////////////////////////////////
   template <typename dd_t>
-  inline void __print_dot(const dd_t& dd, const std::string& filename)
+  inline void __print_dot(const dd_t& dd,
+                          const std::string& filename,
+                          bool include_id)
   {
     // Create output stream for file
     std::ofstream out;
     out.open(filename);
 
     // Print to output
-    __print_dot(dd, out);
+    __print_dot(dd, out, include_id);
 
     // Close
     out.close();
@@ -107,15 +119,15 @@ namespace adiar::internal
   /// \brief Output a decision diagram to a given output stream.
   //////////////////////////////////////////////////////////////////////////////
   template <typename dd_t>
-  void print_dot(const dd_t& dd, std::ostream &out)
-  { __print_dot(dd, out); }
+  void print_dot(const dd_t& dd, std::ostream &out, bool include_id)
+  { __print_dot(dd, out, include_id); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Output a decision diagram to a given file
   //////////////////////////////////////////////////////////////////////////////
   template <typename dd_t>
-  void print_dot(const dd_t& dd, const std::string &filename)
-  { __print_dot(dd, filename); }
+  void print_dot(const dd_t& dd, const std::string &filename, bool include_id)
+  { __print_dot(dd, filename, include_id); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Print dot file of an intermediate output of arcs.

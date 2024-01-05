@@ -1,4 +1,5 @@
 add_test(adiar-internal-algorithms-convert         test_convert.cpp)
+add_test(adiar-internal-algorithms-dot             test_dot.cpp)
 add_test(adiar-internal-algorithms-isomorphism     test_isomorphism.cpp)
 add_test(adiar-internal-algorithms-nested_sweeping test_nested_sweeping.cpp)
 add_test(adiar-internal-algorithms-reduce          test_reduce.cpp)

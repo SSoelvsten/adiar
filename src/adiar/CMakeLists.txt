@@ -38,7 +38,6 @@ set(HEADERS
   internal/cut.h
   internal/dd.h
   internal/dd_func.h
-  internal/dot.h
   internal/memory.h
   internal/unreachable.h
   internal/util.h
@@ -47,6 +46,7 @@ set(HEADERS
   internal/algorithms/build.h
   internal/algorithms/convert.h
   internal/algorithms/count.h
+  internal/algorithms/dot.h
   internal/algorithms/intercut.h
   internal/algorithms/nested_sweeping.h
   internal/algorithms/pred.h
@@ -105,6 +105,7 @@ set(SOURCES
   bdd/bdd.cpp
   bdd/build.cpp
   bdd/count.cpp
+  bdd/dot.cpp
   bdd/evaluate.cpp
   bdd/if_then_else.cpp
   bdd/negate.cpp
@@ -119,6 +120,7 @@ set(SOURCES
   zdd/complement.cpp
   zdd/contains.cpp
   zdd/count.cpp
+  zdd/dot.cpp
   zdd/elem.cpp
   zdd/expand.cpp
   zdd/pred.cpp

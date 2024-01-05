@@ -5,7 +5,6 @@
 #include <memory>
 
 #include <adiar/domain.h>
-#include <adiar/internal/dot.h>
 #include <adiar/internal/dd_func.h>
 #include <adiar/internal/algorithms/convert.h>
 #include <adiar/internal/algorithms/intercut.h>
@@ -200,17 +199,5 @@ namespace adiar
   __bdd bdd_from(const zdd &A)
   {
     return bdd_from(exec_policy(), A);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  // Debug
-  void bdd_printdot(const bdd &f, std::ostream &out)
-  {
-    internal::print_dot<bdd>(f, out);
-  }
-
-  void bdd_printdot(const bdd &f, const std::string &file_name)
-  {
-    internal::print_dot<bdd>(f, file_name);
   }
 }
