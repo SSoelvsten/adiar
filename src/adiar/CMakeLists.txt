@@ -104,6 +104,7 @@ set(SOURCES
   bdd/apply.cpp
   bdd/bdd.cpp
   bdd/build.cpp
+  bdd/convert.cpp
   bdd/count.cpp
   bdd/dot.cpp
   bdd/evaluate.cpp
@@ -120,6 +121,7 @@ set(SOURCES
   zdd/complement.cpp
   zdd/contains.cpp
   zdd/count.cpp
+  zdd/convert.cpp
   zdd/dot.cpp
   zdd/elem.cpp
   zdd/expand.cpp
