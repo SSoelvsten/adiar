@@ -54,9 +54,9 @@ namespace adiar::internal
 
       out << "\tnode [shape=box];" << "\n";
       out << "\tn" << ptr_uint64(false)._raw
-          << " [label=\"" << File::false_print << "\"];" << "\n";
+          << " [label=<" << File::false_print << ">];" << "\n";
       out << "\tn" << ptr_uint64(true)._raw
-          << " [label=\"" << File::true_print << "\"];" << "\n";
+          << " [label=<" << File::true_print << ">];" << "\n";
 
       out <<  std::endl << "\t// Arcs" << "\n";
 
