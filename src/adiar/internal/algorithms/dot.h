@@ -28,14 +28,15 @@ namespace adiar::internal
   template <typename File>
   inline void __print_dot(const File& nodes, std::ostream &out, bool include_id)
   {
-    out << "digraph DD {" << std::endl;
+    out << "digraph DD {" << "\n";
 
     node_stream<> ns(nodes);
 
     if (nodes->is_terminal()) {
-      out << "\t"
-          << ns.pull().value()
-          << " [shape=box];" << "\n";
+      const bool value = ns.pull().value();
+
+      out << "\tn" << ptr_uint64(value)._raw
+          << " [shape=box, label=<" << (value ? File::true_print : File::false_print) << ">];" << "\n";
     } else {
       out << "\t// Nodes" << "\n";
       out << "\tnode [shape=" << (include_id ? "box" : "circle") << "];" << "\n";
