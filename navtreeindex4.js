@@ -1,6 +1,5 @@
 var NAVTREEINDEX4 =
 {
-"structadiar_1_1statistics_1_1levelized__priority__queue__t.html#a844804602d4c05ae87cef7f40c10371d":[4,6,0,5,1],
 "structadiar_1_1statistics_1_1levelized__priority__queue__t.html#acbc2d26c2cafb41e66a1965679dfbc78":[4,6,0,5,5],
 "structadiar_1_1statistics_1_1levelized__priority__queue__t.html#ae485ef1f9462d3c8106dc37a519ca896":[4,6,0,5,2],
 "structadiar_1_1statistics_1_1nested__sweeping__t.html":[4,6,0,6],
@@ -81,5 +80,6 @@ var NAVTREEINDEX4 =
 "types_8h_source.html":[7,0,1,0,12],
 "version_8h_source.html":[7,0,0,0,0],
 "zdd_2zdd_8h_source.html":[7,0,1,0,2,0],
-"zdd_8h_source.html":[7,0,1,0,13]
+"zdd_8h_source.html":[7,0,1,0,13],
+"":[5,0,0,0]
 };
