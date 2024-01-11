@@ -96,7 +96,7 @@ namespace adiar
 
   bdd& bdd::operator&= (bdd &&other)
   {
-    __bdd&& temp = bdd_and(*this, other);
+    __bdd temp = bdd_and(*this, other);
     other.deref();
     return (*this = std::move(temp));
   }
@@ -108,7 +108,7 @@ namespace adiar
 
   bdd& bdd::operator|= (bdd &&other)
   {
-    __bdd&& temp = bdd_or(*this, other);
+    __bdd temp = bdd_or(*this, other);
     other.deref();
     return (*this = std::move(temp));
   }
@@ -120,7 +120,7 @@ namespace adiar
 
   bdd& bdd::operator^= (bdd &&other)
   {
-    __bdd&& temp = bdd_xor(*this, other);
+    __bdd temp = bdd_xor(*this, other);
     other.deref();
     return (*this = std::move(temp));
   }
