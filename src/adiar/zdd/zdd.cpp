@@ -124,7 +124,7 @@ namespace adiar
 
   zdd& zdd::operator&= (zdd &&other)
   {
-    __zdd&& temp = zdd_intsec(*this, other);
+    __zdd temp = zdd_intsec(*this, other);
     other.deref();
     return (*this = std::move(temp));
   }
@@ -141,7 +141,7 @@ namespace adiar
 
   zdd& zdd::operator|= (zdd &&other)
   {
-    __zdd&& temp = zdd_union(*this, other);
+    __zdd temp = zdd_union(*this, other);
     other.deref();
     return (*this = std::move(temp));
   }
@@ -158,7 +158,7 @@ namespace adiar
 
   zdd& zdd::operator-= (zdd &&other)
   {
-    __zdd&& temp = zdd_diff(*this, other);
+    __zdd temp = zdd_diff(*this, other);
     other.deref();
     return (*this = std::move(temp));
   }
