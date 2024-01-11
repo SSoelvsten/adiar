@@ -151,7 +151,7 @@ slower than other implementations.
   “[*Predicting Memory Demands of BDD Operations Using Maximum Graph Cuts*](https://link.springer.com/chapter/10.1007/978-3-031-45332-8_4)”.
   In: *Automated Technology for Verification and Analysis* (ATVA). (2023)
   ```bibtex
-  @InProceedings{soelvsten2023:ATVA}
+  @InProceedings{soelvsten2023:ATVA,
     title     = {{P}redicting {M}emory {D}emands of {BDD} {O}perations {U}sing {M}aximum {G}raph {C}uts},
     author    = {S{\o}lvsten, Steffan Christ
              and van de Pol, Jaco},
