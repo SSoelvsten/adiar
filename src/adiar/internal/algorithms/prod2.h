@@ -861,14 +861,28 @@ namespace adiar::internal
     // -------------------------------------------------------------------------
     // Case: Do the product construction (with random access)
     //
+    // Use random access if requested or the width fits into at least a single
+    // block and at most half(ish) of the memory dedicated to the secondary
+    // priority queue.
+    //
     // TODO: Optimisation!
     //
     //   We do not need to check on the decision diagram being 'canonical'. It
     //   merely suffices, that it is 'indexable', i.e. the one half of being
     //   'canonical'.
+    constexpr size_t data_structures_in_pq_2 =
+      prod_priority_queue_2_t<memory_mode::Internal>::data_structures;
 
-    // Use random access if requested or the width fits into a single block
-    const size_t nodes_per_block = get_block_size() / sizeof(typename Policy::node_type);
+    constexpr size_t data_structures_in_pqs = data_structures_in_pq_2
+      + prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::data_structures;
+
+    constexpr size_t node_size = sizeof(typename Policy::node_type);
+
+    const size_t ra_threshold__min =
+      get_block_size();
+    const size_t ra_threshold__max =
+      (memory_available() * data_structures_in_pq_2) / 2*(data_structures_in_pqs);
+    const size_t ra_threshold = std::max(ra_threshold__min, ra_threshold__max) / node_size;
 
     const size_t width_0 = in_0->canonical ? in_0.width() : Policy::max_id;
     const size_t width_1 = in_1->canonical ? in_1.width() : Policy::max_id;
@@ -877,7 +891,7 @@ namespace adiar::internal
     if (// Use `__prod2_ra` if user has forced Random Access
         ep.access_mode() == exec_policy::access::Random_Access
         || (// Heuristically, if the narrowest canonical fits
-            ep.access_mode() == exec_policy::access::Auto && (min_width <= nodes_per_block))) {
+            ep.access_mode() == exec_policy::access::Auto && (min_width <= ra_threshold))) {
 #ifdef ADIAR_STATS
       stats_prod2.ra.runs += 1u;
 #endif
