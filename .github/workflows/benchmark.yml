@@ -94,11 +94,10 @@ jobs:
 
       - name: 'post regression_adiar.out'
         if: always()
-        uses: machine-learning-apps/pr-comment@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: mshick/add-pr-comment@main
         with:
-          path: ./regression_adiar.out
+          message-path: ./regression_adiar.out
+          message-id: 'benchmark_qbf_${{ matrix.circuit }}'
 
   run_picotrav:
     name: 'Performance Regression: Picotrav ${{ matrix.circuit }}'
@@ -150,11 +149,10 @@ jobs:
 
       - name: 'post regression_adiar.out'
         if: always()
-        uses: machine-learning-apps/pr-comment@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: mshick/add-pr-comment@main
         with:
-          path: ./regression_adiar.out
+          message-path: ./regression_adiar.out
+          message-id: 'benchmark_picotrav_${{ matrix.circuit }}'
 
   run_dummy:
     name: 'Performance Regression: ${{ matrix.title }}'

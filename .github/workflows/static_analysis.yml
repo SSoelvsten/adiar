@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-          
+
       - name: 'Run Cppcheck'
         uses: deep5050/cppcheck-action@main
         with:
@@ -47,8 +47,7 @@ jobs:
 
       - name: 'Post cppcheck_report.txt on PR (if failed)'
         if: failure()
-        uses: machine-learning-apps/pr-comment@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: mshick/add-pr-comment@main
         with:
-          path: ./cppcheck_report.txt
+          message-path: ./cppcheck_report.txt
+          message-id: 'cppcheck'
