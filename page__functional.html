@@ -98,7 +98,7 @@ $(document).ready(function(){initNavTree('page__functional.html',''); initResiza
 <div class="textblock"><p><a class="el" href="page__basic.html">Basic Usage</a> contained examples for how to use the basic version of most BDD operations. For more advanced usage, you need to use <a class="el" href="group__module____functional.html">Function Objects</a> as a bridge between your own code and Adiar.</p>
 <h1><a class="anchor" id="autotoc_md25"></a>
 Predicates</h1>
-<p>An <code><a class="el" href="group__module____functional.html#ga78d4d136e1487656864654cd556233d8" title="Predicate function given value(s) of type(s) Args.">adiar::predicate</a>&lt;T&gt;</code> is a function that given a value of some type <code>T</code> returns a <code>bool</code>. For example, the following <em>lambda</em> is a predicate for whether a BDD variable is odd.</p>
+<p>An <code><a class="el" href="group__module____functional.html#ga78d4d136e1487656864654cd556233d8" title="Predicate function given value(s) of type(s) Args.">adiar::predicate</a></code> is a function that given a value of some type <code>T</code> returns a <code>bool</code>. For example, the following <em>lambda</em> is a predicate for whether a BDD variable is odd.</p>
 <div class="fragment"><div class="line"><span class="keyword">const</span> <a class="code" href="group__module____functional.html#ga78d4d136e1487656864654cd556233d8">adiar::predicate&lt;int&gt;</a> is_odd = [](<span class="keywordtype">int</span> x) -&gt; <span class="keywordtype">bool</span></div>
 <div class="line">{</div>
 <div class="line">  <span class="keywordflow">return</span> x % 2;</div>
@@ -114,7 +114,7 @@ Iterators</h1>
 <div class="fragment"><div class="line">std::vector&lt;int&gt; xs = { 5, 3, 1 };</div>
 <div class="line"> </div>
 <div class="line"><a class="code" href="classadiar_1_1bdd.html">adiar::bdd</a> _ = <a class="code" href="group__module____bdd.html#gacf8f50868fb8eac4eff5587173ab703c">adiar::bdd_exists</a>(f, xs.begin(), xs.end());</div>
-</div><!-- fragment --><p>Reversely, one can also parse information from Adiar's algorithms back into one's own data structures with a pair of iterators. For example, the variables within a BDD can be copied (in <em>ascending</em> order) into a <code>std::vector&lt;int&gt;</code> <code><a class="el" href="group__module____bdd.html#gaba9c6758f6c0ba4fea4ccc7b68f5b8d6" title="Get (in ascending order) all of the variable labels that occur in the BDD.">adiar::bdd_support</a></code>.</p>
+</div><!-- fragment --><p>Reversely, one can also parse information from Adiar's algorithms back into one's own data structures with a pair of iterators. For example, the variables within a BDD can be copied (in <em>ascending</em> order) into a <code>std::vector</code> with the <code><a class="el" href="group__module____bdd.html#gaba9c6758f6c0ba4fea4ccc7b68f5b8d6" title="Get (in ascending order) all of the variable labels that occur in the BDD.">adiar::bdd_support</a></code> function as follows.</p>
 <div class="fragment"><div class="line">std::vector&lt;int&gt; xs(<a class="code" href="group__module____bdd.html#ga9ec0db00fab5951b1e3c45f33995afc7">adiar::bdd_varcount</a>(f));</div>
 <div class="line"> </div>
 <div class="line"><a class="code" href="group__module____bdd.html#gaba9c6758f6c0ba4fea4ccc7b68f5b8d6">adiar::bdd_support</a>(f, xs.begin(), xs.end());</div>
@@ -123,25 +123,26 @@ Iterators</h1>
 </div><!-- fragment --><p>Here, we initialise the vector with <code><a class="el" href="group__module____bdd.html#ga9ec0db00fab5951b1e3c45f33995afc7" title="The number of variables that influence the outcome of f, i.e. the number of levels in the BDD.">adiar::bdd_varcount</a></code> many default-initialized values to be sure that the range <code>xs.begin()</code> to <code>xs.end()</code> is big enough to fit the entire result.</p>
 <h1><a class="anchor" id="autotoc_md27"></a>
 Generators and Consumers</h1>
-<p>Under the hood, Adiar wraps the iterator-pair into an <code><a class="el" href="group__module____functional.html#ga73cb424aed6cb6d7e9e6c7d9d85132d7" title="Generator function that produces a new value of RetType for each call.">adiar::generator</a>&lt;int&gt;</code> or an <code><a class="el" href="group__module____functional.html#gadefcfc26477d436a74ae5823676110dc" title="Consumer function of value(s) of type(s) Args.">adiar::consumer</a>&lt;int&gt;</code>.</p>
+<p>Under the hood, Adiar wraps the iterator-pair into an <code><a class="el" href="group__module____functional.html#ga73cb424aed6cb6d7e9e6c7d9d85132d7" title="Generator function that produces a new value of RetType for each call.">adiar::generator</a></code> or an <code><a class="el" href="group__module____functional.html#gadefcfc26477d436a74ae5823676110dc" title="Consumer function of value(s) of type(s) Args.">adiar::consumer</a></code>.</p>
 <h2><a class="anchor" id="autotoc_md28"></a>
 Generators</h2>
-<p>A generator function is a stateful function object that when called provides an <code><a class="el" href="namespaceadiar.html#ac00584c842920c2e4fd92d13b5112746" title="An optional value, i.e. a possibly existent value.">adiar::optional</a>&lt;int&gt;</code> of the next value; in many ways this can be thought of as a <em>coroutine</em>. That is, the above example for quantifying x<sub>5</sub>, x<sub>3</sub>, and x<sub>1</sub> can also be done with the following <em>lambda</em> function.</p>
-<div class="fragment"><div class="line"><span class="keywordtype">int</span> x = 7;</div>
-<div class="line"> </div>
-<div class="line"><span class="keyword">const</span> <span class="keyword">auto</span> gen = [&amp;x]() -&gt; <span class="keywordtype">int</span> {</div>
+<p>A generator function is a stateful function object that when called provides an <code><a class="el" href="namespaceadiar.html#ac00584c842920c2e4fd92d13b5112746" title="An optional value, i.e. a possibly existent value.">adiar::optional</a></code> of the next value; in many ways this can be thought of as a <em>coroutine</em>. That is, the above example for quantifying x<sub>5</sub>, x<sub>3</sub>, and x<sub>1</sub> can also be done with the following <em>lambda</em> function.</p>
+<div class="fragment"><div class="line"><span class="keyword">const</span> <span class="keyword">auto</span> gen = [x = 7]() <span class="keyword">mutable</span> -&gt; <a class="code" href="namespaceadiar.html#ac00584c842920c2e4fd92d13b5112746">adiar::optional&lt;int&gt;</a></div>
+<div class="line">{</div>
 <div class="line">  <span class="comment">// If x &lt; 0, we are done.</span></div>
-<div class="line">  <span class="keywordflow">if</span> (x &lt; 0) { <span class="keywordflow">return</span> adiar::make_optional&lt;int&gt;(); }</div>
+<div class="line">  <span class="keywordflow">if</span> (x &lt; 0) { <span class="keywordflow">return</span> {}; }</div>
 <div class="line">  <span class="comment">// Otherwise, return x-2.</span></div>
-<div class="line">  <span class="keywordflow">return</span> x -= 2;</div>
+<div class="line">  <span class="keywordflow">return</span> {x -= 2};</div>
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line"><a class="code" href="classadiar_1_1bdd.html">adiar::bdd</a> _ = <a class="code" href="group__module____bdd.html#gacf8f50868fb8eac4eff5587173ab703c">adiar::bdd_exists</a>(f, gen);</div>
+<div class="ttc" id="anamespaceadiar_html_ac00584c842920c2e4fd92d13b5112746"><div class="ttname"><a href="namespaceadiar.html#ac00584c842920c2e4fd92d13b5112746">adiar::optional</a></div><div class="ttdeci">std::optional&lt; T &gt; optional</div><div class="ttdoc">An optional value, i.e. a possibly existent value.</div><div class="ttdef"><b>Definition:</b> types.h:52</div></div>
 </div><!-- fragment --><p>Similarly, one can parse an (<em>ascending</em>) iterator or generator <code><a class="el" href="group__module____bdd.html#gafbf9600fb919ec4d16144c8744ee276e" title="Restrict a single variable to a constant value.">adiar::bdd_restrict</a></code> to restrict multiple variables. Doing so is going to be significantly faster.</p>
 <h2><a class="anchor" id="autotoc_md29"></a>
 Consumers</h2>
 <p>A consumer function essentially is a <em>callback</em> that consumes the result. For example, we can print all of the variables that are present within a BDD to the console with the following <em>lambda</em> function.</p>
-<div class="fragment"><div class="line"><span class="keyword">const</span> <span class="keyword">auto</span> con = [](<span class="keywordtype">int</span> x) -&gt; <span class="keywordtype">void</span> {</div>
+<div class="fragment"><div class="line"><span class="keyword">const</span> <span class="keyword">auto</span> con = [](<span class="keywordtype">int</span> x) -&gt; <span class="keywordtype">void</span></div>
+<div class="line">{</div>
 <div class="line"> std::cout &lt;&lt; x &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
 <div class="line">};</div>
 <div class="line"><a class="code" href="group__module____bdd.html#gaba9c6758f6c0ba4fea4ccc7b68f5b8d6">adiar::bdd_support</a>(f, con);</div>
