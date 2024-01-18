@@ -3787,9 +3787,7 @@ go_bandit([]() {
         const exec_policy ep = exec_policy::quantify::Singleton;
 
         it("quantifies 3, 1 in BDD 4 [&&]", [&]() {
-          bdd::label_type var = 3;
-
-          bdd out = bdd_exists(ep, bdd_4, [&var]() -> optional<bdd::label_type> {
+          bdd out = bdd_exists(ep, bdd_4, [var = 3]() mutable -> optional<bdd::label_type> {
               if (var == 42) {
                 return {};
               }
@@ -3827,9 +3825,7 @@ go_bandit([]() {
         it("quantifies 2, 0 in BDD 4 [const &]", [&]() {
           const bdd in = bdd_4;
 
-          bdd::label_type var = 2;
-
-          bdd out = bdd_exists(ep, in, [&var]() -> optional<bdd::label_type> {
+          bdd out = bdd_exists(ep, in, [var = 2]() mutable -> optional<bdd::label_type> {
               if (var == 42) {
                 return {};
               }
@@ -3865,9 +3861,7 @@ go_bandit([]() {
         });
 
         it("quantifies 1 in BDD 1 [&&]", [&]() {
-          bdd::label_type var = 1;
-
-          bdd out = bdd_exists(ep, bdd_1, [&var]() -> optional<bdd::label_type> {
+          bdd out = bdd_exists(ep, bdd_1, [var = 1]() mutable -> optional<bdd::label_type> {
               if (var == 0) {
                 return {};
               }
@@ -3913,9 +3907,7 @@ go_bandit([]() {
         const exec_policy ep = exec_policy::quantify::Nested;
 
         it("quantifies 3, 1 in BDD 4 [&&]", [&]() {
-          bdd::label_type var = 3;
-
-          bdd out = bdd_exists(ep, bdd_4, [&var]() -> optional<bdd::label_type> {
+          bdd out = bdd_exists(ep, bdd_4, [var = 3]() mutable -> optional<bdd::label_type> {
               if (var == 42) {
                 return {};
               }
@@ -3951,9 +3943,7 @@ go_bandit([]() {
         });
 
         it("quantifies 1 in BDD 1 [&&]", [&]() {
-          bdd::label_type var = 1;
-
-          bdd out = bdd_exists(ep, bdd_1, [&var]() -> optional<bdd::label_type> {
+          bdd out = bdd_exists(ep, bdd_1, [var = 1]() mutable -> optional<bdd::label_type> {
             if (var == 0) {
               return {};
             }
@@ -3973,8 +3963,7 @@ go_bandit([]() {
         });
 
         it("bails out on a level that only shortcuts", [&]() {
-          bdd::label_type var = 6;
-          bdd out = bdd_exists(ep, bdd_9T, [&var]() -> optional<bdd::label_type> {
+          bdd out = bdd_exists(ep, bdd_9T, [var = 6]() mutable -> optional<bdd::label_type> {
               if (var == 42) {
                 return {};
               }
@@ -4020,8 +4009,7 @@ go_bandit([]() {
         });
 
         it("bails out on a level that only is irrelevant", [&]() {
-          bdd::label_type var = 6;
-          bdd out = bdd_exists(ep, bdd_9F, [&var]() -> optional<bdd::label_type> {
+          bdd out = bdd_exists(ep, bdd_9F, [var = 6]() mutable -> optional<bdd::label_type> {
               if (var == 42) {
                 return make_optional<bdd::label_type>();
               }
@@ -4059,8 +4047,7 @@ go_bandit([]() {
         });
 
         it("bails out on a level that both shortcuts and is irrelevant", [&]() {
-          bdd::label_type var = 4;
-          bdd out = bdd_exists(ep, bdd_6_x4T, [&var]() -> optional<bdd::label_type> {
+          bdd out = bdd_exists(ep, bdd_6_x4T, [var = 4]() mutable -> optional<bdd::label_type> {
             if (var == 42) {
               return {};
             }
@@ -4089,16 +4076,14 @@ go_bandit([]() {
         });
 
         it("kills intermediate dead partial solution", [&]() {
-          optional<bdd::label_type> var = 3;
-
-          bdd out = bdd_exists(ep, bdd_10, [&var]() -> optional<bdd::label_type> {
-              if (!var) { return {var}; }
+          bdd out = bdd_exists(ep, bdd_10, [var = make_optional<bdd::label_type>(3)]() mutable {
+              if (!var) { return var; }
 
               const optional<bdd::label_type> res = var;
               if (2 < var.value()) { var = var.value()-1; }
-              else                 { var = make_optional<bdd::label_type>(); }
+              else                 { var = {}; }
 
-              return {res};
+              return res;
             });
 
           node_test_stream out_nodes(out);
@@ -4121,8 +4106,6 @@ go_bandit([]() {
         });
 
         it("kills intermediate dead partial solutions multiple times", [&]() {
-          bdd::label_type var = 7;
-
           /* expected
           //
           //         _1_
@@ -4136,7 +4119,7 @@ go_bandit([]() {
           //        |
           //        T
           */
-          bdd out = bdd_exists(ep, bdd_6, [&var]() -> optional<bdd::label_type> {
+          bdd out = bdd_exists(ep, bdd_6, [var = 7]() mutable -> optional<bdd::label_type> {
             if (var == 42) {
               return make_optional<bdd::label_type>();
             }
@@ -4161,13 +4144,11 @@ go_bandit([]() {
         });
 
         it("accounts for number of root arcs from Outer Sweep [&]", [&]() {
-          int var = 6;
-
           /* expected
           //
           //        T
           */
-          bdd out = bdd_exists(ep, bdd_16, [&var]() -> optional<bdd::label_type> {
+          bdd out = bdd_exists(ep, bdd_16, [var = 6]() mutable -> optional<bdd::label_type> {
               var -= 1;
 
               if (var < 0) {
@@ -4850,9 +4831,7 @@ go_bandit([]() {
 
         it("quantifies 0 in BDD 1 [const &]", [&]() {
           const bdd in = bdd_1;
-
-          bdd::label_type var = 0;
-          const bdd out = bdd_forall(ep, in, [&var]() -> optional<bdd::label_type> {
+          const bdd out = bdd_forall(ep, in, [var = 0]() mutable -> optional<bdd::label_type> {
               if (var > 0) {
                 return make_optional<bdd::label_type>();
               }
@@ -4877,16 +4856,11 @@ go_bandit([]() {
         });
 
         it("quantifies 1 in BDD 1 [&&]", [&]() {
-          bdd::label_type var = 1;
-
-          const bdd out = bdd_forall(ep, bdd_1, [&var]() -> optional<bdd::label_type> {
+          const bdd out = bdd_forall(ep, bdd_1, [var = 1]() mutable -> optional<bdd::label_type> {
               if (var == 0) {
                 return {};
               }
-
-              const bdd::label_type ret = var;
-              var = 0;
-              return {ret};
+              return {var--};
             });
 
           node_test_stream out_nodes(out);
@@ -4933,9 +4907,7 @@ go_bandit([]() {
         const exec_policy ep = exec_policy::quantify::Nested;
 
         it("quantifies 0 in BDD 1", [&]() {
-          bdd::label_type var = 0;
-
-          const bdd out = bdd_forall(ep, bdd_1, [&var]() -> optional<bdd::label_type> {
+          const bdd out = bdd_forall(ep, bdd_1, [var = 0]() mutable -> optional<bdd::label_type> {
               if (var == 1) {
                 return {};
               }
@@ -4960,9 +4932,7 @@ go_bandit([]() {
         });
 
         it("quantifies 1 in BDD 1", [&]() {
-          bdd::label_type var = 1;
-
-          const bdd out = bdd_forall(ep, bdd_1, [&var]() -> optional<bdd::label_type> {
+          const bdd out = bdd_forall(ep, bdd_1, [var = 1]() mutable -> optional<bdd::label_type> {
               if (var == 0) {
                 return make_optional<bdd::label_type>();
               }
@@ -4990,8 +4960,7 @@ go_bandit([]() {
         });
 
         it("bails out on a level that only shortcuts", [&]() {
-          bdd::label_type var = 6;
-          bdd out = bdd_forall(ep, bdd_not(bdd_9T), [&var]() -> optional<bdd::label_type> {
+          bdd out = bdd_forall(ep, bdd_not(bdd_9T), [var = 6]() mutable -> optional<bdd::label_type> {
               if (var == 42) {
                 return {};
               }
@@ -5037,8 +5006,7 @@ go_bandit([]() {
         });
 
         it("bails out on a level that only is irrelevant", [&]() {
-          bdd::label_type var = 6;
-          bdd out = bdd_forall(ep, bdd_not(bdd_9F), [&var]() -> optional<bdd::label_type> {
+          bdd out = bdd_forall(ep, bdd_not(bdd_9F), [var = 6]() mutable -> optional<bdd::label_type> {
               if (var == 42) {
                 return {};
               }
@@ -5076,13 +5044,11 @@ go_bandit([]() {
         });
 
         it("accounts for number of root arcs from Outer Sweep [&]", [&]() {
-          int var = 6;
-
           /* expected
           //
           //        F
           */
-          bdd out = bdd_forall(ep, bdd_16, [&var]() -> optional<bdd::label_type> {
+          bdd out = bdd_forall(ep, bdd_16, [var = 6]() mutable -> optional<bdd::label_type> {
               var -= 1;
 
               if (var < 0) {

@@ -73,9 +73,7 @@ x<sub>3</sub>, and x<sub>1</sub> can also be done with the following *lambda*
 function.
 
 ```cpp
-int x = 7;
-
-const auto gen = [&x]() -> adiar::optional<int>
+const auto gen = [x = 7]() mutable -> adiar::optional<int>
 {
   // If x < 0, we are done.
   if (x < 0) { return {}; }

@@ -1580,10 +1580,8 @@ go_bandit([]() {
 
     describe("zdd_project(const zdd&, const generator<zdd::label_type>&)", [&]() {
       it("returns same file for Ø with dom = {6,4,2,0} [const &]", [&](){
-        zdd::label_type var = 6;
-
         const zdd in = zdd_empty;
-        zdd out = zdd_project(in, [&var]() -> optional<zdd::label_type> {
+        zdd out = zdd_project(in, [var = 6]() mutable -> optional<zdd::label_type> {
           if (var == 42) {
             return {};
           }
@@ -1597,9 +1595,7 @@ go_bandit([]() {
       });
 
       it("returns same file for { Ø } with dom = {5,3,1} [&&]", [&](){
-        zdd::label_type var = 5;
-
-        zdd out = zdd_project(zdd(zdd_null), [&var]() -> optional<zdd::label_type> {
+        zdd out = zdd_project(zdd(zdd_null), [var = 5]() mutable -> optional<zdd::label_type> {
           if (var == 42) {
             return {};
           }
@@ -1704,11 +1700,9 @@ go_bandit([]() {
         });
 
         it("collapses zdd_2 with disjoint domain into { Ø } [const &]", [&](){
-          zdd::label_type var = 1;
-
           const zdd in = zdd_2;
 
-          zdd out = zdd_project(ep, in, [&var]() -> optional<zdd::label_type> {
+          zdd out = zdd_project(ep, in, [var = 1]() mutable -> optional<zdd::label_type> {
             if (var == 0) {
               return {};
             }
@@ -1783,8 +1777,7 @@ go_bandit([]() {
            *        T
            */
 
-          zdd::label_type var = 0;
-          zdd out = zdd_project(ep, in, [&var]() {
+          zdd out = zdd_project(ep, in, [var = 0]() mutable {
             return var == 0
               ? make_optional<zdd::label_type>(var--)
               : make_optional<zdd::label_type>();
@@ -1809,11 +1802,6 @@ go_bandit([]() {
         });
 
         it("returns { 1 } for {1} with dom = {1,0} [const &]", [&](){
-          shared_file<zdd::label_type> dom;
-          { label_writer lw(dom);
-            lw << 0 << 1;
-          }
-
           const zdd in = zdd_x1;
 
           /* Expected: { 1 }
@@ -1822,9 +1810,8 @@ go_bandit([]() {
            *       / \
            *       F T
            */
-          zdd::label_type var = 1;
-          zdd out = zdd_project(ep, in, [&var]() {
-            return var <= 1
+          zdd out = zdd_project(ep, in, [var = 1]() mutable {
+            return 0 <= var
               ? make_optional<zdd::label_type>(var--)
               : make_optional<zdd::label_type>();
           });
@@ -1866,8 +1853,7 @@ go_bandit([]() {
           //        / \
           //        T T
           */
-          zdd::label_type var = 4;
-          zdd out = zdd_project(ep, in, [&var]() {
+          zdd out = zdd_project(ep, in, [var = 4]() mutable {
             return 2 <= var && var <= 4
               ? make_optional<zdd::label_type>(var--)
               : make_optional<zdd::label_type>();
@@ -1926,8 +1912,7 @@ go_bandit([]() {
           //       / \
           //       T T
           */
-          zdd::label_type var = 4;
-          zdd out = zdd_project(ep, zdd_2, [&var]() {
+          zdd out = zdd_project(ep, zdd_2, [var = 4]() mutable {
             return 2 <= var && var <= 4
               ? make_optional<zdd::label_type>(var--)
               : make_optional<zdd::label_type>();
@@ -1986,8 +1971,7 @@ go_bandit([]() {
           //        / \
           //        T T
           */
-          zdd::label_type var = 4;
-          zdd out = zdd_project(ep, zdd_3, [&var]() -> optional<zdd::label_type> {
+          zdd out = zdd_project(ep, zdd_3, [var = 4]() mutable -> optional<zdd::label_type> {
             if (var == 42) {
               return {};
             }
@@ -2041,8 +2025,7 @@ go_bandit([]() {
           //    / \ / \
           //    F T T T
           */
-          zdd::label_type var = 4;
-          zdd out = zdd_project(ep, zdd_4, [&var]() -> optional<zdd::label_type> {
+          zdd out = zdd_project(ep, zdd_4, [var = 4]() mutable -> optional<zdd::label_type> {
               if (var == 42) {
                 return {};
               }
@@ -2099,8 +2082,7 @@ go_bandit([]() {
           //     / \||
           //     F  T
           */
-          zdd::label_type var = 4;
-          zdd out = zdd_project(ep, zdd_4, [&var]() -> optional<zdd::label_type> {
+          zdd out = zdd_project(ep, zdd_4, [var = 4]() mutable -> optional<zdd::label_type> {
             if (var == 42) {
               return make_optional<zdd::label_type>();
             }
@@ -2225,10 +2207,8 @@ go_bandit([]() {
         });
 
         it("collapses zdd_2 with disjoint domain into { Ø } [const &]", [&](){
-          zdd::label_type var = 1;
-
           const zdd in = zdd_2;
-          zdd out = zdd_project(ep, in, [&var]() -> optional<zdd::label_type> {
+          zdd out = zdd_project(ep, in, [var = 1]() mutable -> optional<zdd::label_type> {
               if (var != 1) {
                 return {};
               }
@@ -2254,8 +2234,7 @@ go_bandit([]() {
         });
 
         it("computes with disjoint dom to be { Ø } [zdd_3] [&&]", [&](){
-          zdd::label_type var = 5;
-          zdd out = zdd_project(ep, zdd(zdd_3), [&var]() {
+          zdd out = zdd_project(ep, zdd(zdd_3), [var = 5]() mutable {
             return 3 <= var && var <= 5
               ? make_optional<zdd::label_type>(var--)
               : make_optional<zdd::label_type>();
@@ -2301,9 +2280,7 @@ go_bandit([]() {
            *
            *        T
            */
-
-          zdd::label_type var = 0;
-          zdd out = zdd_project(ep, in, [&var]() {
+          zdd out = zdd_project(ep, in, [var = 0]() mutable {
             return var == 0
               ? make_optional<zdd::label_type>(var--)
               : make_optional<zdd::label_type>();
@@ -2328,11 +2305,6 @@ go_bandit([]() {
         });
 
         it("returns { 1 } for {1} with dom = {1,0} [const &]", [&](){
-          shared_file<zdd::label_type> dom;
-          { label_writer lw(dom);
-            lw << 0 << 1;
-          }
-
           const zdd in = zdd_x1;
 
           /* Expected: { 1 }
@@ -2341,9 +2313,8 @@ go_bandit([]() {
            *       / \
            *       F T
            */
-          zdd::label_type var = 1;
-          zdd out = zdd_project(ep, in, [&var]() {
-            return var <= 1
+          zdd out = zdd_project(ep, in, [var = 1]() mutable {
+            return 0 <= var
               ? make_optional<zdd::label_type>(var--)
               : make_optional<zdd::label_type>();
           });
@@ -2383,8 +2354,7 @@ go_bandit([]() {
           //        / \
           //        T T
           */
-          zdd::label_type var = 4;
-          zdd out = zdd_project(ep, in, [&var]() {
+          zdd out = zdd_project(ep, in, [var = 4]() mutable {
             return 2 <= var && var <= 4
               ? make_optional<zdd::label_type>(var--)
               : make_optional<zdd::label_type>();
@@ -2443,8 +2413,7 @@ go_bandit([]() {
           //       / \
           //       T T
           */
-          zdd::label_type var = 4;
-          zdd out = zdd_project(ep, zdd_2, [&var]() {
+          zdd out = zdd_project(ep, zdd_2, [var = 4]() mutable {
             return 2 <= var && var <= 4
               ? make_optional<zdd::label_type>(var--)
               : make_optional<zdd::label_type>();
@@ -2503,8 +2472,7 @@ go_bandit([]() {
           //        / \
           //        T T
           */
-          zdd::label_type var = 4;
-          zdd out = zdd_project(ep, zdd_3, [&var]() -> optional<zdd::label_type> {
+          zdd out = zdd_project(ep, zdd_3, [var = 4]() mutable -> optional<zdd::label_type> {
             if (var == 42) {
               return make_optional<zdd::label_type>();
             }
@@ -2558,8 +2526,7 @@ go_bandit([]() {
           //    / \ / \
           //    F T T T
           */
-          zdd::label_type var = 4;
-          zdd out = zdd_project(ep, zdd_4, [&var]() -> optional<zdd::label_type> {
+          zdd out = zdd_project(ep, zdd_4, [var = 4]() mutable -> optional<zdd::label_type> {
               if (var == 42) {
                 return {};
               }
@@ -2616,8 +2583,7 @@ go_bandit([]() {
           //     / \||
           //     F  T
           */
-          zdd::label_type var = 4;
-          zdd out = zdd_project(ep, zdd_4, [&var]() -> optional<zdd::label_type> {
+          zdd out = zdd_project(ep, zdd_4, [var = 4]() mutable -> optional<zdd::label_type> {
             if (var == 42) {
               return make_optional<zdd::label_type>();
             }
@@ -2679,8 +2645,7 @@ go_bandit([]() {
           //      / \
           //      T T
           */
-          zdd::label_type var = 8;
-          zdd out = zdd_project(ep, in, [&var]() -> optional<zdd::label_type> {
+          zdd out = zdd_project(ep, in, [var = 8]() mutable -> optional<zdd::label_type> {
             if (var == 42) {
               return {};
             }
