@@ -7,9 +7,9 @@ a bridge between your own code and Adiar.
 Predicates
 ==================================
 
-An `adiar::predicate<T>` is a function that given a value of some type `T`
-returns a `bool`. For example, the following *lambda* is a predicate for whether
-a BDD variable is odd.
+An `adiar::predicate` is a function that given a value of some type `T` returns
+a `bool`. For example, the following *lambda* is a predicate for whether a BDD
+variable is odd.
 
 ```cpp
 const adiar::predicate<int> is_odd = [](int x) -> bool
@@ -44,8 +44,8 @@ adiar::bdd _ = adiar::bdd_exists(f, xs.begin(), xs.end());
 
 Reversely, one can also parse information from Adiar's algorithms back into
 one's own data structures with a pair of iterators. For example, the variables
-within a BDD can be copied (in *ascending* order) into a `std::vector<int>`
-`adiar::bdd_support`.
+within a BDD can be copied (in *ascending* order) into a `std::vector` with the
+`adiar::bdd_support` function as follows.
 
 ```cpp
 std::vector<int> xs(adiar::bdd_varcount(f));
@@ -60,26 +60,27 @@ is big enough to fit the entire result.
 Generators and Consumers
 ==================================
 
-Under the hood, Adiar wraps the iterator-pair into an `adiar::generator<int>` or
-an `adiar::consumer<int>`.
+Under the hood, Adiar wraps the iterator-pair into an `adiar::generator` or an
+`adiar::consumer`.
 
 Generators
 ----------------------------------
 
 A generator function is a stateful function object that when called provides an
-`adiar::optional<int>` of the next value; in many ways this can be thought of as
-a *coroutine*. That is, the above example for quantifying x<sub>5</sub>,
+`adiar::optional` of the next value; in many ways this can be thought of as a
+*coroutine*. That is, the above example for quantifying x<sub>5</sub>,
 x<sub>3</sub>, and x<sub>1</sub> can also be done with the following *lambda*
 function.
 
 ```cpp
 int x = 7;
 
-const auto gen = [&x]() -> int {
+const auto gen = [&x]() -> adiar::optional<int>
+{
   // If x < 0, we are done.
-  if (x < 0) { return adiar::make_optional<int>(); }
+  if (x < 0) { return {}; }
   // Otherwise, return x-2.
-  return x -= 2;
+  return {x -= 2};
 };
 
 adiar::bdd _ = adiar::bdd_exists(f, gen);
@@ -97,7 +98,8 @@ example, we can print all of the variables that are present within a BDD to the
 console with the following *lambda* function.
 
 ```cpp
-const auto con = [](int x) -> void {
+const auto con = [](int x) -> void
+{
  std::cout << x << "\n";
 };
 adiar::bdd_support(f, con);

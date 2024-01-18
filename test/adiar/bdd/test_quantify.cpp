@@ -3776,8 +3776,8 @@ go_bandit([]() {
 
     describe("bdd_exists(const bdd&, const generator<bdd::label_type>&)", [&]() {
       it("returns input on 'optional::none' generator BDD 1 [&&]", [&]() {
-        __bdd out = bdd_exists(bdd_1, []() {
-          return make_optional<bdd::label_type>();
+        __bdd out = bdd_exists(bdd_1, []() -> optional<bdd::label_type> {
+          return {};
         });
 
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
@@ -3791,12 +3791,12 @@ go_bandit([]() {
 
           bdd out = bdd_exists(ep, bdd_4, [&var]() -> optional<bdd::label_type> {
               if (var == 42) {
-                return make_optional<bdd::label_type>();
+                return {};
               }
 
               const bdd::label_type ret = var;
               var = ret == 1 ? 42 : var-2;
-              return ret;
+              return {ret};
             });
 
           node_test_stream out_nodes(out);
@@ -3831,12 +3831,12 @@ go_bandit([]() {
 
           bdd out = bdd_exists(ep, in, [&var]() -> optional<bdd::label_type> {
               if (var == 42) {
-                return make_optional<bdd::label_type>();
+                return {};
               }
 
               const bdd::label_type res = var;
               var = res == 0 ? 42 : var-2;
-              return res;
+              return {res};
             });
 
           node_test_stream out_nodes(out);
@@ -3869,9 +3869,9 @@ go_bandit([]() {
 
           bdd out = bdd_exists(ep, bdd_1, [&var]() -> optional<bdd::label_type> {
               if (var == 0) {
-                return make_optional<bdd::label_type>();
+                return {};
               }
-              return var--;
+              return {var--};
             });
 
           node_test_stream out_nodes(out);
@@ -3917,12 +3917,12 @@ go_bandit([]() {
 
           bdd out = bdd_exists(ep, bdd_4, [&var]() -> optional<bdd::label_type> {
               if (var == 42) {
-                return make_optional<bdd::label_type>();
+                return {};
               }
 
               const bdd::label_type ret = var;
               var = ret == 1 ? 42 : var-2;
-              return ret;
+              return {ret};
             });
 
           node_test_stream out_nodes(out);
@@ -3955,9 +3955,9 @@ go_bandit([]() {
 
           bdd out = bdd_exists(ep, bdd_1, [&var]() -> optional<bdd::label_type> {
             if (var == 0) {
-              return make_optional<zdd::label_type>();
+              return {};
             }
-            return var--;
+            return {var--};
           });
 
           node_test_stream out_nodes(out);
@@ -3976,12 +3976,12 @@ go_bandit([]() {
           bdd::label_type var = 6;
           bdd out = bdd_exists(ep, bdd_9T, [&var]() -> optional<bdd::label_type> {
               if (var == 42) {
-                return make_optional<bdd::label_type>();
+                return {};
               }
 
               const bdd::label_type res = var;
               var = res == 0 ? 42 : var-2;
-              return res;
+              return {res};
             });
 
           node_test_stream out_nodes(out);
@@ -4062,7 +4062,7 @@ go_bandit([]() {
           bdd::label_type var = 4;
           bdd out = bdd_exists(ep, bdd_6_x4T, [&var]() -> optional<bdd::label_type> {
             if (var == 42) {
-              return make_optional<bdd::label_type>();
+              return {};
             }
             const bdd::label_type res = var;
             switch (res) {
@@ -4070,7 +4070,7 @@ go_bandit([]() {
             case 2:  { var = 1;  break; } // <-- 2: shortuctting / irrelevant
             default: { var = 42; break; } // <-- 1: final sweep
             }
-            return res;
+            return {res};
           });
 
           // TODO predict output!
@@ -4092,13 +4092,13 @@ go_bandit([]() {
           optional<bdd::label_type> var = 3;
 
           bdd out = bdd_exists(ep, bdd_10, [&var]() -> optional<bdd::label_type> {
-              if (!var) { return var; }
+              if (!var) { return {var}; }
 
               const optional<bdd::label_type> res = var;
               if (2 < var.value()) { var = var.value()-1; }
               else                 { var = make_optional<bdd::label_type>(); }
 
-              return res;
+              return {res};
             });
 
           node_test_stream out_nodes(out);
@@ -4171,12 +4171,12 @@ go_bandit([]() {
               var -= 1;
 
               if (var < 0) {
-                return make_optional<bdd::label_type>();
+                return {};
               }
               if (var == 5) {
                 var -= 1;
               }
-              return var;
+              return {var};
             });
 
           node_test_stream out_nodes(out);
@@ -4881,12 +4881,12 @@ go_bandit([]() {
 
           const bdd out = bdd_forall(ep, bdd_1, [&var]() -> optional<bdd::label_type> {
               if (var == 0) {
-                return make_optional<bdd::label_type>();
+                return {};
               }
 
               const bdd::label_type ret = var;
               var = 0;
-              return ret;
+              return {ret};
             });
 
           node_test_stream out_nodes(out);
@@ -4909,8 +4909,8 @@ go_bandit([]() {
         it("terminates early when quantifying 2, 0 to a terminal in BDD 3 [&&]", [&]() {
           int calls = 0;
 
-          const bdd out = bdd_forall(ep, bdd_3, [&calls]() {
-            return make_optional<bdd::label_type>(2 - 2*(calls++));
+          const bdd out = bdd_forall(ep, bdd_3, [&calls]() -> optional<bdd::label_type> {
+            return {2 - 2*(calls++)};
           });
 
           // What could be expected is 3 calls: 2, 0, none . But, here it terminates early.
@@ -4937,9 +4937,9 @@ go_bandit([]() {
 
           const bdd out = bdd_forall(ep, bdd_1, [&var]() -> optional<bdd::label_type> {
               if (var == 1) {
-                return make_optional<bdd::label_type>();
+                return {};
               }
-              return var++;
+              return {var++};
             });
 
           node_test_stream out_nodes(out);
@@ -4993,12 +4993,12 @@ go_bandit([]() {
           bdd::label_type var = 6;
           bdd out = bdd_forall(ep, bdd_not(bdd_9T), [&var]() -> optional<bdd::label_type> {
               if (var == 42) {
-                return make_optional<bdd::label_type>();
+                return {};
               }
 
               const bdd::label_type res = var;
               var = res == 0 ? 42 : var-2;
-              return res;
+              return {res};
             });
 
           node_test_stream out_nodes(out);
@@ -5040,12 +5040,12 @@ go_bandit([]() {
           bdd::label_type var = 6;
           bdd out = bdd_forall(ep, bdd_not(bdd_9F), [&var]() -> optional<bdd::label_type> {
               if (var == 42) {
-                return make_optional<bdd::label_type>();
+                return {};
               }
 
               const bdd::label_type res = var;
               var = res == 0 ? 42 : var-2;
-              return res;
+              return {res};
             });
 
           node_test_stream out_nodes(out);
@@ -5086,12 +5086,12 @@ go_bandit([]() {
               var -= 1;
 
               if (var < 0) {
-                return make_optional<bdd::label_type>();
+                return {};
               }
               if (var == 5) {
                 var -= 1;
               }
-              return var;
+              return {var};
             });
 
           node_test_stream out_nodes(out);
