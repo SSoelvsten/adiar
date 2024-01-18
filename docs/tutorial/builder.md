@@ -3,8 +3,8 @@
 In some cases, one may already know the shape of an `adiar::bdd` for a more
 complex function. In those cases, it is much cheaper to construct them by hand
 than to manipulate logic formulas. The `adiar::bdd_builder` class allows you to
-do exactly this by providing you with the “*pointers*” of prior constructed
-nodes such that they can be referenced by new ones.
+do exactly this by providing you with the “pointers” of prior constructed nodes
+such that they can be referenced by new ones.
 
 For example, consider the following BDD consisting of 3 nodes that represents
 the formula \f$ (x_0 \land x_1) \lor x_2 \f$.
