@@ -808,25 +808,41 @@ namespace adiar
 
       o << indent << endl;
 
-      o << indent << bold_on << "root requests" << bold_off << endl;
+      const uintwide total_requests = internal::nested_sweeping::stats.inner_down.requests.terminals
+                                    + internal::nested_sweeping::stats.inner_down.requests.preserving
+                                    + internal::nested_sweeping::stats.inner_down.requests.modifying;
+
+      o << indent << bold_on << label << "root requests" << bold_off
+        << total_requests
+        << endl;
 
       indent_level++;
 
-      o << indent << label << "terminals (skipped)"
-        << internal::nested_sweeping::stats.inner_down.terminals_skipped
-        << endl;
-
-      o << indent << label << "preserving"
-        << internal::nested_sweeping::stats.inner_down.preserving
-        << endl;
-
-      o << indent << label << "suppressed"
-        << internal::nested_sweeping::stats.inner_down.suppressed
+      o << indent << label << "terminals"
+        << internal::nested_sweeping::stats.inner_down.requests.terminals
+        << " = "  << internal::percent_frac(internal::nested_sweeping::stats.inner_down.requests.terminals,
+                                            total_requests) << percent
         << endl;
 
       o << indent << label << "modifying"
-        << internal::nested_sweeping::stats.inner_down.modifying
+        << internal::nested_sweeping::stats.inner_down.requests.modifying
+        << " = "  << internal::percent_frac(internal::nested_sweeping::stats.inner_down.requests.modifying,
+                                            total_requests) << percent
         << endl;
+
+      o << indent << label << "preserving"
+        << internal::nested_sweeping::stats.inner_down.requests.preserving
+        << " = "  << internal::percent_frac(internal::nested_sweeping::stats.inner_down.requests.preserving,
+                                            total_requests) << percent
+        << endl;
+
+      indent_level++;
+      o << indent << label << "(node removed - rule 1)"
+        << internal::nested_sweeping::stats.inner_down.requests.preserving_suppressed
+        // << " = "  << internal::percent_frac(internal::nested_sweeping::stats.inner_down.requests.preserving_suppressed,
+        //                                     internal::nested_sweeping::stats.inner_down.requests.preserving) << percent
+        << endl;
+      indent_level--;
 
       indent_level -= 2;
     }

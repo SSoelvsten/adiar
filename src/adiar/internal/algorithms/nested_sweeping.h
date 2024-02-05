@@ -481,15 +481,14 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         void push(const reduce_arc &a)
         {
-          // TODO: use outer_pq::level_comp_t instead of hardcoding '<'
           if (a.source().is_nil() || (a.source().label() < _next_inner && a.target().is_node())) {
 #ifdef ADIAR_STATS
-            nested_sweeping::stats.inner_down.preserving += 1;
+            nested_sweeping::stats.inner_down.requests.preserving += 1;
 #endif
             _outer_roots.push(a);
           } else {
 #ifdef ADIAR_STATS
-            nested_sweeping::stats.inner_down.terminals_skipped +=
+            nested_sweeping::stats.inner_down.requests.terminals +=
               static_cast<int>(a.target().is_terminal());
 #endif
             _outer_pq.push(a);
@@ -512,10 +511,15 @@ namespace adiar::internal
           adiar_assert(e.data.source.is_nil() || e.data.source.label() < _next_inner);
           if (e.target.first().is_terminal()) {
 #ifdef ADIAR_STATS
-            nested_sweeping::stats.inner_down.terminals_skipped += 1;
+            nested_sweeping::stats.inner_down.requests.terminals += 1;
 #endif
             _outer_pq.push({ e.data.source, e.target.first() });
           } else {
+#ifdef ADIAR_STATS
+            const size_t modifying = e.targets() > 1; // 0 or 1
+            nested_sweeping::stats.inner_down.requests.modifying  += modifying;
+            nested_sweeping::stats.inner_down.requests.preserving += 1 - modifying; // !modifying
+#endif
             _outer_roots.push(e);
           }
         }
@@ -1621,13 +1625,13 @@ namespace adiar::internal
                 return reduced_t(reduction_rule_ret.value());
               }
 #ifdef ADIAR_STATS
-              nested_sweeping::stats.inner_down.suppressed += 1;
+              nested_sweeping::stats.inner_down.requests.preserving_suppressed += 1;
 #endif
               outer_pq_decorator.push(arc(node::pointer_type::nil(), flag(reduction_rule_ret)));
             } else {
               do {
 #ifdef ADIAR_STATS
-                nested_sweeping::stats.inner_down.suppressed += 1;
+                nested_sweeping::stats.inner_down.requests.preserving_suppressed += 1;
 #endif
                 outer_pq_decorator.push(arc(outer_arcs.pull_internal().source(), flag(reduction_rule_ret)));
               } while (outer_arcs.can_pull_internal() && outer_arcs.peek_internal().target() == n.uid());
@@ -1646,15 +1650,9 @@ namespace adiar::internal
               if (r.target.first().is_terminal()) {
                 return reduced_t(r.target.first().value());
               }
-#ifdef ADIAR_STATS
-              nested_sweeping::stats.inner_down.modifying += 1;
-#endif
               outer_pq_decorator.push(r);
             } else {
               do {
-#ifdef ADIAR_STATS
-                nested_sweeping::stats.inner_down.modifying += 1;
-#endif
                 const request_t r =
                   policy_impl.request_from_node(n, outer_arcs.pull_internal().source());
 
