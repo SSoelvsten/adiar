@@ -552,8 +552,7 @@ namespace adiar
         uintwide skipped_nested_levels__prune = 0;
 
         //////////////////////////////////////////////////////////////////////////
-        /// \brief Number of times Nested Sweeping Framework is skipped for a
-        ///        simple Reduce algorithm.
+        /// \brief Number of outer sweeps that collapsed early into a terminal.
         //////////////////////////////////////////////////////////////////////////
         uintwide collapse_to_terminal = 0;
       }
