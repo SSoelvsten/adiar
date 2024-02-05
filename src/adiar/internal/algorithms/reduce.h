@@ -273,7 +273,7 @@ namespace adiar::internal
                  node_writer &out_writer,
                  const size_t sorters_memory,
                  const size_t unreduced_width,
-                 statistics::reduce_t &stats = stats_reduce)
+                 [[maybe_unused]] statistics::reduce_t &stats = stats_reduce)
   {
     // Temporary file for Reduction Rule 1 mappings (opened later if need be)
     tpie::file_stream<mapping> red1_mapping;

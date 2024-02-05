@@ -75,7 +75,7 @@ namespace adiar::internal
                          const typename dd_policy::label_type label,
                          pq_t &pq,
                          node_writer &out_writer,
-                         statistics::reduce_t &stats = internal::stats_reduce)
+                         [[maybe_unused]] statistics::reduce_t &stats = internal::stats_reduce)
     {
       // Count number of arcs that cross this level (including tainted ones)
       // TODO: move into helper function
