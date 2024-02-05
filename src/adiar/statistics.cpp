@@ -852,6 +852,13 @@ namespace adiar
         << endl;
 
       indent_level++;
+      o << indent << label << "reduce rule 1"
+        << internal::nested_sweeping::stats.inner_down.removed_by_rule_1
+        << " = "  << internal::percent_frac(internal::nested_sweeping::stats.inner_down.removed_by_rule_1,
+                                            total_requests) << percent
+        << endl;
+
+      o << indent << endl;
 
       o << indent << label << "terminals"
         << internal::nested_sweeping::stats.inner_down.requests.terminals
@@ -870,14 +877,6 @@ namespace adiar
         << " = "  << internal::percent_frac(internal::nested_sweeping::stats.inner_down.requests.preserving,
                                             total_requests) << percent
         << endl;
-
-      indent_level++;
-      o << indent << label << "(node removed - rule 1)"
-        << internal::nested_sweeping::stats.inner_down.requests.preserving_suppressed
-        // << " = "  << internal::percent_frac(internal::nested_sweeping::stats.inner_down.requests.preserving_suppressed,
-        //                                     internal::nested_sweeping::stats.inner_down.requests.preserving) << percent
-        << endl;
-      indent_level--;
 
       indent_level -= 2;
     }

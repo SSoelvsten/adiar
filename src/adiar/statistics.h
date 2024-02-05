@@ -614,16 +614,16 @@ namespace adiar
           uintwide preserving = 0;
 
           //////////////////////////////////////////////////////////////////////
-          /// \brief Number of requests crossing nesting level that originate
-          ///        from suppressing a node on the nesting level.
-          //////////////////////////////////////////////////////////////////////
-          uintwide preserving_suppressed = 0;
-
-          //////////////////////////////////////////////////////////////////////
           /// \brief Number of requests created at this level.
           //////////////////////////////////////////////////////////////////////
           uintwide modifying = 0;
         } requests;
+
+        //////////////////////////////////////////////////////////////////////
+        /// \brief Number of preserving and terminal requests that stem from
+        ///        suppressing a node on the nesting level.
+        //////////////////////////////////////////////////////////////////////
+        uintwide removed_by_rule_1 = 0;
       }
       /// \copybrief inner_down_t
       inner_down;
