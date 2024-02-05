@@ -783,22 +783,57 @@ namespace adiar
       o << indent << bold_on << "inner down sweep" << bold_off << endl;
       indent_level++;
 
-      const uintwide total_arcs = internal::nested_sweeping::stats.inner_up.outer_arcs
-                                + internal::nested_sweeping::stats.inner_up.inner_arcs;
+      o << indent << bold_on << "inputs" << bold_off << endl;
 
-      o << indent << bold_on << label << "arc types" << bold_off
+      indent_level++;
+
+      o << indent << "size" << endl;
+
+      indent_level++;
+      o << indent << label << "accumulated"
+        << internal::nested_sweeping::stats.inner_down.inputs.acc_size << endl;
+      o << indent << label << "maximum"
+        << internal::nested_sweeping::stats.inner_down.inputs.max_size << endl;
+      indent_level--;
+
+      o << indent << "width" << endl;
+
+      indent_level++;
+      o << indent << label << "accumulated"
+        << internal::nested_sweeping::stats.inner_down.inputs.acc_width << endl;
+      o << indent << label << "maximum"
+        << internal::nested_sweeping::stats.inner_down.inputs.max_width << endl;
+      indent_level--;
+
+      o << indent << "levels" << endl;
+
+      indent_level++;
+      o << indent << label << "accumulated"
+        << internal::nested_sweeping::stats.inner_down.inputs.acc_levels << endl;
+      o << indent << label << "maximum"
+        << internal::nested_sweeping::stats.inner_down.inputs.max_levels << endl;
+      indent_level--;
+
+      indent_level--;
+
+      o << indent << endl;
+
+      const uintwide total_arcs = internal::nested_sweeping::stats.inner_up.outer_arcs
+        + internal::nested_sweeping::stats.inner_up.inner_arcs;
+
+      o << indent << bold_on << label << "output origin (arcs)" << bold_off
         << total_arcs
         << endl;
 
       indent_level++;
 
-      o << indent << label << "outer"
+      o << indent << label << "outer sweep"
         << internal::nested_sweeping::stats.inner_up.outer_arcs
         << " = "  << internal::percent_frac(internal::nested_sweeping::stats.inner_up.outer_arcs,
                                             total_arcs) << percent
         << endl;
 
-      o << indent << label << "inner"
+      o << indent << label << "inner sweep"
         << internal::nested_sweeping::stats.inner_up.inner_arcs
         << " = "  << internal::percent_frac(internal::nested_sweeping::stats.inner_up.inner_arcs,
                                             total_arcs) << percent

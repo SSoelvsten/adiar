@@ -1691,6 +1691,18 @@ namespace adiar::internal
 
         outer_writer.detach();
 
+#ifdef ADIAR_STATS
+        nested_sweeping::stats.inner_down.inputs.acc_size   += outer_file->size();
+        nested_sweeping::stats.inner_down.inputs.max_size    = std::max<uintwide>(nested_sweeping::stats.inner_down.inputs.max_size,
+                                                                                  outer_file->size());
+        nested_sweeping::stats.inner_down.inputs.acc_width  += outer_file->width;
+        nested_sweeping::stats.inner_down.inputs.max_width   = std::max<uintwide>(nested_sweeping::stats.inner_down.inputs.max_width,
+                                                                                  outer_file->width);
+        nested_sweeping::stats.inner_down.inputs.acc_levels += outer_file->levels();
+        nested_sweeping::stats.inner_down.inputs.max_levels  = std::max<uintwide>(nested_sweeping::stats.inner_down.inputs.max_levels,
+                                                                                  outer_file->levels());
+#endif
+
         // TODO (optimisation): is_last_inner && !non_gc_request
         //   Use a simpler (and hence faster?) algorithm for a GC-only sweep.
 
