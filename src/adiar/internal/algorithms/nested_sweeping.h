@@ -1625,13 +1625,13 @@ namespace adiar::internal
                 return reduced_t(reduction_rule_ret.value());
               }
 #ifdef ADIAR_STATS
-              nested_sweeping::stats.inner_down.requests.preserving_suppressed += 1;
+              nested_sweeping::stats.inner_down.removed_by_rule_1 += 1;
 #endif
               outer_pq_decorator.push(arc(node::pointer_type::nil(), flag(reduction_rule_ret)));
             } else {
               do {
 #ifdef ADIAR_STATS
-                nested_sweeping::stats.inner_down.requests.preserving_suppressed += 1;
+                nested_sweeping::stats.inner_down.removed_by_rule_1 += 1;
 #endif
                 outer_pq_decorator.push(arc(outer_arcs.pull_internal().source(), flag(reduction_rule_ret)));
               } while (outer_arcs.can_pull_internal() && outer_arcs.peek_internal().target() == n.uid());
