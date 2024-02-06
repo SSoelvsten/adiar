@@ -595,8 +595,8 @@ namespace adiar
     const size_t pq_3_memory_fits =
       ite_priority_queue_3_t<internal::memory_mode::Internal>::memory_fits(pq_3_internal_memory);
 
-    const bool internal_only = ep.memory_mode() == exec_policy::memory::Internal;
-    const bool external_only = ep.memory_mode() == exec_policy::memory::External;
+    const bool internal_only = ep.template get<exec_policy::memory>() == exec_policy::memory::Internal;
+    const bool external_only = ep.template get<exec_policy::memory>() == exec_policy::memory::External;
 
     const size_t pq_1_bound = std::min({__ite_ilevel_upper_bound<internal::get_2level_cut, 2u>(f, g, h),
                                         __ite_ilevel_upper_bound(f, g, h)});

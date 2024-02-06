@@ -480,8 +480,8 @@ namespace adiar::internal
     const size_t pq_2_memory_fits =
       quantify_priority_queue_2_t<memory_mode::Internal>::memory_fits(pq_2_internal_memory);
 
-    const bool internal_only = ep.memory_mode() == exec_policy::memory::Internal;
-    const bool external_only = ep.memory_mode() == exec_policy::memory::External;
+    const bool internal_only = ep.template get<exec_policy::memory>() == exec_policy::memory::Internal;
+    const bool external_only = ep.template get<exec_policy::memory>() == exec_policy::memory::External;
 
     const size_t pq_1_bound = std::min({__quantify_ilevel_upper_bound<quantify_policy, get_2level_cut, 2u>(in,op),
                                         __quantify_ilevel_upper_bound(in)});
@@ -672,11 +672,11 @@ namespace adiar::internal
         // Add crossing arcs
         + (inner_pq_1.size());
 
-      const size_t max_pq_2_size = ep.memory_mode() == exec_policy::memory::Internal
+      const size_t max_pq_2_size = ep.template get<exec_policy::memory>() == exec_policy::memory::Internal
         ? std::min(pq_2_memory_fits, pq_2_bound)
         : pq_2_bound;
 
-      if(ep.memory_mode() != exec_policy::memory::External && max_pq_2_size <= pq_2_memory_fits) {
+      if(ep.template get<exec_policy::memory>() != exec_policy::memory::External && max_pq_2_size <= pq_2_memory_fits) {
         using inner_pq_2_t = quantify_priority_queue_2_t<memory_mode::Internal>;
         inner_pq_2_t inner_pq_2(inner_remaining_memory, max_pq_2_size);
 
@@ -868,7 +868,7 @@ namespace adiar::internal
       return dd;
     }
 
-    switch (ep.quantify_alg()) {
+    switch (ep.template get<exec_policy::quantify>()) {
     case exec_policy::quantify::Partial:
       { // ---------------------------------------------------------------------
         // Case: Repeated partial quantification
@@ -1100,9 +1100,8 @@ namespace adiar::internal
   {
     adiar_assert(is_commutative(op), "Operator must be commutative");
 
-    // NOTE: read-once access with 'gen' makes partial quantification not
-    //       possible.
-    switch (ep.quantify_alg()) {
+    // NOTE: read-once access with 'gen' makes partial quantification not possible.
+    switch (ep.template get<exec_policy::quantify>()) {
     case exec_policy::quantify::Partial:
     case exec_policy::quantify::Singleton:
       { // -------------------------------------------------------------------

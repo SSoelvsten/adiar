@@ -680,8 +680,8 @@ namespace adiar::internal
   {
     adiar_assert(in_0->canonical || in_1->canonical, "At least one input must be canonical");
 
-    const bool internal_only = ep.memory_mode() == exec_policy::memory::Internal;
-    const bool external_only = ep.memory_mode() == exec_policy::memory::External;
+    const bool internal_only = ep.template get<exec_policy::memory>() == exec_policy::memory::Internal;
+    const bool external_only = ep.template get<exec_policy::memory>() == exec_policy::memory::External;
 
     const size_t pq_bound = std::min({__prod2_ilevel_upper_bound<Policy, get_2level_cut, 2u>(in_0, in_1, op),
                                       __prod2_2level_upper_bound<Policy>(in_0, in_1, op),
@@ -749,8 +749,8 @@ namespace adiar::internal
              const typename Policy::dd_type &in_1,
              const bool_op &op)
   {
-    const bool internal_only = ep.memory_mode() == exec_policy::memory::Internal;
-    const bool external_only = ep.memory_mode() == exec_policy::memory::External;
+    const bool internal_only = ep.template get<exec_policy::memory>() == exec_policy::memory::Internal;
+    const bool external_only = ep.template get<exec_policy::memory>() == exec_policy::memory::External;
 
     const size_t pq_1_bound = std::min({__prod2_ilevel_upper_bound<Policy, get_2level_cut, 2u>(in_0, in_1, op),
         __prod2_2level_upper_bound<Policy>(in_0, in_1, op),
@@ -889,9 +889,9 @@ namespace adiar::internal
     const size_t min_width = std::min(width_0, width_1);
 
     if (// Use `__prod2_ra` if user has forced Random Access
-        ep.access_mode() == exec_policy::access::Random_Access
+        ep.template get<exec_policy::access>() == exec_policy::access::Random_Access
         || (// Heuristically, if the narrowest canonical fits
-            ep.access_mode() == exec_policy::access::Auto && (min_width <= ra_threshold))) {
+            ep.template get<exec_policy::access>() == exec_policy::access::Auto && (min_width <= ra_threshold))) {
 #ifdef ADIAR_STATS
       stats_prod2.ra.runs += 1u;
 #endif

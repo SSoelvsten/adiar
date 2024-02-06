@@ -864,7 +864,7 @@ namespace adiar::internal
 
         // ---------------------------------------------------------------------
         // Case: Run Inner Sweep (with random access)
-        adiar_assert(ep.access_mode() != exec_policy::access::Random_Access);
+        adiar_assert(ep.template get<exec_policy::access>() != exec_policy::access::Random_Access);
 
         // ---------------------------------------------------------------------
         // Case: Run Inner Sweep (with priority queues)
@@ -880,9 +880,9 @@ namespace adiar::internal
 
         const size_t inner_pq_bound = policy_impl.pq_bound(outer_file, outer_roots.size());
 
-        const bool external_only = ep.memory_mode() == exec_policy::memory::External;
+        const bool external_only = ep.template get<exec_policy::memory>() == exec_policy::memory::External;
 
-        const size_t inner_pq_max_size = ep.memory_mode() == exec_policy::memory::Internal
+        const size_t inner_pq_max_size = ep.template get<exec_policy::memory>() == exec_policy::memory::Internal
           ? std::min(inner_pq_fits, inner_pq_bound)
           : inner_pq_bound;
 
@@ -1345,11 +1345,11 @@ namespace adiar::internal
         //   Resolve `inner_arcs_file->max_1level_cut == 0` in a separate while-loop.
         const size_t inner_pq_bound = std::max<size_t>(inner_arcs_file->max_1level_cut, 1);
 
-        const size_t inner_pq_max_size = ep.memory_mode() == exec_policy::memory::Internal
+        const size_t inner_pq_max_size = ep.template get<exec_policy::memory>() == exec_policy::memory::Internal
           ? std::min(inner_pq_memory_fits, inner_pq_bound)
           : inner_pq_bound;
 
-        const bool external_only = ep.memory_mode() == exec_policy::memory::External;
+        const bool external_only = ep.template get<exec_policy::memory>() == exec_policy::memory::External;
         if (!external_only && inner_pq_max_size <= no_lookahead_bound(1)) {
 #ifdef ADIAR_STATS
           stats.inner_up.lpq.unbucketed += 1u;
@@ -1907,11 +1907,11 @@ namespace adiar::internal
 
     const size_t pq_roots_bound = dag->max_1level_cut;
 
-    const size_t outer_pq_roots_max = ep.memory_mode() == exec_policy::memory::Internal
+    const size_t outer_pq_roots_max = ep.template get<exec_policy::memory>() == exec_policy::memory::Internal
       ? std::min({outer_pq_memory_fits, outer_roots_memory_fits, pq_roots_bound})
       : pq_roots_bound;
 
-    const bool external_only = ep.memory_mode() == exec_policy::memory::External;
+    const bool external_only = ep.template get<exec_policy::memory>() == exec_policy::memory::External;
     if (!external_only && outer_pq_roots_max <= no_lookahead_bound(1)) {
 #ifdef ADIAR_STATS
       nested_sweeping::stats.outer_up.lpq.unbucketed += 1u;
