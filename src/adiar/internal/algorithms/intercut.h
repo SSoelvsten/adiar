@@ -353,8 +353,8 @@ namespace adiar::internal
     const size_t pq_memory_fits =
       intercut_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(pq_memory);
 
-    const bool internal_only = ep.memory_mode() == exec_policy::memory::Internal;
-    const bool external_only = ep.memory_mode() == exec_policy::memory::External;
+    const bool internal_only = ep.template get<exec_policy::memory>() == exec_policy::memory::Internal;
+    const bool external_only = ep.template get<exec_policy::memory>() == exec_policy::memory::External;
 
     const size_t pq_bound = __intercut_2level_upper_bound<intercut_policy>(dd);
 

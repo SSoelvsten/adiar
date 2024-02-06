@@ -203,22 +203,11 @@ namespace adiar
 
   public:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Chosen access mode.
+    /// \brief Obtain a value
     ////////////////////////////////////////////////////////////////////////////
-    const access& access_mode() const
-    { return this->_access_mode; }
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Chosen memory type.
-    ////////////////////////////////////////////////////////////////////////////
-    const memory& memory_mode() const
-    { return this->_memory_mode; }
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Chosen quantification strategy.
-    ////////////////////////////////////////////////////////////////////////////
-    const quantify& quantify_alg() const
-    { return this->_quantify_alg; }
+    template <typename T>
+    const T& get() const
+    { static_assert(false, "Type 'T' not stored in execution policy"); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Chosen \f$ \epsilon \f$ threshold to trigger the fast Reduce
@@ -237,9 +226,9 @@ namespace adiar
     bool operator ==(const exec_policy& ep) const
     {
       // Order based from the most generic to the most specific setting.
-      return this->memory_mode()  == ep.memory_mode()
-          && this->access_mode()  == ep.access_mode()
-          && this->quantify_alg() == ep.quantify_alg()
+      return this->_memory_mode  == ep._memory_mode
+          && this->_access_mode  == ep._access_mode
+          && this->_quantify_alg == ep._quantify_alg
         ;
     }
 
@@ -306,6 +295,30 @@ namespace adiar
       return ep.set(qs);
     }
   };
+
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Chosen access mode.
+  ////////////////////////////////////////////////////////////////////////////
+  template <>
+  inline const exec_policy::access&
+  exec_policy::get<exec_policy::access>() const
+  { return this->_access_mode; }
+
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Chosen memory type.
+  ////////////////////////////////////////////////////////////////////////////
+  template <>
+  inline const exec_policy::memory&
+  exec_policy::get<exec_policy::memory>() const
+  { return this->_memory_mode; }
+
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Chosen quantification strategy.
+  ////////////////////////////////////////////////////////////////////////////
+  template <>
+  inline const exec_policy::quantify&
+  exec_policy::get<exec_policy::quantify>() const
+  { return this->_quantify_alg; }
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////

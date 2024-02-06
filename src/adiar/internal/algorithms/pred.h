@@ -242,8 +242,8 @@ namespace adiar::internal
     const size_t pq_2_memory_fits =
       comparison_priority_queue_2_t<memory_mode::Internal>::memory_fits(pq_2_internal_memory);
 
-    const bool internal_only = ep.memory_mode() == exec_policy::memory::Internal;
-    const bool external_only = ep.memory_mode() == exec_policy::memory::External;
+    const bool internal_only = ep.template get<exec_policy::memory>() == exec_policy::memory::Internal;
+    const bool external_only = ep.template get<exec_policy::memory>() == exec_policy::memory::External;
 
     const size_t pq_1_bound = comp_policy::level_check_t::pq1_upper_bound(f0, f1);
 

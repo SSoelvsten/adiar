@@ -623,8 +623,8 @@ namespace adiar::internal
     const tpie::memory_size_type pq_memory_fits =
       reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(pq_memory);
 
-    const bool internal_only = input._policy.memory_mode() == exec_policy::memory::Internal;
-    const bool external_only = input._policy.memory_mode() == exec_policy::memory::External;
+    const bool internal_only = input._policy.template get<exec_policy::memory>() == exec_policy::memory::Internal;
+    const bool external_only = input._policy.template get<exec_policy::memory>() == exec_policy::memory::External;
 
     const size_t pq_bound = in_file->max_1level_cut;
 
