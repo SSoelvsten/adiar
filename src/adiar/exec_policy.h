@@ -121,17 +121,17 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Chosen `access` (default `Auto`).
     ////////////////////////////////////////////////////////////////////////////
-    access _access_mode = access::Auto;
+    access _access = access::Auto;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Chosen `memory`  (default `Auto`).
     ////////////////////////////////////////////////////////////////////////////
-    memory _memory_mode = memory::Auto;
+    memory _memory = memory::Auto;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Chosen `quantify` (default `Auto`).
     ////////////////////////////////////////////////////////////////////////////
-    quantify _quantify_alg = quantify::Auto;
+    quantify _quantify = quantify::Auto;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Chosen epsilon value for Nested Sweeping to start skipping the
@@ -171,21 +171,21 @@ namespace adiar
     /// \brief Conversion construction from `access` enum.
     ////////////////////////////////////////////////////////////////////////////
     exec_policy(const access &am)
-      : _access_mode(am)
+      : _access(am)
     { }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Conversion construction from `memory` enum.
     ////////////////////////////////////////////////////////////////////////////
     exec_policy(const memory &mm)
-      : _memory_mode(mm)
+      : _memory(mm)
     { }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Conversion construction from `quantify` enum.
     ////////////////////////////////////////////////////////////////////////////
     exec_policy(const quantify &qm)
-      : _quantify_alg(qm)
+      : _quantify(qm)
     { }
 
     // TODO: constructor with defaults for a specific 'version number'?
@@ -206,8 +206,7 @@ namespace adiar
     /// \brief Obtain a value
     ////////////////////////////////////////////////////////////////////////////
     template <typename T>
-    const T& get() const
-    { static_assert(false, "Type 'T' not stored in execution policy"); }
+    const T& get() const;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Chosen \f$ \epsilon \f$ threshold to trigger the fast Reduce
@@ -226,9 +225,9 @@ namespace adiar
     bool operator ==(const exec_policy& ep) const
     {
       // Order based from the most generic to the most specific setting.
-      return this->_memory_mode  == ep._memory_mode
-          && this->_access_mode  == ep._access_mode
-          && this->_quantify_alg == ep._quantify_alg
+      return this->_memory  == ep._memory
+          && this->_access  == ep._access
+          && this->_quantify == ep._quantify
         ;
     }
 
@@ -246,7 +245,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     exec_policy& set(const access &am)
     {
-      this->_access_mode = am;
+      this->_access = am;
       return *this;
     }
 
@@ -264,7 +263,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     exec_policy& set(const memory &mm)
     {
-      this->_memory_mode = mm;
+      this->_memory = mm;
       return *this;
     }
 
@@ -282,7 +281,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     exec_policy& set(const quantify &qs)
     {
-      this->_quantify_alg = qs;
+      this->_quantify = qs;
       return *this;
     }
 
@@ -302,7 +301,7 @@ namespace adiar
   template <>
   inline const exec_policy::access&
   exec_policy::get<exec_policy::access>() const
-  { return this->_access_mode; }
+  { return this->_access; }
 
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Chosen memory type.
@@ -310,7 +309,7 @@ namespace adiar
   template <>
   inline const exec_policy::memory&
   exec_policy::get<exec_policy::memory>() const
-  { return this->_memory_mode; }
+  { return this->_memory; }
 
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Chosen quantification strategy.
@@ -318,7 +317,7 @@ namespace adiar
   template <>
   inline const exec_policy::quantify&
   exec_policy::get<exec_policy::quantify>() const
-  { return this->_quantify_alg; }
+  { return this->_quantify; }
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////
