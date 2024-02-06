@@ -4,7 +4,7 @@ go_bandit([]() {
   describe("adiar/exec_policy.h", []() {
     describe("exec_policy", []() {
       it("uses expected number of bytes", []() {
-        AssertThat(sizeof(exec_policy),  Is().EqualTo(3u));
+        AssertThat(sizeof(exec_policy),  Is().EqualTo(4u));
       });
 
       describe("set(const __ &)", []() {

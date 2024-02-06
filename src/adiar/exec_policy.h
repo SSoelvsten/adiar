@@ -1,6 +1,8 @@
 #ifndef ADIAR_EXEC_POLICY_H
 #define ADIAR_EXEC_POLICY_H
 
+#include <limits>
+
 namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
@@ -131,6 +133,24 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     quantify _quantify_alg = quantify::Auto;
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Chosen epsilon value for Nested Sweeping to start skipping the
+    ///        expensive node merging computations (if applicable).
+    ///
+    /// \details During Nested Sweeping, if a later sweep will touch a level
+    ///          again, one can postpone dealing with merging duplicate nodes.
+    ///          This does not apply to the last Reduce sweep up, so the final
+    ///          diagram is still canonical.
+    ///
+    /// \details Setting this value to 0 is equivalent to always using the fast
+    ///          reduce. On the other hand, setting it to a negative value turns
+    ///          this optimisation of.
+    ///
+    /// \details To safe on space, the value is stored in a char. Hence, the
+    ///          precision is only 1/254 for values in the interval [-1,1].
+    ////////////////////////////////////////////////////////////////////////////
+    signed char _nested_reduce_epsilon = 6; // <-- 4.7%
+
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Default constructor with all options set to their default value.
@@ -186,19 +206,29 @@ namespace adiar
     /// \brief Chosen access mode.
     ////////////////////////////////////////////////////////////////////////////
     const access& access_mode() const
-    { return _access_mode; }
+    { return this->_access_mode; }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Chosen memory type.
     ////////////////////////////////////////////////////////////////////////////
     const memory& memory_mode() const
-    { return _memory_mode; }
+    { return this->_memory_mode; }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Chosen quantification strategy.
     ////////////////////////////////////////////////////////////////////////////
     const quantify& quantify_alg() const
-    { return _quantify_alg; }
+    { return this->_quantify_alg; }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Chosen \f$ \epsilon \f$ threshold to trigger the fast Reduce
+    ///        within Nested Sweeping.
+    ////////////////////////////////////////////////////////////////////////////
+    float nested_reduce_epsilon() const
+    {
+      constexpr double tick_distance = std::numeric_limits<signed char>::max();
+      return static_cast<double>(this->_nested_reduce_epsilon) / tick_distance;
+    }
 
   public:
     ////////////////////////////////////////////////////////////////////////////
