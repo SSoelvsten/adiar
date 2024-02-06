@@ -1230,11 +1230,13 @@ namespace adiar::internal
       //////////////////////////////////////////////////////////////////////////
       /// \brief Execute the Inner Up Sweep (part 2).
       ///
+      /// \returns Whether the 'fast_reduce' should be turned on.
+      ///
       /// \see nested_sweep
       //////////////////////////////////////////////////////////////////////////
       template<typename nesting_policy, typename inner_pq_t, typename outer_pq_t>
-      inline void
-      up(const exec_policy &/*ep*/,
+      inline bool
+      up(const exec_policy &ep,
          const arc_stream<> &outer_arcs,
          outer_pq_t &outer_pq,
          node_writer &outer_writer,
@@ -1265,6 +1267,9 @@ namespace adiar::internal
         const size_t internal_sorter_can_fit =
           internal_sorter<node>::memory_fits(inner_sorters_memory / 2);
 
+        // Set state for fast reduce.
+        bool auto_fast_reduce = false;
+
         // Process bottom-up each level
         while (inner_levels.can_pull()) {
           adiar_assert(decorated_arcs.can_pull_terminal() || !decorated_pq.empty(),
@@ -1281,7 +1286,8 @@ namespace adiar::internal
 #endif
 
           if (nesting_policy::reduce_strategy == nested_sweeping::Never_Canonical ||
-              (nesting_policy::reduce_strategy == nested_sweeping::Final_Canonical && !is_last_inner)) {
+              (nesting_policy::reduce_strategy == nested_sweeping::Final_Canonical && !is_last_inner) ||
+              (nesting_policy::reduce_strategy == nested_sweeping::Auto && !is_last_inner && auto_fast_reduce)) {
 #ifdef ADIAR_STATS
             nested_sweeping::stats.inner_up.reduced_levels__fast += 1;
 #endif
@@ -1290,12 +1296,21 @@ namespace adiar::internal
               (decorated_arcs, level, decorated_pq, outer_writer, stats.inner_up);
           } else {
             const size_t unreduced_width = inner_level_info.width();
+            size_t reduced_width;
+
             if(unreduced_width <= internal_sorter_can_fit) {
-             __reduce_level<nesting_policy, internal_sorter>
+             reduced_width = __reduce_level<nesting_policy, internal_sorter>
                (decorated_arcs, level, decorated_pq, outer_writer, inner_sorters_memory, unreduced_width, stats.inner_up);
             } else {
-             __reduce_level<nesting_policy, external_sorter>
+             reduced_width = __reduce_level<nesting_policy, external_sorter>
                (decorated_arcs, level, decorated_pq, outer_writer, inner_sorters_memory, unreduced_width, stats.inner_up);
+            }
+
+            if constexpr (nesting_policy::reduce_strategy == nested_sweeping::Auto) {
+              const double prior = static_cast<double>(unreduced_width);
+              const double delta = static_cast<double>(unreduced_width - reduced_width);
+
+              auto_fast_reduce |= (delta / prior) < ep.nested_reduce_epsilon();
             }
           }
         }
@@ -1307,6 +1322,8 @@ namespace adiar::internal
                        "Left-over terminal arcs are meant for outer sweep");
           outer_pq.push(arc(unflag(a.source()), a.target()));
         }
+
+        return auto_fast_reduce;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -1315,7 +1332,7 @@ namespace adiar::internal
       /// \see nested_sweep
       //////////////////////////////////////////////////////////////////////////
       template<typename nesting_policy, typename outer_pq_t>
-      void
+      bool
       up(const exec_policy &ep,
          const arc_stream<> &outer_arcs,
          outer_pq_t &outer_pq,
@@ -1355,32 +1372,32 @@ namespace adiar::internal
           stats.inner_up.lpq.unbucketed += 1u;
 #endif
           using inner_pq_t = up__pq_t<0, memory_mode::Internal>;
-          up<nesting_policy, inner_pq_t>(ep,
-                                         outer_arcs, outer_pq, outer_writer,
-                                         inner_arcs_file,
-                                         inner_pq_memory, inner_pq_max_size, inner_sorters_memory,
-                                         is_last_inner);
+          return up<nesting_policy, inner_pq_t>(ep,
+                                                outer_arcs, outer_pq, outer_writer,
+                                                inner_arcs_file,
+                                                inner_pq_memory, inner_pq_max_size, inner_sorters_memory,
+                                                is_last_inner);
 
         } else if (!external_only && inner_pq_max_size <= inner_pq_memory_fits) {
 #ifdef ADIAR_STATS
           stats.inner_up.lpq.internal += 1u;
 #endif
           using inner_pq_t = up__pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>;
-          up<nesting_policy, inner_pq_t>(ep,
-                                         outer_arcs, outer_pq, outer_writer,
-                                         inner_arcs_file,
-                                         inner_pq_memory, inner_pq_max_size, inner_sorters_memory,
-                                         is_last_inner);
+          return up<nesting_policy, inner_pq_t>(ep,
+                                                outer_arcs, outer_pq, outer_writer,
+                                                inner_arcs_file,
+                                                inner_pq_memory, inner_pq_max_size, inner_sorters_memory,
+                                                is_last_inner);
         } else {
 #ifdef ADIAR_STATS
           stats.inner_up.lpq.external += 1u;
 #endif
           using inner_pq_t = up__pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::External>;
-          up<nesting_policy, inner_pq_t>(ep,
-                                         outer_arcs, outer_pq, outer_writer,
-                                         inner_arcs_file,
-                                         inner_pq_memory, inner_pq_max_size, inner_sorters_memory,
-                                         is_last_inner);
+          return up<nesting_policy, inner_pq_t>(ep,
+                                                outer_arcs, outer_pq, outer_writer,
+                                                inner_arcs_file,
+                                                inner_pq_memory, inner_pq_max_size, inner_sorters_memory,
+                                                is_last_inner);
         }
       }
     } // namespace inner
@@ -1570,15 +1587,13 @@ namespace adiar::internal
                nested_sweeping::stats.outer_up);
           }
 
-          //  Strategy: Use the fast reduce from the next level (until next
-          // inner sweep) if this level did not change considerably in size.
+          // Strategy: Use the fast reduce from the next level (until next inner sweep) if this
+          // level did not change considerably in size.
           if constexpr (nesting_policy::reduce_strategy == nested_sweeping::Auto) {
-            const double threshold = ep.nested_reduce_epsilon();
-
             const double prior = static_cast<double>(unreduced_width);
             const double delta = static_cast<double>(unreduced_width - reduced_width);
 
-            auto_fast_reduce |= (delta / prior) < threshold;
+            auto_fast_reduce |= (delta / prior) < ep.nested_reduce_epsilon();
           }
         }
 
@@ -1590,9 +1605,6 @@ namespace adiar::internal
       //   Sweep down re-reduce it back up to this level.
       adiar_assert(outer_level.level() == next_inner,
                    "'next_inner' level is not skipped");
-
-      // Reset fast reduce for  strategy.
-      auto_fast_reduce = false;
 
       // -----------------------------------------------------------------------
       // Collect all recursions for this level
@@ -1730,18 +1742,18 @@ namespace adiar::internal
         outer_writer.attach(outer_file);
 
         if (is_last_inner) {
-          nested_sweeping::inner::up<nesting_policy>(ep,
-                                                     outer_arcs, outer_pq, outer_writer,
-                                                     inner_arcs, inner_memory, is_last_inner);
+          auto_fast_reduce = nested_sweeping::inner::up<nesting_policy>(ep,
+                                                                        outer_arcs, outer_pq, outer_writer,
+                                                                        inner_arcs, inner_memory, is_last_inner);
         } else {
           adiar_assert(next_inner < outer_level.level(),
                        "If 'next_inner' is not illegal, then it is above current level");
 
           outer_pq_decorator_t outer_pq_decorator(outer_pq, outer_roots, next_inner);
 
-          nested_sweeping::inner::up<nesting_policy>(ep,
-                                                     outer_arcs, outer_pq_decorator, outer_writer,
-                                                     inner_arcs, inner_memory, is_last_inner);
+          auto_fast_reduce = nested_sweeping::inner::up<nesting_policy>(ep,
+                                                                        outer_arcs, outer_pq_decorator, outer_writer,
+                                                                        inner_arcs, inner_memory, is_last_inner);
         }
       } else if (outer_roots.size() > 0) {
         // ---------------------------------------------------------------------
