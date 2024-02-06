@@ -734,8 +734,7 @@ namespace adiar::internal
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr internal::nested_sweeping::reduce_strategy reduce_strategy =
-      internal::nested_sweeping::Auto;
+    static constexpr bool final_canonical = true;
   };
 
   //////////////////////////////////////////////////////////////////////////////

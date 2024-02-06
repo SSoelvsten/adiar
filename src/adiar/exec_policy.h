@@ -149,7 +149,7 @@ namespace adiar
     /// \details To safe on space, the value is stored in a char. Hence, the
     ///          precision is only 1/254 for values in the interval [-1,1].
     ////////////////////////////////////////////////////////////////////////////
-    signed char _nested_reduce_epsilon = 6; // <-- 4.7%
+    signed char _nested_reduce_epsilon = -1; // TODO: set to positive value
 
   public:
     ////////////////////////////////////////////////////////////////////////////

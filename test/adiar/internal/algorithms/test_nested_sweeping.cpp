@@ -19,7 +19,7 @@
 ///                 single non-nil member, i.e. it is a request preserving a
 ///                 subtree but (presumably) not changing it.
 ////////////////////////////////////////////////////////////////////////////////
-template<nested_sweeping::reduce_strategy reduce_strat, bool only_gc = false>
+template<bool FinalCanonical = true, bool only_gc = false>
 class test_not_sweep
   : public bdd_policy, public statistics::__alg_base::__lpq_t
 {
@@ -163,10 +163,10 @@ public:
   }
 
   ////////////////////////////////////////////////////////////////////////////
-  static constexpr auto reduce_strategy = reduce_strat;
+  static constexpr bool final_canonical = FinalCanonical;
 };
 
-template<nested_sweeping::reduce_strategy reduce_strat>
+template<bool FinalCanonical = true>
 class test_terminal_sweep
   : public bdd_policy, public statistics::__alg_base::__lpq_t
 {
@@ -297,7 +297,7 @@ public:
   }
 
   ////////////////////////////////////////////////////////////////////////////
-  static constexpr auto reduce_strategy = reduce_strat;
+  static constexpr bool final_canonical = FinalCanonical;
 };
 
 go_bandit([]() {
@@ -1006,7 +1006,7 @@ go_bandit([]() {
       });
 
       describe("outer::inner_iterator", [&terminal_F, &terminal_T]() {
-        using test_iter_t = nested_sweeping::outer::inner_iterator<test_not_sweep<nested_sweeping::Always_Canonical>>;
+        using test_iter_t = nested_sweeping::outer::inner_iterator<test_not_sweep<>>;
 
         it("provides {end} for {3,2,1} % 4", [&]() {
           /*
@@ -1041,7 +1041,7 @@ go_bandit([]() {
             aw.push(level_info(3,1u));
           }
 
-          test_not_sweep<nested_sweeping::Always_Canonical> inner_impl(4);
+          test_not_sweep<> inner_impl(4);
           test_iter_t inner_iter(dag, inner_impl);
 
           AssertThat(inner_iter.next_inner(), Is().EqualTo(test_iter_t::end));
@@ -1080,7 +1080,7 @@ go_bandit([]() {
             aw.push(level_info(3,1u));
           }
 
-          test_not_sweep<nested_sweeping::Always_Canonical> inner_impl(2);
+          test_not_sweep<> inner_impl(2);
           test_iter_t inner_iter(dag, inner_impl);
 
           AssertThat(inner_iter.next_inner(), Is().EqualTo(2u));
@@ -1126,7 +1126,7 @@ go_bandit([]() {
             aw.push(level_info(4,1u));
           }
 
-          test_not_sweep<nested_sweeping::Always_Canonical> inner_impl(2);
+          test_not_sweep<> inner_impl(2);
           test_iter_t inner_iter(dag, inner_impl);
 
           AssertThat(inner_iter.next_inner(), Is().EqualTo(4u));
@@ -2890,7 +2890,7 @@ go_bandit([]() {
 
     describe("nested_sweeping:: _ ::sweeps", [&terminal_F, &terminal_T, &outer_dag]() {
       describe("inner::down(...)", [&]() {
-        using inner_down_sweep = test_not_sweep<nested_sweeping::Always_Canonical>;
+        using inner_down_sweep = test_not_sweep<>;
         using inner_roots_t =
           nested_sweeping::outer::roots_sorter<memory_mode::Internal,
                                                inner_down_sweep::request_t,
@@ -3069,7 +3069,7 @@ go_bandit([]() {
         });
 
         it("can collapse to a terminal", []() {
-          test_terminal_sweep<nested_sweeping::Always_Canonical> test_policy(2);
+          test_terminal_sweep<> test_policy(2);
 
           /*
           //  nil
@@ -3124,8 +3124,10 @@ go_bandit([]() {
       });
 
       describe("inner::up(...)", []() {
-        using test_policy = test_not_sweep<nested_sweeping::Always_Canonical>;
+        using test_policy = test_not_sweep<>;
         using outer_pq_t  = nested_sweeping::outer::up__pq_t<1, memory_mode::Internal>;
+
+        // TODO: copy over test from below with non-negative value.
 
         it("reduces forest and pushes roots back out", []() {
           /* input
@@ -3805,7 +3807,7 @@ go_bandit([]() {
           nw << node(true);
         }
 
-        test_not_sweep<nested_sweeping::Always_Canonical> inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         const bdd out = nested_sweep<>(exec_policy(),in, inner_impl);
 
@@ -3852,7 +3854,7 @@ go_bandit([]() {
           in->max_1level_cut = 3;
         }
 
-        test_not_sweep<nested_sweeping::Always_Canonical> inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         /* output
         //     1      ---- x1
@@ -3948,7 +3950,7 @@ go_bandit([]() {
           in->max_1level_cut = 3;
         }
 
-        test_not_sweep<nested_sweeping::Always_Canonical> inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         /* output
         //       1     ---- x1
@@ -4039,7 +4041,7 @@ go_bandit([]() {
           in->max_1level_cut = 1;
         }
 
-        test_not_sweep<nested_sweeping::Always_Canonical> inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         /* output
         //             ---- x0
@@ -4140,7 +4142,7 @@ go_bandit([]() {
           in->max_1level_cut = 3;
         }
 
-        test_not_sweep<nested_sweeping::Always_Canonical> inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         /* output (note, the deepest ones are doubly-negated!)
         //       1     ---- x1
@@ -4263,7 +4265,7 @@ go_bandit([]() {
           in->max_1level_cut = 3;
         }
 
-        test_not_sweep<nested_sweeping::Always_Canonical> inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         /* output
         //                    ---- x0
@@ -4349,7 +4351,7 @@ go_bandit([]() {
         // Just a sanity check we created the input as intended
         AssertThat(in->canonical, Is().True());
 
-        test_not_sweep<nested_sweeping::Always_Canonical> inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         /* output
         // See 'accumulates multiple nested sweeps [excl. root]' above.
@@ -4466,7 +4468,7 @@ go_bandit([]() {
           in->max_1level_cut = 3;
         }
 
-        test_not_sweep<nested_sweeping::Always_Canonical> inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         /* output
         //         _1_       ---- x1
@@ -4589,7 +4591,7 @@ go_bandit([]() {
           in->max_1level_cut = 4;
         }
 
-        test_terminal_sweep<nested_sweeping::Always_Canonical> inner_impl(2);
+        test_terminal_sweep<> inner_impl(2);
 
         /* output
         //        1            ---- x1
@@ -4678,7 +4680,7 @@ go_bandit([]() {
           in->max_1level_cut = 2;
         }
 
-        test_terminal_sweep<nested_sweeping::Always_Canonical> inner_impl(3);
+        test_terminal_sweep<> inner_impl(3);
 
         /* output
         //         _1_        ---- x2
@@ -4773,7 +4775,7 @@ go_bandit([]() {
           in->max_1level_cut = 1;
         }
 
-        test_not_sweep<nested_sweeping::Always_Canonical> inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         /* output
         //     1       ---- x1
@@ -4852,7 +4854,7 @@ go_bandit([]() {
           in->max_1level_cut = 1;
         }
 
-        test_not_sweep<nested_sweeping::Always_Canonical> inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         /* output
         //     1       ---- x1
@@ -4925,7 +4927,7 @@ go_bandit([]() {
           in->max_1level_cut = 1;
         }
 
-        test_not_sweep<nested_sweeping::Always_Canonical> inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         /* output
         //     T
@@ -4992,7 +4994,7 @@ go_bandit([]() {
           in->max_1level_cut = 2;
         }
 
-        test_not_sweep<nested_sweeping::Always_Canonical> inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         /* output
         //     2         ---- x1
@@ -5063,7 +5065,7 @@ go_bandit([]() {
           in->max_1level_cut = 1;
         }
 
-        test_not_sweep<nested_sweeping::Always_Canonical> inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         /* output
         //     T
@@ -5129,7 +5131,7 @@ go_bandit([]() {
           in->max_1level_cut = 1;
         }
 
-        test_not_sweep<nested_sweeping::Always_Canonical> inner_impl(2);
+        test_not_sweep<> inner_impl(2);
 
         /* output
         //     F
@@ -5195,7 +5197,7 @@ go_bandit([]() {
           in->max_1level_cut = 1;
         }
 
-        test_terminal_sweep<nested_sweeping::Always_Canonical> inner_impl(2);
+        test_terminal_sweep<> inner_impl(2);
 
         /* output
         //     T
@@ -5263,7 +5265,7 @@ go_bandit([]() {
           in->max_1level_cut = 1;
         }
 
-        test_terminal_sweep<nested_sweeping::Always_Canonical> inner_impl(4);
+        test_terminal_sweep<> inner_impl(4);
         /* output
         //     T   <-- reduced from  2'    ---- x2
         //                          / \
@@ -5355,7 +5357,7 @@ go_bandit([]() {
             in->max_1level_cut = 3;
           }
 
-          test_not_sweep<nested_sweeping::Always_Canonical, true> inner_impl(2);
+          test_not_sweep<true, true> inner_impl(2);
 
           /* output
           //        _1_      ---- x1
@@ -5492,7 +5494,7 @@ go_bandit([]() {
             in->max_1level_cut = 3;
           }
 
-          test_not_sweep<nested_sweeping::Always_Canonical, true> inner_impl(2);
+          test_not_sweep<true, true> inner_impl(2);
 
           /* output
           //        _1_      ---- x1
@@ -5664,72 +5666,8 @@ go_bandit([]() {
         //     T F  T
         */
 
-        it("outputs with 'Always_Canonical' a canonical BDD", [&]() {
-          test_not_sweep<nested_sweeping::Always_Canonical> inner_impl(2);
-
-          const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
-
-          // Check it looks all right
-          node_test_stream out_nodes(out);
-
-          // n8
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id, terminal_F, terminal_T)));
-
-          // n9
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id-1, terminal_T, terminal_F)));
-
-          // n4
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
-                                                         terminal_T,
-                                                         node::pointer_type(7, node::max_id))));
-
-          // n1
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         node::pointer_type(5, node::max_id),
-                                                         node::pointer_type(7, node::max_id-1))));
-
-          AssertThat(out_nodes.can_pull(), Is().False());
-
-          level_info_test_stream out_meta(out);
-
-          AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(7,2u)));
-
-          AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5,1u)));
-
-          AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
-
-          AssertThat(out_meta.can_pull(), Is().False());
-
-          AssertThat(out->width, Is().EqualTo(2u));
-
-          AssertThat(out->canonical, Is().True());
-
-          AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(2u));
-          AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(2u));
-          AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(3u));
-          AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(5u));
-
-          AssertThat(out->max_2level_cut[cut::Internal], Is().GreaterThanOrEqualTo(2u));
-          AssertThat(out->max_2level_cut[cut::Internal], Is().LessThanOrEqualTo(3u));
-          AssertThat(out->max_2level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(2u));
-          AssertThat(out->max_2level_cut[cut::Internal_False], Is().LessThanOrEqualTo(3u));
-          AssertThat(out->max_2level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(3u));
-          AssertThat(out->max_2level_cut[cut::Internal_True], Is().LessThanOrEqualTo(4u));
-          AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(5u));
-
-          AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
-          AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
-        });
-
-        it("outputs with 'Final_Canonical' a canonical BDD", [&]() {
-          test_not_sweep<nested_sweeping::Final_Canonical> inner_impl(2);
+        it("outputs with 'final_canonical == true' a canonical BDD", [&]() {
+          test_not_sweep<true> inner_impl(2);
 
           const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
@@ -5809,7 +5747,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
         });
 
-        it("outputs with 'Never_Canonical' an unordered and unmerged BDD", [&]() {
+        it("outputs with 'final_canonical == false' an unordered and unmerged BDD", [&]() {
           /* fast-reduce output
           //         _1_          ---- x1
           //        /   \
@@ -5828,7 +5766,7 @@ go_bandit([]() {
           //           F T T F
           */
 
-          test_not_sweep<nested_sweeping::Never_Canonical> inner_impl(2);
+          test_not_sweep<false> inner_impl(2);
 
           const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
@@ -5905,76 +5843,6 @@ go_bandit([]() {
 
           AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
           AssertThat(out->number_of_terminals[true],  Is().EqualTo(4u));
-        });
-
-        it("outputs with 'Auto' a canonical BDD", [&]() {
-          test_not_sweep<nested_sweeping::Auto> inner_impl(2);
-
-          const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
-
-          // Check it looks all right
-          node_test_stream out_nodes(out);
-
-          // n8
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id, terminal_F, terminal_T)));
-
-          // n9
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id-1, terminal_T, terminal_F)));
-
-          // n4
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
-                                                         terminal_T,
-                                                         node::pointer_type(7, node::max_id))));
-
-          // n1
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         node::pointer_type(5, node::max_id),
-                                                         node::pointer_type(7, node::max_id-1))));
-
-          AssertThat(out_nodes.can_pull(), Is().False());
-
-          level_info_test_stream out_meta(out);
-
-          AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(7,2u)));
-
-          AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5,1u)));
-
-          AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
-
-          AssertThat(out_meta.can_pull(), Is().False());
-
-          AssertThat(out->width, Is().EqualTo(2u));
-
-          AssertThat(out->canonical, Is().True());
-
-          // Over-approximation:
-          //   It is somewhere in-between Always_Canonical and Final_Canonical,
-          //   and so should the cuts too.
-          AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(2u));
-          AssertThat(out->max_1level_cut[cut::Internal], Is().LessThanOrEqualTo(3u));
-          AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(2u));
-          AssertThat(out->max_1level_cut[cut::Internal_False], Is().LessThanOrEqualTo(3u));
-          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(3u));
-          AssertThat(out->max_1level_cut[cut::Internal_True], Is().LessThanOrEqualTo(5u));
-          AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(5u));
-
-          AssertThat(out->max_2level_cut[cut::Internal], Is().GreaterThanOrEqualTo(2u));
-          AssertThat(out->max_2level_cut[cut::Internal], Is().LessThanOrEqualTo(3u));
-          AssertThat(out->max_2level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(2u));
-          AssertThat(out->max_2level_cut[cut::Internal_False], Is().LessThanOrEqualTo(4u));
-          AssertThat(out->max_2level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(3u));
-          AssertThat(out->max_2level_cut[cut::Internal_True], Is().LessThanOrEqualTo(5u));
-          AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(5u));
-
-          AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
-          AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
         });
       });
     });
