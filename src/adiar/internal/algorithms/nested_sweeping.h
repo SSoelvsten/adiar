@@ -28,22 +28,6 @@ namespace adiar::internal
     /// Struct to hold statistics
     extern statistics::nested_sweeping_t stats;
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Choice of Reduce algorithm to use.
-    ////////////////////////////////////////////////////////////////////////////
-    enum reduce_strategy
-    {
-      /** Always use the canonical reduce algorithm. */
-      Always_Canonical,
-      /** Use canonical reduce at the very end for the final output. */
-      Final_Canonical,
-      /** Always use the faster non-canonical reduce. */
-      Never_Canonical,
-      /** In-between `Always_Canonical` and `Final_Canonical`; whether the
-          canonical reduce is used depends on heuristics. */
-      Auto
-    };
-
     template<typename pointer_type>
     inline void
     __reduce_decrement_cut(cuts_t &c, const pointer_type& p)
@@ -1285,9 +1269,8 @@ namespace adiar::internal
           nested_sweeping::stats.inner_up.reduced_levels += 1;
 #endif
 
-          if (nesting_policy::reduce_strategy == nested_sweeping::Never_Canonical ||
-              (nesting_policy::reduce_strategy == nested_sweeping::Final_Canonical && !is_last_inner) ||
-              (nesting_policy::reduce_strategy == nested_sweeping::Auto && !is_last_inner && auto_fast_reduce)) {
+          if (/*constexpr*/ !nesting_policy::final_canonical ||
+              (!is_last_inner && auto_fast_reduce)) {
 #ifdef ADIAR_STATS
             nested_sweeping::stats.inner_up.reduced_levels__fast += 1;
 #endif
@@ -1306,7 +1289,7 @@ namespace adiar::internal
                (decorated_arcs, level, decorated_pq, outer_writer, inner_sorters_memory, unreduced_width, stats.inner_up);
             }
 
-            if constexpr (nesting_policy::reduce_strategy == nested_sweeping::Auto) {
+            if constexpr (nesting_policy::final_canonical) {
               const double prior = static_cast<double>(unreduced_width);
               const double delta = static_cast<double>(unreduced_width - reduced_width);
 
@@ -1526,7 +1509,7 @@ namespace adiar::internal
         nested_sweeping::stats.outer_up.reduced_levels += 1;
 #endif
 
-        if constexpr (nesting_policy::reduce_strategy == nested_sweeping::Never_Canonical) {
+        if constexpr (!nesting_policy::final_canonical) {
 #ifdef ADIAR_STATS
           nested_sweeping::stats.outer_up.reduced_levels__fast += 1;
 #endif
@@ -1561,9 +1544,7 @@ namespace adiar::internal
         nested_sweeping::stats.outer_up.reduced_levels += 1;
 #endif
 
-        if (/*constexpr*/ nesting_policy::reduce_strategy == nested_sweeping::Never_Canonical ||
-            /*constexpr*/ nesting_policy::reduce_strategy == nested_sweeping::Final_Canonical ||
-            (nesting_policy::reduce_strategy == nested_sweeping::Auto && auto_fast_reduce)) {
+        if (/*constexpr*/ !nesting_policy::final_canonical || auto_fast_reduce) {
 #ifdef ADIAR_STATS
           nested_sweeping::stats.outer_up.reduced_levels__fast += 1;
 #endif
@@ -1589,7 +1570,7 @@ namespace adiar::internal
 
           // Strategy: Use the fast reduce from the next level (until next inner sweep) if this
           // level did not change considerably in size.
-          if constexpr (nesting_policy::reduce_strategy == nested_sweeping::Auto) {
+          if constexpr (nesting_policy::final_canonical) {
             const double prior = static_cast<double>(unreduced_width);
             const double delta = static_cast<double>(unreduced_width - reduced_width);
 
