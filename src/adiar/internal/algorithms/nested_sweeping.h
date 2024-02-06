@@ -1573,7 +1573,7 @@ namespace adiar::internal
           //  Strategy: Use the fast reduce from the next level (until next
           // inner sweep) if this level did not change considerably in size.
           if constexpr (nesting_policy::reduce_strategy == nested_sweeping::Auto) {
-            const double threshold = 0.05;
+            const double threshold = ep.nested_reduce_epsilon();
 
             const double prior = static_cast<double>(unreduced_width);
             const double delta = static_cast<double>(unreduced_width - reduced_width);
