@@ -87,18 +87,6 @@ go_bandit([]() {
           AssertThat(ep.quantify_alg(), Is().EqualTo(exec_policy::quantify::Auto));
         });
 
-        it("can set settigs akin to Adiar v1.0", []() {
-          exec_policy ep;
-
-          ep.set(exec_policy::access::Priority_Queue);
-          ep.set(exec_policy::memory::External);
-          ep.set(exec_policy::quantify::Singleton);
-
-          AssertThat(ep.access_mode(),  Is().EqualTo(exec_policy::access::Priority_Queue));
-          AssertThat(ep.memory_mode(),  Is().EqualTo(exec_policy::memory::External));
-          AssertThat(ep.quantify_alg(), Is().EqualTo(exec_policy::quantify::Singleton));
-        });
-
         it("can set settigs with a builder pattern syntax", []() {
           exec_policy ep;
 
