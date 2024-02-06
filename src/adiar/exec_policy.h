@@ -46,7 +46,7 @@ namespace adiar
     ///
     /// \see bdd_apply zdd_binop
     ////////////////////////////////////////////////////////////////////////////
-    enum class access
+    enum class access : char
     {
       /** Pick \em Random Access when an input is narrow enough. */
       Auto,
@@ -74,7 +74,7 @@ namespace adiar
     /// \warning Using `Internal` may lead to crashes if an input or output is
     ///          too large!
     ////////////////////////////////////////////////////////////////////////////
-    enum class memory
+    enum class memory : char
     {
       /** Pick \em internal memory as long as it is safe to do so. */
       Auto,
@@ -99,7 +99,7 @@ namespace adiar
     ///
     /// \see bdd_exists bdd_forall zdd_project
     ////////////////////////////////////////////////////////////////////////////
-    enum class quantify
+    enum class quantify : char
     {
       /** Automatically decide what approach to use (may switch half-way). */
       Auto,
