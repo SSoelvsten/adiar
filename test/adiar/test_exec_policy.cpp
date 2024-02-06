@@ -3,6 +3,10 @@
 go_bandit([]() {
   describe("adiar/exec_policy.h", []() {
     describe("exec_policy", []() {
+      it("uses expected number of bytes", []() {
+        AssertThat(sizeof(exec_policy),  Is().EqualTo(3u));
+      });
+
       describe("set(const __ &)", []() {
         it("is default constructed with default settings", []() {
           exec_policy ep;
