@@ -7,7 +7,7 @@ go_bandit([]() {
         AssertThat(sizeof(exec_policy),  Is().EqualTo(4u));
       });
 
-      describe("set(const __ &)", []() {
+      describe("exec_policy(const __ &)", []() {
         it("is default constructed with default settings", []() {
           exec_policy ep;
 
