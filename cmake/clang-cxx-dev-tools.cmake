@@ -7,6 +7,7 @@ file(GLOB_RECURSE ALL_SRC_FILES
   ${PROJECT_SOURCE_DIR}/src/*.[chi]xx
   ${PROJECT_SOURCE_DIR}/src/*.cc
   ${PROJECT_SOURCE_DIR}/src/*.hh
+  ${PROJECT_SOURCE_DIR}/src/*.h
   ${PROJECT_SOURCE_DIR}/src/*.ii
   ${PROJECT_SOURCE_DIR}/src/*.[CHI]
 )
@@ -17,6 +18,7 @@ file(GLOB_RECURSE ALL_TEST_FILES
   ${PROJECT_SOURCE_DIR}/test/*.[chi]xx
   ${PROJECT_SOURCE_DIR}/test/*.cc
   ${PROJECT_SOURCE_DIR}/test/*.hh
+  ${PROJECT_SOURCE_DIR}/test/*.h
   ${PROJECT_SOURCE_DIR}/test/*.ii
   ${PROJECT_SOURCE_DIR}/test/*.[CHI]
 )
