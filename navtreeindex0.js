@@ -1,6 +1,5 @@
 var NAVTREEINDEX0 =
 {
-"":[5,0,0,0],
 "adiar_8h_source.html":[7,0,1,0,3],
 "annotated.html":[6,0],
 "bdd_2bdd_8h_source.html":[7,0,1,0,0,0],
@@ -249,5 +248,6 @@ var NAVTREEINDEX0 =
 "functions_o.html":[6,3,0,13],
 "functions_p.html":[6,3,0,14],
 "functions_q.html":[6,3,0,15],
-"functions_r.html":[6,3,0,16]
+"functions_r.html":[6,3,0,16],
+"functions_rela.html":[6,3,5]
 };
