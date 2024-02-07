@@ -1,18 +1,13 @@
-BasedOnStyle: LLVM
 Language: Cpp
+Standard: c++17
 
 AlignAfterOpenBracket: Align
-AlignConsecutiveAssignments:
-    Enabled: true
-    AcrossEmptyLines: false
-    AcrossComments: false
-    AlignCompound: true
-    PadOperators: true
 AlignOperands: AlignAfterOperator
 AllowAllArgumentsOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortBlocksOnASingleLine: Always
 AllowShortCaseLabelsOnASingleLine: true
+AllowShortEnumsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: All
 AllowShortIfStatementsOnASingleLine: AllIfsAndElse
 AllowShortLambdasOnASingleLine: All
@@ -26,30 +21,49 @@ BraceWrapping:
     AfterClass: true
     AfterControlStatement: Never
     AfterEnum: true
+    AfterExternBlock: true
     AfterFunction: true
     AfterNamespace: true
     AfterStruct: true
     AfterUnion: true
-    AfterExternBlock: true
     BeforeCatch: false
     BeforeElse: false
     BeforeLambdaBody: false
     BeforeWhile: false
     IndentBraces: false
     SplitEmptyFunction: false
+    SplitEmptyNamespace: false
     SplitEmptyRecord: false
-    SplitEmptyNamespace: true
 BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeBraces: Custom
 BreakBeforeTernaryOperators: true
+BreakConstructorInitializers: BeforeComma 
+BreakInheritanceList: BeforeComma
 ColumnLimit: 100
-ConstructorInitializerAllOnOneLineOrOnePerLine: true
-Cpp11BracedListStyle: true
+ConstructorInitializerIndentWidth: 2
+Cpp11BracedListStyle: false
 FixNamespaceComments: false
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex:           '<adiar/internal/.*'
+    Priority:        4
+  - Regex:           '<adiar/.*'
+    Priority:        3
+  - Regex:           '<cnl/.*'
+    Priority:        2
+  - Regex:           '<tpie/.*'
+    Priority:        3
+  - Regex:           '.*'
+    Priority:        1
+    SortPriority:    0
 IndentWidth: 2
+LambdaBodyIndentation: Signature
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: All
+#PackConstructorInitializers: NextLineOnly
 PointerAlignment: Left
-SpaceAfterTemplateKeyword: false
-# type above function name
-# short if on same line
+QualifierAlignment: Left
+ReferenceAlignment: Left
+SeparateDefinitionBlocks: Always
+SpaceAfterTemplateKeyword: true
+SpaceBeforeParens: ControlStatements
