@@ -252,7 +252,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Create a copy with the access mode changed.
     ////////////////////////////////////////////////////////////////////////////
-    exec_policy operator &(const access& am)
+    exec_policy operator &(const access& am) const
     {
       exec_policy ep = *this;
       return ep.set(am);
@@ -270,7 +270,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Create a copy with the memory mode changed.
     ////////////////////////////////////////////////////////////////////////////
-    exec_policy operator &(const memory& mm)
+    exec_policy operator &(const memory& mm) const
     {
       exec_policy ep = *this;
       return ep.set(mm);
@@ -288,7 +288,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Create a copy with the quantify strategy changed.
     ////////////////////////////////////////////////////////////////////////////
-    exec_policy operator &(const quantify& qs)
+    exec_policy operator &(const quantify& qs) const
     {
       exec_policy ep = *this;
       return ep.set(qs);
