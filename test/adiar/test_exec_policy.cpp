@@ -146,8 +146,8 @@ go_bandit([]() {
 
       describe("operator &(const exec_policy&)", []() {
         it("can create a copy with another 'access mode'", []() {
-          exec_policy in = exec_policy::memory::Internal;
-          exec_policy out = in & exec_policy::access::Random_Access;
+          const exec_policy in = exec_policy::memory::Internal;
+          const exec_policy out = in & exec_policy::access::Random_Access;
 
           AssertThat(in.template get<exec_policy::access>(),  Is().EqualTo(exec_policy::access::Auto));
           AssertThat(in.template get<exec_policy::memory>(),  Is().EqualTo(exec_policy::memory::Internal));
@@ -159,8 +159,8 @@ go_bandit([]() {
         });
 
         it("can create a copy with another 'memory mode'", []() {
-          exec_policy in = exec_policy::access::Priority_Queue;
-          exec_policy out = in & exec_policy::memory::Internal;
+          const exec_policy in = exec_policy::access::Priority_Queue;
+          const exec_policy out = in & exec_policy::memory::Internal;
 
           AssertThat(in.template get<exec_policy::access>(),  Is().EqualTo(exec_policy::access::Priority_Queue));
           AssertThat(in.template get<exec_policy::memory>(),  Is().EqualTo(exec_policy::memory::Auto));
@@ -172,8 +172,8 @@ go_bandit([]() {
         });
 
         it("can create a copy with another 'quantify algorithm'", []() {
-          exec_policy in = exec_policy::memory::Internal;
-          exec_policy out = in & exec_policy::quantify::Partial;
+          const exec_policy in = exec_policy::memory::Internal;
+          const exec_policy out = in & exec_policy::quantify::Partial;
 
           AssertThat(in.template get<exec_policy::access>(),  Is().EqualTo(exec_policy::access::Auto));
           AssertThat(in.template get<exec_policy::memory>(),  Is().EqualTo(exec_policy::memory::Internal));
@@ -185,7 +185,7 @@ go_bandit([]() {
         });
 
         it("can lift enum values [access & memory]", []() {
-          exec_policy ep = exec_policy::access::Random_Access & exec_policy::memory::Internal;
+          const exec_policy ep = exec_policy::access::Random_Access & exec_policy::memory::Internal;
 
           AssertThat(ep.template get<exec_policy::access>(),  Is().EqualTo(exec_policy::access::Random_Access));
           AssertThat(ep.template get<exec_policy::memory>(),  Is().EqualTo(exec_policy::memory::Internal));
@@ -193,7 +193,7 @@ go_bandit([]() {
         });
 
         it("can lift enum values [memory & access]", []() {
-          exec_policy ep = exec_policy::memory::Internal & exec_policy::access::Random_Access;
+          const exec_policy ep = exec_policy::memory::Internal & exec_policy::access::Random_Access;
 
           AssertThat(ep.template get<exec_policy::access>(),  Is().EqualTo(exec_policy::access::Random_Access));
           AssertThat(ep.template get<exec_policy::memory>(),  Is().EqualTo(exec_policy::memory::Internal));
@@ -201,7 +201,7 @@ go_bandit([]() {
         });
 
         it("can lift enum values [access & quantify]", []() {
-          exec_policy ep = exec_policy::access::Random_Access & exec_policy::quantify::Singleton;
+          const exec_policy ep = exec_policy::access::Random_Access & exec_policy::quantify::Singleton;
 
           AssertThat(ep.template get<exec_policy::access>(),  Is().EqualTo(exec_policy::access::Random_Access));
           AssertThat(ep.template get<exec_policy::memory>(),  Is().EqualTo(exec_policy::memory::Auto));
@@ -209,7 +209,7 @@ go_bandit([]() {
         });
 
         it("can lift enum values [quantify & access]", []() {
-          exec_policy ep = exec_policy::quantify::Singleton & exec_policy::access::Random_Access;
+          const exec_policy ep = exec_policy::quantify::Singleton & exec_policy::access::Random_Access;
 
           AssertThat(ep.template get<exec_policy::access>(), Is().EqualTo(exec_policy::access::Random_Access));
           AssertThat(ep.template get<exec_policy::memory>(),  Is().EqualTo(exec_policy::memory::Auto));
@@ -217,7 +217,7 @@ go_bandit([]() {
         });
 
         it("can lift enum values [memory & quantify]", []() {
-          exec_policy ep = exec_policy::memory::External & exec_policy::quantify::Nested;
+          const exec_policy ep = exec_policy::memory::External & exec_policy::quantify::Nested;
 
           AssertThat(ep.template get<exec_policy::access>(),  Is().EqualTo(exec_policy::access::Auto));
           AssertThat(ep.template get<exec_policy::memory>(),  Is().EqualTo(exec_policy::memory::External));
