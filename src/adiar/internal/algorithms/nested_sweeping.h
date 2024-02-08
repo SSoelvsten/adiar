@@ -1290,10 +1290,11 @@ namespace adiar::internal
             }
 
             if constexpr (nesting_policy::final_canonical) {
-              const double prior = static_cast<double>(unreduced_width);
-              const double delta = static_cast<double>(unreduced_width - reduced_width);
+              const float  epsilon = ep.template get<exec_policy::nested::fast_reduce>();
+              const double prior   = static_cast<double>(unreduced_width);
+              const double delta   = static_cast<double>(unreduced_width - reduced_width);
 
-              auto_fast_reduce |= (delta / prior) < ep.nested_reduce_epsilon();
+              auto_fast_reduce |= (delta / prior) < epsilon;
             }
           }
         }
@@ -1571,10 +1572,11 @@ namespace adiar::internal
           // Strategy: Use the fast reduce from the next level (until next inner sweep) if this
           // level did not change considerably in size.
           if constexpr (nesting_policy::final_canonical) {
-            const double prior = static_cast<double>(unreduced_width);
-            const double delta = static_cast<double>(unreduced_width - reduced_width);
+            const float  epsilon = ep.template get<exec_policy::nested::fast_reduce>();
+            const double prior   = static_cast<double>(unreduced_width);
+            const double delta   = static_cast<double>(unreduced_width - reduced_width);
 
-            auto_fast_reduce |= (delta / prior) < ep.nested_reduce_epsilon();
+            auto_fast_reduce |= (delta / prior) < epsilon;
           }
         }
 
