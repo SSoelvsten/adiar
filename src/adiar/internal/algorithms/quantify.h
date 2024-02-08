@@ -2,6 +2,8 @@
 #define ADIAR_INTERNAL_ALGORITHMS_QUANTIFY_H
 
 #include <algorithm>
+#include <limits>
+#include <queue>
 #include <variant>
 
 #include <adiar/exec_policy.h>
@@ -866,23 +868,6 @@ namespace adiar::internal
   }
 
   template <typename quantify_policy>
-  inline typename quantify_policy::label_type
-  quantify__count_above_widest(const typename quantify_policy::dd_type& dd,
-                               const predicate<typename quantify_policy::label_type>& pred)
-  {
-    level_info_stream<true /* bottom-up */> lis(dd);
-
-    size_t acc       = 0u;
-    bool start_count = false;
-    while (lis.can_pull()) {
-      const level_info li = lis.pull();
-      start_count |= li.width() == dd->width;
-      acc += start_count && pred(li.label()) == quantify_policy::quantify_onset;
-    }
-    return acc;
-  }
-
-  template <typename quantify_policy>
   typename quantify_policy::__dd_type
   quantify(const exec_policy& ep,
            typename quantify_policy::dd_type dd,
@@ -901,29 +886,10 @@ namespace adiar::internal
       return dd;
     }
 
-    switch (ep.template get<exec_policy::quantify>()) {
-    case exec_policy::quantify::
-      Partial: { // ---------------------------------------------------------------------
-                 // Case: Repeated partial quantification
-#ifdef ADIAR_STATS
-      stats_quantify.partial_sweeps += 1u;
-#endif
-      partial_quantify_policy<quantify_policy> partial_impl(pred);
-      unreduced_t res = __quantify(ep, std::move(dd), partial_impl, op);
-
-      while (partial_impl.remaining_nodes > 0) {
-#ifdef ADIAR_STATS
-        stats_quantify.partial_sweeps += 1u;
-#endif
-        partial_impl.reset();
-        res = __quantify(ep, res, partial_impl, op);
-      }
-      return res;
-    }
-
-    case exec_policy::quantify::
-      Singleton: { // ---------------------------------------------------------------------
-                   // Case: Repeated single variable quantification
+    switch (ep.template get<exec_policy::quantify::algorithm>()) {
+    case exec_policy::quantify::Singleton: {
+      // ---------------------------------------------------------------------
+      // Case: Repeated single variable quantification
 #ifdef ADIAR_STATS
       stats_quantify.singleton_sweeps += 1u;
 #endif
@@ -936,46 +902,26 @@ namespace adiar::internal
       return dd;
     }
 
-    case exec_policy::quantify::
-      Nested: { // ---------------------------------------------------------------------
-                // Case: Nested Sweeping
-#ifdef ADIAR_STATS
-      stats_quantify.nested_sweeps += 1u;
-#endif
-      multi_quantify_policy__pred<quantify_policy> inner_impl(op, pred);
-      return nested_sweep<>(
-        ep, quantify<quantify_policy>(ep, std::move(dd), label, op), inner_impl);
-    }
-    case exec_policy::quantify::
-      Auto: { // ---------------------------------------------------------------------
-      // Case: Partial/Singleton Quantification + Nested Sweeping
+    case exec_policy::quantify::Nested: {
+      // ---------------------------------------------------------------------
+      // Case: Nested Sweeping
       const size_t dd_size = dd.size();
 
-      const size_t nodes_per_block = get_block_size() / sizeof(typename quantify_policy::node_type);
-
       // Do Partial Quantification as long as...
-      //   1. ... it stays smaller than 150% of the input size.
-      const size_t partial__size_threshold = 3u * (dd_size / 2u);
+      //   1. ... it stays smaller than 1+epsilon% of the input size.
+      const size_t transposition__size_threshold = static_cast<size_t>(
+        std::min<double>(std::numeric_limits<size_t>::max(),
+                         (1.0 + ep.template get<exec_policy::quantify::transposition_growth>())
+                           * static_cast<double>(dd_size)));
 
-      //   2. ... the number of terminals stays above 2% of the input.
-      //      (abusing rounding errors, this only has an effect if the
-      //      decision diagram is larger than a single block).
-      const size_t partial__terminal_threshold =
-        (nodes_per_block / (100u / 2u)) * (dd_size / nodes_per_block);
-
-      //   3. ... there (most likely) are still shallow to-be quantified
-      //      variables left for this iteration ('shallow' is in this context
-      //      variables above the deepest level with maximum width).
-      //
-      //      TODO: compute in the same iteration as 'label' above.
-      const size_t partial__max_iterations =
-        quantify__count_above_widest<quantify_policy>(dd, pred);
+      //   2. ... it has not run more than the maximum number of iterations.
+      const size_t transposition__max_iterations =
+        ep.template get<exec_policy::quantify::transposition_max>();
 
       unreduced_t transposed;
 
-      // If 2. does not apply to the input, then partial quantification
-      // probably will explode the diagram to something quadratic.
-      if (dd.number_of_terminals() < partial__terminal_threshold) {
+      // If transposition__max_iterations is 0, then only quantify the lowest level.
+      if (transposition__max_iterations == 0) {
         // Singleton Quantification of bottom-most level
 #ifdef ADIAR_STATS
         stats_quantify.singleton_sweeps += 1u;
@@ -996,9 +942,8 @@ namespace adiar::internal
           return transposed;
         }
 
-        for (size_t i = 1; i < partial__max_iterations; ++i) {
-          if (partial__size_threshold < transposed.size()) { break; }
-          if (transposed.number_of_terminals() < partial__terminal_threshold) { break; }
+        for (size_t i = 1; i < transposition__max_iterations; ++i) {
+          if (transposition__size_threshold < transposed.size()) { break; }
 
           // Reset policy and rerun partial quantification
           partial_impl.reset();
@@ -1123,11 +1068,9 @@ namespace adiar::internal
   {
     adiar_assert(is_commutative(op), "Operator must be commutative");
 
-    // NOTE: read-once access with 'gen' makes partial quantification not possible.
-    switch (ep.template get<exec_policy::quantify>()) {
-    case exec_policy::quantify::Partial:
-    case exec_policy::quantify::
-      Singleton: { // -------------------------------------------------------------------
+    switch (ep.template get<exec_policy::quantify::algorithm>()) {
+    case exec_policy::quantify::Singleton: {
+      // -------------------------------------------------------------------
       // Case: Repeated single variable quantification
       // TODO: correctly handle quantify_policy::quantify_onset
       optional<typename quantify_policy::label_type> on_level = lvls();
@@ -1200,14 +1143,14 @@ namespace adiar::internal
       }
     }
 
-    case exec_policy::quantify::Auto:
-    case exec_policy::quantify::
-      Nested: { // ---------------------------------------------------------------------
+    case exec_policy::quantify::Nested: {
+      // ---------------------------------------------------------------------
       // Case: Nested Sweeping
       //
-      // NOTE: Despite partial quantification is not possible, we can
-      //       (assuming we have to quantify the on-set) still use the
-      //       bottom-most level to transpose the DAG.
+      // NOTE: read-once access with 'gen' makes repeated transposition not
+      //       possible. Yet, despite of this, we can (assuming we have to
+      //       quantify the on-set) still use the bottom-most level to transpose
+      //       the DAG.
       if constexpr (quantify_policy::quantify_onset) {
         // Obtain the bottom-most onset level that exists in the diagram.
         optional<typename quantify_policy::label_type> transposition_level = lvls();

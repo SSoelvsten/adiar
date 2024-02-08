@@ -300,7 +300,7 @@ go_bandit([]() {
         AssertThat(out.file_ptr(), Is().EqualTo(zdd_null));
       });
 
-      describe("quantify_alg == Singleton", [&]() {
+      describe("algorithm: Singleton", [&]() {
         const exec_policy &ep = exec_policy::quantify::Singleton;
 
         it("computes with dom = Ø to be { Ø } for non-empty input [zdd_1] [const &]", [&](){
@@ -419,10 +419,245 @@ go_bandit([]() {
         });
       });
 
-      describe("quantify_alg == Partial", [&]() {
-        const exec_policy ep = exec_policy::quantify::Partial;
+      describe("algorithm: Nested, max: 0", [&]() {
+        const exec_policy ep = exec_policy::quantify::Nested
+          & exec_policy::quantify::transposition_max(0);
 
-        it("computes zdd_3 in a single sweep with dom = { x | x % 2 == 0 }", [&](){
+        it("computes with dom = Ø to be { Ø } for non-empty input [zdd_1]", [&](){
+          shared_file<zdd::label_type> dom;
+
+          const zdd in = zdd_1;
+          zdd out = zdd_project(ep, in, [](zdd::label_type) { return false; });
+
+          node_test_stream out_nodes(out);
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream ms(out);
+          AssertThat(ms.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(0u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(1u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        });
+
+        it("computes with disjoint dom = { x | x > 2 } to be { Ø } [zdd_3]", [&](){
+          zdd out = zdd_project(ep, zdd(zdd_3), [](zdd::label_type x) { return x > 2; });
+
+          node_test_stream out_nodes(out);
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream ms(out);
+          AssertThat(ms.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(0u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(1u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        });
+
+        it("computes zdd_3 with dom = { x | x % 2 == 0 }", [&](){
+          /* Expected: { {0}, {2}, {0,2} }
+          //
+          //                           1    ---- x0
+          //                          / \
+          //                          | |   ---- x1
+          //                          \ /
+          //                           2    ---- x2
+          //                          / \
+          //                          T T
+          */
+
+          zdd out = zdd_project(ep, zdd_3, [](zdd::label_type x) { return !(x % 2); });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
+                                                         terminal_T,
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
+                                                         ptr_uint64(2, ptr_uint64::max_id),
+                                                         ptr_uint64(2, ptr_uint64::max_id))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream ms(out);
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
+
+          AssertThat(ms.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(2u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(2u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(2u));
+          AssertThat(out->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(2u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+        });
+
+        it("bails out of inner sweep for zdd_4 with dom = { x | x % 2 == 0 } [const &]", [&](){
+          const zdd in = zdd_1;
+
+          /* Expected: { Ø, {0}, {2}, {4} }
+          //
+          //         1       ---- x0
+          //        / \
+          //        3 T      ---- x2
+          //       / \
+          //       5 T       ---- x4
+          //      / \
+          //      T T
+          */
+          zdd out = zdd_project(ep, in, [](const zdd::label_type x) { return x % 2 == 0; });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id,
+                                                         terminal_T,
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
+                                                         ptr_uint64(4, ptr_uint64::max_id),
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
+                                                         ptr_uint64(2, ptr_uint64::max_id),
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream ms(out);
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(4,1u)));
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
+
+          AssertThat(ms.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(4u));
+          AssertThat(out->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(4u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(4u));
+        });
+
+        it("accounts for number of root arcs from Outer Sweep [const &]", [&](){
+          const zdd in = zdd_6;
+
+          /* Expected: { Ø, {5} }
+          //
+          //         1       ---- x5
+          //        / \
+          //        T T
+          */
+          zdd out = zdd_project(ep, in, [](const zdd::label_type x) { return x == 5; });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
+                                                         terminal_T,
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream ms(out);
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(5,1u)));
+
+          AssertThat(ms.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(0u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(2u));
+          AssertThat(out->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(2u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+        });
+      });
+
+      describe("algorithm: Nested, max: 1+", [&]() {
+        const exec_policy ep = exec_policy::quantify::Nested
+          & exec_policy::quantify::transposition_growth(0.5)
+          & exec_policy::quantify::transposition_max(2);
+
+        it("computes with dom = Ø to be { Ø } for non-empty input [zdd_2]", [&](){
+          shared_file<zdd::label_type> dom;
+
+          zdd out = zdd_project(ep, zdd(zdd_2), [](zdd::label_type) { return false; });
+
+          node_test_stream out_nodes(out);
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream ms(out);
+          AssertThat(ms.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(0u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(1u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        });
+
+        it("computes with disjoint dom = { x | x > 2 } to be { Ø } [zdd_3]", [&](){
+          zdd out = zdd_project(ep, zdd(zdd_3), [](zdd::label_type x) { return x > 2; });
+
+          node_test_stream out_nodes(out);
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream ms(out);
+          AssertThat(ms.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(0u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(1u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        });
+
+        it("finishes during initial transposition in zdd_3 and dom = { x | x % 2 == 0 }", [&](){
           /* Expected: { {0}, {2}, {0,2} }
           //
           //                           1    ---- x0
@@ -492,7 +727,162 @@ go_bandit([]() {
           AssertThat(call_history.at(5),  Is().EqualTo(2u));
         });
 
-        it("quantifies exploding ZDD 5", [&]() {
+        it("computes zdd_1 with dom = { x | x % 2 == 1 }", [&](){
+          /* Expected: { Ø, {1}, {1,3} }
+          //
+          //                    2         ---- x1
+          //                   / \
+          //                   | |
+          //                   \ /
+          //                    4         ---- x3
+          //                   / \
+          //                   T T
+          */
+
+          zdd out = zdd_project(ep, zdd_1, [](zdd::label_type x) { return x % 2 == 1; });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
+                                                         terminal_T,
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
+                                                         ptr_uint64(3, ptr_uint64::max_id),
+                                                         ptr_uint64(3, ptr_uint64::max_id))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream ms(out);
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(3,1u)));
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+
+          AssertThat(ms.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(2u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(2u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(2u));
+          AssertThat(out->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(2u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+        });
+
+        it("computes zdd_1 with dom = { x | x != 0,2 }", [&](){
+          /* Expected: { Ø, {1}, {1,3}, {1,3,4} }
+          //
+          //                    2         ---- x1
+          //                   / \
+          //                   | |
+          //                   \ /
+          //                    4         ---- x3
+          //                   / \
+          //                   T 5        ---- x4
+          //                    / \
+          //                    T T
+          */
+
+          zdd out = zdd_project(ep, zdd_1, [](zdd::label_type x) { return x != 0 && x != 2; });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id,
+                                                         terminal_T,
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
+                                                         terminal_T,
+                                                         ptr_uint64(4, ptr_uint64::max_id))));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
+                                                         ptr_uint64(3, ptr_uint64::max_id),
+                                                         ptr_uint64(3, ptr_uint64::max_id))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream ms(out);
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(4,1u)));
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(3,1u)));
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+
+          AssertThat(ms.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(2u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(2u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(3u));
+          AssertThat(out->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(3u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
+        });
+
+        it("computes zdd_3 with dom = { x | x % 2 == 0 }", [&](){
+          /* Expected: { {0}, {2}, {0,2} }
+          //
+          //                           1    ---- x0
+          //                          / \
+          //                          | |   ---- x1
+          //                          \ /
+          //                           2    ---- x2
+          //                          / \
+          //                          T T
+          */
+
+          zdd out = zdd_project(ep, zdd_3, [](zdd::label_type x) { return x % 2 == 0; });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
+                                                         terminal_T,
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
+                                                         ptr_uint64(2, ptr_uint64::max_id),
+                                                         ptr_uint64(2, ptr_uint64::max_id))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream ms(out);
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
+
+          AssertThat(ms.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(2u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(2u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(2u));
+          AssertThat(out->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(2u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+        });
+
+        it("quantifies exploding ZDD 5 with unbounded transpositions", [&]() {
+          const exec_policy ep = exec_policy::quantify::Nested
+            & exec_policy::quantify::transposition_growth::max()
+            & exec_policy::quantify::transposition_max::max();
+
           std::vector<zdd::label_type> call_history;
           zdd out = zdd_project(ep, zdd_5, [&call_history](const zdd::label_type x) -> bool {
             call_history.push_back(x);
@@ -834,395 +1224,12 @@ go_bandit([]() {
           AssertThat(call_history.at(40), Is().EqualTo(12u));
           AssertThat(call_history.at(41), Is().EqualTo(13u));
         });
-      });
-
-      describe("quantify_alg == Nested", [&]() {
-        const exec_policy ep = exec_policy::quantify::Nested;
-
-        it("computes with dom = Ø to be { Ø } for non-empty input [zdd_1]", [&](){
-          shared_file<zdd::label_type> dom;
-
-          const zdd in = zdd_1;
-          zdd out = zdd_project(ep, in, [](zdd::label_type) { return false; });
-
-          node_test_stream out_nodes(out);
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
-
-          AssertThat(out_nodes.can_pull(), Is().False());
-
-          level_info_test_stream ms(out);
-          AssertThat(ms.can_pull(), Is().False());
-
-          AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
-          AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(0u));
-          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(1u));
-          AssertThat(out->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(1u));
-
-          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
-          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
-        });
-
-        it("computes with disjoint dom = { x | x > 2 } to be { Ø } [zdd_3]", [&](){
-          zdd out = zdd_project(ep, zdd(zdd_3), [](zdd::label_type x) { return x > 2; });
-
-          node_test_stream out_nodes(out);
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
-
-          AssertThat(out_nodes.can_pull(), Is().False());
-
-          level_info_test_stream ms(out);
-          AssertThat(ms.can_pull(), Is().False());
-
-          AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
-          AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(0u));
-          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(1u));
-          AssertThat(out->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(1u));
-
-          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
-          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
-        });
-
-        it("computes zdd_3 with dom = { x | x % 2 == 0 }", [&](){
-          /* Expected: { {0}, {2}, {0,2} }
-          //
-          //                           1    ---- x0
-          //                          / \
-          //                          | |   ---- x1
-          //                          \ /
-          //                           2    ---- x2
-          //                          / \
-          //                          T T
-          */
-
-          zdd out = zdd_project(ep, zdd_3, [](zdd::label_type x) { return !(x % 2); });
-
-          node_test_stream out_nodes(out);
-
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                         terminal_T,
-                                                         terminal_T)));
-
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                         ptr_uint64(2, ptr_uint64::max_id),
-                                                         ptr_uint64(2, ptr_uint64::max_id))));
-
-          AssertThat(out_nodes.can_pull(), Is().False());
-
-          level_info_test_stream ms(out);
-
-          AssertThat(ms.can_pull(), Is().True());
-          AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
-
-          AssertThat(ms.can_pull(), Is().True());
-          AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
-
-          AssertThat(ms.can_pull(), Is().False());
-
-          AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(2u));
-          AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(2u));
-          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(2u));
-          AssertThat(out->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(2u));
-
-          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
-          AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
-        });
-
-        it("bails out of inner sweep for zdd_4 with dom = { x | x % 2 == 0 } [const &]", [&](){
-          const zdd in = zdd_1;
-
-          /* Expected: { Ø, {0}, {2}, {4} }
-          //
-          //         1       ---- x0
-          //        / \
-          //        3 T      ---- x2
-          //       / \
-          //       5 T       ---- x4
-          //      / \
-          //      T T
-          */
-          zdd out = zdd_project(ep, in, [](const zdd::label_type x) { return x % 2 == 0; });
-
-          node_test_stream out_nodes(out);
-
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id,
-                                                         terminal_T,
-                                                         terminal_T)));
-
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                         ptr_uint64(4, ptr_uint64::max_id),
-                                                         terminal_T)));
-
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                         ptr_uint64(2, ptr_uint64::max_id),
-                                                         terminal_T)));
-
-          AssertThat(out_nodes.can_pull(), Is().False());
-
-          level_info_test_stream ms(out);
-
-          AssertThat(ms.can_pull(), Is().True());
-          AssertThat(ms.pull(), Is().EqualTo(level_info(4,1u)));
-
-          AssertThat(ms.can_pull(), Is().True());
-          AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
-
-          AssertThat(ms.can_pull(), Is().True());
-          AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
-
-          AssertThat(ms.can_pull(), Is().False());
-
-          AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(1u));
-          AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(1u));
-          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(4u));
-          AssertThat(out->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(4u));
-
-          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
-          AssertThat(out->number_of_terminals[true],  Is().EqualTo(4u));
-        });
-
-        it("accounts for number of root arcs from Outer Sweep [const &]", [&](){
-          const zdd in = zdd_6;
-
-          /* Expected: { Ø, {5} }
-          //
-          //         1       ---- x5
-          //        / \
-          //        T T
-          */
-          zdd out = zdd_project(ep, in, [](const zdd::label_type x) { return x == 5; });
-
-          node_test_stream out_nodes(out);
-
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
-                                                         terminal_T,
-                                                         terminal_T)));
-
-          AssertThat(out_nodes.can_pull(), Is().False());
-
-          level_info_test_stream ms(out);
-
-          AssertThat(ms.can_pull(), Is().True());
-          AssertThat(ms.pull(), Is().EqualTo(level_info(5,1u)));
-
-          AssertThat(ms.can_pull(), Is().False());
-
-          AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(1u));
-          AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(0u));
-          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(2u));
-          AssertThat(out->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(2u));
-
-          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
-          AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
-        });
-      });
-
-      describe("quantify_alg == Auto", [&]() {
-        const exec_policy ep = exec_policy::quantify::Auto;
-
-        it("computes with dom = Ø to be { Ø } for non-empty input [zdd_2]", [&](){
-          shared_file<zdd::label_type> dom;
-
-          zdd out = zdd_project(ep, zdd(zdd_2), [](zdd::label_type) { return false; });
-
-          node_test_stream out_nodes(out);
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
-
-          AssertThat(out_nodes.can_pull(), Is().False());
-
-          level_info_test_stream ms(out);
-          AssertThat(ms.can_pull(), Is().False());
-
-          AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
-          AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(0u));
-          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(1u));
-          AssertThat(out->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(1u));
-
-          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
-          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
-        });
-
-        it("computes with disjoint dom = { x | x > 2 } to be { Ø } [zdd_3]", [&](){
-          zdd out = zdd_project(ep, zdd(zdd_3), [](zdd::label_type x) { return x > 2; });
-
-          node_test_stream out_nodes(out);
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
-
-          AssertThat(out_nodes.can_pull(), Is().False());
-
-          level_info_test_stream ms(out);
-          AssertThat(ms.can_pull(), Is().False());
-
-          AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
-          AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(0u));
-          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(1u));
-          AssertThat(out->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(1u));
-
-          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
-          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
-        });
-
-        it("computes zdd_1 with dom = { x | x % 2 == 1 }", [&](){
-          /* Expected: { Ø, {1}, {1,3} }
-          //
-          //                    2         ---- x1
-          //                   / \
-          //                   | |
-          //                   \ /
-          //                    4         ---- x3
-          //                   / \
-          //                   T T
-          */
-
-          zdd out = zdd_project(ep, zdd_1, [](zdd::label_type x) { return x % 2 == 1; });
-
-          node_test_stream out_nodes(out);
-
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         terminal_T,
-                                                         terminal_T)));
-
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         ptr_uint64(3, ptr_uint64::max_id),
-                                                         ptr_uint64(3, ptr_uint64::max_id))));
-
-          AssertThat(out_nodes.can_pull(), Is().False());
-
-          level_info_test_stream ms(out);
-
-          AssertThat(ms.can_pull(), Is().True());
-          AssertThat(ms.pull(), Is().EqualTo(level_info(3,1u)));
-
-          AssertThat(ms.can_pull(), Is().True());
-          AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
-
-          AssertThat(ms.can_pull(), Is().False());
-
-          AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(2u));
-          AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(2u));
-          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(2u));
-          AssertThat(out->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(2u));
-
-          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
-          AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
-        });
-
-        it("computes zdd_1 with dom = { x | x != 0,2 }", [&](){
-          /* Expected: { Ø, {1}, {1,3}, {1,3,4} }
-          //
-          //                    2         ---- x1
-          //                   / \
-          //                   | |
-          //                   \ /
-          //                    4         ---- x3
-          //                   / \
-          //                   T 5        ---- x4
-          //                    / \
-          //                    T T
-          */
-
-          zdd out = zdd_project(ep, zdd_1, [](zdd::label_type x) { return x != 0 && x != 2; });
-
-          node_test_stream out_nodes(out);
-
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id,
-                                                         terminal_T,
-                                                         terminal_T)));
-
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         terminal_T,
-                                                         ptr_uint64(4, ptr_uint64::max_id))));
-
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         ptr_uint64(3, ptr_uint64::max_id),
-                                                         ptr_uint64(3, ptr_uint64::max_id))));
-
-          AssertThat(out_nodes.can_pull(), Is().False());
-
-          level_info_test_stream ms(out);
-
-          AssertThat(ms.can_pull(), Is().True());
-          AssertThat(ms.pull(), Is().EqualTo(level_info(4,1u)));
-
-          AssertThat(ms.can_pull(), Is().True());
-          AssertThat(ms.pull(), Is().EqualTo(level_info(3,1u)));
-
-          AssertThat(ms.can_pull(), Is().True());
-          AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
-
-          AssertThat(ms.can_pull(), Is().False());
-
-          AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(2u));
-          AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(2u));
-          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(3u));
-          AssertThat(out->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(3u));
-
-          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
-          AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
-        });
-
-        it("computes zdd_3 with dom = { x | x % 2 == 0 }", [&](){
-          /* Expected: { {0}, {2}, {0,2} }
-          //
-          //                           1    ---- x0
-          //                          / \
-          //                          | |   ---- x1
-          //                          \ /
-          //                           2    ---- x2
-          //                          / \
-          //                          T T
-          */
-
-          zdd out = zdd_project(ep, zdd_3, [](zdd::label_type x) { return x % 2 == 0; });
-
-          node_test_stream out_nodes(out);
-
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                         terminal_T,
-                                                         terminal_T)));
-
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                         ptr_uint64(2, ptr_uint64::max_id),
-                                                         ptr_uint64(2, ptr_uint64::max_id))));
-
-          AssertThat(out_nodes.can_pull(), Is().False());
-
-          level_info_test_stream ms(out);
-
-          AssertThat(ms.can_pull(), Is().True());
-          AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
-
-          AssertThat(ms.can_pull(), Is().True());
-          AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
-
-          AssertThat(ms.can_pull(), Is().False());
-
-          AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(2u));
-          AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(2u));
-          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(2u));
-          AssertThat(out->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(2u));
-
-          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
-          AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
-        });
 
         it("switches to Nested Sweeping for exploding ZDD 5", [&]() {
+          const exec_policy ep = exec_policy::quantify::Nested
+            & exec_policy::quantify::transposition_growth(0.5)
+            & exec_policy::quantify::transposition_max::max();
+
           std::vector<zdd::label_type> call_history;
           zdd out = zdd_project(ep, zdd_5, [&call_history](const zdd::label_type x) -> bool {
             call_history.push_back(x);
@@ -1510,7 +1517,7 @@ go_bandit([]() {
           // NOTE: Test failure does NOT indicate a bug, but only indicates a
           //       change. Please verify that this change makes sense and is as
           //       intended.
-          AssertThat(call_history.size(), Is().EqualTo(53u));
+          AssertThat(call_history.size(), Is().EqualTo(41u));
 
           // - First check for at least one variable satisfying the predicate.
           AssertThat(call_history.at(0),  Is().EqualTo(13u));
@@ -1527,53 +1534,39 @@ go_bandit([]() {
           AssertThat(call_history.at(11), Is().EqualTo(2u));
           AssertThat(call_history.at(12), Is().EqualTo(1u));
 
-          // - Count number of variables above widest
-          AssertThat(call_history.at(13), Is().EqualTo(11u)); // <-- widest level
-          AssertThat(call_history.at(14), Is().EqualTo(10u));
-          AssertThat(call_history.at(15), Is().EqualTo(9u));
-          AssertThat(call_history.at(16), Is().EqualTo(8u));
-          AssertThat(call_history.at(17), Is().EqualTo(7u));
-          AssertThat(call_history.at(18), Is().EqualTo(6u));
-          AssertThat(call_history.at(19), Is().EqualTo(5u));
-          AssertThat(call_history.at(20), Is().EqualTo(4u));
-          AssertThat(call_history.at(21), Is().EqualTo(3u));
-          AssertThat(call_history.at(22), Is().EqualTo(2u));
-          AssertThat(call_history.at(23), Is().EqualTo(1u));
-          AssertThat(call_history.at(24), Is().EqualTo(0u));
-
           // - Top-down sweep (root call)
-          AssertThat(call_history.at(25), Is().EqualTo(0u));
+          AssertThat(call_history.at(13), Is().EqualTo(0u));
 
           // - Top-down sweep
-          AssertThat(call_history.at(26), Is().EqualTo(0u));
-          AssertThat(call_history.at(27), Is().EqualTo(1u));
-          AssertThat(call_history.at(28), Is().EqualTo(2u));
-          AssertThat(call_history.at(29), Is().EqualTo(3u));
-          AssertThat(call_history.at(30), Is().EqualTo(4u));
-          AssertThat(call_history.at(31), Is().EqualTo(5u));
-          AssertThat(call_history.at(32), Is().EqualTo(6u));
-          AssertThat(call_history.at(33), Is().EqualTo(7u));
-          AssertThat(call_history.at(34), Is().EqualTo(8u));
-          AssertThat(call_history.at(35), Is().EqualTo(9u));
-          AssertThat(call_history.at(36), Is().EqualTo(10u));
-          AssertThat(call_history.at(37), Is().EqualTo(11u));
-          AssertThat(call_history.at(38), Is().EqualTo(12u));
-          AssertThat(call_history.at(39), Is().EqualTo(13u));
+          AssertThat(call_history.at(14), Is().EqualTo(0u));
+          AssertThat(call_history.at(15), Is().EqualTo(1u));
+          AssertThat(call_history.at(16), Is().EqualTo(2u));
+          AssertThat(call_history.at(17), Is().EqualTo(3u));
+          AssertThat(call_history.at(18), Is().EqualTo(4u));
+          AssertThat(call_history.at(19), Is().EqualTo(5u));
+          AssertThat(call_history.at(20), Is().EqualTo(6u));
+          AssertThat(call_history.at(21), Is().EqualTo(7u));
+          AssertThat(call_history.at(22), Is().EqualTo(8u));
+          AssertThat(call_history.at(23), Is().EqualTo(9u));
+          AssertThat(call_history.at(24), Is().EqualTo(10u));
+          AssertThat(call_history.at(25), Is().EqualTo(11u));
+          AssertThat(call_history.at(26), Is().EqualTo(12u));
+          AssertThat(call_history.at(27), Is().EqualTo(13u));
 
           // - Nested Sweeping (x0 is gone)
-          AssertThat(call_history.at(40), Is().EqualTo(13u));
-          AssertThat(call_history.at(41), Is().EqualTo(12u));
-          AssertThat(call_history.at(42), Is().EqualTo(11u));
-          AssertThat(call_history.at(43), Is().EqualTo(10u));
-          AssertThat(call_history.at(44), Is().EqualTo(9u));
-          AssertThat(call_history.at(45), Is().EqualTo(8u));
-          AssertThat(call_history.at(46), Is().EqualTo(7u));
-          AssertThat(call_history.at(47), Is().EqualTo(6u));
-          AssertThat(call_history.at(48), Is().EqualTo(5u));
-          AssertThat(call_history.at(49), Is().EqualTo(4u));
-          AssertThat(call_history.at(50), Is().EqualTo(3u));
-          AssertThat(call_history.at(51), Is().EqualTo(2u));
-          AssertThat(call_history.at(52), Is().EqualTo(1u));
+          AssertThat(call_history.at(28), Is().EqualTo(13u));
+          AssertThat(call_history.at(29), Is().EqualTo(12u));
+          AssertThat(call_history.at(30), Is().EqualTo(11u));
+          AssertThat(call_history.at(31), Is().EqualTo(10u));
+          AssertThat(call_history.at(32), Is().EqualTo(9u));
+          AssertThat(call_history.at(33), Is().EqualTo(8u));
+          AssertThat(call_history.at(34), Is().EqualTo(7u));
+          AssertThat(call_history.at(35), Is().EqualTo(6u));
+          AssertThat(call_history.at(36), Is().EqualTo(5u));
+          AssertThat(call_history.at(37), Is().EqualTo(4u));
+          AssertThat(call_history.at(38), Is().EqualTo(3u));
+          AssertThat(call_history.at(39), Is().EqualTo(2u));
+          AssertThat(call_history.at(40), Is().EqualTo(1u));
         });
       });
     });
@@ -1625,7 +1618,7 @@ go_bandit([]() {
         AssertThat(out.file_ptr(), Is().EqualTo(in.file_ptr()));
       });
 
-      describe("quantify_alg == Singleton / Partial", [&]() {
+      describe("algorithm: Singleton", [&]() {
         const exec_policy ep = exec_policy::quantify::Singleton;
 
         it("collapses zdd_1 with dom = Ø into { Ø } [const &]", [&](){
@@ -2132,7 +2125,7 @@ go_bandit([]() {
         });
       });
 
-      describe("quantify_alg == Nested / Auto", [&]() {
+      describe("algorithm: Nested, max: _", [&]() {
         const exec_policy ep = exec_policy::quantify::Nested;
 
         it("collapses zdd_1 with dom = Ø into { Ø } [const &]", [&](){
@@ -2738,7 +2731,7 @@ go_bandit([]() {
       // Since this is merely a wrapper on the generator function, we will just
       // double-check with a few tests.
 
-      describe("quantify_alg == Singleton / Partial", [&]() {
+      describe("algorithm: Singleton", [&]() {
         const exec_policy ep = exec_policy::quantify::Singleton;
 
         it("computes zdd_2 with dom = {4,3,2} [&&]", [&](){
@@ -2799,7 +2792,7 @@ go_bandit([]() {
         });
       });
 
-      describe("quantify_alg == Nested / Auto", [&]() {
+      describe("algorithm: Nested, max: _", [&]() {
         const exec_policy ep = exec_policy::quantify::Nested;
 
         it("computes zdd_3 with dom = {4,2,0} [&&]", [&](){
