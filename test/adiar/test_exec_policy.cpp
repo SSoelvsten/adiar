@@ -4,7 +4,7 @@ go_bandit([]() {
   describe("adiar/exec_policy.h", []() {
     describe("exec_policy", []() {
       it("uses expected number of bytes",
-         []() { AssertThat(sizeof(exec_policy), Is().EqualTo(4u)); });
+         []() { AssertThat(sizeof(exec_policy), Is().EqualTo(12u)); });
 
       describe("exec_policy(const __ &)", []() {
         it("is default constructed with default settings", []() {
@@ -12,10 +12,19 @@ go_bandit([]() {
 
           AssertThat(ep.template get<exec_policy::access>(),
                      Is().EqualTo(exec_policy::access::Auto));
+
           AssertThat(ep.template get<exec_policy::memory>(),
                      Is().EqualTo(exec_policy::memory::Auto));
-          AssertThat(ep.template get<exec_policy::quantify>(),
-                     Is().EqualTo(exec_policy::quantify::Auto));
+
+          AssertThat(ep.template get<exec_policy::quantify::algorithm>(),
+                     Is().EqualTo(exec_policy::quantify::Nested));
+          AssertThat(
+            static_cast<float>(ep.template get<exec_policy::quantify::transposition_growth>()),
+            Is().EqualTo(0.5));
+          AssertThat(
+            static_cast<float>(ep.template get<exec_policy::quantify::transposition_max>()),
+            Is().EqualTo(1));
+
           AssertThat(static_cast<float>(ep.template get<exec_policy::nested::fast_reduce>()),
                      Is().EqualTo(-1.0));
         });
@@ -27,8 +36,16 @@ go_bandit([]() {
                      Is().EqualTo(exec_policy::access::Priority_Queue));
           AssertThat(ep.template get<exec_policy::memory>(),
                      Is().EqualTo(exec_policy::memory::Auto));
-          AssertThat(ep.template get<exec_policy::quantify>(),
-                     Is().EqualTo(exec_policy::quantify::Auto));
+
+          AssertThat(ep.template get<exec_policy::quantify::algorithm>(),
+                     Is().EqualTo(exec_policy::quantify::Nested));
+          AssertThat(
+            static_cast<float>(ep.template get<exec_policy::quantify::transposition_growth>()),
+            Is().EqualTo(0.5));
+          AssertThat(
+            static_cast<float>(ep.template get<exec_policy::quantify::transposition_max>()),
+            Is().EqualTo(1));
+
           AssertThat(static_cast<float>(ep.template get<exec_policy::nested::fast_reduce>()),
                      Is().EqualTo(-1.0));
         });
@@ -40,21 +57,37 @@ go_bandit([]() {
                      Is().EqualTo(exec_policy::access::Auto));
           AssertThat(ep.template get<exec_policy::memory>(),
                      Is().EqualTo(exec_policy::memory::Internal));
-          AssertThat(ep.template get<exec_policy::quantify>(),
-                     Is().EqualTo(exec_policy::quantify::Auto));
+
+          AssertThat(ep.template get<exec_policy::quantify::algorithm>(),
+                     Is().EqualTo(exec_policy::quantify::Nested));
+          AssertThat(
+            static_cast<float>(ep.template get<exec_policy::quantify::transposition_growth>()),
+            Is().EqualTo(0.5));
+          AssertThat(
+            static_cast<float>(ep.template get<exec_policy::quantify::transposition_max>()),
+            Is().EqualTo(1));
+
           AssertThat(static_cast<float>(ep.template get<exec_policy::nested::fast_reduce>()),
                      Is().EqualTo(-1.0));
         });
 
         it("can be conversion constructed from 'quantify algorithm'", []() {
-          exec_policy ep = exec_policy::quantify::Nested;
+          exec_policy ep = exec_policy::quantify::Singleton;
 
           AssertThat(ep.template get<exec_policy::access>(),
                      Is().EqualTo(exec_policy::access::Auto));
           AssertThat(ep.template get<exec_policy::memory>(),
                      Is().EqualTo(exec_policy::memory::Auto));
-          AssertThat(ep.template get<exec_policy::quantify>(),
-                     Is().EqualTo(exec_policy::quantify::Nested));
+
+          AssertThat(ep.template get<exec_policy::quantify::algorithm>(),
+                     Is().EqualTo(exec_policy::quantify::Singleton));
+          AssertThat(
+            static_cast<float>(ep.template get<exec_policy::quantify::transposition_growth>()),
+            Is().EqualTo(0.5));
+          AssertThat(
+            static_cast<float>(ep.template get<exec_policy::quantify::transposition_max>()),
+            Is().EqualTo(1));
+
           AssertThat(static_cast<float>(ep.template get<exec_policy::nested::fast_reduce>()),
                      Is().EqualTo(-1.0));
         });
@@ -99,24 +132,40 @@ go_bandit([]() {
 
         it("can set 'quantify algorithm'", []() {
           exec_policy ep;
-          AssertThat(ep.template get<exec_policy::quantify>(),
-                     Is().EqualTo(exec_policy::quantify::Auto));
-
-          ep.set(exec_policy::quantify::Nested);
-          AssertThat(ep.template get<exec_policy::quantify>(),
+          AssertThat(ep.template get<exec_policy::quantify::algorithm>(),
                      Is().EqualTo(exec_policy::quantify::Nested));
 
-          ep.set(exec_policy::quantify::Partial);
-          AssertThat(ep.template get<exec_policy::quantify>(),
-                     Is().EqualTo(exec_policy::quantify::Partial));
-
           ep.set(exec_policy::quantify::Singleton);
-          AssertThat(ep.template get<exec_policy::quantify>(),
+          AssertThat(ep.template get<exec_policy::quantify::algorithm>(),
                      Is().EqualTo(exec_policy::quantify::Singleton));
 
-          ep.set(exec_policy::quantify::Auto);
-          AssertThat(ep.template get<exec_policy::quantify>(),
-                     Is().EqualTo(exec_policy::quantify::Auto));
+          ep.set(exec_policy::quantify::Nested);
+          AssertThat(ep.template get<exec_policy::quantify::algorithm>(),
+                     Is().EqualTo(exec_policy::quantify::Nested));
+        });
+
+        it("can set 'quantify::transposition growth epsilon'", []() {
+          exec_policy ep;
+          AssertThat(
+            static_cast<float>(ep.template get<exec_policy::quantify::transposition_growth>()),
+            Is().EqualTo(0.5));
+
+          ep.set(exec_policy::quantify::transposition_growth(4.2));
+          AssertThat(
+            static_cast<float>(ep.template get<exec_policy::quantify::transposition_growth>()),
+            Is().EqualTo(4.2f));
+        });
+
+        it("can set 'quantify::transposition max delta'", []() {
+          exec_policy ep;
+          AssertThat(
+            static_cast<float>(ep.template get<exec_policy::quantify::transposition_max>()),
+            Is().EqualTo(1));
+
+          ep.set(exec_policy::quantify::transposition_max(42));
+          AssertThat(
+            static_cast<float>(ep.template get<exec_policy::quantify::transposition_max>()),
+            Is().EqualTo(42));
         });
 
         it("can set 'nested::fast reduce epsilon'", []() {
@@ -157,7 +206,7 @@ go_bandit([]() {
                      Is().EqualTo(exec_policy::access::Priority_Queue));
           AssertThat(ep.template get<exec_policy::memory>(),
                      Is().EqualTo(exec_policy::memory::External));
-          AssertThat(ep.template get<exec_policy::quantify>(),
+          AssertThat(ep.template get<exec_policy::quantify::algorithm>(),
                      Is().EqualTo(exec_policy::quantify::Singleton));
           AssertThat(static_cast<float>(ep.template get<exec_policy::nested::fast_reduce>()),
                      Is().EqualTo(1.0));
@@ -202,7 +251,7 @@ go_bandit([]() {
 
         it("mismatches on 'quantify algorithm'", []() {
           exec_policy ep1 = exec_policy::quantify::Nested;
-          exec_policy ep2 = exec_policy::quantify::Partial;
+          exec_policy ep2 = exec_policy::quantify::Singleton;
 
           AssertThat(ep1, Is().Not().EqualTo(ep2));
         });
@@ -222,55 +271,31 @@ go_bandit([]() {
 
           AssertThat(in.template get<exec_policy::access>(),
                      Is().EqualTo(exec_policy::access::Auto));
-          AssertThat(in.template get<exec_policy::memory>(),
-                     Is().EqualTo(exec_policy::memory::Internal));
-          AssertThat(in.template get<exec_policy::quantify>(),
-                     Is().EqualTo(exec_policy::quantify::Auto));
 
           AssertThat(out.template get<exec_policy::access>(),
                      Is().EqualTo(exec_policy::access::Random_Access));
-          AssertThat(out.template get<exec_policy::memory>(),
-                     Is().EqualTo(exec_policy::memory::Internal));
-          AssertThat(out.template get<exec_policy::quantify>(),
-                     Is().EqualTo(exec_policy::quantify::Auto));
         });
 
         it("can create a copy with another 'memory mode'", []() {
           const exec_policy in  = exec_policy::access::Priority_Queue;
           const exec_policy out = in & exec_policy::memory::Internal;
 
-          AssertThat(in.template get<exec_policy::access>(),
-                     Is().EqualTo(exec_policy::access::Priority_Queue));
           AssertThat(in.template get<exec_policy::memory>(),
                      Is().EqualTo(exec_policy::memory::Auto));
-          AssertThat(in.template get<exec_policy::quantify>(),
-                     Is().EqualTo(exec_policy::quantify::Auto));
 
-          AssertThat(out.template get<exec_policy::access>(),
-                     Is().EqualTo(exec_policy::access::Priority_Queue));
           AssertThat(out.template get<exec_policy::memory>(),
                      Is().EqualTo(exec_policy::memory::Internal));
-          AssertThat(out.template get<exec_policy::quantify>(),
-                     Is().EqualTo(exec_policy::quantify::Auto));
         });
 
         it("can create a copy with another 'quantify algorithm'", []() {
           const exec_policy in  = exec_policy::memory::Internal;
-          const exec_policy out = in & exec_policy::quantify::Partial;
+          const exec_policy out = in & exec_policy::quantify::Singleton;
 
-          AssertThat(in.template get<exec_policy::access>(),
-                     Is().EqualTo(exec_policy::access::Auto));
-          AssertThat(in.template get<exec_policy::memory>(),
-                     Is().EqualTo(exec_policy::memory::Internal));
-          AssertThat(in.template get<exec_policy::quantify>(),
-                     Is().EqualTo(exec_policy::quantify::Auto));
+          AssertThat(in.template get<exec_policy::quantify::algorithm>(),
+                     Is().EqualTo(exec_policy::quantify::Nested));
 
-          AssertThat(out.template get<exec_policy::access>(),
-                     Is().EqualTo(exec_policy::access::Auto));
-          AssertThat(out.template get<exec_policy::memory>(),
-                     Is().EqualTo(exec_policy::memory::Internal));
-          AssertThat(out.template get<exec_policy::quantify>(),
-                     Is().EqualTo(exec_policy::quantify::Partial));
+          AssertThat(out.template get<exec_policy::quantify::algorithm>(),
+                     Is().EqualTo(exec_policy::quantify::Singleton));
         });
 
         it("can create a copy with another 'nested::fast reduce epsilon'", []() {
@@ -281,8 +306,8 @@ go_bandit([]() {
                      Is().EqualTo(exec_policy::access::Auto));
           AssertThat(in.template get<exec_policy::memory>(),
                      Is().EqualTo(exec_policy::memory::Internal));
-          AssertThat(in.template get<exec_policy::quantify>(),
-                     Is().EqualTo(exec_policy::quantify::Auto));
+          AssertThat(in.template get<exec_policy::quantify::algorithm>(),
+                     Is().EqualTo(exec_policy::quantify::Nested));
           AssertThat(static_cast<float>(in.template get<exec_policy::nested::fast_reduce>()),
                      Is().EqualTo(-1.0));
 
@@ -290,170 +315,83 @@ go_bandit([]() {
                      Is().EqualTo(exec_policy::access::Auto));
           AssertThat(out.template get<exec_policy::memory>(),
                      Is().EqualTo(exec_policy::memory::Internal));
-          AssertThat(out.template get<exec_policy::quantify>(),
-                     Is().EqualTo(exec_policy::quantify::Auto));
+          AssertThat(out.template get<exec_policy::quantify::algorithm>(),
+                     Is().EqualTo(exec_policy::quantify::Nested));
           AssertThat(static_cast<float>(out.template get<exec_policy::nested::fast_reduce>()),
                      Is().EqualTo(1.0));
         });
 
-        it("can lift enum values [access & memory]", []() {
+        it("can lift enum values [access]", []() {
           const exec_policy ep = exec_policy::access::Random_Access & exec_policy::memory::Internal;
 
           AssertThat(ep.template get<exec_policy::access>(),
                      Is().EqualTo(exec_policy::access::Random_Access));
           AssertThat(ep.template get<exec_policy::memory>(),
                      Is().EqualTo(exec_policy::memory::Internal));
-          AssertThat(ep.template get<exec_policy::quantify>(),
-                     Is().EqualTo(exec_policy::quantify::Auto));
+          AssertThat(ep.template get<exec_policy::quantify::algorithm>(),
+                     Is().EqualTo(exec_policy::quantify::Nested));
           AssertThat(static_cast<float>(ep.template get<exec_policy::nested::fast_reduce>()),
                      Is().EqualTo(-1.0));
         });
 
-        it("can lift enum values [memory & access]", []() {
+        it("can lift enum values [memory]", []() {
           const exec_policy ep = exec_policy::memory::Internal & exec_policy::access::Random_Access;
 
           AssertThat(ep.template get<exec_policy::access>(),
                      Is().EqualTo(exec_policy::access::Random_Access));
           AssertThat(ep.template get<exec_policy::memory>(),
                      Is().EqualTo(exec_policy::memory::Internal));
-          AssertThat(ep.template get<exec_policy::quantify>(),
-                     Is().EqualTo(exec_policy::quantify::Auto));
-          AssertThat(static_cast<float>(ep.template get<exec_policy::nested::fast_reduce>()),
-                     Is().EqualTo(-1.0));
-        });
-
-        it("can lift enum values [access & quantify]", []() {
-          const exec_policy ep =
-            exec_policy::access::Random_Access & exec_policy::quantify::Singleton;
-
-          AssertThat(ep.template get<exec_policy::access>(),
-                     Is().EqualTo(exec_policy::access::Random_Access));
-          AssertThat(ep.template get<exec_policy::memory>(),
-                     Is().EqualTo(exec_policy::memory::Auto));
-          AssertThat(ep.template get<exec_policy::quantify>(),
-                     Is().EqualTo(exec_policy::quantify::Singleton));
-          AssertThat(static_cast<float>(ep.template get<exec_policy::nested::fast_reduce>()),
-                     Is().EqualTo(-1.0));
-        });
-
-        it("can lift enum values [quantify & access]", []() {
-          const exec_policy ep =
-            exec_policy::quantify::Singleton & exec_policy::access::Random_Access;
-
-          AssertThat(ep.template get<exec_policy::access>(),
-                     Is().EqualTo(exec_policy::access::Random_Access));
-          AssertThat(ep.template get<exec_policy::memory>(),
-                     Is().EqualTo(exec_policy::memory::Auto));
-          AssertThat(ep.template get<exec_policy::quantify>(),
-                     Is().EqualTo(exec_policy::quantify::Singleton));
-          AssertThat(static_cast<float>(ep.template get<exec_policy::nested::fast_reduce>()),
-                     Is().EqualTo(-1.0));
-        });
-
-        it("can lift enum values [memory & quantify]", []() {
-          const exec_policy ep = exec_policy::memory::External & exec_policy::quantify::Nested;
-
-          AssertThat(ep.template get<exec_policy::access>(),
-                     Is().EqualTo(exec_policy::access::Auto));
-          AssertThat(ep.template get<exec_policy::memory>(),
-                     Is().EqualTo(exec_policy::memory::External));
-          AssertThat(ep.template get<exec_policy::quantify>(),
+          AssertThat(ep.template get<exec_policy::quantify::algorithm>(),
                      Is().EqualTo(exec_policy::quantify::Nested));
           AssertThat(static_cast<float>(ep.template get<exec_policy::nested::fast_reduce>()),
                      Is().EqualTo(-1.0));
         });
 
-        it("can lift enum values [quantify & memory]", []() {
-          const exec_policy ep = exec_policy::quantify::Nested & exec_policy::memory::External;
+        it("can lift enum values [quantify::*]", []() {
+          const exec_policy ep = exec_policy::quantify::Nested
+            & exec_policy::quantify::transposition_growth(4.2)
+            & exec_policy::quantify::transposition_max(42);
 
           AssertThat(ep.template get<exec_policy::access>(),
                      Is().EqualTo(exec_policy::access::Auto));
+
           AssertThat(ep.template get<exec_policy::memory>(),
-                     Is().EqualTo(exec_policy::memory::External));
-          AssertThat(ep.template get<exec_policy::quantify>(),
+                     Is().EqualTo(exec_policy::memory::Auto));
+
+          AssertThat(ep.template get<exec_policy::quantify::algorithm>(),
                      Is().EqualTo(exec_policy::quantify::Nested));
+          AssertThat(
+            static_cast<float>(ep.template get<exec_policy::quantify::transposition_growth>()),
+            Is().EqualTo(4.2f));
+          AssertThat(
+            static_cast<float>(ep.template get<exec_policy::quantify::transposition_max>()),
+            Is().EqualTo(42));
+
           AssertThat(static_cast<float>(ep.template get<exec_policy::nested::fast_reduce>()),
                      Is().EqualTo(-1.0));
         });
 
-        it("can lift enum values [access & nested::fast reduce epsilon]", []() {
-          const exec_policy ep =
-            exec_policy::access::Random_Access & exec_policy::nested::fast_reduce(1.0);
-
-          AssertThat(ep.template get<exec_policy::access>(),
-                     Is().EqualTo(exec_policy::access::Random_Access));
-          AssertThat(ep.template get<exec_policy::memory>(),
-                     Is().EqualTo(exec_policy::memory::Auto));
-          AssertThat(ep.template get<exec_policy::quantify>(),
-                     Is().EqualTo(exec_policy::quantify::Auto));
-          AssertThat(static_cast<float>(ep.template get<exec_policy::nested::fast_reduce>()),
-                     Is().EqualTo(1.0));
-        });
-
-        it("can lift enum values [nested::fast reduce epsilon & access]", []() {
-          const exec_policy ep =
-            exec_policy::nested::fast_reduce(1.0) & exec_policy::access::Random_Access;
-
-          AssertThat(ep.template get<exec_policy::access>(),
-                     Is().EqualTo(exec_policy::access::Random_Access));
-          AssertThat(ep.template get<exec_policy::memory>(),
-                     Is().EqualTo(exec_policy::memory::Auto));
-          AssertThat(ep.template get<exec_policy::quantify>(),
-                     Is().EqualTo(exec_policy::quantify::Auto));
-          AssertThat(static_cast<float>(ep.template get<exec_policy::nested::fast_reduce>()),
-                     Is().EqualTo(1.0));
-        });
-
-        it("can lift enum values [memory & nested::fast reduce epsilon]", []() {
-          const exec_policy ep =
-            exec_policy::memory::Internal & exec_policy::nested::fast_reduce(1.0);
-
-          AssertThat(ep.template get<exec_policy::access>(),
-                     Is().EqualTo(exec_policy::access::Auto));
-          AssertThat(ep.template get<exec_policy::memory>(),
-                     Is().EqualTo(exec_policy::memory::Internal));
-          AssertThat(ep.template get<exec_policy::quantify>(),
-                     Is().EqualTo(exec_policy::quantify::Auto));
-          AssertThat(static_cast<float>(ep.template get<exec_policy::nested::fast_reduce>()),
-                     Is().EqualTo(1.0));
-        });
-
-        it("can lift enum values [nested::fast reduce epsilon & memory]", []() {
-          const exec_policy ep =
-            exec_policy::nested::fast_reduce(1.0) & exec_policy::memory::External;
-
-          AssertThat(ep.template get<exec_policy::access>(),
-                     Is().EqualTo(exec_policy::access::Auto));
-          AssertThat(ep.template get<exec_policy::memory>(),
-                     Is().EqualTo(exec_policy::memory::External));
-          AssertThat(ep.template get<exec_policy::quantify>(),
-                     Is().EqualTo(exec_policy::quantify::Auto));
-          AssertThat(static_cast<float>(ep.template get<exec_policy::nested::fast_reduce>()),
-                     Is().EqualTo(1.0));
-        });
-
-        it("can lift enum values [quantify & nested::fast reduce epsilon]", []() {
-          const exec_policy ep =
-            exec_policy::quantify::Singleton & exec_policy::nested::fast_reduce(1.0);
-
-          AssertThat(ep.template get<exec_policy::access>(),
-                     Is().EqualTo(exec_policy::access::Auto));
-          AssertThat(ep.template get<exec_policy::memory>(),
-                     Is().EqualTo(exec_policy::memory::Auto));
-          AssertThat(ep.template get<exec_policy::quantify>(),
-                     Is().EqualTo(exec_policy::quantify::Singleton));
-        });
-
-        it("can lift enum values [nested::fast reduce epsilon & quantify]", []() {
+        it("can lift enum values [nested::fast reduce epsilon]", []() {
           const exec_policy ep =
             exec_policy::nested::fast_reduce(1.0) & exec_policy::quantify::Nested;
 
           AssertThat(ep.template get<exec_policy::access>(),
                      Is().EqualTo(exec_policy::access::Auto));
+
           AssertThat(ep.template get<exec_policy::memory>(),
                      Is().EqualTo(exec_policy::memory::Auto));
-          AssertThat(ep.template get<exec_policy::quantify>(),
+
+          AssertThat(ep.template get<exec_policy::quantify::algorithm>(),
                      Is().EqualTo(exec_policy::quantify::Nested));
+          AssertThat(
+            static_cast<float>(ep.template get<exec_policy::quantify::transposition_growth>()),
+            Is().EqualTo(0.5));
+          AssertThat(
+            static_cast<float>(ep.template get<exec_policy::quantify::transposition_max>()),
+            Is().EqualTo(1));
+
+          AssertThat(static_cast<float>(ep.template get<exec_policy::nested::fast_reduce>()),
+                     Is().EqualTo(1.0));
         });
       });
     });

@@ -89,33 +89,99 @@ namespace adiar
     };
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief   Strategies for Adiar to use in quantify/project algorithms.
+    /// \brief   Strategies and settings for Adiar to use in quantify/project
+    ///          algorithms.
     ///
     /// \details Adiar’s supports multiple approaches to compute the
     ///          quantification of multiple variables. While `Auto`
     ///          heuristically uses one or more of the three options, one can
     ///          choose to run the approach of particular interest
     ///
-    /// \remark  Not all approaches can apply to each algorithm. If the desired
-    ///          approach does not apply, then an approach that is *less* than
-    ///          it is used instead. For example, `Partial` cannot be used with
-    ///          a `generator` and so `Singleton` is used instead.
-    ///
     /// \see bdd_exists bdd_forall zdd_project
     ////////////////////////////////////////////////////////////////////////////
-    enum class quantify : char
+    class quantify
     {
-      /** Automatically decide what approach to use (may switch half-way). */
-      Auto,
-      /** Use the \em nested \em sweeping framework. */
-      Nested,
-      /** Use repeated \em partial \em quantification. */
-      Partial,
-      /** Quantify each variable independently. */
-      Singleton
-    };
+    public:
+      //////////////////////////////////////////////////////////////////////////
+      /// \brief
+      //////////////////////////////////////////////////////////////////////////
+      enum algorithm : char
+      {
+        /** Use the \em nested \em sweeping framework (recommended). */
+        Nested,
+        /** Quantify each variable independently. */
+        Singleton
+      };
 
-    // TODO: Move Nested Sweeping constants/strategies in here too...
+      //////////////////////////////////////////////////////////////////////////
+      /// \brief Epsilon value for maximal growth a BDD may grow during repeated
+      ///        transpostion before switching to Nested Sweeping.
+      //////////////////////////////////////////////////////////////////////////
+      class transposition_growth
+      {
+      public:
+        /// \brief Minimal value
+        static constexpr transposition_growth
+        min()
+        {
+          return -1.0;
+        }
+
+        /// \brief Maximal value
+        static constexpr transposition_growth
+        max()
+        {
+          return std::numeric_limits<float>::max();
+        }
+
+      private:
+        float _value;
+
+      public:
+        /// \brief Wrap a `float`.
+        constexpr transposition_growth(float value)
+          : _value(value)
+        {}
+
+        /// \brief Reobtain the wrapped `float`
+        operator float() const { return this->_value; }
+      };
+
+      //////////////////////////////////////////////////////////////////////////
+      /// \brief Maximum number of repeated transpositions before switching to
+      ///        nested sweeping
+      //////////////////////////////////////////////////////////////////////////
+      class transposition_max
+      {
+      public:
+        /// \brief Minimal value (equivalent to disabling repeated transpositions)
+        static constexpr transposition_max
+        min()
+        {
+          return std::numeric_limits<unsigned char>::min();
+        }
+
+        /// \brief Maximal value (in many cases, this is equivalent to only
+        ///        doing repeated transpositions and not nested sweeping)
+        static constexpr transposition_max
+        max()
+        {
+          return std::numeric_limits<unsigned char>::max();
+        }
+
+      private:
+        unsigned char _value;
+
+      public:
+        /// \brief Wrap an `unsigned char`
+        constexpr transposition_max(unsigned char value)
+          : _value(value)
+        {}
+
+        /// \brief Reobtain the wrapped `unsigned char` value
+        operator unsigned char() const { return this->_value; }
+      };
+    };
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Settings for Nested Sweeping framework
@@ -141,6 +207,21 @@ namespace adiar
       //////////////////////////////////////////////////////////////////////////
       class fast_reduce
       {
+      public:
+        /// \brief Minimal value
+        static constexpr fast_reduce
+        min()
+        {
+          return -1.0;
+        }
+
+        /// \brief Maximal value
+        static constexpr fast_reduce
+        max()
+        {
+          return 1.0;
+        }
+
       private:
         signed char _value;
 
@@ -185,25 +266,35 @@ namespace adiar
     // TODO: Merge all enums into a single 64 bit integer to safe on space?
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Chosen `access` (default `Auto`).
+    /// \brief `access` (default `Auto`).
     ////////////////////////////////////////////////////////////////////////////
     access _access = access::Auto;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Chosen `memory`  (default `Auto`).
+    /// \brief `memory` (default `Auto`).
     ////////////////////////////////////////////////////////////////////////////
     memory _memory = memory::Auto;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Chosen `quantify` (default `Auto`).
+    /// \brief `quantify` algorithm (default `Nested`).
     ////////////////////////////////////////////////////////////////////////////
-    quantify _quantify = quantify::Auto;
+    quantify::algorithm _quantify__algorithm = quantify::Nested;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Maximal growth during repeated transposition of `quantify`.
+    ////////////////////////////////////////////////////////////////////////////
+    quantify::transposition_growth _quantify__transposition_growth = 0.5;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Maximal number of repeated transpositions in `quantify`.
+    ////////////////////////////////////////////////////////////////////////////
+    quantify::transposition_max _quantify__transposition_max = 1;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Chosen epsilon value for Nested Sweeping to start skipping the
     ///        expensive node merging computations (if applicable).
     ////////////////////////////////////////////////////////////////////////////
-    // TODO: set to positive value
+    // TODO: set to ~5%
     nested::fast_reduce _nested__fast_reduce = -1.0;
 
   public:
@@ -239,8 +330,22 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Conversion construction from `quantify` enum.
     ////////////////////////////////////////////////////////////////////////////
-    exec_policy(const quantify& qm)
-      : _quantify(qm)
+    exec_policy(const quantify::algorithm& qa)
+      : _quantify__algorithm(qa)
+    {}
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Conversion construction from `quantify` enum.
+    ////////////////////////////////////////////////////////////////////////////
+    exec_policy(const quantify::transposition_growth& tg)
+      : _quantify__transposition_growth(tg)
+    {}
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Conversion construction from `quantify` enum.
+    ////////////////////////////////////////////////////////////////////////////
+    exec_policy(const quantify::transposition_max& tm)
+      : _quantify__transposition_max(tm)
     {}
 
     ////////////////////////////////////////////////////////////////////////////
@@ -282,7 +387,10 @@ namespace adiar
     {
       // Order based from the most generic to the most specific setting.
       return this->_memory == ep._memory && this->_access == ep._access
-        && this->_quantify == ep._quantify && this->_nested__fast_reduce == ep._nested__fast_reduce;
+        && this->_quantify__algorithm == ep._quantify__algorithm
+        && this->_quantify__transposition_growth == ep._quantify__transposition_growth
+        && this->_quantify__transposition_max == ep._quantify__transposition_max
+        && this->_nested__fast_reduce == ep._nested__fast_reduce;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -336,23 +444,63 @@ namespace adiar
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Set the quantify strategy.
+    /// \brief Set the quantify algorithm.
     ////////////////////////////////////////////////////////////////////////////
     exec_policy&
-    set(const quantify& qs)
+    set(const quantify::algorithm& qa)
     {
-      this->_quantify = qs;
+      this->_quantify__algorithm = qa;
       return *this;
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Create a copy with the quantify strategy changed.
+    /// \brief Create a copy with the quantify algorithm changed.
     ////////////////////////////////////////////////////////////////////////////
     exec_policy
-    operator&(const quantify& qs) const
+    operator&(const quantify::algorithm& qa) const
     {
       exec_policy ep = *this;
-      return ep.set(qs);
+      return ep.set(qa);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Set the quantify strategy.
+    ////////////////////////////////////////////////////////////////////////////
+    exec_policy&
+    set(const quantify::transposition_growth& tg)
+    {
+      this->_quantify__transposition_growth = tg;
+      return *this;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Create a copy with the quantify algorithm changed.
+    ////////////////////////////////////////////////////////////////////////////
+    exec_policy
+    operator&(const quantify::transposition_growth& tg) const
+    {
+      exec_policy ep = *this;
+      return ep.set(tg);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Set the quantify strategy.
+    ////////////////////////////////////////////////////////////////////////////
+    exec_policy&
+    set(const quantify::transposition_max& tm)
+    {
+      this->_quantify__transposition_max = tm;
+      return *this;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Create a copy with the quantify algorithm changed.
+    ////////////////////////////////////////////////////////////////////////////
+    exec_policy
+    operator&(const quantify::transposition_max& tm) const
+    {
+      exec_policy ep = *this;
+      return ep.set(tm);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -400,10 +548,30 @@ namespace adiar
   /// \brief Chosen quantification strategy.
   ////////////////////////////////////////////////////////////////////////////
   template <>
-  inline const exec_policy::quantify&
-  exec_policy::get<exec_policy::quantify>() const
+  inline const exec_policy::quantify::algorithm&
+  exec_policy::get<exec_policy::quantify::algorithm>() const
   {
-    return this->_quantify;
+    return this->_quantify__algorithm;
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Chosen quantification strategy.
+  ////////////////////////////////////////////////////////////////////////////
+  template <>
+  inline const exec_policy::quantify::transposition_growth&
+  exec_policy::get<exec_policy::quantify::transposition_growth>() const
+  {
+    return this->_quantify__transposition_growth;
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Chosen quantification strategy.
+  ////////////////////////////////////////////////////////////////////////////
+  template <>
+  inline const exec_policy::quantify::transposition_max&
+  exec_policy::get<exec_policy::quantify::transposition_max>() const
+  {
+    return this->_quantify__transposition_max;
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -424,109 +592,14 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Lift enum values to `exec_policy`.
   //////////////////////////////////////////////////////////////////////////////
-  inline exec_policy
-  operator&(const exec_policy::access& am, const exec_policy::memory& mm)
+  template <typename A, typename B>
+  typename std::enable_if<
+    std::is_convertible<A, exec_policy>::value && !std::is_same<A, exec_policy>::value
+      && std::is_convertible<A, exec_policy>::value && !std::is_same<A, exec_policy>::value,
+    exec_policy>::type
+  operator&(const A& a, const B& b)
   {
-    return exec_policy(am) & mm;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Lift enum values to `exec_policy`.
-  //////////////////////////////////////////////////////////////////////////////
-  inline exec_policy
-  operator&(const exec_policy::memory& mm, const exec_policy::access& am)
-  {
-    return exec_policy(mm) & am;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Lift enum values to `exec_policy`.
-  //////////////////////////////////////////////////////////////////////////////
-  inline exec_policy
-  operator&(const exec_policy::access& am, const exec_policy::nested::fast_reduce& fr)
-  {
-    return exec_policy(am) & fr;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Lift enum values to `exec_policy`.
-  //////////////////////////////////////////////////////////////////////////////
-  inline exec_policy
-  operator&(const exec_policy::nested::fast_reduce& fr, const exec_policy::access& am)
-  {
-    return exec_policy(fr) & am;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Lift enum values to `exec_policy`.
-  //////////////////////////////////////////////////////////////////////////////
-  inline exec_policy
-  operator&(const exec_policy::access& am, const exec_policy::quantify& qs)
-  {
-    return exec_policy(am) & qs;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Lift enum values to `exec_policy`.
-  //////////////////////////////////////////////////////////////////////////////
-  inline exec_policy
-  operator&(const exec_policy::quantify& qs, const exec_policy::access& am)
-  {
-    return exec_policy(qs) & am;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Lift enum values to `exec_policy`.
-  //////////////////////////////////////////////////////////////////////////////
-  inline exec_policy
-  operator&(const exec_policy::memory& mm, const exec_policy::nested::fast_reduce& fr)
-  {
-    return exec_policy(mm) & fr;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Lift enum values to `exec_policy`.
-  //////////////////////////////////////////////////////////////////////////////
-  inline exec_policy
-  operator&(const exec_policy::nested::fast_reduce& fr, const exec_policy::memory& mm)
-  {
-    return exec_policy(fr) & mm;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Lift enum values to `exec_policy`.
-  //////////////////////////////////////////////////////////////////////////////
-  inline exec_policy
-  operator&(const exec_policy::memory& mm, const exec_policy::quantify& qs)
-  {
-    return exec_policy(mm) & qs;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Lift enum values to `exec_policy`.
-  //////////////////////////////////////////////////////////////////////////////
-  inline exec_policy
-  operator&(const exec_policy::quantify& qs, const exec_policy::memory& mm)
-  {
-    return exec_policy(qs) & mm;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Lift enum values to `exec_policy`.
-  //////////////////////////////////////////////////////////////////////////////
-  inline exec_policy
-  operator&(const exec_policy::quantify& qs, const exec_policy::nested::fast_reduce& fr)
-  {
-    return exec_policy(qs) & fr;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Lift enum values to `exec_policy`.
-  //////////////////////////////////////////////////////////////////////////////
-  inline exec_policy
-  operator&(const exec_policy::nested::fast_reduce& fr, const exec_policy::quantify& qs)
-  {
-    return exec_policy(fr) & qs;
+    return exec_policy(a) & b;
   }
 
   /// \endcond
