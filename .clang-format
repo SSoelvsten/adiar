@@ -1,10 +1,28 @@
 Language: Cpp
 Standard: c++17
 
+
+# ----------------------------------------------------------
+# TODOs
+#
+# AlignOperands: AlignAfterOperator
+#
+# AllowAllArgumentsOnNextLine: should move the parentheses
+#                              to the next line too
+
+# ----------------------------------------------------------
+# Settings
+
 AlignAfterOpenBracket: Align
-AlignOperands: AlignAfterOperator
-AllowAllArgumentsOnNextLine: false
+AlignOperands: DontAlign
+AllowAllArgumentsOnNextLine: true
 AllowAllParametersOfDeclarationOnNextLine: false
+AlignConsecutiveAssignments:
+    Enabled: true
+    AcrossEmptyLines: false
+    AcrossComments: false
+    PadOperators: true
+AlignEscapedNewlines: Left
 AllowShortBlocksOnASingleLine: Always
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortEnumsOnASingleLine: false
@@ -41,6 +59,7 @@ BreakConstructorInitializers: BeforeComma
 BreakInheritanceList: BeforeComma
 ColumnLimit: 100
 ConstructorInitializerIndentWidth: 2
+ContinuationIndentWidth: 2
 Cpp11BracedListStyle: false
 FixNamespaceComments: false
 IncludeBlocks: Regroup
@@ -64,6 +83,7 @@ NamespaceIndentation: All
 PointerAlignment: Left
 QualifierAlignment: Left
 ReferenceAlignment: Left
+RemoveParentheses: MultipleParentheses
 SeparateDefinitionBlocks: Always
 SpaceAfterTemplateKeyword: true
 SpaceBeforeParens: ControlStatements
