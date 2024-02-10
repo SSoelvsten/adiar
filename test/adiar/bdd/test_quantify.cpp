@@ -1,5 +1,4 @@
 #include "../../test.h"
-
 #include <vector>
 
 go_bandit([]() {
@@ -53,14 +52,14 @@ go_bandit([]() {
     shared_levelized_file<bdd::node_type> bdd_2;
 
     const node n2_5 = node(2, node::max_id, ptr_uint64(false), ptr_uint64(true));
-    const node n2_4 = node(2, node::max_id-1, ptr_uint64(true), ptr_uint64(false));
+    const node n2_4 = node(2, node::max_id - 1, ptr_uint64(true), ptr_uint64(false));
     const node n2_3 = node(1, node::max_id, n2_5.uid(), ptr_uint64(false));
-    const node n2_2 = node(1, node::max_id-1, n2_4.uid(), n2_5.uid());
+    const node n2_2 = node(1, node::max_id - 1, n2_4.uid(), n2_5.uid());
     const node n2_1 = node(0, node::max_id, n2_2.uid(), n2_3.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw_2(bdd_2);
-      nw_2 << n2_5 << n2_4 << n2_3 <<n2_2 << n2_1;
+      nw_2 << n2_5 << n2_4 << n2_3 << n2_2 << n2_1;
     }
 
     ////////////////////////////////////////////////////////////////////////
@@ -77,7 +76,7 @@ go_bandit([]() {
     shared_levelized_file<bdd::node_type> bdd_3;
 
     const node n3_4 = node(2, node::max_id, ptr_uint64(false), ptr_uint64(true));
-    const node n3_3 = node(2, node::max_id-1, ptr_uint64(true), ptr_uint64(false));
+    const node n3_3 = node(2, node::max_id - 1, ptr_uint64(true), ptr_uint64(false));
     const node n3_2 = node(1, node::max_id, n3_3.uid(), n3_4.uid());
     const node n3_1 = node(0, node::max_id, n3_3.uid(), n3_2.uid());
 
@@ -103,7 +102,7 @@ go_bandit([]() {
 
     const node n4_5 = node(3, node::max_id, ptr_uint64(false), ptr_uint64(true));
     const node n4_4 = node(2, node::max_id, n4_5.uid(), ptr_uint64(true));
-    const node n4_3 = node(2, node::max_id-1, ptr_uint64(false), n4_5.uid());
+    const node n4_3 = node(2, node::max_id - 1, ptr_uint64(false), n4_5.uid());
     const node n4_2 = node(1, node::max_id, n4_3.uid(), n4_4.uid());
     const node n4_1 = node(0, node::max_id, n4_3.uid(), n4_2.uid());
 
@@ -126,7 +125,7 @@ go_bandit([]() {
     shared_levelized_file<bdd::node_type> bdd_5;
 
     const node n5_4 = node(2, node::max_id, ptr_uint64(true), ptr_uint64(false));
-    const node n5_3 = node(2, node::max_id-1, ptr_uint64(false), ptr_uint64(true));
+    const node n5_3 = node(2, node::max_id - 1, ptr_uint64(false), ptr_uint64(true));
     const node n5_2 = node(1, node::max_id, n5_3.uid(), n5_4.uid());
     const node n5_1 = node(0, node::max_id, ptr_uint64(false), n5_2.uid());
 
@@ -162,14 +161,24 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw_6(bdd_6);
-      nw_6 << node(3, node::max_id,   ptr_uint64(false),                   ptr_uint64(true))                    // 8
-           << node(3, node::max_id-1, ptr_uint64(true),                    ptr_uint64(false))                   // 7
-           << node(2, node::max_id,   ptr_uint64(3, ptr_uint64::max_id),   ptr_uint64(true))                    // 6
-           << node(2, node::max_id-1, ptr_uint64(3, ptr_uint64::max_id-1), ptr_uint64(false))                   // 5
-           << node(2, node::max_id-2, ptr_uint64(false),                   ptr_uint64(3, ptr_uint64::max_id))   // 4
-           << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-2), ptr_uint64(2, ptr_uint64::max_id))   // 3
-           << node(1, node::max_id-1, ptr_uint64(2, ptr_uint64::max_id),   ptr_uint64(2, ptr_uint64::max_id-1)) // 2
-           << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id),   ptr_uint64(1, ptr_uint64::max_id-1)) // 1
+      nw_6 << node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))                 // 8
+           << node(3, node::max_id - 1, ptr_uint64(true), ptr_uint64(false))             // 7
+           << node(2, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true)) // 6
+           << node(
+                2, node::max_id - 1, ptr_uint64(3, ptr_uint64::max_id - 1), ptr_uint64(false)) // 5
+           << node(2, node::max_id - 2, ptr_uint64(false), ptr_uint64(3, ptr_uint64::max_id))  // 4
+           << node(1,
+                   node::max_id,
+                   ptr_uint64(2, ptr_uint64::max_id - 2),
+                   ptr_uint64(2, ptr_uint64::max_id)) // 3
+           << node(1,
+                   node::max_id - 1,
+                   ptr_uint64(2, ptr_uint64::max_id),
+                   ptr_uint64(2, ptr_uint64::max_id - 1)) // 2
+           << node(0,
+                   node::max_id,
+                   ptr_uint64(1, ptr_uint64::max_id),
+                   ptr_uint64(1, ptr_uint64::max_id - 1)) // 1
         ;
     }
 
@@ -179,15 +188,28 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw_6(bdd_6_x4T);
-      nw_6 << node(4, node::max_id,   ptr_uint64(false),                   ptr_uint64(true))                    // T
-           << node(3, node::max_id,   ptr_uint64(false),                   ptr_uint64(4, ptr_uint64::max_id))   // 8
-           << node(3, node::max_id-1, ptr_uint64(4, ptr_uint64::max_id),   ptr_uint64(false))                   // 7
-           << node(2, node::max_id,   ptr_uint64(3, ptr_uint64::max_id),   ptr_uint64(4, ptr_uint64::max_id))   // 6
-           << node(2, node::max_id-1, ptr_uint64(3, ptr_uint64::max_id-1), ptr_uint64(false))                   // 5
-           << node(2, node::max_id-2, ptr_uint64(false),                   ptr_uint64(3, ptr_uint64::max_id))   // 4
-           << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-2), ptr_uint64(2, ptr_uint64::max_id))   // 3
-           << node(1, node::max_id-1, ptr_uint64(2, ptr_uint64::max_id),   ptr_uint64(2, ptr_uint64::max_id-1)) // 2
-           << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id),   ptr_uint64(1, ptr_uint64::max_id-1)) // 1
+      nw_6 << node(4, node::max_id, ptr_uint64(false), ptr_uint64(true))                      // T
+           << node(3, node::max_id, ptr_uint64(false), ptr_uint64(4, ptr_uint64::max_id))     // 8
+           << node(3, node::max_id - 1, ptr_uint64(4, ptr_uint64::max_id), ptr_uint64(false)) // 7
+           << node(2,
+                   node::max_id,
+                   ptr_uint64(3, ptr_uint64::max_id),
+                   ptr_uint64(4, ptr_uint64::max_id)) // 6
+           << node(
+                2, node::max_id - 1, ptr_uint64(3, ptr_uint64::max_id - 1), ptr_uint64(false)) // 5
+           << node(2, node::max_id - 2, ptr_uint64(false), ptr_uint64(3, ptr_uint64::max_id))  // 4
+           << node(1,
+                   node::max_id,
+                   ptr_uint64(2, ptr_uint64::max_id - 2),
+                   ptr_uint64(2, ptr_uint64::max_id)) // 3
+           << node(1,
+                   node::max_id - 1,
+                   ptr_uint64(2, ptr_uint64::max_id),
+                   ptr_uint64(2, ptr_uint64::max_id - 1)) // 2
+           << node(0,
+                   node::max_id,
+                   ptr_uint64(1, ptr_uint64::max_id),
+                   ptr_uint64(1, ptr_uint64::max_id - 1)) // 1
         ;
     }
 
@@ -208,11 +230,20 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw_7(bdd_7);
-      nw_7 << node(2, node::max_id,   ptr_uint64(false),      ptr_uint64(true))       // 5
-           << node(2, node::max_id-1, ptr_uint64(true),       ptr_uint64(false))      // 4
-           << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id),   ptr_uint64(2, ptr_uint64::max_id-1)) // 3
-           << node(1, node::max_id-1, ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(2, ptr_uint64::max_id))   // 2
-           << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id),   ptr_uint64(1, ptr_uint64::max_id-1)) // 1
+      nw_7 << node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))     // 5
+           << node(2, node::max_id - 1, ptr_uint64(true), ptr_uint64(false)) // 4
+           << node(1,
+                   node::max_id,
+                   ptr_uint64(2, ptr_uint64::max_id),
+                   ptr_uint64(2, ptr_uint64::max_id - 1)) // 3
+           << node(1,
+                   node::max_id - 1,
+                   ptr_uint64(2, ptr_uint64::max_id - 1),
+                   ptr_uint64(2, ptr_uint64::max_id)) // 2
+           << node(0,
+                   node::max_id,
+                   ptr_uint64(1, ptr_uint64::max_id),
+                   ptr_uint64(1, ptr_uint64::max_id - 1)) // 1
         ;
     }
 
@@ -236,19 +267,31 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw_8a(bdd_8a);
-      nw_8a << node(3, node::max_id,   ptr_uint64(false),      ptr_uint64(true))       // 5
-            << node(2, node::max_id,   ptr_uint64(false),      ptr_uint64(3, ptr_uint64::max_id))   // 4
-            << node(2, node::max_id-1, ptr_uint64(true),       ptr_uint64(3, ptr_uint64::max_id))   // 3
-            << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(2, ptr_uint64::max_id))   // 2
-            << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id),   ptr_uint64(3, ptr_uint64::max_id))   // 1
+      nw_8a << node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))                     // 5
+            << node(2, node::max_id, ptr_uint64(false), ptr_uint64(3, ptr_uint64::max_id))    // 4
+            << node(2, node::max_id - 1, ptr_uint64(true), ptr_uint64(3, ptr_uint64::max_id)) // 3
+            << node(1,
+                    node::max_id,
+                    ptr_uint64(2, ptr_uint64::max_id - 1),
+                    ptr_uint64(2, ptr_uint64::max_id)) // 2
+            << node(0,
+                    node::max_id,
+                    ptr_uint64(1, ptr_uint64::max_id),
+                    ptr_uint64(3, ptr_uint64::max_id)) // 1
         ;
 
       node_writer nw_8b(bdd_8b);
-      nw_8b << node(3, node::max_id,   ptr_uint64(false),      ptr_uint64(true))       // 5
-            << node(2, node::max_id,   ptr_uint64(3, ptr_uint64::max_id),   ptr_uint64(false))      // 4
-            << node(2, node::max_id-1, ptr_uint64(3, ptr_uint64::max_id),   ptr_uint64(true))       // 3
-            << node(1, node::max_id,   ptr_uint64(2, ptr_uint64::max_id-1), ptr_uint64(2, ptr_uint64::max_id))   // 2
-            << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id),   ptr_uint64(3, ptr_uint64::max_id))   // 1
+      nw_8b << node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))                     // 5
+            << node(2, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(false))    // 4
+            << node(2, node::max_id - 1, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true)) // 3
+            << node(1,
+                    node::max_id,
+                    ptr_uint64(2, ptr_uint64::max_id - 1),
+                    ptr_uint64(2, ptr_uint64::max_id)) // 2
+            << node(0,
+                    node::max_id,
+                    ptr_uint64(1, ptr_uint64::max_id),
+                    ptr_uint64(3, ptr_uint64::max_id)) // 1
         ;
     }
 
@@ -269,14 +312,14 @@ go_bandit([]() {
     //      / \
     //      F T
     */
-    const node n9T_8 = node(6, node::max_id,   ptr_uint64(false), ptr_uint64(true));
-    const node n9T_7 = node(5, node::max_id,   ptr_uint64(false), ptr_uint64(true));
-    const node n9T_6 = node(4, node::max_id,   n9T_8.uid(),       n9T_7.uid());
-    const node n9T_5 = node(3, node::max_id,   ptr_uint64(false), ptr_uint64(true));
-    const node n9T_4 = node(3, node::max_id-1, n9T_6.uid(),       ptr_uint64(false));
-    const node n9T_3 = node(2, node::max_id,   n9T_5.uid(),       n9T_7.uid());
-    const node n9T_2 = node(2, node::max_id-1, n9T_4.uid(),       n9T_5.uid());
-    const node n9T_1 = node(1, node::max_id,   n9T_2.uid(),       n9T_3.uid());
+    const node n9T_8 = node(6, node::max_id, ptr_uint64(false), ptr_uint64(true));
+    const node n9T_7 = node(5, node::max_id, ptr_uint64(false), ptr_uint64(true));
+    const node n9T_6 = node(4, node::max_id, n9T_8.uid(), n9T_7.uid());
+    const node n9T_5 = node(3, node::max_id, ptr_uint64(false), ptr_uint64(true));
+    const node n9T_4 = node(3, node::max_id - 1, n9T_6.uid(), ptr_uint64(false));
+    const node n9T_3 = node(2, node::max_id, n9T_5.uid(), n9T_7.uid());
+    const node n9T_2 = node(2, node::max_id - 1, n9T_4.uid(), n9T_5.uid());
+    const node n9T_1 = node(1, node::max_id, n9T_2.uid(), n9T_3.uid());
 
     shared_levelized_file<bdd::node_type> bdd_9T;
     { // Garbage collect writer to free write-lock
@@ -301,14 +344,14 @@ go_bandit([]() {
     //            / \
     //            F T
     */
-    const node n9F_8 = node(6, node::max_id,   ptr_uint64(false), ptr_uint64(true));
-    const node n9F_7 = node(5, node::max_id,   ptr_uint64(false), n9F_8.uid());
-    const node n9F_6 = node(4, node::max_id,   ptr_uint64(false), n9F_7.uid());
-    const node n9F_5 = node(3, node::max_id,   ptr_uint64(false), ptr_uint64(true));
-    const node n9F_4 = node(3, node::max_id-1, n9F_6.uid(),       ptr_uint64(false));
-    const node n9F_3 = node(2, node::max_id,   n9F_5.uid(),       n9F_7.uid());
-    const node n9F_2 = node(2, node::max_id-1, n9F_4.uid(),       n9F_5.uid());
-    const node n9F_1 = node(1, node::max_id,   n9F_2.uid(),       n9F_3.uid());
+    const node n9F_8 = node(6, node::max_id, ptr_uint64(false), ptr_uint64(true));
+    const node n9F_7 = node(5, node::max_id, ptr_uint64(false), n9F_8.uid());
+    const node n9F_6 = node(4, node::max_id, ptr_uint64(false), n9F_7.uid());
+    const node n9F_5 = node(3, node::max_id, ptr_uint64(false), ptr_uint64(true));
+    const node n9F_4 = node(3, node::max_id - 1, n9F_6.uid(), ptr_uint64(false));
+    const node n9F_3 = node(2, node::max_id, n9F_5.uid(), n9F_7.uid());
+    const node n9F_2 = node(2, node::max_id - 1, n9F_4.uid(), n9F_5.uid());
+    const node n9F_1 = node(1, node::max_id, n9F_2.uid(), n9F_3.uid());
 
     shared_levelized_file<bdd::node_type> bdd_9F;
 
@@ -332,14 +375,14 @@ go_bandit([]() {
     //             / \
     //             F T
     */
-    const node n10_8 = node(4, node::max_id,   ptr_uint64(false), ptr_uint64(true));
-    const node n10_7 = node(3, node::max_id,   n10_8.uid(),       ptr_uint64(true));
-    const node n10_6 = node(3, node::max_id-1, n10_8.uid(),       n10_8.uid());
-    const node n10_5 = node(3, node::max_id-2, ptr_uint64(true),  n10_8.uid());
-    const node n10_4 = node(2, node::max_id,   n10_6.uid(),       n10_7.uid());
-    const node n10_3 = node(2, node::max_id-1, n10_5.uid(),       n10_6.uid());
-    const node n10_2 = node(1, node::max_id,   n10_3.uid(),       n10_4.uid());
-    const node n10_1 = node(0, node::max_id,   ptr_uint64(false), n10_2.uid());
+    const node n10_8 = node(4, node::max_id, ptr_uint64(false), ptr_uint64(true));
+    const node n10_7 = node(3, node::max_id, n10_8.uid(), ptr_uint64(true));
+    const node n10_6 = node(3, node::max_id - 1, n10_8.uid(), n10_8.uid());
+    const node n10_5 = node(3, node::max_id - 2, ptr_uint64(true), n10_8.uid());
+    const node n10_4 = node(2, node::max_id, n10_6.uid(), n10_7.uid());
+    const node n10_3 = node(2, node::max_id - 1, n10_5.uid(), n10_6.uid());
+    const node n10_2 = node(1, node::max_id, n10_3.uid(), n10_4.uid());
+    const node n10_1 = node(0, node::max_id, ptr_uint64(false), n10_2.uid());
 
     shared_levelized_file<bdd::node_type> bdd_10;
 
@@ -361,10 +404,10 @@ go_bandit([]() {
     */
     shared_levelized_file<bdd::node_type> bdd_11;
 
-    node n11_4 = node(6, node::max_id,   ptr_uint64(false), ptr_uint64(true));
-    node n11_3 = node(6, node::max_id-1, ptr_uint64(true),  ptr_uint64(false));
-    node n11_2 = node(4, node::max_id,   n11_3.uid(),       n11_4.uid());
-    node n11_1 = node(2, node::max_id,   n11_3.uid(),       n11_2.uid());
+    node n11_4 = node(6, node::max_id, ptr_uint64(false), ptr_uint64(true));
+    node n11_3 = node(6, node::max_id - 1, ptr_uint64(true), ptr_uint64(false));
+    node n11_2 = node(4, node::max_id, n11_3.uid(), n11_4.uid());
+    node n11_1 = node(2, node::max_id, n11_3.uid(), n11_2.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw_11(bdd_11);
@@ -386,13 +429,13 @@ go_bandit([]() {
     //              / \
     //              F T
     */
-    const node n12a_7 = node(4, node::max_id,   ptr_uint64(false), ptr_uint64(true));
-    const node n12a_6 = node(3, node::max_id,   ptr_uint64(false), ptr_uint64(true));
-    const node n12a_5 = node(3, node::max_id-1, ptr_uint64(true),  ptr_uint64(false));
-    const node n12a_4 = node(2, node::max_id,   n12a_6.uid(),      n12a_7.uid());
-    const node n12a_3 = node(2, node::max_id-1, n12a_5.uid(),      n12a_6.uid());
-    const node n12a_2 = node(1, node::max_id,   n12a_3.uid(),      n12a_4.uid());
-    const node n12a_1 = node(0, node::max_id,   n12a_3.uid(),      n12a_2.uid());
+    const node n12a_7 = node(4, node::max_id, ptr_uint64(false), ptr_uint64(true));
+    const node n12a_6 = node(3, node::max_id, ptr_uint64(false), ptr_uint64(true));
+    const node n12a_5 = node(3, node::max_id - 1, ptr_uint64(true), ptr_uint64(false));
+    const node n12a_4 = node(2, node::max_id, n12a_6.uid(), n12a_7.uid());
+    const node n12a_3 = node(2, node::max_id - 1, n12a_5.uid(), n12a_6.uid());
+    const node n12a_2 = node(1, node::max_id, n12a_3.uid(), n12a_4.uid());
+    const node n12a_1 = node(0, node::max_id, n12a_3.uid(), n12a_2.uid());
 
     shared_levelized_file<bdd::node_type> bdd_12a;
 
@@ -417,14 +460,14 @@ go_bandit([]() {
     //      / \   / \
     //      T F   F T
     */
-    const node n12b_8 = node(4, node::max_id,   ptr_uint64(false), ptr_uint64(true));
-    const node n12b_7 = node(4, node::max_id-1, ptr_uint64(true),  ptr_uint64(false));
-    const node n12b_6 = node(3, node::max_id,   ptr_uint64(false), n12b_8.uid());
-    const node n12b_5 = node(3, node::max_id-1, n12b_7.uid(),      ptr_uint64(false));
-    const node n12b_4 = node(2, node::max_id,   n12b_6.uid(),      n12b_8.uid());
-    const node n12b_3 = node(2, node::max_id-1, n12b_5.uid(),      n12b_6.uid());
-    const node n12b_2 = node(1, node::max_id,   n12b_3.uid(),      n12b_4.uid());
-    const node n12b_1 = node(0, node::max_id,   n12b_3.uid(),      n12b_2.uid());
+    const node n12b_8 = node(4, node::max_id, ptr_uint64(false), ptr_uint64(true));
+    const node n12b_7 = node(4, node::max_id - 1, ptr_uint64(true), ptr_uint64(false));
+    const node n12b_6 = node(3, node::max_id, ptr_uint64(false), n12b_8.uid());
+    const node n12b_5 = node(3, node::max_id - 1, n12b_7.uid(), ptr_uint64(false));
+    const node n12b_4 = node(2, node::max_id, n12b_6.uid(), n12b_8.uid());
+    const node n12b_3 = node(2, node::max_id - 1, n12b_5.uid(), n12b_6.uid());
+    const node n12b_2 = node(1, node::max_id, n12b_3.uid(), n12b_4.uid());
+    const node n12b_1 = node(0, node::max_id, n12b_3.uid(), n12b_2.uid());
 
     shared_levelized_file<bdd::node_type> bdd_12b;
 
@@ -470,30 +513,29 @@ go_bandit([]() {
     */
 
     // This is definitely NOT canonical... it is not worth making.
-    const node n13_16 = node(7, node::max_id,   ptr_uint64(false), ptr_uint64(true));
-    const node n13_15 = node(6, node::max_id,   ptr_uint64(false), ptr_uint64(true));
-    const node n13_14 = node(6, node::max_id-1, ptr_uint64(true),  ptr_uint64(false));
-    const node n13_13 = node(5, node::max_id,   ptr_uint64(false), ptr_uint64(true));
-    const node n13_12 = node(5, node::max_id-1, ptr_uint64(true),  ptr_uint64(false));
-    const node n13_11 = node(4, node::max_id,   n13_12.uid(),      n13_13.uid());
-    const node n13_10 = node(4, node::max_id-1, n13_13.uid(),      n13_12.uid());
-    const node n13_9  = node(4, node::max_id-2, n13_14.uid(),      n13_15.uid());
-    const node n13_8  = node(4, node::max_id-3, n13_15.uid(),      n13_14.uid());
-    const node n13_7  = node(3, node::max_id,   n13_10.uid(),      n13_11.uid());
-    const node n13_6  = node(3, node::max_id-1, ptr_uint64(false), n13_16.uid());
-    const node n13_5  = node(2, node::max_id,   ptr_uint64(false), n13_16.uid());
-    const node n13_4  = node(2, node::max_id-1, n13_8.uid(),       n13_9.uid());
-    const node n13_3  = node(1, node::max_id,   n13_6.uid(),       n13_7.uid());
-    const node n13_2  = node(1, node::max_id-1, n13_4.uid(),       n13_5.uid());
-    const node n13_1  = node(0, node::max_id,   n13_2.uid(),       n13_3.uid());
+    const node n13_16 = node(7, node::max_id, ptr_uint64(false), ptr_uint64(true));
+    const node n13_15 = node(6, node::max_id, ptr_uint64(false), ptr_uint64(true));
+    const node n13_14 = node(6, node::max_id - 1, ptr_uint64(true), ptr_uint64(false));
+    const node n13_13 = node(5, node::max_id, ptr_uint64(false), ptr_uint64(true));
+    const node n13_12 = node(5, node::max_id - 1, ptr_uint64(true), ptr_uint64(false));
+    const node n13_11 = node(4, node::max_id, n13_12.uid(), n13_13.uid());
+    const node n13_10 = node(4, node::max_id - 1, n13_13.uid(), n13_12.uid());
+    const node n13_9  = node(4, node::max_id - 2, n13_14.uid(), n13_15.uid());
+    const node n13_8  = node(4, node::max_id - 3, n13_15.uid(), n13_14.uid());
+    const node n13_7  = node(3, node::max_id, n13_10.uid(), n13_11.uid());
+    const node n13_6  = node(3, node::max_id - 1, ptr_uint64(false), n13_16.uid());
+    const node n13_5  = node(2, node::max_id, ptr_uint64(false), n13_16.uid());
+    const node n13_4  = node(2, node::max_id - 1, n13_8.uid(), n13_9.uid());
+    const node n13_3  = node(1, node::max_id, n13_6.uid(), n13_7.uid());
+    const node n13_2  = node(1, node::max_id - 1, n13_4.uid(), n13_5.uid());
+    const node n13_1  = node(0, node::max_id, n13_2.uid(), n13_3.uid());
 
     shared_levelized_file<bdd::node_type> bdd_13;
 
     { // Garbage collect writer to free write-lock
       node_writer nw(bdd_13);
-      nw << n13_16 << n13_15 << n13_14 << n13_13 << n13_12 << n13_11 << n13_10
-         << n13_9 << n13_8 << n13_7 << n13_6 << n13_5 << n13_4 << n13_3 << n13_2
-         << n13_1;
+      nw << n13_16 << n13_15 << n13_14 << n13_13 << n13_12 << n13_11 << n13_10 << n13_9 << n13_8
+         << n13_7 << n13_6 << n13_5 << n13_4 << n13_3 << n13_2 << n13_1;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -516,26 +558,26 @@ go_bandit([]() {
     //              /  \ /  \
     //              T  F F  T
     */
-    const node n14_13 = node(8, node::max_id,   ptr_uint64(false), ptr_uint64(true));
-    const node n14_12 = node(8, node::max_id-1, ptr_uint64(true),  ptr_uint64(false));
-    const node n14_11 = node(7, node::max_id,   ptr_uint64(false), ptr_uint64(true));
-    const node n14_10 = node(7, node::max_id-1, ptr_uint64(true),  ptr_uint64(false));
-    const node n14_9  = node(6, node::max_id,   n14_12.uid(),      n14_13.uid());
-    const node n14_8  = node(5, node::max_id,   n14_9.uid(),       n14_11.uid());
-    const node n14_7  = node(5, node::max_id-1, n14_10.uid(),      n14_9.uid());
-    const node n14_6  = node(4, node::max_id,   n14_8.uid(),       ptr_uint64(false));
-    const node n14_5  = node(4, node::max_id-1, n14_7.uid(),       n14_8.uid());
-    const node n14_4  = node(4, node::max_id-2, ptr_uint64(false), n14_7.uid());
-    const node n14_3  = node(3, node::max_id,   n14_5.uid(),       n14_6.uid());
-    const node n14_2  = node(3, node::max_id-1, n14_4.uid(),       n14_5.uid());
-    const node n14_1  = node(2, node::max_id,   n14_2.uid(),       n14_3.uid());
+    const node n14_13 = node(8, node::max_id, ptr_uint64(false), ptr_uint64(true));
+    const node n14_12 = node(8, node::max_id - 1, ptr_uint64(true), ptr_uint64(false));
+    const node n14_11 = node(7, node::max_id, ptr_uint64(false), ptr_uint64(true));
+    const node n14_10 = node(7, node::max_id - 1, ptr_uint64(true), ptr_uint64(false));
+    const node n14_9  = node(6, node::max_id, n14_12.uid(), n14_13.uid());
+    const node n14_8  = node(5, node::max_id, n14_9.uid(), n14_11.uid());
+    const node n14_7  = node(5, node::max_id - 1, n14_10.uid(), n14_9.uid());
+    const node n14_6  = node(4, node::max_id, n14_8.uid(), ptr_uint64(false));
+    const node n14_5  = node(4, node::max_id - 1, n14_7.uid(), n14_8.uid());
+    const node n14_4  = node(4, node::max_id - 2, ptr_uint64(false), n14_7.uid());
+    const node n14_3  = node(3, node::max_id, n14_5.uid(), n14_6.uid());
+    const node n14_2  = node(3, node::max_id - 1, n14_4.uid(), n14_5.uid());
+    const node n14_1  = node(2, node::max_id, n14_2.uid(), n14_3.uid());
 
     shared_levelized_file<bdd::node_type> bdd_14a;
 
     { // Garbage collect writer to free write-lock
       node_writer nw(bdd_14a);
-      nw << n14_13 << n14_12 << n14_11 << n14_10 << n14_9 << n14_8 << n14_7
-         << n14_6 << n14_5 << n14_4 << n14_3 << n14_2 << n14_1;
+      nw << n14_13 << n14_12 << n14_11 << n14_10 << n14_9 << n14_8 << n14_7 << n14_6 << n14_5
+         << n14_4 << n14_3 << n14_2 << n14_1;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -547,16 +589,15 @@ go_bandit([]() {
     //                  |     / \
     //               BDD 14   F T
     */
-    const node n14b_2  = node(1, node::max_id,   ptr_uint64(false), ptr_uint64(true));
-    const node n14b_1  = node(0, node::max_id,   n14_1.uid(),       n14b_2.uid());
+    const node n14b_2 = node(1, node::max_id, ptr_uint64(false), ptr_uint64(true));
+    const node n14b_1 = node(0, node::max_id, n14_1.uid(), n14b_2.uid());
 
     shared_levelized_file<bdd::node_type> bdd_14b;
 
     { // Garbage collect writer to free write-lock
       node_writer nw(bdd_14b);
-      nw << n14_13 << n14_12 << n14_11 << n14_10 << n14_9 << n14_8 << n14_7
-         << n14_6 << n14_5 << n14_4 << n14_3 << n14_2 << n14_1
-         << n14b_2 << n14b_1;
+      nw << n14_13 << n14_12 << n14_11 << n14_10 << n14_9 << n14_8 << n14_7 << n14_6 << n14_5
+         << n14_4 << n14_3 << n14_2 << n14_1 << n14b_2 << n14b_1;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -618,17 +659,21 @@ go_bandit([]() {
     /*
     //                            _______(1,a)_______
     //                           /                   \
-    //              __________(1,b)__________      (1,c)   <-- (1,c) is symmetric to (1,b) (these merge with (4,b) and (4,c))
-    //             /                         \       .         Size: 3 additional nodes (incl. (1,c))
+    //              __________(1,b)__________      (1,c)   <-- (1,c) is symmetric to (1,b) (these
+    merge with (4,b) and (4,c))
+    //             /                         \       .         Size: 3 additional nodes (incl.
+    (1,c))
     //           (2,b)                     (3,c)     .
     //           /   \                      |  \     .
     //          (b) (4,b)                (4,c) (c)
     //              /   \                /   \
-    //             (5) (6,d)           (5,d) (6)            <-- At this point we have copies of both inputs.
+    //             (5) (6,d)           (5,d) (6)            <-- At this point we have copies of both
+    inputs.
     //                 /   \           /   \                    Left subtree:  #nodes - 4
     //              (7,f) (9,g)    (8,d) (7,g)                  Right subtree: #nodes - 1
     //              /   \                /   \
-    //          (8,f)   (9,f)          (8,g) (9,g)          <-- (8,g) and (9,g) also produce the same pairs
+    //          (8,f)   (9,f)          (8,g) (9,g)          <-- (8,g) and (9,g) also produce the
+    same pairs
     //         /   |     |   \          / /   / /
     //        /    |     |    \        . .   . .
     //       /     |     |     \      . .   . .
@@ -660,73 +705,62 @@ go_bandit([]() {
     // NOTE: This is not going to be canonical (i.e. ordered) because that would
     //       become too messy.
 
-    const node n15_o  = node(13, node::max_id,   ptr_uint64(false), ptr_uint64(true));
-    const node n15_n  = node(13, node::max_id-1, ptr_uint64(true),  ptr_uint64(false));
+    const node n15_o = node(13, node::max_id, ptr_uint64(false), ptr_uint64(true));
+    const node n15_n = node(13, node::max_id - 1, ptr_uint64(true), ptr_uint64(false));
 
-    const node n15_17 = node(12, node::max_id,   ptr_uint64(false), ptr_uint64(true));
-    const node n15_16 = node(12, node::max_id-1, ptr_uint64(true),  ptr_uint64(false));
+    const node n15_17 = node(12, node::max_id, ptr_uint64(false), ptr_uint64(true));
+    const node n15_16 = node(12, node::max_id - 1, ptr_uint64(true), ptr_uint64(false));
 
-    const node n15_m  = node(11, node::max_id,   n15_o.uid(),       n15_n.uid());
-    const node n15_l  = node(11, node::max_id-1, n15_n.uid(),       n15_o.uid());
-    const node n15_15 = node(11, node::max_id-2, n15_17.uid(),      n15_16.uid());
-    const node n15_14 = node(11, node::max_id-3, n15_16.uid(),      n15_17.uid());
+    const node n15_m  = node(11, node::max_id, n15_o.uid(), n15_n.uid());
+    const node n15_l  = node(11, node::max_id - 1, n15_n.uid(), n15_o.uid());
+    const node n15_15 = node(11, node::max_id - 2, n15_17.uid(), n15_16.uid());
+    const node n15_14 = node(11, node::max_id - 3, n15_16.uid(), n15_17.uid());
 
-    const node n15_k  = node(10, node::max_id,   n15_m.uid(),       n15_l.uid());
-    const node n15_j  = node(10, node::max_id-1, n15_l.uid(),       n15_m.uid());
-    const node n15_13 = node(10, node::max_id-2, n15_15.uid(),      n15_14.uid());
-    const node n15_12 = node(10, node::max_id-3, n15_14.uid(),      n15_15.uid());
+    const node n15_k  = node(10, node::max_id, n15_m.uid(), n15_l.uid());
+    const node n15_j  = node(10, node::max_id - 1, n15_l.uid(), n15_m.uid());
+    const node n15_13 = node(10, node::max_id - 2, n15_15.uid(), n15_14.uid());
+    const node n15_12 = node(10, node::max_id - 3, n15_14.uid(), n15_15.uid());
 
-    const node n15_i  = node(9,  node::max_id,   n15_k.uid(),       n15_j.uid());
-    const node n15_h  = node(9,  node::max_id-1, n15_j.uid(),       n15_k.uid());
-    const node n15_11 = node(9,  node::max_id-2, n15_13.uid(),      n15_12.uid());
-    const node n15_10 = node(9,  node::max_id-3, n15_12.uid(),      n15_13.uid());
+    const node n15_i  = node(9, node::max_id, n15_k.uid(), n15_j.uid());
+    const node n15_h  = node(9, node::max_id - 1, n15_j.uid(), n15_k.uid());
+    const node n15_11 = node(9, node::max_id - 2, n15_13.uid(), n15_12.uid());
+    const node n15_10 = node(9, node::max_id - 3, n15_12.uid(), n15_13.uid());
 
-    const node n15_g  = node(8,  node::max_id,   n15_i.uid(),       n15_h.uid());
-    const node n15_f  = node(8,  node::max_id-1, n15_h.uid(),       n15_i.uid());
-    const node n15_9  = node(8,  node::max_id-2, n15_11.uid(),      n15_10.uid());
-    const node n15_8  = node(8,  node::max_id-3, n15_10.uid(),      n15_11.uid());
+    const node n15_g = node(8, node::max_id, n15_i.uid(), n15_h.uid());
+    const node n15_f = node(8, node::max_id - 1, n15_h.uid(), n15_i.uid());
+    const node n15_9 = node(8, node::max_id - 2, n15_11.uid(), n15_10.uid());
+    const node n15_8 = node(8, node::max_id - 3, n15_10.uid(), n15_11.uid());
 
-    const node n15_7  = node(7,  node::max_id,   n15_8.uid(),       n15_9.uid());
+    const node n15_7 = node(7, node::max_id, n15_8.uid(), n15_9.uid());
 
-    const node n15_d  = node(6,  node::max_id,   n15_f.uid(),       n15_g.uid());
-    const node n15_6  = node(6,  node::max_id-1, n15_7.uid(),       n15_9.uid());
-    const node n15_5  = node(6,  node::max_id-2, n15_8.uid(),       n15_7.uid());
+    const node n15_d = node(6, node::max_id, n15_f.uid(), n15_g.uid());
+    const node n15_6 = node(6, node::max_id - 1, n15_7.uid(), n15_9.uid());
+    const node n15_5 = node(6, node::max_id - 2, n15_8.uid(), n15_7.uid());
 
-    const node n15_c  = node(5,  node::max_id,   n15_d.uid(),       ptr_uint64(false));
-    const node n15_b  = node(5,  node::max_id-1, ptr_uint64(false), n15_d.uid());
-    const node n15_4  = node(5,  node::max_id-2, n15_5.uid(),       n15_6.uid());
+    const node n15_c = node(5, node::max_id, n15_d.uid(), ptr_uint64(false));
+    const node n15_b = node(5, node::max_id - 1, ptr_uint64(false), n15_d.uid());
+    const node n15_4 = node(5, node::max_id - 2, n15_5.uid(), n15_6.uid());
 
-    const node n15_3  = node(4,  node::max_id,   n15_4.uid(),       ptr_uint64(false));
-    const node n15_2  = node(4,  node::max_id-1, ptr_uint64(false), n15_4.uid());
+    const node n15_3 = node(4, node::max_id, n15_4.uid(), ptr_uint64(false));
+    const node n15_2 = node(4, node::max_id - 1, ptr_uint64(false), n15_4.uid());
 
-    const node n15_1  = node(3,  node::max_id,   n15_2.uid(),       n15_3.uid());
+    const node n15_1 = node(3, node::max_id, n15_2.uid(), n15_3.uid());
 
-    const node n15_a  = node(2,  node::max_id,   n15_b.uid(),       n15_c.uid());
+    const node n15_a = node(2, node::max_id, n15_b.uid(), n15_c.uid());
 
-    const node n15_r3 = node(1,  node::max_id,   n15_5.uid(),       n15_d.uid());
-    const node n15_r2 = node(1,  node::max_id-1, n15_1.uid(),       n15_a.uid());
+    const node n15_r3 = node(1, node::max_id, n15_5.uid(), n15_d.uid());
+    const node n15_r2 = node(1, node::max_id - 1, n15_1.uid(), n15_a.uid());
 
-    const node n15_r1 = node(0,  node::max_id,   n15_r2.uid(),      n15_r3.uid());
+    const node n15_r1 = node(0, node::max_id, n15_r2.uid(), n15_r3.uid());
 
     shared_levelized_file<bdd::node_type> bdd_15;
 
     { // Garbage collect writer to free write-lock
       node_writer nw(bdd_15);
-      nw << n15_o  << n15_n
-         << n15_17 << n15_16
-         << n15_m  << n15_l  << n15_15 << n15_14
-         << n15_k  << n15_j  << n15_13 << n15_12
-         << n15_i  << n15_h  << n15_11 << n15_10
-         << n15_g  << n15_f  << n15_9  << n15_8
-         << n15_7
-         << n15_d  << n15_6  << n15_5
-         << n15_c  << n15_b  << n15_4
-         << n15_3  << n15_2
-         << n15_1
-         << n15_a
-         << n15_r3 << n15_r2
-         << n15_r1
-        ;
+      nw << n15_o << n15_n << n15_17 << n15_16 << n15_m << n15_l << n15_15 << n15_14 << n15_k
+         << n15_j << n15_13 << n15_12 << n15_i << n15_h << n15_11 << n15_10 << n15_g << n15_f
+         << n15_9 << n15_8 << n15_7 << n15_d << n15_6 << n15_5 << n15_c << n15_b << n15_4 << n15_3
+         << n15_2 << n15_1 << n15_a << n15_r3 << n15_r2 << n15_r1;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -756,27 +790,25 @@ go_bandit([]() {
     shared_levelized_file<bdd::node_type> bdd_16;
 
     {
-      const node nc   = node(6, node::max_id,   ptr_uint64(false), ptr_uint64(true));
-      const node nb   = node(5, node::max_id,   ptr_uint64(false), ptr_uint64(true));
-      const node na   = node(5, node::max_id-1, ptr_uint64(true),  ptr_uint64(false));
+      const node nc = node(6, node::max_id, ptr_uint64(false), ptr_uint64(true));
+      const node nb = node(5, node::max_id, ptr_uint64(false), ptr_uint64(true));
+      const node na = node(5, node::max_id - 1, ptr_uint64(true), ptr_uint64(false));
 
-      const node n9_3 = node(4, node::max_id,   na.uid(),          nb.uid());
-      const node n9_2 = node(4, node::max_id-1, na.uid(),          nb.uid());
-      const node n9_1 = node(4, node::max_id-2, na.uid(),          nb.uid());
+      const node n9_3 = node(4, node::max_id, na.uid(), nb.uid());
+      const node n9_2 = node(4, node::max_id - 1, na.uid(), nb.uid());
+      const node n9_1 = node(4, node::max_id - 2, na.uid(), nb.uid());
 
-      const node n8   = node(3, node::max_id,   n9_2.uid(),        n9_3.uid());
-      const node n7   = node(3, node::max_id-1, n9_1.uid(),        n9_3.uid());
-      const node n6   = node(3, node::max_id-2, n9_2.uid(),        n9_1.uid());
-      const node n5   = node(3, node::max_id-3, n9_1.uid(),        n9_2.uid());
-      const node n4   = node(2, node::max_id,   n7.uid(),          n8.uid());
-      const node n3   = node(2, node::max_id-1, n5.uid(),          n6.uid());
-      const node n2   = node(1, node::max_id,   n3.uid(),          n4.uid());
-      const node n1   = node(0, node::max_id,   n2.uid(),          nc.uid());
+      const node n8 = node(3, node::max_id, n9_2.uid(), n9_3.uid());
+      const node n7 = node(3, node::max_id - 1, n9_1.uid(), n9_3.uid());
+      const node n6 = node(3, node::max_id - 2, n9_2.uid(), n9_1.uid());
+      const node n5 = node(3, node::max_id - 3, n9_1.uid(), n9_2.uid());
+      const node n4 = node(2, node::max_id, n7.uid(), n8.uid());
+      const node n3 = node(2, node::max_id - 1, n5.uid(), n6.uid());
+      const node n2 = node(1, node::max_id, n3.uid(), n4.uid());
+      const node n1 = node(0, node::max_id, n2.uid(), nc.uid());
 
       node_writer nw(bdd_16);
-      nw << nc << nb << na
-         << n9_3 << n9_2 << n9_1
-         << n8 << n7 << n6 << n5 << n4 << n3 << n2 << n1;
+      nw << nc << nb << na << n9_3 << n9_2 << n9_1 << n8 << n7 << n6 << n5 << n4 << n3 << n2 << n1;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -806,13 +838,21 @@ go_bandit([]() {
 
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->levels(), Is().EqualTo(0u));
 
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal], Is().EqualTo(0u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal],
+                   Is().EqualTo(0u));
+        AssertThat(
+          out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False],
+          Is().EqualTo(0u));
+        AssertThat(
+          out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True],
+          Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All],
+                   Is().EqualTo(1u));
 
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false],
+                   Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],
+                   Is().EqualTo(1u));
       });
 
       it("should shortcut quantification of root into T terminal [x2]", [&]() {
@@ -826,13 +866,21 @@ go_bandit([]() {
 
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->levels(), Is().EqualTo(0u));
 
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal], Is().EqualTo(0u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal],
+                   Is().EqualTo(0u));
+        AssertThat(
+          out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False],
+          Is().EqualTo(0u));
+        AssertThat(
+          out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True],
+          Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All],
+                   Is().EqualTo(1u));
 
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false],
+                   Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],
+                   Is().EqualTo(1u));
       });
 
       it("should shortcut quantification on non-existent label in input [BDD 1]", [&]() {
@@ -850,25 +898,28 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0u,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0u, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(0u));
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(0u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(2u));
       });
 
       it("should quantify root without terminal arcs [BDD 2]", [&]() {
@@ -878,46 +929,49 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,0) }));
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(2,1) }));
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), // (4,5)
-                   Is().EqualTo(arc { ptr_uint64(2,0), false, ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(2,0), true,  ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), // (5,_)
-                   Is().EqualTo(arc { ptr_uint64(2,1), false, ptr_uint64(false) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 1), false, ptr_uint64(false) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(2,1), true,  ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 1), true, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(1u,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1u, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2u,2u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 2u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(3u));
       });
 
       it("should quantify root with F terminal [BDD 5]", [&]() {
@@ -927,46 +981,49 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,0) }));
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(2,1) }));
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), // true due to 4.low()
-                   Is().EqualTo(arc { ptr_uint64(2,0), false, ptr_uint64(false) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(false) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), // true due to 5.high()
-                   Is().EqualTo(arc { ptr_uint64(2,0), true,  ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), // true due to 5.high()
-                   Is().EqualTo(arc { ptr_uint64(2,1), false, ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 1), false, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), // false due to its own leaf
-                   Is().EqualTo(arc { ptr_uint64(2,1), true,  ptr_uint64(false) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 1), true, ptr_uint64(false) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(1u,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1u, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2u,2u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 2u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(2u));
 
         // TODO: meta variables...
       });
@@ -978,46 +1035,49 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(2,0) }));
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(2, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(0,0), true,   ptr_uint64(2,1) }));
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(2, 1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), // (4,5)
-                   Is().EqualTo(arc { ptr_uint64(2,0), false, ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(2,0), true,   ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), // (5,_)
-                   Is().EqualTo(arc { ptr_uint64(2,1), false, ptr_uint64(false) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 1), false, ptr_uint64(false) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(2,1), true,  ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 1), true, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0u,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0u, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2u,2u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 2u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(3u));
       });
 
       it("should output terminal arcs in order, despite the order of resolvement [BDD 2]", [&]() {
@@ -1027,46 +1087,49 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(1, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(0,0), true,   ptr_uint64(1,1) }));
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), // true due to 4.low()
-                   Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), // true due to 5.high()
-                   Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), // true due to 5.high()
-                   Is().EqualTo(arc { ptr_uint64(1,1), false, ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(1, 1), false, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), // false due to its own leaf
-                   Is().EqualTo(arc { ptr_uint64(1,1), true,  ptr_uint64(false) }));
+                   Is().EqualTo(arc{ ptr_uint64(1, 1), true, ptr_uint64(false) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0u,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0u, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(1u,2u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1u, 2u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(3u));
       });
 
       it("should keep nodes as is when skipping quantified level [BDD 3]", [&]() {
@@ -1078,46 +1141,49 @@ go_bandit([]() {
         // request without forwarding n3 through the secondary priority queue
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(2,0) }));
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(2, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(2,1) }));
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(2, 1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), // n3
-                   Is().EqualTo(arc { ptr_uint64(2,0), false, ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), // n3
-                   Is().EqualTo(arc { ptr_uint64(2,0), true,  ptr_uint64(false) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(false) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), // true due to 3.low()
-                   Is().EqualTo(arc { ptr_uint64(2,1), false, ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 1), false, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), // true due to 4.high()
-                   Is().EqualTo(arc { ptr_uint64(2,1), true,  ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 1), true, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0u,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0u, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2u,2u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 2u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(3u));
       });
 
       it("should output terminal arcs in order, despite the order of resolvement [BDD 3]", [&]() {
@@ -1129,38 +1195,41 @@ go_bandit([]() {
         // request without forwarding n3 through the secondary priority queue
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(1,0) }));
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), // true due to 3.low()
-                   Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), // true due to 3.low()
-                   Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), // true due to 4.high()
-                   Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0u,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0u, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(1u,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1u, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(0u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(3u));
       });
 
       it("should resolve terminal-terminal requests in [BDD 5]", [&]() {
@@ -1172,38 +1241,41 @@ go_bandit([]() {
         // request without forwarding n3 through the secondary priority queue
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(2,0) }));
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(2, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(false) }));
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(false) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), // true due to 4.low()
-                   Is().EqualTo(arc { ptr_uint64(2,0), false, ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), // true due to 3.high()
-                   Is().EqualTo(arc { ptr_uint64(2,0), true,  ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0u,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0u, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2u,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(2u));
       });
 
       it("can shortcut/prune irrelevant subtrees [OR-chain]", [&]() {
@@ -1225,37 +1297,40 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(1, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), // true due to quantification of x2
-                   Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0u,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0u, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(1u,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1u, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(0u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(3u));
       });
 
       it("can forward information across a level [BDD 6]", [&]() {
@@ -1265,62 +1340,65 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_internal(), Is().True()); // (4,6)
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(2,0) }));
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(2, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True()); // (5,6)
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(2,1) }));
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(2, 1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True()); // (7,8)
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(2,1), false, ptr_uint64(3,0) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 1), false, ptr_uint64(3, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True()); // (8,F)
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(2,0), false, ptr_uint64(3,1) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(3, 1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
         AssertThat(arcs.can_pull_terminal(), Is().True()); // (4,6)
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(2,0), true,  ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True()); // (5,6)
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(2,1), true,  ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 1), true, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True()); // (7,8)
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(3,0), false, ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(3, 0), false, ptr_uint64(true) }));
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(3,0), true,  ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(3, 0), true, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True()); // (8,F)
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(3,1), false, ptr_uint64(false) }));
+                   Is().EqualTo(arc{ ptr_uint64(3, 1), false, ptr_uint64(false) }));
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(3,1), true,  ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(3, 1), true, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0u,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0u, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2u,2u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 2u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(3u,2u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(3u, 2u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(5u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(5u));
       });
 
       it("can forward multiple arcs to the same node across a level [BDD 7]", [&]() {
@@ -1330,144 +1408,155 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_internal(), Is().True()); // (4,5)
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(2,0) }));
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(2, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(2,0) }));
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(2, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
         AssertThat(arcs.can_pull_terminal(), Is().True()); // (4,5)
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(2,0), false, ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(true) }));
         AssertThat(arcs.can_pull_terminal(), Is().True()); // (4,5)
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(2,0), true,  ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0u,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0u, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2u,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(0u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(2u));
       });
 
-      it("should collapse tuple requests of the same node back into request on a single node [BDD 8a]", [&]() {
-        __bdd out = bdd_exists(bdd_8a, 1);
+      it("should collapse tuple requests of the same node back into request on a single node [BDD "
+         "8a]",
+         [&]() {
+           __bdd out = bdd_exists(bdd_8a, 1);
 
-        arc_test_stream arcs(out);
+           arc_test_stream arcs(out);
 
-        AssertThat(arcs.can_pull_internal(), Is().True()); // (3,4)
-        AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(2,0) }));
+           AssertThat(arcs.can_pull_internal(), Is().True()); // (3,4)
+           AssertThat(arcs.pull_internal(),
+                      Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(2, 0) }));
 
-        AssertThat(arcs.can_pull_internal(), Is().True()); // (5,_)
-        AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(3,0) }));
-        AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(2,0), true,  ptr_uint64(3,0) }));
+           AssertThat(arcs.can_pull_internal(), Is().True()); // (5,_)
+           AssertThat(arcs.pull_internal(),
+                      Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(3, 0) }));
+           AssertThat(arcs.can_pull_internal(), Is().True());
+           AssertThat(arcs.pull_internal(),
+                      Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(3, 0) }));
 
-        AssertThat(arcs.can_pull_internal(), Is().False());
+           AssertThat(arcs.can_pull_internal(), Is().False());
 
-        AssertThat(arcs.can_pull_terminal(), Is().True()); // (3,4)
-        AssertThat(arcs.pull_terminal(), // true due to 3.low()
-                   Is().EqualTo(arc { ptr_uint64(2,0), false, ptr_uint64(true) }));
+           AssertThat(arcs.can_pull_terminal(), Is().True()); // (3,4)
+           AssertThat(arcs.pull_terminal(),                   // true due to 3.low()
+                      Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(true) }));
 
-        AssertThat(arcs.can_pull_terminal(), Is().True()); // (5,_)
-        AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(3,0), false, ptr_uint64(false) }));
-        AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(3,0), true,  ptr_uint64(true) }));
+           AssertThat(arcs.can_pull_terminal(), Is().True()); // (5,_)
+           AssertThat(arcs.pull_terminal(),
+                      Is().EqualTo(arc{ ptr_uint64(3, 0), false, ptr_uint64(false) }));
+           AssertThat(arcs.can_pull_terminal(), Is().True());
+           AssertThat(arcs.pull_terminal(),
+                      Is().EqualTo(arc{ ptr_uint64(3, 0), true, ptr_uint64(true) }));
 
+           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        AssertThat(arcs.can_pull_terminal(), Is().False());
+           level_info_test_stream levels(out);
 
-        level_info_test_stream levels(out);
+           AssertThat(levels.can_pull(), Is().True());
+           AssertThat(levels.pull(), Is().EqualTo(level_info(0u, 1u)));
 
-        AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0u,1u)));
+           AssertThat(levels.can_pull(), Is().True());
+           AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 1u)));
 
-        AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2u,1u)));
+           AssertThat(levels.can_pull(), Is().True());
+           AssertThat(levels.pull(), Is().EqualTo(level_info(3u, 1u)));
 
-        AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(3u,1u)));
+           AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(levels.can_pull(), Is().False());
+           AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                      Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+           AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                      Is().EqualTo(1u));
+           AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                      Is().EqualTo(2u));
+         });
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
-      });
+      it("should collapse tuple requests of the same node back into request on a single node [BDD "
+         "8b]",
+         [&]() {
+           __bdd out = bdd_exists(bdd_8b, 1);
 
-      it("should collapse tuple requests of the same node back into request on a single node [BDD 8b]", [&]() {
-        __bdd out = bdd_exists(bdd_8b, 1);
+           arc_test_stream arcs(out);
 
-        arc_test_stream arcs(out);
+           AssertThat(arcs.can_pull_internal(), Is().True()); // (3,4)
+           AssertThat(arcs.pull_internal(),
+                      Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(2, 0) }));
 
-        AssertThat(arcs.can_pull_internal(), Is().True()); // (3,4)
-        AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(2,0) }));
+           AssertThat(arcs.can_pull_internal(), Is().True()); // (5,_)
+           AssertThat(arcs.pull_internal(),
+                      Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(3, 0) }));
+           AssertThat(arcs.can_pull_internal(), Is().True());
+           AssertThat(arcs.pull_internal(),
+                      Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(3, 0) }));
 
-        AssertThat(arcs.can_pull_internal(), Is().True()); // (5,_)
-        AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(3,0) }));
-        AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(2,0), false, ptr_uint64(3,0) }));
+           AssertThat(arcs.can_pull_internal(), Is().False());
 
-        AssertThat(arcs.can_pull_internal(), Is().False());
+           AssertThat(arcs.can_pull_terminal(), Is().True()); // (3,4)
+           AssertThat(arcs.pull_terminal(),                   // true due to 3.low()
+                      Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(true) }));
 
-        AssertThat(arcs.can_pull_terminal(), Is().True()); // (3,4)
-        AssertThat(arcs.pull_terminal(), // true due to 3.low()
-                   Is().EqualTo(arc { ptr_uint64(2,0), true,  ptr_uint64(true) }));
+           AssertThat(arcs.can_pull_terminal(), Is().True()); // (5,_)
+           AssertThat(arcs.pull_terminal(),
+                      Is().EqualTo(arc{ ptr_uint64(3, 0), false, ptr_uint64(false) }));
+           AssertThat(arcs.can_pull_terminal(), Is().True());
+           AssertThat(arcs.pull_terminal(),
+                      Is().EqualTo(arc{ ptr_uint64(3, 0), true, ptr_uint64(true) }));
 
-        AssertThat(arcs.can_pull_terminal(), Is().True()); // (5,_)
-        AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(3,0), false, ptr_uint64(false) }));
-        AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(3,0), true,  ptr_uint64(true) }));
+           AssertThat(arcs.can_pull_terminal(), Is().False());
 
+           level_info_test_stream levels(out);
 
-        AssertThat(arcs.can_pull_terminal(), Is().False());
+           AssertThat(levels.can_pull(), Is().True());
+           AssertThat(levels.pull(), Is().EqualTo(level_info(0u, 1u)));
 
-        level_info_test_stream levels(out);
+           AssertThat(levels.can_pull(), Is().True());
+           AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 1u)));
 
-        AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0u,1u)));
+           AssertThat(levels.can_pull(), Is().True());
+           AssertThat(levels.pull(), Is().EqualTo(level_info(3u, 1u)));
 
-        AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2u,1u)));
+           AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(3u,1u)));
+           AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                      Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(levels.can_pull(), Is().False());
-
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
-
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
-      });
+           AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                      Is().EqualTo(1u));
+           AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                      Is().EqualTo(2u));
+         });
     });
 
     describe("bdd_exists(const bdd&, const predicate<bdd::label_type>&)", [&]() {
       it("returns input on always-false predicate BDD 1 [const &]", [&]() {
-        bdd in = bdd_1;
+        bdd in    = bdd_1;
         __bdd out = bdd_exists(in, [](const bdd::label_type) -> bool { return false; });
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
       });
@@ -1481,31 +1570,28 @@ go_bandit([]() {
         const exec_policy ep = exec_policy::quantify::Singleton;
 
         it("quantifies odd variables in BDD 4 [&&]", [&]() {
-          bdd out = bdd_exists(ep, bdd_4, [](const bdd::label_type x) -> bool {
-            return x % 2;
-          });
+          bdd out = bdd_exists(ep, bdd_4, [](const bdd::label_type x) -> bool { return x % 2; });
 
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (3)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                         ptr_uint64(false),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                         ptr_uint64(2, ptr_uint64::max_id),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -1513,31 +1599,29 @@ go_bandit([]() {
         });
 
         it("quantifies 1, 2 in BDD 4 [&&]", [&]() {
-          bdd out = bdd_exists(ep, bdd_4, [](const bdd::label_type x) -> bool {
-            return x == 1 || x == 2;
-          });
+          bdd out =
+            bdd_exists(ep, bdd_4, [](const bdd::label_type x) -> bool { return x == 1 || x == 2; });
 
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         ptr_uint64(false),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                         ptr_uint64(3, ptr_uint64::max_id),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(0, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -1546,31 +1630,29 @@ go_bandit([]() {
 
         it("quantifies even variables in BDD 4 [const &]", [&]() {
           const bdd in = bdd_4;
-          const bdd out = bdd_exists(ep, in, [](const bdd::label_type x) -> bool {
-            return !(x % 2);
-          });
+          const bdd out =
+            bdd_exists(ep, in, [](const bdd::label_type x) -> bool { return !(x % 2); });
 
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         ptr_uint64(false),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (2')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         ptr_uint64(3, ptr_uint64::max_id),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -1578,9 +1660,7 @@ go_bandit([]() {
         });
 
         it("quantifies odd variables in BDD 1 [&&]", [&]() {
-          bdd out = bdd_exists(ep, bdd_1, [](const bdd::label_type x) -> bool {
-            return x % 2;
-          });
+          bdd out = bdd_exists(ep, bdd_1, [](const bdd::label_type x) -> bool { return x % 2; });
 
           node_test_stream out_nodes(out);
 
@@ -1620,9 +1700,7 @@ go_bandit([]() {
         });
 
         it("quantifies with always-true predicate in BDD 4 [&&]", [&]() {
-          bdd out = bdd_exists(ep, bdd_4, [](const bdd::label_type) -> bool {
-            return true;
-          });
+          bdd out = bdd_exists(ep, bdd_4, [](const bdd::label_type) -> bool { return true; });
 
           node_test_stream out_nodes(out);
 
@@ -1668,7 +1746,6 @@ go_bandit([]() {
           // - First check for at least one variable satisfying the predicate.
           AssertThat(call_history.at(0), Is().EqualTo(3u));
 
-
           // - First top-down sweep (root call)
           AssertThat(call_history.at(1), Is().EqualTo(0u));
 
@@ -1681,7 +1758,7 @@ go_bandit([]() {
         it("finishes during initial transposition of even variables in BDD 4 [const &]", [&]() {
           std::vector<bdd::label_type> call_history;
 
-          const bdd in = bdd_4;
+          const bdd in  = bdd_4;
           const bdd out = bdd_exists(ep, in, [&call_history](const bdd::label_type x) -> bool {
             call_history.push_back(x);
             return !(x % 2);
@@ -1690,24 +1767,23 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         ptr_uint64(false),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (2')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         ptr_uint64(3, ptr_uint64::max_id),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -1734,54 +1810,55 @@ go_bandit([]() {
           AssertThat(call_history.at(6), Is().EqualTo(3u));
         });
 
-        it("collapses during repeated transposition with variables 1 2 variables in BDD 11a [&&]", [&]() {
-          std::vector<bdd::label_type> call_history;
-          bdd out = bdd_exists(ep, bdd_12a, [&call_history](const bdd::label_type x) -> bool {
-            call_history.push_back(x);
-            return 0 < x && x < 3;
-          });
+        it("collapses during repeated transposition with variables 1 2 variables in BDD 11a [&&]",
+           [&]() {
+             std::vector<bdd::label_type> call_history;
+             bdd out = bdd_exists(ep, bdd_12a, [&call_history](const bdd::label_type x) -> bool {
+               call_history.push_back(x);
+               return 0 < x && x < 3;
+             });
 
-          node_test_stream out_nodes(out);
+             node_test_stream out_nodes(out);
 
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
-          AssertThat(out_nodes.can_pull(), Is().False());
+             AssertThat(out_nodes.can_pull(), Is().True());
+             AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+             AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
-          AssertThat(out_meta.can_pull(), Is().False());
+             level_info_test_stream out_meta(out);
+             AssertThat(out_meta.can_pull(), Is().False());
 
-          // TODO: meta variables...
+             // TODO: meta variables...
 
-          // Check call history
-          //
-          // NOTE: Test failure does NOT indicate a bug, but only indicates a
-          //       change. Please verify that this change makes sense and is as
-          //       intended.
-          AssertThat(call_history.size(), Is().EqualTo(13u));
+             // Check call history
+             //
+             // NOTE: Test failure does NOT indicate a bug, but only indicates a
+             //       change. Please verify that this change makes sense and is as
+             //       intended.
+             AssertThat(call_history.size(), Is().EqualTo(13u));
 
-          // - First check for at least one variable satisfying the predicate.
-          AssertThat(call_history.at(0), Is().EqualTo(4u));
-          AssertThat(call_history.at(1), Is().EqualTo(3u));
-          AssertThat(call_history.at(2), Is().EqualTo(2u));
+             // - First check for at least one variable satisfying the predicate.
+             AssertThat(call_history.at(0), Is().EqualTo(4u));
+             AssertThat(call_history.at(1), Is().EqualTo(3u));
+             AssertThat(call_history.at(2), Is().EqualTo(2u));
 
-          // - First top-down sweep (root call)
-          AssertThat(call_history.at(3), Is().EqualTo(0u));
+             // - First top-down sweep (root call)
+             AssertThat(call_history.at(3), Is().EqualTo(0u));
 
-          // - First top-down sweep
-          AssertThat(call_history.at(4),  Is().EqualTo(0u));
-          AssertThat(call_history.at(5),  Is().EqualTo(1u));
-          AssertThat(call_history.at(6), Is().EqualTo(2u));
-          AssertThat(call_history.at(7), Is().EqualTo(3u));
-          AssertThat(call_history.at(8), Is().EqualTo(4u));
+             // - First top-down sweep
+             AssertThat(call_history.at(4), Is().EqualTo(0u));
+             AssertThat(call_history.at(5), Is().EqualTo(1u));
+             AssertThat(call_history.at(6), Is().EqualTo(2u));
+             AssertThat(call_history.at(7), Is().EqualTo(3u));
+             AssertThat(call_history.at(8), Is().EqualTo(4u));
 
-          // - Second top-down sweep (root call)
-          AssertThat(call_history.at(9),  Is().EqualTo(0u));
+             // - Second top-down sweep (root call)
+             AssertThat(call_history.at(9), Is().EqualTo(0u));
 
-          // - Second top-down sweep
-          AssertThat(call_history.at(10), Is().EqualTo(0u));
-          AssertThat(call_history.at(11), Is().EqualTo(2u));
-          AssertThat(call_history.at(12), Is().EqualTo(3u));
-        });
+             // - Second top-down sweep
+             AssertThat(call_history.at(10), Is().EqualTo(0u));
+             AssertThat(call_history.at(11), Is().EqualTo(2u));
+             AssertThat(call_history.at(12), Is().EqualTo(3u));
+           });
 
         it("finishes during repeated transposition with variables 1 and 2 in BDD 11b [&&]", [&]() {
           std::vector<bdd::label_type> call_history;
@@ -1812,42 +1889,47 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (8)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id,
-                                                         node::pointer_type(false),
-                                                         node::pointer_type(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(4, node::max_id, node::pointer_type(false), node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-1,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(false))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(
+                       4, node::max_id - 1, node::pointer_type(true), node::pointer_type(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5,6,8)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(4, node::max_id))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(
+              3, node::max_id, node::pointer_type(true), node::pointer_type(4, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5,6)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id-1,
-                                                         node::pointer_type(4, node::max_id-1),
-                                                         node::pointer_type(4, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3,
+                                       node::max_id - 1,
+                                       node::pointer_type(4, node::max_id - 1),
+                                       node::pointer_type(4, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                         node::pointer_type(3, node::max_id-1),
-                                                         node::pointer_type(3, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(0,
+                                       node::max_id,
+                                       node::pointer_type(3, node::max_id - 1),
+                                       node::pointer_type(3, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u,2u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u, 2u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,2u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 2u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -1876,7 +1958,7 @@ go_bandit([]() {
           AssertThat(call_history.at(8), Is().EqualTo(4u));
 
           // - Second top-down sweep (root call)
-          AssertThat(call_history.at(9),  Is().EqualTo(0u));
+          AssertThat(call_history.at(9), Is().EqualTo(0u));
 
           // - Second top-down sweep
           AssertThat(call_history.at(10), Is().EqualTo(0u));
@@ -1895,116 +1977,143 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id,
-                                                         node::pointer_type(false),
-                                                         node::pointer_type(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(7, node::max_id, node::pointer_type(false), node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (15)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id,
-                                                         node::pointer_type(false),
-                                                         node::pointer_type(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(6, node::max_id, node::pointer_type(false), node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (15,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id-1,
-                                                         node::pointer_type(7, node::max_id),
-                                                         node::pointer_type(true))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(
+              6, node::max_id - 1, node::pointer_type(7, node::max_id), node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (14)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id-2,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(false))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(
+                       6, node::max_id - 2, node::pointer_type(true), node::pointer_type(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (14,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id-3,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(7, node::max_id))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(
+              6, node::max_id - 3, node::pointer_type(true), node::pointer_type(7, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (13,15)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
-                                                         node::pointer_type(6, node::max_id),
-                                                         node::pointer_type(true))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(
+              5, node::max_id, node::pointer_type(6, node::max_id), node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (13,15,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-1,
-                                                         node::pointer_type(6, node::max_id-1),
-                                                         node::pointer_type(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(5,
+                                       node::max_id - 1,
+                                       node::pointer_type(6, node::max_id - 1),
+                                       node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (13,14,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-2,
-                                                         node::pointer_type(6, node::max_id-3),
-                                                         node::pointer_type(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(5,
+                                       node::max_id - 2,
+                                       node::pointer_type(6, node::max_id - 3),
+                                       node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (12,15,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-3,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(6, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(5,
+                                       node::max_id - 3,
+                                       node::pointer_type(true),
+                                       node::pointer_type(6, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (12,14)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-4,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(6, node::max_id-2))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(5,
+                                       node::max_id - 4,
+                                       node::pointer_type(true),
+                                       node::pointer_type(6, node::max_id - 2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (12,14,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-5,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(6, node::max_id-3))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(5,
+                                       node::max_id - 5,
+                                       node::pointer_type(true),
+                                       node::pointer_type(6, node::max_id - 3))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (9,11,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id,
-                                                         node::pointer_type(5, node::max_id-5),
-                                                         node::pointer_type(5, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(4,
+                                       node::max_id,
+                                       node::pointer_type(5, node::max_id - 5),
+                                       node::pointer_type(5, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (8,11,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-1,
-                                                         node::pointer_type(5, node::max_id-3),
-                                                         node::pointer_type(5, node::max_id-2))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(4,
+                                       node::max_id - 1,
+                                       node::pointer_type(5, node::max_id - 3),
+                                       node::pointer_type(5, node::max_id - 2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (9,10,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-2,
-                                                         node::pointer_type(5, node::max_id-2),
-                                                         node::pointer_type(5, node::max_id-3))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(4,
+                                       node::max_id - 2,
+                                       node::pointer_type(5, node::max_id - 2),
+                                       node::pointer_type(5, node::max_id - 3))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (8,10)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-3,
-                                                         node::pointer_type(5, node::max_id),
-                                                         node::pointer_type(5, node::max_id-4))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(4,
+                                       node::max_id - 3,
+                                       node::pointer_type(5, node::max_id),
+                                       node::pointer_type(5, node::max_id - 4))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (6,7,9,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         node::pointer_type(4, node::max_id-2),
-                                                         node::pointer_type(4, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3,
+                                       node::max_id,
+                                       node::pointer_type(4, node::max_id - 2),
+                                       node::pointer_type(4, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (6,7,8)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id-1,
-                                                         node::pointer_type(4, node::max_id-3),
-                                                         node::pointer_type(4, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3,
+                                       node::max_id - 1,
+                                       node::pointer_type(4, node::max_id - 3),
+                                       node::pointer_type(4, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (4,5,6,7)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                         node::pointer_type(3, node::max_id-1),
-                                                         node::pointer_type(3, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(2,
+                                       node::max_id,
+                                       node::pointer_type(3, node::max_id - 1),
+                                       node::pointer_type(3, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(7u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(7u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(6u,4u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(6u, 4u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u,6u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u, 6u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u,4u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u, 4u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,2u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 2u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -2030,8 +2139,8 @@ go_bandit([]() {
           AssertThat(call_history.at(7), Is().EqualTo(0u));
 
           // - First top-down sweep
-          AssertThat(call_history.at(8),  Is().EqualTo(0u));
-          AssertThat(call_history.at(9),  Is().EqualTo(1u));
+          AssertThat(call_history.at(8), Is().EqualTo(0u));
+          AssertThat(call_history.at(9), Is().EqualTo(1u));
           AssertThat(call_history.at(10), Is().EqualTo(2u));
           AssertThat(call_history.at(11), Is().EqualTo(3u));
           AssertThat(call_history.at(12), Is().EqualTo(4u));
@@ -2062,157 +2171,210 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (o)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(13, node::max_id,
-                                                         node::pointer_type(false),
-                                                         node::pointer_type(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(
+                       13, node::max_id, node::pointer_type(false), node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (n)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(13, node::max_id-1,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(false))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(
+                       13, node::max_id - 1, node::pointer_type(true), node::pointer_type(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (17,o)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::max_id,
-                                                         node::pointer_type(13, node::max_id),
-                                                         node::pointer_type(true))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(
+              12, node::max_id, node::pointer_type(13, node::max_id), node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (17,n)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::max_id-1,
-                                                         node::pointer_type(13, node::max_id-1),
-                                                         node::pointer_type(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(12,
+                                       node::max_id - 1,
+                                       node::pointer_type(13, node::max_id - 1),
+                                       node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (16,o)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::max_id-2,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(13, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(12,
+                                       node::max_id - 2,
+                                       node::pointer_type(true),
+                                       node::pointer_type(13, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (16,n)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::max_id-3,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(13, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(12,
+                                       node::max_id - 3,
+                                       node::pointer_type(true),
+                                       node::pointer_type(13, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (14,l)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::max_id,
-                                                         node::pointer_type(12, node::max_id-3),
-                                                         node::pointer_type(12, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(11,
+                                       node::max_id,
+                                       node::pointer_type(12, node::max_id - 3),
+                                       node::pointer_type(12, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (14,m)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::max_id-1,
-                                                         node::pointer_type(12, node::max_id-2),
-                                                         node::pointer_type(12, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(11,
+                                       node::max_id - 1,
+                                       node::pointer_type(12, node::max_id - 2),
+                                       node::pointer_type(12, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (15,l)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::max_id-2,
-                                                         node::pointer_type(12, node::max_id-1),
-                                                         node::pointer_type(12, node::max_id-2))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(11,
+                                       node::max_id - 2,
+                                       node::pointer_type(12, node::max_id - 1),
+                                       node::pointer_type(12, node::max_id - 2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (15,m)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::max_id-3,
-                                                         node::pointer_type(12, node::max_id),
-                                                         node::pointer_type(12, node::max_id-3))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(11,
+                                       node::max_id - 3,
+                                       node::pointer_type(12, node::max_id),
+                                       node::pointer_type(12, node::max_id - 3))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (13,k)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::max_id,
-                                                         node::pointer_type(11, node::max_id-3),
-                                                         node::pointer_type(11, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(10,
+                                       node::max_id,
+                                       node::pointer_type(11, node::max_id - 3),
+                                       node::pointer_type(11, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (13,j)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::max_id-1,
-                                                         node::pointer_type(11, node::max_id-2),
-                                                         node::pointer_type(11, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(10,
+                                       node::max_id - 1,
+                                       node::pointer_type(11, node::max_id - 2),
+                                       node::pointer_type(11, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (12,k)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::max_id-2,
-                                                         node::pointer_type(11, node::max_id-1),
-                                                         node::pointer_type(11, node::max_id-2))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(10,
+                                       node::max_id - 2,
+                                       node::pointer_type(11, node::max_id - 1),
+                                       node::pointer_type(11, node::max_id - 2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (12,j)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::max_id-3,
-                                                         node::pointer_type(11, node::max_id),
-                                                         node::pointer_type(11, node::max_id-3))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(10,
+                                       node::max_id - 3,
+                                       node::pointer_type(11, node::max_id),
+                                       node::pointer_type(11, node::max_id - 3))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (10,h)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::max_id,
-                                                         node::pointer_type(10, node::max_id-3),
-                                                         node::pointer_type(10, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(9,
+                                       node::max_id,
+                                       node::pointer_type(10, node::max_id - 3),
+                                       node::pointer_type(10, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (10,i)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::max_id-1,
-                                                         node::pointer_type(10, node::max_id-2),
-                                                         node::pointer_type(10, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(9,
+                                       node::max_id - 1,
+                                       node::pointer_type(10, node::max_id - 2),
+                                       node::pointer_type(10, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (11,h)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::max_id-2,
-                                                         node::pointer_type(10, node::max_id-1),
-                                                         node::pointer_type(10, node::max_id-2))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(9,
+                                       node::max_id - 2,
+                                       node::pointer_type(10, node::max_id - 1),
+                                       node::pointer_type(10, node::max_id - 2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (11,i)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::max_id-3,
-                                                         node::pointer_type(10, node::max_id),
-                                                         node::pointer_type(10, node::max_id-3))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(9,
+                                       node::max_id - 3,
+                                       node::pointer_type(10, node::max_id),
+                                       node::pointer_type(10, node::max_id - 3))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (9,g)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::max_id,
-                                                         node::pointer_type(9, node::max_id-3),
-                                                         node::pointer_type(9, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(8,
+                                       node::max_id,
+                                       node::pointer_type(9, node::max_id - 3),
+                                       node::pointer_type(9, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (8,g)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::max_id-1,
-                                                         node::pointer_type(9, node::max_id-1),
-                                                         node::pointer_type(9, node::max_id-2))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(8,
+                                       node::max_id - 1,
+                                       node::pointer_type(9, node::max_id - 1),
+                                       node::pointer_type(9, node::max_id - 2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (8,f)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::max_id-2,
-                                                         node::pointer_type(9, node::max_id),
-                                                         node::pointer_type(9, node::max_id-3))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(8,
+                                       node::max_id - 2,
+                                       node::pointer_type(9, node::max_id),
+                                       node::pointer_type(9, node::max_id - 3))));
 
           // NOTE: (9,f) because the pair (7,f) is is merged with (8) which
           //       prunes that entire subtree away.
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7,8,f)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id,
-                                                         node::pointer_type(8, node::max_id-2),
-                                                         node::pointer_type(true))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(
+              7, node::max_id, node::pointer_type(8, node::max_id - 2), node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7,g,9)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id-1,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(8, node::max_id))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(
+              7, node::max_id - 1, node::pointer_type(true), node::pointer_type(8, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7,g)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id-2,
-                                                         node::pointer_type(8, node::max_id-1),
-                                                         node::pointer_type(8, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(7,
+                                       node::max_id - 2,
+                                       node::pointer_type(8, node::max_id - 1),
+                                       node::pointer_type(8, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (6,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id,
-                                                         node::pointer_type(7, node::max_id),
-                                                         node::pointer_type(7, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(6,
+                                       node::max_id,
+                                       node::pointer_type(7, node::max_id),
+                                       node::pointer_type(7, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id-1,
-                                                         node::pointer_type(8, node::max_id-2),
-                                                         node::pointer_type(7, node::max_id-2))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(6,
+                                       node::max_id - 1,
+                                       node::pointer_type(8, node::max_id - 2),
+                                       node::pointer_type(7, node::max_id - 2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (4,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
-                                                         node::pointer_type(6, node::max_id-1),
-                                                         node::pointer_type(6, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(5,
+                                       node::max_id,
+                                       node::pointer_type(6, node::max_id - 1),
+                                       node::pointer_type(6, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (3,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id,
-                                                         node::pointer_type(5, node::max_id),
-                                                         node::pointer_type(6, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(4,
+                                       node::max_id,
+                                       node::pointer_type(5, node::max_id),
+                                       node::pointer_type(6, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (2,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-1,
-                                                         node::pointer_type(6, node::max_id-1),
-                                                         node::pointer_type(5, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(4,
+                                       node::max_id - 1,
+                                       node::pointer_type(6, node::max_id - 1),
+                                       node::pointer_type(5, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         node::pointer_type(4, node::max_id-1),
-                                                         node::pointer_type(4, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3,
+                                       node::max_id,
+                                       node::pointer_type(4, node::max_id - 1),
+                                       node::pointer_type(4, node::max_id))));
 
           // NOTE: The root (1,a,5,d) has x2 suppressed as the choice at (a)
           //       only is relevant for (b) and (c), not for (d).
@@ -2222,37 +2384,37 @@ go_bandit([]() {
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(13u,2u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(13u, 2u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(12u,4u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(12u, 4u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(11u,4u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(11u, 4u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(10u,4u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(10u, 4u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(9u,4u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(9u, 4u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(8u,3u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(8u, 3u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(7u,3u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(7u, 3u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(6u,2u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(6u, 2u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u,2u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u, 2u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -2266,16 +2428,16 @@ go_bandit([]() {
           AssertThat(call_history.size(), Is().EqualTo(42u));
 
           // - First check for at least one variable satisfying the predicate.
-          AssertThat(call_history.at(0),  Is().EqualTo(13u));
-          AssertThat(call_history.at(1),  Is().EqualTo(12u));
-          AssertThat(call_history.at(2),  Is().EqualTo(11u));
-          AssertThat(call_history.at(3),  Is().EqualTo(10u));
-          AssertThat(call_history.at(4),  Is().EqualTo(9u));
-          AssertThat(call_history.at(5),  Is().EqualTo(8u));
-          AssertThat(call_history.at(6),  Is().EqualTo(7u));
-          AssertThat(call_history.at(7),  Is().EqualTo(6u));
-          AssertThat(call_history.at(8),  Is().EqualTo(5u));
-          AssertThat(call_history.at(9),  Is().EqualTo(4u));
+          AssertThat(call_history.at(0), Is().EqualTo(13u));
+          AssertThat(call_history.at(1), Is().EqualTo(12u));
+          AssertThat(call_history.at(2), Is().EqualTo(11u));
+          AssertThat(call_history.at(3), Is().EqualTo(10u));
+          AssertThat(call_history.at(4), Is().EqualTo(9u));
+          AssertThat(call_history.at(5), Is().EqualTo(8u));
+          AssertThat(call_history.at(6), Is().EqualTo(7u));
+          AssertThat(call_history.at(7), Is().EqualTo(6u));
+          AssertThat(call_history.at(8), Is().EqualTo(5u));
+          AssertThat(call_history.at(9), Is().EqualTo(4u));
           AssertThat(call_history.at(10), Is().EqualTo(3u));
           AssertThat(call_history.at(11), Is().EqualTo(2u));
           AssertThat(call_history.at(12), Is().EqualTo(1u));
@@ -2333,24 +2495,23 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (3)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                         ptr_uint64(false),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                         ptr_uint64(2, ptr_uint64::max_id),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -2374,9 +2535,7 @@ go_bandit([]() {
         });
 
         it("quantifies odd variables in BDD 1", [&]() {
-          bdd out = bdd_exists(ep, bdd_1, [](const bdd::label_type x) -> bool {
-            return x % 2;
-          });
+          bdd out = bdd_exists(ep, bdd_1, [](const bdd::label_type x) -> bool { return x % 2; });
 
           node_test_stream out_nodes(out);
 
@@ -2393,9 +2552,7 @@ go_bandit([]() {
         });
 
         it("quantifies with always-true predicate in BDD 4 [&&]", [&]() {
-          bdd out = bdd_exists(ep, bdd_4, [](const bdd::label_type) -> bool {
-            return true;
-          });
+          bdd out = bdd_exists(ep, bdd_4, [](const bdd::label_type) -> bool { return true; });
 
           node_test_stream out_nodes(out);
 
@@ -2410,39 +2567,37 @@ go_bandit([]() {
         });
 
         it("bails out on a level that only shortcuts", [&]() {
-          bdd out = bdd_exists(ep, bdd_9T, [](const bdd::label_type x) -> bool {
-            return !(x % 2);
-          });
+          bdd out =
+            bdd_exists(ep, bdd_9T, [](const bdd::label_type x) -> bool { return !(x % 2); });
 
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
-                                                         ptr_uint64(false),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(5, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         ptr_uint64(5, node::max_id),
-                                                         ptr_uint64(true))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(3, node::max_id, ptr_uint64(5, node::max_id), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         ptr_uint64(true),
-                                                         ptr_uint64(3, node::max_id))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(1, node::max_id, ptr_uint64(true), ptr_uint64(3, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -2450,31 +2605,29 @@ go_bandit([]() {
         });
 
         it("bails out on a level that only is irrelevant", [&]() {
-          bdd out = bdd_exists(ep, bdd_9F, [](const bdd::label_type x) -> bool {
-            return !(x % 2);
-          });
+          bdd out =
+            bdd_exists(ep, bdd_9F, [](const bdd::label_type x) -> bool { return !(x % 2); });
 
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
-                                                         ptr_uint64(false),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(5, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         ptr_uint64(5, node::max_id),
-                                                         ptr_uint64(true))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(3, node::max_id, ptr_uint64(5, node::max_id), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -2511,16 +2664,15 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                         ptr_uint64(false),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(0, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -2559,9 +2711,7 @@ go_bandit([]() {
           //        |
           //        T
           */
-          bdd out = bdd_exists(ep, bdd_6, [](const bdd::label_type x) -> bool {
-            return (x % 2);
-          });
+          bdd out = bdd_exists(ep, bdd_6, [](const bdd::label_type x) -> bool { return (x % 2); });
 
           node_test_stream out_nodes(out);
 
@@ -2583,157 +2733,210 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (o)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(13, node::max_id,
-                                                         node::pointer_type(false),
-                                                         node::pointer_type(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(
+                       13, node::max_id, node::pointer_type(false), node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (n)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(13, node::max_id-1,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(false))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(
+                       13, node::max_id - 1, node::pointer_type(true), node::pointer_type(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (17,o)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::max_id,
-                                                         node::pointer_type(13, node::max_id),
-                                                         node::pointer_type(true))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(
+              12, node::max_id, node::pointer_type(13, node::max_id), node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (17,n)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::max_id-1,
-                                                         node::pointer_type(13, node::max_id-1),
-                                                         node::pointer_type(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(12,
+                                       node::max_id - 1,
+                                       node::pointer_type(13, node::max_id - 1),
+                                       node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (16,o)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::max_id-2,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(13, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(12,
+                                       node::max_id - 2,
+                                       node::pointer_type(true),
+                                       node::pointer_type(13, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (16,n)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::max_id-3,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(13, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(12,
+                                       node::max_id - 3,
+                                       node::pointer_type(true),
+                                       node::pointer_type(13, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (14,l)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::max_id,
-                                                         node::pointer_type(12, node::max_id-3),
-                                                         node::pointer_type(12, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(11,
+                                       node::max_id,
+                                       node::pointer_type(12, node::max_id - 3),
+                                       node::pointer_type(12, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (14,m)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::max_id-1,
-                                                         node::pointer_type(12, node::max_id-2),
-                                                         node::pointer_type(12, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(11,
+                                       node::max_id - 1,
+                                       node::pointer_type(12, node::max_id - 2),
+                                       node::pointer_type(12, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (15,l)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::max_id-2,
-                                                         node::pointer_type(12, node::max_id-1),
-                                                         node::pointer_type(12, node::max_id-2))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(11,
+                                       node::max_id - 2,
+                                       node::pointer_type(12, node::max_id - 1),
+                                       node::pointer_type(12, node::max_id - 2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (15,m)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::max_id-3,
-                                                         node::pointer_type(12, node::max_id),
-                                                         node::pointer_type(12, node::max_id-3))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(11,
+                                       node::max_id - 3,
+                                       node::pointer_type(12, node::max_id),
+                                       node::pointer_type(12, node::max_id - 3))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (13,k)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::max_id,
-                                                         node::pointer_type(11, node::max_id-3),
-                                                         node::pointer_type(11, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(10,
+                                       node::max_id,
+                                       node::pointer_type(11, node::max_id - 3),
+                                       node::pointer_type(11, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (13,j)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::max_id-1,
-                                                         node::pointer_type(11, node::max_id-2),
-                                                         node::pointer_type(11, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(10,
+                                       node::max_id - 1,
+                                       node::pointer_type(11, node::max_id - 2),
+                                       node::pointer_type(11, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (12,k)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::max_id-2,
-                                                         node::pointer_type(11, node::max_id-1),
-                                                         node::pointer_type(11, node::max_id-2))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(10,
+                                       node::max_id - 2,
+                                       node::pointer_type(11, node::max_id - 1),
+                                       node::pointer_type(11, node::max_id - 2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (12,j)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::max_id-3,
-                                                         node::pointer_type(11, node::max_id),
-                                                         node::pointer_type(11, node::max_id-3))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(10,
+                                       node::max_id - 3,
+                                       node::pointer_type(11, node::max_id),
+                                       node::pointer_type(11, node::max_id - 3))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (10,h)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::max_id,
-                                                         node::pointer_type(10, node::max_id-3),
-                                                         node::pointer_type(10, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(9,
+                                       node::max_id,
+                                       node::pointer_type(10, node::max_id - 3),
+                                       node::pointer_type(10, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (10,i)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::max_id-1,
-                                                         node::pointer_type(10, node::max_id-2),
-                                                         node::pointer_type(10, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(9,
+                                       node::max_id - 1,
+                                       node::pointer_type(10, node::max_id - 2),
+                                       node::pointer_type(10, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (11,h)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::max_id-2,
-                                                         node::pointer_type(10, node::max_id-1),
-                                                         node::pointer_type(10, node::max_id-2))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(9,
+                                       node::max_id - 2,
+                                       node::pointer_type(10, node::max_id - 1),
+                                       node::pointer_type(10, node::max_id - 2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (11,i)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::max_id-3,
-                                                         node::pointer_type(10, node::max_id),
-                                                         node::pointer_type(10, node::max_id-3))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(9,
+                                       node::max_id - 3,
+                                       node::pointer_type(10, node::max_id),
+                                       node::pointer_type(10, node::max_id - 3))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (9,g)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::max_id,
-                                                         node::pointer_type(9, node::max_id-3),
-                                                         node::pointer_type(9, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(8,
+                                       node::max_id,
+                                       node::pointer_type(9, node::max_id - 3),
+                                       node::pointer_type(9, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (8,g)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::max_id-1,
-                                                         node::pointer_type(9, node::max_id-1),
-                                                         node::pointer_type(9, node::max_id-2))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(8,
+                                       node::max_id - 1,
+                                       node::pointer_type(9, node::max_id - 1),
+                                       node::pointer_type(9, node::max_id - 2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (8,f)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::max_id-2,
-                                                         node::pointer_type(9, node::max_id),
-                                                         node::pointer_type(9, node::max_id-3))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(8,
+                                       node::max_id - 2,
+                                       node::pointer_type(9, node::max_id),
+                                       node::pointer_type(9, node::max_id - 3))));
 
           // NOTE: (9,f) because the pair (7,f) is is merged with (8) which
           //       prunes that entire subtree away.
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7,8,f)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id,
-                                                         node::pointer_type(8, node::max_id-2),
-                                                         node::pointer_type(true))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(
+              7, node::max_id, node::pointer_type(8, node::max_id - 2), node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7,g,9)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id-1,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(8, node::max_id))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(
+              7, node::max_id - 1, node::pointer_type(true), node::pointer_type(8, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7,g)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id-2,
-                                                         node::pointer_type(8, node::max_id-1),
-                                                         node::pointer_type(8, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(7,
+                                       node::max_id - 2,
+                                       node::pointer_type(8, node::max_id - 1),
+                                       node::pointer_type(8, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (6,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id,
-                                                         node::pointer_type(7, node::max_id),
-                                                         node::pointer_type(7, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(6,
+                                       node::max_id,
+                                       node::pointer_type(7, node::max_id),
+                                       node::pointer_type(7, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id-1,
-                                                         node::pointer_type(8, node::max_id-2),
-                                                         node::pointer_type(7, node::max_id-2))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(6,
+                                       node::max_id - 1,
+                                       node::pointer_type(8, node::max_id - 2),
+                                       node::pointer_type(7, node::max_id - 2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (4,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
-                                                         node::pointer_type(6, node::max_id-1),
-                                                         node::pointer_type(6, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(5,
+                                       node::max_id,
+                                       node::pointer_type(6, node::max_id - 1),
+                                       node::pointer_type(6, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (3,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id,
-                                                         node::pointer_type(5, node::max_id),
-                                                         node::pointer_type(6, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(4,
+                                       node::max_id,
+                                       node::pointer_type(5, node::max_id),
+                                       node::pointer_type(6, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (2,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-1,
-                                                         node::pointer_type(6, node::max_id-1),
-                                                         node::pointer_type(5, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(4,
+                                       node::max_id - 1,
+                                       node::pointer_type(6, node::max_id - 1),
+                                       node::pointer_type(5, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         node::pointer_type(4, node::max_id-1),
-                                                         node::pointer_type(4, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3,
+                                       node::max_id,
+                                       node::pointer_type(4, node::max_id - 1),
+                                       node::pointer_type(4, node::max_id))));
 
           // NOTE: The root (1,a,5,d) has x2 suppressed as the choice at (a)
           //       only is relevant for (b) and (c), not for (d).
@@ -2745,37 +2948,37 @@ go_bandit([]() {
           // TODO
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(13u,2u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(13u, 2u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(12u,4u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(12u, 4u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(11u,4u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(11u, 4u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(10u,4u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(10u, 4u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(9u,4u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(9u, 4u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(8u,3u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(8u, 3u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(7u,3u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(7u, 3u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(6u,2u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(6u, 2u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u,2u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u, 2u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -2852,7 +3055,7 @@ go_bandit([]() {
         it("finishes during initial transposition of even variables in BDD 4 [const &]", [&]() {
           std::vector<bdd::label_type> call_history;
 
-          const bdd in = bdd_4;
+          const bdd in  = bdd_4;
           const bdd out = bdd_exists(ep, in, [&call_history](const bdd::label_type x) -> bool {
             call_history.push_back(x);
             return !(x % 2);
@@ -2861,24 +3064,23 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         ptr_uint64(false),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (2')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         ptr_uint64(3, ptr_uint64::max_id),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -2910,60 +3112,61 @@ go_bandit([]() {
           AssertThat(call_history.at(9), Is().EqualTo(3u));
         });
 
-        it("collapses during repeated transposition with variables 1 2 variables in BDD 11a [&&]", [&]() {
-          std::vector<bdd::label_type> call_history;
-          bdd out = bdd_exists(ep, bdd_12a, [&call_history](const bdd::label_type x) -> bool {
-            call_history.push_back(x);
-            return 0 < x && x < 3;
-          });
+        it("collapses during repeated transposition with variables 1 2 variables in BDD 11a [&&]",
+           [&]() {
+             std::vector<bdd::label_type> call_history;
+             bdd out = bdd_exists(ep, bdd_12a, [&call_history](const bdd::label_type x) -> bool {
+               call_history.push_back(x);
+               return 0 < x && x < 3;
+             });
 
-          node_test_stream out_nodes(out);
+             node_test_stream out_nodes(out);
 
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
-          AssertThat(out_nodes.can_pull(), Is().False());
+             AssertThat(out_nodes.can_pull(), Is().True());
+             AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+             AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
-          AssertThat(out_meta.can_pull(), Is().False());
+             level_info_test_stream out_meta(out);
+             AssertThat(out_meta.can_pull(), Is().False());
 
-          // TODO: meta variables...
+             // TODO: meta variables...
 
-          // Check call history
-          //
-          // NOTE: Test failure does NOT indicate a bug, but only indicates a
-          //       change. Please verify that this change makes sense and is as
-          //       intended.
-          AssertThat(call_history.size(), Is().EqualTo(17u));
+             // Check call history
+             //
+             // NOTE: Test failure does NOT indicate a bug, but only indicates a
+             //       change. Please verify that this change makes sense and is as
+             //       intended.
+             AssertThat(call_history.size(), Is().EqualTo(17u));
 
-          // - First check for at least one variable satisfying the predicate.
-          AssertThat(call_history.at(0), Is().EqualTo(4u));
-          AssertThat(call_history.at(1), Is().EqualTo(3u));
-          AssertThat(call_history.at(2), Is().EqualTo(2u));
+             // - First check for at least one variable satisfying the predicate.
+             AssertThat(call_history.at(0), Is().EqualTo(4u));
+             AssertThat(call_history.at(1), Is().EqualTo(3u));
+             AssertThat(call_history.at(2), Is().EqualTo(2u));
 
-          // - Count number of variables above widest
-          AssertThat(call_history.at(3), Is().EqualTo(3u)); // <-- widest level
-          AssertThat(call_history.at(4), Is().EqualTo(2u));
-          AssertThat(call_history.at(5), Is().EqualTo(1u));
-          AssertThat(call_history.at(6), Is().EqualTo(0u));
+             // - Count number of variables above widest
+             AssertThat(call_history.at(3), Is().EqualTo(3u)); // <-- widest level
+             AssertThat(call_history.at(4), Is().EqualTo(2u));
+             AssertThat(call_history.at(5), Is().EqualTo(1u));
+             AssertThat(call_history.at(6), Is().EqualTo(0u));
 
-          // - First top-down sweep (root call)
-          AssertThat(call_history.at(7), Is().EqualTo(0u));
+             // - First top-down sweep (root call)
+             AssertThat(call_history.at(7), Is().EqualTo(0u));
 
-          // - First top-down sweep
-          AssertThat(call_history.at(8),  Is().EqualTo(0u));
-          AssertThat(call_history.at(9),  Is().EqualTo(1u));
-          AssertThat(call_history.at(10), Is().EqualTo(2u));
-          AssertThat(call_history.at(11), Is().EqualTo(3u));
-          AssertThat(call_history.at(12), Is().EqualTo(4u));
+             // - First top-down sweep
+             AssertThat(call_history.at(8), Is().EqualTo(0u));
+             AssertThat(call_history.at(9), Is().EqualTo(1u));
+             AssertThat(call_history.at(10), Is().EqualTo(2u));
+             AssertThat(call_history.at(11), Is().EqualTo(3u));
+             AssertThat(call_history.at(12), Is().EqualTo(4u));
 
-          // - Second top-down sweep (root call)
-          AssertThat(call_history.at(13),  Is().EqualTo(0u));
+             // - Second top-down sweep (root call)
+             AssertThat(call_history.at(13), Is().EqualTo(0u));
 
-          // - Second top-down sweep
-          AssertThat(call_history.at(14), Is().EqualTo(0u));
-          AssertThat(call_history.at(15), Is().EqualTo(2u));
-          AssertThat(call_history.at(16), Is().EqualTo(3u));
-        });
+             // - Second top-down sweep
+             AssertThat(call_history.at(14), Is().EqualTo(0u));
+             AssertThat(call_history.at(15), Is().EqualTo(2u));
+             AssertThat(call_history.at(16), Is().EqualTo(3u));
+           });
 
         it("finishes during repeated transposition with variables 1 and 2 in BDD 11b [&&]", [&]() {
           std::vector<bdd::label_type> call_history;
@@ -2994,42 +3197,47 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (8)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id,
-                                                         node::pointer_type(false),
-                                                         node::pointer_type(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(4, node::max_id, node::pointer_type(false), node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-1,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(false))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(
+                       4, node::max_id - 1, node::pointer_type(true), node::pointer_type(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5,6,8)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(4, node::max_id))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(
+              3, node::max_id, node::pointer_type(true), node::pointer_type(4, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5,6)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id-1,
-                                                         node::pointer_type(4, node::max_id-1),
-                                                         node::pointer_type(4, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3,
+                                       node::max_id - 1,
+                                       node::pointer_type(4, node::max_id - 1),
+                                       node::pointer_type(4, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                         node::pointer_type(3, node::max_id-1),
-                                                         node::pointer_type(3, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(0,
+                                       node::max_id,
+                                       node::pointer_type(3, node::max_id - 1),
+                                       node::pointer_type(3, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u,2u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u, 2u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,2u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 2u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -3058,14 +3266,14 @@ go_bandit([]() {
           AssertThat(call_history.at(8), Is().EqualTo(0u));
 
           // - First top-down sweep
-          AssertThat(call_history.at(9),  Is().EqualTo(0u));
+          AssertThat(call_history.at(9), Is().EqualTo(0u));
           AssertThat(call_history.at(10), Is().EqualTo(1u));
           AssertThat(call_history.at(11), Is().EqualTo(2u));
           AssertThat(call_history.at(12), Is().EqualTo(3u));
           AssertThat(call_history.at(13), Is().EqualTo(4u));
 
           // - Second top-down sweep (root call)
-          AssertThat(call_history.at(14),  Is().EqualTo(0u));
+          AssertThat(call_history.at(14), Is().EqualTo(0u));
 
           // - Second top-down sweep
           AssertThat(call_history.at(15), Is().EqualTo(0u));
@@ -3084,116 +3292,143 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id,
-                                                         node::pointer_type(false),
-                                                         node::pointer_type(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(7, node::max_id, node::pointer_type(false), node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (15)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id,
-                                                         node::pointer_type(false),
-                                                         node::pointer_type(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(6, node::max_id, node::pointer_type(false), node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (15,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id-1,
-                                                         node::pointer_type(7, node::max_id),
-                                                         node::pointer_type(true))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(
+              6, node::max_id - 1, node::pointer_type(7, node::max_id), node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (14)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id-2,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(false))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(
+                       6, node::max_id - 2, node::pointer_type(true), node::pointer_type(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (14,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id-3,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(7, node::max_id))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(
+              6, node::max_id - 3, node::pointer_type(true), node::pointer_type(7, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (13,15)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
-                                                         node::pointer_type(6, node::max_id),
-                                                         node::pointer_type(true))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(
+              5, node::max_id, node::pointer_type(6, node::max_id), node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (13,15,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-1,
-                                                         node::pointer_type(6, node::max_id-1),
-                                                         node::pointer_type(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(5,
+                                       node::max_id - 1,
+                                       node::pointer_type(6, node::max_id - 1),
+                                       node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (13,14,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-2,
-                                                         node::pointer_type(6, node::max_id-3),
-                                                         node::pointer_type(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(5,
+                                       node::max_id - 2,
+                                       node::pointer_type(6, node::max_id - 3),
+                                       node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (12,15,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-3,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(6, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(5,
+                                       node::max_id - 3,
+                                       node::pointer_type(true),
+                                       node::pointer_type(6, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (12,14)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-4,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(6, node::max_id-2))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(5,
+                                       node::max_id - 4,
+                                       node::pointer_type(true),
+                                       node::pointer_type(6, node::max_id - 2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (12,14,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-5,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(6, node::max_id-3))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(5,
+                                       node::max_id - 5,
+                                       node::pointer_type(true),
+                                       node::pointer_type(6, node::max_id - 3))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (9,11,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id,
-                                                         node::pointer_type(5, node::max_id-5),
-                                                         node::pointer_type(5, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(4,
+                                       node::max_id,
+                                       node::pointer_type(5, node::max_id - 5),
+                                       node::pointer_type(5, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (8,11,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-1,
-                                                         node::pointer_type(5, node::max_id-3),
-                                                         node::pointer_type(5, node::max_id-2))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(4,
+                                       node::max_id - 1,
+                                       node::pointer_type(5, node::max_id - 3),
+                                       node::pointer_type(5, node::max_id - 2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (9,10,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-2,
-                                                         node::pointer_type(5, node::max_id-2),
-                                                         node::pointer_type(5, node::max_id-3))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(4,
+                                       node::max_id - 2,
+                                       node::pointer_type(5, node::max_id - 2),
+                                       node::pointer_type(5, node::max_id - 3))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (8,10)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-3,
-                                                         node::pointer_type(5, node::max_id),
-                                                         node::pointer_type(5, node::max_id-4))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(4,
+                                       node::max_id - 3,
+                                       node::pointer_type(5, node::max_id),
+                                       node::pointer_type(5, node::max_id - 4))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (6,7,9,16)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         node::pointer_type(4, node::max_id-2),
-                                                         node::pointer_type(4, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3,
+                                       node::max_id,
+                                       node::pointer_type(4, node::max_id - 2),
+                                       node::pointer_type(4, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (6,7,8)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id-1,
-                                                         node::pointer_type(4, node::max_id-3),
-                                                         node::pointer_type(4, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3,
+                                       node::max_id - 1,
+                                       node::pointer_type(4, node::max_id - 3),
+                                       node::pointer_type(4, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (4,5,6,7)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                         node::pointer_type(3, node::max_id-1),
-                                                         node::pointer_type(3, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(2,
+                                       node::max_id,
+                                       node::pointer_type(3, node::max_id - 1),
+                                       node::pointer_type(3, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(7u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(7u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(6u,4u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(6u, 4u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u,6u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u, 6u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u,4u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u, 4u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,2u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 2u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -3216,9 +3451,9 @@ go_bandit([]() {
           AssertThat(call_history.at(6), Is().EqualTo(1u));
 
           // - Count number of variables above widest
-          AssertThat(call_history.at(7),  Is().EqualTo(4u)); // <-- widest level
-          AssertThat(call_history.at(8),  Is().EqualTo(3u));
-          AssertThat(call_history.at(9),  Is().EqualTo(2u));
+          AssertThat(call_history.at(7), Is().EqualTo(4u)); // <-- widest level
+          AssertThat(call_history.at(8), Is().EqualTo(3u));
+          AssertThat(call_history.at(9), Is().EqualTo(2u));
           AssertThat(call_history.at(10), Is().EqualTo(1u));
           AssertThat(call_history.at(11), Is().EqualTo(0u));
 
@@ -3258,16 +3493,16 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                         node::pointer_type(false),
-                                                         node::pointer_type(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(0, node::max_id, node::pointer_type(false), node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -3293,10 +3528,10 @@ go_bandit([]() {
           AssertThat(call_history.at(5), Is().EqualTo(0u));
 
           // - First top-down sweep
-          AssertThat(call_history.at(6),  Is().EqualTo(0u));
-          AssertThat(call_history.at(7),  Is().EqualTo(1u));
-          AssertThat(call_history.at(8),  Is().EqualTo(2u));
-          AssertThat(call_history.at(9),  Is().EqualTo(3u));
+          AssertThat(call_history.at(6), Is().EqualTo(0u));
+          AssertThat(call_history.at(7), Is().EqualTo(1u));
+          AssertThat(call_history.at(8), Is().EqualTo(2u));
+          AssertThat(call_history.at(9), Is().EqualTo(3u));
 
           // NOTE: Even though there are three levels that should be quantified,
           //       we only do one partial quantification.
@@ -3312,157 +3547,210 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (o)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(13, node::max_id,
-                                                         node::pointer_type(false),
-                                                         node::pointer_type(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(
+                       13, node::max_id, node::pointer_type(false), node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (n)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(13, node::max_id-1,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(false))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(
+                       13, node::max_id - 1, node::pointer_type(true), node::pointer_type(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (17,o)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::max_id,
-                                                         node::pointer_type(13, node::max_id),
-                                                         node::pointer_type(true))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(
+              12, node::max_id, node::pointer_type(13, node::max_id), node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (17,n)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::max_id-1,
-                                                         node::pointer_type(13, node::max_id-1),
-                                                         node::pointer_type(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(12,
+                                       node::max_id - 1,
+                                       node::pointer_type(13, node::max_id - 1),
+                                       node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (16,o)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::max_id-2,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(13, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(12,
+                                       node::max_id - 2,
+                                       node::pointer_type(true),
+                                       node::pointer_type(13, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (16,n)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::max_id-3,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(13, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(12,
+                                       node::max_id - 3,
+                                       node::pointer_type(true),
+                                       node::pointer_type(13, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (14,l)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::max_id,
-                                                         node::pointer_type(12, node::max_id-3),
-                                                         node::pointer_type(12, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(11,
+                                       node::max_id,
+                                       node::pointer_type(12, node::max_id - 3),
+                                       node::pointer_type(12, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (14,m)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::max_id-1,
-                                                         node::pointer_type(12, node::max_id-2),
-                                                         node::pointer_type(12, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(11,
+                                       node::max_id - 1,
+                                       node::pointer_type(12, node::max_id - 2),
+                                       node::pointer_type(12, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (15,l)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::max_id-2,
-                                                         node::pointer_type(12, node::max_id-1),
-                                                         node::pointer_type(12, node::max_id-2))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(11,
+                                       node::max_id - 2,
+                                       node::pointer_type(12, node::max_id - 1),
+                                       node::pointer_type(12, node::max_id - 2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (15,m)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(11, node::max_id-3,
-                                                         node::pointer_type(12, node::max_id),
-                                                         node::pointer_type(12, node::max_id-3))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(11,
+                                       node::max_id - 3,
+                                       node::pointer_type(12, node::max_id),
+                                       node::pointer_type(12, node::max_id - 3))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (13,k)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::max_id,
-                                                         node::pointer_type(11, node::max_id-3),
-                                                         node::pointer_type(11, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(10,
+                                       node::max_id,
+                                       node::pointer_type(11, node::max_id - 3),
+                                       node::pointer_type(11, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (13,j)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::max_id-1,
-                                                         node::pointer_type(11, node::max_id-2),
-                                                         node::pointer_type(11, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(10,
+                                       node::max_id - 1,
+                                       node::pointer_type(11, node::max_id - 2),
+                                       node::pointer_type(11, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (12,k)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::max_id-2,
-                                                         node::pointer_type(11, node::max_id-1),
-                                                         node::pointer_type(11, node::max_id-2))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(10,
+                                       node::max_id - 2,
+                                       node::pointer_type(11, node::max_id - 1),
+                                       node::pointer_type(11, node::max_id - 2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (12,j)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(10, node::max_id-3,
-                                                         node::pointer_type(11, node::max_id),
-                                                         node::pointer_type(11, node::max_id-3))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(10,
+                                       node::max_id - 3,
+                                       node::pointer_type(11, node::max_id),
+                                       node::pointer_type(11, node::max_id - 3))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (10,h)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::max_id,
-                                                         node::pointer_type(10, node::max_id-3),
-                                                         node::pointer_type(10, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(9,
+                                       node::max_id,
+                                       node::pointer_type(10, node::max_id - 3),
+                                       node::pointer_type(10, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (10,i)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::max_id-1,
-                                                         node::pointer_type(10, node::max_id-2),
-                                                         node::pointer_type(10, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(9,
+                                       node::max_id - 1,
+                                       node::pointer_type(10, node::max_id - 2),
+                                       node::pointer_type(10, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (11,h)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::max_id-2,
-                                                         node::pointer_type(10, node::max_id-1),
-                                                         node::pointer_type(10, node::max_id-2))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(9,
+                                       node::max_id - 2,
+                                       node::pointer_type(10, node::max_id - 1),
+                                       node::pointer_type(10, node::max_id - 2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (11,i)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(9, node::max_id-3,
-                                                         node::pointer_type(10, node::max_id),
-                                                         node::pointer_type(10, node::max_id-3))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(9,
+                                       node::max_id - 3,
+                                       node::pointer_type(10, node::max_id),
+                                       node::pointer_type(10, node::max_id - 3))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (9,g)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::max_id,
-                                                         node::pointer_type(9, node::max_id-3),
-                                                         node::pointer_type(9, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(8,
+                                       node::max_id,
+                                       node::pointer_type(9, node::max_id - 3),
+                                       node::pointer_type(9, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (8,g)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::max_id-1,
-                                                         node::pointer_type(9, node::max_id-1),
-                                                         node::pointer_type(9, node::max_id-2))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(8,
+                                       node::max_id - 1,
+                                       node::pointer_type(9, node::max_id - 1),
+                                       node::pointer_type(9, node::max_id - 2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (8,f)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, node::max_id-2,
-                                                         node::pointer_type(9, node::max_id),
-                                                         node::pointer_type(9, node::max_id-3))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(8,
+                                       node::max_id - 2,
+                                       node::pointer_type(9, node::max_id),
+                                       node::pointer_type(9, node::max_id - 3))));
 
           // NOTE: (9,f) because the pair (7,f) is is merged with (8) which
           //       prunes that entire subtree away.
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7,8,f)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id,
-                                                         node::pointer_type(8, node::max_id-2),
-                                                         node::pointer_type(true))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(
+              7, node::max_id, node::pointer_type(8, node::max_id - 2), node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7,g,9)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id-1,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(8, node::max_id))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(
+              7, node::max_id - 1, node::pointer_type(true), node::pointer_type(8, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7,g)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id-2,
-                                                         node::pointer_type(8, node::max_id-1),
-                                                         node::pointer_type(8, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(7,
+                                       node::max_id - 2,
+                                       node::pointer_type(8, node::max_id - 1),
+                                       node::pointer_type(8, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (6,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id,
-                                                         node::pointer_type(7, node::max_id),
-                                                         node::pointer_type(7, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(6,
+                                       node::max_id,
+                                       node::pointer_type(7, node::max_id),
+                                       node::pointer_type(7, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(6, node::max_id-1,
-                                                         node::pointer_type(8, node::max_id-2),
-                                                         node::pointer_type(7, node::max_id-2))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(6,
+                                       node::max_id - 1,
+                                       node::pointer_type(8, node::max_id - 2),
+                                       node::pointer_type(7, node::max_id - 2))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (4,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
-                                                         node::pointer_type(6, node::max_id-1),
-                                                         node::pointer_type(6, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(5,
+                                       node::max_id,
+                                       node::pointer_type(6, node::max_id - 1),
+                                       node::pointer_type(6, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (3,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id,
-                                                         node::pointer_type(5, node::max_id),
-                                                         node::pointer_type(6, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(4,
+                                       node::max_id,
+                                       node::pointer_type(5, node::max_id),
+                                       node::pointer_type(6, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (2,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-1,
-                                                         node::pointer_type(6, node::max_id-1),
-                                                         node::pointer_type(5, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(4,
+                                       node::max_id - 1,
+                                       node::pointer_type(6, node::max_id - 1),
+                                       node::pointer_type(5, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1,5,d)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         node::pointer_type(4, node::max_id-1),
-                                                         node::pointer_type(4, node::max_id))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3,
+                                       node::max_id,
+                                       node::pointer_type(4, node::max_id - 1),
+                                       node::pointer_type(4, node::max_id))));
 
           // NOTE: The root (1,a,5,d) has x2 suppressed as the choice at (a)
           //       only is relevant for (b) and (c), not for (d).
@@ -3474,37 +3762,37 @@ go_bandit([]() {
           // TODO
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(13u,2u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(13u, 2u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(12u,4u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(12u, 4u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(11u,4u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(11u, 4u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(10u,4u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(10u, 4u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(9u,4u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(9u, 4u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(8u,3u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(8u, 3u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(7u,3u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(7u, 3u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(6u,2u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(6u, 2u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u,2u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u, 2u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -3518,16 +3806,16 @@ go_bandit([]() {
           AssertThat(call_history.size(), Is().EqualTo(53u));
 
           // - First check for at least one variable satisfying the predicate.
-          AssertThat(call_history.at(0),  Is().EqualTo(13u));
-          AssertThat(call_history.at(1),  Is().EqualTo(12u));
-          AssertThat(call_history.at(2),  Is().EqualTo(11u));
-          AssertThat(call_history.at(3),  Is().EqualTo(10u));
-          AssertThat(call_history.at(4),  Is().EqualTo(9u));
-          AssertThat(call_history.at(5),  Is().EqualTo(8u));
-          AssertThat(call_history.at(6),  Is().EqualTo(7u));
-          AssertThat(call_history.at(7),  Is().EqualTo(6u));
-          AssertThat(call_history.at(8),  Is().EqualTo(5u));
-          AssertThat(call_history.at(9),  Is().EqualTo(4u));
+          AssertThat(call_history.at(0), Is().EqualTo(13u));
+          AssertThat(call_history.at(1), Is().EqualTo(12u));
+          AssertThat(call_history.at(2), Is().EqualTo(11u));
+          AssertThat(call_history.at(3), Is().EqualTo(10u));
+          AssertThat(call_history.at(4), Is().EqualTo(9u));
+          AssertThat(call_history.at(5), Is().EqualTo(8u));
+          AssertThat(call_history.at(6), Is().EqualTo(7u));
+          AssertThat(call_history.at(7), Is().EqualTo(6u));
+          AssertThat(call_history.at(8), Is().EqualTo(5u));
+          AssertThat(call_history.at(9), Is().EqualTo(4u));
           AssertThat(call_history.at(10), Is().EqualTo(3u));
           AssertThat(call_history.at(11), Is().EqualTo(2u));
           AssertThat(call_history.at(12), Is().EqualTo(1u));
@@ -3591,42 +3879,47 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (4)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id,
-                                                         node::pointer_type(false),
-                                                         node::pointer_type(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(4, node::max_id, node::pointer_type(false), node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (6)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-1,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(false))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(
+                       4, node::max_id - 1, node::pointer_type(true), node::pointer_type(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (2)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         node::pointer_type(4, node::max_id),
-                                                         node::pointer_type(true))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(
+              3, node::max_id, node::pointer_type(4, node::max_id), node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (3)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id-1,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(4, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3,
+                                       node::max_id - 1,
+                                       node::pointer_type(true),
+                                       node::pointer_type(4, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                         node::pointer_type(3, node::max_id),
-                                                         node::pointer_type(3, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(2,
+                                       node::max_id,
+                                       node::pointer_type(3, node::max_id),
+                                       node::pointer_type(3, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u,2u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u, 2u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,2u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 2u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -3653,9 +3946,9 @@ go_bandit([]() {
           AssertThat(call_history.at(6), Is().EqualTo(2u));
 
           // - Top-down sweep
-          AssertThat(call_history.at(7),  Is().EqualTo(2u));
-          AssertThat(call_history.at(8),  Is().EqualTo(3u));
-          AssertThat(call_history.at(9),  Is().EqualTo(4u));
+          AssertThat(call_history.at(7), Is().EqualTo(2u));
+          AssertThat(call_history.at(8), Is().EqualTo(3u));
+          AssertThat(call_history.at(9), Is().EqualTo(4u));
           AssertThat(call_history.at(10), Is().EqualTo(5u));
           AssertThat(call_history.at(11), Is().EqualTo(6u));
           AssertThat(call_history.at(12), Is().EqualTo(7u));
@@ -3680,50 +3973,56 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (4)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id,
-                                                         node::pointer_type(false),
-                                                         node::pointer_type(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(4, node::max_id, node::pointer_type(false), node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (6)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-1,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(false))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(
+                       4, node::max_id - 1, node::pointer_type(true), node::pointer_type(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (2)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         node::pointer_type(4, node::max_id),
-                                                         node::pointer_type(true))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(
+              3, node::max_id, node::pointer_type(4, node::max_id), node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (3)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id-1,
-                                                         node::pointer_type(true),
-                                                         node::pointer_type(4, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3,
+                                       node::max_id - 1,
+                                       node::pointer_type(true),
+                                       node::pointer_type(4, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                         node::pointer_type(3, node::max_id),
-                                                         node::pointer_type(3, node::max_id-1))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(2,
+                                       node::max_id,
+                                       node::pointer_type(3, node::max_id),
+                                       node::pointer_type(3, node::max_id - 1))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1*)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                         node::pointer_type(2, node::max_id),
-                                                         node::pointer_type(true))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(
+              0, node::max_id, node::pointer_type(2, node::max_id), node::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u,2u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u, 2u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,2u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 2u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -3752,7 +4051,7 @@ go_bandit([]() {
           AssertThat(call_history.at(8), Is().EqualTo(0u));
 
           // - Top-down sweep
-          AssertThat(call_history.at(9),  Is().EqualTo(0u));
+          AssertThat(call_history.at(9), Is().EqualTo(0u));
           AssertThat(call_history.at(10), Is().EqualTo(1u));
           AssertThat(call_history.at(11), Is().EqualTo(2u));
           AssertThat(call_history.at(12), Is().EqualTo(3u));
@@ -3776,9 +4075,7 @@ go_bandit([]() {
 
     describe("bdd_exists(const bdd&, const generator<bdd::label_type>&)", [&]() {
       it("returns input on 'optional::none' generator BDD 1 [&&]", [&]() {
-        __bdd out = bdd_exists(bdd_1, []() -> optional<bdd::label_type> {
-          return {};
-        });
+        __bdd out = bdd_exists(bdd_1, []() -> optional<bdd::label_type> { return {}; });
 
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
       });
@@ -3788,36 +4085,33 @@ go_bandit([]() {
 
         it("quantifies 3, 1 in BDD 4 [&&]", [&]() {
           bdd out = bdd_exists(ep, bdd_4, [var = 3]() mutable -> optional<bdd::label_type> {
-              if (var == 42) {
-                return {};
-              }
+            if (var == 42) { return {}; }
 
-              const bdd::label_type ret = var;
-              var = ret == 1 ? 42 : var-2;
-              return {ret};
-            });
+            const bdd::label_type ret = var;
+            var                       = ret == 1 ? 42 : var - 2;
+            return { ret };
+          });
 
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (3)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                         ptr_uint64(false),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                         ptr_uint64(2, ptr_uint64::max_id),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
         });
@@ -3826,47 +4120,42 @@ go_bandit([]() {
           const bdd in = bdd_4;
 
           bdd out = bdd_exists(ep, in, [var = 2]() mutable -> optional<bdd::label_type> {
-              if (var == 42) {
-                return {};
-              }
+            if (var == 42) { return {}; }
 
-              const bdd::label_type res = var;
-              var = res == 0 ? 42 : var-2;
-              return {res};
-            });
+            const bdd::label_type res = var;
+            var                       = res == 0 ? 42 : var - 2;
+            return { res };
+          });
 
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         ptr_uint64(false),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (2')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         ptr_uint64(3, ptr_uint64::max_id),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
         it("quantifies 1 in BDD 1 [&&]", [&]() {
           bdd out = bdd_exists(ep, bdd_1, [var = 1]() mutable -> optional<bdd::label_type> {
-              if (var == 0) {
-                return {};
-              }
-              return {var--};
-            });
+            if (var == 0) { return {}; }
+            return { var-- };
+          });
 
           node_test_stream out_nodes(out);
 
@@ -3883,9 +4172,8 @@ go_bandit([]() {
         it("terminates early when quantifying to a terminal in BDD 3 [&&]", [&]() {
           int calls = 0;
 
-          const bdd out = bdd_exists(ep, bdd_3, [&calls]() -> bdd::label_type {
-            return 2 - 2*(calls++);
-          });
+          const bdd out =
+            bdd_exists(ep, bdd_3, [&calls]() -> bdd::label_type { return 2 - 2 * (calls++); });
 
           // What could be expected is 3 calls: 2, 0 . But, here it terminates early.
           AssertThat(calls, Is().EqualTo(2));
@@ -3908,46 +4196,41 @@ go_bandit([]() {
 
         it("quantifies 3, 1 in BDD 4 [&&]", [&]() {
           bdd out = bdd_exists(ep, bdd_4, [var = 3]() mutable -> optional<bdd::label_type> {
-              if (var == 42) {
-                return {};
-              }
+            if (var == 42) { return {}; }
 
-              const bdd::label_type ret = var;
-              var = ret == 1 ? 42 : var-2;
-              return {ret};
-            });
+            const bdd::label_type ret = var;
+            var                       = ret == 1 ? 42 : var - 2;
+            return { ret };
+          });
 
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (3)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                         ptr_uint64(false),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                         ptr_uint64(2, ptr_uint64::max_id),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
         it("quantifies 1 in BDD 1 [&&]", [&]() {
           bdd out = bdd_exists(ep, bdd_1, [var = 1]() mutable -> optional<bdd::label_type> {
-            if (var == 0) {
-              return {};
-            }
-            return {var--};
+            if (var == 0) { return {}; }
+            return { var-- };
           });
 
           node_test_stream out_nodes(out);
@@ -3964,44 +4247,41 @@ go_bandit([]() {
 
         it("bails out on a level that only shortcuts", [&]() {
           bdd out = bdd_exists(ep, bdd_9T, [var = 6]() mutable -> optional<bdd::label_type> {
-              if (var == 42) {
-                return {};
-              }
+            if (var == 42) { return {}; }
 
-              const bdd::label_type res = var;
-              var = res == 0 ? 42 : var-2;
-              return {res};
-            });
+            const bdd::label_type res = var;
+            var                       = res == 0 ? 42 : var - 2;
+            return { res };
+          });
 
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
-                                                         ptr_uint64(false),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(5, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         ptr_uint64(5, node::max_id),
-                                                         ptr_uint64(true))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(3, node::max_id, ptr_uint64(5, node::max_id), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         ptr_uint64(true),
-                                                         ptr_uint64(3, node::max_id))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(1, node::max_id, ptr_uint64(true), ptr_uint64(3, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -4010,36 +4290,33 @@ go_bandit([]() {
 
         it("bails out on a level that only is irrelevant", [&]() {
           bdd out = bdd_exists(ep, bdd_9F, [var = 6]() mutable -> optional<bdd::label_type> {
-              if (var == 42) {
-                return make_optional<bdd::label_type>();
-              }
+            if (var == 42) { return make_optional<bdd::label_type>(); }
 
-              const bdd::label_type res = var;
-              var = res == 0 ? 42 : var-2;
-              return res;
-            });
+            const bdd::label_type res = var;
+            var                       = res == 0 ? 42 : var - 2;
+            return res;
+          });
 
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
-                                                         ptr_uint64(false),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(5, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         ptr_uint64(5, node::max_id),
-                                                         ptr_uint64(true))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(3, node::max_id, ptr_uint64(5, node::max_id), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -4048,16 +4325,23 @@ go_bandit([]() {
 
         it("bails out on a level that both shortcuts and is irrelevant", [&]() {
           bdd out = bdd_exists(ep, bdd_6_x4T, [var = 4]() mutable -> optional<bdd::label_type> {
-            if (var == 42) {
-              return {};
-            }
+            if (var == 42) { return {}; }
             const bdd::label_type res = var;
             switch (res) {
-            case 4:  { var = 2;  break; } // <-- 4: transposing
-            case 2:  { var = 1;  break; } // <-- 2: shortuctting / irrelevant
-            default: { var = 42; break; } // <-- 1: final sweep
+            case 4: {
+              var = 2;
+              break;
+            } // <-- 4: transposing
+            case 2: {
+              var = 1;
+              break;
+            } // <-- 2: shortuctting / irrelevant
+            default: {
+              var = 42;
+              break;
+            } // <-- 1: final sweep
             }
-            return {res};
+            return { res };
           });
 
           // TODO predict output!
@@ -4077,28 +4361,30 @@ go_bandit([]() {
 
         it("kills intermediate dead partial solution", [&]() {
           bdd out = bdd_exists(ep, bdd_10, [var = make_optional<bdd::label_type>(3)]() mutable {
-              if (!var) { return var; }
+            if (!var) { return var; }
 
-              const optional<bdd::label_type> res = var;
-              if (2 < var.value()) { var = var.value()-1; }
-              else                 { var = {}; }
+            const optional<bdd::label_type> res = var;
+            if (2 < var.value()) {
+              var = var.value() - 1;
+            } else {
+              var = {};
+            }
 
-              return res;
-            });
+            return res;
+          });
 
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                         ptr_uint64(false),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(0, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -4120,12 +4406,10 @@ go_bandit([]() {
           //        T
           */
           bdd out = bdd_exists(ep, bdd_6, [var = 7]() mutable -> optional<bdd::label_type> {
-            if (var == 42) {
-              return make_optional<bdd::label_type>();
-            }
+            if (var == 42) { return make_optional<bdd::label_type>(); }
 
             const bdd::label_type ret = var;
-            var = ret == 1 ? 42 : var-2;
+            var                       = ret == 1 ? 42 : var - 2;
             return ret;
           });
 
@@ -4149,16 +4433,12 @@ go_bandit([]() {
           //        T
           */
           bdd out = bdd_exists(ep, bdd_16, [var = 6]() mutable -> optional<bdd::label_type> {
-              var -= 1;
+            var -= 1;
 
-              if (var < 0) {
-                return {};
-              }
-              if (var == 5) {
-                var -= 1;
-              }
-              return {var};
-            });
+            if (var < 0) { return {}; }
+            if (var == 5) { var -= 1; }
+            return { var };
+          });
 
           node_test_stream out_nodes(out);
 
@@ -4178,58 +4458,57 @@ go_bandit([]() {
 
     describe("bdd_exists(const bdd&, ForwardIt begin, ForwardIt end)", [&]() {
       it("returns original file for [].begin() in BDD 1 [&]", [&]() {
-        const std::vector<bdd::label_type> vars = { };
-        const bdd out = bdd_exists(bdd_1, vars.begin(), vars.end());
+        const std::vector<bdd::label_type> vars = {};
+        const bdd out                           = bdd_exists(bdd_1, vars.begin(), vars.end());
 
         AssertThat(out.file_ptr(), Is().EqualTo(bdd_1));
       });
 
       it("returns original file for [3, 5].rbegin() in BDD 11 [&]", [&]() {
-        const std::vector<bdd::label_type> vars = { 3,5 };
-        const bdd out = bdd_exists(bdd_11, vars.rbegin(), vars.rend());
+        const std::vector<bdd::label_type> vars = { 3, 5 };
+        const bdd out                           = bdd_exists(bdd_11, vars.rbegin(), vars.rend());
 
         AssertThat(out.file_ptr(), Is().EqualTo(bdd_11));
       });
 
       it("returns original file for [0, 3].rbegin() in BDD 11 [&]", [&]() {
-        const std::vector<bdd::label_type> vars = { 0,3 };
-        const bdd out = bdd_exists(bdd_11, vars.rbegin(), vars.rend());
+        const std::vector<bdd::label_type> vars = { 0, 3 };
+        const bdd out                           = bdd_exists(bdd_11, vars.rbegin(), vars.rend());
 
         AssertThat(out.file_ptr(), Is().EqualTo(bdd_11));
       });
 
       it("quantifies [1, 3].rbegin() in BDD 4 [&&]", [&]() {
-        std::vector<bdd::label_type> vars = { 1 , 3 };
+        std::vector<bdd::label_type> vars = { 1, 3 };
 
         bdd out = bdd_exists(bdd_4, vars.rbegin(), vars.rend());
 
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // (3)
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                       ptr_uint64(false),
-                                                       ptr_uint64(true))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       ptr_uint64(2, ptr_uint64::max_id),
-                                                       ptr_uint64(true))));
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
       });
 
       it("quantifies [2, 0].begin() in BDD 4 [const &]", [&]() {
-        const bdd in = bdd_4;
+        const bdd in                            = bdd_4;
         const std::vector<bdd::label_type> vars = { 2, 0 };
 
         bdd out = bdd_exists(in, vars.begin(), vars.end());
@@ -4237,31 +4516,30 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // (5)
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                       ptr_uint64(false),
-                                                       ptr_uint64(true))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // (2')
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       ptr_uint64(3, ptr_uint64::max_id),
-                                                       ptr_uint64(true))));
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
       });
 
       it("quantifies [4, 2, 0].begin() in BDD 4 [const &]", [&]() {
         const exec_policy ep;
-        const bdd in = bdd_4;
+        const bdd in                            = bdd_4;
         const std::vector<bdd::label_type> vars = { 4, 2, 0 };
 
         bdd out = bdd_exists(ep, in, vars.begin(), vars.end());
@@ -4269,24 +4547,23 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // (5)
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                       ptr_uint64(false),
-                                                       ptr_uint64(true))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // (2')
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       ptr_uint64(3, ptr_uint64::max_id),
-                                                       ptr_uint64(true))));
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
       });
@@ -4319,25 +4596,28 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(false) }));
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(false) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(1u,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1u, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(0u));
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(1u));
       });
 
       it("quantifies root of [BDD 3]", [&]() {
@@ -4347,46 +4627,49 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,0) }));
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(2,1) }));
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(2,0), false, ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(2,0), true,  ptr_uint64(false) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(false) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(2,1), false, ptr_uint64(false) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 1), false, ptr_uint64(false) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(2,1), true,  ptr_uint64(false) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 1), true, ptr_uint64(false) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(1u,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1u, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2u,2u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 2u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(3u));
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(1u));
       });
 
       it("should prune shortcuttable requests [BDD 4]", [&]() {
@@ -4396,49 +4679,52 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(1,0) }));
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(3,0) }));
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(3, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), // false due to 3.low()
-                   Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(false) }));
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(false) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), // false due to 3.low()
-                   Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(false) }));
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(false) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), // false due to 5.low()
-                   Is().EqualTo(arc { ptr_uint64(3,0), false, ptr_uint64(false) }));
+                   Is().EqualTo(arc{ ptr_uint64(3, 0), false, ptr_uint64(false) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), // true due to 5.high() and 4.high()
-                   Is().EqualTo(arc { ptr_uint64(3,0), true,  ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(3, 0), true, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0u,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0u, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(1u,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1u, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(3u,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(3u, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(3u));
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(1u));
       });
 
       it("can forward information across a level [BDD 6]", [&]() {
@@ -4448,119 +4734,126 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_internal(), Is().True()); // (4,6)
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(2,0) }));
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(2, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True()); // (5,6)
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(2,1) }));
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(2, 1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True()); // (7,8)
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(2,1), false, ptr_uint64(3,0) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 1), false, ptr_uint64(3, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True()); // (8,T)
         AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(2,0), true,  ptr_uint64(3,1) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(3, 1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
         AssertThat(arcs.can_pull_terminal(), Is().True()); // (4,6)
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(2,0), false, ptr_uint64(false) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(false) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True()); // (5,6)
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(2,1), true,  ptr_uint64(false) }));
+                   Is().EqualTo(arc{ ptr_uint64(2, 1), true, ptr_uint64(false) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True()); // (7,8)
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(3,0), false, ptr_uint64(false) }));
+                   Is().EqualTo(arc{ ptr_uint64(3, 0), false, ptr_uint64(false) }));
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(3,0), true,  ptr_uint64(false) }));
+                   Is().EqualTo(arc{ ptr_uint64(3, 0), true, ptr_uint64(false) }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True()); // (8,T)
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(3,1), false, ptr_uint64(false) }));
+                   Is().EqualTo(arc{ ptr_uint64(3, 1), false, ptr_uint64(false) }));
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(3,1), true,  ptr_uint64(true) }));
+                   Is().EqualTo(arc{ ptr_uint64(3, 1), true, ptr_uint64(true) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0u,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0u, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2u,2u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 2u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(3u,2u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(3u, 2u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(5u));
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(5u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(1u));
       });
 
-      it("should collapse tuple requests of the same node back into request on a single node [BDD 8a]", [&]() {
-        __bdd out = bdd_forall(bdd_8a, 1);
+      it("should collapse tuple requests of the same node back into request on a single node [BDD "
+         "8a]",
+         [&]() {
+           __bdd out = bdd_forall(bdd_8a, 1);
 
-        arc_test_stream arcs(out);
+           arc_test_stream arcs(out);
 
-        AssertThat(arcs.can_pull_internal(), Is().True()); // (3,4)
-        AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(2,0) }));
+           AssertThat(arcs.can_pull_internal(), Is().True()); // (3,4)
+           AssertThat(arcs.pull_internal(),
+                      Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(2, 0) }));
 
-        AssertThat(arcs.can_pull_internal(), Is().True()); // (5,_)
-        AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(3,0) }));
-        AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(),
-                   Is().EqualTo(arc { ptr_uint64(2,0), true,  ptr_uint64(3,0) }));
+           AssertThat(arcs.can_pull_internal(), Is().True()); // (5,_)
+           AssertThat(arcs.pull_internal(),
+                      Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(3, 0) }));
+           AssertThat(arcs.can_pull_internal(), Is().True());
+           AssertThat(arcs.pull_internal(),
+                      Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(3, 0) }));
 
-        AssertThat(arcs.can_pull_internal(), Is().False());
+           AssertThat(arcs.can_pull_internal(), Is().False());
 
-        AssertThat(arcs.can_pull_terminal(), Is().True()); // (3,4)
-        AssertThat(arcs.pull_terminal(), // false due to 4.low()
-                   Is().EqualTo(arc { ptr_uint64(2,0), false, ptr_uint64(false) }));
+           AssertThat(arcs.can_pull_terminal(), Is().True()); // (3,4)
+           AssertThat(arcs.pull_terminal(),                   // false due to 4.low()
+                      Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(false) }));
 
-        AssertThat(arcs.can_pull_terminal(), Is().True()); // (5,_)
-        AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(3,0), false, ptr_uint64(false) }));
-        AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(),
-                   Is().EqualTo(arc { ptr_uint64(3,0), true,  ptr_uint64(true) }));
+           AssertThat(arcs.can_pull_terminal(), Is().True()); // (5,_)
+           AssertThat(arcs.pull_terminal(),
+                      Is().EqualTo(arc{ ptr_uint64(3, 0), false, ptr_uint64(false) }));
+           AssertThat(arcs.can_pull_terminal(), Is().True());
+           AssertThat(arcs.pull_terminal(),
+                      Is().EqualTo(arc{ ptr_uint64(3, 0), true, ptr_uint64(true) }));
 
+           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        AssertThat(arcs.can_pull_terminal(), Is().False());
+           level_info_test_stream levels(out);
 
-        level_info_test_stream levels(out);
+           AssertThat(levels.can_pull(), Is().True());
+           AssertThat(levels.pull(), Is().EqualTo(level_info(0u, 1u)));
 
-        AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0u,1u)));
+           AssertThat(levels.can_pull(), Is().True());
+           AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 1u)));
 
-        AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2u,1u)));
+           AssertThat(levels.can_pull(), Is().True());
+           AssertThat(levels.pull(), Is().EqualTo(level_info(3u, 1u)));
 
-        AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(3u,1u)));
+           AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(levels.can_pull(), Is().False());
+           AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                      Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
-
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
-      });
+           AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                      Is().EqualTo(2u));
+           AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                      Is().EqualTo(1u));
+         });
     });
 
     describe("bdd_forall(const bdd&, const predicate<bdd::label_type>&)", [&]() {
       it("returns input on always-false predicate BDD 1 [const &]", [&]() {
-        bdd in = bdd_1;
+        bdd in    = bdd_1;
         __bdd out = bdd_forall(in, [](const bdd::label_type) -> bool { return false; });
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
       });
@@ -4575,23 +4868,21 @@ go_bandit([]() {
 
         it("quantifies even variables in BDD 1 [const &]", [&]() {
           const bdd in = bdd_1;
-          const bdd out = bdd_forall(ep, in, [](const bdd::label_type x) -> bool {
-            return !(x % 2);
-          });
+          const bdd out =
+            bdd_forall(ep, in, [](const bdd::label_type x) -> bool { return !(x % 2); });
 
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         ptr_uint64(false),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -4599,23 +4890,21 @@ go_bandit([]() {
         });
 
         it("quantifies odd variables in BDD 1 [&&]", [&]() {
-          const bdd out = bdd_forall(ep, bdd_1, [](const bdd::label_type x) -> bool {
-            return x % 2;
-          });
+          const bdd out =
+            bdd_forall(ep, bdd_1, [](const bdd::label_type x) -> bool { return x % 2; });
 
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                         ptr_uint64(true),
-                                                         ptr_uint64(false))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(0, node::max_id, ptr_uint64(true), ptr_uint64(false))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -4623,9 +4912,8 @@ go_bandit([]() {
         });
 
         it("quantifies <= 2 variables in BDD 4 [&&]", [&]() {
-          const bdd out = bdd_forall(ep, bdd_4, [](const bdd::label_type x) -> bool {
-            return x <= 2;
-          });
+          const bdd out =
+            bdd_forall(ep, bdd_4, [](const bdd::label_type x) -> bool { return x <= 2; });
 
           node_test_stream out_nodes(out);
 
@@ -4666,7 +4954,7 @@ go_bandit([]() {
       });
 
       describe("quantify_alg == Partial", [&]() {
-        //const exec_policy ep = exec_policy::quantify::Partial;
+        // const exec_policy ep = exec_policy::quantify::Partial;
 
         // TODO
       });
@@ -4675,61 +4963,57 @@ go_bandit([]() {
         const exec_policy ep = exec_policy::quantify::Nested;
 
         it("quantifies even variables in BDD 1", [&]() {
-          const bdd out = bdd_forall(ep, bdd_1, [](const bdd::label_type x) -> bool {
-            return !(x % 2);
-          });
+          const bdd out =
+            bdd_forall(ep, bdd_1, [](const bdd::label_type x) -> bool { return !(x % 2); });
 
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         ptr_uint64(false),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
         it("bails out on a level that only shortcuts", [&]() {
-          bdd out = bdd_forall(ep, bdd_not(bdd_9T), [](const bdd::label_type x) -> bool {
-            return !(x % 2);
-          });
+          bdd out = bdd_forall(
+            ep, bdd_not(bdd_9T), [](const bdd::label_type x) -> bool { return !(x % 2); });
 
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
-                                                         ptr_uint64(true),
-                                                         ptr_uint64(false))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(5, node::max_id, ptr_uint64(true), ptr_uint64(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         ptr_uint64(5, node::max_id),
-                                                         ptr_uint64(false))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(3, node::max_id, ptr_uint64(5, node::max_id), ptr_uint64(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         ptr_uint64(false),
-                                                         ptr_uint64(3, node::max_id))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(1, node::max_id, ptr_uint64(false), ptr_uint64(3, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -4737,31 +5021,29 @@ go_bandit([]() {
         });
 
         it("bails out on a level that only is irrelevant", [&]() {
-          bdd out = bdd_forall(ep, bdd_not(bdd_9F), [](const bdd::label_type x) -> bool {
-            return !(x % 2);
-          });
+          bdd out = bdd_forall(
+            ep, bdd_not(bdd_9F), [](const bdd::label_type x) -> bool { return !(x % 2); });
 
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
-                                                         ptr_uint64(true),
-                                                         ptr_uint64(false))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(5, node::max_id, ptr_uint64(true), ptr_uint64(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         ptr_uint64(5, node::max_id),
-                                                         ptr_uint64(false))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(3, node::max_id, ptr_uint64(5, node::max_id), ptr_uint64(false))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -4794,23 +5076,21 @@ go_bandit([]() {
         const exec_policy ep = exec_policy::quantify::Auto;
 
         it("quantifies odd variables in BDD 1", [&]() {
-          const bdd out = bdd_forall(ep, bdd_1, [](const bdd::label_type x) -> bool {
-            return x % 2;
-          });
+          const bdd out =
+            bdd_forall(ep, bdd_1, [](const bdd::label_type x) -> bool { return x % 2; });
 
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                         ptr_uint64(true),
-                                                         ptr_uint64(false))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(0, node::max_id, ptr_uint64(true), ptr_uint64(false))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
         });
@@ -4819,9 +5099,7 @@ go_bandit([]() {
 
     describe("bdd_forall(const bdd&, const generator<bdd::label_type>&)", [&]() {
       it("returns input on 'optional::none' generator in BDD 1 [&&]", [&]() {
-        __bdd out = bdd_forall(bdd_1, []() {
-          return make_optional<bdd::label_type>();
-        });
+        __bdd out = bdd_forall(bdd_1, []() { return make_optional<bdd::label_type>(); });
 
         AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
       });
@@ -4830,52 +5108,46 @@ go_bandit([]() {
         const exec_policy ep = exec_policy::quantify::Singleton;
 
         it("quantifies 0 in BDD 1 [const &]", [&]() {
-          const bdd in = bdd_1;
+          const bdd in  = bdd_1;
           const bdd out = bdd_forall(ep, in, [var = 0]() mutable -> optional<bdd::label_type> {
-              if (var > 0) {
-                return make_optional<bdd::label_type>();
-              }
-              return var++;
-            });
+            if (var > 0) { return make_optional<bdd::label_type>(); }
+            return var++;
+          });
 
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         ptr_uint64(false),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
         it("quantifies 1 in BDD 1 [&&]", [&]() {
           const bdd out = bdd_forall(ep, bdd_1, [var = 1]() mutable -> optional<bdd::label_type> {
-              if (var == 0) {
-                return {};
-              }
-              return {var--};
-            });
+            if (var == 0) { return {}; }
+            return { var-- };
+          });
 
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                         ptr_uint64(true),
-                                                         ptr_uint64(false))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(0, node::max_id, ptr_uint64(true), ptr_uint64(false))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
         });
@@ -4883,9 +5155,8 @@ go_bandit([]() {
         it("terminates early when quantifying 2, 0 to a terminal in BDD 3 [&&]", [&]() {
           int calls = 0;
 
-          const bdd out = bdd_forall(ep, bdd_3, [&calls]() -> optional<bdd::label_type> {
-            return {2 - 2*(calls++)};
-          });
+          const bdd out = bdd_forall(
+            ep, bdd_3, [&calls]() -> optional<bdd::label_type> { return { 2 - 2 * (calls++) }; });
 
           // What could be expected is 3 calls: 2, 0, none . But, here it terminates early.
           AssertThat(calls, Is().EqualTo(2));
@@ -4908,97 +5179,89 @@ go_bandit([]() {
 
         it("quantifies 0 in BDD 1", [&]() {
           const bdd out = bdd_forall(ep, bdd_1, [var = 0]() mutable -> optional<bdd::label_type> {
-              if (var == 1) {
-                return {};
-              }
-              return {var++};
-            });
+            if (var == 1) { return {}; }
+            return { var++ };
+          });
 
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         ptr_uint64(false),
-                                                         ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
         it("quantifies 1 in BDD 1", [&]() {
           const bdd out = bdd_forall(ep, bdd_1, [var = 1]() mutable -> optional<bdd::label_type> {
-              if (var == 0) {
-                return make_optional<bdd::label_type>();
-              }
+            if (var == 0) { return make_optional<bdd::label_type>(); }
 
-              const bdd::label_type ret = var;
-              var--;
-              return ret;
-            });
+            const bdd::label_type ret = var;
+            var--;
+            return ret;
+          });
 
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                         ptr_uint64(true),
-                                                         ptr_uint64(false))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(0, node::max_id, ptr_uint64(true), ptr_uint64(false))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
         it("bails out on a level that only shortcuts", [&]() {
-          bdd out = bdd_forall(ep, bdd_not(bdd_9T), [var = 6]() mutable -> optional<bdd::label_type> {
-              if (var == 42) {
-                return {};
-              }
+          bdd out =
+            bdd_forall(ep, bdd_not(bdd_9T), [var = 6]() mutable -> optional<bdd::label_type> {
+              if (var == 42) { return {}; }
 
               const bdd::label_type res = var;
-              var = res == 0 ? 42 : var-2;
-              return {res};
+              var                       = res == 0 ? 42 : var - 2;
+              return { res };
             });
 
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
-                                                         ptr_uint64(true),
-                                                         ptr_uint64(false))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(5, node::max_id, ptr_uint64(true), ptr_uint64(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         ptr_uint64(5, node::max_id),
-                                                         ptr_uint64(false))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(3, node::max_id, ptr_uint64(5, node::max_id), ptr_uint64(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         ptr_uint64(false),
-                                                         ptr_uint64(3, node::max_id))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(1, node::max_id, ptr_uint64(false), ptr_uint64(3, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -5006,37 +5269,35 @@ go_bandit([]() {
         });
 
         it("bails out on a level that only is irrelevant", [&]() {
-          bdd out = bdd_forall(ep, bdd_not(bdd_9F), [var = 6]() mutable -> optional<bdd::label_type> {
-              if (var == 42) {
-                return {};
-              }
+          bdd out =
+            bdd_forall(ep, bdd_not(bdd_9F), [var = 6]() mutable -> optional<bdd::label_type> {
+              if (var == 42) { return {}; }
 
               const bdd::label_type res = var;
-              var = res == 0 ? 42 : var-2;
-              return {res};
+              var                       = res == 0 ? 42 : var - 2;
+              return { res };
             });
 
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
-                                                         ptr_uint64(true),
-                                                         ptr_uint64(false))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(5, node::max_id, ptr_uint64(true), ptr_uint64(false))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (5')
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         ptr_uint64(5, node::max_id),
-                                                         ptr_uint64(false))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(3, node::max_id, ptr_uint64(5, node::max_id), ptr_uint64(false))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -5049,16 +5310,12 @@ go_bandit([]() {
           //        F
           */
           bdd out = bdd_forall(ep, bdd_16, [var = 6]() mutable -> optional<bdd::label_type> {
-              var -= 1;
+            var -= 1;
 
-              if (var < 0) {
-                return {};
-              }
-              if (var == 5) {
-                var -= 1;
-              }
-              return {var};
-            });
+            if (var < 0) { return {}; }
+            if (var == 5) { var -= 1; }
+            return { var };
+          });
 
           node_test_stream out_nodes(out);
 
@@ -5078,7 +5335,7 @@ go_bandit([]() {
 
     describe("bdd_forall(const bdd&, ForwardIt begin, ForwardIt end)", [&]() {
       it("quantifies [0].rbegin() in BDD 1 [const &]", [&]() {
-        const bdd in = bdd_1;
+        const bdd in                            = bdd_1;
         const std::vector<bdd::label_type> vars = { 0 };
 
         const bdd out = bdd_forall(in, vars.rbegin(), vars.rend());
@@ -5086,16 +5343,15 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       ptr_uint64(false),
-                                                       ptr_uint64(true))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
       });
@@ -5104,24 +5360,23 @@ go_bandit([]() {
         const exec_policy ep = exec_policy::quantify::Auto;
 
         const std::vector<bdd::label_type> vars = { 1 };
-        const bdd out = bdd_forall(ep, bdd_1, vars.begin(), vars.end());
+        const bdd out                           = bdd_forall(ep, bdd_1, vars.begin(), vars.end());
 
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       ptr_uint64(true),
-                                                       ptr_uint64(false))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(0, node::max_id, ptr_uint64(true), ptr_uint64(false))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
       });
     });
   });
- });
+});
