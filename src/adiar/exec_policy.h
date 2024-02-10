@@ -1,7 +1,9 @@
 #ifndef ADIAR_EXEC_POLICY_H
 #define ADIAR_EXEC_POLICY_H
 
+#include <algorithm>
 #include <limits>
+#include <type_traits>
 
 namespace adiar
 {
@@ -146,10 +148,15 @@ namespace adiar
         static constexpr float ticks = std::numeric_limits<signed char>::max();
 
         /// \brief Convert into a `signed char`
-        static constexpr signed char from_float(float f)
+        static constexpr signed char
+        from_float(float f)
         {
           // Truncate `f` to be in the interval [-1,1]
-          if (1.0 < f) { f = 1.0; } else if (f < -1.0) { f = -1.0; }
+          if (1.0 < f) {
+            f = 1.0;
+          } else if (f < -1.0) {
+            f = -1.0;
+          }
 
           // Multiply by 'ticks' to extend the interval *[-1,1]* into
           // *[-ticks,ticks]*. Then, convert to an integral value. This
@@ -160,17 +167,14 @@ namespace adiar
       public:
         /// \brief Conversion constructor from `float`.
         constexpr fast_reduce(float f)
-          : _value{from_float(f)}
-        { }
+          : _value{ from_float(f) }
+        {}
 
         /// \brief Reobtain this value as a `float`.
-        operator float() const
-        {
-          return static_cast<double>(this->_value) / ticks;
-        }
+        operator float() const { return static_cast<double>(this->_value) / ticks; }
 
         bool
-        operator== (const fast_reduce &other) const
+        operator==(const fast_reduce& other) const
         {
           return this->_value == other._value;
         }
@@ -221,30 +225,30 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Conversion construction from `access` enum.
     ////////////////////////////////////////////////////////////////////////////
-    exec_policy(const access &am)
+    exec_policy(const access& am)
       : _access(am)
-    { }
+    {}
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Conversion construction from `memory` enum.
     ////////////////////////////////////////////////////////////////////////////
-    exec_policy(const memory &mm)
+    exec_policy(const memory& mm)
       : _memory(mm)
-    { }
+    {}
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Conversion construction from `quantify` enum.
     ////////////////////////////////////////////////////////////////////////////
-    exec_policy(const quantify &qm)
+    exec_policy(const quantify& qm)
       : _quantify(qm)
-    { }
+    {}
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Conversion construction from `quantify` enum.
     ////////////////////////////////////////////////////////////////////////////
-    exec_policy(const nested::fast_reduce &fr)
+    exec_policy(const nested::fast_reduce& fr)
       : _nested__fast_reduce(fr)
-    { }
+    {}
 
     // TODO: constructor with defaults for a specific 'version number'?
 
@@ -252,38 +256,40 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Copy assignment
     ////////////////////////////////////////////////////////////////////////////
-    exec_policy& operator =(const exec_policy &) = default;
+    exec_policy&
+    operator=(const exec_policy&) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Move assignment
     ////////////////////////////////////////////////////////////////////////////
-    exec_policy& operator =(exec_policy &&) = default;
+    exec_policy&
+    operator=(exec_policy&&) = default;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain a value
     ////////////////////////////////////////////////////////////////////////////
     template <typename T>
-    const T& get() const;
+    const T&
+    get() const;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Check for equality of settings.
     ////////////////////////////////////////////////////////////////////////////
-    bool operator ==(const exec_policy& ep) const
+    bool
+    operator==(const exec_policy& ep) const
     {
       // Order based from the most generic to the most specific setting.
-      return this->_memory  == ep._memory
-          && this->_access  == ep._access
-          && this->_quantify == ep._quantify
-          && this->_nested__fast_reduce == ep._nested__fast_reduce
-        ;
+      return this->_memory == ep._memory && this->_access == ep._access
+        && this->_quantify == ep._quantify && this->_nested__fast_reduce == ep._nested__fast_reduce;
     }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Check for at least one mismatch in the settings.
     ////////////////////////////////////////////////////////////////////////////
-    bool operator !=(const exec_policy& ep) const
+    bool
+    operator!=(const exec_policy& ep) const
     {
       return !(*this == ep);
     }
@@ -292,7 +298,8 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Set the access mode.
     ////////////////////////////////////////////////////////////////////////////
-    exec_policy& set(const access &am)
+    exec_policy&
+    set(const access& am)
     {
       this->_access = am;
       return *this;
@@ -301,7 +308,8 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Create a copy with the access mode changed.
     ////////////////////////////////////////////////////////////////////////////
-    exec_policy operator &(const access& am) const
+    exec_policy
+    operator&(const access& am) const
     {
       exec_policy ep = *this;
       return ep.set(am);
@@ -310,7 +318,8 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Set the memory mode.
     ////////////////////////////////////////////////////////////////////////////
-    exec_policy& set(const memory &mm)
+    exec_policy&
+    set(const memory& mm)
     {
       this->_memory = mm;
       return *this;
@@ -319,7 +328,8 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Create a copy with the memory mode changed.
     ////////////////////////////////////////////////////////////////////////////
-    exec_policy operator &(const memory& mm) const
+    exec_policy
+    operator&(const memory& mm) const
     {
       exec_policy ep = *this;
       return ep.set(mm);
@@ -328,7 +338,8 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Set the quantify strategy.
     ////////////////////////////////////////////////////////////////////////////
-    exec_policy& set(const quantify &qs)
+    exec_policy&
+    set(const quantify& qs)
     {
       this->_quantify = qs;
       return *this;
@@ -337,7 +348,8 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Create a copy with the quantify strategy changed.
     ////////////////////////////////////////////////////////////////////////////
-    exec_policy operator &(const quantify& qs) const
+    exec_policy
+    operator&(const quantify& qs) const
     {
       exec_policy ep = *this;
       return ep.set(qs);
@@ -346,7 +358,8 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Set the quantify strategy.
     ////////////////////////////////////////////////////////////////////////////
-    exec_policy& set(const nested::fast_reduce& fr)
+    exec_policy&
+    set(const nested::fast_reduce& fr)
     {
       this->_nested__fast_reduce = fr;
       return *this;
@@ -355,7 +368,8 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Create a copy with the quantify strategy changed.
     ////////////////////////////////////////////////////////////////////////////
-    exec_policy operator &(const nested::fast_reduce& fr) const
+    exec_policy
+    operator&(const nested::fast_reduce& fr) const
     {
       exec_policy ep = *this;
       return ep.set(fr);
@@ -368,7 +382,9 @@ namespace adiar
   template <>
   inline const exec_policy::access&
   exec_policy::get<exec_policy::access>() const
-  { return this->_access; }
+  {
+    return this->_access;
+  }
 
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Chosen memory type.
@@ -376,7 +392,9 @@ namespace adiar
   template <>
   inline const exec_policy::memory&
   exec_policy::get<exec_policy::memory>() const
-  { return this->_memory; }
+  {
+    return this->_memory;
+  }
 
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Chosen quantification strategy.
@@ -384,7 +402,9 @@ namespace adiar
   template <>
   inline const exec_policy::quantify&
   exec_policy::get<exec_policy::quantify>() const
-  { return this->_quantify; }
+  {
+    return this->_quantify;
+  }
 
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Chosen Nested Sweeping fast reduce epsilon value.
@@ -392,7 +412,9 @@ namespace adiar
   template <>
   inline const exec_policy::nested::fast_reduce&
   exec_policy::get<exec_policy::nested::fast_reduce>() const
-  { return this->_nested__fast_reduce; }
+  {
+    return this->_nested__fast_reduce;
+  }
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////
@@ -402,86 +424,110 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Lift enum values to `exec_policy`.
   //////////////////////////////////////////////////////////////////////////////
-  inline exec_policy operator &(const exec_policy::access &am,
-                                const exec_policy::memory &mm)
-  { return exec_policy(am) & mm; }
+  inline exec_policy
+  operator&(const exec_policy::access& am, const exec_policy::memory& mm)
+  {
+    return exec_policy(am) & mm;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Lift enum values to `exec_policy`.
   //////////////////////////////////////////////////////////////////////////////
-  inline exec_policy operator &(const exec_policy::memory &mm,
-                                const exec_policy::access &am)
-  { return exec_policy(mm) & am; }
+  inline exec_policy
+  operator&(const exec_policy::memory& mm, const exec_policy::access& am)
+  {
+    return exec_policy(mm) & am;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Lift enum values to `exec_policy`.
   //////////////////////////////////////////////////////////////////////////////
-  inline exec_policy operator &(const exec_policy::access &am,
-                                const exec_policy::nested::fast_reduce &fr)
-  { return exec_policy(am) & fr; }
+  inline exec_policy
+  operator&(const exec_policy::access& am, const exec_policy::nested::fast_reduce& fr)
+  {
+    return exec_policy(am) & fr;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Lift enum values to `exec_policy`.
   //////////////////////////////////////////////////////////////////////////////
-  inline exec_policy operator &(const exec_policy::nested::fast_reduce &fr,
-                                const exec_policy::access &am)
-  { return exec_policy(fr) & am; }
+  inline exec_policy
+  operator&(const exec_policy::nested::fast_reduce& fr, const exec_policy::access& am)
+  {
+    return exec_policy(fr) & am;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Lift enum values to `exec_policy`.
   //////////////////////////////////////////////////////////////////////////////
-  inline exec_policy operator &(const exec_policy::access &am,
-                                const exec_policy::quantify &qs)
-  { return exec_policy(am) & qs; }
+  inline exec_policy
+  operator&(const exec_policy::access& am, const exec_policy::quantify& qs)
+  {
+    return exec_policy(am) & qs;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Lift enum values to `exec_policy`.
   //////////////////////////////////////////////////////////////////////////////
-  inline exec_policy operator &(const exec_policy::quantify &qs,
-                                const exec_policy::access &am)
-  { return exec_policy(qs) & am; }
+  inline exec_policy
+  operator&(const exec_policy::quantify& qs, const exec_policy::access& am)
+  {
+    return exec_policy(qs) & am;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Lift enum values to `exec_policy`.
   //////////////////////////////////////////////////////////////////////////////
-  inline exec_policy operator &(const exec_policy::memory &mm,
-                                const exec_policy::nested::fast_reduce &fr)
-  { return exec_policy(mm) & fr; }
+  inline exec_policy
+  operator&(const exec_policy::memory& mm, const exec_policy::nested::fast_reduce& fr)
+  {
+    return exec_policy(mm) & fr;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Lift enum values to `exec_policy`.
   //////////////////////////////////////////////////////////////////////////////
-  inline exec_policy operator &(const exec_policy::nested::fast_reduce &fr,
-                                const exec_policy::memory &mm)
-  { return exec_policy(fr) & mm; }
+  inline exec_policy
+  operator&(const exec_policy::nested::fast_reduce& fr, const exec_policy::memory& mm)
+  {
+    return exec_policy(fr) & mm;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Lift enum values to `exec_policy`.
   //////////////////////////////////////////////////////////////////////////////
-  inline exec_policy operator &(const exec_policy::memory &mm,
-                                const exec_policy::quantify &qs)
-  { return exec_policy(mm) & qs; }
+  inline exec_policy
+  operator&(const exec_policy::memory& mm, const exec_policy::quantify& qs)
+  {
+    return exec_policy(mm) & qs;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Lift enum values to `exec_policy`.
   //////////////////////////////////////////////////////////////////////////////
-  inline exec_policy operator &(const exec_policy::quantify &qs,
-                                const exec_policy::memory &mm)
-  { return exec_policy(qs) & mm; }
+  inline exec_policy
+  operator&(const exec_policy::quantify& qs, const exec_policy::memory& mm)
+  {
+    return exec_policy(qs) & mm;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Lift enum values to `exec_policy`.
   //////////////////////////////////////////////////////////////////////////////
-  inline exec_policy operator &(const exec_policy::quantify &qs,
-                                const exec_policy::nested::fast_reduce &fr)
-  { return exec_policy(qs) & fr; }
+  inline exec_policy
+  operator&(const exec_policy::quantify& qs, const exec_policy::nested::fast_reduce& fr)
+  {
+    return exec_policy(qs) & fr;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Lift enum values to `exec_policy`.
   //////////////////////////////////////////////////////////////////////////////
-  inline exec_policy operator &(const exec_policy::nested::fast_reduce &fr,
-                                const exec_policy::quantify &qs)
-  { return exec_policy(fr) & qs; }
+  inline exec_policy
+  operator&(const exec_policy::nested::fast_reduce& fr, const exec_policy::quantify& qs)
+  {
+    return exec_policy(fr) & qs;
+  }
 
   /// \endcond
 }
