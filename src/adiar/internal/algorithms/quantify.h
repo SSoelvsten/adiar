@@ -895,7 +895,7 @@ namespace adiar::internal
 #endif
       while (label <= quantify_policy::max_label) {
         dd = quantify<quantify_policy>(ep, dd, label, op);
-        if (dd_isterminal(dd)) { return std::move(dd); }
+        if (dd_isterminal(dd)) { return dd; }
 
         label = quantify__get_deepest<quantify_policy>(dd, pred);
       }
