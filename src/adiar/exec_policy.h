@@ -126,12 +126,15 @@ namespace adiar
       //////////////////////////////////////////////////////////////////////////
       class transposition_growth
       {
+      private:
+        static constexpr float min_val = 0.0f;
+
       public:
         /// \brief Minimal value
         static constexpr transposition_growth
         min()
         {
-          return 0.0f;
+          return min_val;
         }
 
         /// \brief Maximal value
@@ -144,6 +147,14 @@ namespace adiar
       private:
         float _value;
 
+        /// \brief Convert into a `signed char`
+        static constexpr float
+        from_float(float f)
+        {
+          // Truncate `f` to be in the interval [0.0f, ...)
+          return f < min_val ? min_val : f;
+        }
+
       public:
         constexpr transposition_growth()
           : _value(1.5f)
@@ -151,7 +162,7 @@ namespace adiar
 
         /// \brief Wrap a `float`.
         constexpr transposition_growth(float value)
-          : _value(value)
+          : _value(from_float(value))
         {}
 
         /// \brief Reobtain the wrapped `float`

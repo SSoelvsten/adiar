@@ -16,13 +16,24 @@ go_bandit([]() {
           AssertThat(default__transposition_growth, Is().GreaterThanOrEqualTo(0.0f));
         });
 
-        it("'quantify::transposition max' defaults to a non-negative value", [&]() {
-          AssertThat(default__transposition_max, Is().GreaterThanOrEqualTo(0u));
+        it("'quantify::transposition growth' truncates negative values to '0.0f'", [&]() {
+          const exec_policy::quantify::transposition_growth res(-0.5f);
+          AssertThat(static_cast<float>(res), Is().GreaterThanOrEqualTo(0.0f));
         });
 
         it("'nested::fast reduce epsilon' defaults to a value in [-1,1]", [&]() {
           AssertThat(default__fast_reduce, Is().GreaterThanOrEqualTo(-1.0f));
           AssertThat(default__fast_reduce, Is().LessThanOrEqualTo(1.0f));
+        });
+
+        it("'nested::fast reduce epsilon' truncates negative values to '-1.0f'", [&]() {
+          const exec_policy::nested::fast_reduce res(-42.0f);
+          AssertThat(static_cast<float>(res), Is().EqualTo(-1.0f));
+        });
+
+        it("'nested::fast reduce epsilon' truncates positive value to '1.0f'", [&]() {
+          const exec_policy::nested::fast_reduce res(2.0f);
+          AssertThat(static_cast<float>(res), Is().EqualTo(1.0f));
         });
       });
 
