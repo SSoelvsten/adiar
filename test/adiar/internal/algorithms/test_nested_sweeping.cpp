@@ -2611,7 +2611,134 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
-        it("does not merge duplicates", []() {
+        it("does not merge (non-adjacent) duplicate nodes", []() {
+          /*
+          //        _1_        ---- x0
+          //       /   \
+          //      _2_   \      ---- x1
+          //     /   \   \
+          //     3   4   5     ---- x2 (being reduced)
+          //    / \ / \ / \
+          //    F | F T F |
+          //      \___ ___/    ---- x3
+          //          6
+          //         / \
+          //         F T
+          */
+          const arc::pointer_type terminal_F(false);
+          const arc::pointer_type terminal_T(true);
+
+          const arc::pointer_type n1(0,0);
+          const arc::pointer_type n2(1,0);
+          const arc::pointer_type n3(2,0);
+          const arc::pointer_type n4(2,1);
+          const arc::pointer_type n5(2,2);
+          const arc::pointer_type n6(3,0);
+
+          shared_levelized_file<arc> in;
+
+          { // Garbage collect writer to free write-lock
+            arc_writer aw(in);
+
+            aw.push_internal({ n1, false, n2 });
+            aw.push_internal({ n2, false, n3 });
+            aw.push_internal({ n2, true,  n4 });
+            aw.push_internal({ n1, true,  n5 });
+            aw.push_internal({ n3, true,  n6 });
+            aw.push_internal({ n5, true,  n6 });
+
+            aw.push_terminal({ n3, false, terminal_F });
+            aw.push_terminal({ n4, false, terminal_F });
+            aw.push_terminal({ n4, true,  terminal_T });
+            aw.push_terminal({ n5, false, terminal_F });
+            aw.push_terminal({ n6, false, terminal_F });
+            aw.push_terminal({ n6, true,  terminal_T });
+
+            aw.push(level_info(0,1u));
+            aw.push(level_info(1,1u));
+            aw.push(level_info(2,3u));
+            aw.push(level_info(3,1u));
+          }
+
+          // Outer state
+          shared_levelized_file<node> out =  __reduce_init_output<bdd_policy>();
+
+          node_writer out_writer(out);
+
+          arc_stream arcs(in);
+
+          pq_t pq({in}, memory_available(), 16);
+
+          // Simulate reduction of x3
+          arcs.pull_terminal(); // 6 ---> T
+          arcs.pull_terminal(); // 6 - -> F
+          out_writer.unsafe_push(node(3, node::max_id, terminal_F, terminal_T));
+
+          out_writer.unsafe_push(level_info(3, 1));
+          out_writer.unsafe_max_1level_cut({ 0, 1, 1, 2 });
+
+          // 5 ---> 6
+          pq.push(arc(arcs.pull_internal().source(), node::pointer_type(3, node::max_id)));
+          // 3 ---> 6
+          pq.push(arc(arcs.pull_internal().source(), node::pointer_type(3, node::max_id)));
+
+          pq.setup_next_level(2);
+
+          // Reduce level x1
+          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 2, pq, out_writer);
+
+          // Check meta variables before detach computations
+          AssertThat(out->width, Is().EqualTo(3u));
+
+          AssertThat(out->canonical, Is().False());
+
+          AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(2u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(5u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(3u));
+          AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(6u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(4u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+
+          // Check node and meta files are correct
+          out_writer.detach();
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
+                                                         terminal_F,
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
+                                                         node::pointer_type(false),
+                                                         node::pointer_type(3, node::max_id))));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id-1,
+                                                         node::pointer_type(false),
+                                                         node::pointer_type(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id-2,
+                                                         node::pointer_type(false),
+                                                         node::pointer_type(3, node::max_id))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,3u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("merges adjacent duplicate nodes", []() {
           /*
           //      _1_     ---- x0
           //     /   \
@@ -2690,11 +2817,11 @@ go_bandit([]() {
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(2u));
 
-          AssertThat(out->canonical, Is().False());
+          AssertThat(out->canonical, Is().True());
 
-          AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(4u));
-          AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(4u));
-          AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(4u));
+          AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(2u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(2u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(2u));
           AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(4u));
 
           AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
@@ -2720,11 +2847,6 @@ go_bandit([]() {
                                                          node::pointer_type(2, node::max_id-1),
                                                          node::pointer_type(2, node::max_id))));
 
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id-1,
-                                                         node::pointer_type(2, node::max_id-1),
-                                                         node::pointer_type(2, node::max_id))));
-
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream out_meta(out);
@@ -2733,7 +2855,97 @@ go_bandit([]() {
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,2u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,2u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("merges adjacent duplicate nodes (with a suppressed one in-between)", []() {
+          /* input
+          //        _1_         ---- x0
+          //       /   \
+          //       2    \       ---- x1
+          //      / \    \
+          //     3   4   5      ---- x2 (being reduced)
+          //    / \  || / \
+          //    F T  F  F T
+          */
+          const arc::pointer_type terminal_F(false);
+          const arc::pointer_type terminal_T(true);
+
+          const arc::pointer_type n1(0,0);
+          const arc::pointer_type n2(1,0);
+          const arc::pointer_type n3(2,0);
+          const arc::pointer_type n4(2,1);
+          const arc::pointer_type n5(2,2);
+
+          shared_levelized_file<arc> in;
+
+          { // Garbage collect writer to free write-lock
+            arc_writer aw(in);
+
+            aw.push_internal({ n1, false, n2 });
+            aw.push_internal({ n2, false, n3 });
+            aw.push_internal({ n2, true,  n5 });
+            aw.push_internal({ n1, true,  n5 });
+
+            aw.push_terminal({ n3, false, terminal_F });
+            aw.push_terminal({ n3, true,  terminal_T });
+            aw.push_terminal({ n4, false, terminal_F });
+            aw.push_terminal({ n4, true,  terminal_F });
+            aw.push_terminal({ n5, false, terminal_F });
+            aw.push_terminal({ n5, true,  terminal_T });
+
+            aw.push(level_info(0,1u));
+            aw.push(level_info(1,1u));
+            aw.push(level_info(2,3u));
+          }
+
+          // Outer state
+          shared_levelized_file<node> out =  __reduce_init_output<bdd_policy>();
+
+          node_writer out_writer(out);
+
+          arc_stream arcs(in);
+
+          pq_t pq({in}, memory_available(), 16);
+
+          out_writer.unsafe_max_1level_cut({ 0, 0, 0, 0 });
+
+          pq.setup_next_level(2);
+
+          // Reduce level x2
+          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 2, pq, out_writer);
+
+          // Check meta variables before detach computations
+          AssertThat(out->width, Is().EqualTo(1u));
+
+          AssertThat(out->canonical, Is().True());
+
+          AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(2u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+
+          // Check node and meta files are correct
+          out_writer.detach();
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
+                                                         terminal_F,
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
         });
@@ -3136,11 +3348,11 @@ go_bandit([]() {
           //  -   - \ - / - \  -   -   -    -
           //        3   4   5          ---- x2
           //       / \ / \ / \
-          //       T | T | F T
-          //         \_ _/
-          //           6               ---- x3
-          //          / \
-          //          T F
+          //       T | F T T |
+          //         \___ ___/
+          //             6             ---- x3
+          //            / \
+          //            T F
           */
 
           const uid_uint64 terminal_F(false);
@@ -3178,12 +3390,12 @@ go_bandit([]() {
             aw.push_internal({ flag(n2.as_ptr(false)), n4 });
             aw.push_internal({ flag(n2.as_ptr(true)),  n5 });
             aw.push_internal({ n3.as_ptr(true), n6 });
-            aw.push_internal({ n4.as_ptr(true), n6 });
+            aw.push_internal({ n5.as_ptr(true), n6 });
 
             aw.push_terminal({ n3.as_ptr(false), terminal_T });
-            aw.push_terminal({ n4.as_ptr(false), terminal_T });
-            aw.push_terminal({ n5.as_ptr(false), terminal_F });
-            aw.push_terminal({ n5.as_ptr(true),  terminal_T });
+            aw.push_terminal({ n4.as_ptr(false), terminal_F });
+            aw.push_terminal({ n4.as_ptr(true),  terminal_T });
+            aw.push_terminal({ n5.as_ptr(false), terminal_T });
             aw.push_terminal({ n6.as_ptr(false), terminal_T });
             aw.push_terminal({ n6.as_ptr(true),  terminal_F });
 
@@ -3206,8 +3418,8 @@ go_bandit([]() {
 
             /* output
             //      1   2           ---- x1
-            //  -   -\ /-\  -   -   -    -
-            //        3   5         ---- x2
+            //  -   -\ _X_  -   -   -    -
+            //        3   4         ---- x2
             //       / \ / \
             //       T 6 F T        ---- x3
             //        / \
@@ -3270,10 +3482,10 @@ go_bandit([]() {
             out_pq.setup_next_level();
 
             AssertThat(out_pq.can_pull(), Is().True());
-            AssertThat(out_pq.pull(), Is().EqualTo(arc(n2, true, ptr_uint64(2, ptr_uint64::max_id))));
+            AssertThat(out_pq.pull(), Is().EqualTo(arc(n2, true, ptr_uint64(2, ptr_uint64::max_id-1))));
 
             AssertThat(out_pq.can_pull(), Is().True());
-            AssertThat(out_pq.pull(), Is().EqualTo(arc(n2, false, ptr_uint64(2, ptr_uint64::max_id-1))));
+            AssertThat(out_pq.pull(), Is().EqualTo(arc(n2, false, ptr_uint64(2, ptr_uint64::max_id))));
 
             AssertThat(out_pq.can_pull(), Is().True());
             AssertThat(out_pq.pull(), Is().EqualTo(arc(n1, true,  ptr_uint64(2, ptr_uint64::max_id-1))));
@@ -3281,7 +3493,7 @@ go_bandit([]() {
             AssertThat(out_pq.can_pull(), Is().False());
           });
 
-          it("uses fast reduce with non-negative value", [&]() {
+          it("uses fast reduce with non-negative value [non-adjacent duplicates]", [&]() {
             shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
             node_writer out_writer(out);
 
@@ -3291,15 +3503,15 @@ go_bandit([]() {
             out_pq.setup_next_level(2);
 
             /* output
-            //      1      _2_          ---- x1
-            //  -   -\  - / - \ -   -   -    -
-            //        3   4   5         ---- x2
+            //       1     _2_           ---- x1
+            //  -   - \ - / - \  -   -   -    -
+            //        3   4   5          ---- x2
             //       / \ / \ / \
-            //       T | T | F T        ---- x3
-            //         \_ _/
-            //           6
-            //          / \
-            //          T F
+            //       T | F T T |
+            //         \___ ___/
+            //             6             ---- x3
+            //            / \
+            //            T F
             */
             nested_sweeping::inner::up<test_policy>(exec_policy::nested::fast_reduce(1.0),
                                                     stream_outer, out_pq, out_writer,
@@ -3326,15 +3538,16 @@ go_bandit([]() {
                                                            terminal_T,
                                                            terminal_F)));
 
+
             AssertThat(out_nodes.can_pull(), Is().True()); // 5
             AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                           terminal_F,
-                                                           terminal_T)));
+                                                           terminal_T,
+                                                           ptr_uint64(3, ptr_uint64::max_id))));
 
             AssertThat(out_nodes.can_pull(), Is().True()); // 4
             AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id-1,
-                                                           terminal_T,
-                                                           ptr_uint64(3, ptr_uint64::max_id))));
+                                                           terminal_F,
+                                                           terminal_T)));
 
             AssertThat(out_nodes.can_pull(), Is().True()); // 3
             AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id-2,
@@ -3370,6 +3583,160 @@ go_bandit([]() {
             AssertThat(out_pq.can_pull(), Is().False());
           });
         }
+
+        it("uses fast reduce with non-negative value [adjacent duplicates]", []() {
+          /* input (same as above but with nodes 4 and 5 swapped)
+          //
+          //         _0__              ---- x0
+          //        /    \
+          //       1     _2_           ---- x1
+          //  -   - \ - / - \  -   -   -    -
+          //        3   4   5          ---- x2
+          //       / \ / \ / \
+          //       T | T | F T
+          //         \_ _/
+          //           6               ---- x3
+          //          / \
+          //          T F
+          */
+
+          const uid_uint64 terminal_F(false);
+          const uid_uint64 terminal_T(true);
+
+          const uid_uint64 n0(0,0);
+          const uid_uint64 n1(1,0);
+          const uid_uint64 n2(1,1);
+          const uid_uint64 n3(2,0);
+          const uid_uint64 n4(2,1);
+          const uid_uint64 n5(2,2);
+          const uid_uint64 n6(3,0);
+
+          shared_levelized_file<arc> in_outer;
+          { // Garbage collect writer to free write-lock
+            arc_writer aw(in_outer);
+
+            aw.push_internal({ n0, false, n1 });
+            aw.push_internal({ n0, true,  n2 });
+
+            aw.push(level_info(0,1u));
+            aw.push(level_info(1,2u));
+            aw.push(level_info(2,3u));
+
+            in_outer->max_1level_cut = 3;
+          }
+          arc_stream<> stream_outer(in_outer);
+
+          shared_levelized_file<arc> in_inner;
+
+          { // Garbage collect writer to free write-lock
+            arc_writer aw(in_inner);
+
+            aw.push_internal({ flag(n1.as_ptr(true)),  n3 });
+            aw.push_internal({ flag(n2.as_ptr(false)), n4 });
+            aw.push_internal({ flag(n2.as_ptr(true)),  n5 });
+            aw.push_internal({ n3.as_ptr(true), n6 });
+            aw.push_internal({ n4.as_ptr(true), n6 });
+
+            aw.push_terminal({ n3.as_ptr(false), terminal_T });
+            aw.push_terminal({ n4.as_ptr(false), terminal_T });
+            aw.push_terminal({ n5.as_ptr(false), terminal_F });
+            aw.push_terminal({ n5.as_ptr(true),  terminal_T });
+            aw.push_terminal({ n6.as_ptr(false), terminal_T });
+            aw.push_terminal({ n6.as_ptr(true),  terminal_F });
+
+            // NOTE: 'level_info(0,1u)' is not a processable part of the forest;
+            // NOTE: 'level_info(1,2u)' is not a processable part of the forest;
+            aw.push(level_info(2,3u));
+            aw.push(level_info(3,1u));
+
+            in_inner->max_1level_cut = 2;
+          }
+
+          shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
+          node_writer out_writer(out);
+
+          const size_t available_memory = memory_available();
+
+          outer_pq_t out_pq({in_outer}, available_memory / 2, in_outer->max_1level_cut);
+          out_pq.setup_next_level(2);
+
+          /* output
+          //          1   2            ---- x1
+          //  -   -   -\ /-\  -   -   -    -
+          //            4   5          ---- x2
+          //           / \ / \
+          //           T 6 F T         ---- x3
+          //            / \
+          //            T F
+          */
+          nested_sweeping::inner::up<test_policy>(exec_policy::nested::fast_reduce(1.0),
+                                                  stream_outer, out_pq, out_writer,
+                                                  in_inner, available_memory / 2, false);
+
+          // Check meta variables before detach computations
+          AssertThat(out->width, Is().EqualTo(2u));
+
+          AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(2u));
+
+          // Over-approximation, since T-terminal from level (2) is removed
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(3u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().LessThanOrEqualTo(4u));
+          AssertThat(out->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(5u));
+          AssertThat(out->max_1level_cut[cut::All], Is().LessThanOrEqualTo(6u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
+
+          // Check node and meta files are correct
+          out_writer.detach();
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // 6
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
+                                                         terminal_T,
+                                                         terminal_F)));
+
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // 5
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
+                                                         terminal_F,
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // 4
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id-1,
+                                                         terminal_T,
+                                                         ptr_uint64(3, ptr_uint64::max_id))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,2u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // Check outer priority queue is correct
+          AssertThat(out_pq.size(),  Is().EqualTo(3u));
+
+          out_pq.setup_next_level();
+
+          AssertThat(out_pq.can_pull(), Is().True());
+          AssertThat(out_pq.pull(), Is().EqualTo(arc(n2, true, ptr_uint64(2, ptr_uint64::max_id))));
+
+          AssertThat(out_pq.can_pull(), Is().True());
+          AssertThat(out_pq.pull(), Is().EqualTo(arc(n2, false, ptr_uint64(2, ptr_uint64::max_id-1))));
+
+          AssertThat(out_pq.can_pull(), Is().True());
+          AssertThat(out_pq.pull(), Is().EqualTo(arc(n1, true,  ptr_uint64(2, ptr_uint64::max_id-1))));
+
+          AssertThat(out_pq.can_pull(), Is().False());
+        });
 
         it("includes outer_pq terminals in cut size", []() {
           /* input
@@ -5666,33 +6033,42 @@ go_bandit([]() {
         });
       });
 
-      describe("fast-reduce optimisation", []() {
+      describe("'final_canonical' switch (fast-reduce optimisation)", []() {
         /* input
-        //         _1_          ---- x1
-        //        /   \
-        //       /    2         ---- x2 (%2)
-        //       |   / \
-        //       3   |  \       ---- x3
-        //      / \  |  |
-        //      | |  |  |       ---- x4 (%2)
-        //      |  \ /  |
-        //      4   5   6       ---- x5
-        //     / \ / \  ||
-        //     F | F  \ 7       ---- x6 (%2)
-        //        \___|/ \
-        //            8  9      ---- x7
-        //           / \/ \
-        //           F  T F
+        //           1            ---- x1
+        //          / \
+        //         /   \
+        //         |   |
+        //         |   2          ---- x2 (%2) <-- Negates (4) subtree to prove nesting
+        //         |  / \
+        //         | /   \
+        //         |/     \
+        //         3      4       ---- x3      <-- (3) is suppressable if (5) and (7) are merged.
+        //        / \     ||                       (4) is suppressable either way.
+        //       /   \    ||
+        //       |   |    ||
+        //       5   7    6       ---- x5      <-- (5) and (7) should be merged but (6) blocks the view for fast-reduce
+        //      / \ / \  / \                       NOTE: the picture is (for sake of clarity) out-of-order
+        //      |  X  |  F T
+        //      \ / \ /
+        //       8   9            ---- x6 (%2)
+        //      / \ / \
+        //      F | T  \
+        //        10   11         ---- x7      <-- out-of-order
+        //       /  \ /  \
+        //       F  T T  F
         */
         const node::pointer_type n1(1,0);
         const node::pointer_type n2(2,0);
         const node::pointer_type n3(3,0);
-        const node::pointer_type n4(5,0);
-        const node::pointer_type n5(5,1);
-        const node::pointer_type n6(5,2);
-        const node::pointer_type n7(6,0);
-        const node::pointer_type n8(7,0);
-        const node::pointer_type n9(7,1);
+        const node::pointer_type n4(3,1);
+        const node::pointer_type n5(5,0);
+        const node::pointer_type n6(5,1);
+        const node::pointer_type n7(5,2);
+        const node::pointer_type n8(6,0);
+        const node::pointer_type n9(6,1);
+        const node::pointer_type n10(7,0);
+        const node::pointer_type n11(7,1);
 
         const node::pointer_type terminal_F(false);
         const node::pointer_type terminal_T(true);
@@ -5704,87 +6080,94 @@ go_bandit([]() {
 
           aw.push_internal({ n1, true,  n2 });
           aw.push_internal({ n1, false, n3 });
-          aw.push_internal({ n3, false, n4 });
-          aw.push_internal({ n2, false, n5 });
-          aw.push_internal({ n3, true,  n5 });
-          aw.push_internal({ n2, true,  n6 });
-          aw.push_internal({ n6, false, n7 });
-          aw.push_internal({ n6, true,  n7 });
-          aw.push_internal({ n4, true,  n8 });
-          aw.push_internal({ n5, true,  n8 });
+          aw.push_internal({ n2, false, n3 });
+          aw.push_internal({ n2, true,  n4 });
+          aw.push_internal({ n3, false, n5 });
+          aw.push_internal({ n4, false, n6 });
+          aw.push_internal({ n4, true,  n6 });
+          aw.push_internal({ n3, true,  n7 });
+          aw.push_internal({ n5, false, n8 });
           aw.push_internal({ n7, false, n8 });
+          aw.push_internal({ n5, true,  n9 });
           aw.push_internal({ n7, true,  n9 });
+          aw.push_internal({ n8, true,  n10 });
+          aw.push_internal({ n9, true,  n11 });
 
-          aw.push_terminal({ n4, false, terminal_F });
-          aw.push_terminal({ n5, false, terminal_F });
-          aw.push_terminal({ n8, false, terminal_F });
-          aw.push_terminal({ n8, true,  terminal_T });
-          aw.push_terminal({ n9, false, terminal_T });
-          aw.push_terminal({ n9, true,  terminal_F });
+          aw.push_terminal({ n6,  false, terminal_F });
+          aw.push_terminal({ n6,  true,  terminal_T });
+          aw.push_terminal({ n8,  false, terminal_F });
+          aw.push_terminal({ n9,  false, terminal_T });
+          aw.push_terminal({ n10, false, terminal_F });
+          aw.push_terminal({ n10, true,  terminal_T });
+          aw.push_terminal({ n11, false, terminal_T });
+          aw.push_terminal({ n11, true,  terminal_F });
 
           aw.push(level_info(1,1u));
           aw.push(level_info(2,1u));
-          aw.push(level_info(3,1u));
+          aw.push(level_info(3,2u));
           aw.push(level_info(5,3u));
-          aw.push(level_info(6,1u));
+          aw.push(level_info(6,2u));
           aw.push(level_info(7,2u));
 
-          in->max_1level_cut = 4;
+          in->max_1level_cut = 5; // TODO: why is this cut 5 and not 4?
         }
 
-        /* canonical output
-        //
-        // - it is canonical:
-        //    (a) 4 and 5 are merged
-        //    (b) 6 and 3 are suppressed
-        //    (c) 8 and 9 are swapped.
-        //
-        // - it is nesting: 8 and 9 are doubly negated whereas 4 is singly negated.
-        //
-        //       1     ---- x1
-        //      / \
-        //     /   \   ---- x2
-        //     |   |
-        //     |   |   ---- x3
-        //     |   |
-        //     |   |   ---- x4
-        //     |   |
-        //    4/5  /   ---- x5
-        //    / \ /
-        //    T  X     ---- x6
-        //      / \
-        //      9  8   ---- x7
-        //     / \/ \
-        //     T F  T
-        */
+        it("outputs a canonical BDD if set to 'true'", [&]() {
+          /* input
+          //           1             ---- x1
+          //          / \
+          //         /   \
+          //         |    \
+          //         |     \         ---- x2
+          //         |      \
+          //         |       \
+          //         |       |
+          //         |       |       ---- x3
+          //         |       |
+          //         |       |
+          //         |       |
+          //        5/6      7       ---- x5
+          //       /   \    / \
+          //      /     \   F T
+          //      |     |
+          //      |     |            ---- x6
+          //      |     |
+          //      |     |
+          //     11     10           ---- x7
+          //    /  \   /  \
+          //    T  F   F  T
+          */
 
-        it("outputs with 'final_canonical == true' a canonical BDD", [&]() {
-          test_not_sweep<true> inner_impl(2);
+          test_not_sweep</*final_canonical*/ true> inner_impl(2);
 
           const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
           // Check it looks all right
           node_test_stream out_nodes(out);
 
-          // n8
+          // n10 (doubly-negated)
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id, terminal_F, terminal_T)));
 
-          // n9
+          // n11 (doubly-negated)
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id-1, terminal_T, terminal_F)));
 
-          // n4
+          // n7 (singly-negated)
           AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
-                                                         terminal_T,
-                                                         node::pointer_type(7, node::max_id))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id, terminal_T, terminal_F)));
+
+          // n5/6
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-1,
+                                                         node::pointer_type(7, node::max_id),
+                                                         node::pointer_type(7, node::max_id-1))));
 
           // n1
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                         node::pointer_type(5, node::max_id),
-                                                         node::pointer_type(7, node::max_id-1))));
+                                                         node::pointer_type(5, node::max_id-1),
+                                                         node::pointer_type(5, node::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -5794,7 +6177,7 @@ go_bandit([]() {
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(7,2u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5,2u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
@@ -5818,14 +6201,13 @@ go_bandit([]() {
           AssertThat(out->max_1level_cut[cut::Internal_False], Is().LessThanOrEqualTo(3u));
 
           // Over-approximation:
-          //   The merge of 4 and 5 is unknown at 8 and 9, so both 4 - -> T and
-          //   5 - -> must be counted. Add on-top of this the above mentioned, taint
+          //   See above.
           AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(3u));
-          AssertThat(out->max_1level_cut[cut::Internal_True], Is().LessThanOrEqualTo(5u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().LessThanOrEqualTo(4u));
 
           // Over-approximation:
-          //   Despite the above, there is still the saving grace of 4 BDD Nodes +1.
-          AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(5u));
+          //   Despite the above, there is still the saving grace of 5 BDD Nodes +1.
+          AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(6u));
 
           AssertThat(out->max_2level_cut[cut::Internal], Is().GreaterThanOrEqualTo(2u));
           AssertThat(out->max_2level_cut[cut::Internal], Is().LessThanOrEqualTo(3u));
@@ -5833,69 +6215,80 @@ go_bandit([]() {
           AssertThat(out->max_2level_cut[cut::Internal_False], Is().LessThanOrEqualTo(4u));
           AssertThat(out->max_2level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(3u));
           AssertThat(out->max_2level_cut[cut::Internal_True], Is().LessThanOrEqualTo(5u));
-          AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(5u));
+          AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(6u));
 
-          AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(3u));
           AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
         });
 
-        it("outputs with 'final_canonical == false' an unordered and unmerged BDD", [&]() {
-          /* fast-reduce output
-          //         _1_          ---- x1
-          //        /   \
-          //       /     \        ---- x2
-          //       |      \
-          //       3       \      ---- x3
-          //      / \       \
-          //      | |       |      ---- x4
-          //      |  \      |
-          //      4   5     |      ---- x5
-          //     / \ / \    |
-          //     T | T  \   |       ---- x6
-          //        \___|   |
-          //            8   9      ---- x7
-          //           / \ / \
-          //           F T T F
+        it("outputs an unordered, unmerged, and unsuppressed BDD if set to 'false'", [&]() {
+          /*
+          //           1            ---- x1
+          //          / \
+          //         /   \
+          //         |    \
+          //         |     \        ---- x2
+          //         |      \
+          //         |      |
+          //         |      |
+          //         3      |       ---- x3
+          //        / \     |
+          //       /   \    |
+          //       |   |    |
+          //       5   7    6       ---- x5
+          //      / \ / \  / \
+          //      |  X  |  F T
+          //      | / \ |
+          //      |/   \|           ---- x6
+          //      ||   ||
+          //      ||   ||
+          //      10   11           ---- x7
+          //     /  \ /  \
+          //     F  T T  F
           */
 
-          test_not_sweep<false> inner_impl(2);
+          test_not_sweep</*final_canonical*/ false> inner_impl(2);
 
           const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
           // Check it looks all right
           node_test_stream out_nodes(out);
 
-          // n9
+          // n11 (doubly-negated)
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id, terminal_T, terminal_F)));
 
-          // n9
+          // n10 (doubly-negated)
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(7, node::max_id-1, terminal_F, terminal_T)));
 
-          // n5
+          // n7
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
-                                                         terminal_T,
-                                                         node::pointer_type(7, node::max_id-1))));
+                                                         node::pointer_type(7, node::max_id-1),
+                                                         node::pointer_type(7, node::max_id))));
 
-          // n4
+          // n6 (singly-negated)
           AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-1,
-                                                         terminal_T,
-                                                         node::pointer_type(7, node::max_id-1))));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-1, terminal_T, terminal_F)));
+
+          // n5
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-2,
+                                                         node::pointer_type(7, node::max_id-1),
+                                                         node::pointer_type(7, node::max_id))));
 
           // n3
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                         node::pointer_type(5, node::max_id-1),
+                                                         node::pointer_type(5, node::max_id-2),
                                                          node::pointer_type(5, node::max_id))));
 
           // n1
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
                                                          node::pointer_type(3, node::max_id),
-                                                         node::pointer_type(7, node::max_id))));
+                                                         node::pointer_type(5, node::max_id-1))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -5905,7 +6298,7 @@ go_bandit([]() {
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(7,2u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5,2u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5,3u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
@@ -5915,26 +6308,26 @@ go_bandit([]() {
 
           AssertThat(out_meta.can_pull(), Is().False());
 
-          AssertThat(out->width, Is().EqualTo(2u));
+          AssertThat(out->width, Is().EqualTo(3u));
 
           AssertThat(out->canonical, Is().False());
 
-          AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(3u));
-          AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(3u));
+          AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(4u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(5u));
           AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(5u));
           AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(6u));
 
-          AssertThat(out->max_2level_cut[cut::Internal], Is().GreaterThanOrEqualTo(3u));
-          AssertThat(out->max_2level_cut[cut::Internal], Is().LessThanOrEqualTo(4u));
-          AssertThat(out->max_2level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(3u));
-          AssertThat(out->max_2level_cut[cut::Internal_False], Is().LessThanOrEqualTo(4u));
+          AssertThat(out->max_2level_cut[cut::Internal], Is().GreaterThanOrEqualTo(4u));
+          AssertThat(out->max_2level_cut[cut::Internal], Is().LessThanOrEqualTo(6u));
+          AssertThat(out->max_2level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(5u));
+          AssertThat(out->max_2level_cut[cut::Internal_False], Is().LessThanOrEqualTo(7u));
           AssertThat(out->max_2level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(5u));
-          AssertThat(out->max_2level_cut[cut::Internal_True], Is().LessThanOrEqualTo(6u));
+          AssertThat(out->max_2level_cut[cut::Internal_True], Is().LessThanOrEqualTo(7u));
           AssertThat(out->max_2level_cut[cut::All], Is().GreaterThanOrEqualTo(6u));
-          AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(7u));
+          AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(8u));
 
-          AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
-          AssertThat(out->number_of_terminals[true],  Is().EqualTo(4u));
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(3u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
         });
       });
     });

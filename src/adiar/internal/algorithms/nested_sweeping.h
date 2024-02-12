@@ -75,6 +75,9 @@ namespace adiar::internal
       // Pull out all nodes from pq and terminal_arcs for this level
       typename dd_policy::id_type out_id = dd_policy::max_id;
 
+      // Remember previously outputted node
+      node out_node = { node::uid_type(), node::pointer_type::nil(), node::pointer_type::nil() } /* <-- dummy value */;
+
       while (pq.can_pull() || (arcs.can_pull_terminal() && arcs.peek_terminal().source().label() == label)) {
         // TODO (MDD / QMDD):
         //   Use __reduce_get_next node_type::outdegree times to create a node_type::children_type.
@@ -87,42 +90,52 @@ namespace adiar::internal
         // TODO (dd_replace):
         //   Disable the following if-statement for faster performance
 
+        node::pointer_type t;
+
         // Apply Reduction rule 1
         const node::pointer_type reduction_rule_ret = dd_policy::reduction_rule(n);
         if (reduction_rule_ret != n.uid()) {
 #ifdef ADIAR_STATS
           stats.removed_by_rule_1 += 1u;
 #endif
-          // Forward child
-          // Tell the parents this arc is tainted by Reduction Rule 1.
-          const node::pointer_type t = flag(reduction_rule_ret);
-          adiar_assert(t.is_terminal() || t.out_idx() == false, "Created target is without an index");
-          if (t.is_terminal()) { terminal_val = t.value(); }
-
-          while (arcs.can_pull_internal() && arcs.peek_internal().target() == n.uid()) {
-            // The out_idx is included in arc.source() pulled from the internal arcs.
-            const node::pointer_type s = arcs.pull_internal().source();
-            pq.push(arc(s,t));
-          }
-
           // Decrease 1-level cut over-approximation
           __reduce_decrement_cut(one_level_cut, n.low());
           __reduce_decrement_cut(one_level_cut, n.high());
+
+          // Taint to-be forwarded uid by Reduction Rule 1.
+          t = flag(reduction_rule_ret);
+
+          // Store terminal value for epilogue
+          if (t.is_terminal()) { terminal_val = t.value(); }
         } else {
-          // Output node
-          adiar_assert(out_id > 0, "Should still have more ids left");
-          const node next_node(label, out_id--, unflag(n.low()), unflag(n.high()));
-          out_writer.unsafe_push(next_node);
+          // Apply Reduction rule 2
+          if (out_node.low() == unflag(n.low()) && out_node.high() == unflag(n.high())) {
+            // TODO (reordering): make this branch trivially false with 'final_canonical'
+#ifdef ADIAR_STATS
+            stats.removed_by_rule_2 += 1u;
+#endif
+            // Decrease 1-level cut over-approximation
+            __reduce_decrement_cut(one_level_cut, n.low());
+            __reduce_decrement_cut(one_level_cut, n.high());
+          } else {
+            // TODO (canonicity): mark canonical false if order is wrong
 
-          // Forward new node to parents
-          const node::pointer_type t = next_node.uid();
-          adiar_assert(t.is_terminal() || t.out_idx() == false, "Created target is without an index");
-
-          while (arcs.can_pull_internal() && arcs.peek_internal().target() == n.uid()) {
-            // The out_idx is included in arc.source() pulled from the internal arcs.
-            const node::pointer_type s = arcs.pull_internal().source();
-            pq.push(arc(s,t));
+            // Output node
+            adiar_assert(out_id > 0, "Should still have more ids left");
+            out_node = node(label, out_id--, unflag(n.low()), unflag(n.high()));
+            out_writer.unsafe_push(out_node);
           }
+
+          t = out_node.uid();
+        }
+
+        // Forward resulting node to parents
+        adiar_assert(t.is_terminal() || t.out_idx() == false, "Created target is without an index");
+
+        while (arcs.can_pull_internal() && arcs.peek_internal().target() == n.uid()) {
+          // The out_idx is included in arc.source() pulled from the internal arcs.
+          const node::pointer_type s = arcs.pull_internal().source();
+          pq.push(arc(s,t));
         }
       }
 
