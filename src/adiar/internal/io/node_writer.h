@@ -2,10 +2,11 @@
 #define ADIAR_INTERNAL_IO_NODE_WRITER_H
 
 #include <adiar/exception.h>
+
 #include <adiar/internal/assert.h>
 #include <adiar/internal/cut.h>
-#include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/level_info.h>
+#include <adiar/internal/data_types/node.h>
 #include <adiar/internal/io/levelized_file_writer.h>
 #include <adiar/internal/io/node_file.h>
 
@@ -17,20 +18,18 @@ namespace adiar::internal
   ///
   /// \see shared_levelized_file<node>
   //////////////////////////////////////////////////////////////////////////////
-  class node_writer
-    : public levelized_file_writer<node>
+  class node_writer : public levelized_file_writer<node>
   {
   private:
     ////////////////////////////////////////////////////////////////////////////
     /// Construct a dummy node, that is invalid within a decision diagram and
     /// hence easy to recognise.
     ////////////////////////////////////////////////////////////////////////////
-    node dummy()
+    node
+    dummy()
     {
       // Notice, this goes around any of the consistency checks of 'node'!
-      return node(node::uid_type(0, 0),
-                            node::pointer_type::nil(),
-                            node::pointer_type::nil());
+      return node(node::uid_type(0, 0), node::pointer_type::nil(), node::pointer_type::nil());
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -59,48 +58,53 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     size_t _terminals_at_bottom[2] = { 0u, 0u };
 
-    cut::size_type _max_1level_short_internal = 0u;
+    cut::size_type _max_1level_short_internal  = 0u;
     cut::size_type _curr_1level_short_internal = 0u;
 
-    node::pointer_type _long_internal_ptr = node::pointer_type::nil();
+    node::pointer_type _long_internal_ptr        = node::pointer_type::nil();
     cut::size_type _number_of_long_internal_arcs = 0u;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct unattached to any levelized node file.
     ////////////////////////////////////////////////////////////////////////////
-    node_writer(): levelized_file_writer<node>()
-    { }
+    node_writer()
+      : levelized_file_writer<node>()
+    {}
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a levelized node file.
     ////////////////////////////////////////////////////////////////////////////
-    node_writer(levelized_file<node> &nf)
+    node_writer(levelized_file<node>& nf)
       : levelized_file_writer<node>(nf)
       , _canonical(!levelized_file_writer::has_pushed() || nf.canonical)
-    { }
+    {}
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a shared levelized node file.
     ////////////////////////////////////////////////////////////////////////////
     node_writer(adiar::shared_ptr<levelized_file<node>> nf)
       : levelized_file_writer<node>(nf)
-      , _canonical(!levelized_file_writer::has_pushed()|| nf->canonical)
-    { }
+      , _canonical(!levelized_file_writer::has_pushed() || nf->canonical)
+    {}
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Detaches and cleans up from the levelized file (if need be).
     ////////////////////////////////////////////////////////////////////////////
     ~node_writer()
-    { detach(); }
+    {
+      detach();
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Attach to a file
     ////////////////////////////////////////////////////////////////////////////
-    void attach(adiar::shared_ptr<levelized_file<node>> &f) {
+    void
+    attach(adiar::shared_ptr<levelized_file<node>>& f)
+    {
       levelized_file_writer::attach(f);
 
-      //Reset all meta-data
+      // Reset all meta-data
       _latest_node = dummy();
 
       _canonical = true;
@@ -110,23 +114,27 @@ namespace adiar::internal
       _terminals_at_bottom[0] = 0u;
       _terminals_at_bottom[1] = 0u;
 
-      _max_1level_short_internal = 0u;
+      _max_1level_short_internal  = 0u;
       _curr_1level_short_internal = 0u;
 
-      _long_internal_ptr = node::pointer_type::nil();
+      _long_internal_ptr            = node::pointer_type::nil();
       _number_of_long_internal_arcs = 0u;
     }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the writer currently is attached.
     ////////////////////////////////////////////////////////////////////////////
-    bool attached() const
-    { return levelized_file_writer::attached(); }
+    bool
+    attached() const
+    {
+      return levelized_file_writer::attached();
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Detach from a file (if need be)
     ////////////////////////////////////////////////////////////////////////////
-    void detach()
+    void
+    detach()
     {
       if (!attached()) { return; }
 
@@ -142,8 +150,8 @@ namespace adiar::internal
         _level_size = 0u; // TODO: remove?
 
         // 1-level cut
-        _max_1level_short_internal = std::max(_max_1level_short_internal,
-                                              _curr_1level_short_internal);
+        _max_1level_short_internal =
+          std::max(_max_1level_short_internal, _curr_1level_short_internal);
 
         const cut::size_type max_1level_internal_cut =
           _max_1level_short_internal + _number_of_long_internal_arcs;
@@ -152,7 +160,7 @@ namespace adiar::internal
 
         const size_t terminals_above_bottom[2] = {
           _file_ptr->number_of_terminals[false] - _terminals_at_bottom[false],
-          _file_ptr->number_of_terminals[true]  - _terminals_at_bottom[true]
+          _file_ptr->number_of_terminals[true] - _terminals_at_bottom[true]
         };
 
         _file_ptr->max_1level_cut[cut::Internal_False] =
@@ -163,9 +171,9 @@ namespace adiar::internal
           std::max(max_1level_internal_cut + terminals_above_bottom[true],
                    _file_ptr->number_of_terminals[true]);
 
-        _file_ptr->max_1level_cut[cut::All] =
-          std::max(max_1level_internal_cut + terminals_above_bottom[false] + terminals_above_bottom[true],
-                   _file_ptr->number_of_terminals[false] + _file_ptr->number_of_terminals[true]);
+        _file_ptr->max_1level_cut[cut::All] = std::max(
+          max_1level_internal_cut + terminals_above_bottom[false] + terminals_above_bottom[true],
+          _file_ptr->number_of_terminals[false] + _file_ptr->number_of_terminals[true]);
       }
 
       // Run final i-level cut computations
@@ -185,7 +193,8 @@ namespace adiar::internal
     ///
     /// \throws domain_error If the writer is yet not attached.
     ////////////////////////////////////////////////////////////////////////////
-    void push(const node &n)
+    void
+    push(const node& n)
     {
       if (!attached()) {
         throw domain_error("node_writer is not yet attached to any levelized_file<node>");
@@ -193,26 +202,23 @@ namespace adiar::internal
 
       if (_latest_node == dummy()) { // First node pushed
         _canonical = n.is_terminal() || n.id() == node::max_id;
-        if (n.is_terminal()) {
-          _file_ptr->number_of_terminals[n.uid().value()]++;
-        }
+        if (n.is_terminal()) { _file_ptr->number_of_terminals[n.uid().value()]++; }
       } else { // Check validity of input based on prior written node
         adiar_assert(!_latest_node.is_terminal(),
                      "Cannot push a node after having pushed a terminal");
-        adiar_assert(!n.is_terminal(),
-                     "Cannot push a terminal into non-empty file");
+        adiar_assert(!n.is_terminal(), "Cannot push a terminal into non-empty file");
 
         // Check it is canonically sorted
         if (_canonical) {
           if (_latest_node.label() == n.label()) {
-            const bool id_diff = n.uid().id() == _latest_node.id() - 1u;
+            const bool id_diff          = n.uid().id() == _latest_node.id() - 1u;
             const bool children_ordered = n.high() < _latest_node.high()
               || (n.high() == _latest_node.high() && n.low() < _latest_node.low());
 
             _canonical = id_diff && children_ordered;
           } else {
             const bool id_reset = n.id() == node::max_id;
-            _canonical = id_reset;
+            _canonical          = id_reset;
           }
         }
 
@@ -223,11 +229,11 @@ namespace adiar::internal
           _level_size = 0u;
 
           // Update 1-level cut information
-          _max_1level_short_internal = std::max(_max_1level_short_internal,
-                                                _curr_1level_short_internal);
+          _max_1level_short_internal =
+            std::max(_max_1level_short_internal, _curr_1level_short_internal);
 
           _curr_1level_short_internal = 0u;
-          _long_internal_ptr = node::uid_type(_latest_node.label(), node::max_id);
+          _long_internal_ptr          = node::uid_type(_latest_node.label(), node::max_id);
         }
       }
 
@@ -239,13 +245,19 @@ namespace adiar::internal
       }
 
       if (n.low().is_node()) {
-        if (n.low() > _long_internal_ptr) { _number_of_long_internal_arcs++; }
-        else { _curr_1level_short_internal++; }
+        if (n.low() > _long_internal_ptr) {
+          _number_of_long_internal_arcs++;
+        } else {
+          _curr_1level_short_internal++;
+        }
       }
 
       if (n.high().is_node()) {
-        if (n.high() > _long_internal_ptr) { _number_of_long_internal_arcs++; }
-        else { _curr_1level_short_internal++; }
+        if (n.high() > _long_internal_ptr) {
+          _number_of_long_internal_arcs++;
+        } else {
+          _curr_1level_short_internal++;
+        }
       }
 
       // Write node to file
@@ -255,7 +267,8 @@ namespace adiar::internal
       unsafe_push(n);
     }
 
-    node_writer& operator<< (const node& n)
+    node_writer&
+    operator<<(const node& n)
     {
       this->push(n);
       return *this;
@@ -264,7 +277,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Write directly to level information file without any checks.
     ////////////////////////////////////////////////////////////////////////////
-    void unsafe_push(const level_info &m)
+    void
+    unsafe_push(const level_info& m)
     {
 #ifdef ADIAR_STATS
       stats_node_file.push_level += 1;
@@ -276,12 +290,13 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Write directly to the underlying node file without any checks.
     ////////////////////////////////////////////////////////////////////////////
-    void unsafe_push(const node &n)
+    void
+    unsafe_push(const node& n)
     {
 #ifdef ADIAR_STATS
       stats_node_file.push_node += 1;
 #endif
-      if (n.low().is_terminal())  { _file_ptr->number_of_terminals[n.low().value()]++; }
+      if (n.low().is_terminal()) { _file_ptr->number_of_terminals[n.low().value()]++; }
       if (n.high().is_terminal()) { _file_ptr->number_of_terminals[n.high().value()]++; }
 
       levelized_file_writer::template push<0>(n);
@@ -291,7 +306,8 @@ namespace adiar::internal
     /// \brief Change the 1-level cut size to the maximum of the current or the
     ///        given cuts.
     ////////////////////////////////////////////////////////////////////////////
-    void unsafe_max_1level_cut(const cuts_t &o)
+    void
+    unsafe_max_1level_cut(const cuts_t& o)
     {
       max_cut(_file_ptr->max_1level_cut, o);
     }
@@ -299,7 +315,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Increase the current maximum 1-level cut size by the given cut.
     ////////////////////////////////////////////////////////////////////////////
-    void unsafe_inc_1level_cut(const cuts_t &o)
+    void
+    unsafe_inc_1level_cut(const cuts_t& o)
     {
       inc_cut(_file_ptr->max_1level_cut, o);
     }
@@ -307,8 +324,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Overwrite the number of false and true arcs.
     ////////////////////////////////////////////////////////////////////////////
-    void unsafe_set_number_of_terminals(const size_t number_of_false,
-                                        const size_t number_of_true)
+    void
+    unsafe_set_number_of_terminals(const size_t number_of_false, const size_t number_of_true)
     {
       _file_ptr->number_of_terminals[false] = number_of_false;
       _file_ptr->number_of_terminals[true]  = number_of_true;
@@ -317,7 +334,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Overwrite the canonicity flag.
     ////////////////////////////////////////////////////////////////////////////
-    void unsafe_set_canonical(const bool canonical)
+    void
+    unsafe_set_canonical(const bool canonical)
     {
       _file_ptr->canonical = canonical;
     }
@@ -325,21 +343,28 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether anything has been pushed to any of the underlying files.
     ////////////////////////////////////////////////////////////////////////////
-    bool has_pushed()
-    { return levelized_file_writer::has_pushed(); }
+    bool
+    has_pushed()
+    {
+      return levelized_file_writer::has_pushed();
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the underlying file is empty.
     ////////////////////////////////////////////////////////////////////////////
-    bool empty()
-    { return levelized_file_writer::empty(); }
+    bool
+    empty()
+    {
+      return levelized_file_writer::empty();
+    }
 
   private:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Helper function to bound derived 1-level and 2-level cuts with
     ///        their trivial upper bounds (assuming nothing is pushed later).
     ////////////////////////////////////////////////////////////////////////////
-    void fixup_ilevel_cuts()
+    void
+    fixup_ilevel_cuts()
     {
       const size_t number_of_nodes = levelized_file_writer::size();
       const size_t number_of_false = _file_ptr->number_of_terminals[false];
@@ -355,14 +380,14 @@ namespace adiar::internal
       // Upper bound on just 'all arcs'. This is better than 'max_cut' above, if
       // there are 'number_of_nodes' or more arcs to terminals.
       const bool noa_overflow_safe = number_of_nodes <= cut::max / 2u;
-      const size_t number_of_arcs = 2u * number_of_nodes;
+      const size_t number_of_arcs  = 2u * number_of_nodes;
 
-      const cuts_t all_arcs_cut = {{
-          noa_overflow_safe ? number_of_arcs - number_of_false - number_of_true : cut::max,
-          noa_overflow_safe ? number_of_arcs - number_of_true                   : cut::max,
-          noa_overflow_safe ? number_of_arcs - number_of_false                  : cut::max,
-          noa_overflow_safe ? number_of_arcs                                    : cut::max
-        }};
+      const cuts_t all_arcs_cut = {
+        { noa_overflow_safe ? number_of_arcs - number_of_false - number_of_true : cut::max,
+          noa_overflow_safe ? number_of_arcs - number_of_true : cut::max,
+          noa_overflow_safe ? number_of_arcs - number_of_false : cut::max,
+          noa_overflow_safe ? number_of_arcs : cut::max }
+      };
 
       // -----------------------------------------------------------------------
       // Maximum 1-level cuts
@@ -374,14 +399,12 @@ namespace adiar::internal
         _file_ptr->max_1level_cut[cut::Internal_True]  = number_of_true;
         _file_ptr->max_1level_cut[cut::All]            = 1u;
       } else {
-        for(size_t ct = 0u; ct < cut::size; ct++) {
+        for (size_t ct = 0u; ct < cut::size; ct++) {
           // Use smallest sound upper bound. Since it is not a terminal, then there
           // must be at least one in-going arc to the root.
-          _file_ptr->max_1level_cut[ct] = std::max<cut::size_type>(1lu, std::min<cut::size_type>({
-                _file_ptr->max_1level_cut[ct],
-                max_cut,
-                all_arcs_cut[ct]
-              }));
+          _file_ptr->max_1level_cut[ct] = std::max<cut::size_type>(
+            1lu,
+            std::min<cut::size_type>({ _file_ptr->max_1level_cut[ct], max_cut, all_arcs_cut[ct] }));
         }
       }
 
@@ -390,41 +413,34 @@ namespace adiar::internal
       const size_t number_of_levels = levelized_file_writer::levels();
 
       if (is_terminal || number_of_nodes == number_of_levels) {
-        for(size_t ct = 0u; ct < cut::size; ct++) {
+        for (size_t ct = 0u; ct < cut::size; ct++) {
           _file_ptr->max_2level_cut[ct] = _file_ptr->max_1level_cut[ct];
         }
       } else { // General case
-        for(size_t ct = 0u; ct < cut::size; ct++) {
+        for (size_t ct = 0u; ct < cut::size; ct++) {
           // Upper bound based on 1-level cut
-          const cut::size_type ub_from_1level_cut =
-            _file_ptr->max_1level_cut[ct] < cut::max / 3u
+          const cut::size_type ub_from_1level_cut = _file_ptr->max_1level_cut[ct] < cut::max / 3u
             ? ((_file_ptr->max_1level_cut[cut::Internal] * 3u) / 2u
                + (_file_ptr->max_1level_cut[ct] - _file_ptr->max_1level_cut[cut::Internal]))
             : cut::max;
 
           // Use smallest sound upper bound.
-          _file_ptr->max_2level_cut[ct] = std::min({
-              _file_ptr->max_2level_cut[ct],
-              ub_from_1level_cut,
-              max_cut,
-              all_arcs_cut[ct]
-            });
+          _file_ptr->max_2level_cut[ct] = std::min(
+            { _file_ptr->max_2level_cut[ct], ub_from_1level_cut, max_cut, all_arcs_cut[ct] });
         }
       }
     }
 
-    void max_cut(cuts_t &c, const cuts_t &o)
+    void
+    max_cut(cuts_t& c, const cuts_t& o)
     {
-      for(size_t ct = 0u; ct < cut::size; ct++) {
-        c[ct] = std::max(c[ct], o[ct]);
-      }
+      for (size_t ct = 0u; ct < cut::size; ct++) { c[ct] = std::max(c[ct], o[ct]); }
     }
 
-    void inc_cut(cuts_t &c, const cuts_t &o)
+    void
+    inc_cut(cuts_t& c, const cuts_t& o)
     {
-      for(size_t ct = 0u; ct < cut::size; ct++) {
-        c[ct] += o[ct];
-      }
+      for (size_t ct = 0u; ct < cut::size; ct++) { c[ct] += o[ct]; }
     }
   };
 }

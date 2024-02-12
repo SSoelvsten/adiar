@@ -3,8 +3,8 @@
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/data_types/ptr.h>
-#include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/data_types/tuple.h>
+#include <adiar/internal/data_types/uid.h>
 
 namespace adiar::internal
 {
@@ -99,7 +99,7 @@ namespace adiar::internal
     /// \details The default, copy, and move constructor has to be `default` to
     ///          ensure it is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    node(const node &n) = default;
+    node(const node& n) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   Move construction (trivial).
@@ -107,7 +107,7 @@ namespace adiar::internal
     /// \details The default, copy, and move constructor has to be `default` to
     ///          ensure it is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    node(node &&n) = default;
+    node(node&& n) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   Destruction (trivial).
@@ -124,7 +124,8 @@ namespace adiar::internal
     /// \details The copy and move assignment has to be `default` to
     ///          ensure it is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    node& operator =(const node &n) = default;
+    node&
+    operator=(const node& n) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   Move assignment (trivial).
@@ -132,14 +133,18 @@ namespace adiar::internal
     /// \details The copy and move assignment has to be `default` to ensure it
     ///          is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    node& operator =(node &&n) = default;
+    node&
+    operator=(node&& n) = default;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The unique identifier of this node
     ////////////////////////////////////////////////////////////////////////////
-    inline uid_type uid() const
-    { return _uid; }
+    inline uid_type
+    uid() const
+    {
+      return _uid;
+    }
 
     /* ============================== TERMINAL NODE ========================= */
   public:
@@ -149,21 +154,26 @@ namespace adiar::internal
     /// \brief Construct *terminal* node `(value, nil, nil)`.
     ////////////////////////////////////////////////////////////////////////////
     node(const terminal_type value)
-      : _uid(pointer_type(value)), _children(ptr_uint64::nil())
-    { }
+      : _uid(pointer_type(value))
+      , _children(ptr_uint64::nil())
+    {}
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether this node represents a terminal value.
     ////////////////////////////////////////////////////////////////////////////
-    inline bool is_terminal() const
-    { return _uid.is_terminal(); }
+    inline bool
+    is_terminal() const
+    {
+      return _uid.is_terminal();
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The value of this terminal node (assuming it is one).
     ///
     /// \pre `is_terminal()` evaluates to `true`.
     ////////////////////////////////////////////////////////////////////////////
-    inline terminal_type value() const
+    inline terminal_type
+    value() const
     {
       adiar_assert(is_terminal());
       return _uid.value();
@@ -174,16 +184,22 @@ namespace adiar::internal
     ///
     /// \details This is equivalent to `n.is_terminal() && !n.value()`.
     //////////////////////////////////////////////////////////////////////////////
-    inline bool is_false() const
-    { return uid().is_false(); }
+    inline bool
+    is_false() const
+    {
+      return uid().is_false();
+    }
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Whether this node is the true terminal.
     ///
     /// \details This is equivalent to `n.is_terminal() && n.value()`.
     //////////////////////////////////////////////////////////////////////////////
-    inline bool is_true() const
-    { return uid().is_true(); }
+    inline bool
+    is_true() const
+    {
+      return uid().is_true();
+    }
 
     /* ============================== INTERNAL NODE ========================= */
   public:
@@ -196,29 +212,29 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct node `(uid, low, high)`.
     ////////////////////////////////////////////////////////////////////////////
-    node(const uid_type &u, const pointer_type &l, const pointer_type &h)
-      : _uid(u), _children{l, h}
-    { }
+    node(const uid_type& u, const pointer_type& l, const pointer_type& h)
+      : _uid(u)
+      , _children{ l, h }
+    {}
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct *internal* node `((label, id), low, high)`.
     ////////////////////////////////////////////////////////////////////////////
-    node(const label_type label, const id_type id, const pointer_type &l, const pointer_type &h)
-      : _uid(label, id), _children{l, h}
+    node(const label_type label, const id_type id, const pointer_type& l, const pointer_type& h)
+      : _uid(label, id)
+      , _children{ l, h }
     {
       adiar_assert(!l.is_nil(), "Cannot create a node with nil child");
-      adiar_assert(l.is_terminal() || label < l.label(),
-                   "Node is not prior to given low child");
+      adiar_assert(l.is_terminal() || label < l.label(), "Node is not prior to given low child");
 
       adiar_assert(!h.is_nil(), "Cannot create a node with nil child");
-      adiar_assert(h.is_terminal() || label < h.label(),
-                   "Node is not prior to given high child");
+      adiar_assert(h.is_terminal() || label < h.label(), "Node is not prior to given high child");
     }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct *internal* node `((label, id), low, high)`.
     ////////////////////////////////////////////////////////////////////////////
-    node(const label_type label, const id_type id, const node &l, const pointer_type &h)
+    node(const label_type label, const id_type id, const node& l, const pointer_type& h)
       : node(label, id, l.uid(), h)
     {
       adiar_assert(outdegree == 2, "Constructor is for binary node only.");
@@ -227,7 +243,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct *internal* node `((label, id), low, high)`.
     ////////////////////////////////////////////////////////////////////////////
-    node(const label_type label, const id_type id, const pointer_type &l, const node &h)
+    node(const label_type label, const id_type id, const pointer_type& l, const node& h)
       : node(label, id, l, h.uid())
     {
       adiar_assert(outdegree == 2, "Constructor is for binary node only.");
@@ -236,7 +252,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct *internal* node `((label, id), low, high)`.
     ////////////////////////////////////////////////////////////////////////////
-    node(const label_type label, const id_type id, const node &l, const node &h)
+    node(const label_type label, const id_type id, const node& l, const node& h)
       : node(label, id, l.uid(), h.uid())
     {
       adiar_assert(outdegree == 2, "Constructor is for binary node only.");
@@ -248,7 +264,8 @@ namespace adiar::internal
     /// \pre `is_terminal()` evaluates to `false`.
     ////////////////////////////////////////////////////////////////////////////
     // TODO: Rename to `level()` when introducing variable ordering
-    inline label_type label() const
+    inline label_type
+    label() const
     {
       adiar_assert(!is_terminal());
       return uid().label();
@@ -259,7 +276,8 @@ namespace adiar::internal
     ///
     /// \pre `is_terminal()` evaluates to `false`.
     ////////////////////////////////////////////////////////////////////////////
-    inline id_type id() const
+    inline id_type
+    id() const
     {
       adiar_assert(!is_terminal());
       return uid().id();
@@ -270,13 +288,17 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The node's children sorted based on the semantics of this node.
     ////////////////////////////////////////////////////////////////////////////
-    inline const children_type& children() const
-    { return _children; }
+    inline const children_type&
+    children() const
+    {
+      return _children;
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The node's i'th child (sorted based on the semantics).
     ////////////////////////////////////////////////////////////////////////////
-    inline pointer_type child(const size_t i) const
+    inline pointer_type
+    child(const size_t i) const
     {
       adiar_assert(i < outdegree, "'i' must be a valid children index.");
       return _children[i];
@@ -290,10 +312,10 @@ namespace adiar::internal
     ///
     /// \see child
     ////////////////////////////////////////////////////////////////////////////
-    inline pointer_type low() const
+    inline pointer_type
+    low() const
     {
-      adiar_assert(outdegree == 2,
-                   "Semantics of 'low' is only defined for binary nodes.");
+      adiar_assert(outdegree == 2, "Semantics of 'low' is only defined for binary nodes.");
 
       return child(false);
     }
@@ -306,63 +328,74 @@ namespace adiar::internal
     ///
     /// \see child
     ////////////////////////////////////////////////////////////////////////////
-    inline pointer_type high() const
+    inline pointer_type
+    high() const
     {
-      adiar_assert(outdegree == 2,
-                   "Semantics of 'high' is only defined for binary node.");
+      adiar_assert(outdegree == 2, "Semantics of 'high' is only defined for binary node.");
 
       return child(true);
     }
 
     /* =============================== COMPARATORS ========================== */
   public:
-
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Sorting of node based based on its `uid()` (i.e. its time-stamp).
     ///        If they are the same, then it secondly is sorted on its cildren.
     //////////////////////////////////////////////////////////////////////////////
-    inline bool operator<  (const node &o) const
+    inline bool
+    operator<(const node& o) const
     {
-      return (this->_uid < o._uid)
-        || (this->_uid == o._uid && this->_children < o._children);
+      return (this->_uid < o._uid) || (this->_uid == o._uid && this->_children < o._children);
     }
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Sorting of node based based on its `uid()` (i.e. its time-stamp).
     ///        If they are the same, then it secondly is sorted on its cildren.
     //////////////////////////////////////////////////////////////////////////////
-    inline bool operator>  (const node &o) const
-    { return (o < *this); }
+    inline bool
+    operator>(const node& o) const
+    {
+      return (o < *this);
+    }
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Check uid and children match.
     //////////////////////////////////////////////////////////////////////////////
-    inline bool operator== (const node &o) const
+    inline bool
+    operator==(const node& o) const
     {
-      return this->_uid == o._uid
-        && this->_children[false] == o._children[false]
-        && this->_children[true]  == o._children[true];
+      return this->_uid == o._uid && this->_children[false] == o._children[false]
+        && this->_children[true] == o._children[true];
     }
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Check either uid or one of the children mismatch.
     //////////////////////////////////////////////////////////////////////////////
-    inline bool operator!= (const node &o) const
-    { return !(*this == o); }
+    inline bool
+    operator!=(const node& o) const
+    {
+      return !(*this == o);
+    }
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Sorting of node based based on its `uid()` (i.e. its time-stamp).
     ///        If they are the same, then it secondly is sorted on its cildren.
     //////////////////////////////////////////////////////////////////////////////
-    inline bool operator<= (const node &o) const
-    { return (*this < o) || (*this == o); }
+    inline bool
+    operator<=(const node& o) const
+    {
+      return (*this < o) || (*this == o);
+    }
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Sorting of node based based on its `uid()` (i.e. its time-stamp).
     ///        If they are the same, then it secondly is sorted on its cildren.
     //////////////////////////////////////////////////////////////////////////////
-    inline bool operator>= (const node &o) const
-    { return (*this > o) || (*this == o); }
+    inline bool
+    operator>=(const node& o) const
+    {
+      return (*this > o) || (*this == o);
+    }
 
     /* ================================ OPERATORS =========================== */
   public:
@@ -371,7 +404,8 @@ namespace adiar::internal
     ///        pointers to terminal children are negated while pointers to other
     ///        nodes are left unchanged.
     ////////////////////////////////////////////////////////////////////////////
-    node operator! () const
+    node
+    operator!() const
     {
       if (this->is_terminal()) {
         return node(!this->_uid, pointer_type::nil(), pointer_type::nil());
@@ -383,50 +417,74 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Ordering of node in comparison to a unique identifier.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool operator< (const node &n, const node::uid_type &u)
-  { return n.uid() < u; }
+  inline bool
+  operator<(const node& n, const node::uid_type& u)
+  {
+    return n.uid() < u;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Ordering of node in comparison to a unique identifier.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool operator< (const node::uid_type &u, const node &n)
-  { return u < n.uid(); }
+  inline bool
+  operator<(const node::uid_type& u, const node& n)
+  {
+    return u < n.uid();
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Ordering of node in comparison to a unique identifier.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool operator<= (const node &n, const node::uid_type &u)
-  { return n.uid() <= u; }
+  inline bool
+  operator<=(const node& n, const node::uid_type& u)
+  {
+    return n.uid() <= u;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Ordering of node in comparison to a unique identifier.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool operator<= (const node::uid_type &u, const node &n)
-  { return u <= n.uid(); }
+  inline bool
+  operator<=(const node::uid_type& u, const node& n)
+  {
+    return u <= n.uid();
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Ordering of node in comparison to a unique identifier.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool operator> (const node &n, const node::uid_type &u)
-  { return n.uid() > u; }
+  inline bool
+  operator>(const node& n, const node::uid_type& u)
+  {
+    return n.uid() > u;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Ordering of node in comparison to a unique identifier.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool operator> (const node::uid_type &u, const node &n)
-  { return u > n.uid(); }
+  inline bool
+  operator>(const node::uid_type& u, const node& n)
+  {
+    return u > n.uid();
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Ordering of node in comparison to a unique identifier.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool operator>= (const node &n, const node::uid_type &u)
-  { return n.uid() >= u; }
+  inline bool
+  operator>=(const node& n, const node::uid_type& u)
+  {
+    return n.uid() >= u;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Ordering of node in comparison to a unique identifier.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool operator>= (const node::uid_type &u, const node &n)
-  { return u >= n.uid(); }
+  inline bool
+  operator>=(const node::uid_type& u, const node& n)
+  {
+    return u >= n.uid();
+  }
 }
 
 #endif // ADIAR_INTERNAL_DATA_TYPES_NODE_H

@@ -3,8 +3,8 @@
 
 #include <string>
 
-#include <tpie/tpie.h>
 #include <tpie/memory.h>
+#include <tpie/tpie.h>
 
 #include <adiar/internal/assert.h>
 
@@ -13,7 +13,8 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Obtain from TPIE the amount of available memory.
   //////////////////////////////////////////////////////////////////////////////
-  inline size_t memory_available()
+  inline size_t
+  memory_available()
   {
     return tpie::get_memory_manager().available();
   }
@@ -26,7 +27,11 @@ namespace adiar::internal
   ///          using the external memory (the disk) and (2) an implementation
   ///          that is much faster but is limited to internal memory (the RAM).
   //////////////////////////////////////////////////////////////////////////////
-  enum class memory_mode { Internal, External };
+  enum class memory_mode
+  {
+    Internal,
+    External
+  };
 }
 
 namespace adiar
@@ -49,8 +54,9 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Creates a new object on the heap with shared ownership.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename T, typename ... TT>
-  inline shared_ptr<T> make_shared(TT && ... tt)
+  template <typename T, typename... TT>
+  inline shared_ptr<T>
+  make_shared(TT&&... tt)
   {
     return std::make_shared<T>(std::forward<TT>(tt)...);
   }
@@ -66,8 +72,9 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Creates a new object on the heap with unique ownership.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename T, typename ... TT>
-  inline unique_ptr<T> make_unique(TT && ... tt)
+  template <typename T, typename... TT>
+  inline unique_ptr<T>
+  make_unique(TT&&... tt)
   {
     return std::make_unique<T>(std::forward<TT>(tt)...);
   }

@@ -5,7 +5,6 @@
 #include <adiar/internal/dd.h>
 #include <adiar/internal/io/levelized_file_stream.h>
 
-
 namespace adiar::internal
 {
   statistics::equality_t stats_equality;
@@ -18,48 +17,51 @@ namespace adiar::internal
   // Check whether more requests were processed on this level than allowed. An
   // isomorphic DAG would not create more requests than the original number of
   // nodes.
-  template<bool tv>
+  template <bool tv>
   class input_bound_levels
   {
   private:
     level_info_stream<> in_meta_1;
 
-    size_t curr_level_size = 0;
+    size_t curr_level_size      = 0;
     size_t curr_level_processed = 0;
 
   public:
-    static size_t pq1_upper_bound(const shared_levelized_file<node> &in_1,
-                                  const shared_levelized_file<node> &in_2)
+    static size_t
+    pq1_upper_bound(const shared_levelized_file<node>& in_1,
+                    const shared_levelized_file<node>& in_2)
     {
-      return std::max(in_1->max_2level_cut[cut::Internal],
-                      in_2->max_2level_cut[cut::Internal]);
+      return std::max(in_1->max_2level_cut[cut::Internal], in_2->max_2level_cut[cut::Internal]);
     }
 
-    static size_t pq2_upper_bound(const shared_levelized_file<node> &in_1,
-                                  const shared_levelized_file<node> &in_2)
+    static size_t
+    pq2_upper_bound(const shared_levelized_file<node>& in_1,
+                    const shared_levelized_file<node>& in_2)
     {
-      return std::max(in_1->max_1level_cut[cut::Internal],
-                      in_2->max_1level_cut[cut::Internal]);
+      return std::max(in_1->max_1level_cut[cut::Internal], in_2->max_1level_cut[cut::Internal]);
     }
 
-    static constexpr size_t memory_usage()
+    static constexpr size_t
+    memory_usage()
     {
       return level_info_stream<>::memory_usage();
     }
 
   public:
-    input_bound_levels(const shared_levelized_file<node> &f0,
-                       const shared_levelized_file<node> &/*f1*/)
+    input_bound_levels(const shared_levelized_file<node>& f0,
+                       const shared_levelized_file<node>& /*f1*/)
       : in_meta_1(f0)
-    { }
+    {}
 
-    void next_level(ptr_uint64::label_type /* level */)
+    void
+    next_level(ptr_uint64::label_type /* level */)
     { // Ignore input, since only used with the isomorphism_policy below.
-      curr_level_size = in_meta_1.pull().width();
+      curr_level_size      = in_meta_1.pull().width();
       curr_level_processed = 0;
     }
 
-    bool on_step()
+    bool
+    on_step()
     {
       curr_level_processed++;
       const bool ret_value = curr_level_size < curr_level_processed;
@@ -83,19 +85,22 @@ namespace adiar::internal
   // TODO (Decision Diagrams with other kinds of pointers):
   // template<class dd_policy>
   class isomorphism_policy
-    : public dd_policy<dd, __dd>, public prod2_same_level_merger<dd_policy<dd, __dd>>
+    : public dd_policy<dd, __dd>
+    , public prod2_same_level_merger<dd_policy<dd, __dd>>
   {
   public:
     using level_check_t = input_bound_levels<false>;
 
   public:
-    static constexpr size_t lookahead_bound()
+    static constexpr size_t
+    lookahead_bound()
     {
       return 2u;
     }
 
   public:
-    static bool resolve_terminals(const dd::node_type &v1, const dd::node_type &v2, bool &ret_value)
+    static bool
+    resolve_terminals(const dd::node_type& v1, const dd::node_type& v2, bool& ret_value)
     {
       ret_value = v1.is_terminal() && v2.is_terminal() && v1.value() == v2.value();
 #ifdef ADIAR_STATS
@@ -105,7 +110,8 @@ namespace adiar::internal
     }
 
   public:
-    static bool resolve_singletons(const dd::node_type &v1, const dd::node_type &v2)
+    static bool
+    resolve_singletons(const dd::node_type& v1, const dd::node_type& v2)
     {
 #ifdef ADIAR_STATS
       stats_equality.slow_check.exit_on_root += 1u;
@@ -115,8 +121,9 @@ namespace adiar::internal
     }
 
   public:
-    template<typename pq_1_t>
-    static bool resolve_request(pq_1_t &pq, const tuple<dd::pointer_type> &rp)
+    template <typename pq_1_t>
+    static bool
+    resolve_request(pq_1_t& pq, const tuple<dd::pointer_type>& rp)
     {
       // Are they both a terminal (and the same terminal)?
       if (rp[0].is_terminal() || rp[1].is_terminal()) {
@@ -144,7 +151,7 @@ namespace adiar::internal
     }
 
   public:
-    static constexpr bool early_return_value = false;
+    static constexpr bool early_return_value    = false;
     static constexpr bool no_early_return_value = true;
   };
 
@@ -168,8 +175,9 @@ namespace adiar::internal
   /// (3) The negation flags given to both shared_levelized_file<node>s agree
   ///     (breaks canonicity)
   //////////////////////////////////////////////////////////////////////////////
-  bool fast_isomorphism_check(const shared_levelized_file<node> &f0,
-                              const shared_levelized_file<node> &f1)
+  bool
+  fast_isomorphism_check(const shared_levelized_file<node>& f0,
+                         const shared_levelized_file<node>& f1)
   {
     node_stream<> in_nodes_1(f0);
     node_stream<> in_nodes_2(f1);
@@ -187,11 +195,12 @@ namespace adiar::internal
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  bool is_isomorphic(const exec_policy &ep,
-                     const shared_levelized_file<node> &f0,
-                     const shared_levelized_file<node> &f1,
-                     const bool negate0,
-                     const bool negate1)
+  bool
+  is_isomorphic(const exec_policy& ep,
+                const shared_levelized_file<node>& f0,
+                const shared_levelized_file<node>& f1,
+                const bool negate0,
+                const bool negate1)
   {
     // Are they literally referring to the same underlying file?
     if (f0 == f1) {
@@ -220,8 +229,8 @@ namespace adiar::internal
 
     // Are they trivially not the same, since they have different number of
     // terminal arcs?
-    if(f0->number_of_terminals[negate0] != f1->number_of_terminals[negate1] ||
-       f0->number_of_terminals[!negate0] != f1->number_of_terminals[!negate1]) {
+    if (f0->number_of_terminals[negate0] != f1->number_of_terminals[negate1]
+        || f0->number_of_terminals[!negate0] != f1->number_of_terminals[!negate1]) {
 #ifdef ADIAR_STATS
       stats_equality.exit_on_terminalcount += 1u;
 #endif
@@ -273,7 +282,8 @@ namespace adiar::internal
     }
   }
 
-  bool is_isomorphic(const exec_policy &ep, const dd &a, const dd &b)
+  bool
+  is_isomorphic(const exec_policy& ep, const dd& a, const dd& b)
   {
     return is_isomorphic(ep, a.file, b.file, a.negate, b.negate);
   }

@@ -2345,31 +2345,31 @@ go_bandit([]() {
             return 0 < x && x < 3;
           });
 
-             node_test_stream out_nodes(out);
+          node_test_stream out_nodes(out);
 
-             AssertThat(out_nodes.can_pull(), Is().True());
-             AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
-             AssertThat(out_nodes.can_pull(), Is().False());
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+          AssertThat(out_nodes.can_pull(), Is().False());
 
-             level_info_test_stream out_meta(out);
-             AssertThat(out_meta.can_pull(), Is().False());
+          level_info_test_stream out_meta(out);
+          AssertThat(out_meta.can_pull(), Is().False());
 
-             // TODO: meta variables...
+          // TODO: meta variables...
 
-             // Check call history
-             //
-             // NOTE: Test failure does NOT indicate a bug, but only indicates a
-             //       change. Please verify that this change makes sense and is as
-             //       intended.
-             AssertThat(call_history.size(), Is().EqualTo(13u));
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a
+          //       change. Please verify that this change makes sense and is as
+          //       intended.
+          AssertThat(call_history.size(), Is().EqualTo(13u));
 
-             // - First check for at least one variable satisfying the predicate.
-             AssertThat(call_history.at(0), Is().EqualTo(4u));
-             AssertThat(call_history.at(1), Is().EqualTo(3u));
-             AssertThat(call_history.at(2), Is().EqualTo(2u));
+          // - First check for at least one variable satisfying the predicate.
+          AssertThat(call_history.at(0), Is().EqualTo(4u));
+          AssertThat(call_history.at(1), Is().EqualTo(3u));
+          AssertThat(call_history.at(2), Is().EqualTo(2u));
 
-             // - First top-down sweep (root call)
-             AssertThat(call_history.at(3), Is().EqualTo(0u));
+          // - First top-down sweep (root call)
+          AssertThat(call_history.at(3), Is().EqualTo(0u));
 
           // - First top-down sweep
           AssertThat(call_history.at(4), Is().EqualTo(0u));
@@ -2381,11 +2381,11 @@ go_bandit([]() {
           // - Second top-down sweep (root call)
           AssertThat(call_history.at(9), Is().EqualTo(0u));
 
-             // - Second top-down sweep
-             AssertThat(call_history.at(10), Is().EqualTo(0u));
-             AssertThat(call_history.at(11), Is().EqualTo(2u));
-             AssertThat(call_history.at(12), Is().EqualTo(3u));
-           });
+          // - Second top-down sweep
+          AssertThat(call_history.at(10), Is().EqualTo(0u));
+          AssertThat(call_history.at(11), Is().EqualTo(2u));
+          AssertThat(call_history.at(12), Is().EqualTo(3u));
+        });
 
         it("finishes during repeated transposition with variables 1 and 2 in BDD 12b [&&]", [&]() {
           std::vector<bdd::label_type> call_history;

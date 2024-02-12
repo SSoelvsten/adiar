@@ -74,7 +74,7 @@ namespace adiar::internal
     /// \details The default, copy, and move assignment has to be `default` to
     ///          ensure it is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    arc(const arc &a) = default;
+    arc(const arc& a) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   Move construction (trivial).
@@ -82,7 +82,7 @@ namespace adiar::internal
     /// \details The default, copy, and move assignment has to be `default` to
     ///          ensure it is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    arc(arc &&a) = default;
+    arc(arc&& a) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   Destruction (trivial).
@@ -99,7 +99,8 @@ namespace adiar::internal
     /// \details The copy and move assignment has to be `default` to ensure it
     ///          is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    arc& operator =(const arc &a) = default;
+    arc&
+    operator=(const arc& a) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   Move assignment (trivial).
@@ -107,7 +108,8 @@ namespace adiar::internal
     /// \details The copy and move assignment has to be `default` to ensure it
     ///          is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    arc& operator =(arc &&a) = default;
+    arc&
+    operator=(arc&& a) = default;
 
   public:
     // Provide 'non-default' constructors to make it easy to use outside of TPIE.
@@ -118,8 +120,9 @@ namespace adiar::internal
     /// \pre The flags on both `source` and `target` are already set correctly
     ///      and the out-index on `source` is too.
     ////////////////////////////////////////////////////////////////////////////
-    arc(const pointer_type &source, const pointer_type &target)
-      : _source(source), _target(target)
+    arc(const pointer_type& source, const pointer_type& target)
+      : _source(source)
+      , _target(target)
     {
       adiar_assert(!target.is_node() || target.out_idx() == 0u);
     }
@@ -129,9 +132,9 @@ namespace adiar::internal
     ///
     /// \pre The flags on `target` is already set correctly.
     ////////////////////////////////////////////////////////////////////////////
-    arc(const uid_type &source,
-        const pointer_type::out_idx_type &out_idx,
-        const pointer_type &target)
+    arc(const uid_type& source,
+        const pointer_type::out_idx_type& out_idx,
+        const pointer_type& target)
       : _source(source.as_ptr(out_idx))
       , _target(target)
     {
@@ -144,15 +147,21 @@ namespace adiar::internal
     /// \brief Obtain 'source' value (including flag and out-index).
     ////////////////////////////////////////////////////////////////////////////
     // TODO Always return the essential pointer?
-    pointer_type source() const
-    { return _source; }
+    pointer_type
+    source() const
+    {
+      return _source;
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain 'target' value (including flag).
     ////////////////////////////////////////////////////////////////////////////
     // TODO Always return the essential pointer?
-    pointer_type target() const
-    { return _target; }
+    pointer_type
+    target() const
+    {
+      return _target;
+    }
 
     /* ================================= FLAGS ============================== */
   public:
@@ -160,8 +169,11 @@ namespace adiar::internal
     /// \brief Obtain the outdegree index, i.e. the child number this arc is of
     ///        the `source` node.
     ////////////////////////////////////////////////////////////////////////////
-    pointer_type::out_idx_type out_idx() const
-    { return _source.out_idx(); }
+    pointer_type::out_idx_type
+    out_idx() const
+    {
+      return _source.out_idx();
+    }
 
     /* ============================== COMPARATORS =========================== */
 
@@ -169,22 +181,28 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Check that both `source` and `target` match.
     ////////////////////////////////////////////////////////////////////////////
-    inline bool operator== (const arc &o) const
-    { return this->_source == o._source && this->_target == o._target; }
+    inline bool
+    operator==(const arc& o) const
+    {
+      return this->_source == o._source && this->_target == o._target;
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Check either `source` or `target` mismatch.
     ////////////////////////////////////////////////////////////////////////////
-    inline bool operator!= (const arc &o) const
-    { return !(*this == o); }
+    inline bool
+    operator!=(const arc& o) const
+    {
+      return !(*this == o);
+    }
 
     /* =============================== OPERATORS ============================ */
   public:
-
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain an arc where the target's value (if any) is negated.
     ////////////////////////////////////////////////////////////////////////////
-    arc operator! () const
+    arc
+    operator!() const
     {
       return arc(this->_source, !this->_target);
     }
@@ -197,7 +215,9 @@ namespace adiar::internal
   struct arc_source_lt
   {
     /// \copydoc arc_target_lt
-    bool operator ()(const arc& a, const arc& b) const {
+    bool
+    operator()(const arc& a, const arc& b) const
+    {
       return a.source() < b.source();
     }
   };
@@ -208,7 +228,9 @@ namespace adiar::internal
   struct arc_target_lt
   {
     /// \copydoc arc_target_lt
-    bool operator ()(const arc& a, const arc& b) const {
+    bool
+    operator()(const arc& a, const arc& b) const
+    {
       return a.target() < b.target()
 #ifndef NDEBUG
         || (a.target() == b.target() && a.source() < b.source())

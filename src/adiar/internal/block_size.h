@@ -15,7 +15,8 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Sets the block size for TPIE.
   //////////////////////////////////////////////////////////////////////////////
-  inline void set_block_size(size_t block_size_bytes)
+  inline void
+  set_block_size(size_t block_size_bytes)
   {
     tpie::set_block_size(block_size_bytes);
   }
@@ -23,7 +24,8 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Get the block size from TPIE.
   //////////////////////////////////////////////////////////////////////////////
-  inline size_t get_block_size()
+  inline size_t
+  get_block_size()
   {
     return tpie::get_block_size();
   }
@@ -32,7 +34,8 @@ namespace adiar::internal
   /// \brief Computes a recommended block size to be used with a specific
   ///        amount of available internal memory.
   //////////////////////////////////////////////////////////////////////////////
-  inline size_t recommended_block_size(size_t /*memory_limit_bytes*/)
+  inline size_t
+  recommended_block_size(size_t /*memory_limit_bytes*/)
   {
     return minimum_block_size;
   }

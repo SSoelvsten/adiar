@@ -147,12 +147,10 @@ go_bandit([]() {
 
         const auto gen = [&x, &y]() {
           const domain_var z = x + y;
-          x = y;
-          y = z;
+          x                  = y;
+          y                  = z;
 
-          return x > 13
-            ? make_optional<domain_var>()
-            : make_optional<domain_var>(x);
+          return x > 13 ? make_optional<domain_var>() : make_optional<domain_var>(x);
         };
 
         domain_set(gen);

@@ -2,9 +2,9 @@
 #define ADIAR_INTERNAL_ALGORITHMS_TRAVERSE_H
 
 #include <adiar/internal/assert.h>
-#include <adiar/internal/dd.h>
-#include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/data_types/node.h>
+#include <adiar/internal/data_types/uid.h>
+#include <adiar/internal/dd.h>
 #include <adiar/internal/io/node_file.h>
 #include <adiar/internal/io/node_stream.h>
 
@@ -19,8 +19,9 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////////////////////////////////////////////////
-  template<typename Dd, typename Visitor>
-  void traverse(const Dd &dd, Visitor &visitor)
+  template <typename Dd, typename Visitor>
+  void
+  traverse(const Dd& dd, Visitor& visitor)
   {
     node_stream<> in_nodes(dd);
 
@@ -30,17 +31,14 @@ namespace adiar::internal
     while (!tgt.is_terminal() && !tgt.is_nil()) {
       while (n.uid() < tgt) { n = in_nodes.pull(); }
 
-      adiar_assert(n.uid() == tgt,
-                   "Invalid uid chasing; fell out of Decision Diagram");
+      adiar_assert(n.uid() == tgt, "Invalid uid chasing; fell out of Decision Diagram");
 
       tgt = visitor.visit(n);
 
       adiar_assert((tgt == n.low()) || (tgt == n.high()) || (tgt.is_nil()),
                    "Visitor pointer should be a child or nil");
     }
-    if (!tgt.is_nil()) {
-      visitor.visit(tgt.value());
-    }
+    if (!tgt.is_nil()) { visitor.visit(tgt.value()); }
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -54,13 +52,15 @@ namespace adiar::internal
   public:
     static constexpr bool default_direction = false;
 
-    inline node::pointer_type visit(const node &n)
+    inline node::pointer_type
+    visit(const node& n)
     {
       return n.low().is_false() ? n.high() : n.low();
     }
 
-    inline void visit(const bool/*t*/)
-    { }
+    inline void
+    visit(const bool /*t*/)
+    {}
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -74,13 +74,15 @@ namespace adiar::internal
   public:
     static constexpr bool default_direction = true;
 
-    inline node::pointer_type visit(const node &n)
+    inline node::pointer_type
+    visit(const node& n)
     {
       return n.high().is_false() ? n.low() : n.high();
     }
 
-    inline void visit(const bool/*t*/)
-    { }
+    inline void
+    visit(const bool /*t*/)
+    {}
   };
 }
 

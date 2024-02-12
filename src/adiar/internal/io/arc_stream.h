@@ -13,25 +13,23 @@ namespace adiar::internal
   ///
   /// \see shared_levelized_file<arc>
   //////////////////////////////////////////////////////////////////////////////
-  template<bool Reverse = false>
-  class arc_stream
-    : public levelized_file_stream<arc, !Reverse>
+  template <bool Reverse = false>
+  class arc_stream : public levelized_file_stream<arc, !Reverse>
   {
   private:
     using parent_t = levelized_file_stream<arc, !Reverse>;
 
   public:
-    static size_t memory_usage()
+    static size_t
+    memory_usage()
     {
       return parent_t::memory_usage();
     }
 
   private:
-    static constexpr size_t idx__internal =
-      file_traits<arc>::idx__internal;
+    static constexpr size_t idx__internal = file_traits<arc>::idx__internal;
 
-    static constexpr size_t idx__terminals__in_order =
-      file_traits<arc>::idx__terminals__in_order;
+    static constexpr size_t idx__terminals__in_order = file_traits<arc>::idx__terminals__in_order;
 
     static constexpr size_t idx__terminals__out_of_order =
       file_traits<arc>::idx__terminals__out_of_order;
@@ -48,20 +46,24 @@ namespace adiar::internal
     arc_stream() = default;
 
     ////////////////////////////////////////////////////////////////////////////
-    arc_stream(const arc_stream<Reverse> &) = delete;
-    arc_stream(arc_stream<Reverse> &&) = delete;
+    arc_stream(const arc_stream<Reverse>&) = delete;
+    arc_stream(arc_stream<Reverse>&&)      = delete;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct a stream attached to an arc file.
     ////////////////////////////////////////////////////////////////////////////
-    arc_stream(const levelized_file<arc> &file, bool negate = false)
-    { attach(file, negate); }
+    arc_stream(const levelized_file<arc>& file, bool negate = false)
+    {
+      attach(file, negate);
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct a stream unattached to a shared arc file.
     ////////////////////////////////////////////////////////////////////////////
-    arc_stream(const shared_ptr<levelized_file<arc>> &file, bool negate = false)
-    { attach(file, negate); }
+    arc_stream(const shared_ptr<levelized_file<arc>>& file, bool negate = false)
+    {
+      attach(file, negate);
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Detaches and cleans up when destructed.
@@ -74,10 +76,10 @@ namespace adiar::internal
     ///
     /// \pre No `levelized_file_writer` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
-    void attach(const levelized_file<arc> &f,
-                const bool negate = false)
+    void
+    attach(const levelized_file<arc>& f, const bool negate = false)
     {
-      //adiar_assert(f.semi_transposed);
+      // adiar_assert(f.semi_transposed);
       parent_t::attach(f, negate);
       _unread_terminals[negate ^ false] = f.number_of_terminals[false];
       _unread_terminals[negate ^ true]  = f.number_of_terminals[true];
@@ -88,51 +90,57 @@ namespace adiar::internal
     ///
     /// \pre No `levelized_file_writer` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
-    void attach(const shared_ptr<levelized_file<arc>> &f,
-                const bool negate = false)
+    void
+    attach(const shared_ptr<levelized_file<arc>>& f, const bool negate = false)
     {
-      //adiar_assert(f->semi_transposed);
+      // adiar_assert(f->semi_transposed);
       parent_t::attach(f, negate);
       _unread_terminals[negate ^ false] = f->number_of_terminals[false];
       _unread_terminals[negate ^ true]  = f->number_of_terminals[true];
     }
 
-
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the stream contains more internal arcs.
     ////////////////////////////////////////////////////////////////////////////
-    bool can_pull_internal() const
-    { return parent_t::template can_pull<idx__internal>(); }
+    bool
+    can_pull_internal() const
+    {
+      return parent_t::template can_pull<idx__internal>();
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the next internal arc (and move the read head).
     ////////////////////////////////////////////////////////////////////////////
-    const arc pull_internal()
-    { return parent_t::template pull<idx__internal>(); }
+    const arc
+    pull_internal()
+    {
+      return parent_t::template pull<idx__internal>();
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the next internal arc (but do not move the read head).
     ////////////////////////////////////////////////////////////////////////////
-    const arc peek_internal()
-    { return parent_t::template peek<idx__internal>(); }
+    const arc
+    peek_internal()
+    {
+      return parent_t::template peek<idx__internal>();
+    }
 
   private:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the next element ought to be pulled from the \em in-order
     ///        index.
     ////////////////////////////////////////////////////////////////////////////
-    bool take_in_order_terminal()
+    bool
+    take_in_order_terminal()
     {
-      const bool in_order_pullable =
-        parent_t::template can_pull<idx__terminals__in_order>();
+      const bool in_order_pullable = parent_t::template can_pull<idx__terminals__in_order>();
 
       const bool out_of_order_pullable =
         parent_t::template can_pull<idx__terminals__out_of_order>();
 
-      if (in_order_pullable != out_of_order_pullable) {
-        return in_order_pullable;
-      }
+      if (in_order_pullable != out_of_order_pullable) { return in_order_pullable; }
 
       const arc::pointer_type in_order_source =
         parent_t::template peek<idx__terminals__in_order>().source();
@@ -151,19 +159,26 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the number of unread terminals.
     ////////////////////////////////////////////////////////////////////////////
-    size_t unread_terminals() const
-    { return _unread_terminals[false] + _unread_terminals[true]; }
+    size_t
+    unread_terminals() const
+    {
+      return _unread_terminals[false] + _unread_terminals[true];
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the number of unread terminals of a specific value.
     ////////////////////////////////////////////////////////////////////////////
-    const size_t& unread_terminals(const bool terminal_value) const
-    { return _unread_terminals[terminal_value]; }
+    const size_t&
+    unread_terminals(const bool terminal_value) const
+    {
+      return _unread_terminals[terminal_value];
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the stream contains more terminal arcs.
     ////////////////////////////////////////////////////////////////////////////
-    bool can_pull_terminal() const
+    bool
+    can_pull_terminal() const
     {
       return unread_terminals() > 0;
     }
@@ -171,7 +186,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the next arc (and move the read head).
     ////////////////////////////////////////////////////////////////////////////
-    const arc pull_terminal()
+    const arc
+    pull_terminal()
     {
       const arc a = take_in_order_terminal()
         ? parent_t::template pull<idx__terminals__in_order>()
@@ -187,11 +203,11 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the next arc (but do not move the read head).
     ////////////////////////////////////////////////////////////////////////////
-    const arc peek_terminal()
+    const arc
+    peek_terminal()
     {
-      return take_in_order_terminal()
-        ? parent_t::template peek<idx__terminals__in_order>()
-        : parent_t::template peek<idx__terminals__out_of_order>();
+      return take_in_order_terminal() ? parent_t::template peek<idx__terminals__in_order>()
+                                      : parent_t::template peek<idx__terminals__out_of_order>();
     }
   };
 }

@@ -14,15 +14,14 @@
 /// possible and/or minimise the number of lvalues of said type.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <string>
 #include <iostream>
+#include <string>
 
+#include <adiar/bdd/bdd.h>
 #include <adiar/bool_op.h>
 #include <adiar/exec_policy.h>
 #include <adiar/functional.h>
 #include <adiar/types.h>
-
-#include <adiar/bdd/bdd.h>
 #include <adiar/zdd/zdd.h>
 
 namespace adiar
@@ -47,7 +46,8 @@ namespace adiar
   ///
   /// \see         bdd_false bdd_true
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_const(bool value);
+  bdd
+  bdd_const(bool value);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The BDD representing the given constant value.
@@ -56,33 +56,42 @@ namespace adiar
   ///
   /// \see         bdd_const bdd_false bdd_true
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_terminal(bool value);
+  bdd
+  bdd_terminal(bool value);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The BDD representing the constant `false`.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_false();
+  bdd
+  bdd_false();
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The bottom of the powerset lattice.
   ///
   /// \see bdd_false
   //////////////////////////////////////////////////////////////////////////////
-  inline bdd bdd_bot()
-  { return bdd_false(); }
+  inline bdd
+  bdd_bot()
+  {
+    return bdd_false();
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The BDD representing the constant `true`.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_true();
+  bdd
+  bdd_true();
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The top of the powerset lattice.
   ///
   /// \see bdd_true
   //////////////////////////////////////////////////////////////////////////////
-  inline bdd bdd_top()
-  { return bdd_true(); }
+  inline bdd
+  bdd_top()
+  {
+    return bdd_true();
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The BDD representing the i'th variable.
@@ -94,7 +103,8 @@ namespace adiar
   ///
   /// \throws invalid_argument If `var` is a too large value.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_ithvar(bdd::label_type var);
+  bdd
+  bdd_ithvar(bdd::label_type var);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The BDD representing the negation of the i'th variable.
@@ -106,7 +116,8 @@ namespace adiar
   ///
   /// \throws invalid_argument If `var` is a too large value.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_nithvar(bdd::label_type var);
+  bdd
+  bdd_nithvar(bdd::label_type var);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      The BDD representing the logical 'and' of all the given
@@ -122,7 +133,8 @@ namespace adiar
   ///
   /// \throws invalid_argument If `vars` are not in descending order.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_and(const generator<int> &vars);
+  bdd
+  bdd_and(const generator<int>& vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      The BDD representing the logical 'and' of all the given
@@ -135,7 +147,8 @@ namespace adiar
   ///
   /// \throws invalid_argument If `vars` are not in descending order.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_and(const generator<pair<bdd::label_type, bool>> &vars);
+  bdd
+  bdd_and(const generator<pair<bdd::label_type, bool>>& vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The BDD representing the logical 'and' of all the given
@@ -155,9 +168,12 @@ namespace adiar
   /// \throws invalid_argument If the iterator does not provide values in
   ///                          descending order.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  bdd bdd_and(ForwardIt begin, ForwardIt end)
-  { return bdd_and(make_generator(begin, end)); }
+  template <typename ForwardIt>
+  bdd
+  bdd_and(ForwardIt begin, ForwardIt end)
+  {
+    return bdd_and(make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      The BDD representing the logical 'or' of all the given
@@ -173,7 +189,8 @@ namespace adiar
   ///
   /// \throws invalid_argument If `vars` are not in descending order.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_or(const generator<int> &vars);
+  bdd
+  bdd_or(const generator<int>& vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      The BDD representing the logical 'or' of all the given
@@ -186,7 +203,8 @@ namespace adiar
   ///
   /// \throws invalid_argument If `vars` are not in descending order.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_or(const generator<pair<bdd::label_type, bool>> &vars);
+  bdd
+  bdd_or(const generator<pair<bdd::label_type, bool>>& vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The BDD representing the logical 'or' of all the given
@@ -206,10 +224,12 @@ namespace adiar
   /// \throws invalid_argument If the iterator does not provide values in
   ///                          descending order.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  bdd bdd_or(ForwardIt begin, ForwardIt end)
-  { return bdd_or(make_generator(begin, end)); }
-
+  template <typename ForwardIt>
+  bdd
+  bdd_or(ForwardIt begin, ForwardIt end)
+  {
+    return bdd_or(make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      The BDD representing the cube of all the given variables.
@@ -226,7 +246,8 @@ namespace adiar
   ///
   /// \see bdd_and
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_cube(const generator<int> &vars);
+  bdd
+  bdd_cube(const generator<int>& vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      The BDD representing the cube of all the given variables.
@@ -240,7 +261,8 @@ namespace adiar
   ///
   /// \see bdd_and
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_cube(const generator<pair<bdd::label_type, bool>> &vars);
+  bdd
+  bdd_cube(const generator<pair<bdd::label_type, bool>>& vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The BDD representing the cube of all the given variables.
@@ -261,9 +283,12 @@ namespace adiar
   ///
   /// \see bdd_and
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  bdd bdd_cube(ForwardIt begin, ForwardIt end)
-  { return bdd_cube(make_generator(begin, end)); }
+  template <typename ForwardIt>
+  bdd
+  bdd_cube(ForwardIt begin, ForwardIt end)
+  {
+    return bdd_cube(make_generator(begin, end));
+  }
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////
@@ -282,20 +307,25 @@ namespace adiar
   ///
   /// \returns \f$ \neg f \f$
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_not(const bdd &f);
+  bdd
+  bdd_not(const bdd& f);
 
   /// \cond
-  bdd bdd_not(bdd &&f);
+  bdd
+  bdd_not(bdd&& f);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \see bdd_not
   //////////////////////////////////////////////////////////////////////////////
-  bdd operator~ (const bdd& f);
+  bdd
+  operator~(const bdd& f);
 
   /// \cond
-  bdd operator~ (bdd&& f);
-  bdd operator~ (__bdd&& f);
+  bdd
+  operator~(bdd&& f);
+  bdd
+  operator~(__bdd&& f);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -309,15 +339,14 @@ namespace adiar
   ///
   /// \see bool_op
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_apply(const bdd &f, const bdd &g, const bool_op &op);
+  __bdd
+  bdd_apply(const bdd& f, const bdd& g, const bool_op& op);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Apply a binary operator between two BDDs.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_apply(const exec_policy &ep,
-                  const bdd &f,
-                  const bdd &g,
-                  const bool_op &op);
+  __bdd
+  bdd_apply(const exec_policy& ep, const bdd& f, const bdd& g, const bool_op& op);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Logical 'and' operator.
@@ -326,12 +355,14 @@ namespace adiar
   ///
   /// \see     bdd_apply
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_and(const bdd &f, const bdd &g);
+  __bdd
+  bdd_and(const bdd& f, const bdd& g);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Logical 'and' operator.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_and(const exec_policy &ep, const bdd &f, const bdd &g);
+  __bdd
+  bdd_and(const exec_policy& ep, const bdd& f, const bdd& g);
 
   /// \cond
   ///
@@ -340,20 +371,27 @@ namespace adiar
   /// \remark Since `bdd_and<ForwardIt>(begin, end)` has precedence over the
   ///         implicit conversion from `bdd::shared_node_file_type` to `bdd`, we
   ///         have to do it explicitly ourselves.
-  inline __bdd bdd_and(const bdd::shared_node_file_type &f,
-                       const bdd::shared_node_file_type &g)
-  { return bdd_and(bdd(f), bdd(g)); }
+  inline __bdd
+  bdd_and(const bdd::shared_node_file_type& f, const bdd::shared_node_file_type& g)
+  {
+    return bdd_and(bdd(f), bdd(g));
+  }
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \see bdd_and
   //////////////////////////////////////////////////////////////////////////////
-  __bdd operator& (const bdd &lhs, const bdd &rhs);
+  __bdd
+  operator&(const bdd& lhs, const bdd& rhs);
 
   /// \cond
-  __bdd operator& (const bdd &, __bdd &&);
-  __bdd operator& (__bdd &&, const bdd &);
-  __bdd operator& (__bdd &&, __bdd &&);
+  __bdd
+  operator&(const bdd&, __bdd&&);
+  __bdd
+  operator&(__bdd&&, const bdd&);
+  __bdd
+  operator&(__bdd&&, __bdd&&);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -363,12 +401,14 @@ namespace adiar
   ///
   /// \see     bdd_apply
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_nand(const bdd &f, const bdd &g);
+  __bdd
+  bdd_nand(const bdd& f, const bdd& g);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Logical 'nand' operator.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_nand(const exec_policy &ep, const bdd &f, const bdd &g);
+  __bdd
+  bdd_nand(const exec_policy& ep, const bdd& f, const bdd& g);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Logical 'or' operator.
@@ -377,12 +417,14 @@ namespace adiar
   ///
   /// \see     bdd_apply
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_or(const bdd &f, const bdd &g);
+  __bdd
+  bdd_or(const bdd& f, const bdd& g);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Logical 'or' operator.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_or(const exec_policy &ep, const bdd &f, const bdd &g);
+  __bdd
+  bdd_or(const exec_policy& ep, const bdd& f, const bdd& g);
 
   /// \cond
   ///
@@ -391,20 +433,27 @@ namespace adiar
   /// \remark Since `bdd_or<ForwardIt>(begin, end)` has precedence over the
   ///         implicit conversion from `bdd::shared_node_file_type` to `bdd`, we
   ///         have to do it explicitly ourselves.
-  inline __bdd bdd_or(const bdd::shared_node_file_type &f,
-                      const bdd::shared_node_file_type &g)
-  { return bdd_or(bdd(f), bdd(g)); }
+  inline __bdd
+  bdd_or(const bdd::shared_node_file_type& f, const bdd::shared_node_file_type& g)
+  {
+    return bdd_or(bdd(f), bdd(g));
+  }
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \see bdd_or
   //////////////////////////////////////////////////////////////////////////////
-  __bdd operator| (const bdd &lhs, const bdd &rhs);
+  __bdd
+  operator|(const bdd& lhs, const bdd& rhs);
 
   /// \cond
-  __bdd operator| (const bdd &, __bdd &&);
-  __bdd operator| (__bdd &&, const bdd &);
-  __bdd operator| (__bdd &&, __bdd &&);
+  __bdd
+  operator|(const bdd&, __bdd&&);
+  __bdd
+  operator|(__bdd&&, const bdd&);
+  __bdd
+  operator|(__bdd&&, __bdd&&);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -414,12 +463,14 @@ namespace adiar
   ///
   /// \see     bdd_apply
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_nor(const bdd &f, const bdd &g);
+  __bdd
+  bdd_nor(const bdd& f, const bdd& g);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Logical 'nor' operator.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_nor(const exec_policy &ep, const bdd &f, const bdd &g);
+  __bdd
+  bdd_nor(const exec_policy& ep, const bdd& f, const bdd& g);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Logical 'xor' operator.
@@ -428,22 +479,28 @@ namespace adiar
   ///
   /// \see     bdd_apply
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_xor(const bdd &f, const bdd &g);
+  __bdd
+  bdd_xor(const bdd& f, const bdd& g);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Logical 'xor' operator.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_xor(const exec_policy &ep, const bdd &f, const bdd &g);
+  __bdd
+  bdd_xor(const exec_policy& ep, const bdd& f, const bdd& g);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \see bdd_xor
   //////////////////////////////////////////////////////////////////////////////
-  __bdd operator^ (const bdd &lhs, const bdd &rhs);
+  __bdd
+  operator^(const bdd& lhs, const bdd& rhs);
 
   /// \cond
-  __bdd operator^ (const bdd &, __bdd &&);
-  __bdd operator^ (__bdd &&, const bdd &);
-  __bdd operator^ (__bdd &&, __bdd &&);
+  __bdd
+  operator^(const bdd&, __bdd&&);
+  __bdd
+  operator^(__bdd&&, const bdd&);
+  __bdd
+  operator^(__bdd&&, __bdd&&);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -453,12 +510,14 @@ namespace adiar
   ///
   /// \see     bdd_apply
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_xnor(const bdd &f, const bdd &g);
+  __bdd
+  bdd_xnor(const bdd& f, const bdd& g);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Logical 'xnor' operator.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_xnor(const exec_policy &ep, const bdd &f, const bdd &g);
+  __bdd
+  bdd_xnor(const exec_policy& ep, const bdd& f, const bdd& g);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Logical 'implication' operator.
@@ -467,12 +526,14 @@ namespace adiar
   ///
   /// \see     bdd_apply
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_imp(const bdd &f, const bdd &g);
+  __bdd
+  bdd_imp(const bdd& f, const bdd& g);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Logical 'implication' operator.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_imp(const exec_policy &ep, const bdd &f, const bdd &g);
+  __bdd
+  bdd_imp(const exec_policy& ep, const bdd& f, const bdd& g);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Logical 'inverse implication' operator.
@@ -481,12 +542,14 @@ namespace adiar
   ///
   /// \see     bdd_apply
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_invimp(const bdd &f, const bdd &g);
+  __bdd
+  bdd_invimp(const bdd& f, const bdd& g);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Logical 'inverse implication' operator.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_invimp(const exec_policy &ep, const bdd &f, const bdd &g);
+  __bdd
+  bdd_invimp(const exec_policy& ep, const bdd& f, const bdd& g);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Logical 'equivalence' operator.
@@ -495,12 +558,14 @@ namespace adiar
   ///
   /// \see     bdd_apply
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_equiv(const bdd &f, const bdd &g);
+  __bdd
+  bdd_equiv(const bdd& f, const bdd& g);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Logical 'equivalence' operator.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_equiv(const exec_policy &ep, const bdd &f, const bdd &g);
+  __bdd
+  bdd_equiv(const exec_policy& ep, const bdd& f, const bdd& g);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Logical 'difference'  operator.
@@ -509,12 +574,14 @@ namespace adiar
   ///
   /// \see     bdd_apply
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_diff(const bdd &f, const bdd &g);
+  __bdd
+  bdd_diff(const bdd& f, const bdd& g);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Logical 'difference'  operator.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_diff(const exec_policy &ep, const bdd &f, const bdd &g);
+  __bdd
+  bdd_diff(const exec_policy& ep, const bdd& f, const bdd& g);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Logical 'less than' operator.
@@ -523,12 +590,14 @@ namespace adiar
   ///
   /// \see     bdd_apply
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_less(const bdd &f, const bdd &g);
+  __bdd
+  bdd_less(const bdd& f, const bdd& g);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Logical 'less than' operator.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_less(const exec_policy &ep, const bdd &f, const bdd &g);
+  __bdd
+  bdd_less(const exec_policy& ep, const bdd& f, const bdd& g);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   If-Then-Else operator.
@@ -551,12 +620,14 @@ namespace adiar
   ///
   /// \see    bdd_apply builder bdd_builder
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_ite(const bdd &f, const bdd &g, const bdd &h);
+  __bdd
+  bdd_ite(const bdd& f, const bdd& g, const bdd& h);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   If-Then-Else operator.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_ite(const exec_policy &ep, const bdd &f, const bdd &g, const bdd &h);
+  __bdd
+  bdd_ite(const exec_policy& ep, const bdd& f, const bdd& g, const bdd& h);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Restrict a single variable to a constant value.
@@ -571,15 +642,14 @@ namespace adiar
   ///
   /// \returns  \f$ f|_{x_i = v} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_restrict(const bdd &f, bdd::label_type var, bool val);
+  __bdd
+  bdd_restrict(const bdd& f, bdd::label_type var, bool val);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Restrict a single variable to a constant value.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_restrict(const exec_policy &ep,
-                     const bdd &f,
-                     bdd::label_type var,
-                     bool val);
+  __bdd
+  bdd_restrict(const exec_policy& ep, const bdd& f, bdd::label_type var, bool val);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Restrict a subset of variables to constant values.
@@ -595,15 +665,16 @@ namespace adiar
   ///
   /// \returns  \f$ f|_{(i,v) \in xs : x_i = v} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_restrict(const bdd &f,
-                     const generator<pair<bdd::label_type, bool>> &xs);
+  __bdd
+  bdd_restrict(const bdd& f, const generator<pair<bdd::label_type, bool>>& xs);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Restrict a subset of variables to constant values.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_restrict(const exec_policy &ep,
-                     const bdd &f,
-                     const generator<pair<bdd::label_type, bool>> &xs);
+  __bdd
+  bdd_restrict(const exec_policy& ep,
+               const bdd& f,
+               const generator<pair<bdd::label_type, bool>>& xs);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       Restrict a subset of variables to constant values.
@@ -621,19 +692,22 @@ namespace adiar
   ///
   /// \returns  \f$ f|_{(i,v) \in xs : x_i = v} \f$
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  __bdd bdd_restrict(const bdd& f, ForwardIt begin, ForwardIt end)
-  { return bdd_restrict(f, make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __bdd
+  bdd_restrict(const bdd& f, ForwardIt begin, ForwardIt end)
+  {
+    return bdd_restrict(f, make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Restrict a subset of variables to constant values.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  __bdd bdd_restrict(const exec_policy &ep,
-                     const bdd& f,
-                     ForwardIt begin,
-                     ForwardIt end)
-  { return bdd_restrict(ep, f, make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __bdd
+  bdd_restrict(const exec_policy& ep, const bdd& f, ForwardIt begin, ForwardIt end)
+  {
+    return bdd_restrict(ep, f, make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Restrict the root to `false`, i.e. follow its low edge.
@@ -646,12 +720,14 @@ namespace adiar
   ///
   /// \see bdd_restrict
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_low(const bdd &f);
+  __bdd
+  bdd_low(const bdd& f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Restrict the root to `false`, i.e. follow its low edge.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_low(const exec_policy &ep, const bdd &f);
+  __bdd
+  bdd_low(const exec_policy& ep, const bdd& f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Restrict the root to `true`, i.e. follow its high edge.
@@ -664,12 +740,14 @@ namespace adiar
   ///
   /// \see bdd_restrict
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_high(const bdd &f);
+  __bdd
+  bdd_high(const bdd& f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Restrict the root to `true`, i.e. follow its high edge.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_high(const exec_policy &ep, const bdd &f);
+  __bdd
+  bdd_high(const exec_policy& ep, const bdd& f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Existential quantification of a single variable.
@@ -683,21 +761,31 @@ namespace adiar
   ///
   /// \returns   \f$ \exists x_{var} : f \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_exists(const bdd &f, bdd::label_type var);
+  __bdd
+  bdd_exists(const bdd& f, bdd::label_type var);
 
   /// \cond
-  inline __bdd bdd_exists(bdd &&f, bdd::label_type var)
-  { return bdd_exists(f, var); }
+  inline __bdd
+  bdd_exists(bdd&& f, bdd::label_type var)
+  {
+    return bdd_exists(f, var);
+  }
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Existential quantification of a single variable.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_exists(const exec_policy &ep, const bdd &f, bdd::label_type var);
+  __bdd
+  bdd_exists(const exec_policy& ep, const bdd& f, bdd::label_type var);
 
   /// \cond
-  inline __bdd bdd_exists(const exec_policy &ep, bdd &&f, bdd::label_type var)
-  { return bdd_exists(ep, f, var); }
+  inline __bdd
+  bdd_exists(const exec_policy& ep, bdd&& f, bdd::label_type var)
+  {
+    return bdd_exists(ep, f, var);
+  }
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -715,23 +803,23 @@ namespace adiar
   ///
   /// \returns    \f$ \exists x_i \in \texttt{vars} : f \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_exists(const bdd &f, const predicate<bdd::label_type> &vars);
+  __bdd
+  bdd_exists(const bdd& f, const predicate<bdd::label_type>& vars);
 
   /// \cond
-  __bdd bdd_exists(bdd &&f, const predicate<bdd::label_type> &vars);
+  __bdd
+  bdd_exists(bdd&& f, const predicate<bdd::label_type>& vars);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Existential quantification of multiple variables.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_exists(const exec_policy &ep,
-                   const bdd &f,
-                   const predicate<bdd::label_type> &vars);
+  __bdd
+  bdd_exists(const exec_policy& ep, const bdd& f, const predicate<bdd::label_type>& vars);
 
   /// \cond
-  __bdd bdd_exists(const exec_policy &ep,
-                   bdd &&f,
-                   const predicate<bdd::label_type> &vars);
+  __bdd
+  bdd_exists(const exec_policy& ep, bdd&& f, const predicate<bdd::label_type>& vars);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -748,23 +836,24 @@ namespace adiar
   ///
   /// \returns   \f$ \exists x_i \in \texttt{gen()} : f \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_exists(const bdd &f, const generator<bdd::label_type> &vars);
+  __bdd
+  bdd_exists(const bdd& f, const generator<bdd::label_type>& vars);
 
   /// \cond
-  __bdd bdd_exists(bdd &&f, const generator<bdd::label_type> &vars);
+  __bdd
+  bdd_exists(bdd&& f, const generator<bdd::label_type>& vars);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Existential quantification of multiple variables.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_exists(const exec_policy &ep,
-                   const bdd &f,
-                   const generator<bdd::label_type> &vars);
+  __bdd
+  bdd_exists(const exec_policy& ep, const bdd& f, const generator<bdd::label_type>& vars);
 
   /// \cond
-  __bdd bdd_exists(const exec_policy &ep,
-                   bdd &&f,
-                   const generator<bdd::label_type> &vars);
+  __bdd
+  bdd_exists(const exec_policy& ep, bdd&& f, const generator<bdd::label_type>& vars);
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -783,33 +872,41 @@ namespace adiar
   ///
   /// \returns     \f$ \exists x_i \in \texttt{begin} ... \texttt{end} : f \f$
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  __bdd bdd_exists(const bdd &f, ForwardIt begin, ForwardIt end)
-  { return bdd_exists(f, make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __bdd
+  bdd_exists(const bdd& f, ForwardIt begin, ForwardIt end)
+  {
+    return bdd_exists(f, make_generator(begin, end));
+  }
 
   /// \cond
-  template<typename ForwardIt>
-  __bdd bdd_exists(bdd &&f, ForwardIt begin, ForwardIt end)
-  { return bdd_exists(std::move(f), make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __bdd
+  bdd_exists(bdd&& f, ForwardIt begin, ForwardIt end)
+  {
+    return bdd_exists(std::move(f), make_generator(begin, end));
+  }
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Existential quantification of multiple variables.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  __bdd bdd_exists(const exec_policy &ep,
-                   const bdd &f,
-                   ForwardIt begin,
-                   ForwardIt end)
-  { return bdd_exists(ep, f, make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __bdd
+  bdd_exists(const exec_policy& ep, const bdd& f, ForwardIt begin, ForwardIt end)
+  {
+    return bdd_exists(ep, f, make_generator(begin, end));
+  }
 
   /// \cond
-  template<typename ForwardIt>
-  __bdd bdd_exists(const exec_policy &ep,
-                   bdd &&f,
-                   ForwardIt begin,
-                   ForwardIt end)
-  { return bdd_exists(ep, std::move(f), make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __bdd
+  bdd_exists(const exec_policy& ep, bdd&& f, ForwardIt begin, ForwardIt end)
+  {
+    return bdd_exists(ep, std::move(f), make_generator(begin, end));
+  }
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -825,21 +922,31 @@ namespace adiar
   ///
   /// \returns   \f$ \forall x_{var} : f \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_forall(const bdd &f, bdd::label_type var);
+  __bdd
+  bdd_forall(const bdd& f, bdd::label_type var);
 
   /// \cond
-  inline __bdd bdd_forall(bdd &&f, bdd::label_type var)
-  { return bdd_forall(f, var); }
+  inline __bdd
+  bdd_forall(bdd&& f, bdd::label_type var)
+  {
+    return bdd_forall(f, var);
+  }
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Forall quantification of a single variable.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_forall(const exec_policy &ep, const bdd &f, bdd::label_type var);
+  __bdd
+  bdd_forall(const exec_policy& ep, const bdd& f, bdd::label_type var);
 
   /// \cond
-  inline __bdd bdd_forall(const exec_policy &ep, bdd &&f, bdd::label_type var)
-  { return bdd_forall(ep, f, var); }
+  inline __bdd
+  bdd_forall(const exec_policy& ep, bdd&& f, bdd::label_type var)
+  {
+    return bdd_forall(ep, f, var);
+  }
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -857,23 +964,23 @@ namespace adiar
   ///
   /// \returns    \f$ \forall x_i \in \texttt{vars} : f \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_forall(const bdd &f, const predicate<bdd::label_type> &vars);
+  __bdd
+  bdd_forall(const bdd& f, const predicate<bdd::label_type>& vars);
 
   /// \cond
-  __bdd bdd_forall(bdd &&f, const predicate<bdd::label_type> &vars);
+  __bdd
+  bdd_forall(bdd&& f, const predicate<bdd::label_type>& vars);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Forall quantification of multiple variables.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_forall(const exec_policy &ep,
-                   const bdd &f,
-                   const predicate<bdd::label_type> &vars);
+  __bdd
+  bdd_forall(const exec_policy& ep, const bdd& f, const predicate<bdd::label_type>& vars);
 
   /// \cond
-  __bdd bdd_forall(const exec_policy &ep,
-                   bdd &&f,
-                   const predicate<bdd::label_type> &vars);
+  __bdd
+  bdd_forall(const exec_policy& ep, bdd&& f, const predicate<bdd::label_type>& vars);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -890,23 +997,24 @@ namespace adiar
   ///
   /// \returns   \f$ \forall x_i \in \texttt{gen()} : f \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_forall(const bdd &f, const generator<bdd::label_type> &vars);
+  __bdd
+  bdd_forall(const bdd& f, const generator<bdd::label_type>& vars);
 
   /// \cond
-  __bdd bdd_forall(bdd &&f, const generator<bdd::label_type> &vars);
+  __bdd
+  bdd_forall(bdd&& f, const generator<bdd::label_type>& vars);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Forall quantification of multiple variables.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_forall(const exec_policy &ep,
-                   const bdd &f,
-                   const generator<bdd::label_type> &vars);
+  __bdd
+  bdd_forall(const exec_policy& ep, const bdd& f, const generator<bdd::label_type>& vars);
 
   /// \cond
-  __bdd bdd_forall(const exec_policy &ep,
-                   bdd &&f,
-                   const generator<bdd::label_type> &vars);
+  __bdd
+  bdd_forall(const exec_policy& ep, bdd&& f, const generator<bdd::label_type>& vars);
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -925,33 +1033,41 @@ namespace adiar
   ///
   /// \returns     \f$ \forall x_i \in \texttt{begin} ... \texttt{end} : f \f$
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  __bdd bdd_forall(const bdd &f, ForwardIt begin, ForwardIt end)
-  { return bdd_forall(f, make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __bdd
+  bdd_forall(const bdd& f, ForwardIt begin, ForwardIt end)
+  {
+    return bdd_forall(f, make_generator(begin, end));
+  }
 
   /// \cond
-  template<typename ForwardIt>
-  __bdd bdd_forall(bdd &&f, ForwardIt begin, ForwardIt end)
-  { return bdd_forall(std::forward<bdd>(f), make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __bdd
+  bdd_forall(bdd&& f, ForwardIt begin, ForwardIt end)
+  {
+    return bdd_forall(std::forward<bdd>(f), make_generator(begin, end));
+  }
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Forall quantification of multiple variables.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  __bdd bdd_forall(const exec_policy &ep,
-                   const bdd &f,
-                   ForwardIt begin,
-                   ForwardIt end)
-  { return bdd_forall(ep, f, make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __bdd
+  bdd_forall(const exec_policy& ep, const bdd& f, ForwardIt begin, ForwardIt end)
+  {
+    return bdd_forall(ep, f, make_generator(begin, end));
+  }
 
   /// \cond
-  template<typename ForwardIt>
-  __bdd bdd_forall(const exec_policy &ep,
-                   bdd &&f,
-                   ForwardIt begin,
-                   ForwardIt end)
-  { return bdd_forall(ep, std::move(f), make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __bdd
+  bdd_forall(const exec_policy& ep, bdd&& f, ForwardIt begin, ForwardIt end)
+  {
+    return bdd_forall(ep, std::move(f), make_generator(begin, end));
+  }
+
   /// \endcond
 
   /// \}
@@ -967,79 +1083,94 @@ namespace adiar
   ///
   /// \copydetails adiar::internal::dd_iscanonical
   //////////////////////////////////////////////////////////////////////////////
-  bool bdd_iscanonical(const bdd& f);
+  bool
+  bdd_iscanonical(const bdd& f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether a BDD is a constant.
   ///
   /// \see bdd_isfalse bdd_istrue
   //////////////////////////////////////////////////////////////////////////////
-  bool bdd_isconst(const bdd& f);
+  bool
+  bdd_isconst(const bdd& f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether a BDD is a constant (terminal).
   ///
   /// \see bdd_isfalse bdd_istrue
   //////////////////////////////////////////////////////////////////////////////
-  bool bdd_isterminal(const bdd& f);
+  bool
+  bdd_isterminal(const bdd& f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether a BDD is the constant `false`.
   //////////////////////////////////////////////////////////////////////////////
-  bool bdd_isfalse(const bdd& f);
+  bool
+  bdd_isfalse(const bdd& f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether a BDD is the constant `true`.
   //////////////////////////////////////////////////////////////////////////////
-  bool bdd_istrue(const bdd& f);
+  bool
+  bdd_istrue(const bdd& f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether a BDD is a function dependent on a single variable.
   ///
   /// \see bdd_isithvar bdd_isnithvar
   //////////////////////////////////////////////////////////////////////////////
-  bool bdd_isvar(const bdd& f);
+  bool
+  bdd_isvar(const bdd& f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether a BDD is the function of a single positive variable.
   ///
   /// \see bdd_isvar bdd_ithvar
   //////////////////////////////////////////////////////////////////////////////
-  bool bdd_isithvar(const bdd& f);
+  bool
+  bdd_isithvar(const bdd& f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether a BDD is the function of a single negative variable.
   ///
   /// \see bdd_isvar bdd_nithvar
   //////////////////////////////////////////////////////////////////////////////
-  bool bdd_isnithvar(const bdd& f);
+  bool
+  bdd_isnithvar(const bdd& f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether a BDD represents a cube.
   ///
   /// \see bdd_cube
   //////////////////////////////////////////////////////////////////////////////
-  bool bdd_iscube(const bdd& f);
+  bool
+  bdd_iscube(const bdd& f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether the two BDDs represent the same function.
   //////////////////////////////////////////////////////////////////////////////
-  bool bdd_equal(const bdd& f, const bdd& g);
+  bool
+  bdd_equal(const bdd& f, const bdd& g);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether the two BDDs represent the same function.
   //////////////////////////////////////////////////////////////////////////////
-  bool bdd_equal(const exec_policy&, const bdd& f, const bdd& g);
+  bool
+  bdd_equal(const exec_policy&, const bdd& f, const bdd& g);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \see bdd_equal
   //////////////////////////////////////////////////////////////////////////////
-  bool operator== (const bdd& f, const bdd& g);
+  bool
+  operator==(const bdd& f, const bdd& g);
 
   /// \cond
-  bool operator== (__bdd &&f, const bdd &g);
-  bool operator== (const bdd &f, __bdd &&g);
-  bool operator== (__bdd &&f, __bdd &&g);
+  bool
+  operator==(__bdd&& f, const bdd& g);
+  bool
+  operator==(const bdd& f, __bdd&& g);
+  bool
+  operator==(__bdd&& f, __bdd&& g);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -1047,22 +1178,28 @@ namespace adiar
   ///
   /// \see bdd_equal
   //////////////////////////////////////////////////////////////////////////////
-  bool bdd_unequal(const bdd& f, const bdd& g);
+  bool
+  bdd_unequal(const bdd& f, const bdd& g);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether the two BDDs represent different functions.
   //////////////////////////////////////////////////////////////////////////////
-  bool bdd_unequal(const exec_policy& ep, const bdd& f, const bdd& g);
+  bool
+  bdd_unequal(const exec_policy& ep, const bdd& f, const bdd& g);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \see bdd_equal bdd_unequal
   //////////////////////////////////////////////////////////////////////////////
-  bool operator!= (const bdd& f, const bdd& g);
+  bool
+  operator!=(const bdd& f, const bdd& g);
 
   /// \cond
-  bool operator!= (const bdd &f, __bdd &&g);
-  bool operator!= (__bdd &&f, const bdd &g);
-  bool operator!= (__bdd &&f, __bdd &&g);
+  bool
+  operator!=(const bdd& f, __bdd&& g);
+  bool
+  operator!=(__bdd&& f, const bdd& g);
+  bool
+  operator!=(__bdd&& f, __bdd&& g);
   /// \endcond
 
   /// \}
@@ -1076,13 +1213,15 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The number of (internal) nodes used to represent the function.
   //////////////////////////////////////////////////////////////////////////////
-  size_t bdd_nodecount(const bdd &f);
+  size_t
+  bdd_nodecount(const bdd& f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The number of variables that influence the outcome of f, i.e. the
   ///        number of levels in the BDD.
   //////////////////////////////////////////////////////////////////////////////
-  bdd::label_type bdd_varcount(const bdd &f);
+  bdd::label_type
+  bdd_varcount(const bdd& f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Count all unique (but not necessarily disjoint) paths to the true
@@ -1090,13 +1229,15 @@ namespace adiar
   ///
   /// \returns The number of unique paths.
   //////////////////////////////////////////////////////////////////////////////
-  uint64_t bdd_pathcount(const bdd &f);
+  uint64_t
+  bdd_pathcount(const bdd& f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Count all unique (but not necessarily disjoint) paths to the true
   ///        terminal.
   //////////////////////////////////////////////////////////////////////////////
-  uint64_t bdd_pathcount(const exec_policy &ep, const bdd &f);
+  uint64_t
+  bdd_pathcount(const exec_policy& ep, const bdd& f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief          Count the number of assignments x that make f(x) true.
@@ -1112,14 +1253,14 @@ namespace adiar
   /// \throws invalid_argument If varcount is not larger than the number of
   ///                          levels in the BDD.
   //////////////////////////////////////////////////////////////////////////////
-  uint64_t bdd_satcount(const bdd &f, bdd::label_type varcount);
+  uint64_t
+  bdd_satcount(const bdd& f, bdd::label_type varcount);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Count the number of assignments x that make f(x) true.
   //////////////////////////////////////////////////////////////////////////////
-  uint64_t bdd_satcount(const exec_policy &ep,
-                        const bdd &f,
-                        bdd::label_type varcount);
+  uint64_t
+  bdd_satcount(const exec_policy& ep, const bdd& f, bdd::label_type varcount);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Count the number of assignments x that make f(x) true.
@@ -1130,12 +1271,14 @@ namespace adiar
   ///
   /// \see domain_set bdd_varcount
   //////////////////////////////////////////////////////////////////////////////
-  uint64_t bdd_satcount(const bdd &f);
+  uint64_t
+  bdd_satcount(const bdd& f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Count the number of assignments x that make f(x) true.
   //////////////////////////////////////////////////////////////////////////////
-  uint64_t bdd_satcount(const exec_policy &ep, const bdd &f);
+  uint64_t
+  bdd_satcount(const exec_policy& ep, const bdd& f);
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////
@@ -1153,7 +1296,8 @@ namespace adiar
   ///
   /// \param cb Callback function that consumes the variable labels.
   //////////////////////////////////////////////////////////////////////////////
-  void bdd_support(const bdd &f, const consumer<bdd::label_type> &cb);
+  void
+  bdd_support(const bdd& f, const consumer<bdd::label_type>& cb);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Copy all of the variable labels (in \em ascending order) that occur
@@ -1170,8 +1314,9 @@ namespace adiar
   /// \throws out_of_range If the distance between `begin` and `end` is not big
   ///                      enough to contain all variables in `f`.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  ForwardIt bdd_support(const bdd &f, ForwardIt begin, ForwardIt end)
+  template <typename ForwardIt>
+  ForwardIt
+  bdd_support(const bdd& f, ForwardIt begin, ForwardIt end)
   {
     bdd_support(f, make_consumer(begin, end));
     return begin;
@@ -1182,21 +1327,24 @@ namespace adiar
   ///
   /// \throws invalid_argument If `f` is a terminal.
   //////////////////////////////////////////////////////////////////////////////
-  bdd::label_type bdd_topvar(const bdd &f);
+  bdd::label_type
+  bdd_topvar(const bdd& f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Get the minimal occurring variable in the function's support.
   ///
   /// \throws invalid_argument If `f` is a terminal.
   //////////////////////////////////////////////////////////////////////////////
-  bdd::label_type bdd_minvar(const bdd &f);
+  bdd::label_type
+  bdd_minvar(const bdd& f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Get the maximal occurring variable in the function's support.
   ///
   /// \throws invalid_argument If `f` is a terminal.
   //////////////////////////////////////////////////////////////////////////////
-  bdd::label_type bdd_maxvar(const bdd &f);
+  bdd::label_type
+  bdd_maxvar(const bdd& f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically smallest cube x such that f(x) is true.
@@ -1208,7 +1356,8 @@ namespace adiar
   /// \returns A bdd whos only path to the `true` terminal reflects the minimal
   ///          assignment.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_satmin(const bdd &f);
+  bdd
+  bdd_satmin(const bdd& f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically smallest x such that f(x) is true.
@@ -1216,7 +1365,8 @@ namespace adiar
   /// \param c Consumer that is called in ascending order of the bdd's levels
   ///          with the (var, value) pairs of the assignment.
   //////////////////////////////////////////////////////////////////////////////
-  void bdd_satmin(const bdd &f, const consumer<pair<bdd::label_type, bool>> &c);
+  void
+  bdd_satmin(const bdd& f, const consumer<pair<bdd::label_type, bool>>& c);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically smallest x such that f(x) is true.
@@ -1232,8 +1382,9 @@ namespace adiar
   /// \throws out_of_range If the distance between `begin` and `end` is not big
   ///                      enough to contain all variables in `f`.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  ForwardIt bdd_satmin(const bdd &f, ForwardIt begin, ForwardIt end)
+  template <typename ForwardIt>
+  ForwardIt
+  bdd_satmin(const bdd& f, ForwardIt begin, ForwardIt end)
   {
     bdd_satmin(f, make_consumer(begin, end));
     return begin;
@@ -1249,7 +1400,8 @@ namespace adiar
   /// \returns A bdd whos only path to the `true` terminal reflects the maximal
   ///          assignment.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_satmax(const bdd &f);
+  bdd
+  bdd_satmax(const bdd& f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically largest x such that f(x) is true.
@@ -1257,8 +1409,8 @@ namespace adiar
   /// \param c Consumer that is called in ascending order of the bdd's levels
   ///          with the (var, value) pairs of the assignment.
   //////////////////////////////////////////////////////////////////////////////
-  void bdd_satmax(const bdd &f, const consumer<pair<bdd::label_type, bool>> &c);
-
+  void
+  bdd_satmax(const bdd& f, const consumer<pair<bdd::label_type, bool>>& c);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically largest x such that f(x) is true.
@@ -1274,8 +1426,9 @@ namespace adiar
   /// \throws out_of_range If the distance between `begin` and `end` is not big
   ///                      enough to contain all variables in `f`.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  ForwardIt bdd_satmax(const bdd &f, ForwardIt begin, ForwardIt end)
+  template <typename ForwardIt>
+  ForwardIt
+  bdd_satmax(const bdd& f, ForwardIt begin, ForwardIt end)
   {
     bdd_satmax(f, make_consumer(begin, end));
     return begin;
@@ -1292,7 +1445,8 @@ namespace adiar
   /// \param xs An assignment function of the type \f$ \texttt{label\_t}
   ///           \rightarrow \texttt{bool} \f$.
   //////////////////////////////////////////////////////////////////////////////
-  bool bdd_eval(const bdd &f, const predicate<bdd::label_type> &xs);
+  bool
+  bdd_eval(const bdd& f, const predicate<bdd::label_type>& xs);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Evaluate a BDD according to an assignment to its variables.
@@ -1308,7 +1462,8 @@ namespace adiar
   ///
   /// \throws invalid_argument If a level in the BDD does not exist in `xs`.
   //////////////////////////////////////////////////////////////////////////////
-  bool bdd_eval(const bdd &f, const generator<pair<bdd::label_type, bool>> &xs);
+  bool
+  bdd_eval(const bdd& f, const generator<pair<bdd::label_type, bool>>& xs);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       Evaluate a BDD according to an assignment to its variables.
@@ -1325,9 +1480,12 @@ namespace adiar
   ///
   /// \throws invalid_argument If a level in the BDD does not exist in `xs`.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  bool bdd_eval(const bdd &f, ForwardIt begin, ForwardIt end)
-  { return bdd_eval(f, make_generator(begin, end)); }
+  template <typename ForwardIt>
+  bool
+  bdd_eval(const bdd& f, ForwardIt begin, ForwardIt end)
+  {
+    return bdd_eval(f, make_generator(begin, end));
+  }
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////
@@ -1349,15 +1507,15 @@ namespace adiar
   /// \returns   BDD that is true for the exact same assignments to variables in
   ///            the given domain.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_from(const zdd &A, const generator<bdd::label_type> &dom);
+  __bdd
+  bdd_from(const zdd& A, const generator<bdd::label_type>& dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Obtains the BDD that represents the same function/set as the given
   ///        ZDD within the given domain.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_from(const exec_policy &ep,
-                 const zdd &A,
-                 const generator<bdd::label_type> &dom);
+  __bdd
+  bdd_from(const exec_policy& ep, const zdd& A, const generator<bdd::label_type>& dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       Obtains the BDD that represents the same function/set as the
@@ -1374,20 +1532,23 @@ namespace adiar
   /// \returns     BDD that is true for the exact same assignments to variables
   ///              in the given domain.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  __bdd bdd_from(const zdd &A, ForwardIt begin, ForwardIt end)
-  { return bdd_from(A, make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __bdd
+  bdd_from(const zdd& A, ForwardIt begin, ForwardIt end)
+  {
+    return bdd_from(A, make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Obtains the BDD that represents the same function/set as the given
   ///        ZDD within the given domain.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  __bdd bdd_from(const exec_policy &ep,
-                 const zdd &A,
-                 ForwardIt begin,
-                 ForwardIt end)
-  { return bdd_from(ep, A, make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __bdd
+  bdd_from(const exec_policy& ep, const zdd& A, ForwardIt begin, ForwardIt end)
+  {
+    return bdd_from(ep, A, make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Obtains the BDD that represents the same function/set as the
@@ -1403,13 +1564,15 @@ namespace adiar
   /// \pre       The global \ref module__domain is set to a set of variables
   ///            that is equals to or a superset of the variables in `A`.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_from(const zdd &A);
+  __bdd
+  bdd_from(const zdd& A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Obtains the BDD that represents the same function/set as the given
   ///        ZDD within the global domain.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_from(const exec_policy &ep, const zdd &A);
+  __bdd
+  bdd_from(const exec_policy& ep, const zdd& A);
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////
@@ -1422,16 +1585,14 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Output a DOT drawing of a BDD to the given output stream.
   //////////////////////////////////////////////////////////////////////////////
-  void bdd_printdot(const bdd &f,
-                    std::ostream &out = std::cout,
-                    bool include_id = false);
+  void
+  bdd_printdot(const bdd& f, std::ostream& out = std::cout, bool include_id = false);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Output a DOT drawing of a BDD to the file with the given name.
   //////////////////////////////////////////////////////////////////////////////
-  void bdd_printdot(const bdd &f,
-                    const std::string &file_name,
-                    bool include_id = false);
+  void
+  bdd_printdot(const bdd& f, const std::string& file_name, bool include_id = false);
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////

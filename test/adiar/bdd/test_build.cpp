@@ -32,7 +32,7 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(1u));
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create true terminal [bdd_terminal]", [&]() {
@@ -61,7 +61,7 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(1u));
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create true terminal [bdd_true]", [&]() {
@@ -90,7 +90,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create true terminal [bdd_top]", [&]() {
@@ -119,7 +119,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create false terminal [bdd_const]", [&]() {
@@ -148,7 +148,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(0u));
       });
 
       it("can create false terminal [bdd_terminal]", [&]() {
@@ -177,7 +177,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(0u));
       });
 
       it("can create false terminal [bdd_false]", [&]() {
@@ -206,7 +206,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(0u));
       });
 
       it("can create false terminal [bdd_bot]", [&]() {
@@ -235,7 +235,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(0u));
       });
     });
 
@@ -251,7 +251,7 @@ go_bandit([]() {
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(0, 1u)));
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(1u));
@@ -269,7 +269,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create x42", [&]() {
@@ -283,7 +283,7 @@ go_bandit([]() {
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(42,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(42, 1u)));
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(1u));
@@ -301,12 +301,11 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
-      it("throws exception for a too large label", []() {
-        AssertThrows(invalid_argument, bdd_nithvar(bdd::max_label+1));
-      });
+      it("throws exception for a too large label",
+         []() { AssertThrows(invalid_argument, bdd_nithvar(bdd::max_label + 1)); });
     });
 
     describe("bdd_nithvar(i)", [&]() {
@@ -321,7 +320,7 @@ go_bandit([]() {
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(1u));
@@ -339,7 +338,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create !x3", [&]() {
@@ -353,7 +352,7 @@ go_bandit([]() {
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(3, 1u)));
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(1u));
@@ -371,19 +370,16 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
-      it("throws exception for a too large label", []() {
-        AssertThrows(invalid_argument, bdd_nithvar(bdd::max_label+1));
-      });
+      it("throws exception for a too large label",
+         []() { AssertThrows(invalid_argument, bdd_nithvar(bdd::max_label + 1)); });
     });
 
     describe("bdd_and(generator<pair<bdd::label_type, bool>>)", [&]() {
       it("creates T from empty generator", [&]() {
-        const auto gen = []() {
-          return make_optional<pair<bdd::label_type, bool>>();
-        };
+        const auto gen = []() { return make_optional<pair<bdd::label_type, bool>>(); };
 
         bdd res = bdd_and(gen);
         node_test_stream ns(res);
@@ -410,16 +406,14 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create x1", [&]() {
         int calls = 0;
 
         const auto gen = [&calls]() -> optional<pair<bdd::label_type, bool>> {
-          if (calls++ > 0) {
-            return make_optional<pair<bdd::label_type, bool>>();
-          }
+          if (calls++ > 0) { return make_optional<pair<bdd::label_type, bool>>(); }
           return make_pair(1u, false);
         };
 
@@ -427,16 +421,14 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                terminal_F,
-                                                terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -455,16 +447,14 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create -x1", [&]() {
         int calls = 0;
 
         const auto gen = [&calls]() -> optional<pair<bdd::label_type, bool>> {
-          if (calls++ > 0) {
-            return make_optional<pair<bdd::label_type, bool>>();
-          }
+          if (calls++ > 0) { return make_optional<pair<bdd::label_type, bool>>(); }
           return make_pair(1u, true);
         };
 
@@ -472,16 +462,14 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                terminal_T,
-                                                terminal_F)));
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id, terminal_T, terminal_F)));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -500,7 +488,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       // TODO: more tests independent of iterators
@@ -508,9 +496,7 @@ go_bandit([]() {
 
     describe("bdd_and(generator<int>)", [&]() {
       it("creates T from empty generator", [&]() {
-        const auto gen = []() {
-          return make_optional<int>();
-        };
+        const auto gen = []() { return make_optional<int>(); };
 
         bdd res = bdd_and(gen);
         node_test_stream ns(res);
@@ -537,7 +523,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create x1", [&]() {
@@ -551,16 +537,14 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                terminal_F,
-                                                terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -579,7 +563,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create -x1", [&]() {
@@ -593,16 +577,14 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                terminal_T,
-                                                terminal_F)));
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id, terminal_T, terminal_F)));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -621,7 +603,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       // TODO: more tests independent of iterators
@@ -656,7 +638,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create {x1}", [&]() {
@@ -666,16 +648,14 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                terminal_F,
-                                                terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -694,7 +674,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create {-x1}", [&]() {
@@ -704,16 +684,14 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                terminal_T,
-                                                terminal_F)));
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id, terminal_T, terminal_F)));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -732,7 +710,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create {x1, x2, x5}", [&]() {
@@ -742,32 +720,30 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(5, node::max_id,
-                                                terminal_F,
-                                                terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(5, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id,
-                                                terminal_F,
-                                                ptr_uint64(5, ptr_uint64::max_id))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(2, node::max_id, terminal_F, ptr_uint64(5, ptr_uint64::max_id))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                terminal_F,
-                                                ptr_uint64(2, ptr_uint64::max_id))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(1, node::max_id, terminal_F, ptr_uint64(2, ptr_uint64::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(5,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(5, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -786,7 +762,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(3u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create {-x1, -x2, x5}", [&]() {
@@ -796,32 +772,30 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(5, node::max_id,
-                                                terminal_F,
-                                                terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(5, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id,
-                                                ptr_uint64(5, ptr_uint64::max_id),
-                                                terminal_F)));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(2, node::max_id, ptr_uint64(5, ptr_uint64::max_id), terminal_F)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                ptr_uint64(2, ptr_uint64::max_id),
-                                                terminal_F)));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), terminal_F)));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(5,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(5, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -840,7 +814,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(3u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create {x1, -x2}", [&]() {
@@ -850,24 +824,22 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id,
-                                                terminal_T,
-                                                terminal_F)));
+        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id, terminal_T, terminal_F)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                terminal_F,
-                                                ptr_uint64(2, ptr_uint64::max_id))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(1, node::max_id, terminal_F, ptr_uint64(2, ptr_uint64::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -886,7 +858,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("skips duplicates", [&]() {
@@ -896,32 +868,30 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(5, node::max_id,
-                                                terminal_F,
-                                                terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(5, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id,
-                                                terminal_F,
-                                                ptr_uint64(5, ptr_uint64::max_id))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(2, node::max_id, terminal_F, ptr_uint64(5, ptr_uint64::max_id))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                terminal_F,
-                                                ptr_uint64(2, ptr_uint64::max_id))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(1, node::max_id, terminal_F, ptr_uint64(2, ptr_uint64::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(5,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(5, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -940,7 +910,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(3u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("works with ForwardIt::value_type == 'uint64_t'", [&]() {
@@ -950,24 +920,22 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id,
-                                                terminal_F,
-                                                terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                terminal_F,
-                                                ptr_uint64(3, ptr_uint64::max_id))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(1, node::max_id, terminal_F, ptr_uint64(3, ptr_uint64::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -986,7 +954,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("works with ForwardIt::value_type == 'char'", [&]() {
@@ -996,40 +964,38 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node('d', node::max_id,
-                                                terminal_F,
-                                                terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node('d', node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node('c', node::max_id,
-                                                terminal_F,
-                                                ptr_uint64('d', ptr_uint64::max_id))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node('c', node::max_id, terminal_F, ptr_uint64('d', ptr_uint64::max_id))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node('b', node::max_id,
-                                                terminal_F,
-                                                ptr_uint64('c', ptr_uint64::max_id))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node('b', node::max_id, terminal_F, ptr_uint64('c', ptr_uint64::max_id))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node('a', node::max_id,
-                                                terminal_F,
-                                                ptr_uint64('b', ptr_uint64::max_id))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node('a', node::max_id, terminal_F, ptr_uint64('b', ptr_uint64::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info('d',1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info('d', 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info('c',1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info('c', 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info('b',1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info('b', 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info('a',1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info('a', 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -1048,7 +1014,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(4u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("throws exception for non-ascending list", []() {
@@ -1060,9 +1026,7 @@ go_bandit([]() {
 
     describe("bdd_or(generator<pair<bdd::label_type, bool>>)", [&]() {
       it("creates F from empty generator", [&]() {
-        const auto gen = []() {
-          return make_optional<pair<bdd::label_type, bool>>();
-        };
+        const auto gen = []() { return make_optional<pair<bdd::label_type, bool>>(); };
 
         bdd res = bdd_or(gen);
         node_test_stream ns(res);
@@ -1089,16 +1053,14 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
-        AssertThat(res.number_of_terminals(true),  Is().EqualTo(0u));
+        AssertThat(res.number_of_terminals(true), Is().EqualTo(0u));
       });
 
       it("can create x1", [&]() {
         int calls = 0;
 
         const auto gen = [&calls]() -> optional<pair<bdd::label_type, bool>> {
-          if (calls++ > 0) {
-            return make_optional<pair<bdd::label_type, bool>>();
-          }
+          if (calls++ > 0) { return make_optional<pair<bdd::label_type, bool>>(); }
           return make_pair(1u, false);
         };
 
@@ -1106,16 +1068,14 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                terminal_F,
-                                                terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -1134,16 +1094,14 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
-        AssertThat(res.number_of_terminals(true),  Is().EqualTo(1u));
+        AssertThat(res.number_of_terminals(true), Is().EqualTo(1u));
       });
 
       it("can create -x1", [&]() {
         int calls = 0;
 
         const auto gen = [&calls]() -> optional<pair<bdd::label_type, bool>> {
-          if (calls++ > 0) {
-            return make_optional<pair<bdd::label_type, bool>>();
-          }
+          if (calls++ > 0) { return make_optional<pair<bdd::label_type, bool>>(); }
           return make_pair(1u, true);
         };
 
@@ -1151,16 +1109,14 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                terminal_T,
-                                                terminal_F)));
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id, terminal_T, terminal_F)));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -1179,7 +1135,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
-        AssertThat(res.number_of_terminals(true),  Is().EqualTo(1u));
+        AssertThat(res.number_of_terminals(true), Is().EqualTo(1u));
       });
 
       // TODO: more tests independent of iterators (and differentiating it from bdd_and)
@@ -1187,9 +1143,7 @@ go_bandit([]() {
 
     describe("bdd_or(generator<int>)", [&]() {
       it("creates F from empty generator", [&]() {
-        const auto gen = []() {
-          return make_optional<int>();
-        };
+        const auto gen = []() { return make_optional<int>(); };
 
         bdd res = bdd_or(gen);
         node_test_stream ns(res);
@@ -1216,7 +1170,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
-        AssertThat(res.number_of_terminals(true),  Is().EqualTo(0u));
+        AssertThat(res.number_of_terminals(true), Is().EqualTo(0u));
       });
 
       it("can create x1", [&]() {
@@ -1230,16 +1184,14 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                terminal_F,
-                                                terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -1258,7 +1210,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
-        AssertThat(res.number_of_terminals(true),  Is().EqualTo(1u));
+        AssertThat(res.number_of_terminals(true), Is().EqualTo(1u));
       });
 
       it("can create -x1", [&]() {
@@ -1272,16 +1224,14 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                terminal_T,
-                                                terminal_F)));
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id, terminal_T, terminal_F)));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -1300,7 +1250,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
-        AssertThat(res.number_of_terminals(true),  Is().EqualTo(1u));
+        AssertThat(res.number_of_terminals(true), Is().EqualTo(1u));
       });
 
       // TODO: more tests independent of iterators (and differentiating it from bdd_and)
@@ -1314,32 +1264,30 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(5, node::max_id,
-                                                terminal_F,
-                                                terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(5, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id,
-                                                ptr_uint64(5, ptr_uint64::max_id),
-                                                terminal_T)));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(2, node::max_id, ptr_uint64(5, ptr_uint64::max_id), terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                ptr_uint64(2, ptr_uint64::max_id),
-                                                terminal_T)));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(5,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(5, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -1358,7 +1306,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
-        AssertThat(res.number_of_terminals(true),  Is().EqualTo(3u));
+        AssertThat(res.number_of_terminals(true), Is().EqualTo(3u));
       });
 
       it("can create {} as trivially false", [&]() {
@@ -1384,7 +1332,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
-        AssertThat(res.number_of_terminals(true),  Is().EqualTo(0u));
+        AssertThat(res.number_of_terminals(true), Is().EqualTo(0u));
       });
 
       it("can create {x1, -x3}", [&]() {
@@ -1394,24 +1342,22 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id,
-                                                terminal_T,
-                                                terminal_F)));
+        AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id, terminal_T, terminal_F)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                ptr_uint64(3, ptr_uint64::max_id),
-                                                terminal_T)));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -1430,7 +1376,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
-        AssertThat(res.number_of_terminals(true),  Is().EqualTo(2u));
+        AssertThat(res.number_of_terminals(true), Is().EqualTo(2u));
       });
 
       it("can create {-x2, x4}", [&]() {
@@ -1440,24 +1386,22 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(4, node::max_id,
-                                                terminal_F,
-                                                terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(4, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id,
-                                                terminal_T,
-                                                ptr_uint64(4, ptr_uint64::max_id))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(2, node::max_id, terminal_T, ptr_uint64(4, ptr_uint64::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(4,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(4, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -1476,7 +1420,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
-        AssertThat(res.number_of_terminals(true),  Is().EqualTo(2u));
+        AssertThat(res.number_of_terminals(true), Is().EqualTo(2u));
       });
 
       it("skips duplicates", [&]() {
@@ -1486,32 +1430,30 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(5, node::max_id,
-                                                terminal_F,
-                                                terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(5, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id,
-                                                ptr_uint64(5, ptr_uint64::max_id),
-                                                terminal_T)));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(2, node::max_id, ptr_uint64(5, ptr_uint64::max_id), terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                ptr_uint64(2, ptr_uint64::max_id),
-                                                terminal_T)));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(5,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(5, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -1530,7 +1472,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
-        AssertThat(res.number_of_terminals(true),  Is().EqualTo(3u));
+        AssertThat(res.number_of_terminals(true), Is().EqualTo(3u));
       });
 
       it("works with ForwardIt::value_type == 'int64_t'", [&]() {
@@ -1540,40 +1482,38 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(5, node::max_id,
-                                                terminal_F,
-                                                terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(5, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id,
-                                                ptr_uint64(5, ptr_uint64::max_id),
-                                                terminal_T)));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(3, node::max_id, ptr_uint64(5, ptr_uint64::max_id), terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id,
-                                                terminal_T,
-                                                ptr_uint64(3, ptr_uint64::max_id))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(2, node::max_id, terminal_T, ptr_uint64(3, ptr_uint64::max_id))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                ptr_uint64(2, ptr_uint64::max_id),
-                                                terminal_T)));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(5,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(5, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -1592,7 +1532,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
-        AssertThat(res.number_of_terminals(true),  Is().EqualTo(4u));
+        AssertThat(res.number_of_terminals(true), Is().EqualTo(4u));
       });
 
       it("throws exception for non-ascending list", []() {
@@ -1604,9 +1544,7 @@ go_bandit([]() {
 
     describe("bdd_cube(generator<int>)", [&]() {
       it("creates T from empty generator", [&]() {
-        const auto gen = []() {
-          return make_optional<int>();
-        };
+        const auto gen = []() { return make_optional<int>(); };
 
         bdd res = bdd_cube(gen);
         node_test_stream ns(res);
@@ -1633,16 +1571,14 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create x0", [&]() {
         int calls = 0;
 
         const auto gen = [&calls]() -> optional<int> {
-          if (calls++ > 0) {
-            return make_optional<int>();
-          }
+          if (calls++ > 0) { return make_optional<int>(); }
           return 0;
         };
 
@@ -1650,16 +1586,14 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(0, node::max_id,
-                                                terminal_F,
-                                                terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(0, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -1678,19 +1612,17 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create -x3 & x2 & -x1 & x0", [&]() {
         int calls = 0;
 
         const auto gen = [&calls]() -> optional<int> {
-          if (calls > 3) {
-            return make_optional<int>();
-          }
+          if (calls > 3) { return make_optional<int>(); }
 
-          const bdd::label_type x = 3-calls;
-          const bool negate = calls % 2 == 0;
+          const bdd::label_type x = 3 - calls;
+          const bool negate       = calls % 2 == 0;
 
           calls++;
 
@@ -1701,40 +1633,38 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id,
-                                                terminal_T,
-                                                terminal_F)));
+        AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id, terminal_T, terminal_F)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id,
-                                                terminal_F,
-                                                bdd::pointer_type(3, node::max_id))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(2, node::max_id, terminal_F, bdd::pointer_type(3, node::max_id))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                bdd::pointer_type(2, node::max_id),
-                                                terminal_F)));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(1, node::max_id, bdd::pointer_type(2, node::max_id), terminal_F)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(0, node::max_id,
-                                                terminal_F,
-                                                bdd::pointer_type(1, node::max_id))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(0, node::max_id, terminal_F, bdd::pointer_type(1, node::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -1753,15 +1683,13 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(4u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
     });
 
     describe("bdd_cube(generator<pair<bdd::label_type, bool>>)", [&]() {
       it("creates T from empty generator", [&]() {
-        const auto gen = []() {
-          return make_optional<pair<bdd::label_type, bool>>();
-        };
+        const auto gen = []() { return make_optional<pair<bdd::label_type, bool>>(); };
 
         bdd res = bdd_cube(gen);
         node_test_stream ns(res);
@@ -1788,16 +1716,14 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create x0", [&]() {
         int calls = 0;
 
         const auto gen = [&calls]() -> optional<pair<bdd::label_type, bool>> {
-          if (calls++ > 0) {
-            return make_optional<pair<bdd::label_type, bool>>();
-          }
+          if (calls++ > 0) { return make_optional<pair<bdd::label_type, bool>>(); }
           return make_pair(0u, false);
         };
 
@@ -1805,16 +1731,14 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(0, node::max_id,
-                                                terminal_F,
-                                                terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(0, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -1833,19 +1757,17 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create x3 & ~x2 & x1 & ~x0", [&]() {
         int calls = 0;
 
         const auto gen = [&calls]() -> optional<pair<bdd::label_type, bool>> {
-          if (calls > 3) {
-            return make_optional<pair<bdd::label_type, bool>>();
-          }
+          if (calls > 3) { return make_optional<pair<bdd::label_type, bool>>(); }
 
-          const bdd::label_type x = 3-calls;
-          const bool negate = calls % 2 == 1;
+          const bdd::label_type x = 3 - calls;
+          const bool negate       = calls % 2 == 1;
 
           calls++;
 
@@ -1856,40 +1778,38 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id,
-                                                terminal_F,
-                                                terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id,
-                                                bdd::pointer_type(3, node::max_id),
-                                                terminal_F)));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(2, node::max_id, bdd::pointer_type(3, node::max_id), terminal_F)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                terminal_F,
-                                                bdd::pointer_type(2, node::max_id))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(1, node::max_id, terminal_F, bdd::pointer_type(2, node::max_id))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(0, node::max_id,
-                                                bdd::pointer_type(1, node::max_id),
-                                                terminal_F)));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(0, node::max_id, bdd::pointer_type(1, node::max_id), terminal_F)));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -1908,7 +1828,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(4u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
     });
 
@@ -1941,7 +1861,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create {x42}", [&]() {
@@ -1951,16 +1871,14 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(42, node::max_id,
-                                                terminal_F,
-                                                terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(42, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(42,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(42, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -1979,7 +1897,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create {~x4}", [&]() {
@@ -1989,16 +1907,14 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(4, node::max_id,
-                                                terminal_T,
-                                                terminal_F)));
+        AssertThat(ns.pull(), Is().EqualTo(node(4, node::max_id, terminal_T, terminal_F)));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(4,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(4, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -2017,7 +1933,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create {x1, ~x3, x5}", [&]() {
@@ -2027,32 +1943,30 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(5, node::max_id,
-                                                terminal_F,
-                                                terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(5, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id,
-                                                ptr_uint64(5, ptr_uint64::max_id),
-                                                terminal_F)));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(3, node::max_id, ptr_uint64(5, ptr_uint64::max_id), terminal_F)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                terminal_F,
-                                                ptr_uint64(3, ptr_uint64::max_id))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(1, node::max_id, terminal_F, ptr_uint64(3, ptr_uint64::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(5,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(5, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -2071,7 +1985,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(3u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create {x0, -x2, -x4}", [&]() {
@@ -2081,32 +1995,30 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(4, node::max_id,
-                                                terminal_T,
-                                                terminal_F)));
+        AssertThat(ns.pull(), Is().EqualTo(node(4, node::max_id, terminal_T, terminal_F)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id,
-                                                ptr_uint64(4, ptr_uint64::max_id),
-                                                terminal_F)));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(2, node::max_id, ptr_uint64(4, ptr_uint64::max_id), terminal_F)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(0, node::max_id,
-                                                terminal_F,
-                                                ptr_uint64(2, ptr_uint64::max_id))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(0, node::max_id, terminal_F, ptr_uint64(2, ptr_uint64::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(4,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(4, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -2125,42 +2037,40 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(3u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create {~x0, ~x2, ~x4}", [&]() {
-        std::vector<pair<bdd::label_type, bool>> vars = { {0, true}, {2, true}, {4, true} };
+        std::vector<pair<bdd::label_type, bool>> vars = { { 0, true }, { 2, true }, { 4, true } };
 
         bdd res = bdd_cube(vars.rbegin(), vars.rend());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(4, node::max_id,
-                                                terminal_T,
-                                                terminal_F)));
+        AssertThat(ns.pull(), Is().EqualTo(node(4, node::max_id, terminal_T, terminal_F)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id,
-                                                ptr_uint64(4, ptr_uint64::max_id),
-                                                terminal_F)));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(2, node::max_id, ptr_uint64(4, ptr_uint64::max_id), terminal_F)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(0, node::max_id,
-                                                ptr_uint64(2, ptr_uint64::max_id),
-                                                terminal_F)));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), terminal_F)));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(4,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(4, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -2179,8 +2089,8 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(3u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
     });
   });
- });
+});

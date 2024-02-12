@@ -4,8 +4,8 @@
 #include <adiar/internal/assert.h>
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/level_info.h>
-#include <adiar/internal/io/levelized_file_writer.h>
 #include <adiar/internal/io/arc_file.h>
+#include <adiar/internal/io/levelized_file_writer.h>
 
 namespace adiar::internal
 {
@@ -14,19 +14,16 @@ namespace adiar::internal
   ///
   /// \see shared_levelized_file<arc>
   //////////////////////////////////////////////////////////////////////////////
-  class arc_writer
-    : public levelized_file_writer<arc>
+  class arc_writer : public levelized_file_writer<arc>
   {
   private:
     bool __has_latest_terminal = false;
     arc __latest_terminal;
 
   private:
-    static constexpr size_t idx__internal =
-      file_traits<arc>::idx__internal;
+    static constexpr size_t idx__internal = file_traits<arc>::idx__internal;
 
-    static constexpr size_t idx__terminals__in_order =
-      file_traits<arc>::idx__terminals__in_order;
+    static constexpr size_t idx__terminals__in_order = file_traits<arc>::idx__terminals__in_order;
 
     static constexpr size_t idx__terminals__out_of_order =
       file_traits<arc>::idx__terminals__out_of_order;
@@ -35,15 +32,16 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct unattached to any levelized arc file.
     ////////////////////////////////////////////////////////////////////////////
-    arc_writer() : levelized_file_writer<arc>()
-    { }
+    arc_writer()
+      : levelized_file_writer<arc>()
+    {}
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a levelized arc file.
     ///
     /// \pre The file is empty.
     ////////////////////////////////////////////////////////////////////////////
-    arc_writer(levelized_file<arc> &af)
+    arc_writer(levelized_file<arc>& af)
       : levelized_file_writer<arc>()
     {
       attach(af);
@@ -79,7 +77,9 @@ namespace adiar::internal
     ///
     /// \pre The file is empty.
     ////////////////////////////////////////////////////////////////////////////
-    void attach(levelized_file<arc> &af) {
+    void
+    attach(levelized_file<arc>& af)
+    {
       if (attached()) detach();
       adiar_assert(af.empty());
 
@@ -93,7 +93,9 @@ namespace adiar::internal
     ///
     /// \pre The file is empty.
     ////////////////////////////////////////////////////////////////////////////
-    void attach(shared_ptr<levelized_file<arc>> &af) {
+    void
+    attach(shared_ptr<levelized_file<arc>>& af)
+    {
       if (attached()) detach();
       adiar_assert(af->empty());
 
@@ -105,7 +107,9 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Detaches after having sort the out-of-order terminals.
     //////////////////////////////////////////////////////////////////////////////
-    void detach() {
+    void
+    detach()
+    {
       if (!attached()) return;
 
 #ifdef ADIAR_STATS
@@ -124,7 +128,8 @@ namespace adiar::internal
     ///
     /// \pre `attached() == true`.
     //////////////////////////////////////////////////////////////////////////////
-    void push(const level_info &li)
+    void
+    push(const level_info& li)
     {
 #ifdef ADIAR_STATS
       stats_arc_file.push_level += 1;
@@ -139,7 +144,8 @@ namespace adiar::internal
     ///
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    arc_writer& operator<< (const level_info& li)
+    arc_writer&
+    operator<<(const level_info& li)
     {
       this->push(li);
       return *this;
@@ -154,7 +160,8 @@ namespace adiar::internal
     ///
     /// \see unsafe_push_internal unsafe_push_terminal
     //////////////////////////////////////////////////////////////////////////////
-    void push(const arc &a)
+    void
+    push(const arc& a)
     {
       adiar_assert(!a.target().is_nil(), "Should not push an arc to nil.");
       if (a.target().is_node()) {
@@ -169,7 +176,8 @@ namespace adiar::internal
     ///
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    arc_writer& operator<< (const arc& a)
+    arc_writer&
+    operator<<(const arc& a)
     {
       this->push(a);
       return *this;
@@ -180,7 +188,8 @@ namespace adiar::internal
     ///
     /// \pre `attached() == true`.
     //////////////////////////////////////////////////////////////////////////////
-    void push_internal(const arc &a)
+    void
+    push_internal(const arc& a)
     {
       adiar_assert(attached());
       adiar_assert(a.target().is_node());
@@ -196,7 +205,8 @@ namespace adiar::internal
     ///
     /// \pre `attached() == true`.
     //////////////////////////////////////////////////////////////////////////////
-    void push_terminal(const arc &a)
+    void
+    push_terminal(const arc& a)
     {
       adiar_assert(attached());
       adiar_assert(a.target().is_terminal());
@@ -205,7 +215,7 @@ namespace adiar::internal
       if (!__has_latest_terminal || a.source() > __latest_terminal.source()) {
         // Given arc is 'in-order' compared to latest 'in-order' pushed
         __has_latest_terminal = true;
-        __latest_terminal = a;
+        __latest_terminal     = a;
 #ifdef ADIAR_STATS
         stats_arc_file.push_in_order += 1;
 #endif

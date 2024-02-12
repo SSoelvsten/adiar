@@ -14,7 +14,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Random-access to the contents of a levelized file of node.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename T = node, bool Reverse = false>
+  template <typename T = node, bool Reverse = false>
   class node_random_access
   {
     using value_type = T;
@@ -26,13 +26,15 @@ namespace adiar::internal
     using id_type    = typename value_type::id_type;
 
   public:
-    static size_t memory_usage(tpie::memory_size_type max_width)
+    static size_t
+    memory_usage(tpie::memory_size_type max_width)
     {
       return node_stream<Reverse>::memory_usage()
-           + tpie::array<value_type>::memory_usage(max_width);
+        + tpie::array<value_type>::memory_usage(max_width);
     }
 
-    static size_t memory_usage(const dd &diagram)
+    static size_t
+    memory_usage(const dd& diagram)
     {
       return node_stream<Reverse>::memory_usage()
         + tpie::array<value_type>::memory_usage(diagram->width);
@@ -44,8 +46,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     static constexpr label_type no_level = -1;
 
-    static_assert(uid_type::max_label < no_level,
-                  "'no_level' should be an invalid label value");
+    static_assert(uid_type::max_label < no_level, "'no_level' should be an invalid label value");
 
   private:
     ////////////////////////////////////////////////////////////////////////////
@@ -94,9 +95,10 @@ namespace adiar::internal
     ///
     /// \pre The given levelized file is canonical.
     ////////////////////////////////////////////////////////////////////////////
-    node_random_access(const levelized_file<value_type> &f,
-                       const bool negate = false)
-      : _ns(f, negate), _max_width(f.width), _level_buffer(f.width)
+    node_random_access(const levelized_file<value_type>& f, const bool negate = false)
+      : _ns(f, negate)
+      , _max_width(f.width)
+      , _level_buffer(f.width)
     {
       adiar_assert(f.canonical);
       init();
@@ -107,9 +109,10 @@ namespace adiar::internal
     ///
     /// \pre The given shared levelized file is canonical.
     ////////////////////////////////////////////////////////////////////////////
-    node_random_access(const shared_ptr<levelized_file<value_type>> &f,
-                       const bool negate = false)
-      : _ns(f, negate), _max_width(f->width), _level_buffer(f->width)
+    node_random_access(const shared_ptr<levelized_file<value_type>>& f, const bool negate = false)
+      : _ns(f, negate)
+      , _max_width(f->width)
+      , _level_buffer(f->width)
     {
       adiar_assert(f->canonical);
       init();
@@ -120,45 +123,55 @@ namespace adiar::internal
     ///
     /// \pre The given decision diagram is canonical.
     ////////////////////////////////////////////////////////////////////////////
-    node_random_access(const dd &diagram)
-      : _ns(diagram), _max_width(diagram->width), _level_buffer(diagram->width)
+    node_random_access(const dd& diagram)
+      : _ns(diagram)
+      , _max_width(diagram->width)
+      , _level_buffer(diagram->width)
     {
       adiar_assert(diagram->canonical);
       init();
     }
 
   private:
-    void init()
+    void
+    init()
     {
       adiar_assert(_ns.can_pull(), "given file should be non-empty");
 
       // Skip the terminal node for terminal only BDDs.
       _root = _ns.peek().uid();
-      if (_root.is_terminal()) {
-        _ns.pull();
-      }
+      if (_root.is_terminal()) { _ns.pull(); }
     }
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Return root of the diagram.
     ////////////////////////////////////////////////////////////////////////////
-    uid_type root() const
-    { return _root; }
+    uid_type
+    root() const
+    {
+      return _root;
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether there are any more levels.
     ////////////////////////////////////////////////////////////////////////////
-    bool has_next_level() const
-    { return _ns.can_pull(); }
+    bool
+    has_next_level() const
+    {
+      return _ns.can_pull();
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The immediate next available non-empty level.
     ///
     /// \pre `has_next_level() == true`
     ////////////////////////////////////////////////////////////////////////////
-    label_type next_level()
-    { return _ns.peek().uid().label(); }
+    label_type
+    next_level()
+    {
+      return _ns.peek().uid().label();
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Sets up the random access buffer for the specified level.
@@ -168,7 +181,8 @@ namespace adiar::internal
     ///
     /// \pre `has_current_level() == false` or `current_level() < level`
     ////////////////////////////////////////////////////////////////////////////
-    void setup_next_level(const label_type level)
+    void
+    setup_next_level(const label_type level)
     {
       adiar_assert(!has_current_level() || current_level() < level);
 
@@ -180,9 +194,7 @@ namespace adiar::internal
       if (!has_next_level()) { return; }
 
       // Skip all levels not of interest
-      while (_ns.can_pull() && _ns.peek().uid().label() < level) {
-        _ns.pull();
-      }
+      while (_ns.can_pull() && _ns.peek().uid().label() < level) { _ns.pull(); }
 
       // Copy over all elements from the requested level
       while (_ns.can_pull() && _ns.peek().uid().label() == level) {
@@ -194,34 +206,49 @@ namespace adiar::internal
     /// \brief Sets up the random access buffer for the immediate next available
     ///        non-empty level.
     ////////////////////////////////////////////////////////////////////////////
-    void setup_next_level()
-    { setup_next_level(next_level()); }
+    void
+    setup_next_level()
+    {
+      setup_next_level(next_level());
+    }
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether there is any current level to access elements from.
     ////////////////////////////////////////////////////////////////////////////
-    bool has_current_level() const
-    { return _curr_level != no_level; }
+    bool
+    has_current_level() const
+    {
+      return _curr_level != no_level;
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The label of the current level.
     ////////////////////////////////////////////////////////////////////////////
-    label_type current_level() const
-    { return _curr_level; }
+    label_type
+    current_level() const
+    {
+      return _curr_level;
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The width of the current level, i.e. the number of elements one
     ///        can access to.
     ////////////////////////////////////////////////////////////////////////////
-    label_type current_width() const
-    { return _curr_width; }
+    label_type
+    current_width() const
+    {
+      return _curr_width;
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the current level is empty.
     ////////////////////////////////////////////////////////////////////////////
-    bool empty_level() const
-    { return _curr_width == 0u; }
+    bool
+    empty_level() const
+    {
+      return _curr_width == 0u;
+    }
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -229,7 +256,8 @@ namespace adiar::internal
     ///
     /// \pre `idx < current_width()`
     ////////////////////////////////////////////////////////////////////////////
-    const value_type& at(id_type idx) const
+    const value_type&
+    at(id_type idx) const
     {
       adiar_assert(idx < current_width());
       return _level_buffer[idx];
@@ -238,7 +266,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the node with the given uid.
     ////////////////////////////////////////////////////////////////////////////
-    const value_type& at(uid_type u) const
+    const value_type&
+    at(uid_type u) const
     {
       adiar_assert(u.label() == current_level());
 

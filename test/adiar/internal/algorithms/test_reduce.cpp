@@ -61,29 +61,29 @@ go_bandit([]() {
         //          F T               F T
         */
 
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(1,0);
-        const arc::pointer_type n3(2,0);
-        const arc::pointer_type n4(2,1);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(1, 0);
+        const arc::pointer_type n3(2, 0);
+        const arc::pointer_type n4(2, 1);
 
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ n1, true,  n2 });
+          aw.push_internal({ n1, true, n2 });
           aw.push_internal({ n1, false, n3 });
           aw.push_internal({ n2, false, n4 });
 
-          aw.push_terminal({ n2, true,  terminal_T });
+          aw.push_terminal({ n2, true, terminal_T });
           aw.push_terminal({ n3, false, terminal_F });
-          aw.push_terminal({ n3, true,  terminal_T });
+          aw.push_terminal({ n3, true, terminal_T });
           aw.push_terminal({ n4, false, terminal_F });
-          aw.push_terminal({ n4, true,  terminal_T });
+          aw.push_terminal({ n4, true, terminal_T });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,1u));
-          aw.push(level_info(2,2u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(1, 1u));
+          aw.push(level_info(2, 2u));
         }
 
         in->max_1level_cut = 2;
@@ -99,33 +99,33 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n4
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                       terminal_F,
-                                                       terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n2
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       node::pointer_type(2, node::max_id),
-                                                       terminal_T)));
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(1, node::max_id, node::pointer_type(2, node::max_id), terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n1
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       node::pointer_type(2, node::max_id),
-                                                       node::pointer_type(1, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     node::pointer_type(2, node::max_id),
+                                     node::pointer_type(1, node::max_id))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -146,7 +146,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(4u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
       });
 
       it("applies to terminal arcs [2]", [&]() {
@@ -162,11 +162,11 @@ go_bandit([]() {
         //          /| |\                      / \
         //          FT FT                      F T
         */
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(2,0);
-        const arc::pointer_type n3(2,1);
-        const arc::pointer_type n4(3,0);
-        const arc::pointer_type n5(3,1);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(2, 0);
+        const arc::pointer_type n3(2, 1);
+        const arc::pointer_type n4(3, 0);
+        const arc::pointer_type n5(3, 1);
 
         shared_levelized_file<arc> in;
 
@@ -174,20 +174,20 @@ go_bandit([]() {
           arc_writer aw(in);
 
           aw.push_internal({ n1, false, n2 });
-          aw.push_internal({ n1, true,  n3 });
+          aw.push_internal({ n1, true, n3 });
           aw.push_internal({ n3, false, n4 });
-          aw.push_internal({ n2, true,  n5 });
+          aw.push_internal({ n2, true, n5 });
 
           aw.push_terminal({ n2, false, terminal_F });
-          aw.push_terminal({ n3, true,  terminal_T });
+          aw.push_terminal({ n3, true, terminal_T });
           aw.push_terminal({ n4, false, terminal_F });
-          aw.push_terminal({ n4, true,  terminal_T });
+          aw.push_terminal({ n4, true, terminal_T });
           aw.push_terminal({ n5, false, terminal_F });
-          aw.push_terminal({ n5, true,  terminal_T });
+          aw.push_terminal({ n5, true, terminal_T });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(2,2u));
-          aw.push(level_info(3,2u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(2, 2u));
+          aw.push(level_info(3, 2u));
         }
 
         in->max_1level_cut = 2;
@@ -201,36 +201,36 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                       terminal_F,
-                                                       terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                       node::pointer_type(3, node::max_id),
-                                                       terminal_T)));
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(2, node::max_id, node::pointer_type(3, node::max_id), terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id-1,
-                                                       terminal_F,
-                                                       node::pointer_type(3, node::max_id))));
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(2, node::max_id - 1, terminal_F, node::pointer_type(3, node::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       node::pointer_type(2, node::max_id-1),
-                                                       node::pointer_type(2, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     node::pointer_type(2, node::max_id - 1),
+                                     node::pointer_type(2, node::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -251,7 +251,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(5u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
       });
 
       it("applies to node arcs [1]", [&]() {
@@ -267,36 +267,36 @@ go_bandit([]() {
         //          F T T F           F  T F
         */
 
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(1,0);
-        const arc::pointer_type n3(2,0);
-        const arc::pointer_type n4(2,1);
-        const arc::pointer_type n5(3,0);
-        const arc::pointer_type n6(3,1);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(1, 0);
+        const arc::pointer_type n3(2, 0);
+        const arc::pointer_type n4(2, 1);
+        const arc::pointer_type n5(3, 0);
+        const arc::pointer_type n6(3, 1);
 
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ n1, true,  n2 });
+          aw.push_internal({ n1, true, n2 });
           aw.push_internal({ n1, false, n3 });
           aw.push_internal({ n2, false, n4 });
           aw.push_internal({ n3, false, n5 });
           aw.push_internal({ n4, false, n5 });
-          aw.push_internal({ n3, true,  n6 });
-          aw.push_internal({ n4, true,  n6 });
+          aw.push_internal({ n3, true, n6 });
+          aw.push_internal({ n4, true, n6 });
 
-          aw.push_terminal({ n2, true,  terminal_T });
+          aw.push_terminal({ n2, true, terminal_T });
           aw.push_terminal({ n5, false, terminal_F });
-          aw.push_terminal({ n5, true,  terminal_T });
+          aw.push_terminal({ n5, true, terminal_T });
           aw.push_terminal({ n6, false, terminal_T });
-          aw.push_terminal({ n6, true,  terminal_F });
+          aw.push_terminal({ n6, true, terminal_F });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,1u));
-          aw.push(level_info(2,2u));
-          aw.push(level_info(3,2u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(1, 1u));
+          aw.push(level_info(2, 2u));
+          aw.push(level_info(3, 2u));
         }
 
         in->max_1level_cut = 4;
@@ -316,41 +316,45 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n6
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id-1, terminal_T, terminal_F)));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(3, node::max_id - 1, terminal_T, terminal_F)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n4
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                       node::pointer_type(3, node::max_id),
-                                                       node::pointer_type(3, node::max_id-1))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(2,
+                                     node::max_id,
+                                     node::pointer_type(3, node::max_id),
+                                     node::pointer_type(3, node::max_id - 1))));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n2
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       node::pointer_type(2, node::max_id),
-                                                       terminal_T)));
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(1, node::max_id, node::pointer_type(2, node::max_id), terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n1
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       node::pointer_type(2, node::max_id),
-                                                       node::pointer_type(1, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     node::pointer_type(2, node::max_id),
+                                     node::pointer_type(1, node::max_id))));
         AssertThat(out_nodes.can_pull(), Is().False());
-
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -371,7 +375,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(6u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(3u));
       });
 
       it("applies to both node and terminal arcs", [&]() {
@@ -387,33 +391,33 @@ go_bandit([]() {
         //          F T               F T
         */
 
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(1,0);
-        const arc::pointer_type n3(2,0);
-        const arc::pointer_type n4(2,1);
-        const arc::pointer_type n5(3,0);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(1, 0);
+        const arc::pointer_type n3(2, 0);
+        const arc::pointer_type n4(2, 1);
+        const arc::pointer_type n5(3, 0);
 
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ n1, true,  n2 });
+          aw.push_internal({ n1, true, n2 });
           aw.push_internal({ n1, false, n3 });
           aw.push_internal({ n2, false, n4 });
           aw.push_internal({ n3, false, n5 });
           aw.push_internal({ n4, false, n5 });
 
-          aw.push_terminal({ n2, true,  terminal_T });
-          aw.push_terminal({ n3, true,  terminal_T });
-          aw.push_terminal({ n4, true,  terminal_T });
+          aw.push_terminal({ n2, true, terminal_T });
+          aw.push_terminal({ n3, true, terminal_T });
+          aw.push_terminal({ n4, true, terminal_T });
           aw.push_terminal({ n5, false, terminal_F });
-          aw.push_terminal({ n5, true,  terminal_T });
+          aw.push_terminal({ n5, true, terminal_T });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,1u));
-          aw.push(level_info(2,2u));
-          aw.push(level_info(3,1u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(1, 1u));
+          aw.push(level_info(2, 2u));
+          aw.push(level_info(3, 1u));
         }
 
         in->max_1level_cut = 4;
@@ -433,36 +437,38 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n4
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                       node::pointer_type(3, node::max_id),
-                                                       terminal_T)));
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(2, node::max_id, node::pointer_type(3, node::max_id), terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n2
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       node::pointer_type(2, node::max_id),
-                                                       terminal_T)));
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(1, node::max_id, node::pointer_type(2, node::max_id), terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n1
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       node::pointer_type(2, node::max_id),
-                                                       node::pointer_type(1, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     node::pointer_type(2, node::max_id),
+                                     node::pointer_type(1, node::max_id))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -488,7 +494,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(5u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(3u));
       });
 
       it("applies to 'disjoint' branches", [&]() {
@@ -505,13 +511,13 @@ go_bandit([]() {
         //             F T                      F T
         */
 
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(1,0);
-        const arc::pointer_type n3(1,1);
-        const arc::pointer_type n4(2,0);
-        const arc::pointer_type n5(2,1);
-        const arc::pointer_type n6(2,2);
-        const arc::pointer_type n7(3,0);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(1, 0);
+        const arc::pointer_type n3(1, 1);
+        const arc::pointer_type n4(2, 0);
+        const arc::pointer_type n5(2, 1);
+        const arc::pointer_type n6(2, 2);
+        const arc::pointer_type n7(3, 0);
 
         shared_levelized_file<arc> in;
 
@@ -519,25 +525,25 @@ go_bandit([]() {
           arc_writer aw(in);
 
           aw.push_internal({ n1, false, n2 });
-          aw.push_internal({ n1, true,  n3 });
+          aw.push_internal({ n1, true, n3 });
           aw.push_internal({ n2, false, n4 });
-          aw.push_internal({ n2, true,  n5 });
+          aw.push_internal({ n2, true, n5 });
           aw.push_internal({ n3, false, n5 });
-          aw.push_internal({ n3, true,  n6 });
+          aw.push_internal({ n3, true, n6 });
           aw.push_internal({ n5, false, n7 });
 
           aw.push_terminal({ n4, false, terminal_F });
-          aw.push_terminal({ n4, true,  terminal_T });
-          aw.push_terminal({ n5, true,  terminal_T });
+          aw.push_terminal({ n4, true, terminal_T });
+          aw.push_terminal({ n5, true, terminal_T });
           aw.push_terminal({ n6, false, terminal_F });
-          aw.push_terminal({ n6, true,  terminal_T });
+          aw.push_terminal({ n6, true, terminal_T });
           aw.push_terminal({ n7, false, terminal_F });
           aw.push_terminal({ n7, true, terminal_T });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,2u));
-          aw.push(level_info(2,3u));
-          aw.push(level_info(3,1u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(1, 2u));
+          aw.push(level_info(2, 3u));
+          aw.push(level_info(3, 1u));
         }
 
         in->max_1level_cut = 4;
@@ -553,54 +559,56 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n7
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                       terminal_F,
-                                                       terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n6
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                       terminal_F,
-                                                       terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n5
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id-1,
-                                                       node::pointer_type(3, node::max_id),
-                                                       terminal_T)));
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(2, node::max_id - 1, node::pointer_type(3, node::max_id), terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n3
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       node::pointer_type(2, node::max_id-1),
-                                                       node::pointer_type(2, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(1,
+                                     node::max_id,
+                                     node::pointer_type(2, node::max_id - 1),
+                                     node::pointer_type(2, node::max_id))));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n2
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id-1,
-                                                       node::pointer_type(2, node::max_id),
-                                                       node::pointer_type(2, node::max_id-1))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(1,
+                                     node::max_id - 1,
+                                     node::pointer_type(2, node::max_id),
+                                     node::pointer_type(2, node::max_id - 1))));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n1
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       node::pointer_type(1, node::max_id-1),
-                                                       node::pointer_type(1, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     node::pointer_type(1, node::max_id - 1),
+                                     node::pointer_type(1, node::max_id))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -625,7 +633,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(7u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(3u));
       });
 
       it("does forward the correct children [1]", [&]() {
@@ -639,12 +647,12 @@ go_bandit([]() {
         //          F T F T T F         F T T F
         */
 
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(1,0);
-        const arc::pointer_type n3(1,1);
-        const arc::pointer_type n4(2,0);
-        const arc::pointer_type n5(2,1);
-        const arc::pointer_type n6(2,2);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(1, 0);
+        const arc::pointer_type n3(1, 1);
+        const arc::pointer_type n4(2, 0);
+        const arc::pointer_type n5(2, 1);
+        const arc::pointer_type n6(2, 2);
 
         shared_levelized_file<arc> in;
 
@@ -652,22 +660,22 @@ go_bandit([]() {
           arc_writer aw(in);
 
           aw.push_internal({ n1, false, n2 });
-          aw.push_internal({ n1, true,  n3 });
+          aw.push_internal({ n1, true, n3 });
           aw.push_internal({ n2, false, n4 });
-          aw.push_internal({ n2, true,  n5 });
+          aw.push_internal({ n2, true, n5 });
           aw.push_internal({ n3, false, n5 });
-          aw.push_internal({ n3, true,  n6 });
+          aw.push_internal({ n3, true, n6 });
 
           aw.push_terminal({ n4, false, terminal_F });
-          aw.push_terminal({ n4, true,  terminal_T });
+          aw.push_terminal({ n4, true, terminal_T });
           aw.push_terminal({ n5, false, terminal_F });
-          aw.push_terminal({ n5, true,  terminal_T });
+          aw.push_terminal({ n5, true, terminal_T });
           aw.push_terminal({ n6, false, terminal_T });
-          aw.push_terminal({ n6, true,  terminal_F });
+          aw.push_terminal({ n6, true, terminal_F });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,2u));
-          aw.push(level_info(2,3u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(1, 2u));
+          aw.push(level_info(2, 3u));
         }
 
         in->max_1level_cut = 4;
@@ -681,37 +689,38 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // 5
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                       terminal_F,
-                                                       terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // 6
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id-1,
-                                                       terminal_T,
-                                                       terminal_F)));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(2, node::max_id - 1, terminal_T, terminal_F)));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // 3
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       node::pointer_type(2, node::max_id),
-                                                       node::pointer_type(2, node::max_id-1))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(1,
+                                     node::max_id,
+                                     node::pointer_type(2, node::max_id),
+                                     node::pointer_type(2, node::max_id - 1))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // 1
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       node::pointer_type(2, node::max_id),
-                                                       node::pointer_type(1, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     node::pointer_type(2, node::max_id),
+                                     node::pointer_type(1, node::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -735,7 +744,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(5u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
       });
 
       it("does forward the correct children [2]", [&]() {
@@ -749,12 +758,12 @@ go_bandit([]() {
         //          T F T F F T         T F F T
         */
 
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(1,0);
-        const arc::pointer_type n3(1,1);
-        const arc::pointer_type n4(2,0);
-        const arc::pointer_type n5(2,1);
-        const arc::pointer_type n6(2,2);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(1, 0);
+        const arc::pointer_type n3(1, 1);
+        const arc::pointer_type n4(2, 0);
+        const arc::pointer_type n5(2, 1);
+        const arc::pointer_type n6(2, 2);
 
         shared_levelized_file<arc> in;
 
@@ -762,22 +771,22 @@ go_bandit([]() {
           arc_writer aw(in);
 
           aw.push_internal({ n1, false, n2 });
-          aw.push_internal({ n1, true,  n3 });
+          aw.push_internal({ n1, true, n3 });
           aw.push_internal({ n2, false, n4 });
-          aw.push_internal({ n2, true,  n5 });
+          aw.push_internal({ n2, true, n5 });
           aw.push_internal({ n3, false, n5 });
-          aw.push_internal({ n3, true,  n6 });
+          aw.push_internal({ n3, true, n6 });
 
           aw.push_terminal({ n4, false, terminal_T });
-          aw.push_terminal({ n4, true,  terminal_F });
+          aw.push_terminal({ n4, true, terminal_F });
           aw.push_terminal({ n5, false, terminal_T });
-          aw.push_terminal({ n5, true,  terminal_F });
+          aw.push_terminal({ n5, true, terminal_F });
           aw.push_terminal({ n6, false, terminal_F });
-          aw.push_terminal({ n6, true,  terminal_T });
+          aw.push_terminal({ n6, true, terminal_T });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,2u));
-          aw.push(level_info(2,3u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(1, 2u));
+          aw.push(level_info(2, 3u));
         }
 
         in->max_1level_cut = 4;
@@ -791,37 +800,38 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // 6
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                       terminal_F,
-                                                       terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // 5
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id-1,
-                                                       terminal_T,
-                                                       terminal_F)));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(2, node::max_id - 1, terminal_T, terminal_F)));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // 3
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       node::pointer_type(2, node::max_id-1),
-                                                       node::pointer_type(2, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(1,
+                                     node::max_id,
+                                     node::pointer_type(2, node::max_id - 1),
+                                     node::pointer_type(2, node::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // 1
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       node::pointer_type(2, node::max_id-1),
-                                                       node::pointer_type(1, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     node::pointer_type(2, node::max_id - 1),
+                                     node::pointer_type(1, node::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -844,7 +854,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(5u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
       });
     });
 
@@ -860,29 +870,29 @@ go_bandit([]() {
         //          F  T                F T
         */
 
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(1,0);
-        const arc::pointer_type n3(2,0);
-        const arc::pointer_type n4(2,1);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(1, 0);
+        const arc::pointer_type n3(2, 0);
+        const arc::pointer_type n4(2, 1);
 
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer early
           arc_writer aw(in);
 
-          aw.push_internal({ n1, true,  n2 });
+          aw.push_internal({ n1, true, n2 });
           aw.push_internal({ n1, false, n3 });
           aw.push_internal({ n2, false, n3 });
-          aw.push_internal({ n2, true,  n4 });
+          aw.push_internal({ n2, true, n4 });
 
           aw.push_terminal({ n3, false, terminal_F });
-          aw.push_terminal({ n3, true,  terminal_T });
+          aw.push_terminal({ n3, true, terminal_T });
           aw.push_terminal({ n4, false, terminal_T });
-          aw.push_terminal({ n4, true,  terminal_T });
+          aw.push_terminal({ n4, true, terminal_T });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,1u));
-          aw.push(level_info(2,2u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(1, 1u));
+          aw.push(level_info(2, 2u));
         }
 
         in->max_1level_cut = 3;
@@ -898,34 +908,33 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n3
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                       terminal_F,
-                                                       terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n2
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       node::pointer_type(2, node::max_id),
-                                                       terminal_T)));
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(1, node::max_id, node::pointer_type(2, node::max_id), terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n1
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       node::pointer_type(2, node::max_id),
-                                                       node::pointer_type(1, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     node::pointer_type(2, node::max_id),
+                                     node::pointer_type(1, node::max_id))));
         AssertThat(out_nodes.can_pull(), Is().False());
-
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -946,7 +955,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(4u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
       });
 
       it("applies to node arcs", [&]() {
@@ -962,33 +971,33 @@ go_bandit([]() {
         //              F T                F T
         */
 
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(1,0);
-        const arc::pointer_type n3(2,0);
-        const arc::pointer_type n4(2,1);
-        const arc::pointer_type n5(3,0);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(1, 0);
+        const arc::pointer_type n3(2, 0);
+        const arc::pointer_type n4(2, 1);
+        const arc::pointer_type n5(3, 0);
 
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ n1, true,  n2 });
+          aw.push_internal({ n1, true, n2 });
           aw.push_internal({ n1, false, n3 });
           aw.push_internal({ n2, false, n3 });
-          aw.push_internal({ n2, true,  n4 });
+          aw.push_internal({ n2, true, n4 });
           aw.push_internal({ n4, false, n5 });
-          aw.push_internal({ n4, true,  n5 });
+          aw.push_internal({ n4, true, n5 });
 
           aw.push_terminal({ n3, false, terminal_F });
-          aw.push_terminal({ n3, true,  terminal_T });
+          aw.push_terminal({ n3, true, terminal_T });
           aw.push_terminal({ n5, false, terminal_F });
-          aw.push_terminal({ n5, true,  terminal_T });
+          aw.push_terminal({ n5, true, terminal_T });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,1u));
-          aw.push(level_info(2,2u));
-          aw.push(level_info(3,1u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(1, 1u));
+          aw.push(level_info(2, 2u));
+          aw.push(level_info(3, 1u));
         }
 
         in->max_1level_cut = 3;
@@ -1012,31 +1021,34 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n2
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       node::pointer_type(2, node::max_id),
-                                                       node::pointer_type(3, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(1,
+                                     node::max_id,
+                                     node::pointer_type(2, node::max_id),
+                                     node::pointer_type(3, node::max_id))));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n1
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       node::pointer_type(2, node::max_id),
-                                                       node::pointer_type(1, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     node::pointer_type(2, node::max_id),
+                                     node::pointer_type(1, node::max_id))));
         AssertThat(out_nodes.can_pull(), Is().False());
-
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -1060,7 +1072,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(5u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
       });
 
       it("works with two reductions on the same level", [&]() {
@@ -1074,11 +1086,11 @@ go_bandit([]() {
         //         F T T F            F T T F
         */
 
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(1,0);
-        const arc::pointer_type n3(1,1);
-        const arc::pointer_type n4(2,0);
-        const arc::pointer_type n5(2,1);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(1, 0);
+        const arc::pointer_type n3(1, 1);
+        const arc::pointer_type n4(2, 0);
+        const arc::pointer_type n5(2, 1);
 
         shared_levelized_file<arc> in;
 
@@ -1086,20 +1098,20 @@ go_bandit([]() {
           arc_writer aw(in);
 
           aw.push_internal({ n1, false, n2 });
-          aw.push_internal({ n1, true,  n3 });
+          aw.push_internal({ n1, true, n3 });
           aw.push_internal({ n2, false, n4 });
-          aw.push_internal({ n2, true,  n4 });
+          aw.push_internal({ n2, true, n4 });
           aw.push_internal({ n3, false, n5 });
-          aw.push_internal({ n3, true,  n5 });
+          aw.push_internal({ n3, true, n5 });
 
           aw.push_terminal({ n4, false, terminal_F });
-          aw.push_terminal({ n4, true,  terminal_T });
+          aw.push_terminal({ n4, true, terminal_T });
           aw.push_terminal({ n5, false, terminal_T });
-          aw.push_terminal({ n5, true,  terminal_F });
+          aw.push_terminal({ n5, true, terminal_F });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,2u));
-          aw.push(level_info(2,2u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(1, 2u));
+          aw.push(level_info(2, 2u));
         }
 
         in->max_1level_cut = 4;
@@ -1119,23 +1131,25 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n4
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id-1, terminal_T, terminal_F)));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(2, node::max_id - 1, terminal_T, terminal_F)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n1
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       node::pointer_type(2, node::max_id),
-                                                       node::pointer_type(2, node::max_id-1))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     node::pointer_type(2, node::max_id),
+                                     node::pointer_type(2, node::max_id - 1))));
         AssertThat(out_nodes.can_pull(), Is().False());
-
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -1160,7 +1174,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(4u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
       });
 
       it("can be applied together with reduction rule 2 [1]", [&]() {
@@ -1174,10 +1188,10 @@ go_bandit([]() {
         //          F T                F T
         */
 
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(1,0);
-        const arc::pointer_type n3(2,0);
-        const arc::pointer_type n4(2,1);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(1, 0);
+        const arc::pointer_type n3(2, 0);
+        const arc::pointer_type n4(2, 1);
 
         shared_levelized_file<arc> in;
 
@@ -1186,17 +1200,17 @@ go_bandit([]() {
 
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n2, false, n3 });
-          aw.push_internal({ n2, true,  n4 });
+          aw.push_internal({ n2, true, n4 });
 
-          aw.push_terminal({ n1, true,  terminal_T });
+          aw.push_terminal({ n1, true, terminal_T });
           aw.push_terminal({ n3, false, terminal_F });
-          aw.push_terminal({ n3, true,  terminal_T });
+          aw.push_terminal({ n3, true, terminal_T });
           aw.push_terminal({ n4, false, terminal_F });
-          aw.push_terminal({ n4, true,  terminal_T });
+          aw.push_terminal({ n4, true, terminal_T });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,1u));
-          aw.push(level_info(2,2u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(1, 1u));
+          aw.push(level_info(2, 2u));
         }
 
         in->max_1level_cut = 2;
@@ -1212,24 +1226,22 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n4
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                       terminal_F,
-                                                       terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n1
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       node::pointer_type(2, node::max_id),
-                                                       terminal_T)));
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(0, node::max_id, node::pointer_type(2, node::max_id), terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -1254,7 +1266,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(3u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
       });
 
       it("can be applied together with reduction rule 2 [2]", [&]() {
@@ -1270,12 +1282,12 @@ go_bandit([]() {
         //     F T                 F T
         */
 
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(1,0);
-        const arc::pointer_type n3(1,1);
-        const arc::pointer_type n4(2,0);
-        const arc::pointer_type n5(2,1);
-        const arc::pointer_type n6(3,0);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(1, 0);
+        const arc::pointer_type n3(1, 1);
+        const arc::pointer_type n4(2, 0);
+        const arc::pointer_type n5(2, 1);
+        const arc::pointer_type n6(3, 0);
 
         shared_levelized_file<arc> in;
 
@@ -1283,23 +1295,23 @@ go_bandit([]() {
           arc_writer aw(in);
 
           aw.push_internal({ n1, false, n2 });
-          aw.push_internal({ n1, true,  n3 });
-          aw.push_internal({ n2, true,  n4 });
+          aw.push_internal({ n1, true, n3 });
+          aw.push_internal({ n2, true, n4 });
           aw.push_internal({ n3, false, n4 });
-          aw.push_internal({ n3, true,  n5 });
+          aw.push_internal({ n3, true, n5 });
           aw.push_internal({ n2, false, n6 });
 
           aw.push_terminal({ n4, false, terminal_F });
-          aw.push_terminal({ n4, true,  terminal_T });
+          aw.push_terminal({ n4, true, terminal_T });
           aw.push_terminal({ n5, false, terminal_F });
-          aw.push_terminal({ n5, true,  terminal_T });
+          aw.push_terminal({ n5, true, terminal_T });
           aw.push_terminal({ n6, false, terminal_F });
-          aw.push_terminal({ n6, true,  terminal_T });
+          aw.push_terminal({ n6, true, terminal_T });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,2u));
-          aw.push(level_info(2,2u));
-          aw.push(level_info(3,1u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(1, 2u));
+          aw.push(level_info(2, 2u));
+          aw.push(level_info(3, 1u));
         }
 
         in->max_1level_cut = 4;
@@ -1314,42 +1326,42 @@ go_bandit([]() {
 
         // n6
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                       terminal_F,
-                                                       terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id, terminal_F, terminal_T)));
 
         // n4
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                       terminal_F,
-                                                       terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id, terminal_F, terminal_T)));
 
         // n2
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       node::pointer_type(3, node::max_id),
-                                                       node::pointer_type(2, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(1,
+                                     node::max_id,
+                                     node::pointer_type(3, node::max_id),
+                                     node::pointer_type(2, node::max_id))));
 
         // n1
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       node::pointer_type(1, node::max_id),
-                                                       node::pointer_type(2, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     node::pointer_type(1, node::max_id),
+                                     node::pointer_type(2, node::max_id))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -1381,7 +1393,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(5u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
       });
 
       it("can reduce the root [1]", [&]() {
@@ -1395,29 +1407,29 @@ go_bandit([]() {
         //          F T                F T
         */
 
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(1,0);
-        const arc::pointer_type n3(2,0);
-        const arc::pointer_type n4(2,1);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(1, 0);
+        const arc::pointer_type n3(2, 0);
+        const arc::pointer_type n4(2, 1);
 
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ n1, true,  n2 });
+          aw.push_internal({ n1, true, n2 });
           aw.push_internal({ n1, false, n3 });
           aw.push_internal({ n2, false, n3 });
-          aw.push_internal({ n2, true,  n4 });
+          aw.push_internal({ n2, true, n4 });
 
           aw.push_terminal({ n3, false, terminal_F });
-          aw.push_terminal({ n3, true,  terminal_T });
+          aw.push_terminal({ n3, true, terminal_T });
           aw.push_terminal({ n4, false, terminal_F });
-          aw.push_terminal({ n4, true,  terminal_T });
+          aw.push_terminal({ n4, true, terminal_T });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,1u));
-          aw.push(level_info(2,2u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(1, 1u));
+          aw.push(level_info(2, 2u));
         }
 
         in->max_1level_cut = 3;
@@ -1439,7 +1451,7 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -1456,7 +1468,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(2u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can reduce the root [2]", [&]() {
@@ -1474,15 +1486,15 @@ go_bandit([]() {
         //        F T               F T
         */
 
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(1,0);
-        const arc::pointer_type n3(1,1);
-        const arc::pointer_type n4(2,0);
-        const arc::pointer_type n5(2,1);
-        const arc::pointer_type n6(3,0);
-        const arc::pointer_type n7(3,1);
-        const arc::pointer_type n8(3,2);
-        const arc::pointer_type n9(4,0);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(1, 0);
+        const arc::pointer_type n3(1, 1);
+        const arc::pointer_type n4(2, 0);
+        const arc::pointer_type n5(2, 1);
+        const arc::pointer_type n6(3, 0);
+        const arc::pointer_type n7(3, 1);
+        const arc::pointer_type n8(3, 2);
+        const arc::pointer_type n9(4, 0);
 
         shared_levelized_file<arc> in;
 
@@ -1490,30 +1502,30 @@ go_bandit([]() {
           arc_writer aw(in);
 
           aw.push_internal({ n1, false, n2 });
-          aw.push_internal({ n1, true,  n3 });
+          aw.push_internal({ n1, true, n3 });
           aw.push_internal({ n2, false, n4 });
           aw.push_internal({ n3, false, n4 });
-          aw.push_internal({ n2, true,  n5 });
-          aw.push_internal({ n3, true,  n5 });
+          aw.push_internal({ n2, true, n5 });
+          aw.push_internal({ n3, true, n5 });
           aw.push_internal({ n4, false, n6 });
-          aw.push_internal({ n4, true,  n7 });
+          aw.push_internal({ n4, true, n7 });
           aw.push_internal({ n5, false, n7 });
-          aw.push_internal({ n5, true,  n8 });
-          aw.push_internal({ n6, true,  n9 });
+          aw.push_internal({ n5, true, n8 });
+          aw.push_internal({ n6, true, n9 });
           aw.push_internal({ n7, false, n9 });
 
           aw.push_terminal({ n6, false, terminal_F });
-          aw.push_terminal({ n7, true,  terminal_T });
+          aw.push_terminal({ n7, true, terminal_T });
           aw.push_terminal({ n8, false, terminal_F });
-          aw.push_terminal({ n8, true,  terminal_T });
+          aw.push_terminal({ n8, true, terminal_T });
           aw.push_terminal({ n9, false, terminal_F });
-          aw.push_terminal({ n9, true,  terminal_T });
+          aw.push_terminal({ n9, true, terminal_T });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,2u));
-          aw.push(level_info(2,2u));
-          aw.push(level_info(3,3u));
-          aw.push(level_info(4,1u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(1, 2u));
+          aw.push(level_info(2, 2u));
+          aw.push(level_info(3, 3u));
+          aw.push(level_info(4, 1u));
         }
 
         in->max_1level_cut = 4;
@@ -1533,52 +1545,55 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n8
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                       terminal_F,
-                                                       terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n7
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id-1,
-                                                       node::pointer_type(4, node::max_id),
-                                                       terminal_T)));
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(3, node::max_id - 1, node::pointer_type(4, node::max_id), terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n6
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id-2,
-                                                       terminal_F,
-                                                       node::pointer_type(4, node::max_id))));
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(3, node::max_id - 2, terminal_F, node::pointer_type(4, node::max_id))));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n5
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                       node::pointer_type(3, node::max_id-1),
-                                                       node::pointer_type(3, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(2,
+                                     node::max_id,
+                                     node::pointer_type(3, node::max_id - 1),
+                                     node::pointer_type(3, node::max_id))));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n4
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id-1,
-                                                       node::pointer_type(3, node::max_id-2),
-                                                       node::pointer_type(3, node::max_id-1))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(2,
+                                     node::max_id - 1,
+                                     node::pointer_type(3, node::max_id - 2),
+                                     node::pointer_type(3, node::max_id - 1))));
 
         // n1
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       node::pointer_type(2, node::max_id-1),
-                                                       node::pointer_type(2, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(1,
+                                     node::max_id,
+                                     node::pointer_type(2, node::max_id - 1),
+                                     node::pointer_type(2, node::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
-
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(4,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(4, 1u)));
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,3u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 3u)));
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 2u)));
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -1599,7 +1614,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(8u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(3u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(3u));
       });
 
       it("accounts for multiple ingoing arcs to reduction rule 1 node", [&]() {
@@ -1615,12 +1630,12 @@ go_bandit([]() {
         //    T F F T T T          T F F T
         */
 
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(1,0);
-        const arc::pointer_type n3(2,0);
-        const arc::pointer_type n4(3,0);
-        const arc::pointer_type n5(3,1);
-        const arc::pointer_type n6(3,2);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(1, 0);
+        const arc::pointer_type n3(2, 0);
+        const arc::pointer_type n4(3, 0);
+        const arc::pointer_type n5(3, 1);
+        const arc::pointer_type n6(3, 2);
 
         shared_levelized_file<arc> in;
 
@@ -1630,21 +1645,21 @@ go_bandit([]() {
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n2, false, n3 });
           aw.push_internal({ n3, false, n4 });
-          aw.push_internal({ n3, true,  n5 });
-          aw.push_internal({ n1, true,  n6 });
-          aw.push_internal({ n2, true,  n6 });
+          aw.push_internal({ n3, true, n5 });
+          aw.push_internal({ n1, true, n6 });
+          aw.push_internal({ n2, true, n6 });
 
           aw.push_terminal({ n4, false, terminal_T });
-          aw.push_terminal({ n4, true,  terminal_F });
+          aw.push_terminal({ n4, true, terminal_F });
           aw.push_terminal({ n5, false, terminal_F });
-          aw.push_terminal({ n5, true,  terminal_T });
+          aw.push_terminal({ n5, true, terminal_T });
           aw.push_terminal({ n6, false, terminal_T });
-          aw.push_terminal({ n6, true,  terminal_T });
+          aw.push_terminal({ n6, true, terminal_T });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,1u));
-          aw.push(level_info(2,1u));
-          aw.push(level_info(3,3u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(1, 1u));
+          aw.push(level_info(2, 1u));
+          aw.push(level_info(3, 3u));
         }
 
         in->max_1level_cut = 4;
@@ -1659,47 +1674,46 @@ go_bandit([]() {
 
         // n4
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                       terminal_F,
-                                                       terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id-1,
-                                                       terminal_T,
-                                                       terminal_F)));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(3, node::max_id - 1, terminal_T, terminal_F)));
 
         // n4
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                       node::pointer_type(3, node::max_id-1),
-                                                       node::pointer_type(3, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(2,
+                                     node::max_id,
+                                     node::pointer_type(3, node::max_id - 1),
+                                     node::pointer_type(3, node::max_id))));
 
         // n2
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       node::pointer_type(2, node::max_id),
-                                                       terminal_T)));
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(1, node::max_id, node::pointer_type(2, node::max_id), terminal_T)));
 
         // n1
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       node::pointer_type(1, node::max_id),
-                                                       terminal_T)));
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(0, node::max_id, node::pointer_type(1, node::max_id), terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -1726,7 +1740,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(6u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(4u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(4u));
       });
 
       it("can apply reduction rule 1 to a single node", [&]() {
@@ -1736,7 +1750,7 @@ go_bandit([]() {
         //          F F
         */
 
-        const arc::pointer_type n1(0,0);
+        const arc::pointer_type n1(0, 0);
 
         shared_levelized_file<arc> in;
 
@@ -1744,9 +1758,9 @@ go_bandit([]() {
           arc_writer aw(in);
 
           aw.push_terminal({ n1, false, terminal_F });
-          aw.push_terminal({ n1, true,  terminal_F });
+          aw.push_terminal({ n1, true, terminal_F });
 
-          aw.push(level_info(0,1u));
+          aw.push(level_info(0, 1u));
         }
 
         in->max_1level_cut = 0;
@@ -1781,7 +1795,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
       });
 
       it("can propagate reduction rule 1 up to a terminal", [&]() {
@@ -1793,22 +1807,22 @@ go_bandit([]() {
         //          T  T
         */
 
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(1,0);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(1, 0);
 
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ n1, true,  n2 });
+          aw.push_internal({ n1, true, n2 });
 
           aw.push_terminal({ n1, false, terminal_T });
           aw.push_terminal({ n2, false, terminal_T });
-          aw.push_terminal({ n2, true,  terminal_T });
+          aw.push_terminal({ n2, true, terminal_T });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,1u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(1, 1u));
         }
 
         in->max_1level_cut = 1;
@@ -1841,7 +1855,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can return non-reducible single-node variable with max_id", [&]() {
@@ -1851,7 +1865,7 @@ go_bandit([]() {
         //          F T               F T
         */
 
-        const arc::pointer_type n1(0,0);
+        const arc::pointer_type n1(0, 0);
 
         shared_levelized_file<arc> in;
 
@@ -1859,9 +1873,9 @@ go_bandit([]() {
           arc_writer aw(in);
 
           aw.push_terminal({ n1, false, terminal_F });
-          aw.push_terminal({ n1, true,  terminal_T });
+          aw.push_terminal({ n1, true, terminal_T });
 
-          aw.push(level_info(0u,1u));
+          aw.push(level_info(0u, 1u));
         }
 
         in->max_1level_cut = 0;
@@ -1881,7 +1895,7 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
         AssertThat(out_meta.can_pull(), Is().False());
 
         AssertThat(out->width, Is().EqualTo(1u));
@@ -1897,7 +1911,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(2u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can account for a chain of don't cares contributing to the maximum cut [1]", [&]() {
@@ -1917,17 +1931,17 @@ go_bandit([]() {
         //         T  F   T         T  F F  T
         */
 
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(1,0);
-        const arc::pointer_type n3(1,1);
-        const arc::pointer_type n4(2,0);
-        const arc::pointer_type n5(2,1);
-        const arc::pointer_type n6(3,0);
-        const arc::pointer_type n7(3,1);
-        const arc::pointer_type n8(4,0);
-        const arc::pointer_type n9(4,1);
-        const arc::pointer_type n10(5,0);
-        const arc::pointer_type n11(5,1);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(1, 0);
+        const arc::pointer_type n3(1, 1);
+        const arc::pointer_type n4(2, 0);
+        const arc::pointer_type n5(2, 1);
+        const arc::pointer_type n6(3, 0);
+        const arc::pointer_type n7(3, 1);
+        const arc::pointer_type n8(4, 0);
+        const arc::pointer_type n9(4, 1);
+        const arc::pointer_type n10(5, 0);
+        const arc::pointer_type n11(5, 1);
 
         shared_levelized_file<arc> in;
 
@@ -1935,35 +1949,35 @@ go_bandit([]() {
           arc_writer aw(in);
 
           aw.push_internal({ n1, false, n2 });
-          aw.push_internal({ n1, true,  n3 });
+          aw.push_internal({ n1, true, n3 });
           aw.push_internal({ n2, false, n4 });
-          aw.push_internal({ n2, true,  n4 });
+          aw.push_internal({ n2, true, n4 });
           aw.push_internal({ n3, false, n4 });
-          aw.push_internal({ n3, true,  n5 });
+          aw.push_internal({ n3, true, n5 });
           aw.push_internal({ n4, false, n6 });
-          aw.push_internal({ n4, true,  n6 });
+          aw.push_internal({ n4, true, n6 });
           aw.push_internal({ n5, false, n6 });
-          aw.push_internal({ n5, true,  n7 });
+          aw.push_internal({ n5, true, n7 });
           aw.push_internal({ n6, false, n8 });
-          aw.push_internal({ n6, true,  n8 });
+          aw.push_internal({ n6, true, n8 });
           aw.push_internal({ n7, false, n8 });
-          aw.push_internal({ n7, true,  n9 });
+          aw.push_internal({ n7, true, n9 });
           aw.push_internal({ n8, false, n10 });
-          aw.push_internal({ n8, true,  n10 });
+          aw.push_internal({ n8, true, n10 });
           aw.push_internal({ n9, false, n10 });
-          aw.push_internal({ n9, true,  n11 });
+          aw.push_internal({ n9, true, n11 });
 
           aw.push_terminal({ n10, false, terminal_T });
-          aw.push_terminal({ n10, true,  terminal_F });
+          aw.push_terminal({ n10, true, terminal_F });
           aw.push_terminal({ n11, false, terminal_F });
-          aw.push_terminal({ n11, true,  terminal_T });
+          aw.push_terminal({ n11, true, terminal_T });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,2u));
-          aw.push(level_info(2,2u));
-          aw.push(level_info(3,2u));
-          aw.push(level_info(4,2u));
-          aw.push(level_info(5,2u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(1, 2u));
+          aw.push(level_info(2, 2u));
+          aw.push(level_info(3, 2u));
+          aw.push(level_info(4, 2u));
+          aw.push(level_info(5, 2u));
         }
 
         in->max_1level_cut = 4;
@@ -1977,62 +1991,68 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n11
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
-                                                       terminal_F,
-                                                       terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n10
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-1,
-                                                       terminal_T,
-                                                       terminal_F)));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(5, node::max_id - 1, terminal_T, terminal_F)));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n9
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id,
-                                                       node::pointer_type(5, node::max_id-1),
-                                                       node::pointer_type(5, node::max_id))));
-
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(4,
+                                     node::max_id,
+                                     node::pointer_type(5, node::max_id - 1),
+                                     node::pointer_type(5, node::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n7
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                       node::pointer_type(5, node::max_id-1),
-                                                       node::pointer_type(4, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(3,
+                                     node::max_id,
+                                     node::pointer_type(5, node::max_id - 1),
+                                     node::pointer_type(4, node::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n5
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                       node::pointer_type(5, node::max_id-1),
-                                                       node::pointer_type(3, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(2,
+                                     node::max_id,
+                                     node::pointer_type(5, node::max_id - 1),
+                                     node::pointer_type(3, node::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n3
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       node::pointer_type(5, node::max_id-1),
-                                                       node::pointer_type(2, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(1,
+                                     node::max_id,
+                                     node::pointer_type(5, node::max_id - 1),
+                                     node::pointer_type(2, node::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n1
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       node::pointer_type(5, node::max_id-1),
-                                                       node::pointer_type(1, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     node::pointer_type(5, node::max_id - 1),
+                                     node::pointer_type(1, node::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(5,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(5, 2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(4,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(4, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -2057,7 +2077,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(8u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
       });
 
       it("can account for a chain of don't cares contributing to the maximum cut [2]", [&]() {
@@ -2077,62 +2097,62 @@ go_bandit([]() {
         //             T  F   T                  T  F    F  T
         */
 
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(1,0);
-        const arc::pointer_type n3(1,1);
-        const arc::pointer_type n4(2,0);
-        const arc::pointer_type n5(2,1);
-        const arc::pointer_type n6(2,2);
-        const arc::pointer_type n7(3,0);
-        const arc::pointer_type n8(3,1);
-        const arc::pointer_type n9(3,2);
-        const arc::pointer_type n10(4,0);
-        const arc::pointer_type n11(4,1);
-        const arc::pointer_type n12(4,2);
-        const arc::pointer_type n13(5,0);
-        const arc::pointer_type n14(5,1);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(1, 0);
+        const arc::pointer_type n3(1, 1);
+        const arc::pointer_type n4(2, 0);
+        const arc::pointer_type n5(2, 1);
+        const arc::pointer_type n6(2, 2);
+        const arc::pointer_type n7(3, 0);
+        const arc::pointer_type n8(3, 1);
+        const arc::pointer_type n9(3, 2);
+        const arc::pointer_type n10(4, 0);
+        const arc::pointer_type n11(4, 1);
+        const arc::pointer_type n12(4, 2);
+        const arc::pointer_type n13(5, 0);
+        const arc::pointer_type n14(5, 1);
 
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ n1,  false, n2 });
-          aw.push_internal({ n1,  true,  n3 });
-          aw.push_internal({ n2,  false, n4 });
-          aw.push_internal({ n2,  true,  n5 });
-          aw.push_internal({ n3,  false, n5 });
-          aw.push_internal({ n3,  true,  n6 });
-          aw.push_internal({ n4,  false, n7 });
-          aw.push_internal({ n4,  true,  n8 });
-          aw.push_internal({ n5,  false, n8 });
-          aw.push_internal({ n5,  true,  n8 });
-          aw.push_internal({ n6,  false, n8 });
-          aw.push_internal({ n6,  true,  n9 });
-          aw.push_internal({ n7,  false, n10 });
-          aw.push_internal({ n7,  true,  n11 });
-          aw.push_internal({ n8,  false, n11 });
-          aw.push_internal({ n8,  true,  n11 });
-          aw.push_internal({ n9,  false, n11 });
-          aw.push_internal({ n9,  true,  n12 });
-          aw.push_internal({ n10, true,  n13 });
+          aw.push_internal({ n1, false, n2 });
+          aw.push_internal({ n1, true, n3 });
+          aw.push_internal({ n2, false, n4 });
+          aw.push_internal({ n2, true, n5 });
+          aw.push_internal({ n3, false, n5 });
+          aw.push_internal({ n3, true, n6 });
+          aw.push_internal({ n4, false, n7 });
+          aw.push_internal({ n4, true, n8 });
+          aw.push_internal({ n5, false, n8 });
+          aw.push_internal({ n5, true, n8 });
+          aw.push_internal({ n6, false, n8 });
+          aw.push_internal({ n6, true, n9 });
+          aw.push_internal({ n7, false, n10 });
+          aw.push_internal({ n7, true, n11 });
+          aw.push_internal({ n8, false, n11 });
+          aw.push_internal({ n8, true, n11 });
+          aw.push_internal({ n9, false, n11 });
+          aw.push_internal({ n9, true, n12 });
+          aw.push_internal({ n10, true, n13 });
           aw.push_internal({ n11, false, n13 });
-          aw.push_internal({ n11, true,  n13 });
+          aw.push_internal({ n11, true, n13 });
           aw.push_internal({ n12, false, n13 });
           aw.push_internal({ n10, false, n14 });
-          aw.push_internal({ n12, true,  n14 });
+          aw.push_internal({ n12, true, n14 });
 
           aw.push_terminal({ n13, false, terminal_T });
-          aw.push_terminal({ n13, true,  terminal_F });
+          aw.push_terminal({ n13, true, terminal_F });
           aw.push_terminal({ n14, false, terminal_F });
-          aw.push_terminal({ n14, true,  terminal_T });
+          aw.push_terminal({ n14, true, terminal_T });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,2u));
-          aw.push(level_info(2,3u));
-          aw.push(level_info(3,3u));
-          aw.push(level_info(4,3u));
-          aw.push(level_info(5,2u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(1, 2u));
+          aw.push(level_info(2, 3u));
+          aw.push(level_info(3, 3u));
+          aw.push(level_info(4, 3u));
+          aw.push(level_info(5, 2u));
         }
 
         in->max_1level_cut = 8;
@@ -2146,81 +2166,96 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n14
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
-                                                       terminal_F,
-                                                       terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n13
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-1,
-                                                       terminal_T,
-                                                       terminal_F)));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(5, node::max_id - 1, terminal_T, terminal_F)));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n12
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id,
-                                                       node::pointer_type(5, node::max_id-1),
-                                                       node::pointer_type(5, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(4,
+                                     node::max_id,
+                                     node::pointer_type(5, node::max_id - 1),
+                                     node::pointer_type(5, node::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n10
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-1,
-                                                       node::pointer_type(5, node::max_id),
-                                                       node::pointer_type(5, node::max_id-1))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(4,
+                                     node::max_id - 1,
+                                     node::pointer_type(5, node::max_id),
+                                     node::pointer_type(5, node::max_id - 1))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n7
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                       node::pointer_type(4, node::max_id-1),
-                                                       node::pointer_type(5, node::max_id-1))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(3,
+                                     node::max_id,
+                                     node::pointer_type(4, node::max_id - 1),
+                                     node::pointer_type(5, node::max_id - 1))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n9
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id-1,
-                                                       node::pointer_type(5, node::max_id-1),
-                                                       node::pointer_type(4, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(3,
+                                     node::max_id - 1,
+                                     node::pointer_type(5, node::max_id - 1),
+                                     node::pointer_type(4, node::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n4
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                       node::pointer_type(3, node::max_id),
-                                                       node::pointer_type(5, node::max_id-1))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(2,
+                                     node::max_id,
+                                     node::pointer_type(3, node::max_id),
+                                     node::pointer_type(5, node::max_id - 1))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n6
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id-1,
-                                                       node::pointer_type(5, node::max_id-1),
-                                                       node::pointer_type(3, node::max_id-1))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(2,
+                                     node::max_id - 1,
+                                     node::pointer_type(5, node::max_id - 1),
+                                     node::pointer_type(3, node::max_id - 1))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n2
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       node::pointer_type(2, node::max_id),
-                                                       node::pointer_type(5, node::max_id-1))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(1,
+                                     node::max_id,
+                                     node::pointer_type(2, node::max_id),
+                                     node::pointer_type(5, node::max_id - 1))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n3
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id-1,
-                                                       node::pointer_type(5, node::max_id-1),
-                                                       node::pointer_type(2, node::max_id-1))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(1,
+                                     node::max_id - 1,
+                                     node::pointer_type(5, node::max_id - 1),
+                                     node::pointer_type(2, node::max_id - 1))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n1
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       node::pointer_type(1, node::max_id),
-                                                       node::pointer_type(1, node::max_id-1))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     node::pointer_type(1, node::max_id),
+                                     node::pointer_type(1, node::max_id - 1))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(5,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(5, 2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(4,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(4, 2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -2245,7 +2280,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(15u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
       });
 
       it("applies tainted arcs eagerly to the maximum cut", [&]() {
@@ -2263,14 +2298,14 @@ go_bandit([]() {
         //            F T                  F T
         */
 
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(1,0);
-        const arc::pointer_type n3(1,1);
-        const arc::pointer_type n4(2,0);
-        const arc::pointer_type n5(2,1);
-        const arc::pointer_type n6(2,2);
-        const arc::pointer_type n7(3,0);
-        const arc::pointer_type n8(4,0);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(1, 0);
+        const arc::pointer_type n3(1, 1);
+        const arc::pointer_type n4(2, 0);
+        const arc::pointer_type n5(2, 1);
+        const arc::pointer_type n6(2, 2);
+        const arc::pointer_type n7(3, 0);
+        const arc::pointer_type n8(4, 0);
 
         shared_levelized_file<arc> in;
 
@@ -2278,28 +2313,28 @@ go_bandit([]() {
           arc_writer aw(in);
 
           aw.push_internal({ n1, false, n2 });
-          aw.push_internal({ n1, true,  n3 });
+          aw.push_internal({ n1, true, n3 });
           aw.push_internal({ n2, false, n4 });
-          aw.push_internal({ n2, true,  n5 });
+          aw.push_internal({ n2, true, n5 });
           aw.push_internal({ n3, false, n5 });
-          aw.push_internal({ n3, true,  n6 });
-          aw.push_internal({ n5, true,  n7 });
+          aw.push_internal({ n3, true, n6 });
+          aw.push_internal({ n5, true, n7 });
           aw.push_internal({ n7, false, n8 });
-          aw.push_internal({ n7, true,  n8 });
+          aw.push_internal({ n7, true, n8 });
 
           aw.push_terminal({ n4, false, terminal_F });
-          aw.push_terminal({ n4, true,  terminal_T });
+          aw.push_terminal({ n4, true, terminal_T });
           aw.push_terminal({ n5, false, terminal_F });
           aw.push_terminal({ n6, false, terminal_T });
-          aw.push_terminal({ n6, true,  terminal_F });
+          aw.push_terminal({ n6, true, terminal_F });
           aw.push_terminal({ n8, false, terminal_F });
-          aw.push_terminal({ n8, true,  terminal_T });
+          aw.push_terminal({ n8, true, terminal_T });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,2u));
-          aw.push(level_info(2,3u));
-          aw.push(level_info(3,1u));
-          aw.push(level_info(4,1u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(1, 2u));
+          aw.push(level_info(2, 3u));
+          aw.push(level_info(3, 1u));
+          aw.push(level_info(4, 1u));
 
           in->max_1level_cut = 4;
         }
@@ -2319,41 +2354,50 @@ go_bandit([]() {
         AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n6
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id-1, terminal_T, terminal_F)));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(2, node::max_id - 1, terminal_T, terminal_F)));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n5
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id-2, terminal_F, node::pointer_type(4, node::max_id))));
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(2, node::max_id - 2, terminal_F, node::pointer_type(4, node::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n3
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       node::pointer_type(2, node::max_id-2),
-                                                       node::pointer_type(2, node::max_id-1))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(1,
+                                     node::max_id,
+                                     node::pointer_type(2, node::max_id - 2),
+                                     node::pointer_type(2, node::max_id - 1))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n2
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id-1,
-                                                       node::pointer_type(2, node::max_id),
-                                                       node::pointer_type(2, node::max_id-2))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(1,
+                                     node::max_id - 1,
+                                     node::pointer_type(2, node::max_id),
+                                     node::pointer_type(2, node::max_id - 2))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n2
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       node::pointer_type(1, node::max_id-1),
-                                                       node::pointer_type(1, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     node::pointer_type(1, node::max_id - 1),
+                                     node::pointer_type(1, node::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(4,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(4, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,3u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 3u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -2381,7 +2425,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(9u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(4u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(3u));
       });
 
       it("merges nodes, despite of reduction rule 1 flag on child", [&]() {
@@ -2395,10 +2439,10 @@ go_bandit([]() {
         //     T T
         */
 
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(1,0);
-        const arc::pointer_type n3(1,1);
-        const arc::pointer_type n4(2,0);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(1, 0);
+        const arc::pointer_type n3(1, 1);
+        const arc::pointer_type n4(2, 0);
 
         shared_levelized_file<arc> in;
 
@@ -2406,18 +2450,18 @@ go_bandit([]() {
           arc_writer aw(in);
 
           aw.push_internal({ n1, false, n2 });
-          aw.push_internal({ n1, true,  n3 });
-          aw.push_internal({ n2, true,  n4 });
+          aw.push_internal({ n1, true, n3 });
+          aw.push_internal({ n2, true, n4 });
 
           aw.push_terminal({ n2, false, terminal_F });
           aw.push_terminal({ n3, false, terminal_F });
-          aw.push_terminal({ n3, true,  terminal_T });
+          aw.push_terminal({ n3, true, terminal_T });
           aw.push_terminal({ n4, false, terminal_T });
-          aw.push_terminal({ n4, true,  terminal_T });
+          aw.push_terminal({ n4, true, terminal_T });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,2u));
-          aw.push(level_info(2,1u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(1, 2u));
+          aw.push(level_info(2, 1u));
         }
 
         in->max_1level_cut = 2;
@@ -2438,7 +2482,7 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -2455,7 +2499,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(2u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
       });
     });
 
@@ -2469,22 +2513,22 @@ go_bandit([]() {
         //          T  F
         */
 
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(1,0);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(1, 0);
 
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ n1, true,  n2 });
+          aw.push_internal({ n1, true, n2 });
 
           aw.push_terminal({ n1, false, terminal_T });
           aw.push_terminal({ n2, false, terminal_T });
-          aw.push_terminal({ n2, true,  terminal_F });
+          aw.push_terminal({ n2, true, terminal_F });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,1u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(1, 1u));
         }
 
         in->max_1level_cut = 1;
@@ -2505,7 +2549,7 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -2522,7 +2566,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(2u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
       });
 
       it("applies to node arcs", [&]() {
@@ -2538,33 +2582,33 @@ go_bandit([]() {
         //             F T                 F T
         */
 
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(1,0);
-        const arc::pointer_type n3(2,0);
-        const arc::pointer_type n4(2,1);
-        const arc::pointer_type n5(3,0);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(1, 0);
+        const arc::pointer_type n3(2, 0);
+        const arc::pointer_type n4(2, 1);
+        const arc::pointer_type n5(3, 0);
 
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ n1, true,  n2 });
+          aw.push_internal({ n1, true, n2 });
           aw.push_internal({ n1, false, n3 });
           aw.push_internal({ n2, false, n3 });
-          aw.push_internal({ n2, true,  n4 });
+          aw.push_internal({ n2, true, n4 });
           aw.push_internal({ n4, false, n5 });
 
           aw.push_terminal({ n3, false, terminal_F });
-          aw.push_terminal({ n3, true,  terminal_T });
-          aw.push_terminal({ n4, true,  terminal_F });
+          aw.push_terminal({ n3, true, terminal_T });
+          aw.push_terminal({ n4, true, terminal_F });
           aw.push_terminal({ n5, false, terminal_F });
-          aw.push_terminal({ n5, true,  terminal_T });
+          aw.push_terminal({ n5, true, terminal_T });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,1u));
-          aw.push(level_info(2,2u));
-          aw.push(level_info(3,1u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(1, 1u));
+          aw.push(level_info(2, 2u));
+          aw.push(level_info(3, 1u));
         }
 
         in->max_1level_cut = 3;
@@ -2588,31 +2632,34 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n2
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       node::pointer_type(2, node::max_id),
-                                                       node::pointer_type(3, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(1,
+                                     node::max_id,
+                                     node::pointer_type(2, node::max_id),
+                                     node::pointer_type(3, node::max_id))));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n1
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       node::pointer_type(2, node::max_id),
-                                                       node::pointer_type(1, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     node::pointer_type(2, node::max_id),
+                                     node::pointer_type(1, node::max_id))));
         AssertThat(out_nodes.can_pull(), Is().False());
-
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -2641,7 +2688,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(5u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
       });
 
       it("can be applied together with reduction rule 2", [&]() {
@@ -2655,10 +2702,10 @@ go_bandit([]() {
         //                T F
         */
 
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(1,0);
-        const arc::pointer_type n3(1,1);
-        const arc::pointer_type n4(2,0);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(1, 0);
+        const arc::pointer_type n3(1, 1);
+        const arc::pointer_type n4(2, 0);
 
         shared_levelized_file<arc> in;
 
@@ -2666,18 +2713,18 @@ go_bandit([]() {
           arc_writer aw(in);
 
           aw.push_internal({ n1, false, n2 });
-          aw.push_internal({ n1, true,  n3 });
-          aw.push_internal({ n3, true,  n4 });
+          aw.push_internal({ n1, true, n3 });
+          aw.push_internal({ n3, true, n4 });
 
           aw.push_terminal({ n2, false, terminal_F });
-          aw.push_terminal({ n2, true,  terminal_T });
+          aw.push_terminal({ n2, true, terminal_T });
           aw.push_terminal({ n3, false, terminal_F });
           aw.push_terminal({ n4, false, terminal_T });
-          aw.push_terminal({ n4, true,terminal_F });
+          aw.push_terminal({ n4, true, terminal_F });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,2u));
-          aw.push(level_info(2,1u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(1, 2u));
+          aw.push(level_info(2, 1u));
         }
 
         in->max_1level_cut = 2;
@@ -2693,24 +2740,24 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n3
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       terminal_F,
-                                                       terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n1
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       node::pointer_type(1, node::max_id),
-                                                       node::pointer_type(1, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     node::pointer_type(1, node::max_id),
+                                     node::pointer_type(1, node::max_id))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -2737,7 +2784,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(3u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("applies to a single node", [&]() {
@@ -2747,7 +2794,7 @@ go_bandit([]() {
         //          T F
         */
 
-        const arc::pointer_type n1(0,0);
+        const arc::pointer_type n1(0, 0);
 
         shared_levelized_file<arc> in;
 
@@ -2755,9 +2802,9 @@ go_bandit([]() {
           arc_writer aw(in);
 
           aw.push_terminal({ n1, false, terminal_T });
-          aw.push_terminal({ n1, true,  terminal_F });
+          aw.push_terminal({ n1, true, terminal_F });
 
-          aw.push(level_info(0,1u));
+          aw.push(level_info(0, 1u));
         }
 
         in->max_1level_cut = 0;
@@ -2792,7 +2839,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can reduce the root", [&]() {
@@ -2804,22 +2851,22 @@ go_bandit([]() {
         //          F T                F T
         */
 
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(1,0);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(1, 0);
 
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ n1,n2 });
+          aw.push_internal({ n1, n2 });
 
-          aw.push_terminal({ n1, true,  terminal_F });
+          aw.push_terminal({ n1, true, terminal_F });
           aw.push_terminal({ n2, false, terminal_F });
-          aw.push_terminal({ n2, true,  terminal_T });
+          aw.push_terminal({ n2, true, terminal_T });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,1u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(1, 1u));
         }
 
         in->max_1level_cut = 1;
@@ -2841,7 +2888,7 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -2858,7 +2905,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(2u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can propagate reduction rule 1 up to a terminal", [&]() {
@@ -2870,22 +2917,22 @@ go_bandit([]() {
         //          F  F
         */
 
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(1,0);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(1, 0);
 
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ n1, true,  n2 });
+          aw.push_internal({ n1, true, n2 });
 
           aw.push_terminal({ n1, false, terminal_F });
           aw.push_terminal({ n2, false, terminal_F });
-          aw.push_terminal({ n2, true,  terminal_F });
+          aw.push_terminal({ n2, true, terminal_F });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,1u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(1, 1u));
         }
 
         in->max_1level_cut = 1;
@@ -2918,7 +2965,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
       });
 
       it("can return non-reducible single-node variable with max_id [1]", [&]() {
@@ -2928,7 +2975,7 @@ go_bandit([]() {
         //          F T               F T
         */
 
-        const arc::pointer_type n1(42,0);
+        const arc::pointer_type n1(42, 0);
 
         shared_levelized_file<arc> in;
 
@@ -2936,9 +2983,9 @@ go_bandit([]() {
           arc_writer aw(in);
 
           aw.push_terminal({ n1, false, terminal_F });
-          aw.push_terminal({ n1, true,  terminal_T });
+          aw.push_terminal({ n1, true, terminal_T });
 
-          aw.push(level_info(42,1u));
+          aw.push(level_info(42, 1u));
         }
 
         in->max_1level_cut = 0;
@@ -2958,7 +3005,7 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(42u,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(42u, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -2975,7 +3022,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(2u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can return non-reducible single-node variable with max_id [2]", [&]() {
@@ -2985,7 +3032,7 @@ go_bandit([]() {
         //          T T               T T
         */
 
-        const arc::pointer_type n1(12,0);
+        const arc::pointer_type n1(12, 0);
 
         shared_levelized_file<arc> in;
 
@@ -2993,9 +3040,9 @@ go_bandit([]() {
           arc_writer aw(in);
 
           aw.push_terminal({ n1, false, terminal_T });
-          aw.push_terminal({ n1, true,  terminal_T });
+          aw.push_terminal({ n1, true, terminal_T });
 
-          aw.push(level_info(12,1u));
+          aw.push(level_info(12, 1u));
         }
 
         in->max_1level_cut = 0;
@@ -3015,7 +3062,7 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(12u,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(12u, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -3032,9 +3079,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(2u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
       });
-
 
       it("can account for a chain of don't cares contributing to the maximum cut [1]", [&]() {
         /*
@@ -3053,53 +3099,53 @@ go_bandit([]() {
         //       F T T T             F T T T
         */
 
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(1,0);
-        const arc::pointer_type n3(1,1);
-        const arc::pointer_type n4(2,0);
-        const arc::pointer_type n5(2,1);
-        const arc::pointer_type n6(3,0);
-        const arc::pointer_type n7(3,1);
-        const arc::pointer_type n8(4,0);
-        const arc::pointer_type n9(4,1);
-        const arc::pointer_type n10(5,0);
-        const arc::pointer_type n11(5,1);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(1, 0);
+        const arc::pointer_type n3(1, 1);
+        const arc::pointer_type n4(2, 0);
+        const arc::pointer_type n5(2, 1);
+        const arc::pointer_type n6(3, 0);
+        const arc::pointer_type n7(3, 1);
+        const arc::pointer_type n8(4, 0);
+        const arc::pointer_type n9(4, 1);
+        const arc::pointer_type n10(5, 0);
+        const arc::pointer_type n11(5, 1);
 
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ n1,  false, n2 });
-          aw.push_internal({ n1,  true,  n3 });
-          aw.push_internal({ n2,  false, n4 });
-          aw.push_internal({ n2,  true,  n5 });
-          aw.push_internal({ n3,  false, n5 });
-          aw.push_internal({ n4,  false, n6 });
-          aw.push_internal({ n4,  true,  n7 });
-          aw.push_internal({ n5,  false, n7 });
-          aw.push_internal({ n6,  false, n8 });
-          aw.push_internal({ n6,  true,  n9 });
-          aw.push_internal({ n7,  false, n9 });
-          aw.push_internal({ n8,  false, n10 });
-          aw.push_internal({ n8,  true,  n11 });
-          aw.push_internal({ n9,  false, n11 });
+          aw.push_internal({ n1, false, n2 });
+          aw.push_internal({ n1, true, n3 });
+          aw.push_internal({ n2, false, n4 });
+          aw.push_internal({ n2, true, n5 });
+          aw.push_internal({ n3, false, n5 });
+          aw.push_internal({ n4, false, n6 });
+          aw.push_internal({ n4, true, n7 });
+          aw.push_internal({ n5, false, n7 });
+          aw.push_internal({ n6, false, n8 });
+          aw.push_internal({ n6, true, n9 });
+          aw.push_internal({ n7, false, n9 });
+          aw.push_internal({ n8, false, n10 });
+          aw.push_internal({ n8, true, n11 });
+          aw.push_internal({ n9, false, n11 });
 
-          aw.push_terminal({ n3,  true,  terminal_F });
-          aw.push_terminal({ n5,  true,  terminal_F });
-          aw.push_terminal({ n7,  true,  terminal_F });
-          aw.push_terminal({ n9,  true,  terminal_F });
+          aw.push_terminal({ n3, true, terminal_F });
+          aw.push_terminal({ n5, true, terminal_F });
+          aw.push_terminal({ n7, true, terminal_F });
+          aw.push_terminal({ n9, true, terminal_F });
           aw.push_terminal({ n10, false, terminal_F });
-          aw.push_terminal({ n10, true,  terminal_T });
+          aw.push_terminal({ n10, true, terminal_T });
           aw.push_terminal({ n11, false, terminal_T });
-          aw.push_terminal({ n11, true,  terminal_T });
+          aw.push_terminal({ n11, true, terminal_T });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,2u));
-          aw.push(level_info(2,2u));
-          aw.push(level_info(3,2u));
-          aw.push(level_info(4,2u));
-          aw.push(level_info(5,2u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(1, 2u));
+          aw.push(level_info(2, 2u));
+          aw.push(level_info(3, 2u));
+          aw.push(level_info(4, 2u));
+          aw.push(level_info(5, 2u));
         }
 
         in->max_1level_cut = 4;
@@ -3113,62 +3159,68 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n11
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id,
-                                                       terminal_T,
-                                                       terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id, terminal_T, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n10
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id-1,
-                                                       terminal_F,
-                                                       terminal_T)));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(5, node::max_id - 1, terminal_F, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n9
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id,
-                                                       node::pointer_type(5, node::max_id-1),
-                                                       node::pointer_type(5, node::max_id))));
-
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(4,
+                                     node::max_id,
+                                     node::pointer_type(5, node::max_id - 1),
+                                     node::pointer_type(5, node::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n7
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id,
-                                                       node::pointer_type(4, node::max_id),
-                                                       node::pointer_type(5, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(3,
+                                     node::max_id,
+                                     node::pointer_type(4, node::max_id),
+                                     node::pointer_type(5, node::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n5
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                       node::pointer_type(3, node::max_id),
-                                                       node::pointer_type(5, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(2,
+                                     node::max_id,
+                                     node::pointer_type(3, node::max_id),
+                                     node::pointer_type(5, node::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n3
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       node::pointer_type(2, node::max_id),
-                                                       node::pointer_type(5, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(1,
+                                     node::max_id,
+                                     node::pointer_type(2, node::max_id),
+                                     node::pointer_type(5, node::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n1
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       node::pointer_type(1, node::max_id),
-                                                       node::pointer_type(5, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     node::pointer_type(1, node::max_id),
+                                     node::pointer_type(5, node::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(5,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(5, 2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(4,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(4, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -3193,7 +3245,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(8u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(3u));
       });
 
       it("Merges nodes, despite of reduction rule 1 flag on child", [&]() {
@@ -3207,10 +3259,10 @@ go_bandit([]() {
         //       T F
         */
 
-        const arc::pointer_type n1(0,0);
-        const arc::pointer_type n2(1,0);
-        const arc::pointer_type n3(1,1);
-        const arc::pointer_type n4(2,0);
+        const arc::pointer_type n1(0, 0);
+        const arc::pointer_type n2(1, 0);
+        const arc::pointer_type n3(1, 1);
+        const arc::pointer_type n4(2, 0);
 
         shared_levelized_file<arc> in;
 
@@ -3218,18 +3270,18 @@ go_bandit([]() {
           arc_writer aw(in);
 
           aw.push_internal({ n1, false, n2 });
-          aw.push_internal({ n1, true,  n3 });
-          aw.push_internal({ n2, true,  n4 });
+          aw.push_internal({ n1, true, n3 });
+          aw.push_internal({ n2, true, n4 });
 
           aw.push_terminal({ n2, false, terminal_F });
           aw.push_terminal({ n3, false, terminal_F });
-          aw.push_terminal({ n3, true,  terminal_T });
+          aw.push_terminal({ n3, true, terminal_T });
           aw.push_terminal({ n4, false, terminal_T });
-          aw.push_terminal({ n4, true,  terminal_F });
+          aw.push_terminal({ n4, true, terminal_F });
 
-          aw.push(level_info(0,1u));
-          aw.push(level_info(1,2u));
-          aw.push(level_info(2,1u));
+          aw.push(level_info(0, 1u));
+          aw.push(level_info(1, 2u));
+          aw.push(level_info(2, 1u));
         }
 
         in->max_1level_cut = 2;
@@ -3246,19 +3298,21 @@ go_bandit([]() {
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n1
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       node::pointer_type(1, node::max_id),
-                                                       node::pointer_type(1, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     node::pointer_type(1, node::max_id),
+                                     node::pointer_type(1, node::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -3284,8 +3338,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(3u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
       });
     });
   });
- });
+});

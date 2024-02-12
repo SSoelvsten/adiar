@@ -20,7 +20,8 @@ namespace adiar
   ///
   /// \copydetails adiar::internal::__dd
   //////////////////////////////////////////////////////////////////////////////
-  class __zdd : public internal::__dd {
+  class __zdd : public internal::__dd
+  {
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Default constructor with an empty result.
@@ -30,17 +31,17 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Wrapper for an algorithm's already reduced output.
     ////////////////////////////////////////////////////////////////////////////
-    __zdd(const shared_node_file_type &f);
+    __zdd(const shared_node_file_type& f);
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Wrapper for an algorithm's unreduced output.
     ////////////////////////////////////////////////////////////////////////////
-    __zdd(const shared_arc_file_type &f, const exec_policy &ep);
+    __zdd(const shared_arc_file_type& f, const exec_policy& ep);
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Conversion constructor from a `bdd` to pass along a prior value.
     ////////////////////////////////////////////////////////////////////////////
-    __zdd(const zdd &zdd);
+    __zdd(const zdd& zdd);
 
     // NOTE:
     //   '__dd' class includes 'max_1level_cut' and 'max_2level_cut' operations.
@@ -65,11 +66,15 @@ namespace adiar
     friend __zdd;
 
     // |- functions
-    friend size_t zdd_nodecount(const zdd&);
-    friend zdd::label_type zdd_varcount(const zdd&);
+    friend size_t
+    zdd_nodecount(const zdd&);
+    friend zdd::label_type
+    zdd_varcount(const zdd&);
 
-    friend bool zdd_subseteq(const exec_policy &ep, const zdd&, const zdd&);
-    friend bool zdd_disjoint(const exec_policy &ep, const zdd &, const zdd &);
+    friend bool
+    zdd_subseteq(const exec_policy& ep, const zdd&, const zdd&);
+    friend bool
+    zdd_disjoint(const exec_policy& ep, const zdd&, const zdd&);
 
   public:
     /// \cond
@@ -106,19 +111,19 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor to wrap the node-based result of an algorithm.
     ////////////////////////////////////////////////////////////////////////////
-    zdd(const zdd::shared_node_file_type &A, bool negate = false);
+    zdd(const zdd::shared_node_file_type& A, bool negate = false);
     /// \endcond
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Copy construction, incrementing thre reference count on the file
     ///        underneath.
     ////////////////////////////////////////////////////////////////////////////
-    zdd(const zdd &oA);
+    zdd(const zdd& oA);
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Move construction, taking over ownership of the files underneath.
     ////////////////////////////////////////////////////////////////////////////
-    zdd(zdd &&A);
+    zdd(zdd&& A);
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Implicit move conversion from a possibly to-be reduced result
@@ -131,7 +136,7 @@ namespace adiar
     /// \remark  Since the value `o` is forced to be moved, we force the content
     ///          of `o` to be destructed after finishing the *Reduce* algorithm.
     ////////////////////////////////////////////////////////////////////////////
-    zdd(__zdd &&A);
+    zdd(__zdd&& A);
 
     ////////////////////////////////////////////////////////////////////////////
     // Accessors overwrite
@@ -143,7 +148,8 @@ namespace adiar
     ///
     /// \param ct The type of the cut to obtain
     ////////////////////////////////////////////////////////////////////////////
-    internal::cut::size_type max_1level_cut(const internal::cut ct) const
+    internal::cut::size_type
+    max_1level_cut(const internal::cut ct) const
     {
       return add_false_cofactor(ct, file->max_1level_cut);
     }
@@ -154,10 +160,12 @@ namespace adiar
     ///
     /// \param ct The type of the cut to obtain
     ////////////////////////////////////////////////////////////////////////////
-    internal::cut::size_type max_2level_cut(const internal::cut ct) const
+    internal::cut::size_type
+    max_2level_cut(const internal::cut ct) const
     {
       return add_false_cofactor(ct, file->max_2level_cut);
     }
+
     /// \endcond
 
   private:
@@ -165,13 +173,14 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Accounts for the false arc added due to using a co-factor.
     ////////////////////////////////////////////////////////////////////////////
-    internal::cut::size_type add_false_cofactor(const internal::cut ct, const internal::cuts_t &ilevel_cuts) const
+    internal::cut::size_type
+    add_false_cofactor(const internal::cut ct, const internal::cuts_t& ilevel_cuts) const
     {
       const internal::safe_size_t cut_size = ilevel_cuts[ct];
 
       // Bit-mask (allowing implicit conversion to size_t with bit-operators) to
       // get the cut-type WITHOUT the false arcs.
-      constexpr size_t bit_mask = internal::cut::Internal_True;
+      constexpr size_t bit_mask         = internal::cut::Internal_True;
       const internal::cut ct_excl_false = static_cast<internal::cut>(ct & bit_mask);
 
       // In product construction algorithms we need to take into account the
@@ -192,6 +201,7 @@ namespace adiar
 
       return internal::to_size(cut_size + add_suppressed);
     }
+
     /// \endcond
 
     ////////////////////////////////////////////////////////////////////////////
@@ -200,39 +210,47 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Assigns new `zdd`.
     ////////////////////////////////////////////////////////////////////////////
-    zdd& operator= (const zdd &other);
+    zdd&
+    operator=(const zdd& other);
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Assigns new `zdd` to a variable; the content is derefenced before
     ///        the given `__zdd` is reduced into a `zdd`.
     ////////////////////////////////////////////////////////////////////////////
-    zdd& operator= (__zdd &&other);
+    zdd&
+    operator=(__zdd&& other);
 
     ////////////////////////////////////////////////////////////////////////////
     /// \see zdd_intsec
     ////////////////////////////////////////////////////////////////////////////
-    zdd& operator&= (const zdd &other);
+    zdd&
+    operator&=(const zdd& other);
 
     /// \cond
-    zdd& operator&= (zdd &&other);
+    zdd&
+    operator&=(zdd&& other);
     /// \endcond
 
     ////////////////////////////////////////////////////////////////////////////
     /// \see zdd_union
     ////////////////////////////////////////////////////////////////////////////
-    zdd& operator|= (const zdd &other);
+    zdd&
+    operator|=(const zdd& other);
 
     /// \cond
-    zdd& operator|= (zdd &&other);
+    zdd&
+    operator|=(zdd&& other);
     /// \endcond
 
     ////////////////////////////////////////////////////////////////////////////
     /// \see zdd_diff
     ////////////////////////////////////////////////////////////////////////////
-    zdd& operator-= (const zdd &other);
+    zdd&
+    operator-=(const zdd& other);
 
     /// \cond
-    zdd& operator-= (zdd &&other);
+    zdd&
+    operator-=(zdd&& other);
     /// \endcond
   };
 }

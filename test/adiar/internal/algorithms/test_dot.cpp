@@ -1,6 +1,6 @@
 #include "../../../test.h"
-
 #include <fstream>
+
 #include <adiar/internal/algorithms/dot.h>
 
 go_bandit([]() {
@@ -19,14 +19,13 @@ go_bandit([]() {
       { // Garbage collect writer early
         node_writer rw(reduced_bdd);
 
-        rw << node(42,1, ptr_uint64(false), ptr_uint64(true))
-           << node(42,0, ptr_uint64(true), ptr_uint64(false))
-           << node(1,2, ptr_uint64(42,0), ptr_uint64(42,1))
-           << node(0,1, ptr_uint64(1,2), ptr_uint64(false))
-          ;
+        rw << node(42, 1, ptr_uint64(false), ptr_uint64(true))
+           << node(42, 0, ptr_uint64(true), ptr_uint64(false))
+           << node(1, 2, ptr_uint64(42, 0), ptr_uint64(42, 1))
+           << node(0, 1, ptr_uint64(1, 2), ptr_uint64(false));
       }
 
-      bdd_printdot(reduced_bdd, "dot_test_bdd__without_ids.dot"/*, false*/);
+      bdd_printdot(reduced_bdd, "dot_test_bdd__without_ids.dot" /*, false*/);
       int exit_value = system("dot -O -Tpng dot_test_bdd__without_ids.dot");
       AssertThat(exit_value, Is().EqualTo(0));
     });
@@ -37,10 +36,9 @@ go_bandit([]() {
       { // Garbage collect writer early
         node_writer rw(reduced_bdd);
 
-        rw << node(1,1, ptr_uint64(false), ptr_uint64(true))
-           << node(1,0, ptr_uint64(true),  ptr_uint64(false))
-           << node(0,0, ptr_uint64(1,0),   ptr_uint64(1,1))
-          ;
+        rw << node(1, 1, ptr_uint64(false), ptr_uint64(true))
+           << node(1, 0, ptr_uint64(true), ptr_uint64(false))
+           << node(0, 0, ptr_uint64(1, 0), ptr_uint64(1, 1));
       }
 
       bdd_printdot(reduced_bdd, "dot_test_bdd__with_ids.dot", true);
@@ -77,10 +75,9 @@ go_bandit([]() {
       { // Garbage collect writer early
         node_writer rw(reduced_zdd);
 
-        rw << node(42,0, ptr_uint64(false), ptr_uint64(true))
-           << node(1,2, ptr_uint64(42,0), ptr_uint64(42,0))
-           << node(0,1, ptr_uint64(1,2), ptr_uint64(true))
-          ;
+        rw << node(42, 0, ptr_uint64(false), ptr_uint64(true))
+           << node(1, 2, ptr_uint64(42, 0), ptr_uint64(42, 0))
+           << node(0, 1, ptr_uint64(1, 2), ptr_uint64(true));
       }
 
       zdd_printdot(reduced_zdd, "dot_test_zdd.dot");
@@ -109,15 +106,15 @@ go_bandit([]() {
       { // Garbage collect writer early
         arc_writer uw(unreduced_bdd);
 
-        uw.push_terminal({ flag(ptr_uint64(2,0)), ptr_uint64(true) });
-        uw.push_terminal({ ptr_uint64(2,0), ptr_uint64(true) });
-        uw.push_terminal({ ptr_uint64(1,1), ptr_uint64(true) });
+        uw.push_terminal({ flag(ptr_uint64(2, 0)), ptr_uint64(true) });
+        uw.push_terminal({ ptr_uint64(2, 0), ptr_uint64(true) });
+        uw.push_terminal({ ptr_uint64(1, 1), ptr_uint64(true) });
 
-        uw.push_internal({ ptr_uint64(0,0), ptr_uint64(1,0) });
-        uw.push_internal({ ptr_uint64(0,0), ptr_uint64(1,1) });
-        uw.push_internal({ ptr_uint64(1,0), ptr_uint64(2,0) });
-        uw.push_internal({ flag(ptr_uint64(1,0)), ptr_uint64(2,0) });
-        uw.push_internal({ flag(ptr_uint64(1,1)), ptr_uint64(2,0) });
+        uw.push_internal({ ptr_uint64(0, 0), ptr_uint64(1, 0) });
+        uw.push_internal({ ptr_uint64(0, 0), ptr_uint64(1, 1) });
+        uw.push_internal({ ptr_uint64(1, 0), ptr_uint64(2, 0) });
+        uw.push_internal({ flag(ptr_uint64(1, 0)), ptr_uint64(2, 0) });
+        uw.push_internal({ flag(ptr_uint64(1, 1)), ptr_uint64(2, 0) });
       }
 
       print_dot(unreduced_bdd, "dot_test_unreduced.dot");
@@ -125,4 +122,4 @@ go_bandit([]() {
       AssertThat(exit_value, Is().EqualTo(0));
     });
   });
- });
+});

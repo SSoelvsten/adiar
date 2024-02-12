@@ -8,7 +8,7 @@ namespace adiar
 {
   class zdd_contains_visitor
   {
-    const generator<zdd::label_type> &gen;
+    const generator<zdd::label_type>& gen;
 
     optional<zdd::label_type> l;
 
@@ -21,13 +21,14 @@ namespace adiar
     bool terminal_val = false;
 
   public:
-    zdd_contains_visitor(const generator<zdd::label_type> &a)
+    zdd_contains_visitor(const generator<zdd::label_type>& a)
       : gen(a)
     {
       l = gen();
     }
 
-    inline zdd::pointer_type visit(const zdd::node_type &n)
+    inline zdd::pointer_type
+    visit(const zdd::node_type& n)
     {
       visited_label = n.label();
 
@@ -36,19 +37,15 @@ namespace adiar
 
       if (l) {
         // Did we miss a label before the root?
-        if (is_first_visit && l.value() < visited_label) {
-          return zdd::pointer_type::nil();
-        }
+        if (is_first_visit && l.value() < visited_label) { return zdd::pointer_type::nil(); }
 
         // Forward once (if node was in the set) to hold onto the next to-be
         // visited level.
-        if (l.value() == visited_label) {
-          l = gen();
-        }
+        if (l.value() == visited_label) { l = gen(); }
 
         // Will we miss the next to-be visited level?
-        if (next_ptr.is_node() && l.has_value()
-            && visited_label < l.value() && l.value() < next_ptr.label()) {
+        if (next_ptr.is_node() && l.has_value() && visited_label < l.value()
+            && l.value() < next_ptr.label()) {
           return zdd::pointer_type::nil();
         }
       }
@@ -57,14 +54,21 @@ namespace adiar
       return next_ptr;
     }
 
-    inline void visit(const bool s)
-    { terminal_val = s; }
+    inline void
+    visit(const bool s)
+    {
+      terminal_val = s;
+    }
 
-    inline bool get_result()
-    { return terminal_val && !l.has_value(); }
+    inline bool
+    get_result()
+    {
+      return terminal_val && !l.has_value();
+    }
   };
 
-  bool zdd_contains(const zdd &zdd, const generator<zdd::label_type> &a)
+  bool
+  zdd_contains(const zdd& zdd, const generator<zdd::label_type>& a)
   {
     zdd_contains_visitor v(a);
     internal::traverse(zdd, v);

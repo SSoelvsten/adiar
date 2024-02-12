@@ -20,7 +20,6 @@ namespace adiar::internal
 
     /* ================================ VARIABLES =========================== */
   private:
-
     level_type _label;
 
     size_t _width;
@@ -41,7 +40,7 @@ namespace adiar::internal
     /// \details The default, copy, and move construction has to be `default` to
     ///          ensure it is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    level_info(const level_info &li) = default;
+    level_info(const level_info& li) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   Move construction (trivial).
@@ -49,7 +48,7 @@ namespace adiar::internal
     /// \details The default, copy, and move construction has to be `default` to
     ///          ensure it is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    level_info(level_info &&li) = default;
+    level_info(level_info&& li) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   Destruction (trivial).
@@ -64,8 +63,9 @@ namespace adiar::internal
     ///        the identity variable ordering.
     ////////////////////////////////////////////////////////////////////////////
     level_info(level_type label, size_t width)
-      : _label(label), _width(width)
-    { }
+      : _label(label)
+      , _width(width)
+    {}
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -74,7 +74,8 @@ namespace adiar::internal
     /// \details The copy and move assignment has to be `default` to ensure it
     ///          is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    level_info& operator =(const level_info &li) = default;
+    level_info&
+    operator=(const level_info& li) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   Move assignment (trivial).
@@ -82,48 +83,66 @@ namespace adiar::internal
     /// \details The copy and move assignment has to be `default` to ensure it
     ///          is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    level_info& operator =(level_info &&li) = default;
+    level_info&
+    operator=(level_info&& li) = default;
 
     /* ============================ MEMBER FUNCTIONS ======================== */
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the label for a level.
     ////////////////////////////////////////////////////////////////////////////
-    level_type label() const
-    { return _label; }
+    level_type
+    label() const
+    {
+      return _label;
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the level.
     ////////////////////////////////////////////////////////////////////////////
-    level_type level() const
-    { return _label; }
+    level_type
+    level() const
+    {
+      return _label;
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the width (i.e. number of nodes) of this level.
     ////////////////////////////////////////////////////////////////////////////
-    level_type width() const
-    { return _width; }
+    level_type
+    width() const
+    {
+      return _width;
+    }
 
     /* =============================== OPERATORS ============================ */
   public:
-
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether all entries on this level match.
     ////////////////////////////////////////////////////////////////////////////
-    inline bool operator== (const level_info &o) const
-    { return this->_label == o._label && this->_width == o._width; }
+    inline bool
+    operator==(const level_info& o) const
+    {
+      return this->_label == o._label && this->_width == o._width;
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether any entry on this level mismatches.
     ////////////////////////////////////////////////////////////////////////////
-    inline bool operator!= (const level_info &o) const
-    { return !(*this == o); }
+    inline bool
+    operator!=(const level_info& o) const
+    {
+      return !(*this == o);
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the level info for the negated decision diagram.
     ////////////////////////////////////////////////////////////////////////////
-    level_info operator! () const
-    { return *this; }
+    level_info
+    operator!() const
+    {
+      return *this;
+    }
   };
 }
 

@@ -2,12 +2,12 @@
 #define ADIAR_INTERNAL_IO_LEVELIZED_FILE_WRITER_H
 
 #include <adiar/internal/assert.h>
-#include <adiar/internal/memory.h>
+#include <adiar/internal/io/arc_file.h>
 #include <adiar/internal/io/file.h>
 #include <adiar/internal/io/file_writer.h>
 #include <adiar/internal/io/levelized_file.h>
-#include <adiar/internal/io/arc_file.h>
 #include <adiar/internal/io/node_file.h>
+#include <adiar/internal/memory.h>
 
 namespace adiar::internal
 {
@@ -22,10 +22,11 @@ namespace adiar::internal
   public:
     using value_type = T;
 
-    static size_t memory_usage()
+    static size_t
+    memory_usage()
     {
       return file_traits<value_type>::files * file_writer<value_type>::memory_usage()
-           + 1u * file_writer<level_info>::memory_usage();
+        + 1u * file_writer<level_info>::memory_usage();
     }
 
   protected:
@@ -44,21 +45,24 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Writers for each of the files with 'value_type'.
     ////////////////////////////////////////////////////////////////////////////
-    file_writer<value_type> _elem_writers [elem_writers];
+    file_writer<value_type> _elem_writers[elem_writers];
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct unattached to any levelized file.
     ////////////////////////////////////////////////////////////////////////////
-    levelized_file_writer() { }
+    levelized_file_writer()
+    {}
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a given levelized file.
     ///
     /// \pre No file stream or other writer is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
-    levelized_file_writer(levelized_file<value_type> &f)
-    { attach(f); }
+    levelized_file_writer(levelized_file<value_type>& f)
+    {
+      attach(f);
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a given shared levelized file.
@@ -66,13 +70,15 @@ namespace adiar::internal
     /// \pre No file stream or other writer is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
     levelized_file_writer(adiar::shared_ptr<levelized_file<value_type>> f)
-    { attach(f); }
+    {
+      attach(f);
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Detaches and cleans up when destructed.
     ////////////////////////////////////////////////////////////////////////////
     ~levelized_file_writer()
-    { } // <-- detach within `~file_writer<...>()`
+    {} // <-- detach within `~file_writer<...>()`
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -82,14 +88,15 @@ namespace adiar::internal
     ///          ensure, that the file in question is not destructed before
     ///          `.detach()` is called.
     ////////////////////////////////////////////////////////////////////////////
-    void attach(levelized_file<value_type> &f)
+    void
+    attach(levelized_file<value_type>& f)
     {
       if (attached()) { detach(); }
 
       // The stack variable is made accessible in '_file_ptr', but it should not
       // be garbage collected. Hence, we provide a do-nothing deleter to the
       // 'std::shared_ptr' directly.
-      _file_ptr = std::shared_ptr<levelized_file<value_type>>(&f, [](void *) {});
+      _file_ptr = std::shared_ptr<levelized_file<value_type>>(&f, [](void*) {});
 
       _level_writer.attach(f._level_info_file, nullptr);
       for (size_t s_idx = 0; s_idx < file_traits<value_type>::files; s_idx++)
@@ -99,7 +106,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Attach to a shared file.
     ////////////////////////////////////////////////////////////////////////////
-    void attach(adiar::shared_ptr<levelized_file<value_type>> f)
+    void
+    attach(adiar::shared_ptr<levelized_file<value_type>> f)
     {
       if (attached()) { detach(); }
 
@@ -113,7 +121,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the writer currently is attached to a levelized file.
     ////////////////////////////////////////////////////////////////////////////
-    bool attached() const
+    bool
+    attached() const
     {
       const bool res = _level_writer.attached();
 #ifndef NDEBUG
@@ -128,11 +137,11 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Detach from a levelized file (if need be)
     ////////////////////////////////////////////////////////////////////////////
-    void detach()
+    void
+    detach()
     {
       _level_writer.detach();
-      for (size_t s_idx = 0; s_idx < elem_writers; s_idx++)
-        _elem_writers[s_idx].detach();
+      for (size_t s_idx = 0; s_idx < elem_writers; s_idx++) _elem_writers[s_idx].detach();
       _file_ptr.reset();
     }
 
@@ -143,7 +152,8 @@ namespace adiar::internal
     ///
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    void push(const level_info &li)
+    void
+    push(const level_info& li)
     {
       _level_writer.push(li);
     }
@@ -155,7 +165,8 @@ namespace adiar::internal
     ///
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    levelized_file_writer<value_type>& operator<< (const level_info& li)
+    levelized_file_writer<value_type>&
+    operator<<(const level_info& li)
     {
       this->push(li);
       return *this;
@@ -167,11 +178,11 @@ namespace adiar::internal
     /// \tparam s_idx File index to push to.
     /// \param  e     Element to push.
     ////////////////////////////////////////////////////////////////////////////
-    template<size_t s_idx>
-    void push(const value_type &e)
+    template <size_t s_idx>
+    void
+    push(const value_type& e)
     {
-      static_assert(s_idx < elem_writers,
-                    "Sub-stream index must be within [0; elem_writers).");
+      static_assert(s_idx < elem_writers, "Sub-stream index must be within [0; elem_writers).");
 
       _elem_writers[s_idx].push(e);
     }
@@ -180,10 +191,10 @@ namespace adiar::internal
     /// \brief Number of elements written to the underlying files (excluding the
     ///        level info file).
     ////////////////////////////////////////////////////////////////////////////
-    size_t size(const size_t s_idx) const
+    size_t
+    size(const size_t s_idx) const
     {
-      adiar_assert(s_idx < elem_writers,
-                   "Sub-stream index must be within [0; elem_writers).");
+      adiar_assert(s_idx < elem_writers, "Sub-stream index must be within [0; elem_writers).");
       return _elem_writers[s_idx].size();
     }
 
@@ -191,25 +202,28 @@ namespace adiar::internal
     /// \brief Number of elements written to the underlying files (excluding the
     ///        level info file).
     ////////////////////////////////////////////////////////////////////////////
-    size_t size() const
+    size_t
+    size() const
     {
       size_t acc = 0u;
-      for (size_t s_idx = 0; s_idx < elem_writers; s_idx++) {
-        acc += size(s_idx);
-      }
+      for (size_t s_idx = 0; s_idx < elem_writers; s_idx++) { acc += size(s_idx); }
       return acc;
     }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Number of elements in the level info file.
     ////////////////////////////////////////////////////////////////////////////
-    size_t levels() const
-    { return _level_writer.size(); }
+    size_t
+    levels() const
+    {
+      return _level_writer.size();
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether anything has been pushed to any of the underlying files.
     ////////////////////////////////////////////////////////////////////////////
-    bool has_pushed() const
+    bool
+    has_pushed() const
     {
       for (size_t s_idx = 0; s_idx < elem_writers; s_idx++) {
         if (size(s_idx) > 0) { return true; }
@@ -220,8 +234,11 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the underlying file is empty.
     ////////////////////////////////////////////////////////////////////////////
-    bool empty() const
-    { return !has_pushed(); }
+    bool
+    empty() const
+    {
+      return !has_pushed();
+    }
   };
 }
 

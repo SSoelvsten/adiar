@@ -19,10 +19,10 @@ go_bandit([]() {
     */
 
     { // Garbage collect writer to free write-lock
-      node n4 = node(3,0, terminal_F, terminal_T);
-      node n3 = node(2,0, terminal_F, n4.uid());
-      node n2 = node(1,0, n3.uid(), n4.uid());
-      node n1 = node(0,0, n3.uid(), n2.uid());
+      node n4 = node(3, 0, terminal_F, terminal_T);
+      node n3 = node(2, 0, terminal_F, n4.uid());
+      node n2 = node(1, 0, n3.uid(), n4.uid());
+      node n1 = node(0, 0, n3.uid(), n2.uid());
 
       node_writer nw_1(bdd_1);
       nw_1 << n4 << n3 << n2 << n1;
@@ -40,8 +40,8 @@ go_bandit([]() {
     */
 
     { // Garbage collect writer to free write-lock
-      node n2 = node(2,0, terminal_F, terminal_T);
-      node n1 = node(1,0, n2.uid(), terminal_T);
+      node n2 = node(2, 0, terminal_F, terminal_T);
+      node n1 = node(1, 0, n2.uid(), terminal_T);
 
       node_writer nw_2(bdd_2);
       nw_2 << n2 << n1;
@@ -59,9 +59,9 @@ go_bandit([]() {
     */
 
     { // Garbage collect writer to free write-lock
-      node n3 = node(2,1, terminal_T, terminal_F);
-      node n2 = node(2,0, terminal_F, terminal_T);
-      node n1 = node(1,0, n2.uid(), n3.uid());
+      node n3 = node(2, 1, terminal_T, terminal_F);
+      node n2 = node(2, 0, terminal_F, terminal_T);
+      node n1 = node(1, 0, n2.uid(), n3.uid());
 
       node_writer nw_3(bdd_3);
       nw_3 << n3 << n2 << n1;
@@ -82,12 +82,12 @@ go_bandit([]() {
     */
 
     { // Garbage collect writer to free write-lock
-      node n6 = node(6,1, terminal_F, terminal_T);
-      node n5 = node(6,0, terminal_T, terminal_F);
-      node n4 = node(4,0, n5.uid(), n6.uid());
-      node n3 = node(2,1, n5.uid(), n4.uid());
-      node n2 = node(2,0, n4.uid(), n6.uid());
-      node n1 = node(0,0, n2.uid(), n3.uid());
+      node n6 = node(6, 1, terminal_F, terminal_T);
+      node n5 = node(6, 0, terminal_T, terminal_F);
+      node n4 = node(4, 0, n5.uid(), n6.uid());
+      node n3 = node(2, 1, n5.uid(), n4.uid());
+      node n2 = node(2, 0, n4.uid(), n6.uid());
+      node n1 = node(0, 0, n2.uid(), n3.uid());
 
       node_writer nw_4(bdd_4);
       nw_4 << n6 << n5 << n4 << n3 << n2 << n1;
@@ -122,7 +122,7 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw_root_1(bdd_root_1);
-      nw_root_1 << node(1,0, terminal_F, terminal_T);
+      nw_root_1 << node(1, 0, terminal_F, terminal_T);
     }
 
     // Set domain to be empty
@@ -154,41 +154,32 @@ go_bandit([]() {
     });
 
     describe("bdd_pathcount", [&]() {
-      it("can count paths leading to T terminals [1]", [&]() {
-        AssertThat(bdd_pathcount(bdd_1), Is().EqualTo(3u));
-      });
+      it("can count paths leading to T terminals [1]",
+         [&]() { AssertThat(bdd_pathcount(bdd_1), Is().EqualTo(3u)); });
 
-      it("can count paths leading to T terminals [2]", [&]() {
-        AssertThat(bdd_pathcount(bdd_2), Is().EqualTo(2u));
-      });
+      it("can count paths leading to T terminals [2]",
+         [&]() { AssertThat(bdd_pathcount(bdd_2), Is().EqualTo(2u)); });
 
-      it("can count paths leading to T terminals [3]", [&]() {
-        AssertThat(bdd_pathcount(bdd_3), Is().EqualTo(2u));
-      });
+      it("can count paths leading to T terminals [3]",
+         [&]() { AssertThat(bdd_pathcount(bdd_3), Is().EqualTo(2u)); });
 
-      it("can count paths leading to T terminals [4]", [&]() {
-        AssertThat(bdd_pathcount(bdd_4), Is().EqualTo(6u));
-      });
+      it("can count paths leading to T terminals [4]",
+         [&]() { AssertThat(bdd_pathcount(bdd_4), Is().EqualTo(6u)); });
 
-      it("can count paths leading to F terminals [1]", [&]() {
-        AssertThat(bdd_pathcount(bdd_not(bdd_1)), Is().EqualTo(5u));
-      });
+      it("can count paths leading to F terminals [1]",
+         [&]() { AssertThat(bdd_pathcount(bdd_not(bdd_1)), Is().EqualTo(5u)); });
 
-      it("can count paths leading to F terminals [2]", [&]() {
-        AssertThat(bdd_pathcount(bdd_not(bdd_2)), Is().EqualTo(1u));
-      });
+      it("can count paths leading to F terminals [2]",
+         [&]() { AssertThat(bdd_pathcount(bdd_not(bdd_2)), Is().EqualTo(1u)); });
 
-      it("should count no paths in a true terminal-only BDD", [&]() {
-        AssertThat(bdd_pathcount(bdd_T), Is().EqualTo(0u));
-      });
+      it("should count no paths in a true terminal-only BDD",
+         [&]() { AssertThat(bdd_pathcount(bdd_T), Is().EqualTo(0u)); });
 
-      it("should count no paths in a false terminal-only BDD", [&]() {
-        AssertThat(bdd_pathcount(bdd_F), Is().EqualTo(0u));
-      });
+      it("should count no paths in a false terminal-only BDD",
+         [&]() { AssertThat(bdd_pathcount(bdd_F), Is().EqualTo(0u)); });
 
-      it("should count paths of a root-only BDD [1]", [&]() {
-        AssertThat(bdd_pathcount(bdd_root_1), Is().EqualTo(1u));
-      });
+      it("should count paths of a root-only BDD [1]",
+         [&]() { AssertThat(bdd_pathcount(bdd_root_1), Is().EqualTo(1u)); });
     });
 
     describe("bdd_satcount(f, varcount)", [&]() {
@@ -242,43 +233,34 @@ go_bandit([]() {
         AssertThat(bdd_satcount(bdd_not(bdd_F), 2), Is().EqualTo(4u));
       });
 
-      it("throws exception on varcount being smaller than the number of levels [1]", [&]() {
-        AssertThrows(invalid_argument, bdd_satcount(bdd_1, 3));
-      });
+      it("throws exception on varcount being smaller than the number of levels [1]",
+         [&]() { AssertThrows(invalid_argument, bdd_satcount(bdd_1, 3)); });
 
-      it("throws exception on varcount being smaller than the number of levels [2]", [&]() {
-        AssertThrows(invalid_argument, bdd_satcount(bdd_2, 1));
-      });
+      it("throws exception on varcount being smaller than the number of levels [2]",
+         [&]() { AssertThrows(invalid_argument, bdd_satcount(bdd_2, 1)); });
 
-      it("throws exception on varcount being smaller than the number of levels [3]", [&]() {
-        AssertThrows(invalid_argument, bdd_satcount(bdd_3, 1));
-      });
+      it("throws exception on varcount being smaller than the number of levels [3]",
+         [&]() { AssertThrows(invalid_argument, bdd_satcount(bdd_3, 1)); });
 
-      it("throws exception on varcount being smaller than the number of levels [4]", [&]() {
-        AssertThrows(invalid_argument, bdd_satcount(bdd_4, 3));
-      });
+      it("throws exception on varcount being smaller than the number of levels [4]",
+         [&]() { AssertThrows(invalid_argument, bdd_satcount(bdd_4, 3)); });
     });
 
     describe("bdd_satcount(f) [empty dom]", [&]() {
-      it("can count assignments leading to T terminals [1]", [&]() {
-        AssertThat(bdd_satcount(bdd_1), Is().EqualTo(5u));
-      });
+      it("can count assignments leading to T terminals [1]",
+         [&]() { AssertThat(bdd_satcount(bdd_1), Is().EqualTo(5u)); });
 
-      it("can count assignments leading to T terminals [2]", [&]() {
-        AssertThat(bdd_satcount(bdd_2), Is().EqualTo(3u));
-      });
+      it("can count assignments leading to T terminals [2]",
+         [&]() { AssertThat(bdd_satcount(bdd_2), Is().EqualTo(3u)); });
 
-      it("can count assignments leading to F terminals [1]", [&]() {
-        AssertThat(bdd_satcount(bdd_not(bdd_1)), Is().EqualTo(11u));
-      });
+      it("can count assignments leading to F terminals [1]",
+         [&]() { AssertThat(bdd_satcount(bdd_not(bdd_1)), Is().EqualTo(11u)); });
 
-      it("can count assignments leading to F terminals [2]", [&]() {
-        AssertThat(bdd_satcount(bdd_not(bdd_2)), Is().EqualTo(1u));
-      });
+      it("can count assignments leading to F terminals [2]",
+         [&]() { AssertThat(bdd_satcount(bdd_not(bdd_2)), Is().EqualTo(1u)); });
 
-      it("should count no assignments to the true terminal-only BDD", [&]() {
-        AssertThat(bdd_satcount(bdd_T), Is().EqualTo(0u));
-      });
+      it("should count no assignments to the true terminal-only BDD",
+         [&]() { AssertThat(bdd_satcount(bdd_T), Is().EqualTo(0u)); });
 
       it("should count no assignments in a false terminal-only BDD", [&]() {
         AssertThat(bdd_satcount(bdd_not(bdd_F)), Is().EqualTo(0u));
@@ -299,30 +281,25 @@ go_bandit([]() {
       }
       domain_set(dom);
 
-      it("can count assignments leading to T terminals [1]", [&]() {
-        AssertThat(bdd_satcount(bdd_1), Is().EqualTo(8u * 5u));
-      });
+      it("can count assignments leading to T terminals [1]",
+         [&]() { AssertThat(bdd_satcount(bdd_1), Is().EqualTo(8u * 5u)); });
 
-      it("can count assignments leading to T terminals [2]", [&]() {
-        AssertThat(bdd_satcount(bdd_2), Is().EqualTo(32u * 3u));
-      });
+      it("can count assignments leading to T terminals [2]",
+         [&]() { AssertThat(bdd_satcount(bdd_2), Is().EqualTo(32u * 3u)); });
 
-      it("can count assignments leading to F terminals [1]", [&]() {
-        AssertThat(bdd_satcount(bdd_not(bdd_1)), Is().EqualTo(8u * 11u));
-      });
+      it("can count assignments leading to F terminals [1]",
+         [&]() { AssertThat(bdd_satcount(bdd_not(bdd_1)), Is().EqualTo(8u * 11u)); });
 
-      it("can count assignments leading to F terminals [2]", [&]() {
-        AssertThat(bdd_satcount(bdd_not(bdd_2)), Is().EqualTo(32u * 1u));
-      });
+      it("can count assignments leading to F terminals [2]",
+         [&]() { AssertThat(bdd_satcount(bdd_not(bdd_2)), Is().EqualTo(32u * 1u)); });
 
       it("should count assignments to the true terminal-only BDD", [&]() {
         AssertThat(bdd_satcount(bdd_T), Is().EqualTo(128u * 1u));
         AssertThat(bdd_satcount(bdd_not(bdd_F)), Is().EqualTo(128u * 1u));
       });
 
-      it("should count no assignments in a false terminal-only BDD", [&]() {
-        AssertThat(bdd_satcount(bdd_F), Is().EqualTo(0u));
-      });
+      it("should count no assignments in a false terminal-only BDD",
+         [&]() { AssertThat(bdd_satcount(bdd_F), Is().EqualTo(0u)); });
 
       it("should count assignments of a root-only BDD [1]", [&]() {
         AssertThat(bdd_satcount(bdd_not(bdd_root_1)), Is().EqualTo(64u * 1u));
@@ -330,4 +307,4 @@ go_bandit([]() {
       });
     });
   });
- });
+});

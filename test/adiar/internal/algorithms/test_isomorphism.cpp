@@ -1,4 +1,5 @@
 #include "../../../test.h"
+
 #include <adiar/internal/algorithms/pred.h>
 
 go_bandit([]() {
@@ -36,32 +37,32 @@ go_bandit([]() {
       describe("Case: File Pointer Address", [&]() {
         it("accepts F when negation flags match", [&]() {
           AssertThat(is_isomorphic(exec_policy(), dd(F, false), dd(F, false)), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(F, true),  dd(F, true)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(F, true), dd(F, true)), Is().True());
         });
 
         it("accepts T when negation flags match", [&]() {
           AssertThat(is_isomorphic(exec_policy(), dd(F, false), dd(F, false)), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(F, true),  dd(F, true)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(F, true), dd(F, true)), Is().True());
         });
 
         it("accepts x42 when negation flags match", [&]() {
           AssertThat(is_isomorphic(exec_policy(), dd(x42, false), dd(x42, false)), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(x42, true),  dd(x42, true)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, true), dd(x42, true)), Is().True());
         });
 
         it("rejects F when negation flags mismatch", [&]() {
           AssertThat(is_isomorphic(exec_policy(), dd(F, false), dd(F, true)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(F, true),  dd(F, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(F, true), dd(F, false)), Is().False());
         });
 
         it("rejects T when negation flags mismatch", [&]() {
           AssertThat(is_isomorphic(exec_policy(), dd(F, false), dd(F, true)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(F, true),  dd(F, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(F, true), dd(F, false)), Is().False());
         });
 
         it("rejects x42 when negation flags mismatch", [&]() {
           AssertThat(is_isomorphic(exec_policy(), dd(x42, false), dd(x42, true)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x42, true),  dd(x42, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, true), dd(x42, false)), Is().False());
         });
       });
 
@@ -101,9 +102,9 @@ go_bandit([]() {
       //        T F F T
       */
       {
-        const node n3(42, node::max_id,   node::pointer_type(false), node::pointer_type(true));
-        const node n2(42, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
-        const node n1(21, node::max_id,   n2.uid(), n3.uid());
+        const node n3(42, node::max_id, node::pointer_type(false), node::pointer_type(true));
+        const node n2(42, node::max_id - 1, node::pointer_type(true), node::pointer_type(false));
+        const node n1(21, node::max_id, n2.uid(), n3.uid());
 
         node_writer w(x21_xor_x42);
         w << n3 << n2 << n1;
@@ -118,31 +119,47 @@ go_bandit([]() {
         });
 
         it("rejects x21 (#nodes = 1) vs. x21 & x42 (#nodes = 2)", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(x21, false), dd(x21_and_x42, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21, false), dd(x21_and_x42, true)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true), dd(x21, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true), dd(x21, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21, false), dd(x21_and_x42, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21, false), dd(x21_and_x42, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true), dd(x21, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true), dd(x21, true)),
+                     Is().False());
         });
 
         it("rejects x42 (#nodes = 1) vs. x21 & x42 (#nodes = 2)", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(x42, false), dd(x21_and_x42, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x42, false), dd(x21_and_x42, true)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true), dd(x42, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true), dd(x42, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, false), dd(x21_and_x42, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, false), dd(x21_and_x42, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true), dd(x42, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true), dd(x42, true)),
+                     Is().False());
         });
 
         it("rejects x21 (#nodes = 1) vs. x21 ^ x42 (#nodes = 3)", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(x21, false), dd(x21_xor_x42, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21, false), dd(x21_xor_x42, true)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_xor_x42, true), dd(x21, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_xor_x42, true), dd(x21, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21, false), dd(x21_xor_x42, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21, false), dd(x21_xor_x42, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_xor_x42, true), dd(x21, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_xor_x42, true), dd(x21, true)),
+                     Is().False());
         });
 
         it("rejects x21 & x42 (#nodes = 2) vs. x21 ^ x42 (#nodes = 3)", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_xor_x42, false), dd(x21_and_x42, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_xor_x42, false), dd(x21_and_x42, true)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true), dd(x21_xor_x42, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true), dd(x21_xor_x42, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_xor_x42, false), dd(x21_and_x42, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_xor_x42, false), dd(x21_and_x42, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true), dd(x21_xor_x42, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true), dd(x21_xor_x42, true)),
+                     Is().False());
         });
       });
 
@@ -161,10 +178,10 @@ go_bandit([]() {
       //         T F
       */
       {
-        const node n4(3, node::max_id, node::pointer_type(true),  node::pointer_type(false));
-        const node n3(2, node::max_id, n4.uid(),                  node::pointer_type(true));
+        const node n4(3, node::max_id, node::pointer_type(true), node::pointer_type(false));
+        const node n3(2, node::max_id, n4.uid(), node::pointer_type(true));
         const node n2(1, node::max_id, node::pointer_type(false), n3.uid());
-        const node n1(0, node::max_id, n2.uid(),                  n3.uid());
+        const node n1(0, node::max_id, n2.uid(), n3.uid());
 
         node_writer w(dd_4);
         w << n4 << n3 << n2 << n1;
@@ -185,10 +202,10 @@ go_bandit([]() {
       //           T F
       */
       {
-        const node n4(3, node::max_id, node::pointer_type(true),  node::pointer_type(false));
-        const node n3(2, node::max_id, n4.uid(),                  node::pointer_type(true));
+        const node n4(3, node::max_id, node::pointer_type(true), node::pointer_type(false));
+        const node n3(2, node::max_id, n4.uid(), node::pointer_type(true));
         const node n2(1, node::max_id, node::pointer_type(false), node::pointer_type(true));
-        const node n1(0, node::max_id, n2.uid(),                  n3.uid());
+        const node n1(0, node::max_id, n2.uid(), n3.uid());
 
         node_writer w(dd_5);
         w << n4 << n3 << n2 << n1;
@@ -209,10 +226,10 @@ go_bandit([]() {
       //           T F
       */
       {
-        const node n4(3, node::max_id, node::pointer_type(true),  node::pointer_type(false));
-        const node n3(2, node::max_id, n4.uid(),                  node::pointer_type(false));
+        const node n4(3, node::max_id, node::pointer_type(true), node::pointer_type(false));
+        const node n3(2, node::max_id, n4.uid(), node::pointer_type(false));
         const node n2(1, node::max_id, node::pointer_type(false), node::pointer_type(true));
-        const node n1(0, node::max_id, n2.uid(),                  n3.uid());
+        const node n1(0, node::max_id, n2.uid(), n3.uid());
 
         node_writer w(dd_6);
         w << n4 << n3 << n2 << n1;
@@ -235,7 +252,7 @@ go_bandit([]() {
       */
       {
         const node n3(42, node::max_id, node::pointer_type(false), node::pointer_type(true));
-        const node n2(22, node::max_id, node::pointer_type(true),  n3.uid());
+        const node n2(22, node::max_id, node::pointer_type(true), n3.uid());
         const node n1(21, node::max_id, node::pointer_type(false), n2.uid());
 
         node_writer w(x21_x22_x42_chain);
@@ -244,10 +261,18 @@ go_bandit([]() {
 
       describe("Case: Width", [&]() {
         it("rejects x21 ^ x42 (#levels = 2) vs. (x21 & ~x22) | (x21 & x42) (#levels = 3)", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_x22_x42_chain, false), dd(x21_xor_x42,       false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_x22_x42_chain, false), dd(x21_xor_x42,       true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_xor_x42,       true),  dd(x21_x22_x42_chain, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_xor_x42,       true),  dd(x21_x22_x42_chain, true)),  Is().False());
+          AssertThat(
+            is_isomorphic(exec_policy(), dd(x21_x22_x42_chain, false), dd(x21_xor_x42, false)),
+            Is().False());
+          AssertThat(
+            is_isomorphic(exec_policy(), dd(x21_x22_x42_chain, false), dd(x21_xor_x42, true)),
+            Is().False());
+          AssertThat(
+            is_isomorphic(exec_policy(), dd(x21_xor_x42, true), dd(x21_x22_x42_chain, false)),
+            Is().False());
+          AssertThat(
+            is_isomorphic(exec_policy(), dd(x21_xor_x42, true), dd(x21_x22_x42_chain, true)),
+            Is().False());
         });
 
         it("rejects due to different width", []() {
@@ -269,13 +294,13 @@ go_bandit([]() {
           //               F T
           */
           { // Garbage collect writers to free write-lock
-            const node n7(3, node::max_id,   node::pointer_type(false), node::pointer_type(true));
-            const node n6(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
-            const node n5(2, node::max_id-1, node::pointer_type(true),  n7.uid());
-            const node n4(2, node::max_id-2, node::pointer_type(false), n7.uid());
-            const node n3(1, node::max_id,   n5.uid(),                  n6.uid());
-            const node n2(1, node::max_id-1, n4.uid(),                  n5.uid());
-            const node n1(0, node::max_id,   n2.uid(),                  n2.uid());
+            const node n7(3, node::max_id, node::pointer_type(false), node::pointer_type(true));
+            const node n6(2, node::max_id, node::pointer_type(false), node::pointer_type(true));
+            const node n5(2, node::max_id - 1, node::pointer_type(true), n7.uid());
+            const node n4(2, node::max_id - 2, node::pointer_type(false), n7.uid());
+            const node n3(1, node::max_id, n5.uid(), n6.uid());
+            const node n2(1, node::max_id - 1, n4.uid(), n5.uid());
+            const node n1(0, node::max_id, n2.uid(), n2.uid());
 
             node_writer w(in_a);
             w << n7 << n6 << n5 << n4 << n3 << n2 << n1;
@@ -294,50 +319,54 @@ go_bandit([]() {
           //            TF FT
           */
           { // Garbage collect writers to free write-lock
-            const node n7(3, node::max_id,   node::pointer_type(false), node::pointer_type(true));
-            const node n6(3, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
-            const node n5(2, node::max_id,   n7.uid(),                  node::pointer_type(true));
-            const node n4(2, node::max_id-1, node::pointer_type(false), n6.uid());
-            const node n3(1, node::max_id,   n4.uid(),                  n5.uid());
-            const node n2(1, node::max_id-1, n5.uid(),                  n4.uid());
-            const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+            const node n7(3, node::max_id, node::pointer_type(false), node::pointer_type(true));
+            const node n6(3, node::max_id - 1, node::pointer_type(true), node::pointer_type(false));
+            const node n5(2, node::max_id, n7.uid(), node::pointer_type(true));
+            const node n4(2, node::max_id - 1, node::pointer_type(false), n6.uid());
+            const node n3(1, node::max_id, n4.uid(), n5.uid());
+            const node n2(1, node::max_id - 1, n5.uid(), n4.uid());
+            const node n1(0, node::max_id, n2.uid(), n3.uid());
 
             node_writer w(in_b);
             w << n7 << n6 << n5 << n4 << n3 << n2 << n1;
           }
 
           AssertThat(is_isomorphic(exec_policy(), dd(in_a, false), dd(in_b, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(in_a, false), dd(in_b, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(in_b, true),  dd(in_a, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(in_b, true),  dd(in_a, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(in_a, false), dd(in_b, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(in_b, true), dd(in_a, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(in_b, true), dd(in_a, true)), Is().False());
         });
       });
 
       describe("Case: #Terminal Arcs", [&]() {
         it("rejects F (̈́[1,0]) vs. T ([0,1])", [&]() {
           AssertThat(is_isomorphic(exec_policy(), dd(F, false), dd(T, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(T, true),  dd(F, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(T, true), dd(F, true)), Is().False());
         });
 
         it("rejects F (̈́[1,0]) vs. ~F ([0,1])", [&]() {
           const auto F_copy = shared_levelized_file<dd::node_type>::copy(F);
 
-          AssertThat(is_isomorphic(exec_policy(), dd(F,      false), dd(F_copy, true)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(F_copy, true),  dd(F,      false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(F, false), dd(F_copy, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(F_copy, true), dd(F, false)), Is().False());
         });
 
         it("rejects F ([1,0]) vs. x42 ([1,1])", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(F,  false),  dd(x42, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(F,  false),  dd(x42, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x42, true),  dd(F, false)),   Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x42, true),  dd(F, true)),    Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(F, false), dd(x42, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(F, false), dd(x42, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, true), dd(F, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, true), dd(F, true)), Is().False());
         });
 
         it("rejects T ([0,1]) vs. x21 & x42 ([2,1])", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(T,           false), dd(x21_and_x42, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(T,           false), dd(x21_and_x42, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true),  dd(T,           false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true),  dd(T,           true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(T, false), dd(x21_and_x42, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(T, false), dd(x21_and_x42, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true), dd(T, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true), dd(T, true)),
+                     Is().False());
         });
 
         it("rejects x21 & x42 (̈́[1,2]) vs. ~x21 | (x21 & x42) ([2,1])", [&]() {
@@ -361,8 +390,8 @@ go_bandit([]() {
 
           AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, false)), Is().False());
           AssertThat(is_isomorphic(exec_policy(), dd(b, false), dd(a, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(b, true),  dd(a, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true), dd(b, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(b, true), dd(a, true)), Is().False());
         });
 
         it("rejects x21 & x42 (̈́[1,2]) vs. ~(x21 & ~x42) ([2,1])", [&]() {
@@ -384,32 +413,36 @@ go_bandit([]() {
             w << n2 << n1;
           }
 
-          AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(b, true),  dd(a, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(b, false), dd(a, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(b, true), dd(a, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true), dd(b, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(b, false), dd(a, true)), Is().False());
         });
 
         it("rejects x21 ([1,1]) vs. x21 & x42 ([2,1])", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(x21,         false), dd(x21_and_x42, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21,         false), dd(x21_and_x42, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true),  dd(x21,         false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true),  dd(x21,         true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21, false), dd(x21_and_x42, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21, false), dd(x21_and_x42, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true), dd(x21, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, true), dd(x21, true)),
+                     Is().False());
         });
 
         it("rejects [4] ([2,2]) vs. ~[5] ([3,2]) due to one extra F terminal", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_4, false), dd(dd_5, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_4, false), dd(dd_5, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4, false), dd(dd_5, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4, false), dd(dd_5, true)), Is().False());
         });
 
         it("rejects [4] ([2,2]) vs. [5] ([2,3]) due to one extra T terminal", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_4, false), dd(dd_5, false)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_5, false), dd(dd_4, false)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4, false), dd(dd_5, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_5, false), dd(dd_4, false)), Is().False());
         });
 
         it("rejects [5] ([2,3]) vs. [6] ([3,2])", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_5, false), dd(dd_6, false)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_5, true),  dd(dd_6, true)),   Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_5, false), dd(dd_6, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_5, true), dd(dd_6, true)), Is().False());
         });
       });
 
@@ -426,11 +459,11 @@ go_bandit([]() {
       //          F T
       */
       {
-        const node n5(3, node::max_id,   node::pointer_type(false), node::pointer_type(true));
-        const node n4(2, node::max_id,   node::pointer_type(true),  node::pointer_type(false));
-        const node n3(1, node::max_id,   n4.uid(),                  node::pointer_type(true));
-        const node n2(1, node::max_id-1, node::pointer_type(false), n5.uid());
-        const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+        const node n5(3, node::max_id, node::pointer_type(false), node::pointer_type(true));
+        const node n4(2, node::max_id, node::pointer_type(true), node::pointer_type(false));
+        const node n3(1, node::max_id, n4.uid(), node::pointer_type(true));
+        const node n2(1, node::max_id - 1, node::pointer_type(false), n5.uid());
+        const node n1(0, node::max_id, n2.uid(), n3.uid());
 
         node_writer w(dd_8);
         w << n5 << n4 << n3 << n2 << n1;
@@ -451,11 +484,11 @@ go_bandit([]() {
       //          T F F T
       */
       {
-        const node n5(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
-        const node n4(2, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
-        const node n3(1, node::max_id,   n4.uid(),                  node::pointer_type(true));
-        const node n2(1, node::max_id-1, node::pointer_type(false), n5.uid());
-        const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+        const node n5(2, node::max_id, node::pointer_type(false), node::pointer_type(true));
+        const node n4(2, node::max_id - 1, node::pointer_type(true), node::pointer_type(false));
+        const node n3(1, node::max_id, n4.uid(), node::pointer_type(true));
+        const node n2(1, node::max_id - 1, node::pointer_type(false), n5.uid());
+        const node n1(0, node::max_id, n2.uid(), n3.uid());
 
         node_writer w(dd_9);
         w << n5 << n4 << n3 << n2 << n1;
@@ -464,9 +497,9 @@ go_bandit([]() {
       describe("Case: #Levels", [&]() {
         it("rejects [8] vs. [9] on the number of levels", [&]() {
           AssertThat(is_isomorphic(exec_policy(), dd(dd_8, false), dd(dd_9, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_8, false), dd(dd_9, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_9, true),  dd(dd_8, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_9, true),  dd(dd_8, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_8, false), dd(dd_9, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_9, true), dd(dd_8, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_9, true), dd(dd_8, true)), Is().False());
         });
       });
 
@@ -489,16 +522,20 @@ go_bandit([]() {
       describe("Case: Individual Level's Label and Width)", [&]() {
         it("rejects x21 vs x42 on the label", [&]() {
           AssertThat(is_isomorphic(exec_policy(), dd(x21, false), dd(x42, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21, false), dd(x42, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x42, true),  dd(x21, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x42, true),  dd(x21, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21, false), dd(x42, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, true), dd(x21, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, true), dd(x21, true)), Is().False());
         });
 
         it("rejects x21 & x42 vs x21 & x22 on the label", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, false), dd(x21_and_x22, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, false), dd(x21_and_x22, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x22, true),  dd(x21_and_x42, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x22, true),  dd(x21_and_x42, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, false), dd(x21_and_x22, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x42, false), dd(x21_and_x22, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x22, true), dd(x21_and_x42, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x22, true), dd(x21_and_x42, true)),
+                     Is().False());
         });
 
         it("rejects due to levels have mismatching width", []() {
@@ -515,12 +552,12 @@ go_bandit([]() {
           //             T F F T
           */
           { // Garbage collect writers to free write-lock
-            const node n6(3, node::max_id,   node::pointer_type(false), node::pointer_type(true));
-            const node n5(3, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
-            const node n4(2, node::max_id,   n5.uid(),                  n6.uid());
-            const node n3(1, node::max_id,   n4.uid(),                  n6.uid());
-            const node n2(1, node::max_id-1, n5.uid(),                  n4.uid());
-            const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+            const node n6(3, node::max_id, node::pointer_type(false), node::pointer_type(true));
+            const node n5(3, node::max_id - 1, node::pointer_type(true), node::pointer_type(false));
+            const node n4(2, node::max_id, n5.uid(), n6.uid());
+            const node n3(1, node::max_id, n4.uid(), n6.uid());
+            const node n2(1, node::max_id - 1, n5.uid(), n4.uid());
+            const node n1(0, node::max_id, n2.uid(), n3.uid());
 
             node_writer w(in_a);
             w << n6 << n5 << n4 << n3 << n2 << n1;
@@ -542,21 +579,21 @@ go_bandit([]() {
           //                 F T
           */
           { // Garbage collect writers to free write-lock
-            const node n6(3, node::max_id,   node::pointer_type(false), node::pointer_type(true));
-            const node n5(2, node::max_id,   n6.uid(),                  node::pointer_type(true));
-            const node n4(2, node::max_id,   n6.uid(),                  node::pointer_type(false));
-            const node n3(1, node::max_id,   n4.uid(),                  n5.uid());
-            const node n2(1, node::max_id-1, n6.uid(),                  n4.uid());
-            const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+            const node n6(3, node::max_id, node::pointer_type(false), node::pointer_type(true));
+            const node n5(2, node::max_id, n6.uid(), node::pointer_type(true));
+            const node n4(2, node::max_id, n6.uid(), node::pointer_type(false));
+            const node n3(1, node::max_id, n4.uid(), n5.uid());
+            const node n2(1, node::max_id - 1, n6.uid(), n4.uid());
+            const node n1(0, node::max_id, n2.uid(), n3.uid());
 
             node_writer w(in_b);
             w << n6 << n5 << n4 << n3 << n2 << n1;
           }
 
           AssertThat(is_isomorphic(exec_policy(), dd(in_a, false), dd(in_b, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(in_a, false), dd(in_b, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(in_b, true),  dd(in_a, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(in_b, true),  dd(in_a, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(in_a, false), dd(in_b, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(in_b, true), dd(in_a, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(in_b, true), dd(in_a, true)), Is().False());
         });
       });
 
@@ -607,10 +644,10 @@ go_bandit([]() {
       //      F T
       */
       {
-        const node n4(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
-        const node n3(1, node::max_id,   n4.uid(),                  node::pointer_type(false));
-        const node n2(1, node::max_id-1, node::pointer_type(true),  n4.uid());
-        const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+        const node n4(2, node::max_id, node::pointer_type(false), node::pointer_type(true));
+        const node n3(1, node::max_id, n4.uid(), node::pointer_type(false));
+        const node n2(1, node::max_id - 1, node::pointer_type(true), n4.uid());
+        const node n1(0, node::max_id, n2.uid(), n3.uid());
 
         node_writer w(dd_1);
         w << n4 << n3 << n2 << n1;
@@ -629,10 +666,10 @@ go_bandit([]() {
       //      T F
       */
       {
-        const node n4(2, node::max_id,   node::pointer_type(true),  node::pointer_type(false));
-        const node n3(1, node::max_id,   n4.uid(),                  node::pointer_type(true));
-        const node n2(1, node::max_id-1, node::pointer_type(false), n4.uid());
-        const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+        const node n4(2, node::max_id, node::pointer_type(true), node::pointer_type(false));
+        const node n3(1, node::max_id, n4.uid(), node::pointer_type(true));
+        const node n2(1, node::max_id - 1, node::pointer_type(false), n4.uid());
+        const node n1(0, node::max_id, n2.uid(), n3.uid());
 
         node_writer w(dd_1n);
         w << n4 << n3 << n2 << n1;
@@ -651,10 +688,10 @@ go_bandit([]() {
       //      T T
       */
       {
-        const node n4(2, node::max_id,   node::pointer_type(true),  node::pointer_type(true));
-        const node n3(1, node::max_id,   n4.uid(),                  node::pointer_type(false));
-        const node n2(1, node::max_id-1, node::pointer_type(false), n4.uid());
-        const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+        const node n4(2, node::max_id, node::pointer_type(true), node::pointer_type(true));
+        const node n3(1, node::max_id, n4.uid(), node::pointer_type(false));
+        const node n2(1, node::max_id - 1, node::pointer_type(false), n4.uid());
+        const node n1(0, node::max_id, n2.uid(), n3.uid());
 
         node_writer w(dd_1_low_leaf);
         w << n4 << n3 << n2 << n1;
@@ -674,10 +711,10 @@ go_bandit([]() {
       //      F F
       */
       {
-        const node n4(2, node::max_id,   node::pointer_type(false), node::pointer_type(false));
-        const node n3(1, node::max_id,   n4.uid(),                  node::pointer_type(true));
-        const node n2(1, node::max_id-1, node::pointer_type(true),  n4.uid());
-        const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+        const node n4(2, node::max_id, node::pointer_type(false), node::pointer_type(false));
+        const node n3(1, node::max_id, n4.uid(), node::pointer_type(true));
+        const node n2(1, node::max_id - 1, node::pointer_type(true), n4.uid());
+        const node n1(0, node::max_id, n2.uid(), n3.uid());
 
         node_writer w(dd_1_high_leaf);
         w << n4 << n3 << n2 << n1;
@@ -695,11 +732,11 @@ go_bandit([]() {
       //      T F F T
       */
       {
-        const node n5(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
-        const node n4(2, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
-        const node n3(1, node::max_id,   n4.uid(),                  node::pointer_type(false));
-        const node n2(1, node::max_id-1, node::pointer_type(false), n5.uid());
-        const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+        const node n5(2, node::max_id, node::pointer_type(false), node::pointer_type(true));
+        const node n4(2, node::max_id - 1, node::pointer_type(true), node::pointer_type(false));
+        const node n3(1, node::max_id, n4.uid(), node::pointer_type(false));
+        const node n2(1, node::max_id - 1, node::pointer_type(false), n5.uid());
+        const node n1(0, node::max_id, n2.uid(), n3.uid());
 
         node_writer w(dd_2);
         w << n5 << n4 << n3 << n2 << n1;
@@ -719,11 +756,11 @@ go_bandit([]() {
       //       T F F T
       */
       {
-        const node n5(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
-        const node n4(2, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
-        const node n3(1, node::max_id,   n5.uid(),                  node::pointer_type(true));
-        const node n2(1, node::max_id-1, node::pointer_type(true),  n4.uid());
-        const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+        const node n5(2, node::max_id, node::pointer_type(false), node::pointer_type(true));
+        const node n4(2, node::max_id - 1, node::pointer_type(true), node::pointer_type(false));
+        const node n3(1, node::max_id, n5.uid(), node::pointer_type(true));
+        const node n2(1, node::max_id - 1, node::pointer_type(true), n4.uid());
+        const node n1(0, node::max_id, n2.uid(), n3.uid());
 
         node_writer w(dd_2n);
         w << n5 << n4 << n3 << n2 << n1;
@@ -742,11 +779,11 @@ go_bandit([]() {
       //      T F F T
       */
       {
-        const node n5(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
-        const node n4(2, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
-        const node n3(1, node::max_id,   node::pointer_type(true),  node::pointer_type(false));
-        const node n2(1, node::max_id-1, n4.uid(),                  n5.uid());
-        const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+        const node n5(2, node::max_id, node::pointer_type(false), node::pointer_type(true));
+        const node n4(2, node::max_id - 1, node::pointer_type(true), node::pointer_type(false));
+        const node n3(1, node::max_id, node::pointer_type(true), node::pointer_type(false));
+        const node n2(1, node::max_id - 1, n4.uid(), n5.uid());
+        const node n1(0, node::max_id, n2.uid(), n3.uid());
 
         node_writer w(dd_2_low_child);
         w << n5 << n4 << n3 << n2 << n1;
@@ -765,11 +802,11 @@ go_bandit([]() {
       //      T F F T
       */
       {
-        const node n5(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
-        const node n4(2, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
-        const node n3(1, node::max_id,   node::pointer_type(true),  node::pointer_type(false));
-        const node n2(1, node::max_id-1, n5.uid(),                  n4.uid());
-        const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+        const node n5(2, node::max_id, node::pointer_type(false), node::pointer_type(true));
+        const node n4(2, node::max_id - 1, node::pointer_type(true), node::pointer_type(false));
+        const node n3(1, node::max_id, node::pointer_type(true), node::pointer_type(false));
+        const node n2(1, node::max_id - 1, n5.uid(), n4.uid());
+        const node n1(0, node::max_id, n2.uid(), n3.uid());
 
         node_writer w(dd_2_low_child2);
         w << n5 << n4 << n3 << n2 << n1;
@@ -788,11 +825,11 @@ go_bandit([]() {
       //       T F F T
       */
       {
-        const node n5(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
-        const node n4(2, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
-        const node n3(1, node::max_id,   n5.uid(),                  node::pointer_type(false));
-        const node n2(1, node::max_id-1, node::pointer_type(false), n4.uid());
-        const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+        const node n5(2, node::max_id, node::pointer_type(false), node::pointer_type(true));
+        const node n4(2, node::max_id - 1, node::pointer_type(true), node::pointer_type(false));
+        const node n3(1, node::max_id, n5.uid(), node::pointer_type(false));
+        const node n2(1, node::max_id - 1, node::pointer_type(false), n4.uid());
+        const node n1(0, node::max_id, n2.uid(), n3.uid());
 
         node_writer w(dd_2_high_child);
         w << n5 << n4 << n3 << n2 << n1;
@@ -812,9 +849,9 @@ go_bandit([]() {
       */
       {
         const node n4(3, node::max_id, node::pointer_type(false), node::pointer_type(true));
-        const node n3(2, node::max_id, node::pointer_type(true),  n4.uid());
-        const node n2(1, node::max_id, n3.uid(),                  node::pointer_type(false));
-        const node n1(0, node::max_id, n3.uid(),                  n2.uid());
+        const node n3(2, node::max_id, node::pointer_type(true), n4.uid());
+        const node n2(1, node::max_id, n3.uid(), node::pointer_type(false));
+        const node n1(0, node::max_id, n3.uid(), n2.uid());
 
         node_writer w(dd_3);
         w << n4 << n3 << n2 << n1;
@@ -835,10 +872,10 @@ go_bandit([]() {
       //         T F
       */
       {
-        const node n4(3, node::max_id, node::pointer_type(true),  node::pointer_type(false));
+        const node n4(3, node::max_id, node::pointer_type(true), node::pointer_type(false));
         const node n3(2, node::max_id, node::pointer_type(false), n4.uid());
-        const node n2(1, node::max_id, n3.uid(),                  node::pointer_type(true));
-        const node n1(0, node::max_id, n3.uid(),                  n2.uid());
+        const node n2(1, node::max_id, n3.uid(), node::pointer_type(true));
+        const node n1(0, node::max_id, n3.uid(), n2.uid());
 
         node_writer w(dd_3n);
         w << n4 << n3 << n2 << n1;
@@ -860,9 +897,9 @@ go_bandit([]() {
       */
       {
         const node n4(3, node::max_id, node::pointer_type(false), node::pointer_type(true));
-        const node n3(2, node::max_id, node::pointer_type(true),  n4.uid());
-        const node n2(1, node::max_id, n4.uid(),                  node::pointer_type(false));
-        const node n1(0, node::max_id, n3.uid(),                  n2.uid());
+        const node n3(2, node::max_id, node::pointer_type(true), n4.uid());
+        const node n2(1, node::max_id, n4.uid(), node::pointer_type(false));
+        const node n1(0, node::max_id, n3.uid(), n2.uid());
 
         node_writer w(dd_3_low_child);
         w << n4 << n3 << n2 << n1;
@@ -884,9 +921,9 @@ go_bandit([]() {
       */
       {
         const node n4(3, node::max_id, node::pointer_type(false), node::pointer_type(true));
-        const node n3(2, node::max_id, n4.uid(),                  node::pointer_type(false));
+        const node n3(2, node::max_id, n4.uid(), node::pointer_type(false));
         const node n2(1, node::max_id, node::pointer_type(true), n3.uid());
-        const node n1(0, node::max_id, n2.uid(),                  n3.uid());
+        const node n1(0, node::max_id, n2.uid(), n3.uid());
 
         node_writer w(dd_4n);
         w << n4 << n3 << n2 << n1;
@@ -907,10 +944,10 @@ go_bandit([]() {
       //           T F
       */
       {
-        const node n4(3, node::max_id, node::pointer_type(true),  node::pointer_type(false));
-        const node n3(2, node::max_id, n4.uid(),                  node::pointer_type(true));
+        const node n4(3, node::max_id, node::pointer_type(true), node::pointer_type(false));
+        const node n3(2, node::max_id, n4.uid(), node::pointer_type(true));
         const node n2(1, node::max_id, node::pointer_type(false), n4.uid());
-        const node n1(0, node::max_id, n2.uid(),                  n3.uid());
+        const node n1(0, node::max_id, n2.uid(), n3.uid());
 
         node_writer w(dd_4_high_child);
         w << n4 << n3 << n2 << n1;
@@ -927,11 +964,11 @@ go_bandit([]() {
       //      T F   F T
       */
       {
-        const node n5(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
-        const node n4(2, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
-        const node n3(1, node::max_id,   n5.uid(),                  node::pointer_type(true));
-        const node n2(1, node::max_id-1, n4.uid(),                  node::pointer_type(true));
-        const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+        const node n5(2, node::max_id, node::pointer_type(false), node::pointer_type(true));
+        const node n4(2, node::max_id - 1, node::pointer_type(true), node::pointer_type(false));
+        const node n3(1, node::max_id, n5.uid(), node::pointer_type(true));
+        const node n2(1, node::max_id - 1, n4.uid(), node::pointer_type(true));
+        const node n1(0, node::max_id, n2.uid(), n3.uid());
 
         node_writer w(dd_7);
         w << n5 << n4 << n3 << n2 << n1;
@@ -951,11 +988,11 @@ go_bandit([]() {
       //      T F   F T
       */
       {
-        const node n5(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
-        const node n4(2, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
-        const node n3(1, node::max_id,   n5.uid(),                  node::pointer_type(false));
-        const node n2(1, node::max_id-1, n4.uid(),                  node::pointer_type(false));
-        const node n1(0, node::max_id,   n3.uid(),                  n2.uid());
+        const node n5(2, node::max_id, node::pointer_type(false), node::pointer_type(true));
+        const node n4(2, node::max_id - 1, node::pointer_type(true), node::pointer_type(false));
+        const node n3(1, node::max_id, n5.uid(), node::pointer_type(false));
+        const node n2(1, node::max_id - 1, n4.uid(), node::pointer_type(false));
+        const node n1(0, node::max_id, n3.uid(), n2.uid());
 
         node_writer w(dd_7n);
         w << n5 << n4 << n3 << n2 << n1;
@@ -974,11 +1011,11 @@ go_bandit([]() {
       //     T F F T
       */
       {
-        const node n5(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
-        const node n4(2, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
-        const node n3(1, node::max_id,   node::pointer_type(true),  node::pointer_type(true));
-        const node n2(1, node::max_id-1, n4.uid(),                  n5.uid());
-        const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+        const node n5(2, node::max_id, node::pointer_type(false), node::pointer_type(true));
+        const node n4(2, node::max_id - 1, node::pointer_type(true), node::pointer_type(false));
+        const node n3(1, node::max_id, node::pointer_type(true), node::pointer_type(true));
+        const node n2(1, node::max_id - 1, n4.uid(), n5.uid());
+        const node n1(0, node::max_id, n2.uid(), n3.uid());
 
         node_writer w(dd_7_high_child);
         w << n5 << n4 << n3 << n2 << n1;
@@ -993,7 +1030,7 @@ go_bandit([]() {
           const auto b = shared_levelized_file<node>::copy(F);
 
           AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, false)), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true), dd(b, true)), Is().True());
         });
 
         it("accepts T", [&]() {
@@ -1001,7 +1038,7 @@ go_bandit([]() {
           const auto b = shared_levelized_file<node>::copy(T);
 
           AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, false)), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true), dd(b, true)), Is().True());
         });
 
         it("accepts x42", [&]() {
@@ -1009,7 +1046,7 @@ go_bandit([]() {
           const auto b = shared_levelized_file<node>::copy(x42);
 
           AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, false)), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true), dd(b, true)), Is().True());
         });
 
         it("accepts ~x42", [&]() {
@@ -1017,14 +1054,16 @@ go_bandit([]() {
           const auto b = shared_levelized_file<node>::copy(not_x42);
 
           AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, false)), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true), dd(b, true)), Is().True());
         });
 
         it("rejects on child mismatch [terminal value]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(not_x42, false), dd(x42,     false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x42,     false), dd(not_x42, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(not_x42, true),  dd(x42,     true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(x42,     true),  dd(not_x42, true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(not_x42, false), dd(x42, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, false), dd(not_x42, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(not_x42, true), dd(x42, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, true), dd(not_x42, true)), Is().False());
         });
 
         it("accepts [trivial_x69]", [&]() {
@@ -1032,14 +1071,20 @@ go_bandit([]() {
           const auto b = shared_levelized_file<node>::copy(trivial_x69);
 
           AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, false)), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true), dd(b, true)), Is().True());
         });
 
         it("rejects on child mismatch [terminal value]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(trivial_x69,     false), dd(not_trivial_x69, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(not_trivial_x69, false), dd(trivial_x69,     false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(trivial_x69,     true),  dd(not_trivial_x69, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(not_trivial_x69, true),  dd(trivial_x69,     true)),  Is().False());
+          AssertThat(
+            is_isomorphic(exec_policy(), dd(trivial_x69, false), dd(not_trivial_x69, false)),
+            Is().False());
+          AssertThat(
+            is_isomorphic(exec_policy(), dd(not_trivial_x69, false), dd(trivial_x69, false)),
+            Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(trivial_x69, true), dd(not_trivial_x69, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(not_trivial_x69, true), dd(trivial_x69, true)),
+                     Is().False());
         });
 
         it("accepts [1]", [&]() {
@@ -1047,28 +1092,36 @@ go_bandit([]() {
           const auto b = shared_levelized_file<node>::copy(dd_1);
 
           AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, false)), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true), dd(b, true)), Is().True());
         });
 
         it("rejects on low child mismatch [terminal value]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1,  false), dd(dd_1n, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1n, false), dd(dd_1,  false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1,  true),  dd(dd_1n, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1n, true),  dd(dd_1,  true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1, false), dd(dd_1n, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1n, false), dd(dd_1, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1, true), dd(dd_1n, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1n, true), dd(dd_1, true)), Is().False());
         });
 
         it("rejects on low child mismatch [terminal value]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1,          false), dd(dd_1_low_leaf, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1_low_leaf, false), dd(dd_1,          false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1,          true),  dd(dd_1_low_leaf, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1_low_leaf, true),  dd(dd_1,          true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1, false), dd(dd_1_low_leaf, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1_low_leaf, false), dd(dd_1, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1, true), dd(dd_1_low_leaf, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1_low_leaf, true), dd(dd_1, true)),
+                     Is().False());
         });
 
         it("rejects on high child mismatch [terminal value]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1,           false), dd(dd_1_high_leaf, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1_high_leaf, false), dd(dd_1,           false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1,           true),  dd(dd_1_high_leaf, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1_high_leaf, true),  dd(dd_1,           true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1, false), dd(dd_1_high_leaf, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1_high_leaf, false), dd(dd_1, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1, true), dd(dd_1_high_leaf, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1_high_leaf, true), dd(dd_1, true)),
+                     Is().False());
         });
 
         it("accepts [2]", [&]() {
@@ -1076,35 +1129,51 @@ go_bandit([]() {
           const auto b = shared_levelized_file<node>::copy(dd_2);
 
           AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, false)), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true), dd(b, true)), Is().True());
         });
 
         it("rejects on low child mismatch [terminal value]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2,  false), dd(dd_2n, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n, false), dd(dd_2,  false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2,  true),  dd(dd_2n, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n, true),  dd(dd_2,  true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2, false), dd(dd_2n, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n, false), dd(dd_2, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2, true), dd(dd_2n, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n, true), dd(dd_2, true)), Is().False());
         });
 
         it("rejects on low child mismatch [internal vs. terminal]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2,           false), dd(dd_2_low_child, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_child, false), dd(dd_2, false)),           Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2,           true),  dd(dd_2_low_child, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_child, true),  dd(dd_2, true)),            Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2, false), dd(dd_2_low_child, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_child, false), dd(dd_2, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2, true), dd(dd_2_low_child, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_child, true), dd(dd_2, true)),
+                     Is().False());
         });
 
         it("rejects on low child mismatch [node id]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_child,  false), dd(dd_2_low_child2, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_child2, false), dd(dd_2_low_child,  false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_child,  true),  dd(dd_2_low_child2, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_child2, true),  dd(dd_2_low_child,  true)),  Is().False());
+          AssertThat(
+            is_isomorphic(exec_policy(), dd(dd_2_low_child, false), dd(dd_2_low_child2, false)),
+            Is().False());
+          AssertThat(
+            is_isomorphic(exec_policy(), dd(dd_2_low_child2, false), dd(dd_2_low_child, false)),
+            Is().False());
+          AssertThat(
+            is_isomorphic(exec_policy(), dd(dd_2_low_child, true), dd(dd_2_low_child2, true)),
+            Is().False());
+          AssertThat(
+            is_isomorphic(exec_policy(), dd(dd_2_low_child2, true), dd(dd_2_low_child, true)),
+            Is().False());
         });
 
         it("rejects on high child mismatch [node id]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2,            false), dd(dd_2_high_child, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_high_child, false), dd(dd_2,            false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2,            true),  dd(dd_2_high_child, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_high_child, true) , dd(dd_2,            true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2, false), dd(dd_2_high_child, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_high_child, false), dd(dd_2, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2, true), dd(dd_2_high_child, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_high_child, true), dd(dd_2, true)),
+                     Is().False());
         });
 
         it("accepts [3]", [&]() {
@@ -1112,14 +1181,18 @@ go_bandit([]() {
           const auto b = shared_levelized_file<node>::copy(dd_3);
 
           AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, false)), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true), dd(b, true)), Is().True());
         });
 
         it("rejects on low child mismatch [node label]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_3,           false), dd(dd_3_low_child, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_3_low_child, false), dd(dd_3,           false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_3,           true),  dd(dd_3_low_child, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_3_low_child, true),  dd(dd_3,           true)),  Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_3, false), dd(dd_3_low_child, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_3_low_child, false), dd(dd_3, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_3, true), dd(dd_3_low_child, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_3_low_child, true), dd(dd_3, true)),
+                     Is().False());
         });
 
         it("accepts [4]", [&]() {
@@ -1127,14 +1200,18 @@ go_bandit([]() {
           const auto b = shared_levelized_file<node>::copy(dd_4);
 
           AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, false)), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true), dd(b, true)), Is().True());
         });
 
         it("rejects on high child mismatch [node label]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_4,            false), dd(dd_4_high_child, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_4_high_child, false), dd(dd_4,            false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_4,            true),  dd(dd_4_high_child, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_4_high_child, true) , dd(dd_4,            true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4, false), dd(dd_4_high_child, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4_high_child, false), dd(dd_4, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4, true), dd(dd_4_high_child, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4_high_child, true), dd(dd_4, true)),
+                     Is().False());
         });
 
         it("accepts [7]", [&]() {
@@ -1142,79 +1219,95 @@ go_bandit([]() {
           const auto b = shared_levelized_file<node>::copy(dd_7);
 
           AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, false)), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true), dd(b, true)), Is().True());
         });
 
         it("rejects on root's children flipped [node id]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_7,  false), dd(dd_7n, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_7n, false), dd(dd_7,  false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_7,  true),  dd(dd_7n, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_7n, true) , dd(dd_7,  true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7, false), dd(dd_7n, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7n, false), dd(dd_7, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7, true), dd(dd_7n, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7n, true), dd(dd_7, true)), Is().False());
         });
 
         it("rejects on high child mismatch [internal vs. terminal]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_7,            false), dd(dd_7_high_child, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_7_high_child, false), dd(dd_7,            false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_7,            true),  dd(dd_7_high_child, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_7_high_child, true) , dd(dd_7,            true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7, false), dd(dd_7_high_child, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7_high_child, false), dd(dd_7, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7, true), dd(dd_7_high_child, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7_high_child, true), dd(dd_7, true)),
+                     Is().False());
         });
       });
 
       describe("Case: O(sort(N)) Comparison Check", [&]() {
         it("accepts ~F and T", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(T, false), dd(F, true)),  Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(F, true),  dd(T, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(T, false), dd(F, true)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(F, true), dd(T, false)), Is().True());
         });
 
         it("accepts F and ~T", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(T, false), dd(F, true)),  Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(F, true),  dd(T, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(T, false), dd(F, true)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(F, true), dd(T, false)), Is().True());
         });
 
         it("rejects x42 and ~x42", [&]() {
           const auto a = x42;
           const auto b = shared_levelized_file<node>::copy(x42);
 
-          AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true), dd(b, false)), Is().False());
         });
 
         it("accepts x42 and negated ~x42", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(x42, false), dd(not_x42, true)),  Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(x42, true),  dd(not_x42, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, false), dd(not_x42, true)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, true), dd(not_x42, false)), Is().True());
         });
 
         it("accepts [1] and negated [~1]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1, false), dd(dd_1n, true)),  Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1, true),  dd(dd_1n, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1, false), dd(dd_1n, true)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1, true), dd(dd_1n, false)), Is().True());
         });
 
         it("rejects on low child mismatch [terminal value]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1n,         true),  dd(dd_1_low_leaf, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1_low_leaf, false), dd(dd_1n,         false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1n,         false), dd(dd_1_low_leaf, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1_low_leaf, true),  dd(dd_1n,         false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1n, true), dd(dd_1_low_leaf, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1_low_leaf, false), dd(dd_1n, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1n, false), dd(dd_1_low_leaf, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1_low_leaf, true), dd(dd_1n, false)),
+                     Is().False());
         });
 
         it("rejects on high child mismatch [terminal value]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1n,          true),  dd(dd_1_high_leaf, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1_high_leaf, false), dd(dd_1n,          true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1n,          false), dd(dd_1_high_leaf, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1_high_leaf, true),  dd(dd_1n,          false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1n, true), dd(dd_1_high_leaf, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1_high_leaf, false), dd(dd_1n, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1n, false), dd(dd_1_high_leaf, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1_high_leaf, true), dd(dd_1n, false)),
+                     Is().False());
         });
 
         it("accepts [2] and negated [~2]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2,  false), dd(dd_2n, true)),  Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n, true),  dd(dd_2,  false)), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2,  true),  dd(dd_2n, false)), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n, false), dd(dd_2,  true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2, false), dd(dd_2n, true)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n, true), dd(dd_2, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2, true), dd(dd_2n, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n, false), dd(dd_2, true)), Is().True());
         });
 
         it("rejects on low child mismatch [internal vs. terminal]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n,          true),  dd(dd_2_low_child, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_child, false), dd(dd_2n,          true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n,          false), dd(dd_2_low_child, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_child, true),  dd(dd_2n,          false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n, true), dd(dd_2_low_child, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_child, false), dd(dd_2n, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n, false), dd(dd_2_low_child, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_child, true), dd(dd_2n, false)),
+                     Is().False());
         });
 
         it("rejects on low child mismatch [node id]", [&]() {
@@ -1232,69 +1325,93 @@ go_bandit([]() {
           //      T F F T
           */
           {
-            const node n5(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
-            const node n4(2, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
-            const node n3(1, node::max_id,   node::pointer_type(false), node::pointer_type(true));
-            const node n2(1, node::max_id-1, n5.uid(),                  n4.uid());
-            const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+            const node n5(2, node::max_id, node::pointer_type(false), node::pointer_type(true));
+            const node n4(2, node::max_id - 1, node::pointer_type(true), node::pointer_type(false));
+            const node n3(1, node::max_id, node::pointer_type(false), node::pointer_type(true));
+            const node n2(1, node::max_id - 1, n5.uid(), n4.uid());
+            const node n1(0, node::max_id, n2.uid(), n3.uid());
 
             node_writer w(dd_2_low_childn);
             w << n5 << n4 << n3 << n2 << n1;
           }
 
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_childn, true),  dd(dd_2_low_child2, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_child2, false), dd(dd_2_low_childn, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_childn, false), dd(dd_2_low_child2, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_low_child2, true),  dd(dd_2_low_childn, false)), Is().False());
+          AssertThat(
+            is_isomorphic(exec_policy(), dd(dd_2_low_childn, true), dd(dd_2_low_child2, false)),
+            Is().False());
+          AssertThat(
+            is_isomorphic(exec_policy(), dd(dd_2_low_child2, false), dd(dd_2_low_childn, true)),
+            Is().False());
+          AssertThat(
+            is_isomorphic(exec_policy(), dd(dd_2_low_childn, false), dd(dd_2_low_child2, true)),
+            Is().False());
+          AssertThat(
+            is_isomorphic(exec_policy(), dd(dd_2_low_child2, true), dd(dd_2_low_childn, false)),
+            Is().False());
         });
 
         it("rejects on high child mismatch [node id]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n,           true),  dd(dd_2_high_child, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_high_child, false), dd(dd_2n,           true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n,           false), dd(dd_2_high_child, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_high_child, true) , dd(dd_2n,           false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n, true), dd(dd_2_high_child, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_high_child, false), dd(dd_2n, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n, false), dd(dd_2_high_child, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2_high_child, true), dd(dd_2n, false)),
+                     Is().False());
         });
 
         it("accepts [3] and negated [~3]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_3,  false), dd(dd_3n, true)),  Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_3n, true),  dd(dd_3,  false)), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_3,  true),  dd(dd_3n, false)), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_3n, false),  dd(dd_3, true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_3, false), dd(dd_3n, true)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_3n, true), dd(dd_3, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_3, true), dd(dd_3n, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_3n, false), dd(dd_3, true)), Is().True());
         });
 
         it("rejects on low child mismatch [node label]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_3n,          true),  dd(dd_3_low_child, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_3_low_child, false), dd(dd_3n,          true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_3n,          false), dd(dd_3_low_child, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_3_low_child, true),  dd(dd_3n,          false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_3n, true), dd(dd_3_low_child, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_3_low_child, false), dd(dd_3n, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_3n, false), dd(dd_3_low_child, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_3_low_child, true), dd(dd_3n, false)),
+                     Is().False());
         });
 
         it("accepts [4] and negated [~4]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_4,  false), dd(dd_4n, true)),  Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_4n, false), dd(dd_4,  true)),  Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_4,  true),  dd(dd_4n, false)), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_4n,  true), dd(dd_4,  false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4, false), dd(dd_4n, true)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4n, false), dd(dd_4, true)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4, true), dd(dd_4n, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4n, true), dd(dd_4, false)), Is().True());
         });
 
         it("rejects on high child mismatch [node label]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_4n,           true),  dd(dd_4_high_child, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_4_high_child, false), dd(dd_4n,           true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_4n,           false), dd(dd_4_high_child, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_4_high_child, true) , dd(dd_4n,           false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4n, true), dd(dd_4_high_child, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4_high_child, false), dd(dd_4n, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4n, false), dd(dd_4_high_child, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_4_high_child, true), dd(dd_4n, false)),
+                     Is().False());
         });
 
         it("accepts [7] and negated [~7]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_7,  false), dd(dd_7n, true)),  Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_7n, false), dd(dd_7,  true)),  Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_7,  true),  dd(dd_7n, false)), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_7n, true),  dd(dd_7,  false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7, false), dd(dd_7n, true)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7n, false), dd(dd_7, true)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7, true), dd(dd_7n, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7n, true), dd(dd_7, false)), Is().True());
         });
 
         it("rejects on high child mismatch [internal vs. terminal]", [&]() {
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_7n,           true),  dd(dd_7_high_child, false)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_7_high_child, false), dd(dd_7n,           true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_7n,           false), dd(dd_7_high_child, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_7_high_child, true) , dd(dd_7n,           false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7n, true), dd(dd_7_high_child, false)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7_high_child, false), dd(dd_7n, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7n, false), dd(dd_7_high_child, true)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_7_high_child, true), dd(dd_7n, false)),
+                     Is().False());
         });
 
         it("rejects on root's children mismatching", [&]() {
@@ -1308,7 +1425,7 @@ go_bandit([]() {
           */
           {
             const node n2(1, node::max_id, node::pointer_type(false), node::pointer_type(true));
-            const node n1(0, node::max_id, n2.uid(),                  node::pointer_type(false));
+            const node n1(0, node::max_id, n2.uid(), node::pointer_type(false));
 
             node_writer w(a);
             w << n2 << n1;
@@ -1331,7 +1448,7 @@ go_bandit([]() {
           }
 
           AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, true)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true), dd(b, false)), Is().False());
         });
 
         it("rejects on root's low child mismatches [terminal value]", [&]() {
@@ -1347,8 +1464,8 @@ go_bandit([]() {
           */
           {
             const node n3(2, node::max_id, node::pointer_type(false), node::pointer_type(true));
-            const node n2(1, node::max_id, n3.uid(),                  node::pointer_type(false));
-            const node n1(0, node::max_id, node::pointer_type(true),  n2.uid());
+            const node n2(1, node::max_id, n3.uid(), node::pointer_type(false));
+            const node n1(0, node::max_id, node::pointer_type(true), n2.uid());
 
             node_writer w(a);
             w << n3 << n2 << n1;
@@ -1356,8 +1473,8 @@ go_bandit([]() {
 
           const auto b = shared_levelized_file<node>::copy(a);
 
-          AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true), dd(b, false)), Is().False());
         });
 
         it("rejects on root's high child mismatches [terminal value]", [&]() {
@@ -1373,8 +1490,8 @@ go_bandit([]() {
           */
           {
             const node n3(2, node::max_id, node::pointer_type(false), node::pointer_type(true));
-            const node n2(1, node::max_id, n3.uid(),                  node::pointer_type(false));
-            const node n1(0, node::max_id, n2.uid(),                  node::pointer_type(true));
+            const node n2(1, node::max_id, n3.uid(), node::pointer_type(false));
+            const node n1(0, node::max_id, n2.uid(), node::pointer_type(true));
 
             node_writer w(a);
             w << n3 << n2 << n1;
@@ -1382,8 +1499,8 @@ go_bandit([]() {
 
           const auto b = shared_levelized_file<node>::copy(a);
 
-          AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, true)),  Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, true)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true), dd(b, false)), Is().False());
         });
 
         it("accepts with nodes swapped [1]", [&]() {
@@ -1403,10 +1520,10 @@ go_bandit([]() {
           */
           shared_levelized_file<node> dd_1b;
           { // Garbage collect writers to free write-lock
-            const node n4(2, node::max_id,   node::pointer_type(false), node::pointer_type(true));
-            const node n3(1, node::max_id,   node::pointer_type(true),  n4.uid());
-            const node n2(1, node::max_id-1, n4.uid(),                  node::pointer_type(false));
-            const node n1(0, node::max_id,   n3.uid(),                  n2.uid());
+            const node n4(2, node::max_id, node::pointer_type(false), node::pointer_type(true));
+            const node n3(1, node::max_id, node::pointer_type(true), n4.uid());
+            const node n2(1, node::max_id - 1, n4.uid(), node::pointer_type(false));
+            const node n1(0, node::max_id, n3.uid(), n2.uid());
 
             node_writer w(dd_1b);
             w << n4 << n3 << n2 << n1;
@@ -1414,17 +1531,17 @@ go_bandit([]() {
 
           adiar_assert(dd_1b->canonical == false);
 
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1,  false), dd(dd_1b, false)), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1b, false), dd(dd_1,  false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1, false), dd(dd_1b, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1b, false), dd(dd_1, false)), Is().True());
 
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1n, true),  dd(dd_1b, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1n, true), dd(dd_1b, false)), Is().True());
           AssertThat(is_isomorphic(exec_policy(), dd(dd_1b, false), dd(dd_1n, true)), Is().True());
 
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1n, false), dd(dd_1b, true)),  Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1b, true),  dd(dd_1n, false)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1n, false), dd(dd_1b, true)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1b, true), dd(dd_1n, false)), Is().True());
 
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1,  true),  dd(dd_1b, true)),  Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_1b, true),  dd(dd_1,  true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1, true), dd(dd_1b, true)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1b, true), dd(dd_1, true)), Is().True());
         });
 
         it("accepts with nodes swapped [2]", [&]() {
@@ -1441,11 +1558,11 @@ go_bandit([]() {
           */
           shared_levelized_file<node> dd_2b;
           { // Garbage collect writers to free write-lock
-            const node n5(2, node::max_id,   node::pointer_type(true),  node::pointer_type(false));
-            const node n4(2, node::max_id-1, node::pointer_type(false), node::pointer_type(true));
-            const node n3(1, node::max_id,   n5.uid(),                  node::pointer_type(false));
-            const node n2(1, node::max_id-1, node::pointer_type(false), n4.uid());
-            const node n1(0, node::max_id,   n2.uid(),                  n3.uid());
+            const node n5(2, node::max_id, node::pointer_type(true), node::pointer_type(false));
+            const node n4(2, node::max_id - 1, node::pointer_type(false), node::pointer_type(true));
+            const node n3(1, node::max_id, n5.uid(), node::pointer_type(false));
+            const node n2(1, node::max_id - 1, node::pointer_type(false), n4.uid());
+            const node n1(0, node::max_id, n2.uid(), n3.uid());
 
             node_writer w(dd_2b);
             w << n5 << n4 << n3 << n2 << n1;
@@ -1453,17 +1570,17 @@ go_bandit([]() {
 
           adiar_assert(dd_2b->canonical == false);
 
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2,  false), dd(dd_2b, false)), Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2b, false), dd(dd_2,  false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2, false), dd(dd_2b, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2b, false), dd(dd_2, false)), Is().True());
 
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n, true),  dd(dd_2b, false)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n, true), dd(dd_2b, false)), Is().True());
           AssertThat(is_isomorphic(exec_policy(), dd(dd_2b, false), dd(dd_2n, true)), Is().True());
 
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n, false), dd(dd_2b, true)),  Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2b, true),  dd(dd_2n, false)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2n, false), dd(dd_2b, true)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2b, true), dd(dd_2n, false)), Is().True());
 
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2,  true),  dd(dd_2b, true)),  Is().True());
-          AssertThat(is_isomorphic(exec_policy(), dd(dd_2b, true),  dd(dd_2,  true)),  Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2, true), dd(dd_2b, true)), Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_2b, true), dd(dd_2, true)), Is().True());
         });
 
         it("rejects when number of requests exceed the input's width", [&]() {
@@ -1491,12 +1608,12 @@ go_bandit([]() {
           */
           shared_levelized_file<node> a;
           { // Garbage collect writers to free write-lock
-            const node n6(3, node::max_id,   node::pointer_type(false), node::pointer_type(true));
-            const node n5(3, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
-            const node n4(2, node::max_id,   n5.uid(),                  n6.uid());
-            const node n3(2, node::max_id-1, n6.uid(),                  n5.uid());
-            const node n2(1, node::max_id,   n3.uid(),                  n4.uid());
-            const node n1(0, node::max_id,   n3.uid(),                  n2.uid());
+            const node n6(3, node::max_id, node::pointer_type(false), node::pointer_type(true));
+            const node n5(3, node::max_id - 1, node::pointer_type(true), node::pointer_type(false));
+            const node n4(2, node::max_id, n5.uid(), n6.uid());
+            const node n3(2, node::max_id - 1, n6.uid(), n5.uid());
+            const node n2(1, node::max_id, n3.uid(), n4.uid());
+            const node n1(0, node::max_id, n3.uid(), n2.uid());
 
             node_writer w(a);
             w << n6 << n5 << n4 << n3 << n2 << n1;
@@ -1512,21 +1629,21 @@ go_bandit([]() {
           //         . .
           */
           { // Garbage collect writers to free write-lock
-            const node n6(3, node::max_id,   node::pointer_type(false), node::pointer_type(true));
-            const node n5(3, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
-            const node n4(2, node::max_id,   n5.uid(),                  n6.uid());
-            const node n3(2, node::max_id-1, n6.uid(),                  n5.uid());
-            const node n2(1, node::max_id,   n4.uid(),                  n3.uid());
-            const node n1(0, node::max_id,   n3.uid(),                  n2.uid());
+            const node n6(3, node::max_id, node::pointer_type(false), node::pointer_type(true));
+            const node n5(3, node::max_id - 1, node::pointer_type(true), node::pointer_type(false));
+            const node n4(2, node::max_id, n5.uid(), n6.uid());
+            const node n3(2, node::max_id - 1, n6.uid(), n5.uid());
+            const node n2(1, node::max_id, n4.uid(), n3.uid());
+            const node n1(0, node::max_id, n3.uid(), n2.uid());
 
             node_writer w(b);
             w << n6 << n5 << n4 << n3 << n2 << n1;
           }
 
           AssertThat(is_isomorphic(exec_policy(), dd(b, false), dd(a, true)), Is().False());
-          AssertThat(is_isomorphic(exec_policy(), dd(a, true),  dd(b, false)), Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, true), dd(b, false)), Is().False());
         });
       });
     });
   });
- });
+});

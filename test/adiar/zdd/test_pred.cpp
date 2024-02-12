@@ -7,7 +7,8 @@ go_bandit([]() {
 
     // Ø
     shared_levelized_file<zdd::node_type> zdd_empty_nf;
-    { node_writer nw(zdd_empty_nf);
+    {
+      node_writer nw(zdd_empty_nf);
       nw << node(false);
     }
 
@@ -15,7 +16,8 @@ go_bandit([]() {
 
     // { Ø }
     shared_levelized_file<zdd::node_type> zdd_null_nf;
-    { node_writer nw(zdd_null_nf);
+    {
+      node_writer nw(zdd_null_nf);
       nw << node(true);
     }
 
@@ -23,7 +25,8 @@ go_bandit([]() {
 
     // { {1} }
     shared_levelized_file<zdd::node_type> zdd_A_nf;
-    { node_writer nw(zdd_A_nf);
+    {
+      node_writer nw(zdd_A_nf);
       nw << node(1, node::max_id, terminal_F, terminal_T);
     }
 
@@ -31,54 +34,62 @@ go_bandit([]() {
 
     // { {1}, {1,2} }
     shared_levelized_file<zdd::node_type> zdd_B_nf;
-    { node_writer nw(zdd_B_nf);
+    {
+      node_writer nw(zdd_B_nf);
       nw << node(2, node::max_id, terminal_T, terminal_T)
-         << node(1, node::max_id, terminal_F, ptr_uint64(2, ptr_uint64::max_id))
-        ;
+         << node(1, node::max_id, terminal_F, ptr_uint64(2, ptr_uint64::max_id));
     }
 
     // { Ø, {1}, {2}, {1,2} }
     shared_levelized_file<zdd::node_type> zdd_C_nf;
-    { node_writer nw(zdd_C_nf);
-      nw << node(2, node::max_id, terminal_T,                    terminal_T)
-         << node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id))
-        ;
+    {
+      node_writer nw(zdd_C_nf);
+      nw << node(2, node::max_id, terminal_T, terminal_T)
+         << node(1,
+                 node::max_id,
+                 ptr_uint64(2, ptr_uint64::max_id),
+                 ptr_uint64(2, ptr_uint64::max_id));
     }
 
     auto zdd_C_nf_copy = shared_levelized_file<zdd::node_type>::copy(zdd_C_nf);
 
     // { {1}, {1,2}, {0,1,3} }
     shared_levelized_file<zdd::node_type> zdd_D_nf;
-    { node_writer nw(zdd_D_nf);
-      nw << node(3, node::max_id,   terminal_F,                      terminal_T)
-         << node(2, node::max_id,   terminal_T,                      terminal_T)
-         << node(1, node::max_id,   terminal_F,                      ptr_uint64(3, ptr_uint64::max_id))
-         << node(1, node::max_id-1, terminal_F,                      ptr_uint64(2, ptr_uint64::max_id))
-         << node(0, node::max_id,   ptr_uint64(1, ptr_uint64::max_id-1), ptr_uint64(1, ptr_uint64::max_id))
-        ;
+    {
+      node_writer nw(zdd_D_nf);
+      nw << node(3, node::max_id, terminal_F, terminal_T)
+         << node(2, node::max_id, terminal_T, terminal_T)
+         << node(1, node::max_id, terminal_F, ptr_uint64(3, ptr_uint64::max_id))
+         << node(1, node::max_id - 1, terminal_F, ptr_uint64(2, ptr_uint64::max_id))
+         << node(0,
+                 node::max_id,
+                 ptr_uint64(1, ptr_uint64::max_id - 1),
+                 ptr_uint64(1, ptr_uint64::max_id));
     }
 
     auto zdd_D_nf_copy = shared_levelized_file<zdd::node_type>::copy(zdd_D_nf);
 
     // { Ø, {0,3} }
     shared_levelized_file<zdd::node_type> zdd_E_nf;
-    { node_writer nw(zdd_E_nf);
+    {
+      node_writer nw(zdd_E_nf);
       nw << node(3, node::max_id, terminal_F, terminal_T)
-         << node(0, node::max_id, terminal_T, ptr_uint64(3, ptr_uint64::max_id))
-        ;
+         << node(0, node::max_id, terminal_T, ptr_uint64(3, ptr_uint64::max_id));
     }
 
     auto zdd_E_nf_copy = shared_levelized_file<zdd::node_type>::copy(zdd_E_nf);
 
     // { {2} }
     shared_levelized_file<zdd::node_type> zdd_F_nf;
-    { node_writer nw(zdd_F_nf);
+    {
+      node_writer nw(zdd_F_nf);
       nw << node(2, node::max_id, terminal_F, terminal_T);
     }
 
     // { {0,2,4} }
     shared_levelized_file<zdd::node_type> zdd_G_nf;
-    { node_writer nw(zdd_G_nf);
+    {
+      node_writer nw(zdd_G_nf);
       nw << node(4, node::max_id, terminal_F, terminal_T)
          << node(2, node::max_id, terminal_F, ptr_uint64(4, ptr_uint64::max_id))
          << node(0, node::max_id, terminal_F, ptr_uint64(2, ptr_uint64::max_id));
@@ -95,41 +106,25 @@ go_bandit([]() {
     // -------------------------------------------------------------------------
 
     describe("zdd_ispoint", [&]() {
-      it("rejects Ø", [&]() {
-        AssertThat(zdd_ispoint(zdd_empty_nf), Is().False());
-      });
+      it("rejects Ø", [&]() { AssertThat(zdd_ispoint(zdd_empty_nf), Is().False()); });
 
-      it("accepts { Ø }", [&]() {
-        AssertThat(zdd_ispoint(zdd_null_nf), Is().True());
-      });
+      it("accepts { Ø }", [&]() { AssertThat(zdd_ispoint(zdd_null_nf), Is().True()); });
 
-      it("accepts { {1} }", [&]() {
-        AssertThat(zdd_ispoint(zdd_A_nf), Is().True());
-      });
+      it("accepts { {1} }", [&]() { AssertThat(zdd_ispoint(zdd_A_nf), Is().True()); });
 
-      it("accepts { {2} }", [&]() {
-        AssertThat(zdd_ispoint(zdd_E_nf), Is().False());
-      });
+      it("accepts { {2} }", [&]() { AssertThat(zdd_ispoint(zdd_E_nf), Is().False()); });
 
-      it("rejects { {1}, {1,2} }", [&]() {
-        AssertThat(zdd_ispoint(zdd_B_nf), Is().False());
-      });
+      it("rejects { {1}, {1,2} }", [&]() { AssertThat(zdd_ispoint(zdd_B_nf), Is().False()); });
 
-      it("rejects { Ø, {1}, {2}, {1,2} }", [&]() {
-        AssertThat(zdd_ispoint(zdd_C_nf), Is().False());
-      });
+      it("rejects { Ø, {1}, {2}, {1,2} }",
+         [&]() { AssertThat(zdd_ispoint(zdd_C_nf), Is().False()); });
 
-      it("rejects { {1}, {1,2}, {0,1,3} }", [&]() {
-        AssertThat(zdd_ispoint(zdd_D_nf), Is().False());
-      });
+      it("rejects { {1}, {1,2}, {0,1,3} }",
+         [&]() { AssertThat(zdd_ispoint(zdd_D_nf), Is().False()); });
 
-      it("rejects { Ø, {0,3} }", [&]() {
-        AssertThat(zdd_ispoint(zdd_D_nf), Is().False());
-      });
+      it("rejects { Ø, {0,3} }", [&]() { AssertThat(zdd_ispoint(zdd_D_nf), Is().False()); });
 
-      it("accepts { {0,2,4} }", [&]() {
-        AssertThat(zdd_ispoint(zdd_G_nf), Is().True());
-      });
+      it("accepts { {0,2,4} }", [&]() { AssertThat(zdd_ispoint(zdd_G_nf), Is().True()); });
     });
 
     describe("zdd_subseteq", [&]() {
@@ -281,13 +276,11 @@ go_bandit([]() {
         AssertThat(zdd_disjoint(zdd_E_nf, zdd_E_nf), Is().False());
       });
 
-      it("accepts same file for Ø", [&]() {
-        AssertThat(zdd_disjoint(zdd_empty_nf, zdd_empty_nf), Is().True());
-      });
+      it("accepts same file for Ø",
+         [&]() { AssertThat(zdd_disjoint(zdd_empty_nf, zdd_empty_nf), Is().True()); });
 
-      it("rejects same file for { Ø }", [&]() {
-        AssertThat(zdd_disjoint(zdd_null_nf, zdd_null_nf), Is().False());
-      });
+      it("rejects same file for { Ø }",
+         [&]() { AssertThat(zdd_disjoint(zdd_null_nf, zdd_null_nf), Is().False()); });
 
       it("rejects on equal ZDDs", [&]() {
         AssertThat(zdd_disjoint(zdd_A_nf, zdd_A_nf_copy), Is().False());
@@ -301,9 +294,8 @@ go_bandit([]() {
         AssertThat(zdd_disjoint(zdd_null_nf, zdd_empty_nf), Is().True());
       });
 
-      it("accepts Ø and Ø", [&]() {
-        AssertThat(zdd_disjoint(zdd_empty_nf, zdd_empty_nf_copy), Is().True());
-      });
+      it("accepts Ø and Ø",
+         [&]() { AssertThat(zdd_disjoint(zdd_empty_nf, zdd_empty_nf_copy), Is().True()); });
 
       it("rejects { Ø } and { Ø }", [&]() {
         AssertThat(zdd_disjoint(zdd_empty_nf, zdd_null_nf), Is().True());
@@ -349,9 +341,8 @@ go_bandit([]() {
         AssertThat(zdd_disjoint(zdd_F_nf, zdd_C_nf), Is().False());
       });
 
-      it("accepts non-subsets of { Ø, {1}, {2}, {1,2} }", [&]() {
-        AssertThat(zdd_disjoint(zdd_empty_nf, zdd_C_nf), Is().True());
-      });
+      it("accepts non-subsets of { Ø, {1}, {2}, {1,2} }",
+         [&]() { AssertThat(zdd_disjoint(zdd_empty_nf, zdd_C_nf), Is().True()); });
 
       it("accepts { {2} } and { {1}, {1,2} }", [&]() {
         AssertThat(zdd_disjoint(zdd_F_nf, zdd_B_nf), Is().True());
@@ -359,4 +350,4 @@ go_bandit([]() {
       });
     });
   });
- });
+});

@@ -129,167 +129,104 @@ go_bandit([]() {
     // -------------------------------------------------------------------------
 
     describe("bdd_isvar", [&]() {
-      it("rejects F terminal", [&]() {
-        AssertThat(bdd_isvar(bdd_F), Is().False());
-      });
+      it("rejects F terminal", [&]() { AssertThat(bdd_isvar(bdd_F), Is().False()); });
 
-      it("rejects T terminal", [&]() {
-        AssertThat(bdd_isvar(bdd_T), Is().False());
-      });
+      it("rejects T terminal", [&]() { AssertThat(bdd_isvar(bdd_T), Is().False()); });
 
-      it("accepts  x0 [file content]", [&]() {
-        AssertThat(bdd_isvar(bdd_x0), Is().True());
-      });
+      it("accepts  x0 [file content]", [&]() { AssertThat(bdd_isvar(bdd_x0), Is().True()); });
 
-      it("accepts  x0 [complement flag]", [&]() {
-        AssertThat(bdd_isvar(bdd(bdd_not_x0, true)), Is().True());
-      });
+      it("accepts  x0 [complement flag]",
+         [&]() { AssertThat(bdd_isvar(bdd(bdd_not_x0, true)), Is().True()); });
 
-      it("accepts ~x0 [file content]", [&]() {
-        AssertThat(bdd_isvar(bdd_not_x0), Is().True());
-      });
+      it("accepts ~x0 [file content]", [&]() { AssertThat(bdd_isvar(bdd_not_x0), Is().True()); });
 
-      it("accepts ~x0 [complement flag]", [&]() {
-        AssertThat(bdd_isvar(bdd(bdd_x0, true)), Is().True());
-      });
+      it("accepts ~x0 [complement flag]",
+         [&]() { AssertThat(bdd_isvar(bdd(bdd_x0, true)), Is().True()); });
 
-      it("accepts  x1 [file content]", [&]() {
-        AssertThat(bdd_isvar(bdd_x1), Is().True());
-      });
+      it("accepts  x1 [file content]", [&]() { AssertThat(bdd_isvar(bdd_x1), Is().True()); });
 
-      it("accepts ~x1 [complement flag]", [&]() {
-        AssertThat(bdd_isvar(bdd(bdd_x1, true)), Is().True());
-      });
+      it("accepts ~x1 [complement flag]",
+         [&]() { AssertThat(bdd_isvar(bdd(bdd_x1, true)), Is().True()); });
 
-      it("rejects x0 & x2", [&]() {
-        AssertThat(bdd_isvar(bdd_0and2), Is().False());
-      });
+      it("rejects x0 & x2", [&]() { AssertThat(bdd_isvar(bdd_0and2), Is().False()); });
     });
 
     describe("bdd_isithvar", [&]() {
-      it("rejects F terminal", [&]() {
-        AssertThat(bdd_isithvar(bdd_F), Is().False());
-      });
+      it("rejects F terminal", [&]() { AssertThat(bdd_isithvar(bdd_F), Is().False()); });
 
-      it("rejects T terminal", [&]() {
-        AssertThat(bdd_isithvar(bdd_T), Is().False());
-      });
+      it("rejects T terminal", [&]() { AssertThat(bdd_isithvar(bdd_T), Is().False()); });
 
-      it("accepts  x0 [file content]", [&]() {
-        AssertThat(bdd_isithvar(bdd_x0), Is().True());
-      });
+      it("accepts  x0 [file content]", [&]() { AssertThat(bdd_isithvar(bdd_x0), Is().True()); });
 
-      it("accepts  x0 [complement flag]", [&]() {
-        AssertThat(bdd_isithvar(bdd(bdd_not_x0, true)), Is().True());
-      });
+      it("accepts  x0 [complement flag]",
+         [&]() { AssertThat(bdd_isithvar(bdd(bdd_not_x0, true)), Is().True()); });
 
-      it("rejects ~x0 [file content]", [&]() {
-        AssertThat(bdd_isithvar(bdd_not_x0), Is().False());
-      });
+      it("rejects ~x0 [file content]",
+         [&]() { AssertThat(bdd_isithvar(bdd_not_x0), Is().False()); });
 
-      it("rejects ~x0 [complement flag]", [&]() {
-        AssertThat(bdd_isithvar(bdd(bdd_x0, true)), Is().False());
-      });
+      it("rejects ~x0 [complement flag]",
+         [&]() { AssertThat(bdd_isithvar(bdd(bdd_x0, true)), Is().False()); });
 
-      it("accepts  x1 [file content]", [&]() {
-        AssertThat(bdd_isithvar(bdd_x1), Is().True());
-      });
+      it("accepts  x1 [file content]", [&]() { AssertThat(bdd_isithvar(bdd_x1), Is().True()); });
 
-      it("rejects ~x1 [complement flag]", [&]() {
-        AssertThat(bdd_isithvar(bdd(bdd_x1, true)), Is().False());
-      });
+      it("rejects ~x1 [complement flag]",
+         [&]() { AssertThat(bdd_isithvar(bdd(bdd_x1, true)), Is().False()); });
 
-      it("rejects x0 & x2", [&]() {
-        AssertThat(bdd_isithvar(bdd_0and2), Is().False());
-      });
+      it("rejects x0 & x2", [&]() { AssertThat(bdd_isithvar(bdd_0and2), Is().False()); });
     });
 
     describe("bdd_isnithvar", [&]() {
-      it("rejects F terminal", [&]() {
-        AssertThat(bdd_isnithvar(bdd_F), Is().False());
-      });
+      it("rejects F terminal", [&]() { AssertThat(bdd_isnithvar(bdd_F), Is().False()); });
 
-      it("rejects T terminal", [&]() {
-        AssertThat(bdd_isnithvar(bdd_T), Is().False());
-      });
+      it("rejects T terminal", [&]() { AssertThat(bdd_isnithvar(bdd_T), Is().False()); });
 
-      it("rejects  x0 [file content]", [&]() {
-        AssertThat(bdd_isnithvar(bdd_x0), Is().False());
-      });
+      it("rejects  x0 [file content]", [&]() { AssertThat(bdd_isnithvar(bdd_x0), Is().False()); });
 
-      it("rejects  x0 [complement flag]", [&]() {
-        AssertThat(bdd_isnithvar(bdd(bdd_not_x0, true)), Is().False());
-      });
+      it("rejects  x0 [complement flag]",
+         [&]() { AssertThat(bdd_isnithvar(bdd(bdd_not_x0, true)), Is().False()); });
 
-      it("accepts ~x0 [file content]", [&]() {
-        AssertThat(bdd_isnithvar(bdd_not_x0), Is().True());
-      });
+      it("accepts ~x0 [file content]",
+         [&]() { AssertThat(bdd_isnithvar(bdd_not_x0), Is().True()); });
 
-      it("accepts ~x0 [complement flag]", [&]() {
-        AssertThat(bdd_isnithvar(bdd(bdd_x0, true)), Is().True());
-      });
+      it("accepts ~x0 [complement flag]",
+         [&]() { AssertThat(bdd_isnithvar(bdd(bdd_x0, true)), Is().True()); });
 
-      it("rejects  x1 [file content]", [&]() {
-        AssertThat(bdd_isnithvar(bdd_x1), Is().False());
-      });
+      it("rejects  x1 [file content]", [&]() { AssertThat(bdd_isnithvar(bdd_x1), Is().False()); });
 
-      it("accepts ~x1 [complement flag]", [&]() {
-        AssertThat(bdd_isnithvar(bdd(bdd_x1, true)), Is().True());
-      });
+      it("accepts ~x1 [complement flag]",
+         [&]() { AssertThat(bdd_isnithvar(bdd(bdd_x1, true)), Is().True()); });
 
-      it("rejects x0 & x2", [&]() {
-        AssertThat(bdd_isnithvar(bdd_0and2), Is().False());
-      });
+      it("rejects x0 & x2", [&]() { AssertThat(bdd_isnithvar(bdd_0and2), Is().False()); });
     });
 
     describe("bdd_iscube", [&]() {
-      it("rejects F terminal", [&]() {
-        AssertThat(bdd_iscube(bdd_F), Is().False());
-      });
+      it("rejects F terminal", [&]() { AssertThat(bdd_iscube(bdd_F), Is().False()); });
 
-      it("accepts T terminal", [&]() {
-        AssertThat(bdd_iscube(bdd_T), Is().True());
-      });
+      it("accepts T terminal", [&]() { AssertThat(bdd_iscube(bdd_T), Is().True()); });
 
-      it("accepts  x0 [file content]", [&]() {
-        AssertThat(bdd_iscube(bdd_x0), Is().True());
-      });
+      it("accepts  x0 [file content]", [&]() { AssertThat(bdd_iscube(bdd_x0), Is().True()); });
 
-      it("accepts  x0 [complement flag]", [&]() {
-        AssertThat(bdd_iscube(bdd(bdd_not_x0, true)), Is().True());
-      });
+      it("accepts  x0 [complement flag]",
+         [&]() { AssertThat(bdd_iscube(bdd(bdd_not_x0, true)), Is().True()); });
 
-      it("accepts ~x0 [file content]", [&]() {
-        AssertThat(bdd_iscube(bdd_not_x0), Is().True());
-      });
+      it("accepts ~x0 [file content]", [&]() { AssertThat(bdd_iscube(bdd_not_x0), Is().True()); });
 
-      it("accepts ~x0 [complement flag]", [&]() {
-        AssertThat(bdd_iscube(bdd(bdd_x0, true)), Is().True());
-      });
+      it("accepts ~x0 [complement flag]",
+         [&]() { AssertThat(bdd_iscube(bdd(bdd_x0, true)), Is().True()); });
 
-      it("accepts  x1 [file content]", [&]() {
-        AssertThat(bdd_iscube(bdd_x1), Is().True());
-      });
+      it("accepts  x1 [file content]", [&]() { AssertThat(bdd_iscube(bdd_x1), Is().True()); });
 
-      it("accepts ~x1 [complement flag]", [&]() {
-        AssertThat(bdd_iscube(bdd(bdd_x1, true)), Is().True());
-      });
+      it("accepts ~x1 [complement flag]",
+         [&]() { AssertThat(bdd_iscube(bdd(bdd_x1, true)), Is().True()); });
 
-      it("accepts x0 & x2", [&]() {
-        AssertThat(bdd_iscube(bdd_0and2), Is().True());
-      });
+      it("accepts x0 & x2", [&]() { AssertThat(bdd_iscube(bdd_0and2), Is().True()); });
 
-      it("rejects x0 | x2", [&]() {
-        AssertThat(bdd_iscube(bdd_0or2), Is().False());
-      });
+      it("rejects x0 | x2", [&]() { AssertThat(bdd_iscube(bdd_0or2), Is().False()); });
 
-      it("accepts ~(x0 | x2) [complement flag]", [&]() {
-        AssertThat(bdd_iscube(bdd(bdd_0or2, true)), Is().True());
-      });
+      it("accepts ~(x0 | x2) [complement flag]",
+         [&]() { AssertThat(bdd_iscube(bdd(bdd_0or2, true)), Is().True()); });
 
-      it("rejects (x0 | x1) & x2", [&]() {
-        AssertThat(bdd_iscube(bdd_23_13), Is().False());
-      });
+      it("rejects (x0 | x1) & x2", [&]() { AssertThat(bdd_iscube(bdd_23_13), Is().False()); });
     });
   });
- });
+});

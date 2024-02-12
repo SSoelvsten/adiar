@@ -14,17 +14,17 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   using zdd_policy = internal::dd_policy<zdd, __zdd>;
 
-  template<>
+  template <>
   inline zdd::pointer_type
-  zdd_policy::reduction_rule(const node &n)
+  zdd_policy::reduction_rule(const node& n)
   {
     if (n.high().is_false()) { return n.low(); }
     return n.uid();
   }
 
-  template<>
+  template <>
   inline zdd::node_type::children_type
-  zdd_policy::reduction_rule_inv(const zdd::pointer_type &child)
+  zdd_policy::reduction_rule_inv(const zdd::pointer_type& child)
   {
     return { child, zdd::pointer_type(false) };
   }

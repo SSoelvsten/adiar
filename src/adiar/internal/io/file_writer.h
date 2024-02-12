@@ -5,10 +5,10 @@
 #include <tpie/sort.h>
 
 #include <adiar/internal/assert.h>
-#include <adiar/internal/memory.h>
 #include <adiar/internal/data_types/level_info.h>
 #include <adiar/internal/data_types/ptr.h>
 #include <adiar/internal/io/file.h>
+#include <adiar/internal/memory.h>
 
 namespace adiar::internal
 {
@@ -29,7 +29,8 @@ namespace adiar::internal
     using value_type = T;
 
   public:
-    static size_t memory_usage()
+    static size_t
+    memory_usage()
     {
       return tpie::file_stream<value_type>::memory_usage();
     }
@@ -52,36 +53,42 @@ namespace adiar::internal
     /// \brief Construct unattached to any file.
     ////////////////////////////////////////////////////////////////////////////
     file_writer()
-    { }
+    {}
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a given `file<value_type>`.
     ///
     /// \pre No `file_stream` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
-    file_writer(file<value_type> &f)
-    { attach(f); }
+    file_writer(file<value_type>& f)
+    {
+      attach(f);
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a given shared `file<value_type>`.
     ///
     /// \pre No `file_stream` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
-    file_writer(adiar::shared_ptr<file<value_type>> &f)
-    { attach(f); }
+    file_writer(adiar::shared_ptr<file<value_type>>& f)
+    {
+      attach(f);
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Detaches and cleans up when destructed.
     ////////////////////////////////////////////////////////////////////////////
     ~file_writer()
-    { detach(); }
+    {
+      detach();
+    }
 
   protected:
     ////////////////////////////////////////////////////////////////////////////
-    void attach(file<value_type> &f, adiar::shared_ptr<void> p)
+    void
+    attach(file<value_type>& f, adiar::shared_ptr<void> p)
     {
-      if (f.is_persistent())
-        throw runtime_error("Cannot attach writer to a persisted file");
+      if (f.is_persistent()) throw runtime_error("Cannot attach writer to a persisted file");
 
       if (attached()) { detach(); }
       _file_ptr = p;
@@ -105,27 +112,37 @@ namespace adiar::internal
     ///          ensure, that the file in question is not destructed before
     ///          `.detach()` is called.
     ////////////////////////////////////////////////////////////////////////////
-    void attach(file<value_type> &f)
-    { attach(f, nullptr); }
+    void
+    attach(file<value_type>& f)
+    {
+      attach(f, nullptr);
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Attach to a shared file.
     ///
     /// \pre No `file_stream` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
-    void attach(adiar::shared_ptr<file<value_type>> f)
-    { attach(*f, f); }
+    void
+    attach(adiar::shared_ptr<file<value_type>> f)
+    {
+      attach(*f, f);
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the writer currently is attached to any file.
     ////////////////////////////////////////////////////////////////////////////
-    bool attached() const
-    { return _stream.is_open(); }
+    bool
+    attached() const
+    {
+      return _stream.is_open();
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Detach from a file (if need be).
     ////////////////////////////////////////////////////////////////////////////
-    void detach()
+    void
+    detach()
     {
       _stream.close();
       if (_file_ptr) { _file_ptr.reset(); }
@@ -136,15 +153,19 @@ namespace adiar::internal
     ///
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    void push(const value_type &e)
-    { _stream.write(e); }
+    void
+    push(const value_type& e)
+    {
+      _stream.write(e);
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Push an element to the end of the file.
     ///
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    file_writer<value_type>& operator<< (const value_type& e)
+    file_writer<value_type>&
+    operator<<(const value_type& e)
     {
       this->push(e);
       return *this;
@@ -155,24 +176,33 @@ namespace adiar::internal
     ///
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    bool has_pushed() const
-    { return _stream.size() > 0; }
+    bool
+    has_pushed() const
+    {
+      return _stream.size() > 0;
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the underlying file is empty.
     ///
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    bool empty() const
-    { return !has_pushed(); }
+    bool
+    empty() const
+    {
+      return !has_pushed();
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Number of elements written to this file.
     ///
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    size_t size() const
-    { return _stream.size(); }
+    size_t
+    size() const
+    {
+      return _stream.size();
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Sort the content of the attached file.
@@ -180,7 +210,8 @@ namespace adiar::internal
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////
     template <typename pred_t = std::less<value_type>>
-    void sort(const pred_t pred = pred_t())
+    void
+    sort(const pred_t pred = pred_t())
     {
       if (empty()) return;
 
@@ -190,7 +221,7 @@ namespace adiar::internal
   };
 
   // TODO: remove...
-  using label_writer = file_writer<ptr_uint64::label_type> ;
+  using label_writer = file_writer<ptr_uint64::label_type>;
 }
 
 #endif // ADIAR_INTERNAL_IO_FILE_WRITER_H

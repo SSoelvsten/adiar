@@ -29,17 +29,17 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Wrapper for an algorithm's already reduced output.
     ////////////////////////////////////////////////////////////////////////////
-    __bdd(const shared_node_file_type &f);
+    __bdd(const shared_node_file_type& f);
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Wrapper for an algorithm's unreduced output.
     ////////////////////////////////////////////////////////////////////////////
-    __bdd(const shared_arc_file_type &f, const exec_policy &ep);
+    __bdd(const shared_arc_file_type& f, const exec_policy& ep);
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Conversion constructor from a `bdd` to pass along a prior value.
     ////////////////////////////////////////////////////////////////////////////
-    __bdd(const bdd &bdd);
+    __bdd(const bdd& bdd);
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -60,8 +60,10 @@ namespace adiar
     friend class apply_prod2_policy;
 
     // |- functions
-    friend bdd bdd_not(const bdd&);
-    friend bdd bdd_not(bdd&&);
+    friend bdd
+    bdd_not(const bdd&);
+    friend bdd
+    bdd_not(bdd&&);
 
     friend size_t
     bdd_nodecount(const bdd&);
@@ -70,7 +72,7 @@ namespace adiar
     bdd_varcount(const bdd&);
 
     friend __bdd
-    bdd_ite(const exec_policy &ep, const bdd &f, const bdd &g, const bdd &h);
+    bdd_ite(const exec_policy& ep, const bdd& f, const bdd& g, const bdd& h);
 
   public:
     /// \cond
@@ -107,19 +109,19 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor to wrap the node-based result of an algorithm.
     ////////////////////////////////////////////////////////////////////////////
-    bdd(const bdd::shared_node_file_type &f, bool negate = false);
+    bdd(const bdd::shared_node_file_type& f, bool negate = false);
     /// \endcond
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Copy construction, incrementing the reference count on the file
     ///        underneath.
     ////////////////////////////////////////////////////////////////////////////
-    bdd(const bdd &f);
+    bdd(const bdd& f);
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Move construction, taking over ownership of the files underneath.
     ////////////////////////////////////////////////////////////////////////////
-    bdd(bdd &&f);
+    bdd(bdd&& f);
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Implicit move conversion from a possibly to-be reduced result
@@ -132,7 +134,7 @@ namespace adiar
     /// \remark  Since the value `o` is forced to be moved, we force the content
     ///          of `o` to be destructed after finishing the *Reduce* algorithm.
     ////////////////////////////////////////////////////////////////////////////
-    bdd(__bdd &&f);
+    bdd(__bdd&& f);
 
     ////////////////////////////////////////////////////////////////////////////
     // Assignment operator overloadings
@@ -140,39 +142,47 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Assigns new `bdd`.
     ////////////////////////////////////////////////////////////////////////////
-    bdd& operator= (const bdd &other);
+    bdd&
+    operator=(const bdd& other);
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Assigns new `bdd` to a variable; the content is derefenced before
     ///        the given `__bdd` is reduced into a `bdd`.
     ////////////////////////////////////////////////////////////////////////////
-    bdd& operator= (__bdd &&other);
+    bdd&
+    operator=(__bdd&& other);
 
     ////////////////////////////////////////////////////////////////////////////
     /// \see bdd_and
     ////////////////////////////////////////////////////////////////////////////
-    bdd& operator&= (const bdd &other);
+    bdd&
+    operator&=(const bdd& other);
 
     /// \cond
-    bdd& operator&= (bdd &&other);
+    bdd&
+    operator&=(bdd&& other);
     /// \endcond
 
     ////////////////////////////////////////////////////////////////////////////
     /// \see bdd_or
     ////////////////////////////////////////////////////////////////////////////
-    bdd& operator|= (const bdd &other);
+    bdd&
+    operator|=(const bdd& other);
 
     /// \cond
-    bdd& operator|= (bdd &&other);
+    bdd&
+    operator|=(bdd&& other);
     /// \endcond
 
     ////////////////////////////////////////////////////////////////////////////
     /// \see bdd_xor
     ////////////////////////////////////////////////////////////////////////////
-    bdd& operator^= (const bdd &other);
+    bdd&
+    operator^=(const bdd& other);
 
     /// \cond
-    bdd& operator^= (bdd &&other);
+    bdd&
+    operator^=(bdd&& other);
     /// \endcond
   };
 }

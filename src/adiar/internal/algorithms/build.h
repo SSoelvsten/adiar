@@ -3,10 +3,11 @@
 
 #include <adiar/exception.h>
 #include <adiar/types.h>
+
 #include <adiar/internal/assert.h>
 #include <adiar/internal/cut.h>
-#include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/data_types/node.h>
+#include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/io/file_stream.h>
 #include <adiar/internal/io/node_writer.h>
 #include <adiar/internal/io/shared_file_ptr.h>
@@ -16,9 +17,8 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Builder for a terminal value
   //////////////////////////////////////////////////////////////////////////////
-  template<typename DdPolicy>
-  inline
-  shared_levelized_file<typename DdPolicy::node_type>
+  template <typename DdPolicy>
+  inline shared_levelized_file<typename DdPolicy::node_type>
   build_terminal(bool value)
   {
     using node_type = typename DdPolicy::node_type;
@@ -36,12 +36,11 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Builder for a single-node with children (`false`, `true`).
   //////////////////////////////////////////////////////////////////////////////
-  template<typename DdPolicy>
-  inline
-  shared_levelized_file<typename DdPolicy::node_type>
+  template <typename DdPolicy>
+  inline shared_levelized_file<typename DdPolicy::node_type>
   build_ithvar(typename DdPolicy::label_type label)
   {
-    using node_type = typename DdPolicy::node_type;
+    using node_type    = typename DdPolicy::node_type;
     using pointer_type = typename node_type::pointer_type;
 
     if (node_type::max_label < label) {
@@ -52,7 +51,7 @@ namespace adiar::internal
     {
       node_writer nw(nf);
       nw.unsafe_push(node(label, pointer_type::max_id, pointer_type(false), pointer_type(true)));
-      nw.unsafe_push(level_info(label,1u));
+      nw.unsafe_push(level_info(label, 1u));
       nw.unsafe_set_canonical(true);
     }
 
@@ -62,33 +61,31 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Builds a chain of nodes bottom-up.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename Policy, typename Generator>
+  template <typename Policy, typename Generator>
   inline typename Policy::dd_type
-  build_chain(const Policy &policy, const Generator &vars)
+  build_chain(const Policy& policy, const Generator& vars)
   {
     using label_type = typename Policy::label_type;
 
     optional<pair<label_type, bool>> next = vars();
 
-    if (!next) {
-      return build_terminal<Policy>(Policy::init_terminal);
-    }
+    if (!next) { return build_terminal<Policy>(Policy::init_terminal); }
 
     shared_levelized_file<typename Policy::node_type> nf;
     node_writer nw(nf);
 
-    size_t max_internal_cut      = 1;
+    size_t max_internal_cut = 1;
 
-    size_t terminals_internal[2] = {0u, 0u};
-    bool   terminal_at_bottom[2] = {false, false};
-    size_t terminals[2]          = {0u, 0u};
+    size_t terminals_internal[2] = { 0u, 0u };
+    bool terminal_at_bottom[2]   = { false, false };
+    size_t terminals[2]          = { 0u, 0u };
 
     typename Policy::pointer_type root(Policy::init_terminal);
     adiar_assert(root.is_terminal());
 
     do {
-      const label_type next_var      = next.value().first;
-      const label_type next_negated  = next.value().second;
+      const label_type next_var     = next.value().first;
+      const label_type next_negated = next.value().second;
 
       // Fail if generator is increasing.
       if (!root.is_terminal() && root.label() < next_var) {
@@ -114,11 +111,10 @@ namespace adiar::internal
 
       const node_type n = policy.make_node(next_var, root, next_negated);
 
-      adiar_assert(n.label() == next_var,       "Policy ought to make a node for this level node");
+      adiar_assert(n.label() == next_var, "Policy ought to make a node for this level node");
       adiar_assert(n.id() == node_type::max_id, "Policy ought to make a canonical node");
 
-      max_internal_cut = std::max<size_t>(max_internal_cut,
-                                          n.low().is_node() + n.high().is_node());
+      max_internal_cut = std::max<size_t>(max_internal_cut, n.low().is_node() + n.high().is_node());
 
       if (n.low().is_terminal()) {
         terminals_internal[n.low().value()] =
@@ -149,9 +145,7 @@ namespace adiar::internal
     } while (next);
 
     // If all values have been skipped by the policy, then collapse to a terminal
-    if (nw.size() == 0u) {
-      return build_terminal<Policy>(Policy::init_terminal);
-    }
+    if (nw.size() == 0u) { return build_terminal<Policy>(Policy::init_terminal); }
 
     // Canonicity (assuming the policies are correct)
     nw.unsafe_set_canonical(true);
@@ -160,26 +154,19 @@ namespace adiar::internal
     nf->max_1level_cut[cut::Internal] = max_internal_cut;
 
     nf->max_1level_cut[cut::Internal_False] =
-      std::max<size_t>({
-          nf->max_1level_cut[cut::Internal],
-          terminals_internal[false] + terminals[false] - terminal_at_bottom[false],
-          terminals[false]
-        });
+      std::max<size_t>({ nf->max_1level_cut[cut::Internal],
+                         terminals_internal[false] + terminals[false] - terminal_at_bottom[false],
+                         terminals[false] });
 
     nf->max_1level_cut[cut::Internal_True] =
-      std::max<size_t>({
-          nf->max_1level_cut[cut::Internal],
-          terminals_internal[true] + terminals[true] - terminal_at_bottom[true],
-          terminals[true]
-        });
+      std::max<size_t>({ nf->max_1level_cut[cut::Internal],
+                         terminals_internal[true] + terminals[true] - terminal_at_bottom[true],
+                         terminals[true] });
 
-    nf->max_1level_cut[cut::All] =
-      std::max<size_t>({
-          nf->max_1level_cut[cut::Internal],
-          nf->max_1level_cut[cut::Internal_False],
-          nf->max_1level_cut[cut::Internal_True],
-          terminals[false] + terminals[true]
-        });
+    nf->max_1level_cut[cut::All] = std::max<size_t>({ nf->max_1level_cut[cut::Internal],
+                                                      nf->max_1level_cut[cut::Internal_False],
+                                                      nf->max_1level_cut[cut::Internal_True],
+                                                      terminals[false] + terminals[true] });
 
     return nf;
   }
@@ -189,50 +176,50 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Policy for `build_chain` where the chain goes up the *low* arcs.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename DdPolicy, bool InitTerminal = false, bool HighValue = true>
+  template <typename DdPolicy, bool InitTerminal = false, bool HighValue = true>
   class chain_low : public DdPolicy
   {
   public:
     static constexpr bool init_terminal = InitTerminal;
 
     constexpr bool
-    skip(const typename DdPolicy::label_type &) const
-    { return false; }
+    skip(const typename DdPolicy::label_type&) const
+    {
+      return false;
+    }
 
     inline typename DdPolicy::node_type
-    make_node(const typename DdPolicy::label_type &l,
-              const typename DdPolicy::pointer_type &r,
-              const bool/*negated*/) const
+    make_node(const typename DdPolicy::label_type& l,
+              const typename DdPolicy::pointer_type& r,
+              const bool /*negated*/) const
     {
-      return typename DdPolicy::node_type(l,
-                                           DdPolicy::max_id,
-                                           r,
-                                           typename DdPolicy::pointer_type(HighValue));
+      return typename DdPolicy::node_type(
+        l, DdPolicy::max_id, r, typename DdPolicy::pointer_type(HighValue));
     }
   };
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Policy for `build_chain` where the chain goes up the *high* arcs.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename DdPolicy, bool InitTerminal = true, bool LowValue = false>
+  template <typename DdPolicy, bool InitTerminal = true, bool LowValue = false>
   class chain_high : public DdPolicy
   {
   public:
     static constexpr bool init_terminal = InitTerminal;
 
     constexpr bool
-    skip(const typename DdPolicy::label_type &) const
-    { return false; }
+    skip(const typename DdPolicy::label_type&) const
+    {
+      return false;
+    }
 
     inline typename DdPolicy::node_type
-    make_node(const typename DdPolicy::label_type &l,
-              const typename DdPolicy::pointer_type &r,
-              const bool/*negated*/) const
+    make_node(const typename DdPolicy::label_type& l,
+              const typename DdPolicy::pointer_type& r,
+              const bool /*negated*/) const
     {
-      return typename DdPolicy::node_type(l,
-                                           DdPolicy::max_id,
-                                           typename DdPolicy::pointer_type(LowValue),
-                                           r);
+      return typename DdPolicy::node_type(
+        l, DdPolicy::max_id, typename DdPolicy::pointer_type(LowValue), r);
     }
   };
 
@@ -240,20 +227,22 @@ namespace adiar::internal
   /// \brief Policy for `build_chain` where the chain goes up both the *low* and
   ///        the *high* arcs.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename DdPolicy, bool InitTerminal = true>
+  template <typename DdPolicy, bool InitTerminal = true>
   class chain_both : public DdPolicy
   {
   public:
     static constexpr bool init_terminal = InitTerminal;
 
     constexpr bool
-    skip(const typename DdPolicy::label_type &) const
-    { return false; }
+    skip(const typename DdPolicy::label_type&) const
+    {
+      return false;
+    }
 
     inline typename DdPolicy::node_type
-    make_node(const typename DdPolicy::label_type &l,
-              const typename DdPolicy::pointer_type &r,
-              const bool/*negated*/) const
+    make_node(const typename DdPolicy::label_type& l,
+              const typename DdPolicy::pointer_type& r,
+              const bool /*negated*/) const
     {
       return typename DdPolicy::node_type(l, DdPolicy::max_id, r, r);
     }
@@ -263,38 +252,42 @@ namespace adiar::internal
   /// \brief Wrapper for a generator to map its output to fit the `build_chain`
   ///        algorithm.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename DdPolicy, typename Generator, bool negate = false>
+  template <typename DdPolicy, typename Generator, bool negate = false>
   class chain_converter
   {
   private:
-    const Generator &_gen;
+    const Generator& _gen;
 
   public:
     using value_type  = pair<typename DdPolicy::label_type, bool>;
     using result_type = optional<value_type>;
 
   private:
-    inline value_type map(const value_type &x) const
+    inline value_type
+    map(const value_type& x) const
     {
       return make_pair(x.first, negate ^ x.second);
     }
 
-    inline value_type map(const typename DdPolicy::label_type &x) const
+    inline value_type
+    map(const typename DdPolicy::label_type& x) const
     {
       return make_pair(x, negate);
     }
 
-    inline value_type map(const int &x) const
+    inline value_type
+    map(const int& x) const
     {
       return make_pair(std::abs(x), negate ? 0 < x : x < 0);
     }
 
   public:
-    chain_converter(const Generator &gen)
+    chain_converter(const Generator& gen)
       : _gen(gen)
-    { }
+    {}
 
-    inline result_type operator()() const
+    inline result_type
+    operator()() const
     {
       // NOTE: This is similar to a monadic 'bind'/'map'.
 

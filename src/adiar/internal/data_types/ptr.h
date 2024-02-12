@@ -38,7 +38,8 @@ namespace adiar::internal
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Compute (at compile-time) the (ceiling) log2 of a number.
   ////////////////////////////////////////////////////////////////////////////
-  constexpr uint8_t log2(size_t n)
+  constexpr uint8_t
+  log2(size_t n)
   {
     return n == 0u ? 0u : log2(n / 2u) + 1u;
   }
@@ -99,16 +100,17 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     // befriend functions and classes that need access to 'raw'...
     template <typename dd_t>
-    friend void __print_dot(const dd_t&, std::ostream &, bool);
+    friend void
+    __print_dot(const dd_t&, std::ostream&, bool);
 
-    template<typename pointer_type>
+    template <typename pointer_type>
     friend class __uid;
     ////////////////////////////////////////////////////////////////////////////
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Total number of bits.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr uint8_t total_bits = sizeof(uint64_t)*8u;
+    static constexpr uint8_t total_bits = sizeof(uint64_t) * 8u;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -125,7 +127,7 @@ namespace adiar::internal
     /// \details The default, copy, and move constructor has to be `default` to
     ///          ensure it is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    ptr_uint64(const ptr_uint64 &p) = default;
+    ptr_uint64(const ptr_uint64& p) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   Move construction (trivial).
@@ -133,7 +135,7 @@ namespace adiar::internal
     /// \details The default, copy, and move constructor has to be `default` to
     ///          ensure it is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    ptr_uint64(ptr_uint64 &&p) = default;
+    ptr_uint64(ptr_uint64&& p) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   Destruction (trivial).
@@ -150,7 +152,8 @@ namespace adiar::internal
     /// \details The copy and move assignment has to be `default` to ensure it
     ///          is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    ptr_uint64& operator =(const ptr_uint64 &p) = default;
+    ptr_uint64&
+    operator=(const ptr_uint64& p) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   Move assignment (trivial).
@@ -158,7 +161,8 @@ namespace adiar::internal
     /// \details The copy and move assignment has to be `default` to ensure it
     ///          is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    ptr_uint64& operator =(ptr_uint64 &&p) = default;
+    ptr_uint64&
+    operator=(ptr_uint64&& p) = default;
 
   protected:
     ////////////////////////////////////////////////////////////////////////////
@@ -166,7 +170,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     constexpr ptr_uint64(const raw_type raw)
       : _raw(raw)
-    { }
+    {}
 
     /* ============================ LEVEL FIELD ============================= */
 
@@ -193,8 +197,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The maximal possible value for a level.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr level_type max_level =
-      (static_cast<raw_type>(1) << level_bits) - 1u;
+    static constexpr level_type max_level = (static_cast<raw_type>(1) << level_bits) - 1u;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -210,8 +213,10 @@ namespace adiar::internal
 
     ////////////////////////////////////////////////////////////////////////////
     // befriend flag modifying functions that need access to protected values.
-    friend ptr_uint64 flag(const ptr_uint64 &p);
-    friend ptr_uint64 unflag(const ptr_uint64 &p);
+    friend ptr_uint64
+    flag(const ptr_uint64& p);
+    friend ptr_uint64
+    unflag(const ptr_uint64& p);
     ////////////////////////////////////////////////////////////////////////////
 
   public:
@@ -240,7 +245,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Retrieve the value of the bit flag within a pointer.
     ////////////////////////////////////////////////////////////////////////////
-    inline flag_type is_flagged() const
+    inline flag_type
+    is_flagged() const
     {
       return this->_raw & flag_bit;
     }
@@ -294,8 +300,7 @@ namespace adiar::internal
     ///
     /// \see nil
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr raw_type min_nil =
-      static_cast<raw_type>(nil_level) << level_shift;
+    static constexpr raw_type min_nil = static_cast<raw_type>(nil_level) << level_shift;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -303,13 +308,17 @@ namespace adiar::internal
     ///
     /// \remark  A nil value always comes after all other types of pointers.
     ////////////////////////////////////////////////////////////////////////////
-    static inline constexpr ptr_uint64 nil()
-    { return ptr_uint64{ min_nil }; }
+    static inline constexpr ptr_uint64
+    nil()
+    {
+      return ptr_uint64{ min_nil };
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether a pointer is nil.
     ////////////////////////////////////////////////////////////////////////////
-    inline bool is_nil() const
+    inline bool
+    is_nil() const
     {
       // Since `nil_level` is maximal and the level bits are most significant,
       // then we can implement `is_nil()` as a simple comparison to quickly
@@ -357,7 +366,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     // befriend flag modifying functions that need access to protected values.
     friend ptr_uint64
-    essential(const ptr_uint64 &p);
+    essential(const ptr_uint64& p);
     ////////////////////////////////////////////////////////////////////////////
 
   public:
@@ -382,7 +391,7 @@ namespace adiar::internal
     /// \brief Number of bits used to store the out-index.
     ////////////////////////////////////////////////////////////////////////////
     static constexpr uint8_t out_idx_bits = log2(max_out_idx);
-    static_assert(out_idx_bits <= 8*sizeof(out_idx_type));
+    static_assert(out_idx_bits <= 8 * sizeof(out_idx_type));
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The number of bits for a level identifier.
@@ -391,8 +400,7 @@ namespace adiar::internal
     ///          maximum width possible for a single level: a level cannot
     ///          exceed \$2^{id_bits} \cdot 3 \cdot 8\$ bytes.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr uint8_t id_bits =
-      total_bits - level_bits - out_idx_bits - flag_bits;
+    static constexpr uint8_t id_bits = total_bits - level_bits - out_idx_bits - flag_bits;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -413,8 +421,8 @@ namespace adiar::internal
     ///        weight 0.
     ////////////////////////////////////////////////////////////////////////////
     constexpr ptr_uint64(const label_type label, const id_type id)
-      : _raw((static_cast<raw_type>(label) << level_shift) |
-             (static_cast<raw_type>(id) << (data_shift + out_idx_bits)))
+      : _raw((static_cast<raw_type>(label) << level_shift)
+             | (static_cast<raw_type>(id) << (data_shift + out_idx_bits)))
     {
       // TODO: Add Debug checks for non-constexpr context
       // adiar_assert(label <= max_label, "Cannot represent given label");
@@ -425,12 +433,10 @@ namespace adiar::internal
     /// \brief Constructor for a pointer to an internal node (label, id) with
     ///        given weight.
     ////////////////////////////////////////////////////////////////////////////
-    constexpr ptr_uint64(const label_type label,
-                         const id_type id,
-                         const out_idx_type out_idx)
-      : _raw((static_cast<raw_type>(label) << level_shift) |
-             (static_cast<raw_type>(id) << (data_shift + out_idx_bits)) |
-             (static_cast<raw_type>(out_idx) << data_shift))
+    constexpr ptr_uint64(const label_type label, const id_type id, const out_idx_type out_idx)
+      : _raw((static_cast<raw_type>(label) << level_shift)
+             | (static_cast<raw_type>(id) << (data_shift + out_idx_bits))
+             | (static_cast<raw_type>(out_idx) << data_shift))
     {
       // TODO: Add Debug checks for non-constexpr context
       // adiar_assert(label   <= max_label,   "Cannot represent given label");
@@ -446,8 +452,8 @@ namespace adiar::internal
     is_node() const
     {
       // Derive at compile-time the maximal internal node pointer value.
-      constexpr raw_type max_node = ptr_uint64(max_label, max_id, max_out_idx)._raw
-                                  | ptr_uint64::flag_bit;
+      constexpr raw_type max_node =
+        ptr_uint64(max_label, max_id, max_out_idx)._raw | ptr_uint64::flag_bit;
 
       // Since nodes' levels are the smallest ones and the level bits are most
       // significant, then we can implement `is_node()` as a simple comparison
@@ -513,7 +519,7 @@ namespace adiar::internal
     //   Template 'terminal_type'
     using terminal_type = bool;
 
-    static_assert(8*sizeof(terminal_type) <= data_bits,
+    static_assert(8 * sizeof(terminal_type) <= data_bits,
                   "Type for terminal values may overflow data field");
 
   public:
@@ -531,8 +537,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Minimal possible raw value for a terminal.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr raw_type min_terminal =
-      static_cast<raw_type>(terminal_level) << level_shift;
+    static constexpr raw_type min_terminal = static_cast<raw_type>(terminal_level) << level_shift;
 
     // TODO (32-bit ADD):
     //   Add `max_terminal` at compile-time. Note, we are interested in the raw
@@ -544,9 +549,9 @@ namespace adiar::internal
     /// \brief Constructor for a pointer to a terminal node (v).
     ////////////////////////////////////////////////////////////////////////////
     constexpr ptr_uint64(const terminal_type v)
-      : _raw((static_cast<raw_type>(terminal_level) << level_shift) |
-             (static_cast<raw_type>(v) << data_shift))
-    { }
+      : _raw((static_cast<raw_type>(terminal_level) << level_shift)
+             | (static_cast<raw_type>(v) << data_shift))
+    {}
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -605,43 +610,61 @@ namespace adiar::internal
     /// \brief Lexicographical ordering on internal nodes (i, id), followed by
     ///        terminals `false`, `true`, and finally `nil`.
     ////////////////////////////////////////////////////////////////////////////
-    inline bool operator< (const ptr_uint64 &o) const
-    { return this->_raw < o._raw; }
+    inline bool
+    operator<(const ptr_uint64& o) const
+    {
+      return this->_raw < o._raw;
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Lexicographical ordering on internal nodes (i, id), followed by
     ///        terminals `false`, `true`, and finally `nil`.
     ////////////////////////////////////////////////////////////////////////////
-    inline bool operator<= (const ptr_uint64 &o) const
-    { return this->_raw <= o._raw; }
+    inline bool
+    operator<=(const ptr_uint64& o) const
+    {
+      return this->_raw <= o._raw;
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Lexicographical ordering on internal nodes (i, id), followed by
     ///        terminals `false`, `true`, and finally `nil`.
     ////////////////////////////////////////////////////////////////////////////
-    inline bool operator> (const ptr_uint64 &o) const
-    { return (o < *this); }
+    inline bool
+    operator>(const ptr_uint64& o) const
+    {
+      return (o < *this);
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Lexicographical ordering on internal nodes (i, id), followed by
     ///        terminals `false`, `true`, and finally `nil`.
     ////////////////////////////////////////////////////////////////////////////
-    inline bool operator>= (const ptr_uint64 &o) const
-    { return (o <= *this); }
+    inline bool
+    operator>=(const ptr_uint64& o) const
+    {
+      return (o <= *this);
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether pointers reference the same node and also share the same
     ///        auxiliary data, i.e. `flag` and `out_idx`.
     ////////////////////////////////////////////////////////////////////////////
-    inline bool operator== (const ptr_uint64 &o) const
-    { return this->_raw == o._raw; }
+    inline bool
+    operator==(const ptr_uint64& o) const
+    {
+      return this->_raw == o._raw;
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether pointers reference the same node and also share the same
     ///        auxiliary data, i.e. `flag` and `out_idx`.
     ////////////////////////////////////////////////////////////////////////////
-    inline bool operator!= (const ptr_uint64 &o) const
-    { return !(*this == o); }
+    inline bool
+    operator!=(const ptr_uint64& o) const
+    {
+      return !(*this == o);
+    }
 
     /* ================================ OPERATORS ============================= */
   private:
@@ -649,15 +672,17 @@ namespace adiar::internal
     //
     // This is indeed the case for `bool` and unsigned and signed integers.
     static constexpr raw_type value_mask =
-      (static_cast<raw_type>(std::numeric_limits<terminal_type>::max()) |
-       static_cast<raw_type>(std::numeric_limits<terminal_type>::min())) << data_shift;
+      (static_cast<raw_type>(std::numeric_limits<terminal_type>::max())
+       | static_cast<raw_type>(std::numeric_limits<terminal_type>::min()))
+      << data_shift;
 
   public:
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain a pointer where terminal values (if any) are negated. The
     ///        'flag' is kept as-is.
     //////////////////////////////////////////////////////////////////////////////
-    ptr_uint64 operator! () const
+    ptr_uint64
+    operator!() const
     {
       // TODO (32-bit ADD):
       //   Make this only a specialization for `ptr_uint64<bool>`. Generic version
@@ -671,7 +696,8 @@ namespace adiar::internal
     ///
     /// \pre   `is_terminal()` evaluates to `true`.
     //////////////////////////////////////////////////////////////////////////////
-    ptr_uint64 operator~ () const
+    ptr_uint64
+    operator~() const
     {
       adiar_assert(this->is_terminal());
 
@@ -684,7 +710,8 @@ namespace adiar::internal
     ///
     /// \pre `is_terminal()` evaluates to `true`.
     //////////////////////////////////////////////////////////////////////////////
-    ptr_uint64 operator^ (const ptr_uint64 &o) const
+    ptr_uint64
+    operator^(const ptr_uint64& o) const
     {
       adiar_assert(this->is_terminal());
       adiar_assert(o.is_terminal());
@@ -702,7 +729,8 @@ namespace adiar::internal
     ///
     /// \pre `is_terminal()` evaluates to `true`.
     //////////////////////////////////////////////////////////////////////////////
-    ptr_uint64 operator& (const ptr_uint64 &o) const
+    ptr_uint64
+    operator&(const ptr_uint64& o) const
     {
       adiar_assert(this->is_terminal());
       adiar_assert(o.is_terminal());
@@ -718,7 +746,8 @@ namespace adiar::internal
     ///
     /// \pre `is_terminal()` evaluates to `true`.
     //////////////////////////////////////////////////////////////////////////////
-    ptr_uint64 operator| (const ptr_uint64 &o) const
+    ptr_uint64
+    operator|(const ptr_uint64& o) const
     {
       adiar_assert(this->is_terminal());
       adiar_assert(o.is_terminal());
@@ -734,7 +763,8 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The pointer with its flag set to true.
   //////////////////////////////////////////////////////////////////////////////
-  inline ptr_uint64 flag(const ptr_uint64 &p)
+  inline ptr_uint64
+  flag(const ptr_uint64& p)
   {
     return p._raw | ptr_uint64::flag_bit;
   }
@@ -742,7 +772,8 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The pointer with its flag set to false.
   //////////////////////////////////////////////////////////////////////////////
-  inline ptr_uint64 unflag(const ptr_uint64 &p)
+  inline ptr_uint64
+  unflag(const ptr_uint64& p)
   {
     return p._raw & (~ptr_uint64::flag_bit);
   }
@@ -751,7 +782,8 @@ namespace adiar::internal
   /// \brief The *essential* pointer, i.e. one without any auxiliary data, e.g.
   ///        the Boolean flag and the out-index.
   //////////////////////////////////////////////////////////////////////////////
-  inline ptr_uint64 essential(const ptr_uint64 &p)
+  inline ptr_uint64
+  essential(const ptr_uint64& p)
   {
     // Assuming 'max_out_idx' is consecutive 1s.
     constexpr ptr_uint64::raw_type out_idx_mask =
@@ -760,9 +792,8 @@ namespace adiar::internal
     // We can abuse the bit-layout to boil everything down to a bit mask, and a
     // conditional move instruction (see `ptr_uint64::is_node()`). This should
     // be optimisable into very few CPU instructions similar to 'std::min<>'.
-    return p.is_node()
-      ? (p._raw & ~(out_idx_mask | ptr_uint64::flag_bit))
-      : (p._raw & ~ptr_uint64::flag_bit);
+    return p.is_node() ? (p._raw & ~(out_idx_mask | ptr_uint64::flag_bit))
+                       : (p._raw & ~ptr_uint64::flag_bit);
   }
 
   /* ============================== CONVERSION ============================== */

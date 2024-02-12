@@ -12,8 +12,8 @@
 ///      `ON`.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <iostream>
 #include <cstddef>
+#include <iostream>
 
 #include <adiar/internal/cnl.h>
 
@@ -171,7 +171,8 @@ namespace adiar
         ////////////////////////////////////////////////////////////////////////
         /// \brief Total number of levelized priority queues.
         ////////////////////////////////////////////////////////////////////////
-        uintwide total() const
+        uintwide
+        total() const
         {
           return unbucketed + internal + external;
         }
@@ -189,7 +190,8 @@ namespace adiar
     /// \see bdd_satcount bdd_pathcount zdd_size
     ////////////////////////////////////////////////////////////////////////////
     struct count_t : public __alg_base
-    { }
+    {
+    }
     /// \copydoc count_t
     count;
 
@@ -294,7 +296,8 @@ namespace adiar
     /// \see bdd_from zdd_change zdd_complement zdd_expand zdd_from
     ////////////////////////////////////////////////////////////////////////////
     struct intercut_t : public __alg_base
-    { }
+    {
+    }
     /// \copydoc intercut_t
     intercut;
 
@@ -377,7 +380,8 @@ namespace adiar
     /// \see bdd_ite
     ////////////////////////////////////////////////////////////////////////////
     struct prod3_t : public __alg_base
-    { }
+    {
+    }
     /// \copydoc prod3_t
     prod3;
 
@@ -432,8 +436,7 @@ namespace adiar
         /// \brief Number of recursions left for a product construction.
         ////////////////////////////////////////////////////////////////////////
         uintwide products = 0;
-      }
-      nested_policy;
+      } nested_policy;
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief Number of requests of arity 1 and 2.
@@ -454,7 +457,8 @@ namespace adiar
     /// \see bdd_restrict zdd_onset zdd_offset
     ////////////////////////////////////////////////////////////////////////////
     struct select_t : public __alg_base
-    { }
+    {
+    }
     /// \copydoc select_t
     select;
 
@@ -665,21 +669,24 @@ namespace adiar
   ///
   /// \copydoc statistics
   //////////////////////////////////////////////////////////////////////////////
-  statistics statistics_get();
+  statistics
+  statistics_get();
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Print statistics to an output stream (default `std::cout`).
   ///
   /// \copydoc statistics
   //////////////////////////////////////////////////////////////////////////////
-  void statistics_print(std::ostream &o = std::cout);
+  void
+  statistics_print(std::ostream& o = std::cout);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Resets all statistics to default value.
   ///
   /// \see statistics
   //////////////////////////////////////////////////////////////////////////////
-  void statistics_reset();
+  void
+  statistics_reset();
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////

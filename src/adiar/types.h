@@ -19,17 +19,19 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief A pair of values.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename T1, typename T2>
+  template <typename T1, typename T2>
   using pair = std::pair<T1, T2>;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create an `adiar::pair`, deducing the target type based on the
   ///        types of the arguments.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename T1, typename T2>
+  template <typename T1, typename T2>
   constexpr pair<T1, T2>
-  make_pair(const T1 &t1, const T2 &t2)
-  { return std::make_pair(t1, t2); }
+  make_pair(const T1& t1, const T2& t2)
+  {
+    return std::make_pair(t1, t2);
+  }
 
   /*
   //////////////////////////////////////////////////////////////////////////////
@@ -48,24 +50,28 @@ namespace adiar
   /// \details Not having a value is for example used to indicate the end of
   ///          streams and generators.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename T>
+  template <typename T>
   using optional = std::optional<T>;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create an empty `adiar::optional`, i.e. *None*.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename T>
+  template <typename T>
   constexpr optional<T>
   make_optional()
-  { return optional<T>(); }
+  {
+    return optional<T>();
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create an `adiar::optional` with *Some* value.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename T>
+  template <typename T>
   constexpr optional<T>
-  make_optional(const T &t)
-  { return std::make_optional(t); }
+  make_optional(const T& t)
+  {
+    return std::make_optional(t);
+  }
 
   /*
   //////////////////////////////////////////////////////////////////////////////

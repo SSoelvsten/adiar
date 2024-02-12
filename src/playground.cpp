@@ -4,7 +4,9 @@
 // ADIAR Imports
 #include <adiar/adiar.h>
 
-int main(int argc, char* argv[]) {
+int
+main(int argc, char* argv[])
+{
   std::cout << "-------------------------------------------------------------------------------\n"
             << "  Adiar " << adiar::version_string << " : Playground \n"
             << "-------------------------------------------------------------------------------\n"
@@ -13,13 +15,11 @@ int main(int argc, char* argv[]) {
   size_t M = 1024;
 
   try {
-    if (argc > 1) {
-      M = std::stoi(argv[1]);
-    }
-  } catch (std::invalid_argument const &ex) {
+    if (argc > 1) { M = std::stoi(argv[1]); }
+  } catch (const std::invalid_argument& ex) {
     std::cerr << "Invalid number: " << argv[1] << "\n";
     return -1;
-  } catch (std::out_of_range const &ex) {
+  } catch (const std::out_of_range& ex) {
     std::cerr << "Number out of range: " << argv[1] << "\n";
     return -1;
   }
@@ -29,11 +29,6 @@ int main(int argc, char* argv[]) {
   {
     // ===== Your code starts here =====
 
-
-
-
-
-
     // =====  Your code ends here  =====
   }
 
@@ -42,4 +37,3 @@ int main(int argc, char* argv[]) {
   adiar::adiar_deinit();
   return 0;
 }
-

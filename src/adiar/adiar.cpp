@@ -2,9 +2,9 @@
 
 #include <exception>
 
-#include <tpie/tpie.h>
 #include <tpie/memory.h>
 #include <tpie/tempname.h>
+#include <tpie/tpie.h>
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/block_size.h>
@@ -15,7 +15,8 @@ namespace adiar
   bool _adiar_initialized = false;
   bool _tpie_initialized  = false;
 
-  void adiar_init(size_t memory_limit_bytes, std::string temp_dir)
+  void
+  adiar_init(size_t memory_limit_bytes, std::string temp_dir)
   {
     if (_adiar_initialized) {
 #ifndef NDEBUG
@@ -28,8 +29,7 @@ namespace adiar
     }
     if (memory_limit_bytes < minimum_memory) {
       throw invalid_argument("Adiar requires at least "
-                             + std::to_string(minimum_memory / 1024 / 1024)
-                             + " MiB of memory");
+                             + std::to_string(minimum_memory / 1024 / 1024) + " MiB of memory");
     }
 
     try {
@@ -41,9 +41,7 @@ namespace adiar
       tpie::tempname::set_default_extension("adiar");
 
       // - tmp directory
-      if (temp_dir != "") {
-        tpie::tempname::set_default_path(temp_dir);
-      }
+      if (temp_dir != "") { tpie::tempname::set_default_path(temp_dir); }
 
       // - memory limit and block size
       tpie::get_memory_manager().set_limit(memory_limit_bytes);
@@ -57,7 +55,7 @@ namespace adiar
 
       // - all done, mark initialized
       _adiar_initialized = true;
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
       // LCOV_EXCL_START
       // Mark as not initialized.
       _adiar_initialized = false;
@@ -72,12 +70,14 @@ namespace adiar
     }
   }
 
-  bool adiar_initialized() noexcept
+  bool
+  adiar_initialized() noexcept
   {
     return _adiar_initialized;
   }
 
-  void adiar_deinit()
+  void
+  adiar_deinit()
   {
     if (!_adiar_initialized) return;
 

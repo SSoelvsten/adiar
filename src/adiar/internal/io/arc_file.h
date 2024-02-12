@@ -2,8 +2,9 @@
 #define ADIAR_INTERNAL_IO_ARC_FILE_H
 
 #include <adiar/statistics.h>
-#include <adiar/internal/data_types/node.h>
+
 #include <adiar/internal/data_types/arc.h>
+#include <adiar/internal/data_types/node.h>
 #include <adiar/internal/io/file.h>
 #include <adiar/internal/io/shared_file_ptr.h>
 

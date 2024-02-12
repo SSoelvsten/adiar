@@ -1,25 +1,24 @@
 #include <adiar/bdd.h>
-
 #include <adiar/exec_policy.h>
+#include <adiar/statistics.h>
 
-#include <adiar/internal/io/levelized_file_stream.h>
-#include <adiar/internal/io/levelized_file_writer.h>
 #include <adiar/internal/assert.h>
 #include <adiar/internal/cnl.h>
 #include <adiar/internal/cut.h>
-#include <adiar/internal/dd_func.h>
-#include <adiar/internal/memory.h>
-#include <adiar/internal/util.h>
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
 #include <adiar/internal/data_types/level_info.h>
 #include <adiar/internal/data_types/request.h>
 #include <adiar/internal/data_types/tuple.h>
+#include <adiar/internal/dd_func.h>
 #include <adiar/internal/io/arc_file.h>
 #include <adiar/internal/io/arc_writer.h>
+#include <adiar/internal/io/levelized_file_stream.h>
+#include <adiar/internal/io/levelized_file_writer.h>
 #include <adiar/internal/io/node_file.h>
 #include <adiar/internal/io/node_stream.h>
 #include <adiar/internal/io/node_writer.h>
-#include <adiar/statistics.h>
+#include <adiar/internal/memory.h>
+#include <adiar/internal/util.h>
 
 namespace adiar
 {
@@ -37,31 +36,29 @@ namespace adiar
   // the placement of the else-BDD on whether any element from the if-BDD or
   // then-BDD has been forwarded.
 
-  template<uint8_t nodes_carried>
+  template <uint8_t nodes_carried>
   using ite_request = internal::request_data<3, internal::with_parent, nodes_carried>;
 
-  template<size_t look_ahead, internal::memory_mode mem_mode>
+  template <size_t look_ahead, internal::memory_mode mem_mode>
   using ite_priority_queue_1_t =
-  internal::levelized_node_priority_queue<ite_request<0>,
-                                          internal::request_data_first_lt<ite_request<0>>,
-                                          look_ahead, mem_mode, 3>;
+    internal::levelized_node_priority_queue<ite_request<0>,
+                                            internal::request_data_first_lt<ite_request<0>>,
+                                            look_ahead,
+                                            mem_mode,
+                                            3>;
 
-  template<internal::memory_mode mem_mode>
-  using ite_priority_queue_2_t =
-    internal::priority_queue<mem_mode,
-                             ite_request<1>,
-                             internal::request_data_second_lt<ite_request<1>>>;
+  template <internal::memory_mode mem_mode>
+  using ite_priority_queue_2_t = internal::
+    priority_queue<mem_mode, ite_request<1>, internal::request_data_second_lt<ite_request<1>>>;
 
-  template<internal::memory_mode mem_mode>
-  using ite_priority_queue_3_t =
-    internal::priority_queue<mem_mode,
-                             ite_request<2>,
-                             internal::request_data_third_lt<ite_request<2>>>;
+  template <internal::memory_mode mem_mode>
+  using ite_priority_queue_3_t = internal::
+    priority_queue<mem_mode, ite_request<2>, internal::request_data_third_lt<ite_request<2>>>;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
   internal::shared_levelized_file<bdd::node_type>
-  __ite_zip_bdds(const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else)
+  __ite_zip_bdds(const bdd& bdd_if, const bdd& bdd_then, const bdd& bdd_else)
   {
     // TODO: What is the performance of '<<' rather than 'unsafe_push'? If there
     // is a major difference, then we may want to "inline" the '<<' with its
@@ -83,8 +80,7 @@ namespace adiar
 
     while (in_nodes_then.can_pull() || in_nodes_else.can_pull()) {
       bool from_then = in_nodes_then.can_pull()
-        && (!in_nodes_else.can_pull()
-            || in_nodes_then.peek() > in_nodes_else.peek());
+        && (!in_nodes_else.can_pull() || in_nodes_then.peek() > in_nodes_else.peek());
 
       internal::node n = from_then ? in_nodes_then.pull() : in_nodes_else.pull();
 
@@ -103,18 +99,16 @@ namespace adiar
     while (in_nodes_if.can_pull()) {
       const internal::node n = in_nodes_if.pull();
 
-      const internal::node::pointer_type low = n.low().is_terminal()
-        ? (n.low().value() ? root_then : root_else)
-        : n.low();
+      const internal::node::pointer_type low =
+        n.low().is_terminal() ? (n.low().value() ? root_then : root_else) : n.low();
 
-      const internal::node::pointer_type high = n.high().is_terminal()
-        ? (n.high().value() ? root_then : root_else)
-        : n.high();
+      const internal::node::pointer_type high =
+        n.high().is_terminal() ? (n.high().value() ? root_then : root_else) : n.high();
 
       nw << internal::node(n.uid(), low, high);
     }
 
-    for(size_t ct = 0u; ct < internal::cut::size; ct++) {
+    for (size_t ct = 0u; ct < internal::cut::size; ct++) {
       out_nodes->max_1level_cut[ct] =
         std::max(bdd_if->max_1level_cut[internal::cut::All],
                  bdd_then->max_1level_cut[ct] + bdd_else->max_1level_cut[ct]);
@@ -126,28 +120,31 @@ namespace adiar
     return out_nodes;
   }
 
-  inline bool ite_must_forward(internal::node v,
-                               internal::node::pointer_type t,
-                               internal::node::label_type out_label,
-                               internal::node::pointer_type t_seek)
+  inline bool
+  ite_must_forward(internal::node v,
+                   internal::node::pointer_type t,
+                   internal::node::label_type out_label,
+                   internal::node::pointer_type t_seek)
   {
     return
       // is it a node at this level?
-      t.is_node() && t.label() == out_label
+      t.is_node()
+      && t.label() == out_label
       // and we should be seeing it later
       && t_seek < t
       // and we haven't by accident just run into it anyway
       && v.uid() != t;
   }
 
-  inline void ite_init_request(internal::node_stream<> &in_nodes,
-                               internal::node &v,
-                               const internal::node::label_type out_label,
-                               internal::node::pointer_type &low,
-                               internal::node::pointer_type &high)
+  inline void
+  ite_init_request(internal::node_stream<>& in_nodes,
+                   internal::node& v,
+                   const internal::node::label_type out_label,
+                   internal::node::pointer_type& low,
+                   internal::node::pointer_type& high)
   {
     if (v.label() == out_label) {
-      low = v.low();
+      low  = v.low();
       high = v.high();
 
       if (in_nodes.can_pull()) { v = in_nodes.pull(); }
@@ -156,27 +153,27 @@ namespace adiar
     }
   }
 
-  template<typename pq_1_t>
-  inline void __ite_resolve_request(pq_1_t &ite_pq_1,
-                                    internal::arc_writer &aw,
-                                    const internal::node::pointer_type source,
-                                    internal::node::pointer_type r_if,
-                                    internal::node::pointer_type r_then,
-                                    internal::node::pointer_type r_else)
+  template <typename pq_1_t>
+  inline void
+  __ite_resolve_request(pq_1_t& ite_pq_1,
+                        internal::arc_writer& aw,
+                        const internal::node::pointer_type source,
+                        internal::node::pointer_type r_if,
+                        internal::node::pointer_type r_then,
+                        internal::node::pointer_type r_else)
   {
     // Early shortcut an ite, if the terminals of both cases have collapsed to the
     // same anyway
-    if (r_then.is_terminal() && r_else.is_terminal() &&
-        r_then.value() == r_else.value()) {
+    if (r_then.is_terminal() && r_else.is_terminal() && r_then.value() == r_else.value()) {
 
-      aw.push_terminal(internal::arc { source, r_then });
+      aw.push_terminal(internal::arc{ source, r_then });
       return;
     }
 
     // Remove irrelevant parts of a request to prune requests similar to
     // shortcutting the operator in bdd_apply.
     r_then = r_if.is_false() ? internal::node::pointer_type::nil() : r_then;
-    r_else = r_if.is_true()  ? internal::node::pointer_type::nil() : r_else;
+    r_else = r_if.is_true() ? internal::node::pointer_type::nil() : r_else;
 
     if (r_if.is_terminal() && r_then.is_terminal()) {
       // => ~internal::node::pointer_type::nil() => r_if is a terminal with the 'true' value
@@ -185,16 +182,22 @@ namespace adiar
       // => ~internal::node::pointer_type::nil() => r_if is a terminal with the 'false' value
       aw.push_terminal(internal::arc(source, r_else));
     } else {
-      ite_pq_1.push({ {r_if, r_then, r_else}, {}, {source} });
+      ite_pq_1.push({ { r_if, r_then, r_else }, {}, { source } });
     }
   }
 
-  template<typename pq_1_t, typename pq_2_t, typename pq_3_t>
-  __bdd __bdd_ite(const exec_policy &ep,
-                  const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else,
-                  const size_t pq_1_memory, const size_t max_pq_1_size,
-                  const size_t pq_2_memory, const size_t max_pq_2_size,
-                  const size_t pq_3_memory, const size_t max_pq_3_size)
+  template <typename pq_1_t, typename pq_2_t, typename pq_3_t>
+  __bdd
+  __bdd_ite(const exec_policy& ep,
+            const bdd& bdd_if,
+            const bdd& bdd_then,
+            const bdd& bdd_else,
+            const size_t pq_1_memory,
+            const size_t max_pq_1_size,
+            const size_t pq_2_memory,
+            const size_t max_pq_2_size,
+            const size_t pq_3_memory,
+            const size_t max_pq_3_size)
   {
     // Now, at this point we will not defer to using the Apply, so we can take
     // up memory by opening the input streams and evaluating trivial
@@ -202,9 +205,7 @@ namespace adiar
     internal::node_stream<> in_nodes_if(bdd_if);
     internal::node v_if = in_nodes_if.pull();
 
-    if (v_if.is_terminal()) {
-      return v_if.value() ? bdd_then : bdd_else;
-    }
+    if (v_if.is_terminal()) { return v_if.value() ? bdd_then : bdd_else; }
 
     internal::node_stream<> in_nodes_then(bdd_then);
     internal::node v_then = in_nodes_then.pull();
@@ -215,10 +216,9 @@ namespace adiar
     // If the levels of 'then' and 'else' are disjoint and the 'if' BDD is above
     // the two others, then we can merely zip the 'then' and 'else' BDDs. This
     // is only O((N1+N2+N3)/B) I/Os!
-    if (bdd_maxvar(bdd_if) < v_then.label() &&
-        bdd_maxvar(bdd_if) < v_else.label() &&
-        internal::disjoint_levels(bdd_then, bdd_else)) {
-      return __ite_zip_bdds(bdd_if,bdd_then,bdd_else);
+    if (bdd_maxvar(bdd_if) < v_then.label() && bdd_maxvar(bdd_if) < v_else.label()
+        && internal::disjoint_levels(bdd_then, bdd_else)) {
+      return __ite_zip_bdds(bdd_if, bdd_then, bdd_else);
     }
 
     // From here on forward, we probably cannot get away from actually having to
@@ -231,7 +231,7 @@ namespace adiar
     out_arcs->max_1level_cut = 0;
 
     // Set up cross-level priority queue
-    pq_1_t ite_pq_1({bdd_if, bdd_then, bdd_else}, pq_1_memory, max_pq_1_size, stats_prod3.lpq);
+    pq_1_t ite_pq_1({ bdd_if, bdd_then, bdd_else }, pq_1_memory, max_pq_1_size, stats_prod3.lpq);
 
     // Set up per-level priority queues
     pq_2_t ite_pq_2(pq_2_memory, max_pq_2_size);
@@ -239,7 +239,8 @@ namespace adiar
 
     // Process root and create initial recursion requests
     {
-      const internal::node::label_type out_label = first(v_if.uid(), v_then.uid(), v_else.uid()).label();
+      const internal::node::label_type out_label =
+        first(v_if.uid(), v_then.uid(), v_else.uid()).label();
 
       internal::node::pointer_type low_if, low_then, low_else, high_if, high_then, high_else;
       ite_init_request(in_nodes_if, v_if, out_label, low_if, high_if);
@@ -248,7 +249,7 @@ namespace adiar
 
       const internal::node::uid_type out_uid(out_label, 0);
       __ite_resolve_request(ite_pq_1, aw, out_uid.as_ptr(false), low_if, low_then, low_else);
-      __ite_resolve_request(ite_pq_1, aw, out_uid.as_ptr(true),  high_if, high_then, high_else);
+      __ite_resolve_request(ite_pq_1, aw, out_uid.as_ptr(true), high_if, high_then, high_else);
 
       aw.push(internal::level_info(out_label, 1));
     }
@@ -259,7 +260,7 @@ namespace adiar
       ite_pq_1.setup_next_level();
 
       const internal::node::label_type out_label = ite_pq_1.current_level();
-      internal::node::id_type out_id = 0;
+      internal::node::id_type out_id             = 0;
 
       // Update max 1-level cut
       out_arcs->max_1level_cut = std::max(out_arcs->max_1level_cut, ite_pq_1.size());
@@ -272,18 +273,22 @@ namespace adiar
         // Merge requests from priority queues
         if (ite_pq_1.can_pull()
             && (ite_pq_2.empty() || ite_pq_1.top().target.first() < ite_pq_2.top().target.second())
-            && (ite_pq_3.empty() || ite_pq_1.top().target.first() < ite_pq_3.top().target.third())) {
-          req = { ite_pq_1.top().target,
-                  {{ { internal::node::pointer_type::nil(), internal::node::pointer_type::nil() },
-                     { internal::node::pointer_type::nil(), internal::node::pointer_type::nil() } }},
-                  ite_pq_1.top().data };
+            && (ite_pq_3.empty()
+                || ite_pq_1.top().target.first() < ite_pq_3.top().target.third())) {
+          req = {
+            ite_pq_1.top().target,
+            { { { internal::node::pointer_type::nil(), internal::node::pointer_type::nil() },
+                { internal::node::pointer_type::nil(), internal::node::pointer_type::nil() } } },
+            ite_pq_1.top().data
+          };
 
           ite_pq_1.pop();
         } else if (!ite_pq_2.empty()
-                   && (ite_pq_3.empty() || ite_pq_2.top().target.second() < ite_pq_3.top().target.third())) {
+                   && (ite_pq_3.empty()
+                       || ite_pq_2.top().target.second() < ite_pq_3.top().target.third())) {
           with_data_1 = true;
 
-          req = { ite_pq_2.top().target ,
+          req = { ite_pq_2.top().target,
                   { ite_pq_2.top().node_carry[0],
                     { internal::node::pointer_type::nil(), internal::node::pointer_type::nil() } },
                   ite_pq_2.top().data };
@@ -298,52 +303,43 @@ namespace adiar
         }
 
         // Seek request partially in stream
-        internal::node::pointer_type t_first = req.target.first();
+        internal::node::pointer_type t_first  = req.target.first();
         internal::node::pointer_type t_second = req.target.second();
-        internal::node::pointer_type t_third = req.target.third();
+        internal::node::pointer_type t_third  = req.target.third();
 
         internal::node::pointer_type t_seek = with_data_2 ? t_third
-          : with_data_1 ? t_second
-          : t_first;
+          : with_data_1                                   ? t_second
+                                                          : t_first;
 
-        while (v_if.uid() < t_seek && in_nodes_if.can_pull()) {
-          v_if = in_nodes_if.pull();
-        }
-        while (v_then.uid() < t_seek && in_nodes_then.can_pull()) {
-          v_then = in_nodes_then.pull();
-        }
-        while (v_else.uid() < t_seek && in_nodes_else.can_pull()) {
-          v_else = in_nodes_else.pull();
-        }
+        while (v_if.uid() < t_seek && in_nodes_if.can_pull()) { v_if = in_nodes_if.pull(); }
+        while (v_then.uid() < t_seek && in_nodes_then.can_pull()) { v_then = in_nodes_then.pull(); }
+        while (v_else.uid() < t_seek && in_nodes_else.can_pull()) { v_else = in_nodes_else.pull(); }
 
         // Forward information across the level
-        if (ite_must_forward(v_if, req.target[0], out_label, t_seek) ||
-            ite_must_forward(v_then, req.target[1], out_label, t_seek) ||
-            ite_must_forward(v_else, req.target[2], out_label, t_seek)) {
+        if (ite_must_forward(v_if, req.target[0], out_label, t_seek)
+            || ite_must_forward(v_then, req.target[1], out_label, t_seek)
+            || ite_must_forward(v_else, req.target[2], out_label, t_seek)) {
           // An element should be forwarded, if it was not already forwarded
           // (t_seek <= t_x), if it isn't the last one to seek (t_x < t_third), and
           // if we actually are holding it.
-          const bool forward_if   = (t_seek <= req.target[0])
-                                 && (req.target[0] < t_third)
-                                 && (v_if.uid() == req.target[0]);
+          const bool forward_if =
+            (t_seek <= req.target[0]) && (req.target[0] < t_third) && (v_if.uid() == req.target[0]);
 
-          const bool forward_then = (t_seek == req.target[1])
-                                 && (req.target[1] < t_third)
-                                 && (v_then.uid() == req.target[1]);
+          const bool forward_then = (t_seek == req.target[1]) && (req.target[1] < t_third)
+            && (v_then.uid() == req.target[1]);
 
-          const bool forward_else = (t_seek == req.target[2])
-                                 && (req.target[2] < t_third)
-                                 && (v_else.uid() == req.target[2]);
+          const bool forward_else = (t_seek == req.target[2]) && (req.target[2] < t_third)
+            && (v_else.uid() == req.target[2]);
 
-          const int number_of_elements_to_forward = ((int) forward_if)
-                                                  + ((int) forward_then)
-                                                  + ((int) forward_else);
+          const int number_of_elements_to_forward =
+            ((int)forward_if) + ((int)forward_then) + ((int)forward_else);
 
           if (with_data_1 || number_of_elements_to_forward == 2) {
             adiar_assert(!with_data_1 || t_seek != t_first,
                          "cannot have data and still seek the first element");
             adiar_assert(!(with_data_1 && (number_of_elements_to_forward == 2)),
-                         "cannot have forwarded an element, hold two unforwarded items, and still need to forward for something");
+                         "cannot have forwarded an element, hold two unforwarded items, and still "
+                         "need to forward for something");
 
             internal::node::children_type children_1;
             internal::node::children_type children_2;
@@ -352,15 +348,15 @@ namespace adiar
                 children_1 = req.node_carry[0];
 
                 internal::node v2 = forward_else ? v_else : v_then;
-                children_2 = v2.children();
+                children_2        = v2.children();
               } else { // if (forward_if || req.target[2] < t_seek)
                 internal::node v1 = forward_if ? v_if : v_then;
-                children_1 = v1.children();
+                children_1        = v1.children();
 
                 children_2 = req.node_carry[0];
               }
             } else {
-              internal::node v1 = forward_if   ? v_if   : v_then;
+              internal::node v1 = forward_if ? v_if : v_then;
               internal::node v2 = forward_else ? v_else : v_then;
 
               children_1 = v1.children();
@@ -374,15 +370,13 @@ namespace adiar
             }
           } else {
             // got no data and the stream only gave us a single item to forward.
-            const internal::node v1 = forward_if   ? v_if
-                                    : forward_then ? v_then
-                                    : v_else;
+            const internal::node v1 = forward_if ? v_if : forward_then ? v_then : v_else;
 
             const internal::node::children_type v1_children = v1.children();
             ite_pq_2.push({ req.target, { v1_children }, req.data });
 
             while (ite_pq_1.can_pull() && ite_pq_1.top().target == req.target) {
-              ite_pq_2.push({ req.target, { v1_children } , ite_pq_1.pull().data });
+              ite_pq_2.push({ req.target, { v1_children }, ite_pq_1.pull().data });
             }
           }
           continue;
@@ -394,37 +388,35 @@ namespace adiar
         if (req.target[0].is_terminal() || out_label < req.target[0].label()) {
           low_if = high_if = req.target[0];
         } else {
-          low_if = req.target[0] == v_if.uid() ? v_if.low() : req.node_carry[0][false];
+          low_if  = req.target[0] == v_if.uid() ? v_if.low() : req.node_carry[0][false];
           high_if = req.target[0] == v_if.uid() ? v_if.high() : req.node_carry[0][true];
         }
 
-        if (req.target[1].is_nil()
-            || req.target[1].is_terminal()
+        if (req.target[1].is_nil() || req.target[1].is_terminal()
             || out_label < req.target[1].label()) {
           low_then = high_then = req.target[1];
         } else if (req.target[1] == v_then.uid()) {
-          low_then = v_then.low();
+          low_then  = v_then.low();
           high_then = v_then.high();
         } else if (t_seek <= req.target[0]) {
-          low_then = req.node_carry[0][false];
+          low_then  = req.node_carry[0][false];
           high_then = req.node_carry[0][true];
         } else {
-          low_then = req.node_carry[1][false];
+          low_then  = req.node_carry[1][false];
           high_then = req.node_carry[1][true];
         }
 
-        if (req.target[2].is_nil()
-            || req.target[2].is_terminal()
+        if (req.target[2].is_nil() || req.target[2].is_terminal()
             || out_label < req.target[2].label()) {
           low_else = high_else = req.target[2];
         } else if (req.target[2] == v_else.uid()) {
-          low_else = v_else.low();
+          low_else  = v_else.low();
           high_else = v_else.high();
         } else if (t_seek <= req.target[0] && t_seek <= req.target[1]) {
-          low_else = req.node_carry[0][false];
+          low_else  = req.node_carry[0][false];
           high_else = req.node_carry[0][true];
         } else {
-          low_else = req.node_carry[1][false];
+          low_else  = req.node_carry[1][false];
           high_else = req.node_carry[1][true];
         }
 
@@ -433,7 +425,7 @@ namespace adiar
         const internal::node::uid_type out_uid(out_label, out_id++);
 
         __ite_resolve_request(ite_pq_1, aw, out_uid.as_ptr(false), low_if, low_then, low_else);
-        __ite_resolve_request(ite_pq_1, aw, out_uid.as_ptr(true),  high_if, high_then, high_else);
+        __ite_resolve_request(ite_pq_1, aw, out_uid.as_ptr(true), high_if, high_then, high_else);
 
         // Output ingoing arcs
         internal::node::pointer_type source = req.data.source;
@@ -467,45 +459,52 @@ namespace adiar
   /// Derives an upper bound on the output's maximum i-level cut based on the
   /// product of the maximum i-level cut of all three inputs.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename cut, size_t const_size_inc>
-  size_t __ite_ilevel_upper_bound(const internal::dd &in_if,
-                                  const internal::dd &in_then,
-                                  const internal::dd &in_else)
+  template <typename cut, size_t const_size_inc>
+  size_t
+  __ite_ilevel_upper_bound(const internal::dd& in_if,
+                           const internal::dd& in_then,
+                           const internal::dd& in_else)
   {
     // 2-level cuts for 'if', where we split the false and true arcs away.
     const internal::safe_size_t if_cut_internal = cut::get(in_if, internal::cut::Internal);
-    const internal::safe_size_t if_cut_falses   = cut::get(in_if, internal::cut::Internal_False) - if_cut_internal;
-    const internal::safe_size_t if_cut_trues    = cut::get(in_if, internal::cut::Internal_True)  - if_cut_internal;
+    const internal::safe_size_t if_cut_falses =
+      cut::get(in_if, internal::cut::Internal_False) - if_cut_internal;
+    const internal::safe_size_t if_cut_trues =
+      cut::get(in_if, internal::cut::Internal_True) - if_cut_internal;
 
     // 2-level cuts for 'then'
     const internal::safe_size_t then_cut_internal = cut::get(in_then, internal::cut::Internal);
-    const internal::safe_size_t then_cut_falses   = cut::get(in_then, internal::cut::Internal_False) - then_cut_internal;
-    const internal::safe_size_t then_cut_trues    = cut::get(in_then, internal::cut::Internal_True)  - then_cut_internal;
-    const internal::safe_size_t then_cut_all      = cut::get(in_then, internal::cut::All);
+    const internal::safe_size_t then_cut_falses =
+      cut::get(in_then, internal::cut::Internal_False) - then_cut_internal;
+    const internal::safe_size_t then_cut_trues =
+      cut::get(in_then, internal::cut::Internal_True) - then_cut_internal;
+    const internal::safe_size_t then_cut_all = cut::get(in_then, internal::cut::All);
 
     // 2-level cuts for 'else'
     const internal::safe_size_t else_cut_internal = cut::get(in_else, internal::cut::Internal);
-    const internal::safe_size_t else_cut_falses   = cut::get(in_else, internal::cut::Internal_False) - else_cut_internal;
-    const internal::safe_size_t else_cut_trues    = cut::get(in_else, internal::cut::Internal_True)  - else_cut_internal;
-    const internal::safe_size_t else_cut_all      = cut::get(in_else, internal::cut::All);
+    const internal::safe_size_t else_cut_falses =
+      cut::get(in_else, internal::cut::Internal_False) - else_cut_internal;
+    const internal::safe_size_t else_cut_trues =
+      cut::get(in_else, internal::cut::Internal_True) - else_cut_internal;
+    const internal::safe_size_t else_cut_all = cut::get(in_else, internal::cut::All);
 
     // Compute 2-level cut where irrelevant pairs of terminals are not paired
-    return internal::to_size((if_cut_internal * (then_cut_all * else_cut_internal + then_cut_internal * else_cut_all
-                                                 + then_cut_falses * else_cut_trues
-                                                 + then_cut_trues * else_cut_falses))
-                             + if_cut_trues  * then_cut_internal
-                             + if_cut_falses * else_cut_internal
-                             + const_size_inc);
+    return internal::to_size(
+      (if_cut_internal
+       * (then_cut_all * else_cut_internal + then_cut_internal * else_cut_all
+          + then_cut_falses * else_cut_trues + then_cut_trues * else_cut_falses))
+      + if_cut_trues * then_cut_internal + if_cut_falses * else_cut_internal + const_size_inc);
   }
 
   //////////////////////////////////////////////////////////////////////////////
   /// Derives an upper bound on the output's maximum i-level cut given its size.
   //////////////////////////////////////////////////////////////////////////////
-  size_t __ite_ilevel_upper_bound(const internal::dd &in_if,
-                                  const internal::dd &in_then,
-                                  const internal::dd &in_else)
+  size_t
+  __ite_ilevel_upper_bound(const internal::dd& in_if,
+                           const internal::dd& in_then,
+                           const internal::dd& in_else)
   {
-    const internal::safe_size_t if_size = in_if->size();
+    const internal::safe_size_t if_size   = in_if->size();
     const internal::safe_size_t then_size = in_then->size();
     const internal::safe_size_t else_size = in_else->size();
 
@@ -513,11 +512,13 @@ namespace adiar
     // internal node and t_then and t_else are nodes or (mismatching) terminals.
     // Then also count the copies of in_then and in_else for when in_if hits a
     // terminal early.
-    return internal::to_size(if_size * ((then_size + 2u) * (else_size + 2u) - 2u) + then_size + else_size + 1u + 2u);
+    return internal::to_size(if_size * ((then_size + 2u) * (else_size + 2u) - 2u) + then_size
+                             + else_size + 1u + 2u);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_ite(const exec_policy &ep, const bdd &f, const bdd &g, const bdd &h)
+  __bdd
+  bdd_ite(const exec_policy& ep, const bdd& f, const bdd& g, const bdd& h)
   {
     // There are multiple cases, where this boils down to an Apply rather than
     // an If-Then-Else. The bdd_apply uses tuples rather than triples and only
@@ -528,32 +529,20 @@ namespace adiar
     // Randal E. Bryant.
 
     // Resolve being given the same underlying file in both cases
-    if (g.file == h.file) {
-      return g.negate == h.negate
-        ? __bdd(g)
-        : bdd_xnor(f, g);
-    }
+    if (g.file == h.file) { return g.negate == h.negate ? __bdd(g) : bdd_xnor(f, g); }
 
     // Resolve being given the same underlying file for conditional and a case
     if (f.file == g.file) {
-      return f.negate == g.negate
-        ? bdd_or(f, h)
-        : bdd_and(bdd_not(f), h);
+      return f.negate == g.negate ? bdd_or(f, h) : bdd_and(bdd_not(f), h);
     } else if (f.file == h.file) {
-      return f.negate == h.negate
-        ? bdd_and(f, g)
-        : bdd_imp(f, g);
+      return f.negate == h.negate ? bdd_and(f, g) : bdd_imp(f, g);
     }
 
     // Resolve being given a terminal in one of the cases
     if (bdd_isterminal(g)) {
-      return bdd_apply(dd_valueof(g) ? f : bdd_not(f),
-                       h,
-                       dd_valueof(g) ? or_op : and_op);
-    } else if (bdd_isterminal(h))  {
-      return bdd_apply(f,
-                       g,
-                       dd_valueof(h) ? imp_op : and_op);
+      return bdd_apply(dd_valueof(g) ? f : bdd_not(f), h, dd_valueof(g) ? or_op : and_op);
+    } else if (bdd_isterminal(h)) {
+      return bdd_apply(f, g, dd_valueof(h) ? imp_op : and_op);
     }
 
     // Compute amount of memory available for auxiliary data structures after
@@ -564,7 +553,7 @@ namespace adiar
     // memory variant.
     const tpie::memory_size_type aux_available_memory = internal::memory_available()
       // Input streams
-      - 3*internal::node_stream<>::memory_usage()
+      - 3 * internal::node_stream<>::memory_usage()
       // Output stream
       - internal::arc_writer::memory_usage();
 
@@ -578,16 +567,20 @@ namespace adiar
       ite_priority_queue_3_t<internal::memory_mode::Internal>::data_structures;
 
     const size_t pq_1_internal_memory =
-      (aux_available_memory / (data_structures_in_pq_1 + data_structures_in_pq_2 + data_structures_in_pq_3)) * data_structures_in_pq_1;
+      (aux_available_memory
+       / (data_structures_in_pq_1 + data_structures_in_pq_2 + data_structures_in_pq_3))
+      * data_structures_in_pq_1;
 
-    const size_t pq_2_internal_memory =
-      ((aux_available_memory - pq_1_internal_memory) / (data_structures_in_pq_2 + data_structures_in_pq_3)) * data_structures_in_pq_2;
+    const size_t pq_2_internal_memory = ((aux_available_memory - pq_1_internal_memory)
+                                         / (data_structures_in_pq_2 + data_structures_in_pq_3))
+      * data_structures_in_pq_2;
 
     const size_t pq_3_internal_memory =
       aux_available_memory - pq_1_internal_memory - pq_2_internal_memory;
 
     const size_t pq_1_memory_fits =
-      ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, internal::memory_mode::Internal>::memory_fits(pq_1_internal_memory);
+      ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, internal::memory_mode::Internal>::memory_fits(
+        pq_1_internal_memory);
 
     const size_t pq_2_memory_fits =
       ite_priority_queue_2_t<internal::memory_mode::Internal>::memory_fits(pq_2_internal_memory);
@@ -595,42 +588,63 @@ namespace adiar
     const size_t pq_3_memory_fits =
       ite_priority_queue_3_t<internal::memory_mode::Internal>::memory_fits(pq_3_internal_memory);
 
-    const bool internal_only = ep.template get<exec_policy::memory>() == exec_policy::memory::Internal;
-    const bool external_only = ep.template get<exec_policy::memory>() == exec_policy::memory::External;
+    const bool internal_only =
+      ep.template get<exec_policy::memory>() == exec_policy::memory::Internal;
+    const bool external_only =
+      ep.template get<exec_policy::memory>() == exec_policy::memory::External;
 
-    const size_t pq_1_bound = std::min({__ite_ilevel_upper_bound<internal::get_2level_cut, 2u>(f, g, h),
-                                        __ite_ilevel_upper_bound(f, g, h)});
+    const size_t pq_1_bound =
+      std::min({ __ite_ilevel_upper_bound<internal::get_2level_cut, 2u>(f, g, h),
+                 __ite_ilevel_upper_bound(f, g, h) });
 
-    const size_t max_pq_1_size = internal_only ? std::min(pq_1_memory_fits, pq_1_bound) : pq_1_bound;
+    const size_t max_pq_1_size =
+      internal_only ? std::min(pq_1_memory_fits, pq_1_bound) : pq_1_bound;
 
     const size_t pq_2_bound = __ite_ilevel_upper_bound<internal::get_1level_cut, 0u>(f, g, h);
 
-    const size_t max_pq_2_size = internal_only ? std::min(pq_2_memory_fits, pq_2_bound) : pq_2_bound;
+    const size_t max_pq_2_size =
+      internal_only ? std::min(pq_2_memory_fits, pq_2_bound) : pq_2_bound;
 
     const size_t pq_3_bound = pq_2_bound;
 
-    const size_t max_pq_3_size = internal_only ? std::min(pq_3_memory_fits, pq_3_bound) : pq_3_bound;
+    const size_t max_pq_3_size =
+      internal_only ? std::min(pq_3_memory_fits, pq_3_bound) : pq_3_bound;
 
-    if(!external_only && max_pq_1_size <= internal::no_lookahead_bound(3)) {
+    if (!external_only && max_pq_1_size <= internal::no_lookahead_bound(3)) {
 #ifdef ADIAR_STATS
       stats_prod3.lpq.unbucketed += 1u;
 #endif
       return __bdd_ite<ite_priority_queue_1_t<0, internal::memory_mode::Internal>,
                        ite_priority_queue_2_t<internal::memory_mode::Internal>,
-                       ite_priority_queue_3_t<internal::memory_mode::Internal>>
-        (ep, f, g, h, pq_1_internal_memory, max_pq_1_size,
-         pq_2_internal_memory, max_pq_2_size, pq_3_internal_memory, max_pq_3_size);
-    } else if(!external_only && max_pq_1_size <= pq_1_memory_fits
-                                               && max_pq_2_size <= pq_2_memory_fits
-                                               && max_pq_3_size <= pq_3_memory_fits) {
+                       ite_priority_queue_3_t<internal::memory_mode::Internal>>(
+        ep,
+        f,
+        g,
+        h,
+        pq_1_internal_memory,
+        max_pq_1_size,
+        pq_2_internal_memory,
+        max_pq_2_size,
+        pq_3_internal_memory,
+        max_pq_3_size);
+    } else if (!external_only && max_pq_1_size <= pq_1_memory_fits
+               && max_pq_2_size <= pq_2_memory_fits && max_pq_3_size <= pq_3_memory_fits) {
 #ifdef ADIAR_STATS
       stats_prod3.lpq.internal += 1u;
 #endif
       return __bdd_ite<ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, internal::memory_mode::Internal>,
                        ite_priority_queue_2_t<internal::memory_mode::Internal>,
-                       ite_priority_queue_3_t<internal::memory_mode::Internal>>
-        (ep, f, g, h, pq_1_internal_memory, max_pq_1_size,
-         pq_2_internal_memory, max_pq_2_size, pq_3_internal_memory, max_pq_3_size);
+                       ite_priority_queue_3_t<internal::memory_mode::Internal>>(
+        ep,
+        f,
+        g,
+        h,
+        pq_1_internal_memory,
+        max_pq_1_size,
+        pq_2_internal_memory,
+        max_pq_2_size,
+        pq_3_internal_memory,
+        max_pq_3_size);
     } else {
 #ifdef ADIAR_STATS
       stats_prod3.lpq.external += 1u;
@@ -641,13 +655,21 @@ namespace adiar
 
       return __bdd_ite<ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, internal::memory_mode::External>,
                        ite_priority_queue_2_t<internal::memory_mode::External>,
-                       ite_priority_queue_3_t<internal::memory_mode::External>>
-        (ep, f, g, h, pq_1_memory, max_pq_1_size,
-         pq_2_memory, max_pq_2_size, pq_3_memory, max_pq_3_size);
+                       ite_priority_queue_3_t<internal::memory_mode::External>>(ep,
+                                                                                f,
+                                                                                g,
+                                                                                h,
+                                                                                pq_1_memory,
+                                                                                max_pq_1_size,
+                                                                                pq_2_memory,
+                                                                                max_pq_2_size,
+                                                                                pq_3_memory,
+                                                                                max_pq_3_size);
     }
   }
 
-  __bdd bdd_ite(const bdd &f, const bdd &g, const bdd &h)
+  __bdd
+  bdd_ite(const bdd& f, const bdd& g, const bdd& h)
   {
     return bdd_ite(exec_policy(), f, g, h);
   }
