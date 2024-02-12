@@ -450,7 +450,7 @@ namespace adiar::internal
     void init_buckets()
     {
       // Initially skip the number of levels
-      for (ptr_uint64::label_type idx = 0; _level_merger.can_pull() && idx < LevelSkip; idx++) {
+      for (size_t idx = 0; _level_merger.can_pull() && idx < LevelSkip; idx++) {
         _level_merger.pull();
       }
 
