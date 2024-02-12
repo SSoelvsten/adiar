@@ -131,7 +131,7 @@ namespace adiar
         static constexpr transposition_growth
         min()
         {
-          return 0.0;
+          return 0.0f;
         }
 
         /// \brief Maximal value
@@ -145,6 +145,10 @@ namespace adiar
         float _value;
 
       public:
+        constexpr transposition_growth()
+          : _value(1.5f)
+        { }
+
         /// \brief Wrap a `float`.
         constexpr transposition_growth(float value)
           : _value(value)
@@ -180,6 +184,11 @@ namespace adiar
         unsigned char _value;
 
       public:
+        /// \brief Default value construction.
+        constexpr transposition_max()
+          : _value(1u)
+        {}
+
         /// \brief Wrap an `unsigned char`
         constexpr transposition_max(unsigned char value)
           : _value(value)
@@ -219,14 +228,14 @@ namespace adiar
         static constexpr fast_reduce
         min()
         {
-          return -1.0;
+          return -1.0f;
         }
 
         /// \brief Maximal value
         static constexpr fast_reduce
         max()
         {
-          return 1.0;
+          return 1.0f;
         }
 
       private:
@@ -240,10 +249,10 @@ namespace adiar
         from_float(float f)
         {
           // Truncate `f` to be in the interval [-1,1]
-          if (1.0 < f) {
-            f = 1.0;
-          } else if (f < -1.0) {
-            f = -1.0;
+          if (1.0f < f) {
+            f = 1.0f;
+          } else if (f < -1.0f) {
+            f = -1.0f;
           }
 
           // Multiply by 'ticks' to extend the interval *[-1,1]* into
@@ -253,6 +262,11 @@ namespace adiar
         }
 
       public:
+        /// \brief Default value construction.
+        constexpr fast_reduce()
+          : _value(0.05f)
+        { }
+
         /// \brief Conversion constructor from `float`.
         constexpr fast_reduce(float f)
           : _value{ from_float(f) }
@@ -290,19 +304,19 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Maximal growth during repeated transposition of `quantify`.
     ////////////////////////////////////////////////////////////////////////////
-    quantify::transposition_growth _quantify__transposition_growth = 1.5f;
+    quantify::transposition_growth _quantify__transposition_growth /*default*/;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Maximal number of repeated transpositions in `quantify`.
     ////////////////////////////////////////////////////////////////////////////
-    quantify::transposition_max _quantify__transposition_max = 1;
+    quantify::transposition_max _quantify__transposition_max /*default*/;
+      ;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Chosen epsilon value for Nested Sweeping to start skipping the
     ///        expensive node merging computations (if applicable).
     ////////////////////////////////////////////////////////////////////////////
-    // TODO: set to ~5%
-    nested::fast_reduce _nested__fast_reduce = -1.0f;
+    nested::fast_reduce _nested__fast_reduce /*default*/;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
