@@ -51,3 +51,14 @@ jobs:
         with:
           message-path: ./cppcheck_report.txt
           message-id: 'cppcheck'
+
+  clang-format-checking:
+    name: 'Clang Format'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: RafikFarhad/clang-format-github-action@v4
+        with:
+          style: "file"
+          sources: "src/**/*.h,src/**/*.cpp,test/**/*.h,test/**/*.cpp"
