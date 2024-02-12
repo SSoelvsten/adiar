@@ -2245,7 +2245,7 @@ go_bandit([]() {
 
       describe("algorithm: Nested, max: 1+", [&]() {
         const exec_policy ep = exec_policy::quantify::Nested
-          & exec_policy::quantify::transposition_growth(0.5)
+          & exec_policy::quantify::transposition_growth(1.5)
           & exec_policy::quantify::transposition_max(2);
 
         it("collapses during initial transposition of all variables in BDD 4 [&&]", [&]() {
@@ -3063,7 +3063,7 @@ go_bandit([]() {
 
         it("switches to nested sweeping when the transposition explodes with BDD 15 [&&]", [&]() {
           const exec_policy ep = exec_policy::quantify::Nested
-            & exec_policy::quantify::transposition_growth(0.5)
+            & exec_policy::quantify::transposition_growth(1.5)
             & exec_policy::quantify::transposition_max::max();
 
           std::vector<bdd::label_type> call_history;
