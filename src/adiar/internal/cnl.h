@@ -25,7 +25,8 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Unpacks the value from a 'safe_size_t'.
     ////////////////////////////////////////////////////////////////////////////
-    inline size_t to_size(const safe_size_t s)
+    inline size_t
+    to_size(const safe_size_t s)
     {
       return cnl::convert<cnl::saturated_overflow_tag, cnl::saturated_overflow_tag, size_t>(s);
     }
@@ -33,7 +34,8 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Compute nominator / denominator as a double.
     ////////////////////////////////////////////////////////////////////////////
-    inline double frac(uintwide numerator, uintwide denominator)
+    inline double
+    frac(uintwide numerator, uintwide denominator)
     {
       using frac_type = cnl::fraction<uintwide, uintwide>;
 
@@ -44,7 +46,8 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Compute (100 * nominator) / denominator as a double.
     ////////////////////////////////////////////////////////////////////////////
-    inline double percent_frac(uintwide numerator, uintwide denominator)
+    inline double
+    percent_frac(uintwide numerator, uintwide denominator)
     {
       return 100.0 * frac(numerator, denominator);
     }
@@ -53,18 +56,18 @@ namespace adiar
     /// Derivative of the 'cnl:_impl:to_chars_natural' (and 'cnl::_impl:itoc'
     /// inlined) for the 'cnl::wide_integer' without compiler errors.
     ////////////////////////////////////////////////////////////////////////////
-    inline void to_stringstream(const uintwide &value, std::stringstream &s)
+    inline void
+    to_stringstream(const uintwide& value, std::stringstream& s)
     {
-      constexpr size_t base = 10u;
+      constexpr size_t base   = 10u;
       const uintwide quotient = value / base;
 
-      if (quotient) {
-        to_stringstream(quotient, s);
-      }
+      if (quotient) { to_stringstream(quotient, s); }
 
       const uintwide remainder = value - (quotient * base);
-      const int remainder_int = cnl::convert<cnl::saturated_overflow_tag, cnl::saturated_overflow_tag, int>(remainder);
-      const char remainder_char = static_cast<char>('0'+remainder_int);
+      const int remainder_int =
+        cnl::convert<cnl::saturated_overflow_tag, cnl::saturated_overflow_tag, int>(remainder);
+      const char remainder_char = static_cast<char>('0' + remainder_int);
 
       s << remainder_char;
     }
@@ -72,7 +75,8 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Convert a wide integer to a string.
     ////////////////////////////////////////////////////////////////////////////
-    inline std::string to_string(const uintwide &value)
+    inline std::string
+    to_string(const uintwide& value)
     {
       std::stringstream s;
       to_stringstream(value, s);

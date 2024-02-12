@@ -1,8 +1,9 @@
 #ifndef ADIAR_TEST_H
 #define ADIAR_TEST_H
 
-#include <tpie/tpie.h>
 #include <bandit/bandit.h>
+
+#include <tpie/tpie.h>
 
 using namespace snowhouse;
 using namespace bandit;
@@ -25,44 +26,44 @@ using namespace adiar::internal;
 
 using level_info_test_stream = level_info_stream<true>;
 
-class node_test_stream: public node_stream<true>
+class node_test_stream : public node_stream<true>
 {
 public:
-  node_test_stream(const shared_levelized_file<dd::node_type> &f)
+  node_test_stream(const shared_levelized_file<dd::node_type>& f)
     : node_stream<true>(f)
-  { }
+  {}
 
-  node_test_stream(const bdd &f)
+  node_test_stream(const bdd& f)
     : node_stream<true>(f)
-  { }
+  {}
 
-  node_test_stream(const __bdd &f)
+  node_test_stream(const __bdd& f)
     : node_stream<true>(f.get<__bdd::shared_node_file_type>(), f.negate)
-  { }
+  {}
 
-  node_test_stream(const zdd &f)
+  node_test_stream(const zdd& f)
     : node_stream<true>(f)
-  { }
+  {}
 
-  node_test_stream(const __zdd &f)
+  node_test_stream(const __zdd& f)
     : node_stream<true>(f.get<__zdd::shared_node_file_type>(), f.negate)
-  { }
+  {}
 };
 
-class arc_test_stream: public arc_stream<true>
+class arc_test_stream : public arc_stream<true>
 {
 public:
-  arc_test_stream(const shared_levelized_file<arc> &f)
+  arc_test_stream(const shared_levelized_file<arc>& f)
     : arc_stream<true>(f)
-  { }
+  {}
 
-  arc_test_stream(const __bdd &bdd)
+  arc_test_stream(const __bdd& bdd)
     : arc_stream<true>(bdd.get<__bdd::shared_arc_file_type>())
-  { }
+  {}
 
-  arc_test_stream(const __zdd &zdd)
+  arc_test_stream(const __zdd& zdd)
     : arc_stream<true>(zdd.get<__zdd::shared_arc_file_type>())
-  { }
+  {}
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -71,7 +72,8 @@ public:
 // TODO: move into '<<'/'toString' methods in each respective data type.
 namespace snowhouse
 {
-  std::string string_of_adiar_ptr(adiar::internal::ptr_uint64 p)
+  std::string
+  string_of_adiar_ptr(adiar::internal::ptr_uint64 p)
   {
     std::stringstream stream;
     if (p.is_nil()) {
@@ -82,72 +84,63 @@ namespace snowhouse
       stream << "(x" << p.label() << ", " << p.id() << ")";
     }
 
-    if (p.is_flagged()) {
-      stream << "'";
-    }
+    if (p.is_flagged()) { stream << "'"; }
 
     return stream.str();
   }
 
-  std::string string_of_adiar_uid(adiar::internal::uid_uint64 u)
+  std::string
+  string_of_adiar_uid(adiar::internal::uid_uint64 u)
   {
     std::stringstream stream;
     if (u.is_terminal()) {
       stream << u.value();
     } else { // u.is_node()
-      stream << "(x" << u.label() << ", " << u.id() << ")" ;
+      stream << "(x" << u.label() << ", " << u.id() << ")";
     }
     return stream.str();
   }
 
-  template<>
+  template <>
   struct Stringizer<arc>
   {
-    static std::string ToString(const adiar::internal::arc& a)
+    static std::string
+    ToString(const adiar::internal::arc& a)
     {
       std::stringstream stream;
-      stream << "arc: "
-             << string_of_adiar_ptr(a.source())
-             << " " << (a.out_idx() ? "--->" : "- ->") << " "
-             << string_of_adiar_ptr(a.target())
-        ;
+      stream << "arc: " << string_of_adiar_ptr(a.source()) << " " << (a.out_idx() ? "--->" : "- ->")
+             << " " << string_of_adiar_ptr(a.target());
       return stream.str();
     }
   };
 
-  template<>
+  template <>
   struct Stringizer<node>
   {
-    static std::string ToString(const adiar::internal::node& n)
+    static std::string
+    ToString(const adiar::internal::node& n)
     {
       std::stringstream stream;
       if (n.is_terminal()) {
         stream << "node: " << n.value();
       } else {
-        stream << "node: ("
-               << string_of_adiar_uid(n.uid())
-               << ", "
-               << string_of_adiar_ptr(n.low())
-               << ", "
-               << string_of_adiar_ptr(n.high())
-               << ")"
-          ;
+        stream << "node: (" << string_of_adiar_uid(n.uid()) << ", " << string_of_adiar_ptr(n.low())
+               << ", " << string_of_adiar_ptr(n.high()) << ")";
       }
       return stream.str();
     }
   };
 
-  template<>
+  template <>
   struct Stringizer<level_info>
   {
-    static std::string ToString(const adiar::internal::level_info& m)
+    static std::string
+    ToString(const adiar::internal::level_info& m)
     {
       std::stringstream stream;
       stream << "level_info: ("
-             << "x" << m.label()
-             << " (" << m.level() << ")"
-             << ", #nodes = " << m.width()
-             << ")";
+             << "x" << m.label() << " (" << m.level() << ")"
+             << ", #nodes = " << m.width() << ")";
       return stream.str();
     }
   };
@@ -172,9 +165,12 @@ namespace adiar::internal
 
 ////////////////////////////////////////////////////////////////////////////////
 // Main
-int main(int argc, char* argv[]) {
+int
+main(int argc, char* argv[])
+{
 #ifdef NDEBUG
-  std::cerr << "Warning: Internal assertions are not enabled!" << std::endl << std::endl;;
+  std::cerr << "Warning: Internal assertions are not enabled!" << std::endl << std::endl;
+  ;
 
   std::cerr << "Warning: Some tests may fail due to ties in ordering" << std::endl << std::endl;
 #endif

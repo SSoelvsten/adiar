@@ -9,25 +9,23 @@ go_bandit([]() {
       it("supports copy-construction", [&]() {
         bdd_builder b;
 
-        const bdd_ptr p1 = b.add_node(1,false,true);
+        const bdd_ptr p1 = b.add_node(1, false, true);
         const bdd_ptr p2 = p1;
 
-        const bdd_ptr p3 = b.add_node(0,p2,true);
+        const bdd_ptr p3 = b.add_node(0, p2, true);
 
         bdd out = b.build();
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       terminal_F,
-                                                       terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       ptr_uint64(1, ptr_uint64::max_id),
-                                                       terminal_T)));
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
       });
@@ -35,22 +33,20 @@ go_bandit([]() {
       it("supports move-semantics", [&]() {
         bdd_builder b;
 
-        b.add_node(0,b.add_node(1,false,true),true);
+        b.add_node(0, b.add_node(1, false, true), true);
 
         bdd out = b.build();
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       terminal_F,
-                                                       terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       ptr_uint64(1, ptr_uint64::max_id),
-                                                       terminal_T)));
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
       });
@@ -88,7 +84,7 @@ go_bandit([]() {
       AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
 
       AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-      AssertThat(out->number_of_terminals[true],  Is().EqualTo(0u));
+      AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
     });
 
     it("can create a true terminal-only BDD", [&]() {
@@ -121,7 +117,7 @@ go_bandit([]() {
       AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
 
       AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
-      AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+      AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
     });
 
     it("creates the last pushed terminal if no nodes are pushed", [&]() {
@@ -158,7 +154,7 @@ go_bandit([]() {
       AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
 
       AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-      AssertThat(out->number_of_terminals[true],  Is().EqualTo(0u));
+      AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
     });
 
     it("throws an exception when create is called on an empty file", [&]() {
@@ -170,7 +166,7 @@ go_bandit([]() {
     it("throws an exception when calling create a second time with no new nodes in between", [&]() {
       bdd_builder b;
 
-      b.add_node(0,false,true);
+      b.add_node(0, false, true);
       b.build();
 
       AssertThrows(domain_error, b.build());
@@ -185,7 +181,7 @@ go_bandit([]() {
 
       bdd_builder b;
 
-      b.add_node(0,false,true);
+      b.add_node(0, false, true);
 
       bdd out = b.build();
 
@@ -194,15 +190,13 @@ go_bandit([]() {
 
       AssertThat(out_nodes.can_pull(), Is().True());
 
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                     terminal_F,
-                                                     terminal_T)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id, terminal_F, terminal_T)));
       AssertThat(out_nodes.can_pull(), Is().False());
 
       level_info_test_stream out_meta(out);
 
       AssertThat(out_meta.can_pull(), Is().True());
-      AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+      AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
       AssertThat(out_meta.can_pull(), Is().False());
 
@@ -223,7 +217,7 @@ go_bandit([]() {
       AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(3u));
 
       AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-      AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+      AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
     });
 
     it("throws an exception if pointers are used from a different builder [1]", [&]() {
@@ -232,80 +226,80 @@ go_bandit([]() {
 
       builder_ptr p = b1.add_node(true);
 
-      AssertThrows(invalid_argument, b2.add_node(0,false,p));
+      AssertThrows(invalid_argument, b2.add_node(0, false, p));
     });
 
     it("throws an exception if pointers are used from a different builder [2]", [&]() {
       bdd_builder b1;
       bdd_builder b2;
 
-      builder_ptr p = b1.add_node(1,true,false);
+      builder_ptr p = b1.add_node(1, true, false);
 
-      AssertThrows(invalid_argument, b2.add_node(0,p,false));
+      AssertThrows(invalid_argument, b2.add_node(0, p, false));
     });
 
     it("throws an exception if pointers are used after reset", [&]() {
       bdd_builder b;
 
-      builder_ptr p = b.add_node(1,true,false);
+      builder_ptr p = b.add_node(1, true, false);
       b.clear();
 
-      AssertThrows(invalid_argument, b.add_node(0,p,false));
+      AssertThrows(invalid_argument, b.add_node(0, p, false));
     });
 
     it("throws an exception if pointers are used after create", [&]() {
       bdd_builder b;
 
-      builder_ptr p = b.add_node(1,true,false);
+      builder_ptr p = b.add_node(1, true, false);
       b.build();
 
-      AssertThrows(invalid_argument, b.add_node(0,p,false));
+      AssertThrows(invalid_argument, b.add_node(0, p, false));
     });
 
     it("throws an exception when label > max_label", [&]() {
       bdd_builder b;
 
-      AssertThrows(invalid_argument, b.add_node(node::max_label + 1,false,true));
+      AssertThrows(invalid_argument, b.add_node(node::max_label + 1, false, true));
     });
 
     it("throws an exception when label > last label", [&]() {
       bdd_builder b;
 
-      b.add_node(0,false,true);
+      b.add_node(0, false, true);
 
-      AssertThrows(invalid_argument, b.add_node(1,false,true));
+      AssertThrows(invalid_argument, b.add_node(1, false, true));
     });
 
     it("throws an exception when low.label() >= label [1]", [&]() {
       bdd_builder b;
 
-      const bdd_ptr p = b.add_node(0,false,true);
+      const bdd_ptr p = b.add_node(0, false, true);
 
-      AssertThrows(invalid_argument, b.add_node(0,p,true));
+      AssertThrows(invalid_argument, b.add_node(0, p, true));
     });
 
     it("throws an exception when low.label() >= label [2]", [&]() {
       bdd_builder b;
 
-      const bdd_ptr p = b.add_node(3,false,true);
+      const bdd_ptr p = b.add_node(3, false, true);
 
-      AssertThrows(invalid_argument, b.add_node(3,p,true));
+      AssertThrows(invalid_argument, b.add_node(3, p, true));
     });
 
     it("throws an exception when high.label() >= label [1]", [&]() {
       bdd_builder b;
 
-      const bdd_ptr p = b.add_node(0,false,true);
+      const bdd_ptr p = b.add_node(0, false, true);
 
-      AssertThrows(invalid_argument, b.add_node(0,false,p));
+      AssertThrows(invalid_argument, b.add_node(0, false, p));
     });
 
     it("throws an exception when high.label() >= label [2]", [&]() {
       bdd_builder b;
 
-      const bdd_ptr p = b.add_node(6,false,true);
+      const bdd_ptr p = b.add_node(6, false, true);
 
-      AssertThrows(invalid_argument, b.add_node(6,false,p));
+      AssertThrows(invalid_argument, b.add_node(6, false, p));
     });
 
     it("can create nodes on different levels", [&]() {
@@ -321,9 +315,9 @@ go_bandit([]() {
 
       bdd_builder b;
 
-      const bdd_ptr p3 = b.add_node(2,false,true);
-      const bdd_ptr p2 = b.add_node(1,p3,true);
-      const bdd_ptr p1 = b.add_node(0,p3,p2);
+      const bdd_ptr p3 = b.add_node(2, false, true);
+      const bdd_ptr p2 = b.add_node(1, p3, true);
+      const bdd_ptr p1 = b.add_node(0, p3, p2);
 
       bdd out = b.build();
 
@@ -333,33 +327,32 @@ go_bandit([]() {
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n3
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                     terminal_F,
-                                                     terminal_T)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id, terminal_F, terminal_T)));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n2
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                     ptr_uint64(2, ptr_uint64::max_id),
-                                                     terminal_T)));
+      AssertThat(
+        out_nodes.pull(),
+        Is().EqualTo(node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), terminal_T)));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n1
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                     ptr_uint64(2, ptr_uint64::max_id),
-                                                     ptr_uint64(1, ptr_uint64::max_id))));
+      AssertThat(
+        out_nodes.pull(),
+        Is().EqualTo(node(
+          0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id))));
       AssertThat(out_nodes.can_pull(), Is().False());
 
       level_info_test_stream out_meta(out);
 
       AssertThat(out_meta.can_pull(), Is().True());
-      AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+      AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
 
       AssertThat(out_meta.can_pull(), Is().True());
-      AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+      AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
 
       AssertThat(out_meta.can_pull(), Is().True());
-      AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+      AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
       AssertThat(out_meta.can_pull(), Is().False());
 
@@ -380,7 +373,7 @@ go_bandit([]() {
       AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(5u));
 
       AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-      AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
+      AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
     });
 
     it("can create several nodes on the same level", [&]() {
@@ -396,11 +389,11 @@ go_bandit([]() {
 
       bdd_builder b;
 
-      const bdd_ptr p5 = b.add_node(2,true,false);
-      const bdd_ptr p4 = b.add_node(2,false,true);
-      const bdd_ptr p3 = b.add_node(1,p5,true);
-      const bdd_ptr p2 = b.add_node(1,p4,p5);
-      const bdd_ptr p1 = b.add_node(0,p2,p3);
+      const bdd_ptr p5 = b.add_node(2, true, false);
+      const bdd_ptr p4 = b.add_node(2, false, true);
+      const bdd_ptr p3 = b.add_node(1, p5, true);
+      const bdd_ptr p2 = b.add_node(1, p4, p5);
+      const bdd_ptr p1 = b.add_node(0, p2, p3);
 
       bdd out = b.build();
 
@@ -414,38 +407,41 @@ go_bandit([]() {
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n4
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id-1, terminal_F, terminal_T)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id - 1, terminal_F, terminal_T)));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n3
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                     ptr_uint64(2, ptr_uint64::max_id),
-                                                     terminal_T)));
+      AssertThat(
+        out_nodes.pull(),
+        Is().EqualTo(node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), terminal_T)));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n2
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id-1,
-                                                     ptr_uint64(2, ptr_uint64::max_id-1),
-                                                     ptr_uint64(2, ptr_uint64::max_id))));
+      AssertThat(out_nodes.pull(),
+                 Is().EqualTo(node(1,
+                                   node::max_id - 1,
+                                   ptr_uint64(2, ptr_uint64::max_id - 1),
+                                   ptr_uint64(2, ptr_uint64::max_id))));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n1
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                     ptr_uint64(1, ptr_uint64::max_id-1),
-                                                     ptr_uint64(1, ptr_uint64::max_id))));
+      AssertThat(out_nodes.pull(),
+                 Is().EqualTo(node(0,
+                                   node::max_id,
+                                   ptr_uint64(1, ptr_uint64::max_id - 1),
+                                   ptr_uint64(1, ptr_uint64::max_id))));
       AssertThat(out_nodes.can_pull(), Is().False());
-
 
       level_info_test_stream out_meta(out);
 
       AssertThat(out_meta.can_pull(), Is().True());
-      AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,2u)));
+      AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 2u)));
 
       AssertThat(out_meta.can_pull(), Is().True());
-      AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,2u)));
+      AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 2u)));
 
       AssertThat(out_meta.can_pull(), Is().True());
-      AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+      AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
       AssertThat(out_meta.can_pull(), Is().False());
 
@@ -466,17 +462,17 @@ go_bandit([]() {
       AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(8u));
 
       AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
-      AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
+      AssertThat(out->number_of_terminals[true], Is().EqualTo(3u));
     });
 
     it("can reset and create new nodes", [&]() {
       bdd_builder b;
 
-      b.add_node(0,false,true);
+      b.add_node(0, false, true);
 
       b.clear();
 
-      b.add_node(1,true,false);
+      b.add_node(1, true, false);
 
       bdd out = b.build();
 
@@ -485,15 +481,13 @@ go_bandit([]() {
 
       AssertThat(out_nodes.can_pull(), Is().True());
 
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                     terminal_T,
-                                                     terminal_F)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id, terminal_T, terminal_F)));
       AssertThat(out_nodes.can_pull(), Is().False());
 
       level_info_test_stream out_meta(out);
 
       AssertThat(out_meta.can_pull(), Is().True());
-      AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+      AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
 
       AssertThat(out_meta.can_pull(), Is().False());
 
@@ -514,13 +508,13 @@ go_bandit([]() {
       AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(3u));
 
       AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-      AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+      AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
     });
 
     it("is empty after reset", [&]() {
       bdd_builder b;
 
-      b.add_node(0,false,true);
+      b.add_node(0, false, true);
 
       b.clear();
 
@@ -531,7 +525,7 @@ go_bandit([]() {
       bdd_builder b;
 
       { // FIRST
-        b.add_node(0,false,true);
+        b.add_node(0, false, true);
         bdd out = b.build();
 
         // Check it looks all right
@@ -539,15 +533,13 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       terminal_F,
-                                                       terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -568,11 +560,11 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(3u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
       }
 
       { // SECOND
-        b.add_node(1,true,false);
+        b.add_node(1, true, false);
 
         bdd out = b.build();
 
@@ -581,15 +573,13 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       terminal_T,
-                                                       terminal_F)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id, terminal_T, terminal_F)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -610,15 +600,15 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(3u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
       }
     });
 
     it("throws an exception when there is more than one root [1]", [&]() {
       bdd_builder b;
 
-      b.add_node(0,false,true);
-      b.add_node(0,true,false);
+      b.add_node(0, false, true);
+      b.add_node(0, true, false);
 
       AssertThrows(domain_error, b.build());
     });
@@ -626,8 +616,8 @@ go_bandit([]() {
     it("throws an exception when there is more than one root [2]", [&]() {
       bdd_builder b;
 
-      b.add_node(4,false,true);
-      b.add_node(2,true,false);
+      b.add_node(4, false, true);
+      b.add_node(2, true, false);
 
       AssertThrows(domain_error, b.build());
     });
@@ -635,11 +625,11 @@ go_bandit([]() {
     it("throws an exception when there is more than one root [3]", [&]() {
       bdd_builder b;
 
-      const bdd_ptr p5 = b.add_node(5,true,false);
-      const bdd_ptr p4 = b.add_node(4,false,true);
-      const bdd_ptr p3 = b.add_node(4,p5,true);
-      const bdd_ptr p2 = b.add_node(2,p3,p4);
-      const bdd_ptr p1 = b.add_node(1,p3,p5);
+      const bdd_ptr p5 = b.add_node(5, true, false);
+      const bdd_ptr p4 = b.add_node(4, false, true);
+      const bdd_ptr p3 = b.add_node(4, p5, true);
+      const bdd_ptr p2 = b.add_node(2, p3, p4);
+      const bdd_ptr p1 = b.add_node(1, p3, p5);
 
       AssertThrows(domain_error, b.build());
     });
@@ -657,11 +647,11 @@ go_bandit([]() {
 
       bdd_builder b;
 
-      const bdd_ptr p5 = b.add_node(5,true,false);
-      const bdd_ptr p4 = b.add_node(4,true,false);
-      const bdd_ptr p3 = b.add_node(4,p5,true);
+      const bdd_ptr p5 = b.add_node(5, true, false);
+      const bdd_ptr p4 = b.add_node(4, true, false);
+      const bdd_ptr p3 = b.add_node(4, p5, true);
       const bdd_ptr p2 = p3;
-      const bdd_ptr p1 = b.add_node(2,p2,p4);
+      const bdd_ptr p1 = b.add_node(2, p2, p4);
 
       bdd out = b.build();
 
@@ -679,15 +669,17 @@ go_bandit([]() {
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n3
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id-1,
-                                                     ptr_uint64(5, ptr_uint64::max_id),
-                                                     terminal_T)));
+      AssertThat(
+        out_nodes.pull(),
+        Is().EqualTo(node(4, node::max_id - 1, ptr_uint64(5, ptr_uint64::max_id), terminal_T)));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n1
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                     ptr_uint64(4, ptr_uint64::max_id-1),
-                                                     ptr_uint64(4, ptr_uint64::max_id))));
+      AssertThat(out_nodes.pull(),
+                 Is().EqualTo(node(2,
+                                   node::max_id,
+                                   ptr_uint64(4, ptr_uint64::max_id - 1),
+                                   ptr_uint64(4, ptr_uint64::max_id))));
       AssertThat(out_nodes.can_pull(), Is().False());
 
       level_info_test_stream out_meta(out);
@@ -695,13 +687,13 @@ go_bandit([]() {
       AssertThat(out->width, Is().EqualTo(2u));
 
       AssertThat(out_meta.can_pull(), Is().True());
-      AssertThat(out_meta.pull(), Is().EqualTo(level_info(5,1u)));
+      AssertThat(out_meta.pull(), Is().EqualTo(level_info(5, 1u)));
 
       AssertThat(out_meta.can_pull(), Is().True());
-      AssertThat(out_meta.pull(), Is().EqualTo(level_info(4,2u)));
+      AssertThat(out_meta.pull(), Is().EqualTo(level_info(4, 2u)));
 
       AssertThat(out_meta.can_pull(), Is().True());
-      AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+      AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
 
       AssertThat(out_meta.can_pull(), Is().False());
 
@@ -720,16 +712,16 @@ go_bandit([]() {
       AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(8u));
 
       AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
-      AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
+      AssertThat(out->number_of_terminals[true], Is().EqualTo(3u));
     });
 
     describe("bdd_builder", [&]() {
       it("uses the BDD reduction rule", [&]() {
         bdd_builder b;
 
-        const bdd_ptr p = b.add_node(1,false,true);
+        const bdd_ptr p = b.add_node(1, false, true);
 
-        b.add_node(0,p,p);
+        b.add_node(0, p, p);
 
         bdd out = b.build();
 
@@ -738,15 +730,13 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       terminal_F,
-                                                       terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -767,14 +757,14 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(3u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can collapse BDD reduction rule to a false terminal", [&]() {
         bdd_builder b;
 
-        const bdd_ptr p2 = b.add_node(2,false,false);
-        const bdd_ptr p1 = b.add_node(1,false,p2);
+        const bdd_ptr p2 = b.add_node(2, false, false);
+        const bdd_ptr p1 = b.add_node(1, false, p2);
 
         bdd out = b.build();
 
@@ -803,14 +793,14 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
       });
 
       it("can collapse BDD reduction rule to a true terminal [1]", [&]() {
         bdd_builder b;
 
-        const bdd_ptr p2 = b.add_node(2,true,true);
-        const bdd_ptr p1 = b.add_node(1,p2,p2);
+        const bdd_ptr p2 = b.add_node(2, true, true);
+        const bdd_ptr p1 = b.add_node(1, p2, p2);
 
         bdd out = b.build();
 
@@ -839,14 +829,14 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can collapse BDD reduction rule to a true terminal [2]", [&]() {
         bdd_builder b;
 
-        const bdd_ptr p2 = b.add_node(2,true,true);
-        const bdd_ptr p1 = b.add_node(1,p2,true);
+        const bdd_ptr p2 = b.add_node(2, true, true);
+        const bdd_ptr p1 = b.add_node(1, p2, true);
 
         bdd out = b.build();
 
@@ -875,7 +865,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("does not decrement 'id' when applying the BDD reduction rule", [&]() {
@@ -902,34 +892,34 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                       terminal_F,
-                                                       terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       terminal_F,
-                                                       ptr_uint64(2, ptr_uint64::max_id))));
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(1, node::max_id, terminal_F, ptr_uint64(2, ptr_uint64::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       ptr_uint64(2, ptr_uint64::max_id),
-                                                       ptr_uint64(1, ptr_uint64::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     ptr_uint64(2, ptr_uint64::max_id),
+                                     ptr_uint64(1, ptr_uint64::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -950,16 +940,16 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(4u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("uses the BDD reduction rule with copies of nodes", [&]() {
         bdd_builder b;
 
-        const bdd_ptr p1 = b.add_node(1,false,true);
+        const bdd_ptr p1 = b.add_node(1, false, true);
         const bdd_ptr p2 = p1;
 
-        b.add_node(0,p1,p2);
+        b.add_node(0, p1, p2);
 
         bdd out = b.build();
 
@@ -968,15 +958,13 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       terminal_F,
-                                                       terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -997,17 +985,17 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(3u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("does not allow multiple roots when using BDD reduction rule", [&]() {
         bdd_builder b;
 
-        const bdd_ptr p4 = b.add_node(2,true,false);
-        const bdd_ptr p3 = b.add_node(2,false,true);
-        const bdd_ptr p2 = b.add_node(1,p4,true);
-        const bdd_ptr p1 = b.add_node(1,p3,p4); // root
-        const bdd_ptr p0 = b.add_node(0,p2,p2); // root
+        const bdd_ptr p4 = b.add_node(2, true, false);
+        const bdd_ptr p3 = b.add_node(2, false, true);
+        const bdd_ptr p2 = b.add_node(1, p4, true);
+        const bdd_ptr p1 = b.add_node(1, p3, p4); // root
+        const bdd_ptr p0 = b.add_node(0, p2, p2); // root
 
         AssertThrows(domain_error, b.build());
       });
@@ -1017,9 +1005,9 @@ go_bandit([]() {
       it("uses the ZDD reduction rule", [&]() {
         zdd_builder b;
 
-        const zdd_ptr p = b.add_node(1,false,true);
+        const zdd_ptr p = b.add_node(1, false, true);
 
-        b.add_node(0,p,false);
+        b.add_node(0, p, false);
 
         zdd out = b.build();
 
@@ -1028,15 +1016,13 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       terminal_F,
-                                                       terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -1057,14 +1043,14 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(3u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can collapse ZDD reduction rule to a false terminal", [&]() {
         zdd_builder b;
 
-        const zdd_ptr p2 = b.add_node(2,false,false);
-        const zdd_ptr p1 = b.add_node(1,p2,false);
+        const zdd_ptr p2 = b.add_node(2, false, false);
+        const zdd_ptr p1 = b.add_node(1, p2, false);
 
         zdd out = b.build();
 
@@ -1093,14 +1079,14 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
       });
 
       it("can collapse ZDD reduction rule to a true terminal", [&]() {
         zdd_builder b;
 
-        const zdd_ptr p2 = b.add_node(2,true,false);
-        const zdd_ptr p1 = b.add_node(1,p2,false);
+        const zdd_ptr p2 = b.add_node(2, true, false);
+        const zdd_ptr p1 = b.add_node(1, p2, false);
 
         zdd out = b.build();
 
@@ -1129,7 +1115,7 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("does not decrement 'id' when applying the ZDD reduction rule", [&]() {
@@ -1156,34 +1142,36 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                       terminal_F,
-                                                       terminal_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       ptr_uint64(2, ptr_uint64::max_id),
-                                                       ptr_uint64(2, ptr_uint64::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(1,
+                                     node::max_id,
+                                     ptr_uint64(2, ptr_uint64::max_id),
+                                     ptr_uint64(2, ptr_uint64::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id,
-                                                       ptr_uint64(2, ptr_uint64::max_id),
-                                                       ptr_uint64(1, ptr_uint64::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     ptr_uint64(2, ptr_uint64::max_id),
+                                     ptr_uint64(1, ptr_uint64::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -1204,17 +1192,17 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut::All], Is().LessThanOrEqualTo(4u));
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("does not allow multiple roots when using ZDD reduction rule", [&]() {
         zdd_builder b;
 
-        const zdd_ptr p4 = b.add_node(2,true,false);
-        const zdd_ptr p3 = b.add_node(2,false,true);
-        const zdd_ptr p2 = b.add_node(1,p4,true);
-        const zdd_ptr p1 = b.add_node(1,p3,p4);    // root
-        const zdd_ptr p0 = b.add_node(0,p2,false); // root
+        const zdd_ptr p4 = b.add_node(2, true, false);
+        const zdd_ptr p3 = b.add_node(2, false, true);
+        const zdd_ptr p2 = b.add_node(1, p4, true);
+        const zdd_ptr p1 = b.add_node(1, p3, p4);    // root
+        const zdd_ptr p0 = b.add_node(0, p2, false); // root
 
         AssertThrows(domain_error, b.build());
       });

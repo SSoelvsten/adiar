@@ -15,9 +15,8 @@ namespace adiar::internal
   ///          it is \em never nil, and without any associated information,
   ///          e.g. \em without a flag.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename Ptr>
-  class __uid
-    : public Ptr
+  template <typename Ptr>
+  class __uid : public Ptr
   {
   public:
     using pointer_type = Ptr;
@@ -37,7 +36,7 @@ namespace adiar::internal
     /// \details The default, copy, and move constructor has to be `default` to
     ///          ensure it is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    __uid(const __uid<pointer_type> &p) = default;
+    __uid(const __uid<pointer_type>& p) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   Move construction (trivial).
@@ -45,7 +44,7 @@ namespace adiar::internal
     /// \details The default, copy, and move constructor has to be `default` to
     ///          ensure it is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    __uid(__uid<pointer_type> &&p) = default;
+    __uid(__uid<pointer_type>&& p) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   Destruction (trivial).
@@ -62,7 +61,8 @@ namespace adiar::internal
     /// \details The default, copy, and move assignment has to be `default` to
     ///          ensure it is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    __uid& operator =(const __uid<pointer_type> &p) = default;
+    __uid&
+    operator=(const __uid<pointer_type>& p) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   Move assignment
@@ -70,13 +70,15 @@ namespace adiar::internal
     /// \details The default, copy, and move assignment has to be `default` to
     ///          ensure it is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    __uid& operator =(__uid<pointer_type> &&p) = default;
+    __uid&
+    operator=(__uid<pointer_type>&& p) = default;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a uid of an internal node (label, id).
     ////////////////////////////////////////////////////////////////////////////
-    __uid(const pointer_type &p) : pointer_type(essential(p))
+    __uid(const pointer_type& p)
+      : pointer_type(essential(p))
     {
       adiar_assert(!p.is_nil(), "UID must be created from non-nil value");
     }
@@ -84,19 +86,23 @@ namespace adiar::internal
     /* ============================= ATTRIBUTES ============================= */
     // Remove anything related to the flag.
 
-    bool is_flagged() = delete;
+    bool
+    is_flagged() = delete;
 
     /* ================================= nil ================================ */
     // Remove anything related to nil
 
-    static inline constexpr pointer_type nil() = delete;
+    static inline constexpr pointer_type
+    nil() = delete;
 
-    bool is_nil() = delete;
+    bool
+    is_nil() = delete;
 
     /* ================================ NODES =============================== */
     // Remove anything related to out-index
 
-    typename pointer_type::out_idx_type out_idx() = delete;
+    typename pointer_type::out_idx_type
+    out_idx() = delete;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the `ptr` for this node uid with no auxiliary information.
@@ -122,10 +128,9 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a pointer to an internal node (label, id).
     ////////////////////////////////////////////////////////////////////////////
-    __uid(const typename pointer_type::label_type label,
-          const typename pointer_type::id_type id)
+    __uid(const typename pointer_type::label_type label, const typename pointer_type::id_type id)
       : pointer_type(label, id)
-    { }
+    {}
 
     /* ============================== TERMINALS ============================= */
   public:
@@ -134,7 +139,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     __uid(typename pointer_type::terminal_type v)
       : pointer_type(v)
-    { }
+    {}
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -142,7 +147,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     // This functions is overwritten, such that we can provide a specialization
     // for '__uid<ptr_uint64>'.
-    inline bool is_terminal() const
+    inline bool
+    is_terminal() const
     {
       return this->is_terminal();
     }
@@ -155,7 +161,7 @@ namespace adiar::internal
   /// \brief Obtain the `ptr` for this node uid with the given `out_idx` as
   ///        auxiliary information.
   ////////////////////////////////////////////////////////////////////////////
-  template<>
+  template <>
   inline ptr_uint64
   __uid<ptr_uint64>::as_ptr(const ptr_uint64::out_idx_type out_idx) const
   {
@@ -165,14 +171,15 @@ namespace adiar::internal
     // re-encode all three values.
     constexpr pointer_type::raw_type out_idx_mask = ~(max_out_idx << pointer_type::data_shift);
 
-    return pointer_type((this->_raw & out_idx_mask) |
-                        (static_cast<pointer_type::raw_type>(out_idx) << pointer_type::data_shift));
+    return pointer_type(
+      (this->_raw & out_idx_mask)
+      | (static_cast<pointer_type::raw_type>(out_idx) << pointer_type::data_shift));
   }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether this uid identifies a terminal node.
   //////////////////////////////////////////////////////////////////////////////
-  template<>
+  template <>
   inline bool
   __uid<ptr_uint64>::is_terminal() const
   {

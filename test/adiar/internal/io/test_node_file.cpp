@@ -1,8 +1,7 @@
 #include "../../../test.h"
+#include <filesystem>
 
 #include <adiar/internal/io/node_random_access.h>
-
-#include <filesystem>
 
 go_bandit([]() {
   describe("adiar/internal/io/node_file.h , node_stream.h , node_writer.h", []() {
@@ -67,7 +66,6 @@ go_bandit([]() {
         nw << node(42, node::max_id, node::pointer_type(true), node::pointer_type(true));
       }
 
-
       /*
                     1            ---- x0
                    / \
@@ -79,7 +77,10 @@ go_bandit([]() {
       {
         node_writer nw(nf_0and1);
         nw << node(1, node::max_id, node::pointer_type(false), node::pointer_type(true))
-           << node(0, node::max_id, node::pointer_type(false), node::pointer_type(1, node::pointer_type::max_id));
+           << node(0,
+                   node::max_id,
+                   node::pointer_type(false),
+                   node::pointer_type(1, node::pointer_type::max_id));
       }
 
       /*
@@ -95,8 +96,14 @@ go_bandit([]() {
       {
         node_writer nw(nf_0and1and2);
         nw << node(2, node::max_id, node::pointer_type(false), node::pointer_type(true))
-           << node(1, node::max_id, node::pointer_type(false), node::pointer_type(2, node::pointer_type::max_id))
-           << node(0, node::max_id, node::pointer_type(false), node::pointer_type(1, node::pointer_type::max_id));
+           << node(1,
+                   node::max_id,
+                   node::pointer_type(false),
+                   node::pointer_type(2, node::pointer_type::max_id))
+           << node(0,
+                   node::max_id,
+                   node::pointer_type(false),
+                   node::pointer_type(1, node::pointer_type::max_id));
       }
 
       /*
@@ -112,8 +119,14 @@ go_bandit([]() {
       {
         node_writer nw(nf_0and1_or_2);
         nw << node(2, node::max_id, node::pointer_type(false), node::pointer_type(true))
-           << node(1, node::max_id, node::pointer_type(2, node::pointer_type::max_id), node::pointer_type(true))
-           << node(0, node::max_id, node::pointer_type(2, node::pointer_type::max_id), node::pointer_type(1, node::pointer_type::max_id));
+           << node(1,
+                   node::max_id,
+                   node::pointer_type(2, node::pointer_type::max_id),
+                   node::pointer_type(true))
+           << node(0,
+                   node::max_id,
+                   node::pointer_type(2, node::pointer_type::max_id),
+                   node::pointer_type(1, node::pointer_type::max_id));
       }
 
       /*
@@ -127,8 +140,11 @@ go_bandit([]() {
       {
         node_writer nw(nf_21xor42);
         nw << node(42, node::max_id, node::pointer_type(false), node::pointer_type(true))
-           << node(42, node::max_id-1, node::pointer_type(true), node::pointer_type(false))
-           << node(21, node::max_id, node::pointer_type(42, node::pointer_type::max_id), node::pointer_type(42, node::pointer_type::max_id-1));
+           << node(42, node::max_id - 1, node::pointer_type(true), node::pointer_type(false))
+           << node(21,
+                   node::max_id,
+                   node::pointer_type(42, node::pointer_type::max_id),
+                   node::pointer_type(42, node::pointer_type::max_id - 1));
       }
 
       /*
@@ -144,9 +160,18 @@ go_bandit([]() {
       {
         node_writer nw(nf_0xnor1_or_2);
         nw << node(2, node::max_id, node::pointer_type(false), node::pointer_type(true))
-           << node(1, node::max_id, node::pointer_type(2, node::pointer_type::max_id), node::pointer_type(true))
-           << node(1, node::max_id-1, node::pointer_type(true), node::pointer_type(2, node::pointer_type::max_id))
-           << node(0, node::max_id, node::pointer_type(1, node::pointer_type::max_id-1), node::pointer_type(1, node::pointer_type::max_id));
+           << node(1,
+                   node::max_id,
+                   node::pointer_type(2, node::pointer_type::max_id),
+                   node::pointer_type(true))
+           << node(1,
+                   node::max_id - 1,
+                   node::pointer_type(true),
+                   node::pointer_type(2, node::pointer_type::max_id))
+           << node(0,
+                   node::max_id,
+                   node::pointer_type(1, node::pointer_type::max_id - 1),
+                   node::pointer_type(1, node::pointer_type::max_id));
       }
 
       /*
@@ -162,9 +187,18 @@ go_bandit([]() {
       {
         node_writer nw(nf_0xor1_or_2);
         nw << node(2, node::max_id, node::pointer_type(false), node::pointer_type(true))
-           << node(1, node::max_id, node::pointer_type(2, node::pointer_type::max_id), node::pointer_type(true))
-           << node(1, node::max_id-1, node::pointer_type(true), node::pointer_type(2, node::pointer_type::max_id))
-           << node(0, node::max_id, node::pointer_type(1, node::pointer_type::max_id), node::pointer_type(1, node::pointer_type::max_id-1));
+           << node(1,
+                   node::max_id,
+                   node::pointer_type(2, node::pointer_type::max_id),
+                   node::pointer_type(true))
+           << node(1,
+                   node::max_id - 1,
+                   node::pointer_type(true),
+                   node::pointer_type(2, node::pointer_type::max_id))
+           << node(0,
+                   node::max_id,
+                   node::pointer_type(1, node::pointer_type::max_id),
+                   node::pointer_type(1, node::pointer_type::max_id - 1));
       }
 
       /*
@@ -185,15 +219,36 @@ go_bandit([]() {
         // In comments, we provide the sum (mod 2) before adding the
         // respective variable.
         node_writer nw(nf_sum01234_mod2);
-        nw << node(4, node::max_id,   node::pointer_type(false), node::pointer_type(true))                                            // 0
-           << node(4, node::max_id-1, node::pointer_type(true), node::pointer_type(false))                                            // 1
-           << node(3, node::max_id,   node::pointer_type(4, node::pointer_type::max_id-1), node::pointer_type(4, node::pointer_type::max_id))    // 1
-           << node(3, node::max_id-1, node::pointer_type(4, node::pointer_type::max_id),   node::pointer_type(4, node::pointer_type::max_id-1))  // 0
-           << node(2, node::max_id,   node::pointer_type(3, node::pointer_type::max_id-1), node::pointer_type(3, node::pointer_type::max_id))    // 0
-           << node(2, node::max_id-1, node::pointer_type(3, node::pointer_type::max_id),   node::pointer_type(3, node::pointer_type::max_id-1))  // 1
-           << node(1, node::max_id,   node::pointer_type(2, node::pointer_type::max_id-1), node::pointer_type(2, node::pointer_type::max_id))    // 1
-           << node(1, node::max_id-1, node::pointer_type(2, node::pointer_type::max_id),   node::pointer_type(2, node::pointer_type::max_id-1))  // 0
-           << node(0, node::max_id,   node::pointer_type(1, node::pointer_type::max_id-1), node::pointer_type(1, node::pointer_type::max_id));   // 0
+        nw << node(4, node::max_id, node::pointer_type(false), node::pointer_type(true))     // 0
+           << node(4, node::max_id - 1, node::pointer_type(true), node::pointer_type(false)) // 1
+           << node(3,
+                   node::max_id,
+                   node::pointer_type(4, node::pointer_type::max_id - 1),
+                   node::pointer_type(4, node::pointer_type::max_id)) // 1
+           << node(3,
+                   node::max_id - 1,
+                   node::pointer_type(4, node::pointer_type::max_id),
+                   node::pointer_type(4, node::pointer_type::max_id - 1)) // 0
+           << node(2,
+                   node::max_id,
+                   node::pointer_type(3, node::pointer_type::max_id - 1),
+                   node::pointer_type(3, node::pointer_type::max_id)) // 0
+           << node(2,
+                   node::max_id - 1,
+                   node::pointer_type(3, node::pointer_type::max_id),
+                   node::pointer_type(3, node::pointer_type::max_id - 1)) // 1
+           << node(1,
+                   node::max_id,
+                   node::pointer_type(2, node::pointer_type::max_id - 1),
+                   node::pointer_type(2, node::pointer_type::max_id)) // 1
+           << node(1,
+                   node::max_id - 1,
+                   node::pointer_type(2, node::pointer_type::max_id),
+                   node::pointer_type(2, node::pointer_type::max_id - 1)) // 0
+           << node(0,
+                   node::max_id,
+                   node::pointer_type(1, node::pointer_type::max_id - 1),
+                   node::pointer_type(1, node::pointer_type::max_id)); // 0
       }
 
       // -------------------------------------------------------------------
@@ -218,13 +273,28 @@ go_bandit([]() {
       levelized_file<node> nf_larger_2level_cut_A;
       {
         node_writer nw(nf_larger_2level_cut_A);
-        nw << node(3, node::max_id,   node::pointer_type(false), node::pointer_type(true))
-           << node(3, node::max_id-1, node::pointer_type(true), node::pointer_type(false))
-           << node(2, node::max_id,   node::pointer_type(3, node::pointer_type::max_id),   node::pointer_type(true))
-           << node(2, node::max_id-1, node::pointer_type(3, node::pointer_type::max_id-1), node::pointer_type(3, node::pointer_type::max_id))
-           << node(1, node::max_id,   node::pointer_type(2, node::pointer_type::max_id-1), node::pointer_type(true))
-           << node(1, node::max_id-1, node::pointer_type(2, node::pointer_type::max_id-1), node::pointer_type(2, node::pointer_type::max_id))
-           << node(0, node::max_id,   node::pointer_type(1, node::pointer_type::max_id-1), node::pointer_type(1, node::pointer_type::max_id));
+        nw << node(3, node::max_id, node::pointer_type(false), node::pointer_type(true))
+           << node(3, node::max_id - 1, node::pointer_type(true), node::pointer_type(false))
+           << node(2,
+                   node::max_id,
+                   node::pointer_type(3, node::pointer_type::max_id),
+                   node::pointer_type(true))
+           << node(2,
+                   node::max_id - 1,
+                   node::pointer_type(3, node::pointer_type::max_id - 1),
+                   node::pointer_type(3, node::pointer_type::max_id))
+           << node(1,
+                   node::max_id,
+                   node::pointer_type(2, node::pointer_type::max_id - 1),
+                   node::pointer_type(true))
+           << node(1,
+                   node::max_id - 1,
+                   node::pointer_type(2, node::pointer_type::max_id - 1),
+                   node::pointer_type(2, node::pointer_type::max_id))
+           << node(0,
+                   node::max_id,
+                   node::pointer_type(1, node::pointer_type::max_id - 1),
+                   node::pointer_type(1, node::pointer_type::max_id));
       }
 
       /*
@@ -245,29 +315,30 @@ go_bandit([]() {
       levelized_file<node> nf_larger_2level_cut_B;
       {
         node_writer nw(nf_larger_2level_cut_B);
-        nw << node(3, node::max_id,   node::pointer_type(false), node::pointer_type(true))
-           << node(2, node::max_id,   node::pointer_type(false), node::pointer_type(true))
-           << node(2, node::max_id-1, node::pointer_type(3, node::pointer_type::max_id), node::pointer_type(3, node::pointer_type::max_id))
-           << node(1, node::max_id,   node::pointer_type(2, node::pointer_type::max_id), node::pointer_type(2, node::pointer_type::max_id-1))
-           << node(0, node::max_id,   node::pointer_type(1, node::pointer_type::max_id), node::pointer_type(3, node::pointer_type::max_id));
+        nw << node(3, node::max_id, node::pointer_type(false), node::pointer_type(true))
+           << node(2, node::max_id, node::pointer_type(false), node::pointer_type(true))
+           << node(2,
+                   node::max_id - 1,
+                   node::pointer_type(3, node::pointer_type::max_id),
+                   node::pointer_type(3, node::pointer_type::max_id))
+           << node(1,
+                   node::max_id,
+                   node::pointer_type(2, node::pointer_type::max_id),
+                   node::pointer_type(2, node::pointer_type::max_id - 1))
+           << node(0,
+                   node::max_id,
+                   node::pointer_type(1, node::pointer_type::max_id),
+                   node::pointer_type(3, node::pointer_type::max_id));
       }
 
       describe("canonicity", [&]() {
-        it("is true for False terminal", [&]() {
-          AssertThat(nf_F.canonical, Is().True());
-        });
+        it("is true for False terminal", [&]() { AssertThat(nf_F.canonical, Is().True()); });
 
-        it("is true for True terminal", [&]() {
-          AssertThat(nf_T.canonical, Is().True());
-        });
+        it("is true for True terminal", [&]() { AssertThat(nf_T.canonical, Is().True()); });
 
-        it("is true for single node [1]", [&]() {
-          AssertThat(nf_42.canonical, Is().True());
-        });
+        it("is true for single node [1]", [&]() { AssertThat(nf_42.canonical, Is().True()); });
 
-        it("is true for single node [2]", [&]() {
-          AssertThat(nf_not42.canonical, Is().True());
-        });
+        it("is true for single node [2]", [&]() { AssertThat(nf_not42.canonical, Is().True()); });
 
         it("is false for single node due to too small Id", [&]() {
           levelized_file<node> nf;
@@ -279,17 +350,18 @@ go_bandit([]() {
           AssertThat(nf.canonical, Is().False());
         });
 
-        it("is true for x21 + x42", [&]() {
-          AssertThat(nf_21xor42.canonical, Is().True());
-        });
+        it("is true for x21 + x42", [&]() { AssertThat(nf_21xor42.canonical, Is().True()); });
 
         it("is false if child ordering with terminals are mismatching", [&]() {
           levelized_file<node> nf;
           {
             node_writer nw(nf);
             nw << node(42, node::max_id, node::pointer_type(true), node::pointer_type(false))
-               << node(42, node::max_id-1, node::pointer_type(false), node::pointer_type(true))
-               << node(21, node::max_id, node::pointer_type(42, node::pointer_type::max_id), node::pointer_type(42, node::pointer_type::max_id-1));
+               << node(42, node::max_id - 1, node::pointer_type(false), node::pointer_type(true))
+               << node(21,
+                       node::max_id,
+                       node::pointer_type(42, node::pointer_type::max_id),
+                       node::pointer_type(42, node::pointer_type::max_id - 1));
           }
 
           AssertThat(nf.canonical, Is().False());
@@ -300,8 +372,11 @@ go_bandit([]() {
           {
             node_writer nw(nf);
             nw << node(42, node::max_id, node::pointer_type(false), node::pointer_type(true))
-               << node(42, node::max_id-1, node::pointer_type(true), node::pointer_type(false))
-               << node(21, node::max_id-2, node::pointer_type(42, node::pointer_type::max_id), node::pointer_type(42, node::pointer_type::max_id-1));
+               << node(42, node::max_id - 1, node::pointer_type(true), node::pointer_type(false))
+               << node(21,
+                       node::max_id - 2,
+                       node::pointer_type(42, node::pointer_type::max_id),
+                       node::pointer_type(42, node::pointer_type::max_id - 1));
           }
 
           AssertThat(nf.canonical, Is().False());
@@ -312,44 +387,67 @@ go_bandit([]() {
           {
             node_writer nw(nf);
             nw << node(42, node::max_id, node::pointer_type(false), node::pointer_type(true))
-               << node(42, node::max_id-2, node::pointer_type(true), node::pointer_type(false))
-               << node(21, node::max_id, node::pointer_type(42, node::pointer_type::max_id), node::pointer_type(42, node::pointer_type::max_id-2));
+               << node(42, node::max_id - 2, node::pointer_type(true), node::pointer_type(false))
+               << node(21,
+                       node::max_id,
+                       node::pointer_type(42, node::pointer_type::max_id),
+                       node::pointer_type(42, node::pointer_type::max_id - 2));
           }
 
           AssertThat(nf.canonical, Is().False());
         });
 
-        it("is true for ~(x0 + x1) \\/ x2", [&]() {
-          AssertThat(nf_0xnor1_or_2.canonical, Is().True());
-        });
+        it("is true for ~(x0 + x1) \\/ x2",
+           [&]() { AssertThat(nf_0xnor1_or_2.canonical, Is().True()); });
 
-        it("is true for (x0 + x1) \\/ x2", [&]() {
-          AssertThat(nf_0xor1_or_2.canonical, Is().True());
-        });
+        it("is true for (x0 + x1) \\/ x2",
+           [&]() { AssertThat(nf_0xor1_or_2.canonical, Is().True()); });
 
-        it("is false due to internal uid child is out-of-order compared to a terminal child", [&]() {
-          levelized_file<node> nf;
-          {
-            node_writer nw(nf);
-            nw << node(2, node::max_id, node::pointer_type(false), node::pointer_type(true))
-               << node(1, node::max_id, node::pointer_type(true), node::pointer_type(2, node::pointer_type::max_id))
-               << node(1, node::max_id-1, node::pointer_type(2, node::pointer_type::max_id), node::pointer_type(false))
-               << node(0, node::max_id, node::pointer_type(1, node::pointer_type::max_id), node::pointer_type(1, node::pointer_type::max_id-1));
-          }
+        it("is false due to internal uid child is out-of-order compared to a terminal child",
+           [&]() {
+             levelized_file<node> nf;
+             {
+               node_writer nw(nf);
+               nw << node(2, node::max_id, node::pointer_type(false), node::pointer_type(true))
+                  << node(1,
+                          node::max_id,
+                          node::pointer_type(true),
+                          node::pointer_type(2, node::pointer_type::max_id))
+                  << node(1,
+                          node::max_id - 1,
+                          node::pointer_type(2, node::pointer_type::max_id),
+                          node::pointer_type(false))
+                  << node(0,
+                          node::max_id,
+                          node::pointer_type(1, node::pointer_type::max_id),
+                          node::pointer_type(1, node::pointer_type::max_id - 1));
+             }
 
-          AssertThat(nf.canonical, Is().False());
-        });
+             AssertThat(nf.canonical, Is().False());
+           });
 
         it("is false due to internal uid low-children are out-of-order", [&]() {
           levelized_file<node> nf;
           {
             node_writer nw(nf);
-            nw << node(3, node::max_id,   node::pointer_type(false), node::pointer_type(true))
-               << node(2, node::max_id,   node::pointer_type(false), node::pointer_type(true))
-               << node(2, node::max_id-1, node::pointer_type(true), node::pointer_type(3, node::pointer_type::max_id))
-               << node(1, node::max_id,   node::pointer_type(2, node::pointer_type::max_id-1), node::pointer_type(2, node::pointer_type::max_id))
-               << node(1, node::max_id-1, node::pointer_type(2, node::pointer_type::max_id),   node::pointer_type(2, node::pointer_type::max_id))
-               << node(0, node::max_id,   node::pointer_type(1, node::pointer_type::max_id),   node::pointer_type(1, node::pointer_type::max_id-1));
+            nw << node(3, node::max_id, node::pointer_type(false), node::pointer_type(true))
+               << node(2, node::max_id, node::pointer_type(false), node::pointer_type(true))
+               << node(2,
+                       node::max_id - 1,
+                       node::pointer_type(true),
+                       node::pointer_type(3, node::pointer_type::max_id))
+               << node(1,
+                       node::max_id,
+                       node::pointer_type(2, node::pointer_type::max_id - 1),
+                       node::pointer_type(2, node::pointer_type::max_id))
+               << node(1,
+                       node::max_id - 1,
+                       node::pointer_type(2, node::pointer_type::max_id),
+                       node::pointer_type(2, node::pointer_type::max_id))
+               << node(0,
+                       node::max_id,
+                       node::pointer_type(1, node::pointer_type::max_id),
+                       node::pointer_type(1, node::pointer_type::max_id - 1));
           }
 
           AssertThat(nf.canonical, Is().False());
@@ -359,12 +457,24 @@ go_bandit([]() {
           levelized_file<node> nf;
           {
             node_writer nw(nf);
-            nw << node(3, node::max_id,   node::pointer_type(false), node::pointer_type(true))
-               << node(2, node::max_id,   node::pointer_type(false), node::pointer_type(true))
-               << node(2, node::max_id-1, node::pointer_type(true), node::pointer_type(3, node::pointer_type::max_id))
-               << node(1, node::max_id,   node::pointer_type(2, node::pointer_type::max_id-1), node::pointer_type(2, node::pointer_type::max_id-1))
-               << node(1, node::max_id-1, node::pointer_type(2, node::pointer_type::max_id-1), node::pointer_type(2, node::pointer_type::max_id))
-               << node(0, node::max_id,   node::pointer_type(1, node::pointer_type::max_id),   node::pointer_type(1, node::pointer_type::max_id-1));
+            nw << node(3, node::max_id, node::pointer_type(false), node::pointer_type(true))
+               << node(2, node::max_id, node::pointer_type(false), node::pointer_type(true))
+               << node(2,
+                       node::max_id - 1,
+                       node::pointer_type(true),
+                       node::pointer_type(3, node::pointer_type::max_id))
+               << node(1,
+                       node::max_id,
+                       node::pointer_type(2, node::pointer_type::max_id - 1),
+                       node::pointer_type(2, node::pointer_type::max_id - 1))
+               << node(1,
+                       node::max_id - 1,
+                       node::pointer_type(2, node::pointer_type::max_id - 1),
+                       node::pointer_type(2, node::pointer_type::max_id))
+               << node(0,
+                       node::max_id,
+                       node::pointer_type(1, node::pointer_type::max_id),
+                       node::pointer_type(1, node::pointer_type::max_id - 1));
           }
 
           AssertThat(nf.canonical, Is().False());
@@ -372,37 +482,24 @@ go_bandit([]() {
       });
 
       describe("width", [&]() {
-        it("is 0 for the False terminal", [&]() {
-          AssertThat(nf_F.width, Is().EqualTo(0u));
-        });
+        it("is 0 for the False terminal", [&]() { AssertThat(nf_F.width, Is().EqualTo(0u)); });
 
-        it("is 0 for True terminal", [&]() {
-          AssertThat(nf_T.width, Is().EqualTo(0u));
-        });
+        it("is 0 for True terminal", [&]() { AssertThat(nf_T.width, Is().EqualTo(0u)); });
 
-        it("is 1 for single node [1]", [&]() {
-          AssertThat(nf_42.width, Is().EqualTo(1u));
-        });
+        it("is 1 for single node [1]", [&]() { AssertThat(nf_42.width, Is().EqualTo(1u)); });
 
-        it("is 1 for single node [2]", [&]() {
-          AssertThat(nf_not42.width, Is().EqualTo(1u));
-        });
+        it("is 1 for single node [2]", [&]() { AssertThat(nf_not42.width, Is().EqualTo(1u)); });
 
-        it("is 1 for single node [2]", [&]() {
-          AssertThat(nf_42andnot42.width, Is().EqualTo(1u));
-        });
+        it("is 1 for single node [2]",
+           [&]() { AssertThat(nf_42andnot42.width, Is().EqualTo(1u)); });
 
-        it("is 2 for x21 + x42", [&]() {
-          AssertThat(nf_21xor42.width, Is().EqualTo(2u));
-        });
+        it("is 2 for x21 + x42", [&]() { AssertThat(nf_21xor42.width, Is().EqualTo(2u)); });
 
-        it("is 2 for ~(x0 + x1) \\/ x2", [&]() {
-          AssertThat(nf_0xnor1_or_2.width, Is().EqualTo(2u));
-        });
+        it("is 2 for ~(x0 + x1) \\/ x2",
+           [&]() { AssertThat(nf_0xnor1_or_2.width, Is().EqualTo(2u)); });
 
-        it("is 2 for (x0 + x1 + x2 + x3) mod 2", [&]() {
-          AssertThat(nf_sum01234_mod2.width, Is().EqualTo(2u));
-        });
+        it("is 2 for (x0 + x1 + x2 + x3) mod 2",
+           [&]() { AssertThat(nf_sum01234_mod2.width, Is().EqualTo(2u)); });
 
         it("is 3 for (x1 -> !x3) \\/ (x2 /\\ (x1 \\/ x3))", []() {
           /*
@@ -419,53 +516,67 @@ go_bandit([]() {
           levelized_file<node> nf;
           {
             node_writer nw(nf);
-            nw << node(3, node::max_id,   node::pointer_type(false), node::pointer_type(true))  // n6
-               << node(2, node::max_id,   node::pointer_type(true),  node::pointer_type(false)) // n5 (non-canonical)
-               << node(2, node::max_id-1, node::pointer_type(false), node::pointer_type(true))  // n4 (non-canonical)
-               << node(2, node::max_id-2, node::pointer_type(false), node::pointer_type(3, node::max_id)) // n3
-               << node(1, node::max_id,   node::pointer_type(2, node::max_id-2), node::pointer_type(2, node::max_id-1)) // n2
-               << node(0, node::max_id,   node::pointer_type(1, node::max_id),   node::pointer_type(2, node::max_id));  // n1
+            nw << node(3, node::max_id, node::pointer_type(false), node::pointer_type(true)) // n6
+               << node(2,
+                       node::max_id,
+                       node::pointer_type(true),
+                       node::pointer_type(false)) // n5 (non-canonical)
+               << node(2,
+                       node::max_id - 1,
+                       node::pointer_type(false),
+                       node::pointer_type(true)) // n4 (non-canonical)
+               << node(2,
+                       node::max_id - 2,
+                       node::pointer_type(false),
+                       node::pointer_type(3, node::max_id)) // n3
+               << node(1,
+                       node::max_id,
+                       node::pointer_type(2, node::max_id - 2),
+                       node::pointer_type(2, node::max_id - 1)) // n2
+               << node(0,
+                       node::max_id,
+                       node::pointer_type(1, node::max_id),
+                       node::pointer_type(2, node::max_id)); // n1
           }
 
           AssertThat(nf.width, Is().EqualTo(3u));
         });
-
       });
 
       describe("number of terminals", [&]() {
         it("is [1,0] for the False terminal", [&]() {
           AssertThat(nf_F.number_of_terminals[false], Is().EqualTo(1u));
-          AssertThat(nf_F.number_of_terminals[true],  Is().EqualTo(0u));
+          AssertThat(nf_F.number_of_terminals[true], Is().EqualTo(0u));
         });
 
         it("is [0,1] for True terminal", [&]() {
           AssertThat(nf_T.number_of_terminals[false], Is().EqualTo(0u));
-          AssertThat(nf_T.number_of_terminals[true],  Is().EqualTo(1u));
+          AssertThat(nf_T.number_of_terminals[true], Is().EqualTo(1u));
         });
 
         it("is [1,1] for single node [1]", [&]() {
           AssertThat(nf_42.number_of_terminals[false], Is().EqualTo(1u));
-          AssertThat(nf_42.number_of_terminals[true],  Is().EqualTo(1u));
+          AssertThat(nf_42.number_of_terminals[true], Is().EqualTo(1u));
         });
 
         it("is [1,1] for single node [2]", [&]() {
           AssertThat(nf_not42.number_of_terminals[false], Is().EqualTo(1u));
-          AssertThat(nf_not42.number_of_terminals[true],  Is().EqualTo(1u));
+          AssertThat(nf_not42.number_of_terminals[true], Is().EqualTo(1u));
         });
 
         it("is [0,2] for single node [2]", [&]() {
           AssertThat(nf_42andnot42.number_of_terminals[false], Is().EqualTo(0u));
-          AssertThat(nf_42andnot42.number_of_terminals[true],  Is().EqualTo(2u));
+          AssertThat(nf_42andnot42.number_of_terminals[true], Is().EqualTo(2u));
         });
 
         it("is [2,2] for x21 + x42", [&]() {
           AssertThat(nf_21xor42.number_of_terminals[false], Is().EqualTo(2u));
-          AssertThat(nf_21xor42.number_of_terminals[true],  Is().EqualTo(2u));
+          AssertThat(nf_21xor42.number_of_terminals[true], Is().EqualTo(2u));
         });
 
         it("is [1,3] for ~(x0 + x1) \\/ x2", [&]() {
           AssertThat(nf_0xnor1_or_2.number_of_terminals[false], Is().EqualTo(1u));
-          AssertThat(nf_0xnor1_or_2.number_of_terminals[true],  Is().EqualTo(3u));
+          AssertThat(nf_0xnor1_or_2.number_of_terminals[true], Is().EqualTo(3u));
         });
       });
 
@@ -602,11 +713,15 @@ go_bandit([]() {
           AssertThat(nf_sum01234_mod2.max_2level_cut[cut::Internal], Is().GreaterThanOrEqualTo(4u));
           AssertThat(nf_sum01234_mod2.max_2level_cut[cut::Internal], Is().LessThanOrEqualTo(6u));
 
-          AssertThat(nf_sum01234_mod2.max_2level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(4u));
-          AssertThat(nf_sum01234_mod2.max_2level_cut[cut::Internal_False], Is().LessThanOrEqualTo(8u));
+          AssertThat(nf_sum01234_mod2.max_2level_cut[cut::Internal_False],
+                     Is().GreaterThanOrEqualTo(4u));
+          AssertThat(nf_sum01234_mod2.max_2level_cut[cut::Internal_False],
+                     Is().LessThanOrEqualTo(8u));
 
-          AssertThat(nf_sum01234_mod2.max_2level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(4u));
-          AssertThat(nf_sum01234_mod2.max_2level_cut[cut::Internal_True], Is().LessThanOrEqualTo(8u));
+          AssertThat(nf_sum01234_mod2.max_2level_cut[cut::Internal_True],
+                     Is().GreaterThanOrEqualTo(4u));
+          AssertThat(nf_sum01234_mod2.max_2level_cut[cut::Internal_True],
+                     Is().LessThanOrEqualTo(8u));
 
           AssertThat(nf_sum01234_mod2.max_2level_cut[cut::All], Is().GreaterThanOrEqualTo(4u));
           AssertThat(nf_sum01234_mod2.max_2level_cut[cut::All], Is().LessThanOrEqualTo(8u));
@@ -614,30 +729,44 @@ go_bandit([]() {
 
         // The maximum 2-level cut greater than the maximum 1-level cut.
         it("is soundly upper bounded when 2-level cut > 1-level cut [A]", [&]() {
-          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut::Internal], Is().GreaterThanOrEqualTo(4u));
-          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut::Internal], Is().LessThanOrEqualTo(6u));
+          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut::Internal],
+                     Is().GreaterThanOrEqualTo(4u));
+          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut::Internal],
+                     Is().LessThanOrEqualTo(6u));
 
-          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(4u));
-          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut::Internal_False], Is().LessThanOrEqualTo(6u));
+          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut::Internal_False],
+                     Is().GreaterThanOrEqualTo(4u));
+          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut::Internal_False],
+                     Is().LessThanOrEqualTo(6u));
 
-          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(5u));
-          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut::Internal_True], Is().LessThanOrEqualTo(8u));
+          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut::Internal_True],
+                     Is().GreaterThanOrEqualTo(5u));
+          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut::Internal_True],
+                     Is().LessThanOrEqualTo(8u));
 
-          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut::All], Is().GreaterThanOrEqualTo(5u));
+          AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut::All],
+                     Is().GreaterThanOrEqualTo(5u));
           AssertThat(nf_larger_2level_cut_A.max_2level_cut[cut::All], Is().LessThanOrEqualTo(8u));
         });
 
         it("is soundly upper bounded when 2-level cut > 1-level cut [B]", [&]() {
-          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut::Internal], Is().GreaterThanOrEqualTo(4u));
-          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut::Internal], Is().LessThanOrEqualTo(6u));
+          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut::Internal],
+                     Is().GreaterThanOrEqualTo(4u));
+          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut::Internal],
+                     Is().LessThanOrEqualTo(6u));
 
-          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(4u));
-          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut::Internal_False], Is().LessThanOrEqualTo(7u));
+          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut::Internal_False],
+                     Is().GreaterThanOrEqualTo(4u));
+          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut::Internal_False],
+                     Is().LessThanOrEqualTo(7u));
 
-          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(4u));
-          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut::Internal_True], Is().LessThanOrEqualTo(7u));
+          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut::Internal_True],
+                     Is().GreaterThanOrEqualTo(4u));
+          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut::Internal_True],
+                     Is().LessThanOrEqualTo(7u));
 
-          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut::All], Is().GreaterThanOrEqualTo(5u));
+          AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut::All],
+                     Is().GreaterThanOrEqualTo(5u));
           AssertThat(nf_larger_2level_cut_B.max_2level_cut[cut::All], Is().LessThanOrEqualTo(8u));
         });
       });
@@ -649,8 +778,8 @@ go_bandit([]() {
         AssertThat(nf.empty(), Is().True());
 
         AssertThat(nf.is_terminal(), Is().False());
-        AssertThat(nf.is_false(),    Is().False());
-        AssertThat(nf.is_true(),     Is().False());
+        AssertThat(nf.is_false(), Is().False());
+        AssertThat(nf.is_true(), Is().False());
       });
 
       it("Recognises being the False terminal", [&]() {
@@ -661,9 +790,9 @@ go_bandit([]() {
         }
 
         AssertThat(nf.is_terminal(), Is().True());
-        AssertThat(nf.value(),       Is().False());
-        AssertThat(nf.is_false(),    Is().True());
-        AssertThat(nf.is_true(),     Is().False());
+        AssertThat(nf.value(), Is().False());
+        AssertThat(nf.is_false(), Is().True());
+        AssertThat(nf.is_true(), Is().False());
       });
 
       it("Recognises being the True terminal", [&]() {
@@ -674,34 +803,34 @@ go_bandit([]() {
         }
 
         AssertThat(nf.is_terminal(), Is().True());
-        AssertThat(nf.value(),       Is().True());
-        AssertThat(nf.is_false(),    Is().False());
-        AssertThat(nf.is_true(),     Is().True());
+        AssertThat(nf.value(), Is().True());
+        AssertThat(nf.is_false(), Is().False());
+        AssertThat(nf.is_true(), Is().True());
       });
 
       it("Recognises being a non-terminal [x1]", [&]() {
         levelized_file<node> nf;
         {
           node_writer nw(nf);
-          nw << node(1,0, node::pointer_type(false), node::pointer_type(true));
+          nw << node(1, 0, node::pointer_type(false), node::pointer_type(true));
         }
 
         AssertThat(nf.is_terminal(), Is().False());
-        AssertThat(nf.is_false(),    Is().False());
-        AssertThat(nf.is_true(),     Is().False());
+        AssertThat(nf.is_false(), Is().False());
+        AssertThat(nf.is_true(), Is().False());
       });
 
       it("Recognises being a non-terminal [~x0 & x1]", [&]() {
         levelized_file<node> nf;
         {
           node_writer nw(nf);
-          nw << node(1,0, node::pointer_type(false), node::pointer_type(true))
-             << node(0,0, node::pointer_type(1,0),   node::pointer_type(false));
+          nw << node(1, 0, node::pointer_type(false), node::pointer_type(true))
+             << node(0, 0, node::pointer_type(1, 0), node::pointer_type(false));
         }
 
         AssertThat(nf.is_terminal(), Is().False());
-        AssertThat(nf.is_false(),    Is().False());
-        AssertThat(nf.is_true(),     Is().False());
+        AssertThat(nf.is_false(), Is().False());
+        AssertThat(nf.is_true(), Is().False());
       });
     });
 
@@ -719,10 +848,11 @@ go_bandit([]() {
 
           node_stream<> ns(nf);
 
-          AssertThat(ns.seek(node::uid_type(0,0)), Is().EqualTo(node(false)));
-          AssertThat(ns.seek(node::uid_type(1,0)), Is().EqualTo(node(false)));
-          AssertThat(ns.seek(node::uid_type(1,1)), Is().EqualTo(node(false)));
-          AssertThat(ns.seek(node::uid_type(node::max_label, node::max_id)), Is().EqualTo(node(false)));
+          AssertThat(ns.seek(node::uid_type(0, 0)), Is().EqualTo(node(false)));
+          AssertThat(ns.seek(node::uid_type(1, 0)), Is().EqualTo(node(false)));
+          AssertThat(ns.seek(node::uid_type(1, 1)), Is().EqualTo(node(false)));
+          AssertThat(ns.seek(node::uid_type(node::max_label, node::max_id)),
+                     Is().EqualTo(node(false)));
         });
 
         it("can seek in True sink", [&]() {
@@ -734,78 +864,85 @@ go_bandit([]() {
 
           node_stream<> ns(nf);
 
-          AssertThat(ns.seek(node::uid_type(0,0)), Is().EqualTo(node(true)));
-          AssertThat(ns.seek(node::uid_type(1,0)), Is().EqualTo(node(true)));
-          AssertThat(ns.seek(node::uid_type(1,1)), Is().EqualTo(node(true)));
-          AssertThat(ns.seek(node::uid_type(node::max_label, node::max_id)), Is().EqualTo(node(true)));
+          AssertThat(ns.seek(node::uid_type(0, 0)), Is().EqualTo(node(true)));
+          AssertThat(ns.seek(node::uid_type(1, 0)), Is().EqualTo(node(true)));
+          AssertThat(ns.seek(node::uid_type(1, 1)), Is().EqualTo(node(true)));
+          AssertThat(ns.seek(node::uid_type(node::max_label, node::max_id)),
+                     Is().EqualTo(node(true)));
         });
 
         it("can seek existing elements", [&]() {
           levelized_file<node> nf;
           {
             node_writer nw(nf);
-            nw << node(1,1, node::pointer_type(false), node::pointer_type(true))
-               << node(1,0, node::pointer_type(true), node::pointer_type(false))
-               << node(0,0, node::uid_type(1,0), node::uid_type(1,1))
-              ;
+            nw << node(1, 1, node::pointer_type(false), node::pointer_type(true))
+               << node(1, 0, node::pointer_type(true), node::pointer_type(false))
+               << node(0, 0, node::uid_type(1, 0), node::uid_type(1, 1));
           }
 
           node_stream<> ns(nf);
 
-          AssertThat(ns.seek(node::uid_type(0,0)), Is().EqualTo(node(0,0, node::uid_type(1,0),  node::uid_type(1,1))));
-          AssertThat(ns.seek(node::uid_type(1,1)), Is().EqualTo(node(1,1, node::pointer_type(false), node::pointer_type(true))));
+          AssertThat(ns.seek(node::uid_type(0, 0)),
+                     Is().EqualTo(node(0, 0, node::uid_type(1, 0), node::uid_type(1, 1))));
+          AssertThat(ns.seek(node::uid_type(1, 1)),
+                     Is().EqualTo(node(1, 1, node::pointer_type(false), node::pointer_type(true))));
         });
 
         it("can seek non-existing element in the middle ", [&]() {
           levelized_file<node> nf;
           {
             node_writer nw(nf);
-            nw << node(2,1, node::pointer_type(false), node::pointer_type(true))
-               << node(2,0, node::pointer_type(true),  node::pointer_type(false))
-               << node(0,0, node::pointer_type(1,0),   node::pointer_type(1,1))
-              ;
+            nw << node(2, 1, node::pointer_type(false), node::pointer_type(true))
+               << node(2, 0, node::pointer_type(true), node::pointer_type(false))
+               << node(0, 0, node::pointer_type(1, 0), node::pointer_type(1, 1));
           }
 
           node_stream<> ns(nf);
 
-          AssertThat(ns.seek(node::uid_type(0,0)), Is().EqualTo(node(0,0, node::pointer_type(1,0),   node::pointer_type(1,1))));
-          AssertThat(ns.seek(node::uid_type(1,1)), Is().EqualTo(node(2,0, node::pointer_type(true),  node::pointer_type(false))));
-          AssertThat(ns.seek(node::uid_type(1,2)), Is().EqualTo(node(2,0, node::pointer_type(true),  node::pointer_type(false))));
-          AssertThat(ns.seek(node::uid_type(2,0)), Is().EqualTo(node(2,0, node::pointer_type(true),  node::pointer_type(false))));
-          AssertThat(ns.seek(node::uid_type(2,1)), Is().EqualTo(node(2,1, node::pointer_type(false), node::pointer_type(true))));
+          AssertThat(ns.seek(node::uid_type(0, 0)),
+                     Is().EqualTo(node(0, 0, node::pointer_type(1, 0), node::pointer_type(1, 1))));
+          AssertThat(ns.seek(node::uid_type(1, 1)),
+                     Is().EqualTo(node(2, 0, node::pointer_type(true), node::pointer_type(false))));
+          AssertThat(ns.seek(node::uid_type(1, 2)),
+                     Is().EqualTo(node(2, 0, node::pointer_type(true), node::pointer_type(false))));
+          AssertThat(ns.seek(node::uid_type(2, 0)),
+                     Is().EqualTo(node(2, 0, node::pointer_type(true), node::pointer_type(false))));
+          AssertThat(ns.seek(node::uid_type(2, 1)),
+                     Is().EqualTo(node(2, 1, node::pointer_type(false), node::pointer_type(true))));
         });
 
         it("can seek past end [1]", [&]() {
           levelized_file<node> nf;
           {
             node_writer nw(nf);
-            nw << node(1,1, node::pointer_type(false), node::pointer_type(true))
-               << node(1,0, node::pointer_type(true),  node::pointer_type(false))
-               << node(0,0, node::pointer_type(1,0),   node::pointer_type(1,1))
-              ;
+            nw << node(1, 1, node::pointer_type(false), node::pointer_type(true))
+               << node(1, 0, node::pointer_type(true), node::pointer_type(false))
+               << node(0, 0, node::pointer_type(1, 0), node::pointer_type(1, 1));
           }
 
           node_stream<> ns(nf);
 
           AssertThat(ns.seek(node::uid_type(node::max_label, node::max_id)),
-                     Is().EqualTo(node(1,1, node::pointer_type(false), node::pointer_type(true))));
+                     Is().EqualTo(node(1, 1, node::pointer_type(false), node::pointer_type(true))));
         });
 
         it("can seek past end [2]", [&]() {
           levelized_file<node> nf;
           {
             node_writer nw(nf);
-            nw << node(1,1, node::pointer_type(false), node::pointer_type(true))
-               << node(1,0, node::pointer_type(true),  node::pointer_type(false))
-               << node(0,0, node::pointer_type(1,0),   node::pointer_type(1,1))
-              ;
+            nw << node(1, 1, node::pointer_type(false), node::pointer_type(true))
+               << node(1, 0, node::pointer_type(true), node::pointer_type(false))
+               << node(0, 0, node::pointer_type(1, 0), node::pointer_type(1, 1));
           }
 
           node_stream<> ns(nf);
 
-          AssertThat(ns.seek(node::uid_type(0,0)), Is().EqualTo(node(0,0, node::pointer_type(1,0),   node::pointer_type(1,1))));
-          AssertThat(ns.seek(node::uid_type(1,1)), Is().EqualTo(node(1,1, node::pointer_type(false), node::pointer_type(true))));
-          AssertThat(ns.seek(node::uid_type(2,0)), Is().EqualTo(node(1,1, node::pointer_type(false), node::pointer_type(true))));
+          AssertThat(ns.seek(node::uid_type(0, 0)),
+                     Is().EqualTo(node(0, 0, node::pointer_type(1, 0), node::pointer_type(1, 1))));
+          AssertThat(ns.seek(node::uid_type(1, 1)),
+                     Is().EqualTo(node(1, 1, node::pointer_type(false), node::pointer_type(true))));
+          AssertThat(ns.seek(node::uid_type(2, 0)),
+                     Is().EqualTo(node(1, 1, node::pointer_type(false), node::pointer_type(true))));
         });
 
         // TODO: reversed
@@ -817,7 +954,8 @@ go_bandit([]() {
         //             / \
         //             F T
         */
-        const node A_n1 = node(1, node::max_id, node::pointer_type(false), node::pointer_type(true));
+        const node A_n1 =
+          node(1, node::max_id, node::pointer_type(false), node::pointer_type(true));
 
         levelized_file<node> nf_A;
         {
@@ -836,13 +974,15 @@ go_bandit([]() {
         //      / \ / \
         //      T F F T
          */
-        const node B_n7 = node(4, node::max_id,   node::pointer_type(false), node::pointer_type(true));
-        const node B_n6 = node(4, node::max_id-1, node::pointer_type(true),  node::pointer_type(false));
-        const node B_n5 = node(2, node::max_id,   B_n7.uid(),         node::pointer_type(true));
-        const node B_n4 = node(2, node::max_id-1, B_n6.uid(),         B_n7.uid());
-        const node B_n3 = node(2, node::max_id-2, node::pointer_type(false), B_n6.uid());
-        const node B_n2 = node(1, node::max_id,   B_n3.uid(),         B_n4.uid());
-        const node B_n1 = node(0, node::max_id,   B_n2.uid(),         B_n5.uid());
+        const node B_n7 =
+          node(4, node::max_id, node::pointer_type(false), node::pointer_type(true));
+        const node B_n6 =
+          node(4, node::max_id - 1, node::pointer_type(true), node::pointer_type(false));
+        const node B_n5 = node(2, node::max_id, B_n7.uid(), node::pointer_type(true));
+        const node B_n4 = node(2, node::max_id - 1, B_n6.uid(), B_n7.uid());
+        const node B_n3 = node(2, node::max_id - 2, node::pointer_type(false), B_n6.uid());
+        const node B_n2 = node(1, node::max_id, B_n3.uid(), B_n4.uid());
+        const node B_n1 = node(0, node::max_id, B_n2.uid(), B_n5.uid());
 
         levelized_file<node> nf_B;
         {
@@ -1238,4 +1378,4 @@ go_bandit([]() {
       });
     });
   });
- });
+});

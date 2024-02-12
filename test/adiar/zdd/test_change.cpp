@@ -52,11 +52,11 @@ go_bandit([]() {
     */
     shared_levelized_file<zdd::node_type> zdd_1;
 
-    const node n1_5 = node(3, node::max_id,   terminal_F,   terminal_T);
-    const node n1_4 = node(2, node::max_id,   terminal_T,   terminal_T);
-    const node n1_3 = node(2, node::max_id-1, n1_5.uid(), terminal_T);
-    const node n1_2 = node(1, node::max_id,   n1_3.uid(), n1_4.uid());
-    const node n1_1 = node(0, node::max_id,   n1_2.uid(), n1_4.uid());
+    const node n1_5 = node(3, node::max_id, terminal_F, terminal_T);
+    const node n1_4 = node(2, node::max_id, terminal_T, terminal_T);
+    const node n1_3 = node(2, node::max_id - 1, n1_5.uid(), terminal_T);
+    const node n1_2 = node(1, node::max_id, n1_3.uid(), n1_4.uid());
+    const node n1_1 = node(0, node::max_id, n1_2.uid(), n1_4.uid());
 
     { // Garbage collect writers to free write-lock
       node_writer nw(zdd_1);
@@ -69,21 +69,21 @@ go_bandit([]() {
 
     describe("zdd_change(A, begin, end)", [&]() {
       it("returns same file for Ø on empty labels", [&]() {
-        const std::vector<int> vars = { };
+        const std::vector<int> vars = {};
 
         __zdd out = zdd_change(zdd_F, vars.begin(), vars.end());
         AssertThat(out.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(zdd_F));
       });
 
       it("returns same file for { Ø } on empty labels", [&]() {
-        const std::vector<int> vars = { };
+        const std::vector<int> vars = {};
 
         __zdd out = zdd_change(zdd_T, vars.begin(), vars.end());
         AssertThat(out.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(zdd_T));
       });
 
       it("returns same file for { {1} } on empty labels", [&]() {
-        const std::vector<int> vars = { };
+        const std::vector<int> vars = {};
 
         __zdd out = zdd_change(zdd_x1, vars.begin(), vars.end());
         AssertThat(out.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(zdd_x1));
@@ -107,27 +107,37 @@ go_bandit([]() {
         AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id, terminal_F, ptr_uint64(2, ptr_uint64::max_id))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(1, node::max_id, terminal_F, ptr_uint64(2, ptr_uint64::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal], Is().EqualTo(1u));
-        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal_False], Is().EqualTo(2u));
-        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
-        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::All], Is().EqualTo(3u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal],
+                   Is().EqualTo(1u));
+        AssertThat(
+          out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal_False],
+          Is().EqualTo(2u));
+        AssertThat(
+          out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal_True],
+          Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::All],
+                   Is().EqualTo(3u));
 
-        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[false],
+                   Is().EqualTo(2u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[true],
+                   Is().EqualTo(1u));
       });
 
       it("adds new root for { {1} } on (0)", [&]() {
@@ -138,35 +148,39 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(0, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 0), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(1u));
       });
 
       it("adds new root chain for { {2} } on (0,1)", [&]() {
@@ -184,44 +198,49 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(0, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(2u));
       });
 
       it("adds new nodes after root for { {1} } on (2,3)", [&]() {
@@ -232,44 +251,49 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  ptr_uint64(3,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(3, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(3, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(3, 0), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(3u));
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(3u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(1u));
       });
 
       it("adds a new node before and after root for { {1} } on (0,2)", [&]() {
@@ -280,44 +304,49 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(0, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(3u));
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(3u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(1u));
       });
 
       it("adds new nodes before and after root for { {1} } on (0,2,4)", [&]() {
@@ -328,53 +357,59 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  ptr_uint64(4,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(4, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(0, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(4,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(4, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(4,0), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(4, 0), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(4,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(4, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(4u));
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(4u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(1u));
       });
 
       it("adds node between root and child for { {1}, {3} } on (2)", [&]() {
@@ -383,8 +418,7 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           node_writer w(in);
           w << node(3, node::max_id, terminal_F, terminal_T)
-            << node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), terminal_T)
-            ;
+            << node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), terminal_T);
         }
 
         const std::vector<int> vars = { 2 };
@@ -394,50 +428,56 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(2,1) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  ptr_uint64(3,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(3, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 1), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 1), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(3, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(3, 0), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2,2u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2, 2u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(3u));
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(3u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(2u));
       });
 
       it("returns { Ø } for { {0} } on (0)", [&]() {
@@ -456,13 +496,21 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal], Is().EqualTo(0u));
-        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
-        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
-        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::All], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal],
+                   Is().EqualTo(0u));
+        AssertThat(
+          out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal_False],
+          Is().EqualTo(0u));
+        AssertThat(
+          out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal_True],
+          Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::All],
+                   Is().EqualTo(1u));
 
-        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[false],
+                   Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[true],
+                   Is().EqualTo(1u));
       });
 
       it("returns { Ø } for { {1} } on (1)", [&]() {
@@ -481,13 +529,21 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal], Is().EqualTo(0u));
-        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
-        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
-        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::All], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal],
+                   Is().EqualTo(0u));
+        AssertThat(
+          out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal_False],
+          Is().EqualTo(0u));
+        AssertThat(
+          out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal_True],
+          Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::All],
+                   Is().EqualTo(1u));
 
-        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[false],
+                   Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[true],
+                   Is().EqualTo(1u));
       });
 
       it("shortcuts root for { {0,1} } on (0)", [&]() {
@@ -508,24 +564,27 @@ go_bandit([]() {
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 0), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(0u));
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(1u));
       });
 
       it("shortcuts root for { {0,2} } on (0,1)", [&]() {
@@ -544,35 +603,39 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(1u));
       });
 
       it("shortcuts root and its child for { {0,2}, {0,2,3} } on (0,2)", [&]() {
@@ -594,24 +657,27 @@ go_bandit([]() {
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), false, terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(3, 0), false, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(3, 0), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(0u));
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(0u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(2u));
       });
 
       it("flips root for { Ø, {0} } on (0)", [&]() {
@@ -631,24 +697,27 @@ go_bandit([]() {
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), false, terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(0, 0), false, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(0, 0), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(0u));
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(0u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(2u));
       });
 
       it("flips root for { {0}, {1} } on (0)", [&]() {
@@ -667,35 +736,39 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), false, terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(0, 0), false, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 0), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(2u));
       });
 
       it("flips root for [1] on (0)", [&]() {
@@ -706,59 +779,67 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(2,1) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(2, 1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(2,1) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), false, ptr_uint64(3,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(3, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), false, terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 1), false, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 1), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(3, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(3, 0), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2,2u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2, 2u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(3u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(3u));
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(4u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(4u));
       });
 
       it("flips node in the middle for { Ø, {0}, {1,2} } on (1)", [&]() {
@@ -778,50 +859,56 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(1, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(1,1) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 0), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,1), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 1), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,1), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 1), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1, 2u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(3u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(3u));
       });
 
       it("flips and adds a node for [1] on (1)", [&]() {
@@ -832,65 +919,74 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(1, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(1,1) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,1) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), true,  ptr_uint64(2,1) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(1, 1), true, ptr_uint64(2, 1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), false, ptr_uint64(3,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(3, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,1), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 1), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), false, terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 1), false, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 1), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(3, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(3, 0), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1, 2u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2,2u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2, 2u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(3u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(3u));
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(4u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(4u));
       });
 
       it("collapses to a terminal for { {0,1} } on (0,1)", [&]() {
@@ -917,13 +1013,21 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal], Is().EqualTo(0u));
-        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
-        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
-        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::All], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal],
+                   Is().EqualTo(0u));
+        AssertThat(
+          out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal_False],
+          Is().EqualTo(0u));
+        AssertThat(
+          out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal_True],
+          Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::All],
+                   Is().EqualTo(1u));
 
-        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[false],
+                   Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[true],
+                   Is().EqualTo(1u));
       });
 
       it("bridges over a deleted node for { {0,1,2} } on (1)", [&]() {
@@ -933,8 +1037,7 @@ go_bandit([]() {
           node_writer w(in);
           w << node(2, node::max_id, terminal_F, terminal_T)
             << node(1, node::max_id, terminal_F, ptr_uint64(2, ptr_uint64::max_id))
-            << node(0, node::max_id, terminal_F, ptr_uint64(1, ptr_uint64::max_id))
-            ;
+            << node(0, node::max_id, terminal_F, ptr_uint64(1, ptr_uint64::max_id));
         }
 
         const std::vector<int> vars = { 1 };
@@ -944,35 +1047,39 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(2, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(0, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(1u));
       });
 
       it("bridges over a deleted node for { {1,2}, {0,1,2} } on (1)", [&]() {
@@ -982,8 +1089,10 @@ go_bandit([]() {
           node_writer w(in);
           w << node(2, node::max_id, terminal_F, terminal_T)
             << node(1, node::max_id, terminal_F, ptr_uint64(2, ptr_uint64::max_id))
-            << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id))
-            ;
+            << node(0,
+                    node::max_id,
+                    ptr_uint64(1, ptr_uint64::max_id),
+                    ptr_uint64(1, ptr_uint64::max_id));
         }
 
         const std::vector<int> vars = { 1 };
@@ -993,93 +1102,109 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(2, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(2, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(1u));
       });
 
-      it("only adds a one node when cutting arcs to the same node for { {2}, {0,2} } on (1)", [&]() {
-        shared_levelized_file<zdd::node_type> in;
+      it(
+        "only adds a one node when cutting arcs to the same node for { {2}, {0,2} } on (1)", [&]() {
+          shared_levelized_file<zdd::node_type> in;
 
-        { // Garbage collect writer to free write-lock
-          node_writer w(in);
-          w << node(2, node::max_id, terminal_F, terminal_T)
-            << node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id))
-            ;
-        }
+          { // Garbage collect writer to free write-lock
+            node_writer w(in);
+            w << node(2, node::max_id, terminal_F, terminal_T)
+              << node(0,
+                      node::max_id,
+                      ptr_uint64(2, ptr_uint64::max_id),
+                      ptr_uint64(2, ptr_uint64::max_id));
+          }
 
-        const std::vector<int> vars = { 1 };
+          const std::vector<int> vars = { 1 };
 
-        __zdd out = zdd_change(in, vars.begin(), vars.end());
+          __zdd out = zdd_change(in, vars.begin(), vars.end());
 
-        arc_test_stream arcs(out);
+          arc_test_stream arcs(out);
 
-        AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(1, 0) }));
 
-        AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(1,0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 0) }));
 
-        AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(2,0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 0) }));
 
-        AssertThat(arcs.can_pull_internal(), Is().False());
+          AssertThat(arcs.can_pull_internal(), Is().False());
 
-        AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), false, terminal_F }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), false, terminal_F }));
 
-        AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
 
-        AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
 
-        AssertThat(arcs.can_pull_terminal(), Is().False());
+          AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream levels(out);
+          level_info_test_stream levels(out);
 
-        AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
 
-        AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
 
-        AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
 
-        AssertThat(levels.can_pull(), Is().False());
+          AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                     Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(2u));
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
-      });
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(2u));
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(1u));
+        });
 
       it("bridges node before the last label and a terminal for { {0}, {1} } on (0,1)", [&]() {
         /*
@@ -1099,8 +1224,7 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           node_writer w(in);
           w << node(1, node::max_id, terminal_F, terminal_T)
-            << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), terminal_T)
-            ;
+            << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), terminal_T);
         }
 
         const std::vector<int> vars = { 0, 1 };
@@ -1110,35 +1234,39 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(1, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(0, 0), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 0), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(2u));
       });
 
       it("flips, adds and bridges nodes for [1] on (2,3)", [&]() {
@@ -1163,116 +1291,134 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(1, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(2,1) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(2, 1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(2,1) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), false, ptr_uint64(3,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(3, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,1), false, ptr_uint64(3,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(2, 1), false, ptr_uint64(3, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,1), true,  ptr_uint64(3,0) }));
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(2, 1), true, ptr_uint64(3, 0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(3, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(3, 0), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2,2u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2, 2u)));
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(3u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(3u));
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(2u));
       });
 
-      it("correctly connects pre-root chain with skipped root for { { 1 }, { 1,2 } } on (0,1)", [&]() {
-        shared_levelized_file<zdd::node_type> in;
-        /*
-        //          1     ---- x1
-        //         / \
-        //         F 2    ---- x2
-        //          / \
-        //          T T
-        */
+      it(
+        "correctly connects pre-root chain with skipped root for { { 1 }, { 1,2 } } on (0,1)",
+        [&]() {
+          shared_levelized_file<zdd::node_type> in;
+          /*
+          //          1     ---- x1
+          //         / \
+          //         F 2    ---- x2
+          //          / \
+          //          T T
+          */
 
-        const node n2 = node(2, node::max_id, terminal_T, terminal_T);
-        const node n1 = node(1, node::max_id, terminal_F, n2.uid());
+          const node n2 = node(2, node::max_id, terminal_T, terminal_T);
+          const node n1 = node(1, node::max_id, terminal_F, n2.uid());
 
-        {
-          node_writer nw(in);
-          nw << n2 << n1;
-        }
+          {
+            node_writer nw(in);
+            nw << n2 << n1;
+          }
 
-        const std::vector<int> vars = { 0, 1 };
+          const std::vector<int> vars = { 0, 1 };
 
-        __zdd out = zdd_change(in, vars.begin(), vars.end());
+          __zdd out = zdd_change(in, vars.begin(), vars.end());
 
-        arc_test_stream arcs(out);
+          arc_test_stream arcs(out);
 
-        AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(2,0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(2, 0) }));
 
-        AssertThat(arcs.can_pull_internal(), Is().False());
+          AssertThat(arcs.can_pull_internal(), Is().False());
 
-        AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), false, terminal_F }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), false, terminal_F }));
 
-        AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_T }));
 
-        AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
 
-        AssertThat(arcs.can_pull_terminal(), Is().False());
+          AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream levels(out);
+          level_info_test_stream levels(out);
 
-        AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
 
-        AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
 
-        AssertThat(levels.can_pull(), Is().False());
+          AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                     Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(2u));
-      });
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(1u));
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(2u));
+        });
 
       it("cuts collapse of root to a terminal for { { 0 } } on (0,1)", [&]() {
         shared_levelized_file<zdd::node_type> in;
@@ -1295,24 +1441,27 @@ go_bandit([]() {
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 0), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(0u));
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(1u));
       });
 
       it("cuts collapse to a terminal for { { 0,1 } } on (0,1,2)", [&]() {
@@ -1339,66 +1488,75 @@ go_bandit([]() {
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
         level_info_test_stream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(0u));
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(1u));
       });
 
-      it("keeps pre-root chain despite collapse to a terminal of the root for { { 1 } } on (0,1)", [&]() {
-        shared_levelized_file<zdd::node_type> in;
-        /*
-        //          1     ---- x1
-        //         / \
-        //         F T
-        */
-        { // Garbage collect writer to free write-lock
-          node_writer nw(in);
-          nw << node(1, node::max_id, terminal_F, terminal_T);
-        }
+      it(
+        "keeps pre-root chain despite collapse to a terminal of the root for { { 1 } } on (0,1)",
+        [&]() {
+          shared_levelized_file<zdd::node_type> in;
+          /*
+          //          1     ---- x1
+          //         / \
+          //         F T
+          */
+          { // Garbage collect writer to free write-lock
+            node_writer nw(in);
+            nw << node(1, node::max_id, terminal_F, terminal_T);
+          }
 
-        const std::vector<int> vars = { 0, 1 };
+          const std::vector<int> vars = { 0, 1 };
 
-        __zdd out = zdd_change(in, vars.begin(), vars.end());
+          __zdd out = zdd_change(in, vars.begin(), vars.end());
 
-        arc_test_stream arcs(out);
+          arc_test_stream arcs(out);
 
-        AssertThat(arcs.can_pull_internal(), Is().False());
+          AssertThat(arcs.can_pull_internal(), Is().False());
 
-        AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), false, terminal_F }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), false, terminal_F }));
 
-        AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(0, 0), true, terminal_T }));
 
-        AssertThat(arcs.can_pull_terminal(), Is().False());
+          AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream levels(out);
+          level_info_test_stream levels(out);
 
-        AssertThat(levels.can_pull(), Is().True());
-        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
 
-        AssertThat(levels.can_pull(), Is().False());
+          AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                     Is().GreaterThanOrEqualTo(0u));
 
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],  Is().EqualTo(1u));
-      });
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(1u));
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(1u));
+        });
     });
   });
- });
+});

@@ -33,21 +33,20 @@ namespace adiar::internal
   ///                       such as `bdd_exists` and `bdd_compose` where the
   ///                       request includes pairs of nodes from the same input.
   //////////////////////////////////////////////////////////////////////////////
-  template<uint8_t Cardinality,
-           uint8_t NodeCarrySize = 0u,
-           uint8_t Inputs = Cardinality>
+  template <uint8_t Cardinality, uint8_t NodeCarrySize = 0u, uint8_t Inputs = Cardinality>
   class request;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \details Common details for requests with and without a node carry.
   //////////////////////////////////////////////////////////////////////////////
-  template<uint8_t Cardinality, uint8_t Inputs>
+  template <uint8_t Cardinality, uint8_t Inputs>
   class request<Cardinality, 0, Inputs>
   {
   public:
     ////////////////////////////////////////////////////////////////////////////
     static_assert(0 < Cardinality,
-                  "Request type is not designed for 0-ary targets, i.e. without at least one node in either diagram.");
+                  "Request type is not designed for 0-ary targets, i.e. without at least one node "
+                  "in either diagram.");
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Cardinality of the request target.
@@ -56,7 +55,8 @@ namespace adiar::internal
 
     ////////////////////////////////////////////////////////////////////////////
     static_assert(Inputs > 0,
-                  "Request type is not designed for a 0-ary operation, i.e. an algorithm taking no diagrams as input.");
+                  "Request type is not designed for a 0-ary operation, i.e. an algorithm taking no "
+                  "diagrams as input.");
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Number of input files.
@@ -93,8 +93,11 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The level at which this request should be resolved.
     ////////////////////////////////////////////////////////////////////////////
-    pointer_type::label_type level() const
-    { return target.first().label(); }
+    pointer_type::label_type
+    level() const
+    {
+      return target.first().label();
+    }
 
     /* ============================= NODE CARRY ============================= */
 
@@ -111,25 +114,35 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The value to be inserted in empy slots in the `node_carry`.
     ////////////////////////////////////////////////////////////////////////////
-    static inline constexpr children_type NO_CHILDREN()
-    { return children_type(pointer_type::nil()); }
+    static inline constexpr children_type
+    NO_CHILDREN()
+    {
+      return children_type(pointer_type::nil());
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The number of nodes actually carried by this request.
     ////////////////////////////////////////////////////////////////////////////
-    uint8_t nodes_carried() const
-    { return 0u; }
+    uint8_t
+    nodes_carried() const
+    {
+      return 0u;
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether no nodes are carried by this request.
     ////////////////////////////////////////////////////////////////////////////
-    bool empty_carry() const
-    { return true; }
+    bool
+    empty_carry() const
+    {
+      return true;
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The number of non-nil target values.
     ////////////////////////////////////////////////////////////////////////////
-    uint8_t targets() const
+    uint8_t
+    targets() const
     {
       if constexpr (sorted_target) {
         // Since nil is the greatest value, we can look for the first nil entry
@@ -163,7 +176,7 @@ namespace adiar::internal
     /// \details The default, copy, and move construction has to be `default` to
     ///          ensure it is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    request(const request &r) = default;
+    request(const request& r) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   Move construction (trivial).
@@ -171,7 +184,7 @@ namespace adiar::internal
     /// \details The default, copy, and move construction has to be `default` to
     ///          ensure it is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    request(request &&r) = default;
+    request(request&& r) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   Destruction (trivial).
@@ -188,7 +201,8 @@ namespace adiar::internal
     /// \details The copy and move assignment has to be `default` to ensure it
     ///          is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    request& operator =(const request &r) = default;
+    request&
+    operator=(const request& r) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   Move assignment (trivial).
@@ -196,7 +210,8 @@ namespace adiar::internal
     /// \details The copy and move assignment has to be `default` to ensure it
     ///          is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    request& operator =(request &&r) = default;
+    request&
+    operator=(request&& r) = default;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -204,24 +219,24 @@ namespace adiar::internal
     ///
     /// \param t  Target of the request
     ////////////////////////////////////////////////////////////////////////////
-    request(const target_t &t) : target(t)
-    { }
+    request(const target_t& t)
+      : target(t)
+    {}
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a request to the given `target` with an empty
     ///        node carry.
     ////////////////////////////////////////////////////////////////////////////
-    request(const target_t &t,
-            const std::array<children_type, node_carry_size>&/*nc*/)
+    request(const target_t& t, const std::array<children_type, node_carry_size>& /*nc*/)
       : request(t)
-    { }
+    {}
   };
 
   //////////////////////////////////////////////////////////////////////////////
   /// \details Implementation of `request` template with a non-empty node carry.
   //////////////////////////////////////////////////////////////////////////////
-  template<uint8_t Cardinality, uint8_t NodeCarrySize, uint8_t Inputs>
+  template <uint8_t Cardinality, uint8_t NodeCarrySize, uint8_t Inputs>
   class request : public request<Cardinality, 0, Inputs>
   {
     using base = request<Cardinality, 0, Inputs>;
@@ -253,7 +268,8 @@ namespace adiar::internal
     ///
     /// \see NO_CHILDREN
     ////////////////////////////////////////////////////////////////////////////
-    uint8_t nodes_carried() const
+    uint8_t
+    nodes_carried() const
     {
       uint8_t sum = 0u;
       for (uint8_t n_idx = 0u; n_idx < node_carry_size; n_idx++) {
@@ -273,7 +289,8 @@ namespace adiar::internal
     ///
     /// \see nodes_carried, NO_CHILDREN
     ////////////////////////////////////////////////////////////////////////////
-    bool empty_carry() const
+    bool
+    empty_carry() const
     {
       if constexpr (node_carry_size == 0u) return true;
       return node_carry[0][0] == base::pointer_type::nil();
@@ -295,7 +312,7 @@ namespace adiar::internal
     /// \details The default, copy, and move construction has to be `default` to
     ///          ensure it is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    request(const request &r) = default;
+    request(const request& r) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   Move construction (trivial).
@@ -303,7 +320,7 @@ namespace adiar::internal
     /// \details The default, copy, and move construction has to be `default` to
     ///          ensure it is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    request(request &&r) = default;
+    request(request&& r) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   Destruction (trivial).
@@ -320,7 +337,8 @@ namespace adiar::internal
     /// \details The copy and move assignment has to be `default` to ensure it
     ///          is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    request& operator =(const request &r) = default;
+    request&
+    operator=(const request& r) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   Move assignment (trivial).
@@ -328,7 +346,8 @@ namespace adiar::internal
     /// \details The copy and move assignment has to be `default` to ensure it
     ///          is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    request& operator =(request &&r) = default;
+    request&
+    operator=(request&& r) = default;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -339,10 +358,11 @@ namespace adiar::internal
     /// \param nc List of the children that already have been visited but needs
     ///           to be forwarded to fully resolve the request to `t`.
     ////////////////////////////////////////////////////////////////////////////
-    request(const typename base::target_t &t,
-            const std::array<typename base::children_type, node_carry_size> &nc)
-      : base(t), node_carry(nc)
-    { }
+    request(const typename base::target_t& t,
+            const std::array<typename base::children_type, node_carry_size>& nc)
+      : base(t)
+      , node_carry(nc)
+    {}
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -356,13 +376,14 @@ namespace adiar::internal
   // TODO: request_lt without `idx` for a pure lexicographical ordering...
   //  - Flip parameters, make `idx = 0` default.
   //  - Optimise for default case.
-  template<typename Request, size_t idx = 0>
+  template <typename Request, size_t idx = 0>
   struct request_lt
   {
     static_assert(idx == 0, "Non-lexicographical ordering not (yet) supported.");
 
     /// \copydoc request_lt
-    inline bool operator()(const Request &a, const Request &b)
+    inline bool
+    operator()(const Request& a, const Request& b)
     {
       const typename Request::label_type label_a = a.target.first().label();
       const typename Request::label_type label_b = b.target.first().label();
@@ -374,11 +395,12 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Ordering based on the first target in sorted order.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename Request>
+  template <typename Request>
   struct request_first_lt
   {
     /// \copydoc request_first_lt
-    inline bool operator()(const Request &a, const Request &b)
+    inline bool
+    operator()(const Request& a, const Request& b)
     {
       return tuple_first_lt<typename Request::target_t>()(a.target, b.target);
     }
@@ -387,11 +409,12 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Ordering based on the second target in sorted order.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename Request>
+  template <typename Request>
   struct request_second_lt
   {
     /// \copydoc request_second_lt
-    inline bool operator()(const Request &a, const Request &b)
+    inline bool
+    operator()(const Request& a, const Request& b)
     {
       return tuple_second_lt<typename Request::target_t>()(a.target, b.target);
     }
@@ -400,11 +423,12 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Ordering based on the third target in sorted order.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename Request>
+  template <typename Request>
   struct request_third_lt
   {
     /// \copydoc request_third_lt
-    inline bool operator()(const Request &a, const Request &b)
+    inline bool
+    operator()(const Request& a, const Request& b)
     {
       return tuple_third_lt<typename Request::target_t>()(a.target, b.target);
     }
@@ -416,12 +440,11 @@ namespace adiar::internal
   ///
   /// \see request
   //////////////////////////////////////////////////////////////////////////////
-  template<uint8_t Cardinality,
-           typename Data,
-           uint8_t NodeCarrySize = 0u,
-           uint8_t Inputs = Cardinality>
-  class request_data
-    : public request<Cardinality, NodeCarrySize, Inputs>
+  template <uint8_t Cardinality,
+            typename Data,
+            uint8_t NodeCarrySize = 0u,
+            uint8_t Inputs        = Cardinality>
+  class request_data : public request<Cardinality, NodeCarrySize, Inputs>
   {
   private:
     using Request = request<Cardinality, NodeCarrySize, Inputs>;
@@ -454,7 +477,7 @@ namespace adiar::internal
     /// \details The default, copy, and move construction has to be `default` to
     ///          ensure it is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    request_data(const request_data &r) = default;
+    request_data(const request_data& r) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   Move construction (trivial).
@@ -462,7 +485,7 @@ namespace adiar::internal
     /// \details The default, copy, and move construction has to be `default` to
     ///          ensure it is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    request_data(request_data &&r) = default;
+    request_data(request_data&& r) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   Destruction (trivial).
@@ -479,7 +502,8 @@ namespace adiar::internal
     /// \details The copy and move assignment has to be `default` to ensure it
     ///          is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    request_data& operator =(const request_data &r) = default;
+    request_data&
+    operator=(const request_data& r) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   Move assignment (trivial).
@@ -487,8 +511,8 @@ namespace adiar::internal
     /// \details The copy and move assignment has to be `default` to ensure it
     ///          is a *POD* and hence can be used by TPIE's files.
     ////////////////////////////////////////////////////////////////////////////
-    request_data& operator =(request_data &&r) = default;
-
+    request_data&
+    operator=(request_data&& r) = default;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -501,11 +525,12 @@ namespace adiar::internal
     ///
     /// \param d  Additional data to be forwarded.
     ////////////////////////////////////////////////////////////////////////////
-    request_data(const typename Request::target_t &t,
-                 const std::array<typename Request::children_type, NodeCarrySize> &nc,
-                 const data_type &d)
-      : Request(t, nc), data(d)
-    { }
+    request_data(const typename Request::target_t& t,
+                 const std::array<typename Request::children_type, NodeCarrySize>& nc,
+                 const data_type& d)
+      : Request(t, nc)
+      , data(d)
+    {}
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -515,11 +540,12 @@ namespace adiar::internal
   /// \brief Level/Lexicographical ordering on a request's target(s). Ties are
   ///        (potentially) broken on the data.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename Request, size_t idx = 0>
+  template <typename Request, size_t idx = 0>
   struct request_data_lt
   {
     /// \copydoc request_data_lt
-    inline bool operator()(const Request &a, const Request &b)
+    inline bool
+    operator()(const Request& a, const Request& b)
     {
       if constexpr (Request::data_type::sort_on_tiebreak) {
         if (a.target == b.target) return a.data < b.data;
@@ -532,11 +558,12 @@ namespace adiar::internal
   /// \brief Ordering based on the first target in sorted order. Ties are
   ///        (potentially) broken on the data.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename Request>
+  template <typename Request>
   struct request_data_first_lt
   {
     /// \copydoc request_first_lt
-    inline bool operator()(const Request &a, const Request &b)
+    inline bool
+    operator()(const Request& a, const Request& b)
     {
       if constexpr (Request::data_type::sort_on_tiebreak) {
         if (a.target == b.target) return a.data < b.data;
@@ -549,11 +576,12 @@ namespace adiar::internal
   /// \brief Ordering based on the second target in sorted order. Ties are
   ///        (potentially) broken on the data.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename Request>
+  template <typename Request>
   struct request_data_second_lt
   {
     /// \copydoc request_second_lt
-    inline bool operator()(const Request &a, const Request &b)
+    inline bool
+    operator()(const Request& a, const Request& b)
     {
       if constexpr (Request::data_type::sort_on_tiebreak) {
         if (a.target == b.target) return a.data < b.data;
@@ -566,11 +594,12 @@ namespace adiar::internal
   /// \brief Ordering based on the third target in sorted order. Ties are
   ///        (potentially) broken on the data.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename Request>
+  template <typename Request>
   struct request_data_third_lt
   {
     /// \copydoc request_third_lt
-    inline bool operator()(const Request &a, const Request &b)
+    inline bool
+    operator()(const Request& a, const Request& b)
     {
       if constexpr (Request::data_type::sort_on_tiebreak) {
         if (a.target == b.target) return a.data < b.data;
@@ -607,8 +636,11 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Comparator to break ties based on the .
     ////////////////////////////////////////////////////////////////////////////
-    inline bool operator< (const with_parent &o) const
-    { return this->source < o.source; }
+    inline bool
+    operator<(const with_parent& o) const
+    {
+      return this->source < o.source;
+    }
   };
 }
 

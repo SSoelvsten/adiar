@@ -1,5 +1,4 @@
 #include "../../../test.h"
-
 #include <filesystem>
 
 go_bandit([]() {
@@ -13,7 +12,7 @@ go_bandit([]() {
     // the '/tmp/' folder and also to './'.
     //
     // HACK: get the temporary folder itself directly from TPIE.
-    const std::string tmp_path = tpie::tempname::get_actual_path() + "/";
+    const std::string tmp_path  = tpie::tempname::get_actual_path() + "/";
     const std::string curr_path = "./";
 
     describe("file() [empty]", [&tmp_path, &curr_path]() {
@@ -218,9 +217,7 @@ go_bandit([]() {
           AssertThat(std::filesystem::exists(path), Is().True());
         }
         // Clean up for this test
-        if (std::filesystem::exists(path)) {
-          std::filesystem::remove(path);
-        }
+        if (std::filesystem::exists(path)) { std::filesystem::remove(path); }
       });
     });
 
@@ -705,10 +702,8 @@ go_bandit([]() {
     });
 
     describe("file(path)", []() {
-      it("throws exception on path to non-existing file", []() {
-        AssertThrows(runtime_error,
-                     file<int>("./non-existing-file.adiar"));
-      });
+      it("throws exception on path to non-existing file",
+         []() { AssertThrows(runtime_error, file<int>("./non-existing-file.adiar")); });
 
       std::string path;
       {
@@ -759,9 +754,7 @@ go_bandit([]() {
       });
 
       // Clean up for above tests
-      if (std::filesystem::exists(path)) {
-        std::filesystem::remove(path);
-      }
+      if (std::filesystem::exists(path)) { std::filesystem::remove(path); }
 
       {
         file<int> f;
@@ -774,9 +767,7 @@ go_bandit([]() {
         f.make_persistent();
       }
 
-      it("can reopen a non-empty persisted file", [&path]() {
-        file<int> f(path);
-      });
+      it("can reopen a non-empty persisted file", [&path]() { file<int> f(path); });
 
       it("has expected size after reopening a persisted non-empty file", [&path]() {
         file<int> f(path);
@@ -846,9 +837,7 @@ go_bandit([]() {
       });
 
       // Clean up for above tests
-      if (std::filesystem::exists(path)) {
-        std::filesystem::remove(path);
-      }
+      if (std::filesystem::exists(path)) { std::filesystem::remove(path); }
     });
 
     describe("file.sort(const pred_t&)", []() {
@@ -1137,4 +1126,4 @@ go_bandit([]() {
       });
     });
   });
- });
+});

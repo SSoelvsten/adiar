@@ -2,11 +2,10 @@
 
 go_bandit([]() {
   describe("adiar/internal/data_types/uid.h", []() {
-    it("has same size as the underlying 'ptr_uint64'", []() {
-      AssertThat(sizeof(uid_uint64), Is().EqualTo(sizeof(ptr_uint64)));
-    });
+    it("has same size as the underlying 'ptr_uint64'",
+       []() { AssertThat(sizeof(uid_uint64), Is().EqualTo(sizeof(ptr_uint64))); });
 
-    describe("reexposure of underlying pointer (without auxiliary data)", [](){
+    describe("reexposure of underlying pointer (without auxiliary data)", []() {
       it("wraps compile-time constants", []() {
         // Nil constants
         AssertThat(ptr_uint64::nil_level, Is().EqualTo(ptr_uint64::nil_level));
@@ -39,7 +38,7 @@ go_bandit([]() {
         });
 
         it("is 0 for (0,0)", []() {
-          const uid_uint64 u = ptr_uint64(0,0);
+          const uid_uint64 u = ptr_uint64(0, 0);
 
           AssertThat(u.level(), Is().EqualTo(0u));
         });
@@ -59,15 +58,14 @@ go_bandit([]() {
         });
 
         it("rejects minimal Node Uid", []() {
-          const uid_uint64 u = ptr_uint64(0,0,0);
+          const uid_uint64 u = ptr_uint64(0, 0, 0);
 
           AssertThat(u.is_terminal(), Is().False());
         });
 
         it("rejects maximal Node Uid", []() {
-          const uid_uint64 u = ptr_uint64(ptr_uint64::max_label,
-                                          ptr_uint64::max_id,
-                                          ptr_uint64::max_out_idx);
+          const uid_uint64 u =
+            ptr_uint64(ptr_uint64::max_label, ptr_uint64::max_id, ptr_uint64::max_out_idx);
 
           AssertThat(u.is_terminal(), Is().False());
         });
@@ -101,15 +99,14 @@ go_bandit([]() {
         });
 
         it("rejects minimal Node Uid", []() {
-          const uid_uint64 u = ptr_uint64(0,0,0);
+          const uid_uint64 u = ptr_uint64(0, 0, 0);
 
           AssertThat(u.is_false(), Is().False());
         });
 
         it("rejects maximal Node Uid", []() {
-          const uid_uint64 u = ptr_uint64(ptr_uint64::max_label,
-                                          ptr_uint64::max_id,
-                                          ptr_uint64::max_out_idx);
+          const uid_uint64 u =
+            ptr_uint64(ptr_uint64::max_label, ptr_uint64::max_id, ptr_uint64::max_out_idx);
 
           AssertThat(u.is_false(), Is().False());
         });
@@ -129,15 +126,14 @@ go_bandit([]() {
         });
 
         it("rejects minimal Node Uid", []() {
-          const uid_uint64 u = ptr_uint64(0,0,0);
+          const uid_uint64 u = ptr_uint64(0, 0, 0);
 
           AssertThat(u.is_true(), Is().False());
         });
 
         it("rejects maximal Node Uid", []() {
-          const uid_uint64 u = ptr_uint64(ptr_uint64::max_label,
-                                          ptr_uint64::max_id,
-                                          ptr_uint64::max_out_idx);
+          const uid_uint64 u =
+            ptr_uint64(ptr_uint64::max_label, ptr_uint64::max_id, ptr_uint64::max_out_idx);
 
           AssertThat(u.is_true(), Is().False());
         });
@@ -157,15 +153,14 @@ go_bandit([]() {
         });
 
         it("accepts minimal Node Uid", []() {
-          const uid_uint64 u = ptr_uint64(0,0,0);
+          const uid_uint64 u = ptr_uint64(0, 0, 0);
 
           AssertThat(u.is_node(), Is().True());
         });
 
         it("accepts maximal Node Uid", []() {
-          const uid_uint64 u = ptr_uint64(ptr_uint64::max_label,
-                                          ptr_uint64::max_id,
-                                          ptr_uint64::max_out_idx);
+          const uid_uint64 u =
+            ptr_uint64(ptr_uint64::max_label, ptr_uint64::max_id, ptr_uint64::max_out_idx);
 
           AssertThat(u.is_node(), Is().True());
         });
@@ -239,4 +234,4 @@ go_bandit([]() {
       });
     });
   });
- });
+});

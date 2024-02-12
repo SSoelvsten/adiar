@@ -8,4 +8,4 @@ namespace adiar
   extern statistics::prod3_t stats_prod3;
 }
 
-#endif //ADIAR_BDD_IF_THEN_ELSE_H
+#endif // ADIAR_BDD_IF_THEN_ELSE_H

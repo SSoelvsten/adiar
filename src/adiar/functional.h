@@ -35,7 +35,7 @@ namespace adiar
   ///
   /// \tparam TypeSignature The type signature of the form `ret_t (args_t...)`.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename TypeSignature>
+  template <typename TypeSignature>
   using function = std::function<TypeSignature>;
 
   //////////////////////////////////////////////////////////////////////////////
@@ -44,8 +44,8 @@ namespace adiar
   /// \tparam Args List of the argument's type in the order, they are supposed
   ///              to be given. This list may be empty.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename... Args>
-  using predicate = function<bool (Args...)>;
+  template <typename... Args>
+  using predicate = function<bool(Args...)>;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Consumer function of value(s) of type(s) `Args`.
@@ -57,8 +57,8 @@ namespace adiar
   /// \tparam Args List of the argument's type in the order, they are supposed
   ///              to be given.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename Arg>
-  using consumer = function<void (Arg)>;
+  template <typename Arg>
+  using consumer = function<void(Arg)>;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief  Wrap a `begin` and `end` iterator pair into a consumer function.
@@ -67,13 +67,13 @@ namespace adiar
   ///         if `end` is reached but more values are to be added, i.e. if
   ///         the given range is not large enough for all values to be consumed.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
+  template <typename ForwardIt>
   inline consumer<typename ForwardIt::value_type>
-  make_consumer(ForwardIt &begin, ForwardIt &end)
+  make_consumer(ForwardIt& begin, ForwardIt& end)
   {
     using value_type = typename ForwardIt::value_type;
 
-    return [&begin, &end](const value_type &x) {
+    return [&begin, &end](const value_type& x) {
       if (begin == end) {
         throw out_of_range("Iterator range unable to contain all generated values");
       }
@@ -88,13 +88,13 @@ namespace adiar
   ///         if `end` is reached but more values are to be added, i.e. if
   ///         the given range is not large enough for all values to be consumed.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
+  template <typename ForwardIt>
   inline consumer<typename ForwardIt::value_type>
-  make_consumer(ForwardIt &&begin, ForwardIt &&end)
+  make_consumer(ForwardIt&& begin, ForwardIt&& end)
   {
     using value_type = typename ForwardIt::value_type;
 
-    return [_begin = begin, _end = end](const value_type &x) mutable {
+    return [_begin = begin, _end = end](const value_type& x) mutable {
       if (_begin == _end) {
         throw out_of_range("Iterator range unable to contain all generated values");
       }
@@ -114,22 +114,20 @@ namespace adiar
   ///
   /// \tparam RetType Type of each yielded value from the generator.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename RetType>
-  using generator = function<optional<RetType> ()>;
+  template <typename RetType>
+  using generator = function<optional<RetType>()>;
 
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Wrap a `begin` and `end` iterator pair into a generator function.
   ////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
+  template <typename ForwardIt>
   inline generator<typename ForwardIt::value_type>
-  make_generator(ForwardIt &begin, ForwardIt &end)
+  make_generator(ForwardIt& begin, ForwardIt& end)
   {
     using value_type = typename ForwardIt::value_type;
 
     return [&begin, &end]() {
-      if (begin == end) {
-        return make_optional<value_type>();
-      }
+      if (begin == end) { return make_optional<value_type>(); }
       return make_optional<value_type>(*(begin++));
     };
   }
@@ -137,16 +135,14 @@ namespace adiar
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Wrap a `begin` and `end` iterator pair into a generator function.
   ////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
+  template <typename ForwardIt>
   inline generator<typename ForwardIt::value_type>
-  make_generator(ForwardIt &&begin, ForwardIt &&end)
+  make_generator(ForwardIt&& begin, ForwardIt&& end)
   {
     using value_type = typename ForwardIt::value_type;
 
     return [_begin = begin, _end = end]() mutable {
-      if (_begin == _end) {
-        return make_optional<value_type>();
-      }
+      if (_begin == _end) { return make_optional<value_type>(); }
       return make_optional<value_type>(*(_begin++));
     };
   }
@@ -154,16 +150,14 @@ namespace adiar
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Wrap an `adiar::internal::file_stream` into a generator function.
   ////////////////////////////////////////////////////////////////////////////
-  template<typename Stream>
+  template <typename Stream>
   inline generator<typename Stream::value_type>
-  make_generator(Stream &s)
+  make_generator(Stream& s)
   {
     using value_type = typename Stream::value_type;
 
     return [&s]() {
-      if (!s.can_pull()) {
-        return make_optional<value_type>();
-      }
+      if (!s.can_pull()) { return make_optional<value_type>(); }
       return make_optional<value_type>(s.pull());
     };
   }
@@ -171,9 +165,9 @@ namespace adiar
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Wrap a single value into a generator.
   ////////////////////////////////////////////////////////////////////////////
-  template<typename RetType>
+  template <typename RetType>
   inline generator<RetType>
-  make_generator(const RetType &r)
+  make_generator(const RetType& r)
   {
     return [=, _end = false]() mutable {
       if (_end) { return make_optional<RetType>(); }

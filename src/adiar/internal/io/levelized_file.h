@@ -6,12 +6,13 @@
 #include <string>
 
 #include <adiar/exception.h>
+
 #include <adiar/internal/assert.h>
-#include <adiar/internal/io/file.h>
-#include <adiar/internal/io/file_stream.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/level_info.h>
+#include <adiar/internal/io/file.h>
+#include <adiar/internal/io/file_stream.h>
 
 namespace adiar::internal
 {
@@ -40,8 +41,7 @@ namespace adiar::internal
   /// \param T Type of the file's content.
   ////////////////////////////////////////////////////////////////////////////
   template <typename T>
-  class levelized_file<T, /*SplitOnLevels=*/false>
-    : public file_traits<T>::stats
+  class levelized_file<T, /*SplitOnLevels=*/false> : public file_traits<T>::stats
   {
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -57,25 +57,25 @@ namespace adiar::internal
 
   private:
     ///////////////////////////////////////////////////////////////////////////
-    inline void throw_if_bad_idx(const size_t idx) const
+    inline void
+    throw_if_bad_idx(const size_t idx) const
     {
-      if (FILES <= idx)
-        throw out_of_range("Index must be within interval [0;FILES-1]");
+      if (FILES <= idx) throw out_of_range("Index must be within interval [0;FILES-1]");
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    inline void throw_if_persistent() const
+    inline void
+    throw_if_persistent() const
     {
-      if (is_persistent())
-        throw runtime_error("'"+_level_info_file.path()+"' is persisted.");
+      if (is_persistent()) throw runtime_error("'" + _level_info_file.path() + "' is persisted.");
     }
 
   private:
     ///////////////////////////////////////////////////////////////////////////
     /// \brief Derives the canonical path for one of the file.
     ///////////////////////////////////////////////////////////////////////////
-    static std::string canonical_file_path(const std::string &path_prefix,
-                                           const size_t idx)
+    static std::string
+    canonical_file_path(const std::string& path_prefix, const size_t idx)
     {
       std::stringstream ss;
       ss << path_prefix << ".file_" << idx;
@@ -85,7 +85,8 @@ namespace adiar::internal
     ///////////////////////////////////////////////////////////////////////////
     /// \brief Derives the canonical path for the level information file.
     ///////////////////////////////////////////////////////////////////////////
-    static std::string canonical_levels_path(const std::string &path_prefix)
+    static std::string
+    canonical_levels_path(const std::string& path_prefix)
     {
       std::stringstream ss;
       ss << path_prefix << ".levels";
@@ -101,7 +102,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Files describing the directed acyclic graph.
     ////////////////////////////////////////////////////////////////////////////
-    file<value_type> _files [FILES];
+    file<value_type> _files[FILES];
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the file paths in '_level_info_file' and '_files' are
@@ -127,14 +128,14 @@ namespace adiar::internal
     ///////////////////////////////////////////////////////////////////////////
     levelized_file(const typename file_traits<T>::stats& o)
       : file_traits<T>::stats(o)
-    { }
+    {}
 
   public:
     ///////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a new unamed \em temporary file.
     ///////////////////////////////////////////////////////////////////////////
     levelized_file()
-    { }
+    {}
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a prior named \em persisted file.
@@ -151,7 +152,7 @@ namespace adiar::internal
           _files[idx].set_path(path);
           _files[idx].make_persistent();
         } else { // '_files[idx]' is missing
-          throw runtime_error("'"+path+"' does not exist");
+          throw runtime_error("'" + path + "' does not exist");
         }
       }
 
@@ -161,7 +162,7 @@ namespace adiar::internal
           _level_info_file.set_path(path);
           _level_info_file.make_persistent();
         } else { // '_level_info_file' is missing
-          throw runtime_error("'"+path+"' does not exist");
+          throw runtime_error("'" + path + "' does not exist");
         }
       }
 
@@ -171,8 +172,11 @@ namespace adiar::internal
     }
 
   public:
-    bool canonical_paths()
-    { return _canonical_paths; }
+    bool
+    canonical_paths()
+    {
+      return _canonical_paths;
+    }
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -181,13 +185,13 @@ namespace adiar::internal
     ///
     /// \see make_persistent
     ////////////////////////////////////////////////////////////////////////////
-    bool is_persistent() const
+    bool
+    is_persistent() const
     {
       const bool res = _level_info_file.is_persistent();
 #ifndef NDEBUG
       for (size_t idx = 0; idx < FILES; idx++) {
-        adiar_assert(_files[idx].is_persistent() == res,
-                     "Persistence ought to be synchronised.");
+        adiar_assert(_files[idx].is_persistent() == res, "Persistence ought to be synchronised.");
       }
 #endif
       return res;
@@ -204,14 +208,13 @@ namespace adiar::internal
     ///
     /// \see is_persistent, canonical_paths, move
     ////////////////////////////////////////////////////////////////////////////
-    void make_persistent()
+    void
+    make_persistent()
     {
       if (!canonical_paths()) {
         throw runtime_error("Cannot persist a file with non-canonical paths");
       }
-      for (size_t idx = 0u; idx < FILES; idx++) {
-        _files[idx].make_persistent();
-      }
+      for (size_t idx = 0u; idx < FILES; idx++) { _files[idx].make_persistent(); }
       _level_info_file.make_persistent();
     }
 
@@ -228,7 +231,8 @@ namespace adiar::internal
     ///
     /// \see is_persistent, move
     ////////////////////////////////////////////////////////////////////////////
-    void make_persistent(const std::string &path_prefix)
+    void
+    make_persistent(const std::string& path_prefix)
     {
       move(path_prefix);
       make_persistent();
@@ -238,8 +242,11 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \copydoc is_persistent
     ////////////////////////////////////////////////////////////////////////////
-    bool is_temp() const
-    { return !is_persistent(); }
+    bool
+    is_temp() const
+    {
+      return !is_persistent();
+    }
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -247,7 +254,8 @@ namespace adiar::internal
     ///
     /// \see path
     ////////////////////////////////////////////////////////////////////////////
-    bool exists() const
+    bool
+    exists() const
     {
       const bool res = std::filesystem::exists(_level_info_file.path());
 #ifndef NDEBUG
@@ -263,7 +271,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The number of elements in a specific file.
     ////////////////////////////////////////////////////////////////////////////
-    size_t size(const size_t idx) const
+    size_t
+    size(const size_t idx) const
     {
       throw_if_bad_idx(idx);
       return _files[idx].size();
@@ -273,11 +282,11 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The number of elements in the file(s).
     ////////////////////////////////////////////////////////////////////////////
-    size_t size() const
+    size_t
+    size() const
     {
       size_t sum_size = 0u;
-      for(size_t idx = 0u; idx < FILES; idx++)
-        sum_size += size(idx);
+      for (size_t idx = 0u; idx < FILES; idx++) sum_size += size(idx);
       return sum_size;
     }
 
@@ -285,8 +294,11 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The number of elements in the levelized meta information file
     ////////////////////////////////////////////////////////////////////////////
-    size_t levels() const
-    { return _level_info_file.size(); }
+    size_t
+    levels() const
+    {
+      return _level_info_file.size();
+    }
 
   public:
     //////////////////////////////////////////////////////////////////////////////
@@ -294,7 +306,8 @@ namespace adiar::internal
     ///
     /// \pre `levels() > 0`
     //////////////////////////////////////////////////////////////////////////////
-    size_t first_level() const
+    size_t
+    first_level() const
     {
       adiar_assert(this->levels() > 0u);
       file_stream<level_info, true> fs(this->_level_info_file);
@@ -306,7 +319,8 @@ namespace adiar::internal
     ///
     /// \pre `levels() > 0`
     //////////////////////////////////////////////////////////////////////////////
-    size_t last_level() const
+    size_t
+    last_level() const
     {
       adiar_assert(this->levels() > 0u);
       file_stream<level_info, false> fs(this->_level_info_file);
@@ -317,14 +331,18 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether all file(s) are empty.
     ////////////////////////////////////////////////////////////////////////////
-    bool empty() const
-    { return size() == 0u; }
+    bool
+    empty() const
+    {
+      return size() == 0u;
+    }
 
   private:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Creates the file(s) on disk, if they do not yet already do.
     ////////////////////////////////////////////////////////////////////////////
-    void __touch() const
+    void
+    __touch() const
     {
       if (exists()) return;
 
@@ -336,7 +354,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Creates the file(s) on disk, if they do not yet already do.
     ////////////////////////////////////////////////////////////////////////////
-    void touch()
+    void
+    touch()
     {
       if (exists()) return;
 
@@ -350,12 +369,11 @@ namespace adiar::internal
     ///
     /// \see exists move
     ////////////////////////////////////////////////////////////////////////////
-    std::array<std::string, FILES+1> paths() const
+    std::array<std::string, FILES + 1>
+    paths() const
     {
-      std::array<std::string, FILES+1> res;
-      for (size_t idx = 0u; idx < FILES; idx++) {
-        res[idx] = _files[idx].path();
-      }
+      std::array<std::string, FILES + 1> res;
+      for (size_t idx = 0u; idx < FILES; idx++) { res[idx] = _files[idx].path(); }
       res[FILES] = _level_info_file.path();
       return res;
     }
@@ -364,13 +382,13 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether this file can be moved.
     ////////////////////////////////////////////////////////////////////////////
-    bool can_move()
+    bool
+    can_move()
     {
       const bool res = _level_info_file.can_move();
 #ifndef NDEBUG
       for (size_t idx = 0; idx < FILES; idx++) {
-        adiar_assert(_files[idx].can_move() == res,
-                     "'can_move()' ought to be synchronised.");
+        adiar_assert(_files[idx].can_move() == res, "'can_move()' ought to be synchronised.");
       }
 #endif
       return res;
@@ -388,7 +406,8 @@ namespace adiar::internal
     ///
     /// \throws runtime_error Preconditions are violated.
     ////////////////////////////////////////////////////////////////////////////
-    void move(const std::string &path_prefix)
+    void
+    move(const std::string& path_prefix)
     {
       throw_if_persistent();
 
@@ -397,18 +416,16 @@ namespace adiar::internal
       // TODO: allow this? the path-prefix might be an independently created,
       //       but intendedly related, file made by the user.
       if (std::filesystem::exists(path_prefix))
-        throw runtime_error("path-prefix '"+path_prefix+"' exists.");
+        throw runtime_error("path-prefix '" + path_prefix + "' exists.");
 
       // Disallow moving a file on-top of another.
       {
         std::string path = canonical_levels_path(path_prefix);
-        if (std::filesystem::exists(path))
-          throw runtime_error("'"+path+"' already exists.");
+        if (std::filesystem::exists(path)) throw runtime_error("'" + path + "' already exists.");
       }
       for (size_t idx = 0; idx < FILES; idx++) {
         std::string path = canonical_file_path(path_prefix, idx);
-        if (std::filesystem::exists(path))
-          throw runtime_error("'"+path+"' already exists.");
+        if (std::filesystem::exists(path)) throw runtime_error("'" + path + "' already exists.");
       }
 
       // Move files
@@ -434,7 +451,8 @@ namespace adiar::internal
     ///      this file.
     ////////////////////////////////////////////////////////////////////////////
     template <typename pred_t = std::less<value_type>>
-    void sort(size_t idx, pred_t pred = pred_t())
+    void
+    sort(size_t idx, pred_t pred = pred_t())
     {
       throw_if_persistent();
       throw_if_bad_idx(idx);
@@ -449,7 +467,8 @@ namespace adiar::internal
     /// \remark This new file is a temporary file and must be marked persisted
     ///         to be kept existing beyond the object's lifetime.
     ////////////////////////////////////////////////////////////////////////////
-    static levelized_file<value_type, false> copy(const levelized_file<value_type> &lf)
+    static levelized_file<value_type, false>
+    copy(const levelized_file<value_type>& lf)
     {
       const typename file_traits<T>::stats s(lf);
       levelized_file<value_type, false> lf_copy(s);

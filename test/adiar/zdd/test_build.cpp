@@ -32,7 +32,7 @@ go_bandit([]() {
         AssertThat(res->canonical, Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create { Ø } [zdd_null]", [&]() {
@@ -61,7 +61,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create Ø [zdd_terminal]", [&]() {
@@ -90,7 +90,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(0u));
       });
 
       it("can create Ø [zdd_empty]", [&]() {
@@ -119,7 +119,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(0u));
       });
     });
 
@@ -158,7 +158,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(0u));
       });
 
       it("creates { { 42 } } for i = 42, dom = {42}", [&]() {
@@ -169,15 +169,15 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(42, node::max_id,
-                                                node::pointer_type(false),
-                                                node::pointer_type(true))));
+        AssertThat(ns.pull(),
+                   Is().EqualTo(
+                     node(42, node::max_id, node::pointer_type(false), node::pointer_type(true))));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(42,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(42, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -196,7 +196,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("creates { { 7 } } for i = 7, dom = {7}", [&]() {
@@ -207,15 +207,15 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(7, node::max_id,
-                                                node::pointer_type(false),
-                                                node::pointer_type(true))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(7, node::max_id, node::pointer_type(false), node::pointer_type(true))));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(7,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(7, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -234,7 +234,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("creates { { 21 }, { 42,21 } } for i = 21, dom = {21,42}", [&]() {
@@ -245,24 +245,24 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(42, node::max_id,
-                                                node::pointer_type(true),
-                                                node::pointer_type(true))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(42, node::max_id, node::pointer_type(true), node::pointer_type(true))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(21, node::max_id,
-                                                node::pointer_type(false),
-                                                node::pointer_type(42, node::max_id))));
-
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(
+            21, node::max_id, node::pointer_type(false), node::pointer_type(42, node::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(42,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(42, 1u)));
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(21,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(21, 1u)));
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(1u));
@@ -280,7 +280,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(2u));
       });
 
       it("creates { { 42 }, { 42,21 } } for i = 42, dom = {21,42}", [&]() {
@@ -291,23 +291,25 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(42, node::max_id,
-                                                node::pointer_type(false),
-                                                node::pointer_type(true))));
+        AssertThat(ns.pull(),
+                   Is().EqualTo(
+                     node(42, node::max_id, node::pointer_type(false), node::pointer_type(true))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(21, node::max_id,
-                                                node::pointer_type(42, node::max_id),
-                                                node::pointer_type(42, node::max_id))));
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(21,
+                                     node::max_id,
+                                     node::pointer_type(42, node::max_id),
+                                     node::pointer_type(42, node::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(42,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(42, 1u)));
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(21,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(21, 1u)));
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(1u));
@@ -325,60 +327,64 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
-      it("creates { { 21 }, { 42,21 }, { 21,10 }, { 42,21,10 } } for i = 21, dom = {10,21,42}", [&]() {
-        std::vector<int> dom = { 10, 21, 42 };
+      it("creates { { 21 }, { 42,21 }, { 21,10 }, { 42,21,10 } } for i = 21, dom = {10,21,42}",
+         [&]() {
+           std::vector<int> dom = { 10, 21, 42 };
 
-        zdd res = zdd_ithvar(21, dom.rbegin(), dom.rend());
+           zdd res = zdd_ithvar(21, dom.rbegin(), dom.rend());
 
-        node_test_stream ns(res);
+           node_test_stream ns(res);
 
-        AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(42, node::max_id,
-                                                node::pointer_type(true),
-                                                node::pointer_type(true))));
+           AssertThat(ns.can_pull(), Is().True());
+           AssertThat(ns.pull(),
+                      Is().EqualTo(node(
+                        42, node::max_id, node::pointer_type(true), node::pointer_type(true))));
 
-        AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(21, node::max_id,
-                                                node::pointer_type(false),
-                                                node::pointer_type(42, node::max_id))));
+           AssertThat(ns.can_pull(), Is().True());
+           AssertThat(
+             ns.pull(),
+             Is().EqualTo(node(
+               21, node::max_id, node::pointer_type(false), node::pointer_type(42, node::max_id))));
 
-        AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(10, node::max_id,
-                                                node::pointer_type(21, node::max_id),
-                                                node::pointer_type(21, node::max_id))));
+           AssertThat(ns.can_pull(), Is().True());
+           AssertThat(ns.pull(),
+                      Is().EqualTo(node(10,
+                                        node::max_id,
+                                        node::pointer_type(21, node::max_id),
+                                        node::pointer_type(21, node::max_id))));
 
-        AssertThat(ns.can_pull(), Is().False());
+           AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+           level_info_test_stream ms(res);
 
-        AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(42,1u)));
-        AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(21,1u)));
-        AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(10,1u)));
-        AssertThat(ms.can_pull(), Is().False());
+           AssertThat(ms.can_pull(), Is().True());
+           AssertThat(ms.pull(), Is().EqualTo(level_info(42, 1u)));
+           AssertThat(ms.can_pull(), Is().True());
+           AssertThat(ms.pull(), Is().EqualTo(level_info(21, 1u)));
+           AssertThat(ms.can_pull(), Is().True());
+           AssertThat(ms.pull(), Is().EqualTo(level_info(10, 1u)));
+           AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(res->width, Is().EqualTo(1u));
+           AssertThat(res->width, Is().EqualTo(1u));
 
-        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(2u));
-        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(2u));
-        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(2u));
-        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(3u));
+           AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(2u));
+           AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(2u));
+           AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(2u));
+           AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(3u));
 
-        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(2u));
-        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(2u));
-        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(2u));
-        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(3u));
+           AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(2u));
+           AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(2u));
+           AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(2u));
+           AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(3u));
 
-        AssertThat(zdd_iscanonical(res), Is().True());
+           AssertThat(zdd_iscanonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
-      });
+           AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+           AssertThat(res->number_of_terminals[true], Is().EqualTo(2u));
+         });
 
       it("throws exception when domain is not in descending order", [&]() {
         std::vector<int> dom = { 3, 2, 1, 0 };
@@ -398,38 +404,42 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id,
-                                                node::pointer_type(true),
-                                                node::pointer_type(true))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(3, node::max_id, node::pointer_type(true), node::pointer_type(true))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id,
-                                                node::pointer_type(3, node::max_id),
-                                                node::pointer_type(3, node::max_id))));
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(2,
+                                     node::max_id,
+                                     node::pointer_type(3, node::max_id),
+                                     node::pointer_type(3, node::max_id))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                node::pointer_type(false),
-                                                node::pointer_type(2, node::max_id))));
-
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(
+            node(1, node::max_id, node::pointer_type(false), node::pointer_type(2, node::max_id))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(0, node::max_id,
-                                                node::pointer_type(1, node::max_id),
-                                                node::pointer_type(1, node::max_id))));
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     node::pointer_type(1, node::max_id),
+                                     node::pointer_type(1, node::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(3, 1u)));
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(0, 1u)));
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(1u));
@@ -447,7 +457,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(2u));
       });
     });
 
@@ -486,7 +496,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("creates { Ø } for i = 42, dom = {42}", [&]() {
@@ -519,7 +529,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("creates { Ø, { 21 } } for i = 42, dom = {21,42}", [&]() {
@@ -530,15 +540,15 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(21, zdd::max_id,
-                                                node::pointer_type(true),
-                                                node::pointer_type(true))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(21, zdd::max_id, node::pointer_type(true), node::pointer_type(true))));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(21,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(21, 1u)));
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(1u));
@@ -556,7 +566,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(2u));
       });
 
       it("creates { Ø, { 42 } } for i = 21, dom = {21,42}", [&]() {
@@ -567,15 +577,15 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(42, zdd::max_id,
-                                                node::pointer_type(true),
-                                                node::pointer_type(true))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(42, zdd::max_id, node::pointer_type(true), node::pointer_type(true))));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(42,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(42, 1u)));
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(1u));
@@ -593,7 +603,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(2u));
       });
 
       it("creates { Ø, { 0 }, { 2 }, { 0,2 } } for i = 1, dom = {0,1,2}", [&]() {
@@ -604,22 +614,24 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, zdd::max_id,
-                                                node::pointer_type(true),
-                                                node::pointer_type(true))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(2, zdd::max_id, node::pointer_type(true), node::pointer_type(true))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(0, zdd::max_id,
-                                                node::pointer_type(2, zdd::max_id),
-                                                node::pointer_type(2, zdd::max_id))));
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(0,
+                                     zdd::max_id,
+                                     node::pointer_type(2, zdd::max_id),
+                                     node::pointer_type(2, zdd::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(0, 1u)));
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(1u));
@@ -637,7 +649,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(2u));
       });
 
       it("throws exception when domain is not in ascending order", [&]() {
@@ -659,30 +671,34 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id,
-                                                node::pointer_type(true),
-                                                node::pointer_type(true))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(3, node::max_id, node::pointer_type(true), node::pointer_type(true))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                node::pointer_type(3, node::max_id),
-                                                node::pointer_type(3, node::max_id))));
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(1,
+                                     node::max_id,
+                                     node::pointer_type(3, node::max_id),
+                                     node::pointer_type(3, node::max_id))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(0, node::max_id,
-                                                node::pointer_type(1, node::max_id),
-                                                node::pointer_type(1, node::max_id))));
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     node::pointer_type(1, node::max_id),
+                                     node::pointer_type(1, node::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(3, 1u)));
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(0, 1u)));
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(1u));
@@ -700,7 +716,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(2u));
       });
 
       it("constructs chain for i = 3 global dom = {0,1,2,3}", [&]() {
@@ -709,30 +725,34 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id,
-                                                node::pointer_type(true),
-                                                node::pointer_type(true))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(2, node::max_id, node::pointer_type(true), node::pointer_type(true))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                node::pointer_type(2, node::max_id),
-                                                node::pointer_type(2, node::max_id))));
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(1,
+                                     node::max_id,
+                                     node::pointer_type(2, node::max_id),
+                                     node::pointer_type(2, node::max_id))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(0, node::max_id,
-                                                node::pointer_type(1, node::max_id),
-                                                node::pointer_type(1, node::max_id))));
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     node::pointer_type(1, node::max_id),
+                                     node::pointer_type(1, node::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(0, 1u)));
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(1u));
@@ -750,7 +770,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(2u));
       });
 
       it("constructs chain for i = 0 global dom = {0,1,2,3}", [&]() {
@@ -759,30 +779,34 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id,
-                                                node::pointer_type(true),
-                                                node::pointer_type(true))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(3, node::max_id, node::pointer_type(true), node::pointer_type(true))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id,
-                                                node::pointer_type(3, node::max_id),
-                                                node::pointer_type(3, node::max_id))));
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(2,
+                                     node::max_id,
+                                     node::pointer_type(3, node::max_id),
+                                     node::pointer_type(3, node::max_id))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                node::pointer_type(2, node::max_id),
-                                                node::pointer_type(2, node::max_id))));
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(1,
+                                     node::max_id,
+                                     node::pointer_type(2, node::max_id),
+                                     node::pointer_type(2, node::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(3, 1u)));
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(1u));
@@ -800,7 +824,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(2u));
       });
     });
 
@@ -838,7 +862,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create { {42} }", [&]() {
@@ -854,7 +878,7 @@ go_bandit([]() {
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(42,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(42, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -873,7 +897,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create { {1,2,5} }", [&]() {
@@ -885,20 +909,24 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, node::max_id, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id, terminal_F, ptr_uint64(5, ptr_uint64::max_id))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(2, node::max_id, terminal_F, ptr_uint64(5, ptr_uint64::max_id))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id, terminal_F, ptr_uint64(2, ptr_uint64::max_id))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(1, node::max_id, terminal_F, ptr_uint64(2, ptr_uint64::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(5,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(5, 1u)));
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(1u));
@@ -916,7 +944,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(3u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("throws exception when domain is not in ascending order", [&]() {
@@ -938,7 +966,7 @@ go_bandit([]() {
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -957,7 +985,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       // TODO: more tests independent of std::vector<int>
@@ -993,7 +1021,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create { {4} }", [&]() {
@@ -1009,7 +1037,7 @@ go_bandit([]() {
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(4,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(4, 1u)));
 
         AssertThat(ms.can_pull(), Is().False());
 
@@ -1028,7 +1056,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create { {0,2,4} }", [&]() {
@@ -1040,20 +1068,24 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, node::max_id, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id, terminal_F, ptr_uint64(4, ptr_uint64::max_id))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(2, node::max_id, terminal_F, ptr_uint64(4, ptr_uint64::max_id))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(0, node::max_id, terminal_F, ptr_uint64(2, ptr_uint64::max_id))));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(0, node::max_id, terminal_F, ptr_uint64(2, ptr_uint64::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(4,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(4, 1u)));
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(0, 1u)));
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(1u));
@@ -1071,7 +1103,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(3u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("throws exception when domain is not in ascending order", [&]() {
@@ -1093,7 +1125,7 @@ go_bandit([]() {
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(0, 1u)));
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(1u));
@@ -1111,7 +1143,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create { {42} }", [&]() {
@@ -1125,7 +1157,7 @@ go_bandit([]() {
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(42,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(42, 1u)));
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(1u));
@@ -1143,12 +1175,11 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
-      it("throws exception if the label is too large", [&]() {
-        AssertThrows(invalid_argument, zdd_singleton(zdd::max_label+1));
-      });
+      it("throws exception if the label is too large",
+         [&]() { AssertThrows(invalid_argument, zdd_singleton(zdd::max_label + 1)); });
     });
 
     describe("zdd_singletons(vars)", [&]() {
@@ -1184,7 +1215,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(0u));
       });
 
       it("can create { {42} }", [&]() {
@@ -1200,7 +1231,7 @@ go_bandit([]() {
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(42,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(42, 1u)));
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(1u));
@@ -1218,7 +1249,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create { {1}, {2}, {5} }", [&]() {
@@ -1230,20 +1261,24 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, node::max_id, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id, ptr_uint64(5, ptr_uint64::max_id), terminal_T)));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(2, node::max_id, ptr_uint64(5, ptr_uint64::max_id), terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), terminal_T)));
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(5,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(5, 1u)));
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(1u));
@@ -1261,7 +1296,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(3u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(3u));
       });
 
       it("throws exception when domain is not in ascending order", [&]() {
@@ -1297,7 +1332,7 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(1u));
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("can create { Ø, {42} }", [&]() {
@@ -1313,7 +1348,7 @@ go_bandit([]() {
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(42,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(42, 1u)));
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(1u));
@@ -1331,7 +1366,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(2u));
       });
 
       it("can create { Ø, {1}, {2}, {5}, {1,2}, {1,5}, {2,5}, {1,2,5} }", [&]() {
@@ -1343,24 +1378,28 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, node::max_id, terminal_T, terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id,
-                                                ptr_uint64(5, ptr_uint64::max_id),
-                                                ptr_uint64(5, ptr_uint64::max_id))));
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(2,
+                                     node::max_id,
+                                     ptr_uint64(5, ptr_uint64::max_id),
+                                     ptr_uint64(5, ptr_uint64::max_id))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                ptr_uint64(2, ptr_uint64::max_id),
-                                                ptr_uint64(2, ptr_uint64::max_id))));
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(1,
+                                     node::max_id,
+                                     ptr_uint64(2, ptr_uint64::max_id),
+                                     ptr_uint64(2, ptr_uint64::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(5,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(5, 1u)));
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(1u));
@@ -1378,7 +1417,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(2u));
       });
 
       it("throws exception when domain is not in ascending order", [&]() {
@@ -1417,7 +1456,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(0u));
       });
 
       it("is Ø when given iterators", [&]() {
@@ -1448,7 +1487,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(0u));
       });
 
       it("is Ø when there is no global domain", [&]() {
@@ -1480,7 +1519,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(0u));
       });
 
       it("is Ø when there is a global domain", [&]() {
@@ -1512,7 +1551,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(0u));
       });
     });
 
@@ -1545,68 +1584,75 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
-      it("creates { Ø, {0}, ..., {3}, {0,1}, ..., {2,3}, {0,1,2}, ..., {0,1,2,3} } from generator", [&]() {
-        int x = 3;
-        const auto dom = [&x]() -> optional<zdd::label_type> {
-          if (x < 0) { return make_optional<zdd::label_type>(); }
-          return x--;
-        };
+      it("creates { Ø, {0}, ..., {3}, {0,1}, ..., {2,3}, {0,1,2}, ..., {0,1,2,3} } from generator",
+         [&]() {
+           int x          = 3;
+           const auto dom = [&x]() -> optional<zdd::label_type> {
+             if (x < 0) { return make_optional<zdd::label_type>(); }
+             return x--;
+           };
 
-        zdd res = zdd_top(dom);
-        node_test_stream ns(res);
+           zdd res = zdd_top(dom);
+           node_test_stream ns(res);
 
-        AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id, terminal_T, terminal_T)));
-        AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id,
-                                                ptr_uint64(3, ptr_uint64::max_id),
-                                                ptr_uint64(3, ptr_uint64::max_id))));
-        AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id,
-                                                ptr_uint64(2, ptr_uint64::max_id),
-                                                ptr_uint64(2, ptr_uint64::max_id))));
-        AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(0, node::max_id,
-                                                ptr_uint64(1, ptr_uint64::max_id),
-                                                ptr_uint64(1, ptr_uint64::max_id))));
+           AssertThat(ns.can_pull(), Is().True());
+           AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id, terminal_T, terminal_T)));
+           AssertThat(ns.can_pull(), Is().True());
+           AssertThat(ns.pull(),
+                      Is().EqualTo(node(2,
+                                        node::max_id,
+                                        ptr_uint64(3, ptr_uint64::max_id),
+                                        ptr_uint64(3, ptr_uint64::max_id))));
+           AssertThat(ns.can_pull(), Is().True());
+           AssertThat(ns.pull(),
+                      Is().EqualTo(node(1,
+                                        node::max_id,
+                                        ptr_uint64(2, ptr_uint64::max_id),
+                                        ptr_uint64(2, ptr_uint64::max_id))));
+           AssertThat(ns.can_pull(), Is().True());
+           AssertThat(ns.pull(),
+                      Is().EqualTo(node(0,
+                                        node::max_id,
+                                        ptr_uint64(1, ptr_uint64::max_id),
+                                        ptr_uint64(1, ptr_uint64::max_id))));
 
-        AssertThat(ns.can_pull(), Is().False());
+           AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+           level_info_test_stream ms(res);
 
-        AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(3,1u)));
-        AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
-        AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
-        AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
-        AssertThat(ms.can_pull(), Is().False());
+           AssertThat(ms.can_pull(), Is().True());
+           AssertThat(ms.pull(), Is().EqualTo(level_info(3, 1u)));
+           AssertThat(ms.can_pull(), Is().True());
+           AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
+           AssertThat(ms.can_pull(), Is().True());
+           AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
+           AssertThat(ms.can_pull(), Is().True());
+           AssertThat(ms.pull(), Is().EqualTo(level_info(0, 1u)));
+           AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(res->width, Is().EqualTo(1u));
+           AssertThat(res->width, Is().EqualTo(1u));
 
-        AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(2u));
-        AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(2u));
-        AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(2u));
-        AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(2u));
+           AssertThat(res->max_1level_cut[cut::Internal], Is().EqualTo(2u));
+           AssertThat(res->max_1level_cut[cut::Internal_False], Is().EqualTo(2u));
+           AssertThat(res->max_1level_cut[cut::Internal_True], Is().EqualTo(2u));
+           AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(2u));
 
-        AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(2u));
-        AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(2u));
-        AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(2u));
-        AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
+           AssertThat(res->max_2level_cut[cut::Internal], Is().EqualTo(2u));
+           AssertThat(res->max_2level_cut[cut::Internal_False], Is().EqualTo(2u));
+           AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(2u));
+           AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
 
-        AssertThat(zdd_iscanonical(res), Is().True());
+           AssertThat(zdd_iscanonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
-      });
+           AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+           AssertThat(res->number_of_terminals[true], Is().EqualTo(2u));
+         });
 
       it("is { Ø } with empty iterator", [&]() {
-        const std::vector<int> dom = { };
+        const std::vector<int> dom = {};
 
         zdd res = zdd_top(dom.rbegin(), dom.rend());
         node_test_stream ns(res);
@@ -1633,7 +1679,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("creates { Ø, {0}, {2}, {4}, {0,2}, {0,4}, {0,4}, {0,2,4} } from iterator", [&]() {
@@ -1645,24 +1691,28 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, node::max_id, terminal_T, terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id,
-                                                ptr_uint64(4, ptr_uint64::max_id),
-                                                ptr_uint64(4, ptr_uint64::max_id))));
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(2,
+                                     node::max_id,
+                                     ptr_uint64(4, ptr_uint64::max_id),
+                                     ptr_uint64(4, ptr_uint64::max_id))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(0, node::max_id,
-                                                ptr_uint64(2, ptr_uint64::max_id),
-                                                ptr_uint64(2, ptr_uint64::max_id))));
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     ptr_uint64(2, ptr_uint64::max_id),
+                                     ptr_uint64(2, ptr_uint64::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(4,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(4, 1u)));
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(0, 1u)));
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(1u));
@@ -1680,7 +1730,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(2u));
       });
 
       it("is { Ø } terminal when there is no global domain", [&]() {
@@ -1712,7 +1762,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(1u));
       });
 
       it("creates { Ø, {0}, {1}, {0,1}, {0,1} } from global domain", [&]() {
@@ -1725,18 +1775,20 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id, terminal_T, terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(0, node::max_id,
-                                                ptr_uint64(1, ptr_uint64::max_id),
-                                                ptr_uint64(1, ptr_uint64::max_id))));
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     ptr_uint64(1, ptr_uint64::max_id),
+                                     ptr_uint64(1, ptr_uint64::max_id))));
 
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(0, 1u)));
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(1u));
@@ -1754,8 +1806,8 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[true], Is().EqualTo(2u));
       });
     });
   });
- });
+});

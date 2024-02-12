@@ -3,8 +3,8 @@
 
 #include <functional>
 
-#include <tpie/tpie.h>
 #include <tpie/priority_queue.h>
+#include <tpie/tpie.h>
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/memory.h>
@@ -17,7 +17,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Wrapper for TPIE's internal binary heap.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename T, typename Comp>
+  template <typename T, typename Comp>
   class priority_queue<memory_mode::Internal, T, Comp>
   {
   private:
@@ -25,17 +25,18 @@ namespace adiar::internal
     pq_type pq;
 
   public:
-    static tpie::memory_size_type memory_usage(tpie::memory_size_type no_elements)
+    static tpie::memory_size_type
+    memory_usage(tpie::memory_size_type no_elements)
     {
       return pq_type::memory_usage(no_elements);
     }
 
-    static tpie::memory_size_type memory_fits(tpie::memory_size_type memory_bytes)
+    static tpie::memory_size_type
+    memory_fits(tpie::memory_size_type memory_bytes)
     {
       const tpie::memory_size_type ret = pq_type::memory_fits(memory_bytes);
 
-      adiar_assert(memory_usage(ret) <= memory_bytes,
-                   "memory_fits and memory_usage should agree.");
+      adiar_assert(memory_usage(ret) <= memory_bytes, "memory_fits and memory_usage should agree.");
       return ret;
     }
 
@@ -51,20 +52,35 @@ namespace adiar::internal
                    "Must be instantiated with enough memory.");
     }
 
-    value_type top() const
-    { return pq.top(); }
+    value_type
+    top() const
+    {
+      return pq.top();
+    }
 
-    void pop()
-    { pq.pop(); }
+    void
+    pop()
+    {
+      pq.pop();
+    }
 
-    void push(const value_type &v)
-    { pq.push(v); }
+    void
+    push(const value_type& v)
+    {
+      pq.push(v);
+    }
 
-    size_t size() const
-    { return pq.size(); }
+    size_t
+    size() const
+    {
+      return pq.size();
+    }
 
-    bool empty() const
-    { return pq.empty(); }
+    bool
+    empty() const
+    {
+      return pq.empty();
+    }
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -80,7 +96,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Wrapper for TPIE's internal binary heap.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename T, typename Comp>
+  template <typename T, typename Comp>
   class priority_queue<memory_mode::External, T, Comp>
   {
   public:
@@ -97,20 +113,35 @@ namespace adiar::internal
       : pq(memory_bytes)
     {}
 
-    value_type top()
-    { return pq.top(); }
+    value_type
+    top()
+    {
+      return pq.top();
+    }
 
-    void pop()
-    { pq.pop(); }
+    void
+    pop()
+    {
+      pq.pop();
+    }
 
-    void push(const value_type &v)
-    { pq.push(v); }
+    void
+    push(const value_type& v)
+    {
+      pq.push(v);
+    }
 
-    size_t size() const
-    { return pq.size(); }
+    size_t
+    size() const
+    {
+      return pq.size();
+    }
 
-    bool empty() const
-    { return pq.empty(); }
+    bool
+    empty() const
+    {
+      return pq.empty();
+    }
   };
 
   //////////////////////////////////////////////////////////////////////////////

@@ -909,10 +909,10 @@ namespace adiar::internal
 
       // Do Partial Quantification as long as...
       //   1. ... it stays smaller than 1+epsilon of the input size.
-      const size_t transposition__size_threshold =
-        (std::min(static_cast<double>(std::numeric_limits<size_t>::max() / 2u),
-                  static_cast<double>(ep.template get<exec_policy::quantify::transposition_growth>())
-                  * static_cast<double>(dd_size)));
+      const size_t transposition__size_threshold = (std::min(
+        static_cast<double>(std::numeric_limits<size_t>::max() / 2u),
+        static_cast<double>(ep.template get<exec_policy::quantify::transposition_growth>())
+          * static_cast<double>(dd_size)));
 
       //   2. ... it has not run more than the maximum number of iterations.
       const size_t transposition__max_iterations =

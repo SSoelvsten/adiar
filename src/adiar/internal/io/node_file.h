@@ -2,6 +2,7 @@
 #define ADIAR_INTERNAL_IO_NODE_FILE_H
 
 #include <adiar/statistics.h>
+
 #include <adiar/internal/assert.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/io/file.h>
@@ -62,8 +63,7 @@ namespace adiar::internal
       ///
       /// \see    cut
       //////////////////////////////////////////////////////////////////////////
-      cuts_t max_1level_cut =
-        { cut::max, cut::max, cut::max, cut::max };
+      cuts_t max_1level_cut = { cut::max, cut::max, cut::max, cut::max };
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief An upper bound for the maximum 2-level cut of the DAG (with or
@@ -72,8 +72,7 @@ namespace adiar::internal
       ///
       /// \see    cut
       //////////////////////////////////////////////////////////////////////////
-      cuts_t max_2level_cut =
-        { cut::max, cut::max, cut::max, cut::max };
+      cuts_t max_2level_cut = { cut::max, cut::max, cut::max, cut::max };
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief The number of false and true terminals in the file. Index 0
@@ -87,7 +86,8 @@ namespace adiar::internal
       ///
       /// \param file The shared_levelized_file<node> to check its content.
       //////////////////////////////////////////////////////////////////////////
-      inline bool is_terminal() const
+      inline bool
+      is_terminal() const
       {
         // A shared_levelized_file<node> only contains a terminal iff the number
         // of arcs to a terminal value in its meta information is exactly one.
@@ -101,7 +101,8 @@ namespace adiar::internal
       ///
       /// \pre `is_terminal() == true`
       //////////////////////////////////////////////////////////////////////////
-      inline bool value() const
+      inline bool
+      value() const
       {
         adiar_assert(this->is_terminal());
 
@@ -114,7 +115,8 @@ namespace adiar::internal
       //////////////////////////////////////////////////////////////////////////
       /// \brief Whether this DAG is the false terminal only.
       //////////////////////////////////////////////////////////////////////////
-      inline bool is_false() const
+      inline bool
+      is_false() const
       {
         return this->is_terminal() && !this->value();
       }
@@ -122,7 +124,8 @@ namespace adiar::internal
       //////////////////////////////////////////////////////////////////////////
       /// \brief Whether this DAG is the true terminal only.
       //////////////////////////////////////////////////////////////////////////
-      inline bool is_true() const
+      inline bool
+      is_true() const
       {
         return this->is_terminal() && this->value();
       }

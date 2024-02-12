@@ -57,11 +57,11 @@ go_bandit([]() {
     //        / \/ \
     //        F T  T
     */
-    const node n1_5 = node(3, node::max_id,   terminal_T,   terminal_T);
-    const node n1_4 = node(3, node::max_id-1, terminal_F,   terminal_T);
-    const node n1_3 = node(2, node::max_id,   n1_4.uid(), n1_5.uid());
-    const node n1_2 = node(1, node::max_id,   terminal_T,   n1_3.uid());
-    const node n1_1 = node(0, node::max_id,   n1_2.uid(), n1_3.uid());
+    const node n1_5 = node(3, node::max_id, terminal_T, terminal_T);
+    const node n1_4 = node(3, node::max_id - 1, terminal_F, terminal_T);
+    const node n1_3 = node(2, node::max_id, n1_4.uid(), n1_5.uid());
+    const node n1_2 = node(1, node::max_id, terminal_T, n1_3.uid());
+    const node n1_1 = node(0, node::max_id, n1_2.uid(), n1_3.uid());
 
     { // Garbage collect writers to free write-lock
       node_writer nw(zdd_1);
@@ -79,10 +79,10 @@ go_bandit([]() {
     //       / \/ \
     //       F T  T
     */
-    const node n2_4 = node(6, node::max_id,   terminal_T,   terminal_T);
-    const node n2_3 = node(6, node::max_id-1, terminal_F,   terminal_T);
-    const node n2_2 = node(4, node::max_id,   n2_3.uid(), n2_4.uid());
-    const node n2_1 = node(2, node::max_id,   n2_3.uid(), n2_2.uid());
+    const node n2_4 = node(6, node::max_id, terminal_T, terminal_T);
+    const node n2_3 = node(6, node::max_id - 1, terminal_F, terminal_T);
+    const node n2_2 = node(4, node::max_id, n2_3.uid(), n2_4.uid());
+    const node n2_1 = node(2, node::max_id, n2_3.uid(), n2_2.uid());
 
     { // Garbage collect writers to free write-lock
       node_writer nw(zdd_2);
@@ -95,13 +95,13 @@ go_bandit([]() {
 
     describe("zdd_contains(A, begin, end)", [&]() {
       it("returns false for Ø on Ø", [&]() {
-        const std::vector<int> a = { };
+        const std::vector<int> a = {};
 
         AssertThat(zdd_contains(zdd_F, a.begin(), a.end()), Is().False());
       });
 
       it("returns true for { Ø } on Ø", [&]() {
-        const std::vector<int> a = { };
+        const std::vector<int> a = {};
 
         AssertThat(zdd_contains(zdd_T, a.begin(), a.end()), Is().True());
       });
@@ -113,7 +113,7 @@ go_bandit([]() {
       });
 
       it("returns visited root for [1] on Ø", [&]() {
-        const std::vector<int> a = { };
+        const std::vector<int> a = {};
 
         AssertThat(zdd_contains(zdd_1, a.begin(), a.end()), Is().True());
       });
@@ -173,7 +173,7 @@ go_bandit([]() {
       });
 
       it("returns visited root for [2] on Ø", [&]() {
-        const std::vector<int> a = { };
+        const std::vector<int> a = {};
 
         AssertThat(zdd_contains(zdd_2, a.begin(), a.end()), Is().False());
       });
@@ -233,4 +233,4 @@ go_bandit([]() {
       });
     });
   });
- });
+});

@@ -158,7 +158,7 @@ namespace adiar
       public:
         constexpr transposition_growth()
           : _value(1.5f)
-        { }
+        {}
 
         /// \brief Wrap a `float`.
         constexpr transposition_growth(float value)
@@ -166,7 +166,10 @@ namespace adiar
         {}
 
         /// \brief Reobtain the wrapped `float`
-        operator float() const { return this->_value; }
+        operator float() const
+        {
+          return this->_value;
+        }
       };
 
       //////////////////////////////////////////////////////////////////////////
@@ -206,7 +209,10 @@ namespace adiar
         {}
 
         /// \brief Reobtain the wrapped `unsigned char` value
-        operator unsigned char() const { return this->_value; }
+        operator unsigned char() const
+        {
+          return this->_value;
+        }
       };
     };
 
@@ -276,7 +282,7 @@ namespace adiar
         /// \brief Default value construction.
         constexpr fast_reduce()
           : _value(0.05f)
-        { }
+        {}
 
         /// \brief Conversion constructor from `float`.
         constexpr fast_reduce(float f)
@@ -284,7 +290,10 @@ namespace adiar
         {}
 
         /// \brief Reobtain this value as a `float`.
-        operator float() const { return static_cast<double>(this->_value) / ticks; }
+        operator float() const
+        {
+          return static_cast<double>(this->_value) / ticks;
+        }
 
         bool
         operator==(const fast_reduce& other) const
@@ -321,7 +330,7 @@ namespace adiar
     /// \brief Maximal number of repeated transpositions in `quantify`.
     ////////////////////////////////////////////////////////////////////////////
     quantify::transposition_max _quantify__transposition_max /*default*/;
-      ;
+    ;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Chosen epsilon value for Nested Sweeping to start skipping the

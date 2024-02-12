@@ -1,5 +1,4 @@
 #include "../../../test.h"
-
 #include <array>
 #include <filesystem>
 
@@ -14,7 +13,7 @@ go_bandit([]() {
     // the '/tmp/' folder and also to './'.
     //
     // HACK: get the temporary folder itself directly from TPIE.
-    const std::string tmp_path = tpie::tempname::get_actual_path() + "/";
+    const std::string tmp_path  = tpie::tempname::get_actual_path() + "/";
     const std::string curr_path = "./";
 
     describe("shared_file<int>", [&tmp_path, &curr_path]() {
@@ -156,13 +155,13 @@ go_bandit([]() {
           {
             file_stream<int, false> fs(f);
             AssertThat(fs.can_pull(), Is().True());
-            AssertThat(fs.pull(),     Is().EqualTo(1));
+            AssertThat(fs.pull(), Is().EqualTo(1));
             AssertThat(fs.can_pull(), Is().True());
-            AssertThat(fs.pull(),     Is().EqualTo(2));
+            AssertThat(fs.pull(), Is().EqualTo(2));
             AssertThat(fs.can_pull(), Is().True());
-            AssertThat(fs.pull(),     Is().EqualTo(3));
+            AssertThat(fs.pull(), Is().EqualTo(3));
             AssertThat(fs.can_pull(), Is().True());
-            AssertThat(fs.pull(),     Is().EqualTo(4));
+            AssertThat(fs.pull(), Is().EqualTo(4));
             AssertThat(fs.can_pull(), Is().False());
           }
         });
@@ -176,13 +175,13 @@ go_bandit([]() {
           {
             file_stream<int, true> fs(f);
             AssertThat(fs.can_pull(), Is().True());
-            AssertThat(fs.pull(),     Is().EqualTo(84));
+            AssertThat(fs.pull(), Is().EqualTo(84));
             AssertThat(fs.can_pull(), Is().True());
-            AssertThat(fs.pull(),     Is().EqualTo(21));
+            AssertThat(fs.pull(), Is().EqualTo(21));
             AssertThat(fs.can_pull(), Is().True());
-            AssertThat(fs.pull(),     Is().EqualTo(42));
+            AssertThat(fs.pull(), Is().EqualTo(42));
             AssertThat(fs.can_pull(), Is().True());
-            AssertThat(fs.pull(),     Is().EqualTo(21));
+            AssertThat(fs.pull(), Is().EqualTo(21));
             AssertThat(fs.can_pull(), Is().False());
           }
         });
@@ -221,15 +220,15 @@ go_bandit([]() {
           {
             file_stream<int> fs(f2);
             AssertThat(fs.can_pull(), Is().True());
-            AssertThat(fs.pull(),     Is().EqualTo(1));
+            AssertThat(fs.pull(), Is().EqualTo(1));
             AssertThat(fs.can_pull(), Is().True());
-            AssertThat(fs.pull(),     Is().EqualTo(2));
+            AssertThat(fs.pull(), Is().EqualTo(2));
             AssertThat(fs.can_pull(), Is().True());
-            AssertThat(fs.pull(),     Is().EqualTo(4));
+            AssertThat(fs.pull(), Is().EqualTo(4));
             AssertThat(fs.can_pull(), Is().True());
-            AssertThat(fs.pull(),     Is().EqualTo(8));
+            AssertThat(fs.pull(), Is().EqualTo(8));
             AssertThat(fs.can_pull(), Is().True());
-            AssertThat(fs.pull(),     Is().EqualTo(16));
+            AssertThat(fs.pull(), Is().EqualTo(16));
             AssertThat(fs.can_pull(), Is().False());
           }
         });
@@ -239,9 +238,7 @@ go_bandit([]() {
         std::string file_path = tmp_path + "persisted-shared-path.adiar";
 
         // Clean up after prior test run
-        if (std::filesystem::exists(file_path)) {
-          std::filesystem::remove(file_path);
-        }
+        if (std::filesystem::exists(file_path)) { std::filesystem::remove(file_path); }
 
         { // Create a persisted file
           shared_file<int> f;
@@ -261,33 +258,29 @@ go_bandit([]() {
 
           file_stream<int> fs(f);
           AssertThat(fs.can_pull(), Is().True());
-          AssertThat(fs.pull(),     Is().EqualTo(0));
+          AssertThat(fs.pull(), Is().EqualTo(0));
           AssertThat(fs.can_pull(), Is().True());
-          AssertThat(fs.pull(),     Is().EqualTo(2));
+          AssertThat(fs.pull(), Is().EqualTo(2));
           AssertThat(fs.can_pull(), Is().True());
-          AssertThat(fs.pull(),     Is().EqualTo(4));
+          AssertThat(fs.pull(), Is().EqualTo(4));
           AssertThat(fs.can_pull(), Is().True());
-          AssertThat(fs.pull(),     Is().EqualTo(6));
+          AssertThat(fs.pull(), Is().EqualTo(6));
           AssertThat(fs.can_pull(), Is().True());
-          AssertThat(fs.pull(),     Is().EqualTo(8));
+          AssertThat(fs.pull(), Is().EqualTo(8));
           AssertThat(fs.can_pull(), Is().False());
 
           // TODO: header file content
         }
 
         // Clean up of this test
-        if (std::filesystem::exists(file_path)) {
-          std::filesystem::remove(file_path);
-        }
+        if (std::filesystem::exists(file_path)) { std::filesystem::remove(file_path); }
       });
 
       it("can move, persist and reopen file [./]", [&curr_path]() {
         std::string file_path = curr_path + "persisted-shared-path.adiar";
 
         // Clean up after prior test run
-        if (std::filesystem::exists(file_path)) {
-          std::filesystem::remove(file_path);
-        }
+        if (std::filesystem::exists(file_path)) { std::filesystem::remove(file_path); }
 
         { // Create a persisted file
           shared_file<int> f;
@@ -307,22 +300,20 @@ go_bandit([]() {
 
           file_stream<int> fs(f);
           AssertThat(fs.can_pull(), Is().True());
-          AssertThat(fs.pull(),     Is().EqualTo(1));
+          AssertThat(fs.pull(), Is().EqualTo(1));
           AssertThat(fs.can_pull(), Is().True());
-          AssertThat(fs.pull(),     Is().EqualTo(3));
+          AssertThat(fs.pull(), Is().EqualTo(3));
           AssertThat(fs.can_pull(), Is().True());
-          AssertThat(fs.pull(),     Is().EqualTo(5));
+          AssertThat(fs.pull(), Is().EqualTo(5));
           AssertThat(fs.can_pull(), Is().True());
-          AssertThat(fs.pull(),     Is().EqualTo(7));
+          AssertThat(fs.pull(), Is().EqualTo(7));
           AssertThat(fs.can_pull(), Is().False());
 
           // TODO: header file content
         }
 
         // Clean up of this test
-        if (std::filesystem::exists(file_path)) {
-          std::filesystem::remove(file_path);
-        }
+        if (std::filesystem::exists(file_path)) { std::filesystem::remove(file_path); }
       });
     });
 
@@ -548,36 +539,36 @@ go_bandit([]() {
             lfw.push<0>(21);
             lfw.push<1>(2);
             lfw.push<1>(3);
-            lfw.push(level_info{0,2});
-            lfw.push(level_info{1,3});
-            lfw.push(level_info{2,1});
+            lfw.push(level_info{ 0, 2 });
+            lfw.push(level_info{ 1, 3 });
+            lfw.push(level_info{ 2, 1 });
           }
           {
             levelized_file_stream<int, false> lfs(lf); // <-- default: forwards
             level_info_stream<false> lis(lf);          // <-- default: backwards
 
             AssertThat(lfs.can_pull<0>(), Is().True());
-            AssertThat(lfs.pull<0>(),     Is().EqualTo(42));
+            AssertThat(lfs.pull<0>(), Is().EqualTo(42));
             AssertThat(lfs.can_pull<0>(), Is().True());
-            AssertThat(lfs.pull<0>(),     Is().EqualTo(22));
+            AssertThat(lfs.pull<0>(), Is().EqualTo(22));
             AssertThat(lfs.can_pull<0>(), Is().True());
-            AssertThat(lfs.pull<0>(),     Is().EqualTo(21));
+            AssertThat(lfs.pull<0>(), Is().EqualTo(21));
             AssertThat(lfs.can_pull<0>(), Is().False());
 
             AssertThat(lfs.can_pull<1>(), Is().True());
-            AssertThat(lfs.pull<1>(),     Is().EqualTo(1));
+            AssertThat(lfs.pull<1>(), Is().EqualTo(1));
             AssertThat(lfs.can_pull<1>(), Is().True());
-            AssertThat(lfs.pull<1>(),     Is().EqualTo(2));
+            AssertThat(lfs.pull<1>(), Is().EqualTo(2));
             AssertThat(lfs.can_pull<1>(), Is().True());
-            AssertThat(lfs.pull<1>(),     Is().EqualTo(3));
+            AssertThat(lfs.pull<1>(), Is().EqualTo(3));
             AssertThat(lfs.can_pull<1>(), Is().False());
 
             AssertThat(lis.can_pull(), Is().True());
-            AssertThat(lis.pull(),     Is().EqualTo(level_info{ 2,1 }));
+            AssertThat(lis.pull(), Is().EqualTo(level_info{ 2, 1 }));
             AssertThat(lis.can_pull(), Is().True());
-            AssertThat(lis.pull(),     Is().EqualTo(level_info{ 1,3 }));
+            AssertThat(lis.pull(), Is().EqualTo(level_info{ 1, 3 }));
             AssertThat(lis.can_pull(), Is().True());
-            AssertThat(lis.pull(),     Is().EqualTo(level_info{ 0,2 }));
+            AssertThat(lis.pull(), Is().EqualTo(level_info{ 0, 2 }));
             AssertThat(lis.can_pull(), Is().False());
           }
         });
@@ -593,41 +584,41 @@ go_bandit([]() {
             lfw.push<1>(4);
             lfw.push<1>(8);
             lfw.push<0>(1);
-            lfw.push(level_info{0,2});
-            lfw.push(level_info{1,3});
-            lfw.push(level_info{2,1});
-            lfw.push(level_info{4,1});
+            lfw.push(level_info{ 0, 2 });
+            lfw.push(level_info{ 1, 3 });
+            lfw.push(level_info{ 2, 1 });
+            lfw.push(level_info{ 4, 1 });
           }
           {
             levelized_file_stream<int, true> lfs(lf); // <-- default: forwards
             level_info_stream<true> lis(lf);          // <-- default: backwards
 
             AssertThat(lfs.can_pull<0>(), Is().True());
-            AssertThat(lfs.pull<0>(),     Is().EqualTo(1));
+            AssertThat(lfs.pull<0>(), Is().EqualTo(1));
             AssertThat(lfs.can_pull<0>(), Is().True());
-            AssertThat(lfs.pull<0>(),     Is().EqualTo(4));
+            AssertThat(lfs.pull<0>(), Is().EqualTo(4));
             AssertThat(lfs.can_pull<0>(), Is().True());
-            AssertThat(lfs.pull<0>(),     Is().EqualTo(8));
+            AssertThat(lfs.pull<0>(), Is().EqualTo(8));
             AssertThat(lfs.can_pull<0>(), Is().True());
-            AssertThat(lfs.pull<0>(),     Is().EqualTo(16));
+            AssertThat(lfs.pull<0>(), Is().EqualTo(16));
             AssertThat(lfs.can_pull<0>(), Is().False());
 
             AssertThat(lfs.can_pull<1>(), Is().True());
-            AssertThat(lfs.pull<1>(),     Is().EqualTo(8));
+            AssertThat(lfs.pull<1>(), Is().EqualTo(8));
             AssertThat(lfs.can_pull<1>(), Is().True());
-            AssertThat(lfs.pull<1>(),     Is().EqualTo(4));
+            AssertThat(lfs.pull<1>(), Is().EqualTo(4));
             AssertThat(lfs.can_pull<1>(), Is().True());
-            AssertThat(lfs.pull<1>(),     Is().EqualTo(2));
+            AssertThat(lfs.pull<1>(), Is().EqualTo(2));
             AssertThat(lfs.can_pull<1>(), Is().False());
 
             AssertThat(lis.can_pull(), Is().True());
-            AssertThat(lis.pull(),     Is().EqualTo(level_info{ 0,2 }));
+            AssertThat(lis.pull(), Is().EqualTo(level_info{ 0, 2 }));
             AssertThat(lis.can_pull(), Is().True());
-            AssertThat(lis.pull(),     Is().EqualTo(level_info{ 1,3 }));
+            AssertThat(lis.pull(), Is().EqualTo(level_info{ 1, 3 }));
             AssertThat(lis.can_pull(), Is().True());
-            AssertThat(lis.pull(),     Is().EqualTo(level_info{ 2,1 }));
+            AssertThat(lis.pull(), Is().EqualTo(level_info{ 2, 1 }));
             AssertThat(lis.can_pull(), Is().True());
-            AssertThat(lis.pull(),     Is().EqualTo(level_info{ 4,1 }));
+            AssertThat(lis.pull(), Is().EqualTo(level_info{ 4, 1 }));
             AssertThat(lis.can_pull(), Is().False());
           }
         });
@@ -672,7 +663,7 @@ go_bandit([]() {
             lfw.push<0>(2);
             lfw.push<0>(3);
 
-            lfw.push(level_info{ 0,1 });
+            lfw.push(level_info{ 0, 1 });
           }
 
           shared_levelized_file<int> lf2 = shared_levelized_file<int>::copy(lf1);
@@ -698,9 +689,9 @@ go_bandit([]() {
             levelized_file_stream<int> lfs(lf2);
 
             AssertThat(lfs.can_pull<0>(), Is().True());
-            AssertThat(lfs.pull<0>(),     Is().EqualTo(2));
+            AssertThat(lfs.pull<0>(), Is().EqualTo(2));
             AssertThat(lfs.can_pull<0>(), Is().True());
-            AssertThat(lfs.pull<0>(),     Is().EqualTo(3));
+            AssertThat(lfs.pull<0>(), Is().EqualTo(3));
             AssertThat(lfs.can_pull<0>(), Is().False());
 
             AssertThat(lfs.can_pull<1>(), Is().False());
@@ -708,7 +699,7 @@ go_bandit([]() {
             level_info_stream<> lis(lf2);
 
             AssertThat(lis.can_pull(), Is().True());
-            AssertThat(lis.pull(),     Is().EqualTo(level_info{ 0,1 }));
+            AssertThat(lis.pull(), Is().EqualTo(level_info{ 0, 1 }));
             AssertThat(lis.can_pull(), Is().False());
           }
         });
@@ -718,19 +709,19 @@ go_bandit([]() {
         std::string path_prefix = tmp_path + "persisted-shared-path-prefix.adiar";
 
         // Clean up after prior test run
-        if (std::filesystem::exists(path_prefix+".file_0"))
-          std::filesystem::remove(path_prefix+".file_0");
-        if (std::filesystem::exists(path_prefix+".file_1"))
-          std::filesystem::remove(path_prefix+".file_1");
-        if (std::filesystem::exists(path_prefix+".levels"))
-          std::filesystem::remove(path_prefix+".levels");
+        if (std::filesystem::exists(path_prefix + ".file_0"))
+          std::filesystem::remove(path_prefix + ".file_0");
+        if (std::filesystem::exists(path_prefix + ".file_1"))
+          std::filesystem::remove(path_prefix + ".file_1");
+        if (std::filesystem::exists(path_prefix + ".levels"))
+          std::filesystem::remove(path_prefix + ".levels");
 
         { // Create a persisted file
           shared_levelized_file<int> lf;
 
           levelized_file_writer<int> lfw(lf);
           lfw.push<0>(42);
-          lfw.push(level_info{ 0,1 });
+          lfw.push(level_info{ 0, 1 });
 
           // TODO: header file content
           lfw.detach();
@@ -745,50 +736,49 @@ go_bandit([]() {
           levelized_file_stream<int> lfs(lf);
 
           AssertThat(lfs.can_pull<0>(), Is().True());
-          AssertThat(lfs.pull<0>(),     Is().EqualTo(42));
+          AssertThat(lfs.pull<0>(), Is().EqualTo(42));
           AssertThat(lfs.can_pull<0>(), Is().False());
 
           AssertThat(lfs.can_pull<1>(), Is().False());
 
           level_info_stream<false> lis(lf);
 
-
           AssertThat(lis.can_pull(), Is().True());
-          AssertThat(lis.pull(),     Is().EqualTo(level_info{ 0,1 }));
+          AssertThat(lis.pull(), Is().EqualTo(level_info{ 0, 1 }));
           AssertThat(lis.can_pull(), Is().False());
 
           // TODO: header file content
         }
 
         // Clean up of this test
-        if (std::filesystem::exists(path_prefix+".file_0"))
-          std::filesystem::remove(path_prefix+".file_0");
-        if (std::filesystem::exists(path_prefix+".file_1"))
-          std::filesystem::remove(path_prefix+".file_1");
-        if (std::filesystem::exists(path_prefix+".levels"))
-          std::filesystem::remove(path_prefix+".levels");
+        if (std::filesystem::exists(path_prefix + ".file_0"))
+          std::filesystem::remove(path_prefix + ".file_0");
+        if (std::filesystem::exists(path_prefix + ".file_1"))
+          std::filesystem::remove(path_prefix + ".file_1");
+        if (std::filesystem::exists(path_prefix + ".levels"))
+          std::filesystem::remove(path_prefix + ".levels");
       });
 
       it("can move, persist and reopen a levelized file [./]", [&curr_path]() {
         std::string path_prefix = curr_path + "persisted-shared-path-prefix.adiar";
 
         // Clean up after prior test run
-        if (std::filesystem::exists(path_prefix+".file_0"))
-          std::filesystem::remove(path_prefix+".file_0");
-        if (std::filesystem::exists(path_prefix+".file_1"))
-          std::filesystem::remove(path_prefix+".file_1");
-        if (std::filesystem::exists(path_prefix+".levels"))
-          std::filesystem::remove(path_prefix+".levels");
+        if (std::filesystem::exists(path_prefix + ".file_0"))
+          std::filesystem::remove(path_prefix + ".file_0");
+        if (std::filesystem::exists(path_prefix + ".file_1"))
+          std::filesystem::remove(path_prefix + ".file_1");
+        if (std::filesystem::exists(path_prefix + ".levels"))
+          std::filesystem::remove(path_prefix + ".levels");
 
         { // Create a persisted file
           shared_levelized_file<int> lf;
 
           levelized_file_writer<int> lfw(lf);
           lfw.push<0>(21);
-          lfw.push(level_info{ 0,1 });
+          lfw.push(level_info{ 0, 1 });
           lfw.push<1>(7);
           lfw.push<1>(14);
-          lfw.push(level_info{ 1,2 });
+          lfw.push(level_info{ 1, 2 });
 
           // TODO: header file content
           lfw.detach();
@@ -803,34 +793,34 @@ go_bandit([]() {
           levelized_file_stream<int> lfs(lf);
 
           AssertThat(lfs.can_pull<0>(), Is().True());
-          AssertThat(lfs.pull<0>(),     Is().EqualTo(21));
+          AssertThat(lfs.pull<0>(), Is().EqualTo(21));
           AssertThat(lfs.can_pull<0>(), Is().False());
 
           AssertThat(lfs.can_pull<1>(), Is().True());
-          AssertThat(lfs.pull<1>(),     Is().EqualTo(7));
+          AssertThat(lfs.pull<1>(), Is().EqualTo(7));
           AssertThat(lfs.can_pull<1>(), Is().True());
-          AssertThat(lfs.pull<1>(),     Is().EqualTo(14));
+          AssertThat(lfs.pull<1>(), Is().EqualTo(14));
           AssertThat(lfs.can_pull<1>(), Is().False());
 
           level_info_stream<false> lis(lf);
 
           AssertThat(lis.can_pull(), Is().True());
-          AssertThat(lis.pull(),     Is().EqualTo(level_info{ 1,2 }));
+          AssertThat(lis.pull(), Is().EqualTo(level_info{ 1, 2 }));
           AssertThat(lis.can_pull(), Is().True());
-          AssertThat(lis.pull(),     Is().EqualTo(level_info{ 0,1 }));
+          AssertThat(lis.pull(), Is().EqualTo(level_info{ 0, 1 }));
           AssertThat(lis.can_pull(), Is().False());
 
           // TODO: header file content
         }
 
         // Clean up of this test
-        if (std::filesystem::exists(path_prefix+".file_0"))
-          std::filesystem::remove(path_prefix+".file_0");
-        if (std::filesystem::exists(path_prefix+".file_1"))
-          std::filesystem::remove(path_prefix+".file_1");
-        if (std::filesystem::exists(path_prefix+".levels"))
-          std::filesystem::remove(path_prefix+".levels");
+        if (std::filesystem::exists(path_prefix + ".file_0"))
+          std::filesystem::remove(path_prefix + ".file_0");
+        if (std::filesystem::exists(path_prefix + ".file_1"))
+          std::filesystem::remove(path_prefix + ".file_1");
+        if (std::filesystem::exists(path_prefix + ".levels"))
+          std::filesystem::remove(path_prefix + ".levels");
       });
     });
   });
- });
+});

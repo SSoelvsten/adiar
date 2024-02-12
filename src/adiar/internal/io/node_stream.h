@@ -1,8 +1,8 @@
 #ifndef ADIAR_INTERNAL_IO_NODE_STREAM_H
 #define ADIAR_INTERNAL_IO_NODE_STREAM_H
 
-#include <adiar/internal/dd.h>
 #include <adiar/internal/data_types/node.h>
+#include <adiar/internal/dd.h>
 #include <adiar/internal/io/levelized_file.h>
 #include <adiar/internal/io/levelized_file_stream.h>
 
@@ -16,9 +16,8 @@ namespace adiar::internal
   ///
   /// \see shared_levelized_file<node>
   //////////////////////////////////////////////////////////////////////////////
-  template<bool Reverse = false>
-  class node_stream 
-    : public levelized_file_stream<node, !Reverse>
+  template <bool Reverse = false>
+  class node_stream : public levelized_file_stream<node, !Reverse>
   {
     using parent_t = levelized_file_stream<node, !Reverse>;
 
@@ -29,53 +28,60 @@ namespace adiar::internal
     node_stream() = default;
 
     ////////////////////////////////////////////////////////////////////////////
-    node_stream(const node_stream<Reverse> &) = delete;
-    node_stream(node_stream<Reverse> &&) = delete;
+    node_stream(const node_stream<Reverse>&) = delete;
+    node_stream(node_stream<Reverse>&&)      = delete;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a node file.
     ////////////////////////////////////////////////////////////////////////////
-    node_stream(const levelized_file<node> &file,
-                const bool negate = false)
+    node_stream(const levelized_file<node>& file, const bool negate = false)
       : parent_t(file, negate)
-    { }
+    {}
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a shared node file.
     ////////////////////////////////////////////////////////////////////////////
-    node_stream(const shared_ptr<levelized_file<node>> &file,
-                const bool negate = false)
+    node_stream(const shared_ptr<levelized_file<node>>& file, const bool negate = false)
       : parent_t(file, negate)
-    { }
+    {}
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a Decision Diagram.
     ////////////////////////////////////////////////////////////////////////////
-    node_stream(const dd &diagram)
+    node_stream(const dd& diagram)
       : parent_t(diagram.file, diagram.negate)
-    { }
+    {}
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the stream contains more elements.
     ////////////////////////////////////////////////////////////////////////////
-    bool can_pull() const
-    { return parent_t::template can_pull<0>(); }
+    bool
+    can_pull() const
+    {
+      return parent_t::template can_pull<0>();
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain next element (and move the read head).
     ///
     /// \pre `can_pull() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    const node pull()
-    { return parent_t::template pull<0>(); }
+    const node
+    pull()
+    {
+      return parent_t::template pull<0>();
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the next element (but do not move the read head).
     ///
     /// \pre `can_pull() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    const node peek()
-    { return parent_t::template peek<0>(); }
+    const node
+    peek()
+    {
+      return parent_t::template peek<0>();
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief   Obtain the first node past the seeked value.
@@ -84,8 +90,11 @@ namespace adiar::internal
     ///
     /// \pre     `can_pull() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    const node seek(const node::uid_type &u)
-    { return parent_t::_streams[0].seek(u); }
+    const node
+    seek(const node::uid_type& u)
+    {
+      return parent_t::_streams[0].seek(u);
+    }
   };
 }
 

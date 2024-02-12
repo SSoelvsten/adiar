@@ -70,8 +70,7 @@ namespace adiar::internal
     /// \brief Union of levelized node or arc files to reflect the possible
     ///        return types of a function and a 'no_file' for 'error'.
     ////////////////////////////////////////////////////////////////////////////
-    std::variant<no_file, shared_node_file_type, shared_arc_file_type>
-    _union;
+    std::variant<no_file, shared_node_file_type, shared_arc_file_type> _union;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Propagation of the `dd.negate` flag.
@@ -96,22 +95,23 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Conversion for algorithms returning already-reduced nodes.
     ////////////////////////////////////////////////////////////////////////////
-    __dd(const shared_node_file_type &f)
+    __dd(const shared_node_file_type& f)
       : _union(f)
-    { }
+    {}
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Conversion for algorithms returning to-be reduced arcs
     ////////////////////////////////////////////////////////////////////////////
-    __dd(const shared_arc_file_type &f, const exec_policy &ep)
-      : _union(f), _policy(ep)
-    { }
+    __dd(const shared_arc_file_type& f, const exec_policy& ep)
+      : _union(f)
+      , _policy(ep)
+    {}
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Conversion from a decision diagram (such that it can be passed
     ///        along).
     ////////////////////////////////////////////////////////////////////////////
-    __dd(const dd &dd);
+    __dd(const dd& dd);
 
     ////////////////////////////////////////////////////////////////////////////
     // Accessors
@@ -120,8 +120,9 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the union currently holds a certain file type.
     //////////////////////////////////////////////////////////////////////////////
-    template<typename file_t>
-    bool has() const
+    template <typename file_t>
+    bool
+    has() const
     {
       return std::holds_alternative<file_t>(_union);
     }
@@ -131,8 +132,9 @@ namespace adiar::internal
     ///
     /// \pre `has<file_t>() == true`
     //////////////////////////////////////////////////////////////////////////////
-    template<typename file_t>
-    const file_t& get() const
+    template <typename file_t>
+    const file_t&
+    get() const
     {
       return std::get<file_t>(_union);
     }
@@ -142,7 +144,8 @@ namespace adiar::internal
     ///
     /// \details The end user should not see this in the end.
     //////////////////////////////////////////////////////////////////////////////
-    bool empty() const
+    bool
+    empty() const
     {
       return has<no_file>();
     }
@@ -153,15 +156,14 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Number of nodes.
     ////////////////////////////////////////////////////////////////////////////
-    size_t size() const
+    size_t
+    size() const
     {
       if (has<shared_arc_file_type>()) {
         // TODO (QMDD): Divide by node::outdegree instead of 2u
         return get<shared_arc_file_type>()->size() / 2u;
       }
-      if (has<shared_node_file_type>()) {
-        return get<shared_node_file_type>()->size();
-      }
+      if (has<shared_node_file_type>()) { return get<shared_node_file_type>()->size(); }
       return 0u;
     }
 
@@ -171,17 +173,15 @@ namespace adiar::internal
     ///
     /// \param ct The type of the cut to obtain
     ////////////////////////////////////////////////////////////////////////////
-    cut::size_type max_1level_cut(const cut ct) const
+    cut::size_type
+    max_1level_cut(const cut ct) const
     {
       if (has<shared_arc_file_type>()) {
-        const shared_arc_file_type &af = get<shared_arc_file_type>();
-        return af->max_1level_cut
-          + (ct.includes(false) ? af->number_of_terminals[false] : 0u)
-          + (ct.includes(true)  ? af->number_of_terminals[true]  : 0u);
+        const shared_arc_file_type& af = get<shared_arc_file_type>();
+        return af->max_1level_cut + (ct.includes(false) ? af->number_of_terminals[false] : 0u)
+          + (ct.includes(true) ? af->number_of_terminals[true] : 0u);
       }
-      if (has<shared_node_file_type>()) {
-        return get<shared_node_file_type>()->max_1level_cut[ct];
-      }
+      if (has<shared_node_file_type>()) { return get<shared_node_file_type>()->max_1level_cut[ct]; }
       return 0u;
     }
 
@@ -191,27 +191,26 @@ namespace adiar::internal
     ///
     /// \param ct The type of the cut to obtain
     ////////////////////////////////////////////////////////////////////////////
-    cut::size_type max_2level_cut(const cut ct) const
+    cut::size_type
+    max_2level_cut(const cut ct) const
     {
       if (has<shared_arc_file_type>()) {
-        const shared_arc_file_type &af = get<shared_arc_file_type>();
-        return std::min(// 3/2 times the 1-level cut
-                        (3 * af->max_1level_cut) / 2
-                        + (ct.includes(false) ? af->number_of_terminals[false] : 0u)
-                        + (ct.includes(true)  ? af->number_of_terminals[true]  : 0u),
-                        // At most the number of nodes + 1
-                        (af->size() / 2u) + 1);
+        const shared_arc_file_type& af = get<shared_arc_file_type>();
+        return std::min( // 3/2 times the 1-level cut
+          (3 * af->max_1level_cut) / 2 + (ct.includes(false) ? af->number_of_terminals[false] : 0u)
+            + (ct.includes(true) ? af->number_of_terminals[true] : 0u),
+          // At most the number of nodes + 1
+          (af->size() / 2u) + 1);
       }
-      if (has<shared_node_file_type>()) {
-        return get<shared_node_file_type>()->max_2level_cut[ct];
-      }
+      if (has<shared_node_file_type>()) { return get<shared_node_file_type>()->max_2level_cut[ct]; }
       return 0u;
     }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Number of terminals of a certain value.
     ////////////////////////////////////////////////////////////////////////////
-    size_t number_of_terminals(const bool value) const
+    size_t
+    number_of_terminals(const bool value) const
     {
       if (has<shared_arc_file_type>()) {
         return get<shared_arc_file_type>()->number_of_terminals[negate ^ value];
@@ -225,14 +224,15 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Number of terminals.
     ////////////////////////////////////////////////////////////////////////////
-    size_t number_of_terminals() const
+    size_t
+    number_of_terminals() const
     {
       if (has<shared_arc_file_type>()) {
-        const shared_arc_file_type &af = get<shared_arc_file_type>();
+        const shared_arc_file_type& af = get<shared_arc_file_type>();
         return af->number_of_terminals[false] + af->number_of_terminals[true];
       }
       if (has<shared_node_file_type>()) {
-        const shared_node_file_type &nf = get<shared_node_file_type>();
+        const shared_node_file_type& nf = get<shared_node_file_type>();
         return nf->number_of_terminals[false] + nf->number_of_terminals[true];
       }
       return 0u;
@@ -310,7 +310,8 @@ namespace adiar::internal
     ///        then that object is destructed together with the physical files
     ///        on disk (if temporary).
     ////////////////////////////////////////////////////////////////////////////
-    void deref()
+    void
+    deref()
     {
       file.reset();
     }
@@ -326,24 +327,27 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor to wrap the node-based result of an algorithm.
     ////////////////////////////////////////////////////////////////////////////
-    dd(const shared_node_file_type &f, bool negate = false)
-      : file(f), negate(negate)
-    { }
+    dd(const shared_node_file_type& f, bool negate = false)
+      : file(f)
+      , negate(negate)
+    {}
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Copy construction, incrementing the reference count on the file
     ///        underneath.
     ////////////////////////////////////////////////////////////////////////////
-    dd(const dd &dd)
-      : file(dd.file), negate(dd.negate)
-    { }
+    dd(const dd& dd)
+      : file(dd.file)
+      , negate(dd.negate)
+    {}
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Move construction, taking over ownership of the files underneath.
     ////////////////////////////////////////////////////////////////////////////
-    dd(dd &&dd)
-      : file(std::move(dd.file)), negate(std::move(dd.negate))
-    { }
+    dd(dd&& dd)
+      : file(std::move(dd.file))
+      , negate(std::move(dd.negate))
+    {}
 
     ////////////////////////////////////////////////////////////////////////////
     // NOTE:
@@ -358,7 +362,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Read-only access to the negation flag.
     ////////////////////////////////////////////////////////////////////////////
-    bool is_negated() const
+    bool
+    is_negated() const
     {
       return negate;
     }
@@ -366,7 +371,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Read-only access to the raw files and meta information.
     ////////////////////////////////////////////////////////////////////////////
-    const shared_node_file_type file_ptr() const
+    const shared_node_file_type
+    file_ptr() const
     {
       return file;
     }
@@ -376,7 +382,8 @@ namespace adiar::internal
     ///        information, i.e. this is similar to writing
     ///        `.file_ptr()->`.
     ////////////////////////////////////////////////////////////////////////////
-    const node_file_type* operator->() const
+    const node_file_type*
+    operator->() const
     {
       return file_ptr().get();
     }
@@ -388,7 +395,8 @@ namespace adiar::internal
     ///
     /// \param ct The type of the cut to obtain
     ////////////////////////////////////////////////////////////////////////////
-    cut::size_type max_1level_cut(const cut ct) const
+    cut::size_type
+    max_1level_cut(const cut ct) const
     {
       return file->max_1level_cut[negate_cut_type(ct)];
     }
@@ -399,16 +407,19 @@ namespace adiar::internal
     ///
     /// \param ct The type of the cut to obtain
     ////////////////////////////////////////////////////////////////////////////
-    cut::size_type max_2level_cut(const cut ct) const
+    cut::size_type
+    max_2level_cut(const cut ct) const
     {
       return file->max_2level_cut[negate_cut_type(ct)];
     }
+
     /// \endcond
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The number of elements in the node file.
     ////////////////////////////////////////////////////////////////////////////
-    size_t size() const
+    size_t
+    size() const
     {
       return file->size();
     }
@@ -416,7 +427,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The number of nodes on the widest level.
     ////////////////////////////////////////////////////////////////////////////
-    size_t width() const
+    size_t
+    width() const
     {
       return file->width;
     }
@@ -424,7 +436,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Number of terminals of a certain value.
     ////////////////////////////////////////////////////////////////////////////
-    size_t number_of_terminals(const bool value) const
+    size_t
+    number_of_terminals(const bool value) const
     {
       return file->number_of_terminals[negate ^ value];
     }
@@ -432,7 +445,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Number of terminals.
     ////////////////////////////////////////////////////////////////////////////
-    size_t number_of_terminals() const
+    size_t
+    number_of_terminals() const
     {
       return number_of_terminals(false) + number_of_terminals(true);
     }
@@ -442,17 +456,15 @@ namespace adiar::internal
     /// \brief Obtain the cut-type that matches with the current state of the
     ///        negation flag.
     //////////////////////////////////////////////////////////////////////////////
-    cut negate_cut_type(const cut ct) const
+    cut
+    negate_cut_type(const cut ct) const
     {
       if (!negate) { return ct; }
 
       switch (ct) {
-      case cut::Internal_False:
-        return cut::Internal_True;
-      case cut::Internal_True:
-        return cut::Internal_False;
-      default:
-        return ct;
+      case cut::Internal_False: return cut::Internal_True;
+      case cut::Internal_True: return cut::Internal_False;
+      default: return ct;
       }
     }
 
@@ -471,34 +483,41 @@ namespace adiar::internal
     friend class level_merger;
 
     // |- algorithm functions and classes
-    friend bool is_isomorphic(const exec_policy &, const dd&, const dd&);
+    friend bool
+    is_isomorphic(const exec_policy&, const dd&, const dd&);
 
-    template<typename comp_policy>
-    friend bool comparison_check(const exec_policy &, const dd &, const dd &);
+    template <typename comp_policy>
+    friend bool
+    comparison_check(const exec_policy&, const dd&, const dd&);
 
-    template<typename to_policy, typename from_policy>
+    template <typename to_policy, typename from_policy>
     friend class convert_dd_policy;
 
     // |- public API
     template <typename dd_t>
-    friend bool dd_isterminal(const dd_t &dd);
+    friend bool
+    dd_isterminal(const dd_t& dd);
 
     template <typename dd_t>
-    friend bool dd_valueof(const dd_t &dd);
+    friend bool
+    dd_valueof(const dd_t& dd);
 
     template <typename dd_t>
-    friend label_type dd_minvar(const dd_t &dd);
+    friend label_type
+    dd_minvar(const dd_t& dd);
 
     template <typename dd_t>
-    friend label_type dd_maxvar(const dd_t &dd);
+    friend label_type
+    dd_maxvar(const dd_t& dd);
   };
 
-  inline __dd::__dd(const dd &dd)
-    : _union(dd.file), negate(dd.negate)
-  { }
+  inline __dd::__dd(const dd& dd)
+    : _union(dd.file)
+    , negate(dd.negate)
+  {}
 
   /// \cond
-  template<typename DD, typename __DD>
+  template <typename DD, typename __DD>
   class dd_policy
   {
     ////////////////////////////////////////////////////////////////////////////
@@ -574,7 +593,7 @@ namespace adiar::internal
     /// \returns A pointer to the node itself or one of its children.
     //////////////////////////////////////////////////////////////////////////////
     static inline pointer_type
-    reduction_rule(const node_type &n);
+    reduction_rule(const node_type& n);
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Provides the children of a node that was suppressed.
@@ -583,8 +602,9 @@ namespace adiar::internal
     ///          node, add the variable label next to these children.
     //////////////////////////////////////////////////////////////////////////////
     static inline children_type
-    reduction_rule_inv(const pointer_type &child);
+    reduction_rule_inv(const pointer_type& child);
   };
+
   /// \endcond
 }
 

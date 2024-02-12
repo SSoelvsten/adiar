@@ -5,9 +5,7 @@ go_bandit([]() {
     shared_levelized_file<zdd::node_type> x0_nf;
     {
       node_writer nw_0(x0_nf);
-      nw_0 << node(0, node::max_id,
-                          ptr_uint64(false),
-                          ptr_uint64(true));
+      nw_0 << node(0, node::max_id, ptr_uint64(false), ptr_uint64(true));
     }
 
     zdd x0(x0_nf);
@@ -15,9 +13,7 @@ go_bandit([]() {
     shared_levelized_file<zdd::node_type> x1_nf;
     {
       node_writer nw_1(x1_nf);
-      nw_1 << node(1, node::max_id,
-                          ptr_uint64(false),
-                          ptr_uint64(true));
+      nw_1 << node(1, node::max_id, ptr_uint64(false), ptr_uint64(true));
     }
 
     zdd x1(x1_nf);
@@ -26,13 +22,9 @@ go_bandit([]() {
     {
       node_writer nw_01(x0_or_x1_nf);
 
-      nw_01 << node(1, node::max_id,
-                           ptr_uint64(false),
-                           ptr_uint64(true));
+      nw_01 << node(1, node::max_id, ptr_uint64(false), ptr_uint64(true));
 
-      nw_01 << node(0, node::max_id,
-                           ptr_uint64(1, ptr_uint64::max_id),
-                           ptr_uint64(true));
+      nw_01 << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), ptr_uint64(true));
     }
 
     zdd x0_or_x1(x0_or_x1_nf);
@@ -80,14 +72,14 @@ go_bandit([]() {
 
       {
         arc_writer aw(af);
-        aw.push_internal(arc {ptr_uint64(0,0), false, ptr_uint64(1,0)});
+        aw.push_internal(arc{ ptr_uint64(0, 0), false, ptr_uint64(1, 0) });
 
-        aw.push_terminal(arc {ptr_uint64(0,0), true,  ptr_uint64(true)});
-        aw.push_terminal(arc {ptr_uint64(1,0), false, ptr_uint64(false)});
-        aw.push_terminal(arc {ptr_uint64(1,0), true,  ptr_uint64(true)});
+        aw.push_terminal(arc{ ptr_uint64(0, 0), true, ptr_uint64(true) });
+        aw.push_terminal(arc{ ptr_uint64(1, 0), false, ptr_uint64(false) });
+        aw.push_terminal(arc{ ptr_uint64(1, 0), true, ptr_uint64(true) });
 
-        aw.push(level_info(0,1u));
-        aw.push(level_info(1,1u));
+        aw.push(level_info(0, 1u));
+        aw.push(level_info(1, 1u));
       }
 
       af->max_1level_cut = 1;
@@ -107,17 +99,15 @@ go_bandit([]() {
     });
 
     describe("operators", [&]() {
-      it("should reject Ø == {Ø}", [&]() {
-        AssertThat(terminal_F, Is().Not().EqualTo(terminal_T));
-      });
+      it("should reject Ø == {Ø}",
+         [&]() { AssertThat(terminal_F, Is().Not().EqualTo(terminal_T)); });
 
       it("should accept {{0}} == {{0}} (different files)", [&]() {
         shared_levelized_file<zdd::node_type> x0_nf_2;
 
-        { node_writer nw_0(x0_nf_2);
-          nw_0 << node(0, node::max_id,
-                              ptr_uint64(false),
-                              ptr_uint64(true));
+        {
+          node_writer nw_0(x0_nf_2);
+          nw_0 << node(0, node::max_id, ptr_uint64(false), ptr_uint64(true));
         }
 
         zdd x0_2(x0_nf);
@@ -125,17 +115,14 @@ go_bandit([]() {
         AssertThat(x0, Is().EqualTo(x0_2));
       });
 
-      it("should compute {{0}} /\\ {{1}} == {{0}, {1}}", [&]() {
-        AssertThat((x0 | x1) == x0_or_x1, Is().True());
-      });
+      it("should compute {{0}} /\\ {{1}} == {{0}, {1}}",
+         [&]() { AssertThat((x0 | x1) == x0_or_x1, Is().True()); });
 
-      it("should compute {{0}} \\/ {{0},{1}} == {{0}}", [&]() {
-        AssertThat((x0 & x0_or_x1) == x0, Is().True());
-      });
+      it("should compute {{0}} \\/ {{0},{1}} == {{0}}",
+         [&]() { AssertThat((x0 & x0_or_x1) == x0, Is().True()); });
 
-      it("should compute {{0},{1}} \\ {{0} == {{0}}", [&]() {
-        AssertThat((x0_or_x1 - x0) == x1, Is().True());
-      });
+      it("should compute {{0},{1}} \\ {{0} == {{0}}",
+         [&]() { AssertThat((x0_or_x1 - x0) == x1, Is().True()); });
 
       it("should compute {{0},{1}}' == {Ø,{0,1}} with dom {0,1}", [&]() {
         shared_file<zdd::label_type> dom;
@@ -162,18 +149,18 @@ go_bandit([]() {
       });
 
       it("should compute with __zdd&& operators [|,~,-,]", [&]() {
-          shared_file<zdd::label_type> dom;
-          {
-            label_writer lw(dom);
-            lw << 0 << 1;
-          }
+        shared_file<zdd::label_type> dom;
+        {
+          label_writer lw(dom);
+          lw << 0 << 1;
+        }
 
-          domain_set(dom);
+        domain_set(dom);
 
-          zdd out = ~(~(x0 | x1) - terminal_T);
-          zdd expected = x0 | x1 | terminal_T;
-          AssertThat(expected, Is().EqualTo(out));
-        });
+        zdd out      = ~(~(x0 | x1) - terminal_T);
+        zdd expected = x0 | x1 | terminal_T;
+        AssertThat(expected, Is().EqualTo(out));
+      });
 
       it("should ?= __zdd&&", [&]() {
         zdd out = x0_or_x1;
@@ -198,10 +185,11 @@ go_bandit([]() {
       });
     });
 
-    it("should copy-construct shared_levelized_file<zdd::node_type> and negation back to zdd", [&]() {
-      zdd t2 = zdd(__zdd(x0_or_x1));
-      AssertThat(t2.file_ptr(), Is().EqualTo(x0_or_x1_nf));
-      AssertThat(t2.is_negated(), Is().False());
-    });
+    it("should copy-construct shared_levelized_file<zdd::node_type> and negation back to zdd",
+       [&]() {
+         zdd t2 = zdd(__zdd(x0_or_x1));
+         AssertThat(t2.file_ptr(), Is().EqualTo(x0_or_x1_nf));
+         AssertThat(t2.is_negated(), Is().False());
+       });
   });
- });
+});

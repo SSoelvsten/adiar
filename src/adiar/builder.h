@@ -1,15 +1,16 @@
 #ifndef ADIAR_BUILDER_H
 #define ADIAR_BUILDER_H
 
-#include <adiar/exception.h>
 #include <adiar/bdd/bdd_policy.h>
+#include <adiar/exception.h>
 #include <adiar/zdd/zdd_policy.h>
+
 #include <adiar/internal/assert.h>
-#include <adiar/internal/memory.h>
-#include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/data_types/node.h>
+#include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/io/node_file.h>
 #include <adiar/internal/io/node_writer.h>
+#include <adiar/internal/memory.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \defgroup module__builder Builder
@@ -36,12 +37,10 @@ namespace adiar
   /// \see builder buider_ptr
   //////////////////////////////////////////////////////////////////////////////
   struct builder_shared
-  {
-
-  };
+  {};
   /// \endcond
 
-  template<typename dd_policy>
+  template <typename dd_policy>
   class builder;
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -50,7 +49,7 @@ namespace adiar
   ///
   /// \see builder
   ///////////////////////////////////////////////////////////////////////////////
-  template<typename dd_policy>
+  template <typename dd_policy>
   class builder_ptr
   {
   public:
@@ -83,23 +82,25 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Copy construction.
     ////////////////////////////////////////////////////////////////////////////
-    builder_ptr(const builder_ptr &bp) = default;
+    builder_ptr(const builder_ptr& bp) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Move construction.
     ////////////////////////////////////////////////////////////////////////////
-    builder_ptr(builder_ptr &&bp) = default;
+    builder_ptr(builder_ptr&& bp) = default;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Copy construction.
     ////////////////////////////////////////////////////////////////////////////
-    builder_ptr& operator =(const builder_ptr &bp) = default;
+    builder_ptr&
+    operator=(const builder_ptr& bp) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Move construction.
     ////////////////////////////////////////////////////////////////////////////
-    builder_ptr& operator =(builder_ptr &&bp) = default;
+    builder_ptr&
+    operator=(builder_ptr&& bp) = default;
 
   private:
     ////////////////////////////////////////////////////////////////////////////
@@ -109,10 +110,10 @@ namespace adiar
     ///
     /// \param sp Reference (read-only) to the builder's shared information.
     ////////////////////////////////////////////////////////////////////////////
-    builder_ptr(const internal::node::uid_type &p,
-                const shared_ptr<const builder_shared> &sp)
-      : uid(p), builder_ref(sp)
-    { }
+    builder_ptr(const internal::node::uid_type& p, const shared_ptr<const builder_shared>& sp)
+      : uid(p)
+      , builder_ref(sp)
+    {}
   };
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -138,7 +139,7 @@ namespace adiar
   /// \tparam dd_policy Logic related to the specific type of decision diagram
   ///                   to construct.
   ///////////////////////////////////////////////////////////////////////////////
-  template<typename dd_policy>
+  template <typename dd_policy>
   class builder
   {
   private:
@@ -194,13 +195,13 @@ namespace adiar
     /// \brief Constructor.
     /////////////////////////////////////////////////////////////////////////////
     builder() noexcept
-    { }
+    {}
 
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Destructor.
     /////////////////////////////////////////////////////////////////////////////
     ~builder() noexcept
-    { }
+    {}
 
   public:
     /////////////////////////////////////////////////////////////////////////////
@@ -228,33 +229,30 @@ namespace adiar
     ///
     /// \throws invalid_argument If pointers stem from another builder.
     /////////////////////////////////////////////////////////////////////////////
-    builder_ptr<dd_policy> add_node(typename dd_policy::label_type label,
-                                    const builder_ptr<dd_policy> &low,
-                                    const builder_ptr<dd_policy> &high)
+    builder_ptr<dd_policy>
+    add_node(typename dd_policy::label_type label,
+             const builder_ptr<dd_policy>& low,
+             const builder_ptr<dd_policy>& high)
     {
       attach_if_needed();
 
       // Check validity of input
-      if(low.builder_ref != builder_ref || high.builder_ref != builder_ref) {
+      if (low.builder_ref != builder_ref || high.builder_ref != builder_ref) {
         throw invalid_argument("Cannot use pointers from a different builder");
       }
-      if(label > dd_policy::max_label) {
-        throw invalid_argument("Nodes must have a valid label");
-      }
-      if(label > current_label) {
-        throw invalid_argument("Nodes must be added bottom-up");
-      }
-      if(low.uid.is_node() && low.uid.label() <= label) {
+      if (label > dd_policy::max_label) { throw invalid_argument("Nodes must have a valid label"); }
+      if (label > current_label) { throw invalid_argument("Nodes must be added bottom-up"); }
+      if (low.uid.is_node() && low.uid.label() <= label) {
         throw invalid_argument("Low child must point to a node with higher label");
       }
-      if(high.uid.is_node() && high.uid.label() <= label) {
+      if (high.uid.is_node() && high.uid.label() <= label) {
         throw invalid_argument("High child must point to a node with higher label");
       }
 
       // Update label and ID if necessary
-      if(label < current_label) {
+      if (label < current_label) {
         current_label = label;
-        current_id = dd_policy::max_id;
+        current_id    = dd_policy::max_id;
       }
 
       // Create potential node
@@ -265,11 +263,11 @@ namespace adiar
 
       if (res_uid.is_terminal()) {
         created_terminal = true;
-        terminal_val = res_uid.value();
+        terminal_val     = res_uid.value();
       }
 
-      if(res_uid == low.uid) { return low; }
-      if(res_uid == high.uid) { return high; }
+      if (res_uid == low.uid) { return low; }
+      if (res_uid == high.uid) { return high; }
 
       // Push node to file
       nw.push(n);
@@ -278,13 +276,13 @@ namespace adiar
 
       // Update count of unreferenced nodes
       bool& low_unref = *low.unreferenced;
-      if(low_unref && !low.uid.is_terminal()) {
+      if (low_unref && !low.uid.is_terminal()) {
         low_unref = false;
         unref_nodes--;
       }
 
       bool& high_unref = *high.unreferenced;
-      if(high_unref && !high.uid.is_terminal()) {
+      if (high_unref && !high.uid.is_terminal()) {
         high_unref = false;
         unref_nodes--;
       }
@@ -309,9 +307,10 @@ namespace adiar
     /// \throws invalid_argument If `label` and `high` are illegal (see \ref
     ///                          add_node).
     /////////////////////////////////////////////////////////////////////////////
-    builder_ptr<dd_policy> add_node(const typename dd_policy::label_type label,
-                                    const bool low,
-                                    const builder_ptr<dd_policy> &high)
+    builder_ptr<dd_policy>
+    add_node(const typename dd_policy::label_type label,
+             const bool low,
+             const builder_ptr<dd_policy>& high)
     {
       attach_if_needed();
 
@@ -336,9 +335,10 @@ namespace adiar
     /// \throws invalid_argument If `label` and `low` are illegal (see \ref
     ///                          add_node).
     /////////////////////////////////////////////////////////////////////////////
-    builder_ptr<dd_policy> add_node(const typename dd_policy::label_type label,
-                                    const builder_ptr<dd_policy> &low,
-                                    const bool high)
+    builder_ptr<dd_policy>
+    add_node(const typename dd_policy::label_type label,
+             const builder_ptr<dd_policy>& low,
+             const bool high)
     {
       attach_if_needed();
 
@@ -362,13 +362,12 @@ namespace adiar
     /// \throws invalid_argument If `label` violates the bottom-up ordering (see
     ///                          \ref add_node).
     /////////////////////////////////////////////////////////////////////////////
-    builder_ptr<dd_policy> add_node(const typename dd_policy::label_type label,
-                                    const bool low,
-                                    const bool high)
+    builder_ptr<dd_policy>
+    add_node(const typename dd_policy::label_type label, const bool low, const bool high)
     {
       attach_if_needed();
 
-      builder_ptr<dd_policy> low_ptr = make_ptr(typename node_type::pointer_type(low));
+      builder_ptr<dd_policy> low_ptr  = make_ptr(typename node_type::pointer_type(low));
       builder_ptr<dd_policy> high_ptr = make_ptr(typename node_type::pointer_type(high));
       return add_node(label, low_ptr, high_ptr);
     }
@@ -382,12 +381,13 @@ namespace adiar
     ///         process since terminals are not part of the *bottom-up*
     ///         requirement.
     /////////////////////////////////////////////////////////////////////////////
-    builder_ptr<dd_policy> add_node(bool terminal_value)
+    builder_ptr<dd_policy>
+    add_node(bool terminal_value)
     {
       attach_if_needed();
 
       created_terminal = true;
-      terminal_val = terminal_value;
+      terminal_val     = terminal_value;
 
       return make_ptr(typename node_type::pointer_type(terminal_value));
     }
@@ -408,12 +408,13 @@ namespace adiar
     ///          `builder_ptr` created by this object will be invalidated and
     ///          cannot be used anymore.
     /////////////////////////////////////////////////////////////////////////////
-    typename dd_policy::dd_type build()
+    typename dd_policy::dd_type
+    build()
     {
       attach_if_needed();
 
-      if(!nw.has_pushed()) {
-        if(created_terminal) {
+      if (!nw.has_pushed()) {
+        if (created_terminal) {
           nw.push(node_type(terminal_val));
         } else {
           throw domain_error("There must be at least one node or terminal in the decision diagram");
@@ -421,9 +422,7 @@ namespace adiar
       }
       nw.detach();
 
-      if(unref_nodes > 1) {
-        throw domain_error("Decision diagram has more than one root");
-      }
+      if (unref_nodes > 1) { throw domain_error("Decision diagram has more than one root"); }
 
       const typename dd_policy::dd_type res(nf);
       detach();
@@ -437,14 +436,18 @@ namespace adiar
     /// \warning This will invalidate any pointers created up to this point. You
     ///          will not be able to use them after this.
     /////////////////////////////////////////////////////////////////////////////
-    void clear() noexcept
-    { detach(); }
+    void
+    clear() noexcept
+    {
+      detach();
+    }
 
   private:
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Initializes all values and the node file, if necessary.
     /////////////////////////////////////////////////////////////////////////////
-    inline void attach_if_needed() noexcept
+    inline void
+    attach_if_needed() noexcept
     {
       if (!nf) {
         adiar_assert(!nw.attached(),
@@ -462,14 +465,15 @@ namespace adiar
         unref_nodes      = 0;
 
         // Initialise shared builder reference.
-        builder_ref      = make_shared<builder_shared>();
+        builder_ref = make_shared<builder_shared>();
       }
     }
 
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Detaches the node writer and releases the pointer to the file.
     /////////////////////////////////////////////////////////////////////////////
-    inline void detach() noexcept
+    inline void
+    detach() noexcept
     {
       nw.detach();
       nf.reset();
@@ -478,7 +482,8 @@ namespace adiar
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Create a builder_ptr with 'this' builder as its parent.
     /////////////////////////////////////////////////////////////////////////////
-    builder_ptr<dd_policy> make_ptr(const typename node_type::pointer_type &p) noexcept
+    builder_ptr<dd_policy>
+    make_ptr(const typename node_type::pointer_type& p) noexcept
     {
       return builder_ptr<dd_policy>(p, builder_ref);
     }

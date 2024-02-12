@@ -1,4 +1,5 @@
 #include "../../../test.h"
+
 #include <adiar/internal/data_types/convert.h>
 
 go_bandit([]() {
@@ -7,7 +8,7 @@ go_bandit([]() {
 
     describe("low_arc_of", []() {
       it("should extract low arc from node", [&]() {
-        const node n(7,42, ptr_uint64(8,21), ptr_uint64(9,8));
+        const node n(7, 42, ptr_uint64(8, 21), ptr_uint64(9, 8));
         const arc a = low_arc_of(n);
 
         AssertThat(a.source().is_flagged(), Is().False());
@@ -25,7 +26,7 @@ go_bandit([]() {
 
     describe("high_arc_of", []() {
       it("should extract high arc from node", [&]() {
-        const node n(6,13, ptr_uint64(8,21), ptr_uint64(9,8));
+        const node n(6, 13, ptr_uint64(8, 21), ptr_uint64(9, 8));
         const arc a = high_arc_of(n);
 
         AssertThat(a.source().is_flagged(), Is().False());
@@ -43,30 +44,30 @@ go_bandit([]() {
 
     describe("node_of", []() {
       it("should combine low and high arcs to nodes into single node", [&]() {
-        const arc l_arc(uid_uint64(17,42), false, ptr_uint64(9,8));
-        const arc h_arc(uid_uint64(17,42), true,  ptr_uint64(8,21));
+        const arc l_arc(uid_uint64(17, 42), false, ptr_uint64(9, 8));
+        const arc h_arc(uid_uint64(17, 42), true, ptr_uint64(8, 21));
 
         const node n = node_of(l_arc, h_arc);
 
         AssertThat(n.label(), Is().EqualTo(17u));
         AssertThat(n.id(), Is().EqualTo(42u));
 
-        AssertThat(n.low(),  Is().EqualTo(l_arc.target()));
+        AssertThat(n.low(), Is().EqualTo(l_arc.target()));
         AssertThat(n.high(), Is().EqualTo(h_arc.target()));
       });
 
       it("should combine low and high arcs to terminals into single node", [&]() {
-        const arc l_arc(uid_uint64(17,42), false, ptr_uint64(false));
-        const arc h_arc(uid_uint64(17,42), true,  ptr_uint64(true));
+        const arc l_arc(uid_uint64(17, 42), false, ptr_uint64(false));
+        const arc h_arc(uid_uint64(17, 42), true, ptr_uint64(true));
 
         const node n = node_of(l_arc, h_arc);
 
         AssertThat(n.label(), Is().EqualTo(17u));
         AssertThat(n.id(), Is().EqualTo(42u));
 
-        AssertThat(n.low(),  Is().EqualTo(l_arc.target()));
+        AssertThat(n.low(), Is().EqualTo(l_arc.target()));
         AssertThat(n.high(), Is().EqualTo(h_arc.target()));
       });
     });
   });
- });
+});

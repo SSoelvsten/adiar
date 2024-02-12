@@ -53,11 +53,11 @@ go_bandit([]() {
 
         AssertThat(begin, Is().EqualTo(xs.begin()));
         c(0);
-        AssertThat(begin, Is().EqualTo(xs.begin()+1));
+        AssertThat(begin, Is().EqualTo(xs.begin() + 1));
         c(0);
-        AssertThat(begin, Is().EqualTo(xs.begin()+2));
+        AssertThat(begin, Is().EqualTo(xs.begin() + 2));
         c(0);
-        AssertThat(begin, Is().EqualTo(xs.begin()+3));
+        AssertThat(begin, Is().EqualTo(xs.begin() + 3));
         AssertThat(begin, Is().EqualTo(end));
       });
 
@@ -138,7 +138,7 @@ go_bandit([]() {
       });
 
       it("wraps std::vector<int> = { 0 }", []() {
-        const std::vector<int> xs = {0};
+        const std::vector<int> xs = { 0 };
 
         auto begin = xs.begin();
         auto end   = xs.end();
@@ -150,7 +150,7 @@ go_bandit([]() {
       });
 
       it("wraps std::vector<int> = { 0, 1 }", []() {
-        const std::vector<int> xs = {0,1};
+        const std::vector<int> xs = { 0, 1 };
 
         auto begin = xs.begin();
         auto end   = xs.end();
@@ -163,7 +163,7 @@ go_bandit([]() {
       });
 
       it("wraps std::vector<int> = { -1, 0, 1 }", []() {
-        const std::vector<int> xs = {-1, 0, 1};
+        const std::vector<int> xs = { -1, 0, 1 };
 
         auto begin = xs.begin();
         auto end   = xs.end();
@@ -177,7 +177,7 @@ go_bandit([]() {
       });
 
       it("wraps std::vector<int> = { 4, 2, 0 }", []() {
-        const std::vector<int> xs = {4,2,0};
+        const std::vector<int> xs = { 4, 2, 0 };
 
         auto begin = xs.begin();
         auto end   = xs.end();
@@ -191,7 +191,7 @@ go_bandit([]() {
       });
 
       it("wraps std::vector<int> = { 2, 2 }", []() {
-        const std::vector<int> xs = {2,2};
+        const std::vector<int> xs = { 2, 2 };
 
         auto begin = xs.begin();
         auto end   = xs.end();
@@ -204,7 +204,7 @@ go_bandit([]() {
       });
 
       it("wraps std::vector<int> = { 2, -1, 0, 2 }", []() {
-        const std::vector<int> xs = {2,-1,0,2};
+        const std::vector<int> xs = { 2, -1, 0, 2 };
 
         auto begin = xs.begin();
         auto end   = xs.end();
@@ -229,7 +229,7 @@ go_bandit([]() {
       });
 
       it("wraps std::vector<int> = { 0 }", []() {
-        const std::vector<int> xs = {0};
+        const std::vector<int> xs = { 0 };
 
         generator<int> g = make_generator(xs.begin(), xs.end());
 
@@ -238,7 +238,7 @@ go_bandit([]() {
       });
 
       it("wraps std::vector<int> = { 0, 1 }", []() {
-        const std::vector<int> xs = {0,1};
+        const std::vector<int> xs = { 0, 1 };
 
         generator<int> g = make_generator(xs.begin(), xs.end());
 
@@ -248,7 +248,7 @@ go_bandit([]() {
       });
 
       it("wraps std::vector<int> = { -1, 0, 1 }", []() {
-        const std::vector<int> xs = {-1, 0, 1};
+        const std::vector<int> xs = { -1, 0, 1 };
 
         generator<int> g = make_generator(xs.begin(), xs.end());
 
@@ -259,7 +259,7 @@ go_bandit([]() {
       });
 
       it("wraps std::vector<int> = { 4, 2, 0 }", []() {
-        const std::vector<int> xs = {4,2,0};
+        const std::vector<int> xs = { 4, 2, 0 };
 
         generator<int> g = make_generator(xs.begin(), xs.end());
 
@@ -270,7 +270,7 @@ go_bandit([]() {
       });
 
       it("wraps std::vector<int> = { 2, 2 }", []() {
-        const std::vector<int> xs = {2,2};
+        const std::vector<int> xs = { 2, 2 };
 
         generator<int> g = make_generator(xs.begin(), xs.end());
 
@@ -280,7 +280,7 @@ go_bandit([]() {
       });
 
       it("wraps std::vector<int> = { 2, -1, 0, 2 }", []() {
-        const std::vector<int> xs = {2,-1,0,2};
+        const std::vector<int> xs = { 2, -1, 0, 2 };
 
         generator<int> g = make_generator(xs.begin(), xs.end());
 
@@ -322,4 +322,4 @@ go_bandit([]() {
       });
     });
   });
- });
+});

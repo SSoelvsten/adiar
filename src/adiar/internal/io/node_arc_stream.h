@@ -4,9 +4,9 @@
 #include <adiar/internal/assert.h>
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/node.h>
+#include <adiar/internal/io/arc_stream.h>
 #include <adiar/internal/io/levelized_file.h>
 #include <adiar/internal/io/levelized_file_stream.h>
-#include <adiar/internal/io/arc_stream.h>
 
 namespace adiar::internal
 {
@@ -18,25 +18,23 @@ namespace adiar::internal
   ///
   /// \see shared_levelized_file<arc>
   //////////////////////////////////////////////////////////////////////////////
-  template<bool Reverse = false>
-  class node_arc_stream 
-    : protected arc_stream<!Reverse>
+  template <bool Reverse = false>
+  class node_arc_stream : protected arc_stream<!Reverse>
   {
   private:
     using parent_t = arc_stream<!Reverse>;
 
   public:
-    static size_t memory_usage()
+    static size_t
+    memory_usage()
     {
       return parent_t::memory_usage();
     }
 
   private:
-    static constexpr size_t idx__internal =
-      file_traits<arc>::idx__internal;
+    static constexpr size_t idx__internal = file_traits<arc>::idx__internal;
 
-    static constexpr size_t idx__terminals__in_order =
-      file_traits<arc>::idx__terminals__in_order;
+    static constexpr size_t idx__terminals__in_order = file_traits<arc>::idx__terminals__in_order;
 
     static constexpr size_t idx__terminals__out_of_order =
       file_traits<arc>::idx__terminals__out_of_order;
@@ -48,13 +46,13 @@ namespace adiar::internal
     node_arc_stream() = default;
 
     ////////////////////////////////////////////////////////////////////////////
-    node_arc_stream(const node_stream<Reverse> &) = delete;
-    node_arc_stream(node_stream<Reverse> &&) = delete;
+    node_arc_stream(const node_stream<Reverse>&) = delete;
+    node_arc_stream(node_stream<Reverse>&&)      = delete;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to an arc file.
     ////////////////////////////////////////////////////////////////////////////
-    node_arc_stream(levelized_file<arc> &file, const bool negate = false)
+    node_arc_stream(levelized_file<arc>& file, const bool negate = false)
       : parent_t(/*need to sort before attach*/)
     {
       attach(file, negate);
@@ -63,20 +61,18 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a shared arc file.
     ////////////////////////////////////////////////////////////////////////////
-    node_arc_stream(shared_ptr<levelized_file<arc>> &file,
-                    const bool negate = false)
+    node_arc_stream(shared_ptr<levelized_file<arc>>& file, const bool negate = false)
       : parent_t(/*need to sort before attach*/)
     {
       attach(file, negate);
     }
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to an Decision Diagram.
     ///
     /// \pre The given diagram should contain an unreduced diagram.
     ////////////////////////////////////////////////////////////////////////////
-    node_arc_stream(const __dd &diagram)
+    node_arc_stream(const __dd& diagram)
       : parent_t(/*need to sort before attach*/)
     {
       adiar_assert(diagram.template has<__dd::shared_arc_file_type>());
@@ -88,7 +84,8 @@ namespace adiar::internal
     ///
     /// \remark This sorts the internal arcs of the file.
     ////////////////////////////////////////////////////////////////////////////
-    void attach(levelized_file<arc> &file, const bool negate = false)
+    void
+    attach(levelized_file<arc>& file, const bool negate = false)
     {
       if (file.semi_transposed) {
         file.sort<arc_source_lt>(idx__internal);
@@ -102,8 +99,8 @@ namespace adiar::internal
     ///
     /// \remark This sorts the internal arcs of the file.
     ////////////////////////////////////////////////////////////////////////////
-    void attach(const shared_ptr<levelized_file<arc>> &file,
-                const bool negate = false)
+    void
+    attach(const shared_ptr<levelized_file<arc>>& file, const bool negate = false)
     {
       if (file->semi_transposed) {
         file->sort<arc_source_lt>(idx__internal);
@@ -115,7 +112,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the stream contains more elements.
     ////////////////////////////////////////////////////////////////////////////
-    bool can_pull() const
+    bool
+    can_pull() const
     {
       return parent_t::can_pull_internal() || parent_t::can_pull_terminal();
     }
@@ -125,12 +123,11 @@ namespace adiar::internal
     ///
     /// \pre `can_pull() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    const node pull()
+    const node
+    pull()
     {
-      const arc a_first =
-        take_internal() ? parent_t::pull_internal() : parent_t::pull_terminal();
-      const arc a_second =
-        take_internal() ? parent_t::pull_internal() : parent_t::pull_terminal();
+      const arc a_first  = take_internal() ? parent_t::pull_internal() : parent_t::pull_terminal();
+      const arc a_second = take_internal() ? parent_t::pull_internal() : parent_t::pull_terminal();
 
       // Merge into a node (providing low arc first)
       if constexpr (Reverse) {
@@ -145,12 +142,11 @@ namespace adiar::internal
     ///
     /// \pre `can_pull() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    const node peek()
+    const node
+    peek()
     {
-      const arc a_first =
-        take_internal() ? parent_t::peek_internal() : parent_t::peek_terminal();
-      const arc a_second =
-        take_internal() ? parent_t::peek_internal() : parent_t::peek_terminal();
+      const arc a_first  = take_internal() ? parent_t::peek_internal() : parent_t::peek_terminal();
+      const arc a_second = take_internal() ? parent_t::peek_internal() : parent_t::peek_terminal();
 
       // Merge into a node (providing low arc first)
       if constexpr (Reverse) {
@@ -167,14 +163,16 @@ namespace adiar::internal
     ///
     /// \pre     `can_pull() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    const node seek(const node::uid_type &u);
+    const node
+    seek(const node::uid_type& u);
     // TODO
 
   private:
-    bool take_internal()
+    bool
+    take_internal()
     {
       if constexpr (Reverse) {
-        if (!parent_t::can_pull_terminal()) { return true;  }
+        if (!parent_t::can_pull_terminal()) { return true; }
         if (!parent_t::can_pull_internal()) { return false; }
       } else {
         adiar_assert(parent_t::can_pull_terminal(),

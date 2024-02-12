@@ -16,12 +16,11 @@
 #include <iostream>
 #include <string>
 
+#include <adiar/bdd/bdd.h>
 #include <adiar/bool_op.h>
 #include <adiar/exec_policy.h>
 #include <adiar/functional.h>
-
 #include <adiar/zdd/zdd.h>
-#include <adiar/bdd/bdd.h>
 
 namespace adiar
 {
@@ -45,17 +44,20 @@ namespace adiar
   ///
   /// \see         zdd_empty zdd_null
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_terminal(bool value);
+  zdd
+  zdd_terminal(bool value);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The empty family, i.e. Ø .
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_empty();
+  zdd
+  zdd_empty();
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The family only with the empty set, i.e. { Ø } .
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_null();
+  zdd
+  zdd_null();
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The set of bitvectors over a given domain where *var* is set to
@@ -74,7 +76,8 @@ namespace adiar
   ///
   /// \throws invalid_argument If `dom` is not in \em descending order.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_ithvar(zdd::label_type var, const generator<zdd::label_type> &dom);
+  zdd
+  zdd_ithvar(zdd::label_type var, const generator<zdd::label_type>& dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The set of bitvectors over a given domain where *var* is set
@@ -93,9 +96,12 @@ namespace adiar
   /// \throws invalid_argument If the iterator does not provide values in
   ///                          \em descending order.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  zdd zdd_ithvar(zdd::label_type var, ForwardIt begin, ForwardIt end)
-  { return zdd_ithvar(var, make_generator(begin, end)); }
+  template <typename ForwardIt>
+  zdd
+  zdd_ithvar(zdd::label_type var, ForwardIt begin, ForwardIt end)
+  {
+    return zdd_ithvar(var, make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The set of bitvectors over the globally set domain where *var*
@@ -106,7 +112,8 @@ namespace adiar
   /// \pre       `domain_isset() == true` and the variable `var` should
   ///            occur in the global domain.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_ithvar(zdd::label_type var);
+  zdd
+  zdd_ithvar(zdd::label_type var);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The set of bitvectors over a given domain where *var* is set to
@@ -125,7 +132,8 @@ namespace adiar
   ///
   /// \throws invalid_argument If `dom` is not in \em descending order.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_nithvar(zdd::label_type var, const generator<zdd::label_type> &dom);
+  zdd
+  zdd_nithvar(zdd::label_type var, const generator<zdd::label_type>& dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The set of bitvectors over a given domain where *var* is set
@@ -144,9 +152,12 @@ namespace adiar
   /// \throws invalid_argument If the iterator does not provide values in
   ///                          \em descending order.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  zdd zdd_nithvar(zdd::label_type var, ForwardIt begin, ForwardIt end)
-  { return zdd_nithvar(var, make_generator(begin, end)); }
+  template <typename ForwardIt>
+  zdd
+  zdd_nithvar(zdd::label_type var, ForwardIt begin, ForwardIt end)
+  {
+    return zdd_nithvar(var, make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The set of bitvectors over the globally set domain where *var*
@@ -157,7 +168,8 @@ namespace adiar
   /// \pre       `domain_isset() == true` and the variable `var` should
   ///            occur in the global domain.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_nithvar(zdd::label_type var);
+  zdd
+  zdd_nithvar(zdd::label_type var);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The family { { 1, 2, ..., k } }.
@@ -170,7 +182,8 @@ namespace adiar
   ///
   /// \throws invalid_argument If `vars` are not in \em descending order.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_vars(const generator<zdd::label_type> &vars);
+  zdd
+  zdd_vars(const generator<zdd::label_type>& vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The family { { 1, 2, ..., k } }.
@@ -184,9 +197,12 @@ namespace adiar
   /// \throws invalid_argument If the iterator does not provide values in
   ///                          \em descending order.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  zdd zdd_vars(ForwardIt begin, ForwardIt end)
-  { return zdd_vars(make_generator(begin, end)); }
+  template <typename ForwardIt>
+  zdd
+  zdd_vars(ForwardIt begin, ForwardIt end)
+  {
+    return zdd_vars(make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The family { { 1, 2, ..., k } } with a single bit-vector.
@@ -199,7 +215,8 @@ namespace adiar
   ///
   /// \throws invalid_argument If `vars` are not in \em descending order.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_point(const generator<zdd::label_type> &vars);
+  zdd
+  zdd_point(const generator<zdd::label_type>& vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The family { { 1, 2, ..., k } } with a single bit-vector.
@@ -213,9 +230,12 @@ namespace adiar
   /// \throws invalid_argument If the iterator does not provide values in
   ///                          \em descending order.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  zdd zdd_point(ForwardIt begin, ForwardIt end)
-  { return zdd_point(make_generator(begin, end)); }
+  template <typename ForwardIt>
+  zdd
+  zdd_point(ForwardIt begin, ForwardIt end)
+  {
+    return zdd_point(make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The family { {i} } .
@@ -228,7 +248,8 @@ namespace adiar
   ///
   /// \throws invalid_argument If `var` is a too large value.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_singleton(zdd::label_type var);
+  zdd
+  zdd_singleton(zdd::label_type var);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The family { {1}, {2}, ..., {k} }.
@@ -241,7 +262,8 @@ namespace adiar
   ///
   /// \throws invalid_argument If `vars` are not in \em descending order.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_singletons(const generator<zdd::label_type> &vars);
+  zdd
+  zdd_singletons(const generator<zdd::label_type>& vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The family { {1}, {2}, ..., {k} }.
@@ -255,9 +277,12 @@ namespace adiar
   /// \throws invalid_argument If the iterator does not provide values in
   ///                          \em descending order.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  zdd zdd_singletons(ForwardIt begin, ForwardIt end)
-  { return zdd_singletons(make_generator(begin, end)); }
+  template <typename ForwardIt>
+  zdd
+  zdd_singletons(ForwardIt begin, ForwardIt end)
+  {
+    return zdd_singletons(make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The powerset of all given variables.
@@ -270,7 +295,8 @@ namespace adiar
   ///
   /// \throws invalid_argument If `vars` are not in \em ascending order.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_powerset(const generator<zdd::label_type> &vars);
+  zdd
+  zdd_powerset(const generator<zdd::label_type>& vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The powerset of all given variables.
@@ -284,9 +310,12 @@ namespace adiar
   /// \throws invalid_argument If the iterator does not provide values in
   ///                          \em descending order.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  zdd zdd_powerset(ForwardIt begin, ForwardIt end)
-  { return zdd_powerset(make_generator(begin, end)); }
+  template <typename ForwardIt>
+  zdd
+  zdd_powerset(ForwardIt begin, ForwardIt end)
+  {
+    return zdd_powerset(make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Bottom of the powerset lattice.
@@ -296,7 +325,8 @@ namespace adiar
   ///
   /// \see zdd_empty
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_bot(const generator<zdd::label_type> &dom);
+  zdd
+  zdd_bot(const generator<zdd::label_type>& dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       Bottom of the powerset lattice.
@@ -309,16 +339,20 @@ namespace adiar
   ///
   /// \see zdd_empty
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  inline zdd zdd_bot(ForwardIt begin, ForwardIt end)
-  { return zdd_bot(make_generator(begin, end)); }
+  template <typename ForwardIt>
+  inline zdd
+  zdd_bot(ForwardIt begin, ForwardIt end)
+  {
+    return zdd_bot(make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Bottom of the powerset lattice.
   ///
   /// \see zdd_empty
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_bot();
+  zdd
+  zdd_bot();
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Top of the powerset lattice.
@@ -328,7 +362,8 @@ namespace adiar
   ///
   /// \see zdd_powerset, zdd_null
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_top(const generator<zdd::label_type> &dom);
+  zdd
+  zdd_top(const generator<zdd::label_type>& dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       Top of the powerset lattice.
@@ -341,9 +376,12 @@ namespace adiar
   ///
   /// \see zdd_empty
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  inline zdd zdd_top(ForwardIt begin, ForwardIt end)
-  { return zdd_top(make_generator(begin, end)); }
+  template <typename ForwardIt>
+  inline zdd
+  zdd_top(ForwardIt begin, ForwardIt end)
+  {
+    return zdd_top(make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Top of the powerset lattice.
@@ -353,7 +391,8 @@ namespace adiar
   ///
   /// \see zdd_powerset, zdd_null
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_top();
+  zdd
+  zdd_top();
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////
@@ -374,15 +413,14 @@ namespace adiar
   /// \return Product construction of the two that represents the boolean
   ///         operator applied to the two family of sets.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_binop(const zdd &A, const zdd &B, const bool_op &op);
+  __zdd
+  zdd_binop(const zdd& A, const zdd& B, const bool_op& op);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Apply a binary operator between the sets of two families.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_binop(const exec_policy &ep,
-                  const zdd &A,
-                  const zdd &B,
-                  const bool_op &op);
+  __zdd
+  zdd_binop(const exec_policy& ep, const zdd& A, const zdd& B, const bool_op& op);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The union of two families of sets.
@@ -390,22 +428,28 @@ namespace adiar
   /// \returns
   /// \f$ A \cup B \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_union(const zdd &A, const zdd &B);
+  __zdd
+  zdd_union(const zdd& A, const zdd& B);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The union of two families of sets.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_union(const exec_policy &ep, const zdd &A, const zdd &B);
+  __zdd
+  zdd_union(const exec_policy& ep, const zdd& A, const zdd& B);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \see zdd_union
   //////////////////////////////////////////////////////////////////////////////
-  __zdd operator| (const zdd &lhs, const zdd &rhs);
+  __zdd
+  operator|(const zdd& lhs, const zdd& rhs);
 
   /// \cond
-  __zdd operator| (__zdd &&, __zdd &&);
-  __zdd operator| (const zdd &, __zdd &&);
-  __zdd operator| (__zdd &&, const zdd &);
+  __zdd
+  operator|(__zdd&&, __zdd&&);
+  __zdd
+  operator|(const zdd&, __zdd&&);
+  __zdd
+  operator|(__zdd&&, const zdd&);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -414,22 +458,28 @@ namespace adiar
   /// \returns
   /// \f$ A \cap B \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_intsec(const zdd &A, const zdd &B);
+  __zdd
+  zdd_intsec(const zdd& A, const zdd& B);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The intersection of two families of sets.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_intsec(const exec_policy &ep, const zdd &A, const zdd &B);
+  __zdd
+  zdd_intsec(const exec_policy& ep, const zdd& A, const zdd& B);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \see zdd_intsec
   //////////////////////////////////////////////////////////////////////////////
-  __zdd operator& (const zdd &lhs, const zdd &rhs);
+  __zdd
+  operator&(const zdd& lhs, const zdd& rhs);
 
   /// \cond
-  __zdd operator& (__zdd &&, __zdd &&);
-  __zdd operator& (const zdd &, __zdd &&);
-  __zdd operator& (__zdd &&, const __zdd &);
+  __zdd
+  operator&(__zdd&&, __zdd&&);
+  __zdd
+  operator&(const zdd&, __zdd&&);
+  __zdd
+  operator&(__zdd&&, const __zdd&);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -438,22 +488,28 @@ namespace adiar
   /// \returns
   /// \f$ A \setminus B \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_diff(const zdd &A, const zdd &B);
+  __zdd
+  zdd_diff(const zdd& A, const zdd& B);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The set difference of two families of sets.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_diff(const exec_policy &ep, const zdd &A, const zdd &B);
+  __zdd
+  zdd_diff(const exec_policy& ep, const zdd& A, const zdd& B);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \see zdd_diff
   //////////////////////////////////////////////////////////////////////////////
-  __zdd operator- (const zdd &lhs, const zdd &rhs);
+  __zdd
+  operator-(const zdd& lhs, const zdd& rhs);
 
   /// \cond
-  __zdd operator- (__zdd &&, __zdd &&);
-  __zdd operator- (const zdd &, __zdd &&);
-  __zdd operator- (__zdd &&, const zdd &);
+  __zdd
+  operator-(__zdd&&, __zdd&&);
+  __zdd
+  operator-(const zdd&, __zdd&&);
+  __zdd
+  operator-(__zdd&&, const zdd&);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -468,15 +524,15 @@ namespace adiar
   /// \returns
   /// \f$ \{ \mathit{vars} \Delta a \mid a \in A \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_change(const zdd &A, const generator<zdd::label_type> &vars);
+  __zdd
+  zdd_change(const zdd& A, const generator<zdd::label_type>& vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The symmetric difference between each set in the family and the
   ///        given set of variables.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_change(const exec_policy &ep,
-                   const zdd &A,
-                   const generator<zdd::label_type> &vars);
+  __zdd
+  zdd_change(const exec_policy& ep, const zdd& A, const generator<zdd::label_type>& vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      The symmetric difference between each set in the family and
@@ -493,20 +549,23 @@ namespace adiar
   /// \returns
   /// \f$ \{ \mathit{vars} \Delta a \mid a \in A \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  __zdd zdd_change(const zdd &A, ForwardIt begin, ForwardIt end)
-  { return zdd_change(A, make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __zdd
+  zdd_change(const zdd& A, ForwardIt begin, ForwardIt end)
+  {
+    return zdd_change(A, make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The symmetric difference between each set in the family and the
   ///        given set of variables.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  __zdd zdd_change(const exec_policy &ep,
-                   const zdd &A,
-                   ForwardIt begin,
-                   ForwardIt end)
-  { return zdd_change(ep, A, make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __zdd
+  zdd_change(const exec_policy& ep, const zdd& A, ForwardIt begin, ForwardIt end)
+  {
+    return zdd_change(ep, A, make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Complement of A within the given domain.
@@ -517,14 +576,14 @@ namespace adiar
   ///
   /// \returns    \f$ 2^{\mathit{dom}} \setminus A \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_complement(const zdd &A, const generator<zdd::label_type> &dom);
+  __zdd
+  zdd_complement(const zdd& A, const generator<zdd::label_type>& dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Complement of A within the given domain.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_complement(const exec_policy& ep,
-                       const zdd &A,
-                       const generator<zdd::label_type> &dom);
+  __zdd
+  zdd_complement(const exec_policy& ep, const zdd& A, const generator<zdd::label_type>& dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       Complement of A within the given domain.
@@ -539,19 +598,22 @@ namespace adiar
   ///
   /// \returns     \f$ 2^{\mathit{dom}} \setminus A \f$
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  __zdd zdd_complement(const zdd &A, ForwardIt begin, ForwardIt end)
-  { return zdd_complement(A, make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __zdd
+  zdd_complement(const zdd& A, ForwardIt begin, ForwardIt end)
+  {
+    return zdd_complement(A, make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Complement of A within the given domain.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  __zdd zdd_complement(const exec_policy &ep,
-                       const zdd &A,
-                       ForwardIt begin,
-                       ForwardIt end)
-  { return zdd_complement(ep, A, make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __zdd
+  zdd_complement(const exec_policy& ep, const zdd& A, ForwardIt begin, ForwardIt end)
+  {
+    return zdd_complement(ep, A, make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Complement of A within the global \ref module__domain
@@ -565,20 +627,24 @@ namespace adiar
   /// \pre       The global \ref module__domain is set to a set of variables
   ///            that is equals to or a superset of the variables in `A`.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_complement(const zdd &A);
+  __zdd
+  zdd_complement(const zdd& A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Complement of A within the global \ref module__domain
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_complement(const exec_policy& ep, const zdd &A);
+  __zdd
+  zdd_complement(const exec_policy& ep, const zdd& A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \see zdd_complement
   //////////////////////////////////////////////////////////////////////////////
-  __zdd operator~ (const zdd& A);
+  __zdd
+  operator~(const zdd& A);
 
   /// \cond
-  __zdd operator~ (__zdd&& A);
+  __zdd
+  operator~(__zdd&& A);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -598,15 +664,15 @@ namespace adiar
   /// \returns
   /// \f$ \bigcup_{a \in A, i \in 2^{vars}} (a \cup i) \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_expand(const zdd &A, const generator<zdd::label_type> &vars);
+  __zdd
+  zdd_expand(const zdd& A, const generator<zdd::label_type>& vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Expands the domain of the given ZDD to also include the given set
   ///          of labels.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_expand(const exec_policy &ep,
-                   const zdd &A,
-                   const generator<zdd::label_type> &vars);
+  __zdd
+  zdd_expand(const exec_policy& ep, const zdd& A, const generator<zdd::label_type>& vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       Expands the domain of the given ZDD to also include the given
@@ -627,19 +693,23 @@ namespace adiar
   ///
   /// \see zdd_project
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  __zdd zdd_expand(const zdd &A, ForwardIt begin, ForwardIt end)
-  { return zdd_expand(A, make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __zdd
+  zdd_expand(const zdd& A, ForwardIt begin, ForwardIt end)
+  {
+    return zdd_expand(A, make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Expands the domain of the given ZDD to also include the given set
   ///          of labels.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  __zdd zdd_expand(const exec_policy &ep,
-                   const zdd &A,
-                   ForwardIt begin, ForwardIt end)
-  { return zdd_expand(ep, A, make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __zdd
+  zdd_expand(const exec_policy& ep, const zdd& A, ForwardIt begin, ForwardIt end)
+  {
+    return zdd_expand(ep, A, make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Subset that do \em not include the given element.
@@ -651,12 +721,14 @@ namespace adiar
   /// \returns
   /// \f$ \{ a \in A \mid \mathit{var} \not\in a \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_offset(const zdd &A, zdd::label_type var);
+  __zdd
+  zdd_offset(const zdd& A, zdd::label_type var);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Subset that do \em not include the given element.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_offset(const exec_policy &ep, const zdd &A, zdd::label_type var);
+  __zdd
+  zdd_offset(const exec_policy& ep, const zdd& A, zdd::label_type var);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief  Subset that do \em not include the top variable.
@@ -669,12 +741,14 @@ namespace adiar
   ///
   /// \throws invalid_argument If `A` is a terminal.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_offset(const zdd &A);
+  __zdd
+  zdd_offset(const zdd& A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Subset that do \em not include the top variable.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_offset(const exec_policy &ep, const zdd &A);
+  __zdd
+  zdd_offset(const exec_policy& ep, const zdd& A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Subset that do \em not include the given set of variables.
@@ -688,14 +762,14 @@ namespace adiar
   /// \returns
   /// \f$ \{ a \in A \mid \forall i \in \mathit{vars} : i \not\in a \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_offset(const zdd &A, const generator<zdd::label_type> &vars);
+  __zdd
+  zdd_offset(const zdd& A, const generator<zdd::label_type>& vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Subset that do \em not include the given set of variables.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_offset(const exec_policy &ep,
-                   const zdd &A,
-                   const generator<zdd::label_type> &vars);
+  __zdd
+  zdd_offset(const exec_policy& ep, const zdd& A, const generator<zdd::label_type>& vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Subset that do \em not include the given set of variables.
@@ -711,19 +785,22 @@ namespace adiar
   /// \returns
   /// \f$ \{ a \in A \mid \forall i \in \mathit{vars} : i \not\in a \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  __zdd zdd_offset(const zdd &A, ForwardIt begin, ForwardIt end)
-  { return zdd_offset(A, make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __zdd
+  zdd_offset(const zdd& A, ForwardIt begin, ForwardIt end)
+  {
+    return zdd_offset(A, make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Subset that do \em not include the given set of variables.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  __zdd zdd_offset(const exec_policy &ep,
-                   const zdd &A,
-                   ForwardIt begin,
-                   ForwardIt end)
-  { return zdd_offset(ep, A, make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __zdd
+  zdd_offset(const exec_policy& ep, const zdd& A, ForwardIt begin, ForwardIt end)
+  {
+    return zdd_offset(ep, A, make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Subset that \em do include the given element.
@@ -734,12 +811,14 @@ namespace adiar
   /// \returns
   /// \f$ \{ a \in A \mid \mathit{var} \in a \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_onset(const zdd &A, zdd::label_type var);
+  __zdd
+  zdd_onset(const zdd& A, zdd::label_type var);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Subset that \em do include the given element.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_onset(const exec_policy &ep, const zdd &A, zdd::label_type var);
+  __zdd
+  zdd_onset(const exec_policy& ep, const zdd& A, zdd::label_type var);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Subset that \em do include the top variable.
@@ -752,12 +831,14 @@ namespace adiar
   ///
   /// \throws invalid_argument If `A` is a terminal.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_onset(const zdd &A);
+  __zdd
+  zdd_onset(const zdd& A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Subset that \em do include the top variable.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_onset(const exec_policy &ep, const zdd &A);
+  __zdd
+  zdd_onset(const exec_policy& ep, const zdd& A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Subset that \em do include the given set of variables.
@@ -771,14 +852,14 @@ namespace adiar
   /// \returns
   /// \f$ \{ a \in A \mid \forall i \in \mathit{vars} : i \in a \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_onset(const zdd &A, const generator<zdd::label_type> &vars);
+  __zdd
+  zdd_onset(const zdd& A, const generator<zdd::label_type>& vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Subset that \em do include the given set of variables.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_onset(const exec_policy &ep,
-                  const zdd &A,
-                  const generator<zdd::label_type> &vars);
+  __zdd
+  zdd_onset(const exec_policy& ep, const zdd& A, const generator<zdd::label_type>& vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Subset that \em do include the given set of variables.
@@ -794,19 +875,22 @@ namespace adiar
   /// \returns
   /// \f$ \{ a \in A \mid \forall i \in \mathit{vars} : i \in a \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  __zdd zdd_onset(const zdd &A, ForwardIt begin, ForwardIt end)
-  { return zdd_onset(A, make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __zdd
+  zdd_onset(const zdd& A, ForwardIt begin, ForwardIt end)
+  {
+    return zdd_onset(A, make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Subset that \em do include the given set of variables.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  __zdd zdd_onset(const exec_policy &ep,
-                  const zdd &A,
-                  ForwardIt begin,
-                  ForwardIt end)
-  { return zdd_onset(ep, A, make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __zdd
+  zdd_onset(const exec_policy& ep, const zdd& A, ForwardIt begin, ForwardIt end)
+  {
+    return zdd_onset(ep, A, make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Project family of sets onto a domain, i.e. remove from every
@@ -821,24 +905,24 @@ namespace adiar
   ///
   /// \see zdd_expand
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_project(const zdd &A, const predicate<zdd::label_type> &dom);
+  __zdd
+  zdd_project(const zdd& A, const predicate<zdd::label_type>& dom);
 
   /// \cond
-  __zdd zdd_project(zdd &&A, const predicate<zdd::label_type> &dom);
+  __zdd
+  zdd_project(zdd&& A, const predicate<zdd::label_type>& dom);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       Project family of sets onto a domain, i.e. remove from every
   ///              set all variables not within the domain.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_project(const exec_policy &ep,
-                    const zdd &A,
-                    const predicate<zdd::label_type> &dom);
+  __zdd
+  zdd_project(const exec_policy& ep, const zdd& A, const predicate<zdd::label_type>& dom);
 
   /// \cond
-  __zdd zdd_project(const exec_policy &ep,
-                    zdd &&A,
-                    const predicate<zdd::label_type> &dom);
+  __zdd
+  zdd_project(const exec_policy& ep, zdd&& A, const predicate<zdd::label_type>& dom);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -855,24 +939,25 @@ namespace adiar
   ///
   /// \see zdd_expand
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_project(const zdd &A, const generator<zdd::label_type> &dom);
+  __zdd
+  zdd_project(const zdd& A, const generator<zdd::label_type>& dom);
 
   /// \cond
-  __zdd zdd_project(zdd &&A, const generator<zdd::label_type> &dom);
+  __zdd
+  zdd_project(zdd&& A, const generator<zdd::label_type>& dom);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       Project family of sets onto a domain, i.e. remove from every
   ///              set all variables not within the domain.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_project(const exec_policy &ep,
-                    const zdd &A,
-                    const generator<zdd::label_type> &dom);
+  __zdd
+  zdd_project(const exec_policy& ep, const zdd& A, const generator<zdd::label_type>& dom);
 
   /// \cond
-  __zdd zdd_project(const exec_policy &ep,
-                    zdd &&A,
-                    const generator<zdd::label_type> &dom);
+  __zdd
+  zdd_project(const exec_policy& ep, zdd&& A, const generator<zdd::label_type>& dom);
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -892,34 +977,42 @@ namespace adiar
   ///
   /// \see zdd_expand
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  __zdd zdd_project(const zdd &A, ForwardIt begin, ForwardIt end)
-  { return zdd_project(A, make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __zdd
+  zdd_project(const zdd& A, ForwardIt begin, ForwardIt end)
+  {
+    return zdd_project(A, make_generator(begin, end));
+  }
 
   /// \cond
-  template<typename ForwardIt>
-  __zdd zdd_project(zdd &&A, ForwardIt begin, ForwardIt end)
-  { return zdd_project(std::forward<zdd>(A), make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __zdd
+  zdd_project(zdd&& A, ForwardIt begin, ForwardIt end)
+  {
+    return zdd_project(std::forward<zdd>(A), make_generator(begin, end));
+  }
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       Project family of sets onto a domain, i.e. remove from every
   ///              set all variables not within the domain.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  __zdd zdd_project(const exec_policy &ep,
-                    const zdd &A,
-                    ForwardIt begin,
-                    ForwardIt end)
-  { return zdd_project(ep, A, make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __zdd
+  zdd_project(const exec_policy& ep, const zdd& A, ForwardIt begin, ForwardIt end)
+  {
+    return zdd_project(ep, A, make_generator(begin, end));
+  }
 
   /// \cond
-  template<typename ForwardIt>
-  __zdd zdd_project(const exec_policy &ep,
-                    zdd &&A,
-                    ForwardIt begin,
-                    ForwardIt end)
-  { return zdd_project(ep, std::forward<zdd>(A), make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __zdd
+  zdd_project(const exec_policy& ep, zdd&& A, ForwardIt begin, ForwardIt end)
+  {
+    return zdd_project(ep, std::forward<zdd>(A), make_generator(begin, end));
+  }
+
   /// \endcond
 
   /// \}
@@ -935,153 +1028,194 @@ namespace adiar
   ///
   /// \copydetails adiar::internal::dd_iscanonical
   //////////////////////////////////////////////////////////////////////////////
-  bool zdd_iscanonical(const zdd& A);
+  bool
+  zdd_iscanonical(const zdd& A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether this ZDD represents a terminal.
   //////////////////////////////////////////////////////////////////////////////
-  bool zdd_isterminal(const zdd& A);
+  bool
+  zdd_isterminal(const zdd& A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether this ZDD represents false terminal.
   //////////////////////////////////////////////////////////////////////////////
-  bool zdd_isfalse(const zdd& A);
+  bool
+  zdd_isfalse(const zdd& A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether it is the empty family, i.e. Ø .
   //////////////////////////////////////////////////////////////////////////////
-  bool zdd_isempty(const zdd &A);
+  bool
+  zdd_isempty(const zdd& A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether this BDD represents true terminal.
   //////////////////////////////////////////////////////////////////////////////
-  bool zdd_istrue(const zdd& A);
+  bool
+  zdd_istrue(const zdd& A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether it is the null family, i.e. { Ø } .
   //////////////////////////////////////////////////////////////////////////////
-  bool zdd_isnull(const zdd &A);
+  bool
+  zdd_isnull(const zdd& A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether it contains a single bit-vector `a`, i.e. A = { a }.
   //////////////////////////////////////////////////////////////////////////////
-  bool zdd_ispoint(const zdd &A);
+  bool
+  zdd_ispoint(const zdd& A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether they represent the same family.
   //////////////////////////////////////////////////////////////////////////////
-  bool zdd_equal(const zdd &A, const zdd &B);
+  bool
+  zdd_equal(const zdd& A, const zdd& B);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether they represent the same family.
   //////////////////////////////////////////////////////////////////////////////
-  bool zdd_equal(const exec_policy &ep, const zdd &A, const zdd &B);
+  bool
+  zdd_equal(const exec_policy& ep, const zdd& A, const zdd& B);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \see zdd_equal
   //////////////////////////////////////////////////////////////////////////////
-  bool operator== (const zdd& lhs, const zdd& rhs);
+  bool
+  operator==(const zdd& lhs, const zdd& rhs);
 
   /// \cond
-  bool operator== (__zdd &&, __zdd &&);
-  bool operator== (const zdd &, __zdd &&);
-  bool operator== (__zdd &&, const zdd &);
+  bool
+  operator==(__zdd&&, __zdd&&);
+  bool
+  operator==(const zdd&, __zdd&&);
+  bool
+  operator==(__zdd&&, const zdd&);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether they represent two different families.
   //////////////////////////////////////////////////////////////////////////////
-  bool zdd_unequal(const zdd &A, const zdd &B);
+  bool
+  zdd_unequal(const zdd& A, const zdd& B);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether they represent two different families.
   //////////////////////////////////////////////////////////////////////////////
-  bool zdd_unequal(const exec_policy &ep, const zdd &A, const zdd &B);
+  bool
+  zdd_unequal(const exec_policy& ep, const zdd& A, const zdd& B);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \see zdd_unequal
   //////////////////////////////////////////////////////////////////////////////
-  bool operator!= (const zdd& lhs, const zdd& rhs);
+  bool
+  operator!=(const zdd& lhs, const zdd& rhs);
 
   /// \cond
-  bool operator!= (__zdd &&, __zdd &&);
-  bool operator!= (const zdd &, __zdd &&);
-  bool operator!= (__zdd &&, const zdd &);
+  bool
+  operator!=(__zdd&&, __zdd&&);
+  bool
+  operator!=(const zdd&, __zdd&&);
+  bool
+  operator!=(__zdd&&, const zdd&);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether one family is a subset or equal to the other.
   //////////////////////////////////////////////////////////////////////////////
-  bool zdd_subseteq(const zdd &A, const zdd &B);
+  bool
+  zdd_subseteq(const zdd& A, const zdd& B);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether one family is a subset or equal to the other.
   //////////////////////////////////////////////////////////////////////////////
-  bool zdd_subseteq(const exec_policy &ep, const zdd &A, const zdd &B);
+  bool
+  zdd_subseteq(const exec_policy& ep, const zdd& A, const zdd& B);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \see zdd_subseteq
   //////////////////////////////////////////////////////////////////////////////
-  bool operator<= (const zdd& lhs, const zdd& rhs);
+  bool
+  operator<=(const zdd& lhs, const zdd& rhs);
 
   /// \cond
-  bool operator<= (__zdd &&, __zdd &&);
-  bool operator<= (const zdd &, __zdd &&);
-  bool operator<= (__zdd &&, const zdd &);
+  bool
+  operator<=(__zdd&&, __zdd&&);
+  bool
+  operator<=(const zdd&, __zdd&&);
+  bool
+  operator<=(__zdd&&, const zdd&);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \see zdd_subseteq
   //////////////////////////////////////////////////////////////////////////////
-  bool operator>= (const zdd& lhs, const zdd& rhs);
+  bool
+  operator>=(const zdd& lhs, const zdd& rhs);
 
   /// \cond
-  bool operator>= (__zdd &&, __zdd &&);
-  bool operator>= (const zdd &, __zdd &&);
-  bool operator>= (__zdd &&, const zdd &);
+  bool
+  operator>=(__zdd&&, __zdd&&);
+  bool
+  operator>=(const zdd&, __zdd&&);
+  bool
+  operator>=(__zdd&&, const zdd&);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether one family is a strict subset of the other.
   //////////////////////////////////////////////////////////////////////////////
-  bool zdd_subset(const zdd &A, const zdd &B);
+  bool
+  zdd_subset(const zdd& A, const zdd& B);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether one family is a strict subset of the other.
   //////////////////////////////////////////////////////////////////////////////
-  bool zdd_subset(const exec_policy &ep, const zdd &A, const zdd &B);
+  bool
+  zdd_subset(const exec_policy& ep, const zdd& A, const zdd& B);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \see zdd_subset
   //////////////////////////////////////////////////////////////////////////////
-  bool operator< (const zdd& lhs, const zdd& rhs);
+  bool
+  operator<(const zdd& lhs, const zdd& rhs);
 
   /// \cond
-  bool operator< (__zdd &&, __zdd &&);
-  bool operator< (const zdd &, __zdd &&);
-  bool operator< (__zdd &&, const zdd &);
+  bool
+  operator<(__zdd&&, __zdd&&);
+  bool
+  operator<(const zdd&, __zdd&&);
+  bool
+  operator<(__zdd&&, const zdd&);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \see zdd_subset
   //////////////////////////////////////////////////////////////////////////////
-  bool operator> (const zdd& lhs, const zdd& rhs);
+  bool
+  operator>(const zdd& lhs, const zdd& rhs);
 
   /// \cond
-  bool operator> (__zdd &&, __zdd &&);
-  bool operator> (const zdd &, __zdd &&);
-  bool operator> (__zdd &&, const zdd &);
+  bool
+  operator>(__zdd&&, __zdd&&);
+  bool
+  operator>(const zdd&, __zdd&&);
+  bool
+  operator>(__zdd&&, const zdd&);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether the two families are disjoint.
   //////////////////////////////////////////////////////////////////////////////
-  bool zdd_disjoint(const zdd &A, const zdd &B);
+  bool
+  zdd_disjoint(const zdd& A, const zdd& B);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether the two families are disjoint.
   //////////////////////////////////////////////////////////////////////////////
-  bool zdd_disjoint(const exec_policy &ep, const zdd &A, const zdd &B);
+  bool
+  zdd_disjoint(const exec_policy& ep, const zdd& A, const zdd& B);
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////
@@ -1095,23 +1229,27 @@ namespace adiar
   /// \brief The number of (internal) nodes used to represent the family of
   ///        sets.
   //////////////////////////////////////////////////////////////////////////////
-  size_t zdd_nodecount(const zdd &A);
+  size_t
+  zdd_nodecount(const zdd& A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The number of variables that exist in the family of sets, i.e. the
   ///        number of levels in the ZDD.
   //////////////////////////////////////////////////////////////////////////////
-  zdd::label_type zdd_varcount(const zdd &A);
+  zdd::label_type
+  zdd_varcount(const zdd& A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The number of sets in the family of sets.
   //////////////////////////////////////////////////////////////////////////////
-  uint64_t zdd_size(const zdd &A);
+  uint64_t
+  zdd_size(const zdd& A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The number of sets in the family of sets.
   //////////////////////////////////////////////////////////////////////////////
-  uint64_t zdd_size(const exec_policy &ep, const zdd &A);
+  uint64_t
+  zdd_size(const exec_policy& ep, const zdd& A);
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////
@@ -1129,7 +1267,8 @@ namespace adiar
   ///
   /// \param cb Callback function that consumes the variable labels.
   //////////////////////////////////////////////////////////////////////////////
-  void zdd_support(const zdd &A, const consumer<zdd::label_type> &cb);
+  void
+  zdd_support(const zdd& A, const consumer<zdd::label_type>& cb);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Copy all of the variable labels (in \em ascending order) that occur
@@ -1146,8 +1285,9 @@ namespace adiar
   /// \throws out_of_range If the distance between `begin` and `end` is not big
   ///                      enough to contain all variables in `f`.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  ForwardIt zdd_support(const zdd &A, ForwardIt begin, ForwardIt end)
+  template <typename ForwardIt>
+  ForwardIt
+  zdd_support(const zdd& A, ForwardIt begin, ForwardIt end)
   {
     zdd_support(A, make_consumer(begin, end));
     return begin;
@@ -1158,21 +1298,24 @@ namespace adiar
   ///
   /// \throws invalid_argument If `A` is a terminal.
   //////////////////////////////////////////////////////////////////////////////
-  zdd::label_type zdd_topvar(const zdd &f);
+  zdd::label_type
+  zdd_topvar(const zdd& f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Get the minimal occurring variable in the family.
   ///
   /// \throws invalid_argument If `A` is a terminal.
   //////////////////////////////////////////////////////////////////////////////
-  zdd::label_type zdd_minvar(const zdd &A);
+  zdd::label_type
+  zdd_minvar(const zdd& A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Get the maximal occurring variable in the family.
   ///
   /// \throws invalid_argument If `A` is a terminal.
   //////////////////////////////////////////////////////////////////////////////
-  zdd::label_type zdd_maxvar(const zdd &A);
+  zdd::label_type
+  zdd_maxvar(const zdd& A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Whether the family includes the given set of labels.
@@ -1184,7 +1327,8 @@ namespace adiar
   ///
   /// \returns Whether \f$ a \in A \f$
   //////////////////////////////////////////////////////////////////////////////
-  bool zdd_contains(const zdd &A, const generator<zdd::label_type> &a);
+  bool
+  zdd_contains(const zdd& A, const generator<zdd::label_type>& a);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       Whether the family includes the given set of labels.
@@ -1199,9 +1343,12 @@ namespace adiar
   ///
   /// \returns Whether \f$ \{\mathit{begin}, \dots, \mathit{end}\} \in A \f$
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  bool zdd_contains(const zdd &A, ForwardIt begin, ForwardIt end)
-  { return zdd_contains(A, make_generator(begin, end)); }
+  template <typename ForwardIt>
+  bool
+  zdd_contains(const zdd& A, ForwardIt begin, ForwardIt end)
+  {
+    return zdd_contains(A, make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Retrieves the lexicographically smallest set a in A.
@@ -1212,7 +1359,8 @@ namespace adiar
   ///          resulting assignment is lexicographically smallest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_minelem(const zdd &A);
+  zdd
+  zdd_minelem(const zdd& A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Retrieves the lexicographically smallest set a in A.
@@ -1224,7 +1372,8 @@ namespace adiar
   ///
   /// \pre `A != zdd_empty()`
   //////////////////////////////////////////////////////////////////////////////
-  void zdd_minelem(const zdd &A, const consumer<zdd::label_type> &cb);
+  void
+  zdd_minelem(const zdd& A, const consumer<zdd::label_type>& cb);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       Retrieves the lexicographically smallest set a in A.
@@ -1240,8 +1389,9 @@ namespace adiar
   /// \throws out_of_range If the distance between `begin` and `end` is not big
   ///                      enough to contain all variables in `f`.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  ForwardIt zdd_minelem(const zdd &A, ForwardIt begin, ForwardIt end)
+  template <typename ForwardIt>
+  ForwardIt
+  zdd_minelem(const zdd& A, ForwardIt begin, ForwardIt end)
   {
     zdd_minelem(A, make_consumer(begin, end));
     return begin;
@@ -1256,7 +1406,8 @@ namespace adiar
   ///          resulting assignment is lexicographically largest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_maxelem(const zdd &A);
+  zdd
+  zdd_maxelem(const zdd& A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Retrieves the lexicographically largest set a in A.
@@ -1268,7 +1419,8 @@ namespace adiar
   ///
   /// \pre `A != zdd_empty()`
   //////////////////////////////////////////////////////////////////////////////
-  void zdd_maxelem(const zdd &A, const consumer<zdd::label_type> &cb);
+  void
+  zdd_maxelem(const zdd& A, const consumer<zdd::label_type>& cb);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       Retrieves the lexicographically largest set a in A.
@@ -1284,8 +1436,9 @@ namespace adiar
   /// \throws out_of_range If the distance between `begin` and `end` is not big
   ///                      enough to contain all variables in `f`.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  ForwardIt zdd_maxelem(const zdd &A, ForwardIt begin, ForwardIt end)
+  template <typename ForwardIt>
+  ForwardIt
+  zdd_maxelem(const zdd& A, ForwardIt begin, ForwardIt end)
   {
     zdd_maxelem(A, make_consumer(begin, end));
     return begin;
@@ -1311,15 +1464,15 @@ namespace adiar
   /// \returns   ZDD that is true for the exact same assignments to variables in
   ///            the given domain.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_from(const bdd &f, const generator<zdd::label_type> &dom);
+  __zdd
+  zdd_from(const bdd& f, const generator<zdd::label_type>& dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Obtains the ZDD that represents the same function/set as the given
   ///        BDD within the given domain.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_from(const exec_policy &ep,
-                 const bdd &f,
-                 const generator<zdd::label_type> &dom);
+  __zdd
+  zdd_from(const exec_policy& ep, const bdd& f, const generator<zdd::label_type>& dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       Obtains the ZDD that represents the same function/set as the
@@ -1336,20 +1489,23 @@ namespace adiar
   /// \returns     ZDD that is true for the exact same assignments to variables
   ///              in the given domain.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  __zdd zdd_from(const bdd &f, ForwardIt begin, ForwardIt end)
-  { return zdd_from(f, make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __zdd
+  zdd_from(const bdd& f, ForwardIt begin, ForwardIt end)
+  {
+    return zdd_from(f, make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Obtains the ZDD that represents the same function/set as the given
   ///        BDD within the given domain.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename ForwardIt>
-  __zdd zdd_from(const exec_policy &ep,
-                 const bdd &f,
-                 ForwardIt begin,
-                 ForwardIt end)
-  { return bdd_from(ep, f, make_generator(begin, end)); }
+  template <typename ForwardIt>
+  __zdd
+  zdd_from(const exec_policy& ep, const bdd& f, ForwardIt begin, ForwardIt end)
+  {
+    return bdd_from(ep, f, make_generator(begin, end));
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Obtains the ZDD that represents the same function/set as the
@@ -1363,13 +1519,15 @@ namespace adiar
   /// \pre       The global \ref module__domain is set to a set of variables
   ///            that is equals to or a superset of the variables in `A`.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_from(const bdd &f);
+  __zdd
+  zdd_from(const bdd& f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Obtains the BDD that represents the same function/set as the given
   ///        ZDD within the global domain.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_from(const exec_policy &ep, const bdd &f);
+  __zdd
+  zdd_from(const exec_policy& ep, const bdd& f);
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////
@@ -1382,16 +1540,14 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Output a DOT drawing of a ZDD to the given output stream.
   //////////////////////////////////////////////////////////////////////////////
-  void zdd_printdot(const zdd &A,
-                    std::ostream &out = std::cout,
-                    bool include_id = false);
+  void
+  zdd_printdot(const zdd& A, std::ostream& out = std::cout, bool include_id = false);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Output a DOT drawing of a ZDD to the file with the given name.
   //////////////////////////////////////////////////////////////////////////////
-  void zdd_printdot(const zdd &A,
-                    const std::string &file_name,
-                    bool include_id = false);
+  void
+  zdd_printdot(const zdd& A, const std::string& file_name, bool include_id = false);
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////

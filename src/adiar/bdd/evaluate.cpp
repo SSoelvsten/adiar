@@ -1,47 +1,53 @@
 #include <adiar/bdd.h>
-
-#include <tpie/tpie.h>
-#include <tpie/internal_stack.h>
-
 #include <adiar/exception.h>
 #include <adiar/functional.h>
+#include <tpie/internal_stack.h>
+#include <tpie/tpie.h>
 
-#include <adiar/internal/cut.h>
-#include <adiar/internal/assert.h>
-#include <adiar/internal/util.h>
 #include <adiar/internal/algorithms/traverse.h>
+#include <adiar/internal/assert.h>
+#include <adiar/internal/cut.h>
 #include <adiar/internal/data_types/level_info.h>
 #include <adiar/internal/io/file_stream.h>
 #include <adiar/internal/io/file_writer.h>
 #include <adiar/internal/io/levelized_file_stream.h>
 #include <adiar/internal/io/node_writer.h>
+#include <adiar/internal/util.h>
 
 namespace adiar
 {
   class bdd_eval_func_visitor
   {
-    const predicate<bdd::label_type> &af;
+    const predicate<bdd::label_type>& af;
     bool result = false;
 
   public:
     bdd_eval_func_visitor(const predicate<bdd::label_type>& f)
       : af(f)
-    { }
+    {}
 
-    inline bdd::pointer_type visit(const bdd::node_type &n)
+    inline bdd::pointer_type
+    visit(const bdd::node_type& n)
     {
       const bool a = af(n.label());
       return a ? n.high() : n.low();
     }
 
-    inline void visit(const bool s)
-    { result = s; }
+    inline void
+    visit(const bool s)
+    {
+      result = s;
+    }
 
-    inline bool get_result()
-    { return result; }
+    inline bool
+    get_result()
+    {
+      return result;
+    }
   };
 
-  bool bdd_eval(const bdd &bdd, const predicate<bdd::label_type> &af)
+  bool
+  bdd_eval(const bdd& bdd, const predicate<bdd::label_type>& af)
   {
     bdd_eval_func_visitor v(af);
     traverse(bdd, v);
@@ -51,7 +57,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   class bdd_eval_generator_visitor
   {
-    const generator<pair<bdd::label_type, bool>> &_generator;
+    const generator<pair<bdd::label_type, bool>>& _generator;
 
     // The `_next_pair` value is only queried if there actually are BDD nodes.
     // Hence, we may as well unwrap the `optional<...>`.
@@ -67,16 +73,15 @@ namespace adiar
       if (p) { _next_pair = p.value(); }
     }
 
-    inline bdd::pointer_type visit(const bdd::node_type &n)
+    inline bdd::pointer_type
+    visit(const bdd::node_type& n)
     {
       const bdd::label_type level = n.label();
 
       while (_next_pair.first < level) {
         const optional<pair<bdd::label_type, bool>> p = _generator();
 
-        if (!p) {
-          throw out_of_range("Labels are insufficient to traverse BDD");
-        }
+        if (!p) { throw out_of_range("Labels are insufficient to traverse BDD"); }
 
         if (p.value().first <= _next_pair.first) {
           throw invalid_argument("Labels are not in ascending order");
@@ -92,14 +97,21 @@ namespace adiar
       return n.child(_next_pair.second);
     }
 
-    inline void visit(const bool s)
-    { result = s; }
+    inline void
+    visit(const bool s)
+    {
+      result = s;
+    }
 
-    inline bool get_result()
-    { return result; }
+    inline bool
+    get_result()
+    {
+      return result;
+    }
   };
 
-  bool bdd_eval(const bdd &bdd, const generator<pair<bdd::label_type, bool>> &xs)
+  bool
+  bdd_eval(const bdd& bdd, const generator<pair<bdd::label_type, bool>>& xs)
   {
     bdd_eval_generator_visitor v(xs);
     internal::traverse(bdd, v);
@@ -107,7 +119,7 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  template<typename Visitor>
+  template <typename Visitor>
   class bdd_satX__stack
   {
   private:
@@ -123,22 +135,25 @@ namespace adiar
   public:
     bdd_satX__stack(const size_t stack_size)
       : _stack(stack_size)
-    { }
+    {}
 
-    bdd::pointer_type visit(const bdd::node_type &n)
+    bdd::pointer_type
+    visit(const bdd::node_type& n)
     {
       const bdd::pointer_type next = _visitor.visit(n);
-      _stack.push({n.label(), next == n.low()});
+      _stack.push({ n.label(), next == n.low() });
       return next;
     }
 
-    void visit(const bool t)
+    void
+    visit(const bool t)
     {
       _visitor.visit(t);
     }
 
   public:
-    bdd build_bdd()
+    bdd
+    build_bdd()
     {
       adiar_assert(!_stack.empty());
 
@@ -154,33 +169,36 @@ namespace adiar
     }
   };
 
-  template<typename Visitor>
+  template <typename Visitor>
   class bdd_satX__functional
   {
   private:
     Visitor _visitor;
-    const consumer<pair<bdd::label_type, bool>> &_consumer;
+    const consumer<pair<bdd::label_type, bool>>& _consumer;
 
   public:
-    bdd_satX__functional(const consumer<pair<bdd::label_type, bool>> &c)
+    bdd_satX__functional(const consumer<pair<bdd::label_type, bool>>& c)
       : _consumer(c)
-    { }
+    {}
 
-    bdd::pointer_type visit(const bdd::node_type &n)
+    bdd::pointer_type
+    visit(const bdd::node_type& n)
     {
       const bdd::pointer_type next = _visitor.visit(n);
-      _consumer({n.label(), next == n.high()});
+      _consumer({ n.label(), next == n.high() });
       return next;
     }
 
-    void visit(const bool t)
+    void
+    visit(const bool t)
     {
       _visitor.visit(t);
     }
   };
 
-  template<typename Visitor>
-  bdd __bdd_satX(const bdd &f)
+  template <typename Visitor>
+  bdd
+  __bdd_satX(const bdd& f)
   {
     if (bdd_isterminal(f)) { return f; }
 
@@ -190,29 +208,34 @@ namespace adiar
     return v.build_bdd();
   }
 
-  template<typename Visitor>
-  void __bdd_satX(const bdd &f, const consumer<pair<bdd::label_type, bool>> &c)
+  template <typename Visitor>
+  void
+  __bdd_satX(const bdd& f, const consumer<pair<bdd::label_type, bool>>& c)
   {
     bdd_satX__functional<Visitor> v(c);
     internal::traverse(f, v);
   }
 
-  bdd bdd_satmin(const bdd &f)
+  bdd
+  bdd_satmin(const bdd& f)
   {
     return __bdd_satX<internal::traverse_satmin_visitor>(f);
   }
 
-  void bdd_satmin(const bdd &f, const consumer<pair<bdd::label_type, bool>> &c)
+  void
+  bdd_satmin(const bdd& f, const consumer<pair<bdd::label_type, bool>>& c)
   {
     return __bdd_satX<internal::traverse_satmin_visitor>(f, c);
   }
 
-  bdd bdd_satmax(const bdd &f)
+  bdd
+  bdd_satmax(const bdd& f)
   {
     return __bdd_satX<internal::traverse_satmax_visitor>(f);
   }
 
-  void bdd_satmax(const bdd &f, const consumer<pair<bdd::label_type, bool>> &c)
+  void
+  bdd_satmax(const bdd& f, const consumer<pair<bdd::label_type, bool>>& c)
   {
     return __bdd_satX<internal::traverse_satmax_visitor>(f, c);
   }
