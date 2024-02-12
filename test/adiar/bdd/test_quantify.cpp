@@ -606,8 +606,8 @@ go_bandit([]() {
     //          than twice their original size. If each subtree itself also is
     //          duplicated, then it gets close(ish) to 200% the input size.
     //
-    //          The variables x0 and x1 are designed such that Partial
-    //          Quantification has to leave another node for later.
+    //          The variables x0 and x1 are designed such that repeated
+    //          transposition has to leave another node for later at x1.
     /*
     //                        __r1__                    ---- x0
     //                       /      \
@@ -660,21 +660,19 @@ go_bandit([]() {
     /*
     //                            _______(1,a)_______
     //                           /                   \
-    //              __________(1,b)__________      (1,c)   <-- (1,c) is symmetric to (1,b) (these
-    merge with (4,b) and (4,c))
-    //             /                         \       .         Size: 3 additional nodes (incl.
-    (1,c))
-    //           (2,b)                     (3,c)     .
-    //           /   \                      |  \     .
+    //                ________(1,b)________        (1,c)   <-- (1,c) is symmetric to (1,b) (these
+    //               /                     \         .          merge with (4,b) and (4,c))
+    //              /                       \        .          Size: 3 additional nodes
+    //             /                         \       .                (incl. (1,c))
+    //           (2,b)                     (3,c)
+    //           /   \                      |  \
     //          (b) (4,b)                (4,c) (c)
     //              /   \                /   \
-    //             (5) (6,d)           (5,d) (6)            <-- At this point we have copies of both
-    inputs.
+    //             (5) (6,d)           (5,d) (6)            <-- Here, both inputs are copied
     //                 /   \           /   \                    Left subtree:  #nodes - 4
     //              (7,f) (9,g)    (8,d) (7,g)                  Right subtree: #nodes - 1
     //              /   \                /   \
-    //          (8,f)   (9,f)          (8,g) (9,g)          <-- (8,g) and (9,g) also produce the
-    same pairs
+    //          (8,f)   (9,f)          (8,g) (9,g)          <-- (8,g), (9,g) produce same pairs
     //         /   |     |   \          / /   / /
     //        /    |     |    \        . .   . .
     //       /     |     |     \      . .   . .
