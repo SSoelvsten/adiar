@@ -83,7 +83,7 @@ NamespaceIndentation: All
 PointerAlignment: Left
 QualifierAlignment: Left
 ReferenceAlignment: Left
-RemoveParentheses: MultipleParentheses
+#RemoveParentheses: MultipleParentheses
 SeparateDefinitionBlocks: Always
 SpaceAfterTemplateKeyword: true
 SpaceBeforeParens: ControlStatements
