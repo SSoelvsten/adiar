@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['total_494',['total',['../structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html#a5528e809829233a8f28065318e4c06ae',1,'adiar::statistics::__alg_base::__lpq_t']]]
+  ['width_521',['width',['../classadiar_1_1internal_1_1dd.html#ae50a9dc1b8fcd0a6a907e4b1e3f22ac3',1,'adiar::internal::dd']]]
 ];

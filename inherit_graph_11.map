@@ -1,3 +1,13 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structadiar_1_1statistics_1_1nested__sweeping__t.html" title="Nested Sweeping statistics." alt="" coords="5,5,152,47"/>
+<area shape="rect" id="node1" href="$structadiar_1_1statistics_1_1____alg__base.html" title="Common statistics for all algorithms." alt="" coords="5,235,136,276"/>
+<area shape="rect" id="node2" href="$structadiar_1_1statistics_1_1count__t.html" title="Counting algorithm statistics." alt="" coords="184,5,315,47"/>
+<area shape="rect" id="node3" href="$structadiar_1_1statistics_1_1equality__t.html" title="Equality Checking algorithm statistics." alt="" coords="184,71,315,112"/>
+<area shape="rect" id="node4" href="$structadiar_1_1statistics_1_1intercut__t.html" title="Intercut algorithm statistics." alt="" coords="184,136,315,177"/>
+<area shape="rect" id="node5" href="$structadiar_1_1statistics_1_1prod2__t.html" title="2&#45;ary Product Construction algorithm statistics." alt="" coords="184,201,315,243"/>
+<area shape="rect" id="node6" href="$structadiar_1_1statistics_1_1prod3__t.html" title="3&#45;ary Product Construction algorithm statistics." alt="" coords="184,267,315,308"/>
+<area shape="rect" id="node7" href="$structadiar_1_1statistics_1_1quantify__t.html" title="Quantification algorithm statistics." alt="" coords="184,332,315,373"/>
+<area shape="rect" id="node8" href="$structadiar_1_1statistics_1_1reduce__t.html" title="Reduce algorithm statistics." alt="" coords="184,397,315,439"/>
+<area shape="rect" id="node11" href="$structadiar_1_1statistics_1_1select__t.html" title="Select algorithm statistics." alt="" coords="184,463,315,504"/>
+<area shape="rect" id="node9" href="$structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__up__t.html" title="Inner Up Sweep(s)" alt="" coords="363,365,586,407"/>
+<area shape="rect" id="node10" href="$structadiar_1_1statistics_1_1nested__sweeping__t_1_1outer__up__t.html" title="Outer Reduce Sweep." alt="" coords="363,431,587,472"/>
 </map>

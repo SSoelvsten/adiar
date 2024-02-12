@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['singleton_690',['Singleton',['../classadiar_1_1exec__policy.html#a1d37a49f8ef3843dd33c0cc843313902a6ff5f73c8b5ebd311406568c8ef50bfd',1,'adiar::exec_policy']]]
+  ['singleton_715',['Singleton',['../classadiar_1_1exec__policy_1_1quantify.html#abee6d64d26c9ebc46e6c47a718e22197acf233267597644b4c91a99f8f17cbe69',1,'adiar::exec_policy::quantify']]]
 ];

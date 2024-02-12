@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['zdd_381',['zdd',['../classadiar_1_1zdd.html',1,'adiar']]]
+  ['transposition_5fgrowth_395',['transposition_growth',['../classadiar_1_1exec__policy_1_1quantify_1_1transposition__growth.html',1,'adiar::exec_policy::quantify']]],
+  ['transposition_5fmax_396',['transposition_max',['../classadiar_1_1exec__policy_1_1quantify_1_1transposition__max.html',1,'adiar::exec_policy::quantify']]]
 ];

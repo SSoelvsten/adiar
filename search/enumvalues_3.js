@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['nested_686',['Nested',['../classadiar_1_1exec__policy.html#a1d37a49f8ef3843dd33c0cc843313902a13c479c348969ab459513a4bfd559bb9',1,'adiar::exec_policy']]]
+  ['nested_712',['Nested',['../classadiar_1_1exec__policy_1_1quantify.html#abee6d64d26c9ebc46e6c47a718e22197a44d2c93a61deb96d9309e5a35501fb83',1,'adiar::exec_policy::quantify']]]
 ];
