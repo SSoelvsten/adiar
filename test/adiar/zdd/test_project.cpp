@@ -610,7 +610,7 @@ go_bandit([]() {
 
       describe("algorithm: Nested, max: 1+", [&]() {
         const exec_policy ep = exec_policy::quantify::Nested
-          & exec_policy::quantify::transposition_growth(0.5)
+          & exec_policy::quantify::transposition_growth(1.5)
           & exec_policy::quantify::transposition_max(2);
 
         it("computes with dom = Ø to be { Ø } for non-empty input [zdd_2]", [&](){
@@ -1227,7 +1227,7 @@ go_bandit([]() {
 
         it("switches to Nested Sweeping for exploding ZDD 5", [&]() {
           const exec_policy ep = exec_policy::quantify::Nested
-            & exec_policy::quantify::transposition_growth(0.5)
+            & exec_policy::quantify::transposition_growth(1.5)
             & exec_policy::quantify::transposition_max::max();
 
           std::vector<zdd::label_type> call_history;

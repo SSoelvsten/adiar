@@ -911,7 +911,7 @@ namespace adiar::internal
       //   1. ... it stays smaller than 1+epsilon% of the input size.
       const size_t transposition__size_threshold = static_cast<size_t>(
         std::min<double>(std::numeric_limits<size_t>::max(),
-                         (1.0 + ep.template get<exec_policy::quantify::transposition_growth>())
+                         ep.template get<exec_policy::quantify::transposition_growth>()
                            * static_cast<double>(dd_size)));
 
       //   2. ... it has not run more than the maximum number of iterations.

@@ -114,8 +114,15 @@ namespace adiar
       };
 
       //////////////////////////////////////////////////////////////////////////
-      /// \brief Epsilon value for maximal growth a BDD may grow during repeated
-      ///        transpostion before switching to Nested Sweeping.
+      /// \brief Multiplicative value for the maximal growth of a BDD may during
+      ///        repeated transpostion before switching to Nested Sweeping.
+      ///
+      /// \details A value of `1.0` is equivalent to the original input size.
+      ///          Larger Values reflect an acceptable increase in size. A value
+      ///          between `0.0` and `1.0` requires the BDD to shrink to
+      ///          continue repeating transposition.
+      ///
+      /// \details A negative value will result in undefined behaviour.
       //////////////////////////////////////////////////////////////////////////
       class transposition_growth
       {
@@ -124,7 +131,7 @@ namespace adiar
         static constexpr transposition_growth
         min()
         {
-          return -1.0;
+          return 0.0;
         }
 
         /// \brief Maximal value
@@ -283,7 +290,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Maximal growth during repeated transposition of `quantify`.
     ////////////////////////////////////////////////////////////////////////////
-    quantify::transposition_growth _quantify__transposition_growth = 0.5;
+    quantify::transposition_growth _quantify__transposition_growth = 1.5f;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Maximal number of repeated transpositions in `quantify`.
@@ -295,7 +302,7 @@ namespace adiar
     ///        expensive node merging computations (if applicable).
     ////////////////////////////////////////////////////////////////////////////
     // TODO: set to ~5%
-    nested::fast_reduce _nested__fast_reduce = -1.0;
+    nested::fast_reduce _nested__fast_reduce = -1.0f;
 
   public:
     ////////////////////////////////////////////////////////////////////////////

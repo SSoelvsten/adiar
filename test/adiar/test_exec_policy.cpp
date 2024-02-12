@@ -20,7 +20,7 @@ go_bandit([]() {
                      Is().EqualTo(exec_policy::quantify::Nested));
           AssertThat(
             static_cast<float>(ep.template get<exec_policy::quantify::transposition_growth>()),
-            Is().EqualTo(0.5));
+            Is().EqualTo(1.5));
           AssertThat(
             static_cast<float>(ep.template get<exec_policy::quantify::transposition_max>()),
             Is().EqualTo(1));
@@ -41,7 +41,7 @@ go_bandit([]() {
                      Is().EqualTo(exec_policy::quantify::Nested));
           AssertThat(
             static_cast<float>(ep.template get<exec_policy::quantify::transposition_growth>()),
-            Is().EqualTo(0.5));
+            Is().EqualTo(1.5));
           AssertThat(
             static_cast<float>(ep.template get<exec_policy::quantify::transposition_max>()),
             Is().EqualTo(1));
@@ -62,7 +62,7 @@ go_bandit([]() {
                      Is().EqualTo(exec_policy::quantify::Nested));
           AssertThat(
             static_cast<float>(ep.template get<exec_policy::quantify::transposition_growth>()),
-            Is().EqualTo(0.5));
+            Is().EqualTo(1.5));
           AssertThat(
             static_cast<float>(ep.template get<exec_policy::quantify::transposition_max>()),
             Is().EqualTo(1));
@@ -83,7 +83,7 @@ go_bandit([]() {
                      Is().EqualTo(exec_policy::quantify::Singleton));
           AssertThat(
             static_cast<float>(ep.template get<exec_policy::quantify::transposition_growth>()),
-            Is().EqualTo(0.5));
+            Is().EqualTo(1.5));
           AssertThat(
             static_cast<float>(ep.template get<exec_policy::quantify::transposition_max>()),
             Is().EqualTo(1));
@@ -148,13 +148,20 @@ go_bandit([]() {
           exec_policy ep;
           AssertThat(
             static_cast<float>(ep.template get<exec_policy::quantify::transposition_growth>()),
-            Is().EqualTo(0.5));
+            Is().EqualTo(1.5));
 
           ep.set(exec_policy::quantify::transposition_growth(4.2));
           AssertThat(
             static_cast<float>(ep.template get<exec_policy::quantify::transposition_growth>()),
             Is().EqualTo(4.2f));
         });
+
+        /* TODO
+        it("throws when setting 'quantify::transposition growth epsilon' to a negative value", []() {
+          exec_policy ep;
+          AssertThrows(invalid_argument, ep.set(exec_policy::quantify::transposition_growth(-42.0)));
+        });
+        */
 
         it("can set 'quantify::transposition max delta'", []() {
           exec_policy ep;
@@ -385,7 +392,7 @@ go_bandit([]() {
                      Is().EqualTo(exec_policy::quantify::Nested));
           AssertThat(
             static_cast<float>(ep.template get<exec_policy::quantify::transposition_growth>()),
-            Is().EqualTo(0.5));
+            Is().EqualTo(1.5));
           AssertThat(
             static_cast<float>(ep.template get<exec_policy::quantify::transposition_max>()),
             Is().EqualTo(1));
