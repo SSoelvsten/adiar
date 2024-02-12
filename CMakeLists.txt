@@ -41,7 +41,7 @@ message(STATUS "  | Statistics:              ${ADIAR_STATS}")
 
 message(STATUS "  Optional targets:")
 
-option(ADIAR_DOCS "Build Documentation for Adiar" ON)
+option(ADIAR_DOCS "Build Documentation for Adiar" ${PROJECT_IS_TOP_LEVEL})
 message(STATUS "  | Documentation (Doxygen): ${ADIAR_DOCS}")
 
 option(ADIAR_TEST "Build unit tests for adiar" ${PROJECT_IS_TOP_LEVEL})
@@ -79,7 +79,9 @@ endif (ADIAR_DOCS)
 # ============================================================================ #
 # Formatting
 # ============================================================================ #
-include(cmake/clang-cxx-dev-tools.cmake)
+if (${PROJECT_IS_TOP_LEVEL})
+  include(cmake/clang-cxx-dev-tools.cmake)
+endif()
 
 # ============================================================================ #
 # Unit Tests
