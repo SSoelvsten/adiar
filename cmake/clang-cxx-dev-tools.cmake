@@ -27,7 +27,7 @@ file(GLOB_RECURSE ALL_TEST_FILES
 find_program(CLANG_FORMAT "clang-format")
 if(CLANG_FORMAT)
   add_custom_target(
-    clang-format
+    adiar_clang-format
     COMMAND /usr/bin/clang-format
     ${ALL_SRC_FILES} ${ALL_TEST_FILES}
     -i
@@ -38,7 +38,7 @@ endif()
 find_program(CLANG_TIDY "clang-tidy")
 if(CLANG_TIDY)
   add_custom_target(
-    clang-tidy
+    adiar_clang-tidy
     COMMAND /usr/bin/clang-tidy
     ${ALL_SRC_SOURCE_FILES} ${ALL_TEST_SOURCE_FILES}
     -config=''

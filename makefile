@@ -33,7 +33,7 @@ clean: | clean/files
 # ============================================================================ #
 format:
 	@mkdir -p build/ && cd build/ && cmake -D CMAKE_BUILD_TYPE=$(BUILD_TYPE) ..
-	@cd build/ && make clang-format
+	@cd build/ && make adiar_clang-format
 
 # ============================================================================ #
 #  UNIT TESTING
