@@ -1,6 +1,5 @@
-
-#ifndef ADIAR_INTERNAL_ALGORITHMS_OPT_MIN_H
-#define ADIAR_INTERNAL_ALGORITHMS_OPT_MIN_H
+#ifndef ADIAR_INTERNAL_ALGORITHMS_OPTMIN_H
+#define ADIAR_INTERNAL_ALGORITHMS_OPTMIN_H
 
 #include "adiar/functional.h"
 #include "adiar/internal/data_types/node.h"
@@ -238,4 +237,4 @@ namespace adiar::internal
   }
 }
 
-#endif // ADIAR_INTERNAL_ALGORITHMS_OPT_MIN_H
+#endif // ADIAR_INTERNAL_ALGORITHMS_OPTMIN_H
