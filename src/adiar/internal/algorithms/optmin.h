@@ -193,7 +193,6 @@ namespace adiar::internal
   {
     if (dd_istrue(dd)) { return 0.0; }
     if (dd_isfalse(dd)) { return NAN; }
-    // adiar_assert(!dd_isterminal(dd), "Count algorithm does not work on terminal-only edge case");
 
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.

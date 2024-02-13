@@ -7,15 +7,15 @@ go_bandit([]() {
 
     shared_levelized_file<bdd::node_type> bdd_1;
     /*
-             1       ---- x0
-            / \
-            | 2      ---- x1
-            |/ \
-            3  |     ---- x2
-           / \ /
-           F  4      ---- x3
-             / \
-             F T
+    //       1       ---- x0
+    //      / \
+    //      | 2      ---- x1
+    //      |/ \
+    //      3  |     ---- x2
+    //     / \ /
+    //     F  4      ---- x3
+    //       / \
+    //       F T
     */
 
     { // Garbage collect writer to free write-lock
@@ -30,13 +30,13 @@ go_bandit([]() {
 
     shared_levelized_file<bdd::node_type> bdd_2;
     /*
-                     ---- x0
-
-              1      ---- x1
-             / \
-            2  |     ---- x2
-           / \ /
-           F  T
+    //               ---- x0
+    //
+    //        1      ---- x1
+    //       / \
+    //      2  |     ---- x2
+    //     / \ /
+    //     F  T
     */
 
     { // Garbage collect writer to free write-lock
@@ -49,13 +49,13 @@ go_bandit([]() {
 
     shared_levelized_file<bdd::node_type> bdd_3;
     /*
-                    ---- x0
-
-             1      ---- x1
-            / \
-           2  3     ---- x2
-          / \/ \
-          F T  F
+    //              ---- x0
+    //
+    //       1      ---- x1
+    //      / \
+    //     2  3     ---- x2
+    //    / \/ \
+    //    F T  F
     */
 
     { // Garbage collect writer to free write-lock
@@ -69,16 +69,16 @@ go_bandit([]() {
 
     shared_levelized_file<bdd::node_type> bdd_4;
     /*
-                    __1__      ---- x0
-                   /     \
-                  _2_   _3_    ---- x2
-                 /   \ /   \
-                 \    4    /   ---- x4
-                  \  / \  /
-                   \/   \/
-                   5    6      ---- x6
-                  / \  / \
-                  T F  F T
+    //              __1__      ---- x0
+    //             /     \
+    //            _2_   _3_    ---- x2
+    //           /   \ /   \
+    //           \    4    /   ---- x4
+    //            \  / \  /
+    //             \/   \/
+    //             5    6      ---- x6
+    //            / \  / \
+    //            T F  F T
     */
 
     { // Garbage collect writer to free write-lock
@@ -95,7 +95,7 @@ go_bandit([]() {
 
     shared_levelized_file<bdd::node_type> bdd_T;
     /*
-              T
+    //        T
     */
 
     { // Garbage collect writer to free write-lock
@@ -105,7 +105,7 @@ go_bandit([]() {
 
     shared_levelized_file<bdd::node_type> bdd_F;
     /*
-              F
+    //        F
     */
 
     { // Garbage collect writer to free write-lock
@@ -115,9 +115,9 @@ go_bandit([]() {
 
     shared_levelized_file<bdd::node_type> bdd_root_1;
     /*
-                 1    ---- x1
-                / \
-                F T
+    //           1    ---- x1
+    //          / \
+    //          F T
     */
 
     { // Garbage collect writer to free write-lock
