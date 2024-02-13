@@ -1463,7 +1463,7 @@ namespace adiar
   ///
   /// \param c  A (pure) function that provides the cost function's coefficient.
   ///
-  /// \param cb  A callback function that is called in \em descending order.
+  /// \param cb A callback function that is called in \em descending order.
   ///
   /// \returns The cost of the satisfying solution if any, otherwise NaN.
   ///

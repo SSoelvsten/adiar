@@ -99,6 +99,9 @@ test/adiar/bdd/evaluate:
 test/adiar/bdd/if_then_else:
 	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=if_then_else
 
+test/adiar/bdd/optmin:
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=optmin
+
 test/adiar/bdd/pred:
 	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=pred
 
