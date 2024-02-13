@@ -1,5 +1,6 @@
 #include "statistics.h"
 
+#include "adiar/internal/algorithms/optmin.h"
 #include <iomanip>
 
 #include <adiar/bdd/if_then_else.h>
@@ -7,7 +8,6 @@
 #include <adiar/internal/algorithms/count.h>
 #include <adiar/internal/algorithms/intercut.h>
 #include <adiar/internal/algorithms/nested_sweeping.h>
-#include "adiar/internal/algorithms/optmin.h"
 #include <adiar/internal/algorithms/pred.h>
 #include <adiar/internal/algorithms/prod2.h>
 #include <adiar/internal/algorithms/quantify.h>
@@ -69,7 +69,7 @@ namespace adiar
     internal::stats_count    = {};
     internal::stats_equality = {};
     internal::stats_intercut = {};
-    internal::stats_optmin                   = {};
+    internal::stats_optmin   = {};
     internal::stats_prod2    = {};
     stats_prod3              = {};
     internal::stats_quantify = {};
@@ -378,7 +378,8 @@ namespace adiar
     indent_level -= 2;
   }
 
-  void __printstat_optmin(std::ostream &o)
+  void
+  __printstat_optmin(std::ostream& o)
   {
     uintwide total_runs = internal::stats_optmin.lpq.total();
     o << indent << bold_on << label << "Optmin" << bold_off << total_runs << endl;
@@ -952,7 +953,6 @@ namespace adiar
 
     __printstat_prod2(o);
     o << endl;
-    
 
     __printstat_prod3(o);
     o << endl;

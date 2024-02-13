@@ -14,6 +14,7 @@
 #include <limits>
 #include <memory>
 #include <stdint.h>
+#include <tuple>
 
 #include <adiar/exec_policy.h>
 
@@ -25,7 +26,6 @@
 #include <adiar/internal/io/arc_file.h>
 #include <adiar/internal/io/arc_writer.h>
 #include <adiar/internal/io/node_stream.h>
-#include <tuple>
 
 namespace adiar::internal
 {
@@ -54,16 +54,16 @@ namespace adiar::internal
 
   using optmin_request = request_data<1, optmin_data>;
 
-  template<size_t look_ahead, memory_mode mem_mode>
+  template <size_t look_ahead, memory_mode mem_mode>
   using optmin_priority_queue_t =
-      levelized_node_priority_queue<optmin_request,
-                                    request_data_first_lt<optmin_request>,
-                                    look_ahead,
-                                    mem_mode,
-                                    1u,
-                                    0u>;
+    levelized_node_priority_queue<optmin_request,
+                                  request_data_first_lt<optmin_request>,
+                                  look_ahead,
+                                  mem_mode,
+                                  1u,
+                                  0u>;
 
-  template<typename Policy, typename PriorityQueue>
+  template <typename Policy, typename PriorityQueue>
   double
   __optmin(Policy policy,
            const typename Policy::dd_type& dd,
@@ -85,11 +85,11 @@ namespace adiar::internal
       node_stream<> ns(dd);
 
       // Set up cross-level priority queue with a request for the root
-      PriorityQueue optmin_pq({dd}, pq_max_memory, pq_max_size, stats_optmin.lpq);
+      PriorityQueue optmin_pq({ dd }, pq_max_memory, pq_max_size, stats_optmin.lpq);
       {
         const node root = ns.peek();
 
-        optmin_pq.push({{root.uid()}, {}, {0.0, node::pointer_type::nil()}});
+        optmin_pq.push({ { root.uid() }, {}, { 0.0, node::pointer_type::nil() } });
       }
 
       // Take out the rest of the nodes and process them one by one
@@ -131,7 +131,7 @@ namespace adiar::internal
           // This check could be changed to depending on iteration of the outer loop, making it
           // possible for the compiler to unroll it. That would complicate the code, so should be
           // mesured before changed.
-          if (!best.data.source.is_nil()) { aw.push_internal({best.data.source, n.uid()}); }
+          if (!best.data.source.is_nil()) { aw.push_internal({ best.data.source, n.uid() }); }
 
           // As only children can be terminals (we cannot have a node which is a terminal itself),
           // we have to check if we have found a solution for each of the children, and only
@@ -146,7 +146,7 @@ namespace adiar::internal
               min_so_far_end = n.uid().as_ptr(false);
             }
           } else {
-            optmin_pq.push({{n.low()}, {}, {cost_low, n.uid().as_ptr(false)}});
+            optmin_pq.push({ { n.low() }, {}, { cost_low, n.uid().as_ptr(false) } });
           }
 
           if constexpr (Policy::bullying) {
@@ -159,7 +159,7 @@ namespace adiar::internal
               min_so_far_end = n.uid().as_ptr(true);
             }
           } else {
-            optmin_pq.push({{n.high()}, {}, {cost_high, n.uid().as_ptr(true)}});
+            optmin_pq.push({ { n.high() }, {}, { cost_high, n.uid().as_ptr(true) } });
           }
         }
       }
@@ -173,7 +173,7 @@ namespace adiar::internal
     // enabled or not in the solution.
     {
       arc_stream ns(best_parent_graph);
-      arc next = {min_so_far_end, node::pointer_type(true)};
+      arc next = { min_so_far_end, node::pointer_type(true) };
       policy.out(min_so_far_end.label(), min_so_far_end.out_idx());
       while (ns.can_pull_internal()) {
         arc n = ns.pull_internal();
@@ -187,7 +187,7 @@ namespace adiar::internal
     return min_so_far;
   }
 
-  template<typename Policy>
+  template <typename Policy>
   double
   optmin(const exec_policy& ep, Policy policy, const typename Policy::dd_type& dd)
   {
@@ -205,8 +205,8 @@ namespace adiar::internal
     const size_t aux_available_memory = memory_available() - node_stream<>::memory_usage();
 
     const size_t pq_memory_fits =
-        optmin_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(
-            aux_available_memory);
+      optmin_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(
+        aux_available_memory);
 
     const bool internal_only =
       ep.template get<exec_policy::memory>() == exec_policy::memory::Internal;
@@ -222,28 +222,19 @@ namespace adiar::internal
       stats_optmin.lpq.unbucketed += 1u;
 #endif
       return __optmin<Policy, optmin_priority_queue_t<0, memory_mode::Internal>>(
-          policy,
-          dd,
-          aux_available_memory,
-          max_pq_size);
+        policy, dd, aux_available_memory, max_pq_size);
     } else if (!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
       stats_optmin.lpq.internal += 1u;
 #endif
       return __optmin<Policy, optmin_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>>(
-          policy,
-          dd,
-          aux_available_memory,
-          max_pq_size);
+        policy, dd, aux_available_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
       stats_optmin.lpq.external += 1u;
 #endif
       return __optmin<Policy, optmin_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::External>>(
-          policy,
-          dd,
-          aux_available_memory,
-          max_pq_size);
+        policy, dd, aux_available_memory, max_pq_size);
     }
   }
 }

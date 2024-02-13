@@ -1446,16 +1446,14 @@ namespace adiar
   ///          cost. If no solution was found, returns the false constant and NaN
   ////////////////////////////////////////////////////////////////////////////////
   pair<bdd, double>
-  bdd_optmin(const bdd &f, const cost<bdd::label_type> &c);
-  
+  bdd_optmin(const bdd& f, const cost<bdd::label_type>& c);
+
   ////////////////////////////////////////////////////////////////////////////////
   /// \brief obtain the satisfying assignment that is minimal for the given linear
   ///        cost function over the global domain.
   ////////////////////////////////////////////////////////////////////////////////
   pair<bdd, double>
-  bdd_optmin(const exec_policy &ep,
-             const bdd &f,
-             const cost<bdd::label_type> &c);
+  bdd_optmin(const exec_policy& ep, const bdd& f, const cost<bdd::label_type>& c);
 
   ////////////////////////////////////////////////////////////////////////////////
   /// \brief obtain the satisfying assignment that is minimal for the given linear
@@ -1472,20 +1470,20 @@ namespace adiar
   /// \remark If `f` is a terminal, `cb` will never be called
   ////////////////////////////////////////////////////////////////////////////////
   double
-  bdd_optmin(const bdd &f,
-             const cost<bdd::label_type> &c,
-             const consumer<pair<bdd::label_type, bool>> &cb);
-  
+  bdd_optmin(const bdd& f,
+             const cost<bdd::label_type>& c,
+             const consumer<pair<bdd::label_type, bool>>& cb);
+
   ////////////////////////////////////////////////////////////////////////////////
   /// \brief obtain the satisfying assignment that is minimal for the given linear
   ///        cost function over the global domain.
   ////////////////////////////////////////////////////////////////////////////////
   double
-  bdd_optmin(const exec_policy &ep,
-             const bdd &f,
-             const cost<bdd::label_type> &c,
-             const consumer<pair<bdd::label_type, bool>> &cb);
-  
+  bdd_optmin(const exec_policy& ep,
+             const bdd& f,
+             const cost<bdd::label_type>& c,
+             const consumer<pair<bdd::label_type, bool>>& cb);
+
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Evaluate a BDD according to an assignment to its variables.
   ///

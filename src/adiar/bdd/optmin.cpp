@@ -4,8 +4,10 @@
 #include "adiar/internal/io/node_writer.h"
 #include "adiar/internal/io/shared_file_ptr.h"
 #include "adiar/types.h"
+
 #include <adiar/bdd.h>
 #include <adiar/bdd/bdd_policy.h>
+
 #include <adiar/internal/algorithms/optmin.h>
 
 namespace adiar
@@ -22,10 +24,11 @@ namespace adiar
   {
   public:
     static constexpr bool bullying = true;
+
     void
     out(bdd::label_type label, bool value)
     {
-      this->out_fn({label, value});
+      this->out_fn({ label, value });
     }
 
     double
@@ -40,7 +43,8 @@ namespace adiar
 
     bdd_optmin_policy(const consumer<pair<bdd::label_type, bool>>& o,
                       const cost<bdd::label_type>& c)
-        : out_fn(o), get_cost(c)
+      : out_fn(o)
+      , get_cost(c)
     {}
 
   private:
@@ -88,7 +92,7 @@ namespace adiar
       root = next.uid();
     });
 
-    return {nf, value};
+    return { nf, value };
   }
 
   pair<bdd, double>
