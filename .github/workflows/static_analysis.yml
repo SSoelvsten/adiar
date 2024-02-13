@@ -37,6 +37,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           enable: warning,performance,portability,information
           force_language: c++
+          max_ctu_depth: 4
+          std: c++17
           output_file: ./cppcheck_report.txt
 
       - name: 'Print cppcheck_report.txt'
