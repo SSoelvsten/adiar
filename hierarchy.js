@@ -4,6 +4,7 @@ var hierarchy =
       [ "adiar::statistics::count_t", "structadiar_1_1statistics_1_1count__t.html", null ],
       [ "adiar::statistics::equality_t", "structadiar_1_1statistics_1_1equality__t.html", null ],
       [ "adiar::statistics::intercut_t", "structadiar_1_1statistics_1_1intercut__t.html", null ],
+      [ "adiar::statistics::optmin_t", "structadiar_1_1statistics_1_1optmin__t.html", null ],
       [ "adiar::statistics::prod2_t", "structadiar_1_1statistics_1_1prod2__t.html", null ],
       [ "adiar::statistics::prod3_t", "structadiar_1_1statistics_1_1prod3__t.html", null ],
       [ "adiar::statistics::quantify_t", "structadiar_1_1statistics_1_1quantify__t.html", null ],

@@ -1,6 +1,7 @@
 var group__module____functional =
 [
     [ "consumer", "group__module____functional.html#ga3d65dbfd2713f575acf291dfbabd8e7b", null ],
+    [ "cost", "group__module____functional.html#ga3adf1876f8333cf8cbe78255823b0f8e", null ],
     [ "function", "group__module____functional.html#ga7cedafe2a659228db84b6dc3c35fb0ca", null ],
     [ "generator", "group__module____functional.html#ga13ea491f2be12fdc18cf118b931a423a", null ],
     [ "predicate", "group__module____functional.html#ga8faa1a3ec042e38209635188c27636de", null ],

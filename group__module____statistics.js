@@ -111,6 +111,9 @@ var group__module____statistics =
         [ "push_level", "structadiar_1_1statistics_1_1node__file__t.html#ab2987bf9926b0e9a85acc47390bb4a94", null ],
         [ "push_node", "structadiar_1_1statistics_1_1node__file__t.html#a4391476b5bc3ec1dbc1f50512b0473c9", null ]
       ] ],
+      [ "optmin_t", "structadiar_1_1statistics_1_1optmin__t.html", [
+        [ "lpq", "structadiar_1_1statistics_1_1optmin__t.html#ab769667ff5ecea10ecd9e2589b7e72bf", null ]
+      ] ],
       [ "prod2_t", "structadiar_1_1statistics_1_1prod2__t.html", [
         [ "pq_t", "structadiar_1_1statistics_1_1prod2__t_1_1pq__t.html", [
           [ "pq_2_elems", "structadiar_1_1statistics_1_1prod2__t_1_1pq__t.html#ad43d4178a837bb263f5f2d2f2e528dbc", null ],
@@ -165,6 +168,7 @@ var group__module____statistics =
       [ "levelized_priority_queue", "structadiar_1_1statistics.html#a40ee08e08fd241c4123f6578969e738d", null ],
       [ "nested_sweeping", "structadiar_1_1statistics.html#a73464fed848ef4a2baeb8786b027859c", null ],
       [ "node_file", "structadiar_1_1statistics.html#abd960bddf01859439b3bae5a72b6fc82", null ],
+      [ "optmin", "structadiar_1_1statistics.html#aa9c2c4f48e9cb870e5a95381f5e212a4", null ],
       [ "prod2", "structadiar_1_1statistics.html#a6f0c3f83667de0851028451becbdc83f", null ],
       [ "prod3", "structadiar_1_1statistics.html#a9da0cc7f45afe38af5c95b1a1da2ab0e", null ],
       [ "quantify", "structadiar_1_1statistics.html#abf6e8f5938dc377805bfe755d612751b", null ],
