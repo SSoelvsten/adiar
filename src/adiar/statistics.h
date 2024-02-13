@@ -307,7 +307,8 @@ namespace adiar
     /// \see bdd_optmin
     ////////////////////////////////////////////////////////////////////////////
     struct optmin_t : public __alg_base
-    { }
+    {
+    }
     /// \copydoc prod3_t
     optmin;
 

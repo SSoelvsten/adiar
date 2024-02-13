@@ -107,8 +107,8 @@ namespace adiar
   ///
   /// \tparam VarType Type of variable labels.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename VarType>
-  using cost = function<double (VarType)>;
+  template <typename VarType>
+  using cost = function<double(VarType)>;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief  Generator function that *produces* a new value of `RetType` for
