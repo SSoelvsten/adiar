@@ -83,8 +83,10 @@ namespace adiar
     internal::node_writer nw(nf);
     bdd::pointer_type root = bdd::pointer_type(true);
     double value           = bdd_optmin(ep, f, c, [&nw, &root](pair<bdd::label_type, bool> pair) {
-      const auto [lt, value] = pair;
-      bdd::node_type next(lt,
+      const bdd::label_type x = pair.first;
+      const bool value        = pair.second;
+
+      bdd::node_type next(x,
                           bdd::max_id,
                           value ? bdd::pointer_type(false) : root,
                           value ? root : bdd::pointer_type(false));
