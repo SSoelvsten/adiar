@@ -2,6 +2,7 @@
 #define ADIAR_INTERNAL_DATA_TYPES_TUPLE_H
 
 #include <algorithm>
+#include <array>
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/data_types/ptr.h>
