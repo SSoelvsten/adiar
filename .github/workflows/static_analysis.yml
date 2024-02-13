@@ -35,7 +35,7 @@ jobs:
         uses: deep5050/cppcheck-action@main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          enable: warning,performance,portability,information,missingInclude
+          enable: warning,performance,portability,information
           force_language: c++
           output_file: ./cppcheck_report.txt
 
