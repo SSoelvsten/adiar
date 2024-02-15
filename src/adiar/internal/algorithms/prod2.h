@@ -313,9 +313,6 @@ namespace adiar::internal
   ///
   /// \pre `in_ra` is the input to random access
   //////////////////////////////////////////////////////////////////////////////
-  // TODO (Optimiation): Flip 'in_1' to be the one to do Random Access on. This
-  //                     simplifies the request ordering by merging the `idx`
-  //                     comparison with the final lexicographical tie-breaker.
   template <typename Policy, typename PriorityQueue_1>
   typename Policy::__dd_type
   __prod2_ra(const exec_policy& ep,
