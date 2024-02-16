@@ -224,12 +224,12 @@ namespace adiar::internal
             typename Policy,
             typename In>
   typename Policy::__dd_type
-  __quantify(const exec_policy& ep,
-             const In& in,
-             Policy& policy,
-             const bool_op& op,
-             PriorityQueue_1& pq_1,
-             PriorityQueue_2& pq_2)
+  __quantify_pq(const exec_policy& ep,
+                const In& in,
+                Policy& policy,
+                const bool_op& op,
+                PriorityQueue_1& pq_1,
+                PriorityQueue_2& pq_2)
   {
     // TODO (optimisation):
     //   Merge 'op' into 'policy'.
@@ -444,14 +444,14 @@ namespace adiar::internal
             typename Policy,
             typename In>
   typename Policy::__dd_type
-  __quantify(const exec_policy& ep,
-             const In& in,
-             Policy& policy,
-             const bool_op& op,
-             const size_t pq_1_memory,
-             const size_t max_pq_1_size,
-             const size_t pq_2_memory,
-             const size_t max_pq_2_size)
+  __quantify_pq(const exec_policy& ep,
+                const In& in,
+                Policy& policy,
+                const bool_op& op,
+                const size_t pq_1_memory,
+                const size_t max_pq_1_size,
+                const size_t pq_2_memory,
+                const size_t max_pq_2_size)
   {
     // Check for trivial terminal-only return on shortcutting the root
     typename Policy::node_type root;
@@ -479,7 +479,7 @@ namespace adiar::internal
     // Set up per-level priority queue
     PriorityQueue_2 pq_2(pq_2_memory, max_pq_2_size);
 
-    return __quantify<NodeStream, PriorityQueue_1, PriorityQueue_2>(
+    return __quantify_pq<NodeStream, PriorityQueue_1, PriorityQueue_2>(
       ep, in, policy, op, pq_1, pq_2);
   }
 
@@ -556,7 +556,7 @@ namespace adiar::internal
       using PriorityQueue_1 = PriorityQueue_1_Template<0, memory_mode::Internal>;
       using PriorityQueue_2 = quantify_priority_queue_2_t<memory_mode::Internal>;
 
-      return __quantify<NodeStream, PriorityQueue_1, PriorityQueue_2>(
+      return __quantify_pq<NodeStream, PriorityQueue_1, PriorityQueue_2>(
         ep, in, policy, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
     } else if (!external_only && max_pq_1_size <= pq_1_memory_fits
                && max_pq_2_size <= pq_2_memory_fits) {
@@ -566,7 +566,7 @@ namespace adiar::internal
       using PriorityQueue_1 = PriorityQueue_1_Template<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>;
       using PriorityQueue_2 = quantify_priority_queue_2_t<memory_mode::Internal>;
 
-      return __quantify<NodeStream, PriorityQueue_1, PriorityQueue_2>(
+      return __quantify_pq<NodeStream, PriorityQueue_1, PriorityQueue_2>(
         ep, in, policy, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
     } else {
 #ifdef ADIAR_STATS
@@ -578,7 +578,7 @@ namespace adiar::internal
       const size_t pq_1_memory = aux_available_memory / 2;
       const size_t pq_2_memory = pq_1_memory;
 
-      return __quantify<NodeStream, PriorityQueue_1, PriorityQueue_2>(
+      return __quantify_pq<NodeStream, PriorityQueue_1, PriorityQueue_2>(
         ep, in, policy, op, pq_1_memory, max_pq_1_size, pq_2_memory, max_pq_2_size);
     }
   }
@@ -783,13 +783,13 @@ namespace adiar::internal
         using PriorityQueue_2 = quantify_priority_queue_2_t<memory_mode::Internal>;
         PriorityQueue_2 pq_2(inner_remaining_memory, max_pq_2_size);
 
-        return __quantify<node_stream<>, PriorityQueue_1, PriorityQueue_2>(
+        return __quantify_pq<node_stream<>, PriorityQueue_1, PriorityQueue_2>(
           ep, outer_file, *this, _op, pq_1, pq_2);
       } else {
         using PriorityQueue_2 = quantify_priority_queue_2_t<memory_mode::External>;
         PriorityQueue_2 pq_2(inner_remaining_memory, max_pq_2_size);
 
-        return __quantify<node_stream<>, PriorityQueue_1, PriorityQueue_2>(
+        return __quantify_pq<node_stream<>, PriorityQueue_1, PriorityQueue_2>(
           ep, outer_file, *this, _op, pq_1, pq_2);
       }
     }
