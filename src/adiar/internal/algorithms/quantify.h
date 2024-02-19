@@ -128,10 +128,10 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename Policy, typename PriorityQueue>
   inline void
-  __quantify_forward_request(PriorityQueue& pq,
-                             arc_writer& aw,
-                             const typename Policy::pointer_type source,
-                             const quantify_request<0>::target_t& target)
+  __quantify_recurse_out(PriorityQueue& pq,
+                         arc_writer& aw,
+                         const typename Policy::pointer_type source,
+                         const quantify_request<0>::target_t& target)
   {
     adiar_assert(!target.first().is_nil(),
                  "pointer_type::nil() should only ever end up being placed in target[1]");
@@ -320,7 +320,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
             stats_quantify.requests[arity_idx] += 1;
 #endif
-            __quantify_forward_request<Policy>(pq_1, aw, req.data.source, rec);
+            __quantify_recurse_out<Policy>(pq_1, aw, req.data.source, rec);
           }
 
           continue;
@@ -360,7 +360,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
                 stats_quantify.requests[arity_idx] += 1;
 #endif
-                __quantify_forward_request<Policy>(pq_1, aw, req.data.source, rec);
+                __quantify_recurse_out<Policy>(pq_1, aw, req.data.source, rec);
               }
             } else {
               // Store for later, that a node is yet to be done.
@@ -371,12 +371,12 @@ namespace adiar::internal
 
               quantify_request<0>::target_t rec0(rec_all[0], rec_all[1]);
 
-              __quantify_forward_request<Policy>(
+              __quantify_recurse_out<Policy>(
                 pq_1, aw, out_uid.as_ptr(false), rec0);
 
               quantify_request<0>::target_t rec1(rec_all[2], rec_all[3]);
 
-              __quantify_forward_request<Policy>(
+              __quantify_recurse_out<Policy>(
                 pq_1, aw, out_uid.as_ptr(true), rec1);
 
               while (__quantify_update_source_or_break(pq_1, pq_2, req.data.source, req.target)) {
@@ -405,11 +405,11 @@ namespace adiar::internal
         quantify_request<0>::target_t rec0 = __quantify_resolve_request<Policy, 2>(
           op, { children0[false], children1[false] });
 
-        __quantify_forward_request<Policy>(pq_1, aw, out_uid.as_ptr(false), rec0);
+        __quantify_recurse_out<Policy>(pq_1, aw, out_uid.as_ptr(false), rec0);
 
         quantify_request<0>::target_t rec1 =
           __quantify_resolve_request<Policy, 2>(op, { children0[true], children1[true] });
-        __quantify_forward_request<Policy>(pq_1, aw, out_uid.as_ptr(true), rec1);
+        __quantify_recurse_out<Policy>(pq_1, aw, out_uid.as_ptr(true), rec1);
 
         while (__quantify_update_source_or_break(pq_1, pq_2, req.data.source, req.target)) {
 #ifdef ADIAR_STATS
