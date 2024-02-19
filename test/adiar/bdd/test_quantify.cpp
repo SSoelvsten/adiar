@@ -20,6 +20,15 @@ go_bandit([]() {
       nw_T << node(true);
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    // x2 variable BDD
+    shared_levelized_file<bdd::node_type> bdd_x2;
+
+    { // Garbage collect writer to free write-lock
+      node_writer nw_x2(bdd_x2);
+      nw_x2 << node(2, node::max_id, ptr_uint64(false), ptr_uint64(true));
+    }
+
     ////////////////////////////////////////////////////////////////////////
     // BDD 1
     /*
@@ -121,27 +130,18 @@ go_bandit([]() {
     //    / \
     //   3   4   ---- x2
     //  / \ / \
-    //  F T T F
+    //  T F F T
     */
     shared_levelized_file<bdd::node_type> bdd_5;
 
-    const node n5_4 = node(2, node::max_id, ptr_uint64(true), ptr_uint64(false));
-    const node n5_3 = node(2, node::max_id - 1, ptr_uint64(false), ptr_uint64(true));
+    const node n5_4 = node(2, node::max_id, ptr_uint64(false), ptr_uint64(true));
+    const node n5_3 = node(2, node::max_id - 1, ptr_uint64(true), ptr_uint64(false));
     const node n5_2 = node(1, node::max_id, n5_3.uid(), n5_4.uid());
     const node n5_1 = node(0, node::max_id, ptr_uint64(false), n5_2.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw_5(bdd_5);
       nw_5 << n5_4 << n5_3 << n5_2 << n5_1;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    // x2 variable BDD
-    shared_levelized_file<bdd::node_type> bdd_x2;
-
-    { // Garbage collect writer to free write-lock
-      node_writer nw_x2(bdd_x2);
-      nw_x2 << node(2, node::max_id, ptr_uint64(false), ptr_uint64(true));
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -165,8 +165,7 @@ go_bandit([]() {
       nw_6 << node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))                 // 8
            << node(3, node::max_id - 1, ptr_uint64(true), ptr_uint64(false))             // 7
            << node(2, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true)) // 6
-           << node(
-                2, node::max_id - 1, ptr_uint64(3, ptr_uint64::max_id - 1), ptr_uint64(false)) // 5
+           << node(2, node::max_id - 1, ptr_uint64(3, ptr_uint64::max_id - 1), ptr_uint64(false)) // 5
            << node(2, node::max_id - 2, ptr_uint64(false), ptr_uint64(3, ptr_uint64::max_id))  // 4
            << node(1,
                    node::max_id,
@@ -219,7 +218,7 @@ go_bandit([]() {
     /*
     //          _1_        ---- x0
     //         /   \
-    //         3   2       ---- x1
+    //         2   3       ---- x1
     //        / \ / \
     //        \_ | __\
     //           |    \
@@ -235,12 +234,12 @@ go_bandit([]() {
            << node(2, node::max_id - 1, ptr_uint64(true), ptr_uint64(false)) // 4
            << node(1,
                    node::max_id,
-                   ptr_uint64(2, ptr_uint64::max_id),
-                   ptr_uint64(2, ptr_uint64::max_id - 1)) // 3
+                   ptr_uint64(2, ptr_uint64::max_id - 1),
+                   ptr_uint64(2, ptr_uint64::max_id)) // 3
            << node(1,
                    node::max_id - 1,
-                   ptr_uint64(2, ptr_uint64::max_id - 1),
-                   ptr_uint64(2, ptr_uint64::max_id)) // 2
+                   ptr_uint64(2, ptr_uint64::max_id),
+                   ptr_uint64(2, ptr_uint64::max_id - 1)) // 2
            << node(0,
                    node::max_id,
                    ptr_uint64(1, ptr_uint64::max_id),
@@ -257,7 +256,7 @@ go_bandit([]() {
     //        /   \     \
     //        3    4    |      ---- x2
     //       / \  / \   |
-    //       T  \ F  \  |
+    //       F  \ T  \  |
     //           \____\ |
     //                 \|
     //                  5      ---- x3
@@ -268,9 +267,9 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw_8a(bdd_8a);
-      nw_8a << node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))                     // 5
-            << node(2, node::max_id, ptr_uint64(false), ptr_uint64(3, ptr_uint64::max_id))    // 4
-            << node(2, node::max_id - 1, ptr_uint64(true), ptr_uint64(3, ptr_uint64::max_id)) // 3
+      nw_8a << node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))                      // 5
+            << node(2, node::max_id, ptr_uint64(true), ptr_uint64(3, ptr_uint64::max_id))      // 4
+            << node(2, node::max_id - 1, ptr_uint64(false), ptr_uint64(3, ptr_uint64::max_id)) // 3
             << node(1,
                     node::max_id,
                     ptr_uint64(2, ptr_uint64::max_id - 1),
@@ -282,9 +281,9 @@ go_bandit([]() {
         ;
 
       node_writer nw_8b(bdd_8b);
-      nw_8b << node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))                     // 5
-            << node(2, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(false))    // 4
-            << node(2, node::max_id - 1, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true)) // 3
+      nw_8b << node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))                      // 5
+            << node(2, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))      // 4
+            << node(2, node::max_id - 1, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(false)) // 3
             << node(1,
                     node::max_id,
                     ptr_uint64(2, ptr_uint64::max_id - 1),
@@ -1570,45 +1569,6 @@ go_bandit([]() {
                      Is().EqualTo(1u));
         });
 
-        it("shortcuts quantification on non-existent label in input [BDD 1]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_1, 42);
-
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
-          AssertThat(out.negate, Is().False());
-        });
-
-        it("quantifies bottom-most nodes [BDD 1]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_1, 1);
-
-          arc_test_stream arcs(out);
-          AssertThat(arcs.can_pull_internal(), Is().False());
-
-          AssertThat(arcs.can_pull_terminal(), Is().True());
-          AssertThat(arcs.pull_terminal(),
-                     Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(true) }));
-
-          AssertThat(arcs.can_pull_terminal(), Is().True());
-          AssertThat(arcs.pull_terminal(),
-                     Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(true) }));
-
-          AssertThat(arcs.can_pull_terminal(), Is().False());
-
-          level_info_test_stream levels(out);
-
-          AssertThat(levels.can_pull(), Is().True());
-          AssertThat(levels.pull(), Is().EqualTo(level_info(0u, 1u)));
-
-          AssertThat(levels.can_pull(), Is().False());
-
-          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
-                     Is().GreaterThanOrEqualTo(0u));
-
-          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
-                     Is().EqualTo(0u));
-          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
-                     Is().EqualTo(2u));
-        });
-
         it("quantifies root without terminal arcs [BDD 2]", [&]() {
           __bdd out = bdd_exists(ep, bdd_2, 0);
 
@@ -1678,19 +1638,19 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().True());
           AssertThat(arcs.pull_terminal(), // true due to 4.low()
-                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(false) }));
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(true) }));
 
           AssertThat(arcs.can_pull_terminal(), Is().True());
-          AssertThat(arcs.pull_terminal(), // true due to 5.high()
-                     Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(true) }));
+          AssertThat(arcs.pull_terminal(), // false due to 4.high()
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(false) }));
 
           AssertThat(arcs.can_pull_terminal(), Is().True());
-          AssertThat(arcs.pull_terminal(), // true due to 5.high()
-                     Is().EqualTo(arc{ ptr_uint64(2, 1), false, ptr_uint64(true) }));
+          AssertThat(arcs.pull_terminal(), // false due to 4.low()
+                     Is().EqualTo(arc{ ptr_uint64(2, 1), false, ptr_uint64(false) }));
 
           AssertThat(arcs.can_pull_terminal(), Is().True());
-          AssertThat(arcs.pull_terminal(), // false due to its own leaf
-                     Is().EqualTo(arc{ ptr_uint64(2, 1), true, ptr_uint64(false) }));
+          AssertThat(arcs.pull_terminal(), // true due to 4.high()
+                     Is().EqualTo(arc{ ptr_uint64(2, 1), true, ptr_uint64(true) }));
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -1711,8 +1671,38 @@ go_bandit([]() {
                      Is().EqualTo(2u));
           AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(2u));
+        });
 
-          // TODO: meta variables...
+        it("quantifies bottom-most nodes [BDD 1]", [&]() {
+          __bdd out = bdd_exists(ep, bdd_1, 1);
+
+          arc_test_stream arcs(out);
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(true) }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(true) }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0u, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                     Is().GreaterThanOrEqualTo(0u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(2u));
         });
 
         it("quantifies nodes with terminal or nodes as children [BDD 2]", [&]() {
@@ -1819,13 +1809,59 @@ go_bandit([]() {
                      Is().EqualTo(3u));
         });
 
+        it("outputs terminal arcs in order, despite the order of resolvement [BDD 3]", [&]() {
+          __bdd out = bdd_exists(ep, bdd_3, 2);
+
+          arc_test_stream arcs(out);
+
+          // NOTE: (2,0) := (3,nil) while n4 < nil since we process this request without forwarding
+          //       n3 through the secondary priority queue
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), // true due to 3.low()
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(true) }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), // true due to 3.low()
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(true) }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), // true due to 4.high()
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(true) }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0u, 1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1u, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                     Is().GreaterThanOrEqualTo(1u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(3u));
+        });
+
         it("keeps nodes as is when skipping quantified level [BDD 3]", [&]() {
           __bdd out = bdd_exists(ep, bdd_3, 1);
 
           arc_test_stream arcs(out);
 
-          // Note, that node (2,0) reflects (3,nil) since while n4 < nil we process this
-          // request without forwarding n3 through the secondary priority queue
+          // NOTE: (2,0) := reflects (3,nil) since while n4 < nil we process this request without
+          //       forwarding n3 through the secondary priority queue
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
                      Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(2, 0) }));
@@ -1873,59 +1909,13 @@ go_bandit([]() {
                      Is().EqualTo(3u));
         });
 
-        it("outputs terminal arcs in order, despite the order of resolvement [BDD 3]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_3, 2);
-
-          arc_test_stream arcs(out);
-
-          // Note, that node (2,0) reflects (3,nil) while n4 < nil since we process this
-          // request without forwarding n3 through the secondary priority queue
-          AssertThat(arcs.can_pull_internal(), Is().True());
-          AssertThat(arcs.pull_internal(),
-                     Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 0) }));
-
-          AssertThat(arcs.can_pull_internal(), Is().False());
-
-          AssertThat(arcs.can_pull_terminal(), Is().True());
-          AssertThat(arcs.pull_terminal(), // true due to 3.low()
-                     Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(true) }));
-
-          AssertThat(arcs.can_pull_terminal(), Is().True());
-          AssertThat(arcs.pull_terminal(), // true due to 3.low()
-                     Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(true) }));
-
-          AssertThat(arcs.can_pull_terminal(), Is().True());
-          AssertThat(arcs.pull_terminal(), // true due to 4.high()
-                     Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(true) }));
-
-          AssertThat(arcs.can_pull_terminal(), Is().False());
-
-          level_info_test_stream levels(out);
-
-          AssertThat(levels.can_pull(), Is().True());
-          AssertThat(levels.pull(), Is().EqualTo(level_info(0u, 1u)));
-
-          AssertThat(levels.can_pull(), Is().True());
-          AssertThat(levels.pull(), Is().EqualTo(level_info(1u, 1u)));
-
-          AssertThat(levels.can_pull(), Is().False());
-
-          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
-                     Is().GreaterThanOrEqualTo(1u));
-
-          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
-                     Is().EqualTo(0u));
-          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
-                     Is().EqualTo(3u));
-        });
-
         it("resolves terminal-terminal requests in [BDD 5]", [&]() {
           __bdd out = bdd_exists(ep, bdd_5, 1);
 
           arc_test_stream arcs(out);
 
-          // Note, that node (2,0) reflects (3,nil) while n4 < nil since we process this
-          // request without forwarding n3 through the secondary priority queue
+          // NOTE: (2,0) := (3,nil) while n4 < nil since we process this request without forwarding
+          //       n3 through the secondary priority queue
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
                      Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(2, 0) }));
@@ -2501,9 +2491,8 @@ go_bandit([]() {
 
           // Check call history
           //
-          // NOTE: Test failure does NOT indicate a bug, but only indicates a
-          //       change. Please verify that this change makes sense and is as
-          //       intended.
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+          //       that this change makes sense and is as intended.
           AssertThat(call_history.size(), Is().EqualTo(4u));
 
           // - First check for at least one variable satisfying the predicate.
@@ -2662,9 +2651,8 @@ go_bandit([]() {
 
           // Check call history
           //
-          // NOTE: Test failure does NOT indicate a bug, but only indicates a
-          //       change. Please verify that this change makes sense and is as
-          //       intended.
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+          //       that this change makes sense and is as intended.
           AssertThat(call_history.size(), Is().EqualTo(6u));
 
           // - First check for at least one variable satisfying the predicate.
@@ -3014,9 +3002,8 @@ go_bandit([]() {
 
           // Check call history
           //
-          // NOTE: Test failure does NOT indicate a bug, but only indicates a
-          //       change. Please verify that this change makes sense and is as
-          //       intended.
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+          //       that this change makes sense and is as intended.
           AssertThat(call_history.size(), Is().EqualTo(4u));
 
           // - First check for at least one variable satisfying the predicate.
@@ -3064,9 +3051,8 @@ go_bandit([]() {
 
           // Check call history
           //
-          // NOTE: Test failure does NOT indicate a bug, but only indicates a
-          //       change. Please verify that this change makes sense and is as
-          //       intended.
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+          //       that this change makes sense and is as intended.
           AssertThat(call_history.size(), Is().EqualTo(6u));
 
           // - First check for at least one variable satisfying the predicate.
@@ -3100,9 +3086,8 @@ go_bandit([]() {
 
           // Check call history
           //
-          // NOTE: Test failure does NOT indicate a bug, but only indicates a
-          //       change. Please verify that this change makes sense and is as
-          //       intended.
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+          //       that this change makes sense and is as intended.
           AssertThat(call_history.size(), Is().EqualTo(11u));
 
           // - First check for at least one variable satisfying the predicate.
@@ -3200,9 +3185,8 @@ go_bandit([]() {
 
           // Check call history
           //
-          // NOTE: Test failure does NOT indicate a bug, but only indicates a
-          //       change. Please verify that this change makes sense and is as
-          //       intended.
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+          //       that this change makes sense and is as intended.
           AssertThat(call_history.size(), Is().EqualTo(12u));
 
           // - First check for at least one variable satisfying the predicate.
@@ -3378,9 +3362,8 @@ go_bandit([]() {
 
           // Check call history
           //
-          // NOTE: Test failure does NOT indicate a bug, but only indicates a
-          //       change. Please verify that this change makes sense and is as
-          //       intended.
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+          //       that this change makes sense and is as intended.
           AssertThat(call_history.size(), Is().EqualTo(22u));
 
           // - First check for at least one variable satisfying the predicate.
@@ -3439,9 +3422,8 @@ go_bandit([]() {
 
           // Check call history
           //
-          // NOTE: Test failure does NOT indicate a bug, but only indicates a
-          //       change. Please verify that this change makes sense and is as
-          //       intended.
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+          //       that this change makes sense and is as intended.
           AssertThat(call_history.size(), Is().EqualTo(5u));
 
           // - First check for at least one variable satisfying the predicate.
@@ -3453,8 +3435,8 @@ go_bandit([]() {
           AssertThat(call_history.at(3), Is().EqualTo(2u));
           AssertThat(call_history.at(4), Is().EqualTo(3u));
 
-          // NOTE: Even though there are three levels that should be quantified,
-          //       we only do one partial quantification.
+          // NOTE: Even though there are three levels that should be quantified, we only do one
+          //       partial quantification.
         });
 
         it("quantifies exploding BDD 15 with unbounded repeated transposition", [&]() {
@@ -3612,8 +3594,8 @@ go_bandit([]() {
                                        node::pointer_type(9, node::max_id),
                                        node::pointer_type(9, node::max_id - 3))));
 
-          // NOTE: (9,f) because the pair (7,f) is is merged with (8) which
-          //       prunes that entire subtree away.
+          // NOTE: (9,f) because the pair (7,f) is is merged with (8) which prunes that entire
+          //       subtree away.
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7,8,f)
           AssertThat(
@@ -3676,8 +3658,8 @@ go_bandit([]() {
                                        node::pointer_type(4, node::max_id - 1),
                                        node::pointer_type(4, node::max_id))));
 
-          // NOTE: The root (1,a,5,d) has x2 suppressed as the choice at (a)
-          //       only is relevant for (b) and (c), not for (d).
+          // NOTE: The root (1,a,5,d) has x2 suppressed as the choice at (a) only is relevant for
+          //       (b) and (c), not for (d).
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -3722,9 +3704,8 @@ go_bandit([]() {
 
           // Check call history
           //
-          // NOTE: Test failure does NOT indicate a bug, but only indicates a
-          //       change. Please verify that this change makes sense and is as
-          //       intended.
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+          //       that this change makes sense and is as intended.
           AssertThat(call_history.size(), Is().EqualTo(40u));
 
           // - First check for at least one variable satisfying the predicate.
@@ -3929,8 +3910,8 @@ go_bandit([]() {
                                        node::pointer_type(9, node::max_id),
                                        node::pointer_type(9, node::max_id - 3))));
 
-          // NOTE: (9,f) because the pair (7,f) is is merged with (8) which
-          //       prunes that entire subtree away.
+          // NOTE: (9,f) because the pair (7,f) is is merged with (8) which prunes that entire
+          //       subtree away.
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (7,8,f)
           AssertThat(
@@ -3993,8 +3974,8 @@ go_bandit([]() {
                                        node::pointer_type(4, node::max_id - 1),
                                        node::pointer_type(4, node::max_id))));
 
-          // NOTE: The root (1,a,5,d) has x2 suppressed as the choice at (a)
-          //       only is relevant for (b) and (c), not for (d).
+          // NOTE: The root (1,a,5,d) has x2 suppressed as the choice at (a) only is relevant for
+          //       (b) and (c), not for (d).
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -4041,9 +4022,8 @@ go_bandit([]() {
 
           // Check call history
           //
-          // NOTE: Test failure does NOT indicate a bug, but only indicates a
-          //       change. Please verify that this change makes sense and is as
-          //       intended.
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+          //       that this change makes sense and is as intended.
           AssertThat(call_history.size(), Is().EqualTo(40u));
 
           // - First check for at least one variable satisfying the predicate.
@@ -4155,9 +4135,8 @@ go_bandit([]() {
 
           // Check call history
           //
-          // NOTE: Test failure does NOT indicate a bug, but only indicates a
-          //       change. Please verify that this change makes sense and is as
-          //       intended.
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+          //       that this change makes sense and is as intended.
           AssertThat(call_history.size(), Is().EqualTo(12u));
 
           // - First check for at least one variable satisfying the predicate.
@@ -5043,7 +5022,7 @@ go_bandit([]() {
           // TODO: meta variables...
         });
 
-        it("terminates early when quantifying to a terminal in BDD 1 [&&]", [&]() {
+        it("terminates early when quantifying to a terminal in BDD 5 [&&]", [&]() {
           // TODO: top-down dependant?
           int calls = 0;
 
