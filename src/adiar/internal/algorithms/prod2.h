@@ -92,13 +92,13 @@ namespace adiar::internal
   ///
   /// \pre `source` level is strictly before `target`
   //////////////////////////////////////////////////////////////////////////////
-  template <typename PriorityQueue_1>
+  template <typename PriorityQueue>
   inline void
-  __prod2_recurse_out(PriorityQueue_1& prod_pq_1,
+  __prod2_recurse_out(PriorityQueue& pq,
                       arc_writer& aw,
                       const bool_op& op,
                       const ptr_uint64& source,
-                      const tuple<ptr_uint64>& target)
+                      const typename PriorityQueue::value_type::target_t& target)
   {
     if (target[0].is_terminal() && target[1].is_terminal()) {
       const arc out_arc = { source, op(target[0], target[1]) };
@@ -107,7 +107,7 @@ namespace adiar::internal
       adiar_assert(source.label() < std::min(target[0], target[1]).label(),
                    "should always push recursion for 'later' level");
 
-      prod_pq_1.push({ target, {}, { source } });
+      pq.push({ target, {}, { source } });
     }
   }
 
