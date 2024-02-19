@@ -112,91 +112,57 @@ namespace adiar::internal
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Run `Policy::go(...)` as long as there are in-going arcs to
-  ///        `target` in the Levelized Priority Queue.
+  /// \brief Run `Handler(...)` as long as there are in-going requests to
+  ///        `target` in the Priority Queue.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename Policy, typename LevelizedPriorityQueue, typename Handler>
+  template <typename PriorityQueue, typename Handler>
   inline void
-  __prod2_recurse_in__lpq(LevelizedPriorityQueue& lpq,
-                          arc_writer& aw,
-                          const Handler& handler,
-                          const tuple<ptr_uint64>& target)
+  __prod2_recurse_in(PriorityQueue& pq,
+                     const Handler& handler,
+                     const typename PriorityQueue::value_type::target_t& target)
   {
-    // TODO: merge with the per-level priority queue below. This requires adding
-    //       `can_pull()` or similar to `internal::priority_queue`. Maybe it
-    //       should have a prettier name like `has_top()`?
-    while (!lpq.empty_level() && lpq.top().target == target) {
-      handler(lpq, aw, lpq.pull());
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Run `Handler(...)` as long as there are in-going arcs to `target`
-  ///        in the Per-level Priority Queue.
-  //////////////////////////////////////////////////////////////////////////////
-  template <typename Policy, typename PriorityQueue, typename Handler>
-  inline void
-  __prod2_recurse_in__pq(PriorityQueue& pq,
-                         arc_writer& aw,
-                         const Handler& handler,
-                         const tuple<ptr_uint64>& target)
-  {
-    while (!pq.empty() && pq.top().target == target) {
-      handler(pq, aw, pq.top());
+    while (pq.has_top() && pq.top().target == target) {
+      handler(pq.top());
       pq.pop();
     }
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Run `Handler(...)` as long as there are in-going arcs to `target`
-  ///        in the priority queue.
-  //////////////////////////////////////////////////////////////////////////////
-  template <typename Policy, typename LevelizedPriorityQueue, typename Handler>
-  inline void
-  __prod2_recurse_in(LevelizedPriorityQueue& lpq,
-                     arc_writer& aw,
-                     const Handler& handler,
-                     const tuple<ptr_uint64>& target)
-  {
-    // HACK for hiding '__lpq' and '__pq' versions
-    __prod2_recurse_in__lpq<Policy>(lpq, aw, handler, target);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Run `Policy::go(...)` as long as there are in-going arcs to
+  /// \brief Run `Handler(...)` as long as there are in-going requests to
   ///        `target` in either of the priority queues.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename Policy, typename LevelizedPriorityQueue, typename PriorityQueue, typename Handler>
+  template <typename PriorityQueue_1, typename PriorityQueue_2, typename Handler>
   inline void
-  __prod2_recurse_in(LevelizedPriorityQueue& lpq,
-                     PriorityQueue& pq,
-                     arc_writer& aw,
+  __prod2_recurse_in(PriorityQueue_1& pq_1,
+                     PriorityQueue_2& pq_2,
                      const Handler& handler,
-                     const tuple<ptr_uint64>& target)
+                     const typename PriorityQueue_1::value_type::target_t& target)
   {
-    __prod2_recurse_in__lpq<Policy>(lpq, aw, handler, target);
-    __prod2_recurse_in__pq<Policy>(pq, aw, handler, target);
+    __prod2_recurse_in(pq_1, handler, target);
+    __prod2_recurse_in(pq_2, handler, target);
   }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Policy for `__prod2_recurse_in` for an arc to an internal node.
   //////////////////////////////////////////////////////////////////////////////
+  template <typename UId>
   struct __prod2_recurse_in__output_node
   {
   private:
-    const node::uid_type& _out_uid;
+    arc_writer& _aw;
+    const UId& _out_uid;
 
   public:
-    __prod2_recurse_in__output_node(const node::uid_type& out_uid)
-      : _out_uid(out_uid)
+    __prod2_recurse_in__output_node(arc_writer& aw, const UId& out_uid)
+      : _aw(aw), _out_uid(out_uid)
     {}
 
-    template <typename PriorityQueue, typename Request>
+    template <typename Request>
     inline void
-    operator() (PriorityQueue&, arc_writer& aw, const Request& req) const
+    operator() (const Request& req) const
     {
       if (!req.data.source.is_nil()) {
-        aw.push_internal({ req.data.source, this->_out_uid });
+        this->_aw.push_internal({ req.data.source, this->_out_uid });
       }
     }
   };
@@ -204,21 +170,23 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Policy for `__prod2_recurse_in` for an arc to a terminal.
   //////////////////////////////////////////////////////////////////////////////
+  template <typename Pointer>
   struct __prod2_recurse_in__output_terminal
   {
   private:
-    const ptr_uint64& _out_terminal;
+    arc_writer& _aw;
+    const Pointer& _out_terminal;
 
   public:
-    __prod2_recurse_in__output_terminal(const ptr_uint64& out_terminal)
-      : _out_terminal(out_terminal)
+    __prod2_recurse_in__output_terminal(arc_writer& aw, const Pointer& out_terminal)
+      : _aw(aw), _out_terminal(out_terminal)
     {}
 
-    template <typename PriorityQueue, typename Request>
+    template <typename Request>
     inline void
-    operator() (PriorityQueue&, arc_writer& aw, const Request& req) const
+    operator() (const Request& req) const
     {
-      aw.push_terminal({ req.data.source, this->_out_terminal });
+      this->_aw.push_terminal({ req.data.source, this->_out_terminal });
     }
   };
 
@@ -226,21 +194,23 @@ namespace adiar::internal
   /// \brief Policy for `__prod2_recurse_in` for forwarding a request further,
   ///        i.e. skipping outputting an internal node.
   //////////////////////////////////////////////////////////////////////////////
+  template <typename PriorityQueue, typename Target>
   struct __prod2_recurse_in__forward
   {
   private:
-    const prod2_rec_skipto& _rs;
+    PriorityQueue &_pq;
+    const Target& _t;
 
   public:
-    __prod2_recurse_in__forward(const prod2_rec_skipto& rs)
-      : _rs(rs)
+    __prod2_recurse_in__forward(PriorityQueue &pq, const Target& t)
+      : _pq(pq), _t(t)
     {}
 
-    template <typename PriorityQueue, typename Request>
+    template <typename Request>
     inline void
-    operator() (PriorityQueue& pq, arc_writer&, const Request& req) const
+    operator() (const Request& req) const
     {
-      pq.push({ { this->_rs[0], this->_rs[1] }, {}, req.data });
+      this->_pq.push({ this->_t, {}, req.data });
     }
   };
 
@@ -416,7 +386,8 @@ namespace adiar::internal
           __prod2_recurse_out(prod_pq, aw, op, out_uid.as_ptr(false), r.low);
           __prod2_recurse_out(prod_pq, aw, op, out_uid.as_ptr(true), r.high);
 
-          __prod2_recurse_in<Policy>(prod_pq, aw, __prod2_recurse_in__output_node(out_uid), req.target);
+          const __prod2_recurse_in__output_node handler(aw, out_uid);
+          __prod2_recurse_in(prod_pq, handler, req.target);
 
         } else { // std::holds_alternative<prod2_rec_skipto>(root_rec)
           const prod2_rec_skipto r = std::get<prod2_rec_skipto>(rec_res);
@@ -425,10 +396,13 @@ namespace adiar::internal
               // Skipped in both DAGs all the way from the root until a pair of terminals.
               return __prod2_terminal<Policy>(r, op);
             }
-            __prod2_recurse_in<Policy>(
-              prod_pq, aw, __prod2_recurse_in__output_terminal(op(r[0], r[1])), req.target);
+
+            const typename Policy::pointer_type result = op(r[0], r[1]);
+            const __prod2_recurse_in__output_terminal handler(aw, result);
+            __prod2_recurse_in(prod_pq, handler, req.target);
           } else {
-            __prod2_recurse_in<Policy>(prod_pq, aw, __prod2_recurse_in__forward(r), req.target);
+            const __prod2_recurse_in__forward handler(prod_pq, r);
+            __prod2_recurse_in(prod_pq, handler, req.target);
           }
         }
       }
@@ -559,11 +533,8 @@ namespace adiar::internal
           __prod2_recurse_out(prod_pq_1, aw, op, out_uid.as_ptr(false), r.low);
           __prod2_recurse_out(prod_pq_1, aw, op, out_uid.as_ptr(true), r.high);
 
-          __prod2_recurse_in<Policy>(prod_pq_1,
-                                     prod_pq_2,
-                                     aw,
-                                     __prod2_recurse_in__output_node(out_uid),
-                                     req.target);
+          const __prod2_recurse_in__output_node handler(aw, out_uid);
+          __prod2_recurse_in(prod_pq_1, prod_pq_2, handler, req.target);
 
         } else { // std::holds_alternative<prod2_rec_skipto>(root_rec)
           const prod2_rec_skipto r = std::get<prod2_rec_skipto>(rec_res);
@@ -572,14 +543,13 @@ namespace adiar::internal
               // Skipped in both DAGs all the way from the root until a pair of terminals.
               return __prod2_terminal<Policy>(r, op);
             }
-            __prod2_recurse_in<Policy>(prod_pq_1,
-                                       prod_pq_2,
-                                       aw,
-                                       __prod2_recurse_in__output_terminal(op(r[0], r[1])),
-                                       req.target);
+
+            const typename Policy::pointer_type result = op(r[0], r[1]);
+            const __prod2_recurse_in__output_terminal handler(aw, result);
+            __prod2_recurse_in(prod_pq_1, prod_pq_2, handler, req.target);
           } else {
-            __prod2_recurse_in<Policy>(
-              prod_pq_1, prod_pq_2, aw, __prod2_recurse_in__forward(r), req.target);
+            const __prod2_recurse_in__forward handler(prod_pq_1, r);
+            __prod2_recurse_in(prod_pq_1, prod_pq_2, handler, req.target);
           }
         }
       }
