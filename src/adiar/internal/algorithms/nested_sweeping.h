@@ -299,7 +299,7 @@ namespace adiar::internal
 
         ////////////////////////////////////////////////////////////////////////
         bool
-        can_pull() /*const*/
+        has_top() /*const*/
         {
           return _sorter_ptr->can_pull();
         }
@@ -309,6 +309,13 @@ namespace adiar::internal
         top() /*const*/
         {
           return _sorter_ptr->top();
+        }
+
+        ////////////////////////////////////////////////////////////////////////
+        bool
+        can_pull() /*const*/
+        {
+          return has_top();
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -495,6 +502,15 @@ namespace adiar::internal
         pull()
         {
           return _outer_pq.pull();
+        }
+
+        ////////////////////////////////////////////////////////////////////////
+        /// \brief Whether there is a top element in the priority queue.
+        ////////////////////////////////////////////////////////////////////////
+        bool
+        has_top() const
+        {
+          return _outer_pq.has_top();
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -796,10 +812,10 @@ namespace adiar::internal
         }
 
         ////////////////////////////////////////////////////////////////////////
-        /// \brief Whether there are more requests to pull for this level.
+        /// \brief Whether there is a top element in the priority queue.
         ////////////////////////////////////////////////////////////////////////
         bool
-        can_pull() const
+        has_top() const
         {
           return !empty_level();
         }
@@ -807,7 +823,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         /// \brief Obtain the top request of this level.
         ///
-        /// \pre `can_pull() == true`
+        /// \pre `has_top() == true`
         ////////////////////////////////////////////////////////////////////////
         value_type
         top()
@@ -818,7 +834,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         /// \brief Obtain the top request of this level.
         ///
-        /// \pre `can_pull() == true`
+        /// \pre `has_top() == true`
         ////////////////////////////////////////////////////////////////////////
         value_type
         peek()
@@ -827,9 +843,18 @@ namespace adiar::internal
         }
 
         ////////////////////////////////////////////////////////////////////////
+        /// \brief Whether there are more requests to pull for this level.
+        ////////////////////////////////////////////////////////////////////////
+        bool
+        can_pull() const
+        {
+          return has_top();
+        }
+
+        ////////////////////////////////////////////////////////////////////////
         /// \brief Obtain and remove the top request of this level.
         ///
-        /// \pre `can_pull() == true`
+        /// \pre `can_pull() == true` (or `has_top() == true`)
         ////////////////////////////////////////////////////////////////////////
         value_type
         pull()
@@ -840,7 +865,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         /// \brief Remove the top arc on the current level.
         ///
-        /// \pre `can_pull() == true`
+        /// \pre `can_pull() == true` (or `has_top() == true`)
         ////////////////////////////////////////////////////////////////////////
         void
         pop()
@@ -1192,7 +1217,7 @@ namespace adiar::internal
         ///
         /// \pre has_current_level
         ///
-        /// \see can_pull, empty
+        /// \see has_top, can_pull, empty
         ////////////////////////////////////////////////////////////////////////
         bool
         empty_level() const
@@ -1201,10 +1226,10 @@ namespace adiar::internal
         }
 
         ////////////////////////////////////////////////////////////////////////
-        /// \brief Whether there are more requests to pull for this level.
+        /// \brief Whether there is a top element in the priority queue.
         ////////////////////////////////////////////////////////////////////////
         bool
-        can_pull() const
+        has_top() const
         {
           return _inner_pq.can_pull();
         }
@@ -1212,7 +1237,7 @@ namespace adiar::internal
         ////////////////////////////////////////////////////////////////////////
         /// \brief Obtain the top request of this level.
         ///
-        /// \pre `can_pull() == true`
+        /// \pre `has_top() == true`
         ////////////////////////////////////////////////////////////////////////
         value_type
         top()
@@ -1229,6 +1254,15 @@ namespace adiar::internal
         peek()
         {
           return _inner_pq.peek();
+        }
+
+        ////////////////////////////////////////////////////////////////////////
+        /// \brief Whether there are more requests to pull for this level.
+        ////////////////////////////////////////////////////////////////////////
+        bool
+        can_pull() const
+        {
+          return has_top();
         }
 
         ////////////////////////////////////////////////////////////////////////
