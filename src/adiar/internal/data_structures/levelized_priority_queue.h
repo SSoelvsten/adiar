@@ -679,10 +679,10 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether any elements can be pulled (from the current level).
     ///
-    /// \see    levelized_priority_queue::empty_level
+    /// \see  levelized_priority_queue::empty_level
     ////////////////////////////////////////////////////////////////////////////
     bool
-    can_pull()
+    has_top()
     {
       return !empty_level();
     }
@@ -690,12 +690,12 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the top element of the current level.
     ///
-    /// \pre `can_pull() == true`
+    /// \pre `has_top() == true`
     ////////////////////////////////////////////////////////////////////////////
     value_type
     top()
     {
-      adiar_assert(can_pull(), "Can only obtain top element on non-empty level");
+      adiar_assert(has_top());
 
       if (!_has_top_elem) {
         _top_elem     = pull();
@@ -708,9 +708,9 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the top element of the current level.
     ///
-    /// \pre `can_pull() == true`
+    /// \pre `has_top() == true`
     ///
-    /// \see    levelized_priority_queue::top
+    /// \see levelized_priority_queue::top
     ////////////////////////////////////////////////////////////////////////////
     value_type
     peek()
@@ -719,14 +719,26 @@ namespace adiar::internal
     }
 
     ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether any elements can be pulled (from the current level).
+    ///
+    /// \see   levelized_priority_queue::has_top,
+    ///        levelized_priority_queue::empty_level
+    ////////////////////////////////////////////////////////////////////////////
+    bool
+    can_pull()
+    {
+      return has_top();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the top element on the current level and remove it.
     ///
-    /// \pre `can_pull() == true`
+    /// \pre `can_pull() == true` (or `has_top() == true`)
     ////////////////////////////////////////////////////////////////////////////
     value_type
     pull()
     {
-      adiar_assert(!empty_level(), "Can only pull on non-empty level");
+      adiar_assert(can_pull());
 
       if (_has_top_elem) {
         _has_top_elem = false;
@@ -756,9 +768,9 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Remove the top element of the current level.
     ///
-    /// \pre `can_pull() == true`
+    /// \pre `can_pull() == true` (or `has_top() == true)`
     ///
-    /// \see    levelized_priority_queue::pull
+    /// \see levelized_priority_queue::pull
     ////////////////////////////////////////////////////////////////////////////
     void
     pop()
@@ -783,7 +795,8 @@ namespace adiar::internal
     ///         then use <tt>empty_level</tt> (or <tt>can_pull</tt>) instead.
     ///
     /// \see     levelized_priority_queue::empty_level
-    //          levelized_priority_queue::can_pull
+    ///          levelized_priority_queue::has_top
+    ///          levelized_priority_queue::can_pull
     ////////////////////////////////////////////////////////////////////////////
     bool
     empty() const
@@ -1316,7 +1329,7 @@ namespace adiar::internal
     ///       'current' level.
     ////////////////////////////////////////////////////////////////////////////
     bool
-    empty_level()
+    empty_level() const
     {
       // TODO: change semantics to require 'has_current_level'
       return !has_current_level() || _priority_queue.empty()
@@ -1329,7 +1342,7 @@ namespace adiar::internal
     /// \see    levelized_priority_queue::empty_level
     ////////////////////////////////////////////////////////////////////////////
     bool
-    can_pull()
+    has_top() const
     {
       return !empty_level();
     }
@@ -1337,21 +1350,21 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the top element of the current level.
     ///
-    /// \pre `can_pull() == true`
+    /// \pre `has_top() == true`
     ////////////////////////////////////////////////////////////////////////////
     value_type
     top()
     {
-      adiar_assert(can_pull(), "Can only obtain top element on non-empty level");
+      adiar_assert(has_top(), "Can only obtain top element on non-empty level");
       return _priority_queue.top();
     }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the top element of the current level.
     ///
-    /// \pre `can_pull() == true`
+    /// \pre `has_top() == true`
     ///
-    /// \see    levelized_priority_queue::top
+    /// \see levelized_priority_queue::top
     ////////////////////////////////////////////////////////////////////////////
     value_type
     peek()
@@ -1360,9 +1373,21 @@ namespace adiar::internal
     }
 
     ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether any elements can be pulled (from the current level).
+    ///
+    /// \see   levelized_priority_queue::has_top
+    ///        levelized_priority_queue::empty_level
+    ////////////////////////////////////////////////////////////////////////////
+    bool
+    can_pull() const
+    {
+      return has_top();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the top element on the current level and remove it.
     ///
-    /// \pre `can_pull() == true`
+    /// \pre `can_pull() == true` (or `has_top() == true`)
     ////////////////////////////////////////////////////////////////////////////
     value_type
     pull()
@@ -1377,9 +1402,9 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Remove the top element of the current level.
     ///
-    /// \pre `can_pull() == true`
+    /// \pre `can_pull() == true` (or `has_top() == true`)
     ///
-    /// \see    levelized_priority_queue::pull
+    /// \see levelized_priority_queue::pull
     ////////////////////////////////////////////////////////////////////////////
     void
     pop()
@@ -1402,8 +1427,9 @@ namespace adiar::internal
     /// \remark If you only want to know if it is empty for the current level,
     ///         then use <tt>empty_level</tt> (or <tt>can_pull</tt>) instead.
     ///
-    /// \see     levelized_priority_queue::empty_level
-    //          levelized_priority_queue::can_pull
+    /// \see    levelized_priority_queue::empty_level
+    ///         levelized_priority_queue::has_top
+    ///         levelized_priority_queue::can_pull
     ////////////////////////////////////////////////////////////////////////////
     bool
     empty() const

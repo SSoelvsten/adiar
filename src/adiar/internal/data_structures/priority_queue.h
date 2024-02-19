@@ -81,6 +81,12 @@ namespace adiar::internal
     {
       return pq.empty();
     }
+
+    bool
+    has_top() const
+    {
+      return !this->empty();
+    }
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -141,6 +147,12 @@ namespace adiar::internal
     empty() const
     {
       return pq.empty();
+    }
+
+    bool
+    has_top() const
+    {
+      return !this->empty();
     }
   };
 
