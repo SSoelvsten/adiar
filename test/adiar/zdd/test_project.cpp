@@ -710,19 +710,16 @@ go_bandit([]() {
           // NOTE: Test failure does NOT indicate a bug, but only indicates a
           //       change. Please verify that this change makes sense and is as
           //       intended.
-          AssertThat(call_history.size(), Is().EqualTo(6u));
+          AssertThat(call_history.size(), Is().EqualTo(5u));
 
           // - First check for at least one variable NOT satisfying the predicate.
           AssertThat(call_history.at(0), Is().EqualTo(2u));
           AssertThat(call_history.at(1), Is().EqualTo(1u));
 
-          // - First top-down sweep (root call)
-          AssertThat(call_history.at(2), Is().EqualTo(0u));
-
           // - First top-down sweep
-          AssertThat(call_history.at(3), Is().EqualTo(0u));
-          AssertThat(call_history.at(4), Is().EqualTo(1u));
-          AssertThat(call_history.at(5), Is().EqualTo(2u));
+          AssertThat(call_history.at(2), Is().EqualTo(0u));
+          AssertThat(call_history.at(3), Is().EqualTo(1u));
+          AssertThat(call_history.at(4), Is().EqualTo(2u));
         });
 
         it("computes zdd_1 with dom = { x | x % 2 == 1 }", [&]() {

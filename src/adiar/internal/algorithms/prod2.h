@@ -832,9 +832,8 @@ namespace adiar::internal
     // -------------------------------------------------------------------------
     // Case: Do the product construction (with random access)
     //
-    // Use random access if requested or the width fits into at least a single
-    // block and at most half(ish) of the memory dedicated to the secondary
-    // priority queue.
+    // Use random access if requested or the width fits into half(ish) of the
+    // memory otherwise dedicated to the secondary priority queue.
     //
     // TODO: Optimisation!
     //
