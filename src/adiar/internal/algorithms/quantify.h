@@ -505,27 +505,26 @@ namespace adiar::internal
                 const size_t max_pq_2_size)
   {
     // Check for trivial terminal-only return on shortcutting the root
-    typename Policy::node_type root;
+    typename Policy::pointer_type root;
 
     { // Detach and garbage collect node_stream<>
       NodeStream in_nodes(in);
-      root = in_nodes.pull();
+      const typename Policy::node_type v = in_nodes.pull();
+      root = v.uid();
 
-      if (policy.should_quantify(root.label())
-          && (root.low().is_terminal() || root.high().is_terminal())) {
-        typename Policy::pointer_type result = Policy::resolve_root(root, op);
+      if (policy.should_quantify(v.label())
+          && (v.low().is_terminal() || v.high().is_terminal())) {
+        root = Policy::resolve_root(v, op);
 
-        if (result != root.uid() && result.is_terminal()) {
-          return typename Policy::dd_type(result.value());
+        if (root != v.uid() && root.is_terminal()) {
+          return typename Policy::dd_type(root.value());
         }
       }
     }
 
-    // TODO: use 'result' above rather than 'root.uid()' for root request
-
     // Set up cross-level priority queue
     PriorityQueue_1 pq_1({ in }, pq_1_memory, max_pq_1_size, stats_quantify.lpq);
-    pq_1.push({ { root.uid(), ptr_uint64::nil() }, {}, { ptr_uint64::nil() } });
+    pq_1.push({ { root, ptr_uint64::nil() }, {}, { ptr_uint64::nil() } });
 
     // Set up per-level priority queue
     PriorityQueue_2 pq_2(pq_2_memory, max_pq_2_size);
