@@ -145,15 +145,16 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Policy for `__prod2_recurse_in` for an arc to an internal node.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename UId>
+  template <typename Policy>
   struct __prod2_recurse_in__output_node
   {
   private:
     arc_writer& _aw;
-    const UId& _out_uid;
+    const typename Policy::node_type::uid_type& _out_uid;
 
   public:
-    __prod2_recurse_in__output_node(arc_writer& aw, const UId& out_uid)
+    __prod2_recurse_in__output_node(arc_writer& aw,
+                                    const typename Policy::node_type::uid_type& out_uid)
       : _aw(aw), _out_uid(out_uid)
     {}
 
@@ -161,7 +162,7 @@ namespace adiar::internal
     inline void
     operator() (const Request& req) const
     {
-      if (!req.data.source.is_nil()) {
+      if (Policy::no_skip || !req.data.source.is_nil()) {
         this->_aw.push_internal({ req.data.source, this->_out_uid });
       }
     }
@@ -386,7 +387,7 @@ namespace adiar::internal
           __prod2_recurse_out(prod_pq, aw, op, out_uid.as_ptr(false), r.low);
           __prod2_recurse_out(prod_pq, aw, op, out_uid.as_ptr(true), r.high);
 
-          const __prod2_recurse_in__output_node handler(aw, out_uid);
+          const __prod2_recurse_in__output_node<Policy> handler(aw, out_uid);
           __prod2_recurse_in(prod_pq, handler, req.target);
 
         } else { // std::holds_alternative<prod2_rec_skipto>(root_rec)
@@ -533,7 +534,7 @@ namespace adiar::internal
           __prod2_recurse_out(prod_pq_1, aw, op, out_uid.as_ptr(false), r.low);
           __prod2_recurse_out(prod_pq_1, aw, op, out_uid.as_ptr(true), r.high);
 
-          const __prod2_recurse_in__output_node handler(aw, out_uid);
+          const __prod2_recurse_in__output_node<Policy> handler(aw, out_uid);
           __prod2_recurse_in(prod_pq_1, prod_pq_2, handler, req.target);
 
         } else { // std::holds_alternative<prod2_rec_skipto>(root_rec)
