@@ -31,6 +31,22 @@
 namespace adiar::internal
 {
   //////////////////////////////////////////////////////////////////////////////////////////////////
+  //  Quantification
+  // ================
+  //
+  // Given a Decision Diagram and one (or more) variables, runs a product construction on the
+  // children at the desired levels (removing the level in question).
+  /*
+  //             ____ O ____                    O
+  //            /           \                 /   \
+  //          (a)          (b)               /     \
+  //         /   \    X   /   \     =>      /       \
+  //        a0   a1      b1   b2        (a0,b0)   (a1,b1)
+  */
+  // Examples of uses are `bdd_exists` and `zdd_project`.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// Struct to hold statistics
   extern statistics::quantify_t stats_quantify;
 
