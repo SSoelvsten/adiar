@@ -115,67 +115,67 @@ namespace adiar::internal
   /// \brief Run `Policy::go(...)` as long as there are in-going arcs to
   ///        `target` in the Levelized Priority Queue.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename Policy, typename PriorityQueue, typename Handler>
+  template <typename Policy, typename LevelizedPriorityQueue, typename Handler>
   inline void
-  __prod2_recurse_in__1(PriorityQueue& prod_pq,
-                        arc_writer& aw,
-                        const Handler& handler,
-                        const tuple<ptr_uint64>& target)
+  __prod2_recurse_in__lpq(LevelizedPriorityQueue& lpq,
+                          arc_writer& aw,
+                          const Handler& handler,
+                          const tuple<ptr_uint64>& target)
   {
     // TODO: merge with the per-level priority queue below. This requires adding
     //       `can_pull()` or similar to `internal::priority_queue`. Maybe it
     //       should have a prettier name like `has_top()`?
-    while (!prod_pq.empty_level() && prod_pq.top().target == target) {
-      handler(prod_pq, aw, prod_pq.pull().data.source);
+    while (!lpq.empty_level() && lpq.top().target == target) {
+      handler(lpq, aw, lpq.pull());
     }
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Run `Policy::go(...)` as long as there are in-going arcs to
-  ///        `target` in the Per-level Priority Queue.
+  /// \brief Run `Handler(...)` as long as there are in-going arcs to `target`
+  ///        in the Per-level Priority Queue.
   //////////////////////////////////////////////////////////////////////////////
   template <typename Policy, typename PriorityQueue, typename Handler>
   inline void
-  __prod2_recurse_in__2(PriorityQueue& prod_pq,
-                        arc_writer& aw,
-                        const Handler& handler,
-                        const tuple<ptr_uint64>& target)
+  __prod2_recurse_in__pq(PriorityQueue& pq,
+                         arc_writer& aw,
+                         const Handler& handler,
+                         const tuple<ptr_uint64>& target)
   {
-    while (!prod_pq.empty() && prod_pq.top().target == target) {
-      handler(prod_pq, aw, prod_pq.top().data.source);
-      prod_pq.pop();
+    while (!pq.empty() && pq.top().target == target) {
+      handler(pq, aw, pq.top());
+      pq.pop();
     }
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Run `Policy::go(...)` as long as there are in-going arcs to
-  ///        `target` in the priority queue.
+  /// \brief Run `Handler(...)` as long as there are in-going arcs to `target`
+  ///        in the priority queue.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename Policy, typename PriorityQueue, typename Handler>
+  template <typename Policy, typename LevelizedPriorityQueue, typename Handler>
   inline void
-  __prod2_recurse_in(PriorityQueue& prod_pq,
+  __prod2_recurse_in(LevelizedPriorityQueue& lpq,
                      arc_writer& aw,
                      const Handler& handler,
                      const tuple<ptr_uint64>& target)
   {
-    // HACK for hiding '__1' and '__2' versions
-    __prod2_recurse_in__1<Policy>(prod_pq, aw, handler, target);
+    // HACK for hiding '__lpq' and '__pq' versions
+    __prod2_recurse_in__lpq<Policy>(lpq, aw, handler, target);
   }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Run `Policy::go(...)` as long as there are in-going arcs to
   ///        `target` in either of the priority queues.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename Policy, typename PriorityQueue_1, typename PriorityQueue_2, typename Handler>
+  template <typename Policy, typename LevelizedPriorityQueue, typename PriorityQueue, typename Handler>
   inline void
-  __prod2_recurse_in(PriorityQueue_1& prod_pq_1,
-                     PriorityQueue_2& prod_pq_2,
+  __prod2_recurse_in(LevelizedPriorityQueue& lpq,
+                     PriorityQueue& pq,
                      arc_writer& aw,
                      const Handler& handler,
                      const tuple<ptr_uint64>& target)
   {
-    __prod2_recurse_in__1<Policy>(prod_pq_1, aw, handler, target);
-    __prod2_recurse_in__2<Policy>(prod_pq_2, aw, handler, target);
+    __prod2_recurse_in__lpq<Policy>(lpq, aw, handler, target);
+    __prod2_recurse_in__pq<Policy>(pq, aw, handler, target);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -191,11 +191,13 @@ namespace adiar::internal
       : _out_uid(out_uid)
     {}
 
-    template <typename PriorityQueue>
+    template <typename PriorityQueue, typename Request>
     inline void
-    operator() (PriorityQueue&, arc_writer& aw, const ptr_uint64& source) const
+    operator() (PriorityQueue&, arc_writer& aw, const Request& req) const
     {
-      if (!source.is_nil()) { aw.push_internal({ source, this->_out_uid }); }
+      if (!req.data.source.is_nil()) {
+        aw.push_internal({ req.data.source, this->_out_uid });
+      }
     }
   };
 
@@ -212,11 +214,11 @@ namespace adiar::internal
       : _out_terminal(out_terminal)
     {}
 
-    template <typename PriorityQueue>
+    template <typename PriorityQueue, typename Request>
     inline void
-    operator() (PriorityQueue&, arc_writer& aw, const ptr_uint64& source) const
+    operator() (PriorityQueue&, arc_writer& aw, const Request& req) const
     {
-      aw.push_terminal({ source, this->_out_terminal });
+      aw.push_terminal({ req.data.source, this->_out_terminal });
     }
   };
 
@@ -234,11 +236,11 @@ namespace adiar::internal
       : _rs(rs)
     {}
 
-    template <typename PriorityQueue>
+    template <typename PriorityQueue, typename Request>
     inline void
-    operator() (PriorityQueue& prod_pq, arc_writer&, const ptr_uint64& source) const
+    operator() (PriorityQueue& pq, arc_writer&, const Request& req) const
     {
-      prod_pq.push({ { this->_rs[0], this->_rs[1] }, {}, { source } });
+      pq.push({ { this->_rs[0], this->_rs[1] }, {}, req.data });
     }
   };
 
