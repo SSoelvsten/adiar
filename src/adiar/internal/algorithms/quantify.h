@@ -123,6 +123,16 @@ namespace adiar::internal
   // Common logic for sweeps
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Zero-indexed value for statistics on the arity of a request.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename Request>
+  size_t
+  __quantify_arity_idx(const Request& req)
+  {
+    return req.targets() - 1;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Places a request from `source` to `target` in the output if resolved to a terminal.
   ///        Otherwise, it is placed in the priority queue to be resolved later.
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -145,28 +155,82 @@ namespace adiar::internal
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// \brief Sets the `source` to the next in-going arc and returns `true`. Returns `false` if no
-  ///        such source exists.
-  ///
-  /// \details This it to be used as a do-while loop conditional to resolve all ingoing arcs.
+  /// \brief Policy for `request_foreach` for an arc to an internal node.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename PriorityQueue_1, typename PriorityQueue_2>
-  inline bool
-  __quantify_update_source_or_break(PriorityQueue_1& pq_1,
-                                    PriorityQueue_2& pq_2,
-                                    ptr_uint64& source,
-                                    const quantify_request<0>::target_t& target)
+  template <typename UId>
+  struct __quantify_recurse_in__output_node
   {
-    if (pq_1.can_pull() && pq_1.top().target == target) {
-      source = pq_1.pull().data.source;
-    } else if (!pq_2.empty() && pq_2.top().target == target) {
-      source = pq_2.top().data.source;
-      pq_2.pop();
-    } else {
-      return false;
+  private:
+    arc_writer& _aw;
+    const UId& _out_uid;
+
+  public:
+    __quantify_recurse_in__output_node(arc_writer& aw, const UId& out_uid)
+      : _aw(aw), _out_uid(out_uid)
+    {}
+
+    template <typename Request>
+    inline void
+    operator() (const Request& req) const
+    {
+#ifdef ADIAR_STATS
+      stats_quantify.requests[__quantify_arity_idx(req)] += 1;
+#endif
+      if (!req.data.source.is_nil()) {
+        this->_aw.push_internal({ req.data.source, this->_out_uid });
+      }
     }
-    return true;
-  }
+  };
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Policy for `request_foreach` for an arc to a terminal.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename Pointer>
+  struct __quantify_recurse_in__output_terminal
+  {
+  private:
+    arc_writer& _aw;
+    const Pointer& _out_terminal;
+
+  public:
+    __quantify_recurse_in__output_terminal(arc_writer& aw, const Pointer& out_terminal)
+      : _aw(aw), _out_terminal(out_terminal)
+    {}
+
+    template <typename Request>
+    inline void
+    operator() (const Request& req) const
+    {
+      this->_aw.push_terminal({ req.data.source, this->_out_terminal });
+    }
+  };
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Policy for `request_foreach` for forwarding a request further, i.e. skipping outputting
+  ///        an internal node.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename PriorityQueue, typename Target>
+  struct __quantify_recurse_in__forward
+  {
+  private:
+    PriorityQueue &_pq;
+    const Target& _t;
+
+  public:
+    __quantify_recurse_in__forward(PriorityQueue &pq, const Target& t)
+      : _pq(pq), _t(t)
+    {}
+
+    template <typename Request>
+    inline void
+    operator() (const Request& req) const
+    {
+#ifdef ADIAR_STATS
+      stats_quantify.requests[__quantify_arity_idx(req)] += 1;
+#endif
+      this->_pq.push({ this->_t, {}, req.data });
+    }
+  };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Reduces a request with (up to) `Targets` many values into its canonical form.
@@ -305,8 +369,7 @@ namespace adiar::internal
                      "Level of requests always ought to match the one currently processed");
 
 #ifdef ADIAR_STATS
-        const int arity_idx = req.targets() - 1;
-        stats_quantify.requests_unique[arity_idx] += 1;
+        stats_quantify.requests_unique[__quantify_arity_idx(req)] += 1;
 #endif
 
         // -----------------------------------------------------------------------------------------
@@ -316,11 +379,12 @@ namespace adiar::internal
           quantify_request<0>::target_t rec =
             __quantify_resolve_request<Policy, 2>(op, v.children().data());
 
-          while (__quantify_update_source_or_break(pq_1, pq_2, req.data.source, req.target)) {
-#ifdef ADIAR_STATS
-            stats_quantify.requests[arity_idx] += 1;
-#endif
-            __quantify_recurse_out<Policy>(pq_1, aw, req.data.source, rec);
+          if (rec[0].is_terminal()) {
+            const __quantify_recurse_in__output_terminal handler(aw, rec[0]);
+            request_foreach(pq_1, pq_2, req.target, handler);
+          } else {
+            const __quantify_recurse_in__forward handler(pq_1, rec);
+            request_foreach(pq_1, pq_2, req.target, handler);
           }
 
           continue;
@@ -356,11 +420,12 @@ namespace adiar::internal
               // No need to output a node as everything fits within a 2-tuple.
               quantify_request<0>::target_t rec(rec_all[0], rec_all[1]);
 
-              while (__quantify_update_source_or_break(pq_1, pq_2, req.data.source, req.target)) {
-#ifdef ADIAR_STATS
-                stats_quantify.requests[arity_idx] += 1;
-#endif
-                __quantify_recurse_out<Policy>(pq_1, aw, req.data.source, rec);
+              if (rec[0].is_terminal()) {
+                const __quantify_recurse_in__output_terminal handler(aw, rec[0]);
+                request_foreach(pq_1, pq_2, req.target, handler);
+              } else {
+                const __quantify_recurse_in__forward handler(pq_1, rec);
+                request_foreach(pq_1, pq_2, req.target, handler);
               }
             } else {
               // Store for later, that a node is yet to be done.
@@ -376,17 +441,10 @@ namespace adiar::internal
 
               quantify_request<0>::target_t rec1(rec_all[2], rec_all[3]);
 
-              __quantify_recurse_out<Policy>(
-                pq_1, aw, out_uid.as_ptr(true), rec1);
+              __quantify_recurse_out<Policy>(pq_1, aw, out_uid.as_ptr(true), rec1);
 
-              while (__quantify_update_source_or_break(pq_1, pq_2, req.data.source, req.target)) {
-#ifdef ADIAR_STATS
-                stats_quantify.requests[arity_idx] += 1;
-#endif
-                if (!req.data.source.is_nil()) {
-                  aw.push_internal(arc(req.data.source, out_uid));
-                }
-              }
+              const __quantify_recurse_in__output_node handler(aw, out_uid);
+              request_foreach(pq_1, pq_2, req.target, handler);
             }
             continue;
           }
@@ -411,14 +469,8 @@ namespace adiar::internal
           __quantify_resolve_request<Policy, 2>(op, { children0[true], children1[true] });
         __quantify_recurse_out<Policy>(pq_1, aw, out_uid.as_ptr(true), rec1);
 
-        while (__quantify_update_source_or_break(pq_1, pq_2, req.data.source, req.target)) {
-#ifdef ADIAR_STATS
-          stats_quantify.requests[arity_idx] += 1;
-#endif
-          if (!req.data.source.is_nil()) {
-            aw.push_internal(arc(req.data.source, out_uid));
-          }
-        }
+        const __quantify_recurse_in__output_node handler(aw, out_uid);
+        request_foreach(pq_1, pq_2, req.target, handler);
       }
 
       // Update meta information
