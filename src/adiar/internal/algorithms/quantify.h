@@ -455,9 +455,6 @@ namespace adiar::internal
         //   The variable should stay: proceed as in the Product Construction by simulating both
         //   possibilities in parallel.
 
-        // TODO (optimisation):
-        //   Skip node creation due to Reduction Rule 1
-
         const node::uid_type out_uid(out_label, out_id++);
 
         quantify_request<0>::target_t rec0 = __quantify_resolve_request<Policy, 2>(
