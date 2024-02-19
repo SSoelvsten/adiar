@@ -540,15 +540,15 @@ namespace adiar::internal
   // Common logic for a full single Quantificaiton sweep.
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// \brief Memory computations to decide number and types of priority queues for a single
-  ///        quantification sweep.
+  /// \brief Memory computations to decide types of both priority queues for a single quantification
+  ///        sweep.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename NodeStream,
             template <size_t, memory_mode> typename PriorityQueue_1_Template,
             typename Policy,
             typename In>
   typename Policy::__dd_type
-  __quantify(const exec_policy& ep, const In& in, Policy& policy, const bool_op& op)
+  __quantify_pq(const exec_policy& ep, const In& in, Policy& policy, const bool_op& op)
   {
     adiar_assert(is_commutative(op), "A commutative operator must be used");
 
@@ -644,7 +644,7 @@ namespace adiar::internal
              Policy& policy,
              const bool_op& op)
   {
-    return __quantify<node_stream<>, quantify_priority_queue_1_node_t>(ep, in, policy, op);
+    return __quantify_pq<node_stream<>, quantify_priority_queue_1_node_t>(ep, in, policy, op);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -659,7 +659,7 @@ namespace adiar::internal
              Policy& policy,
              const bool_op& op)
   {
-    return __quantify<node_arc_stream<>, quantify_priority_queue_1_arc_t>(ep, in, policy, op);
+    return __quantify_pq<node_arc_stream<>, quantify_priority_queue_1_arc_t>(ep, in, policy, op);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
