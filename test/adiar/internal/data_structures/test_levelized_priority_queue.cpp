@@ -1907,15 +1907,15 @@ go_bandit([]() {
 
           pq.setup_next_level();
 
-          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.has_top(), Is().True());
           AssertThat(pq.peek(), Is().EqualTo(lpq_test_data{ 2, 42 }));
           AssertThat(pq.size(), Is().EqualTo(1u));
 
-          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.has_top(), Is().True());
           AssertThat(pq.pull(), Is().EqualTo(lpq_test_data{ 2, 42 }));
           AssertThat(pq.size(), Is().EqualTo(0u));
 
-          AssertThat(pq.can_pull(), Is().False());
+          AssertThat(pq.has_top(), Is().False());
         });
 
         it("can look into overflow priority queue without side-effects", []() {
@@ -1939,15 +1939,15 @@ go_bandit([]() {
 
           pq.setup_next_level();
 
-          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.has_top(), Is().True());
           AssertThat(pq.peek(), Is().EqualTo(lpq_test_data{ 5, 3 }));
           AssertThat(pq.size(), Is().EqualTo(1u));
 
-          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.has_top(), Is().True());
           AssertThat(pq.pull(), Is().EqualTo(lpq_test_data{ 5, 3 }));
           AssertThat(pq.size(), Is().EqualTo(0u));
 
-          AssertThat(pq.can_pull(), Is().False());
+          AssertThat(pq.has_top(), Is().False());
         });
 
         it("is the same after pushing an element", []() {
@@ -1971,14 +1971,14 @@ go_bandit([]() {
 
           pq.setup_next_level(); // 2
 
-          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.has_top(), Is().True());
           AssertThat(pq.top(), Is().EqualTo(lpq_test_data{ 2, 1 }));
           AssertThat(pq.size(), Is().EqualTo(1u));
 
           pq.push(lpq_test_data{ 3, 1 }); // bucket
           AssertThat(pq.size(), Is().EqualTo(2u));
 
-          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.has_top(), Is().True());
           AssertThat(pq.top(), Is().EqualTo(lpq_test_data{ 2, 1 }));
           AssertThat(pq.size(), Is().EqualTo(2u));
         });
@@ -2007,19 +2007,19 @@ go_bandit([]() {
 
           pq.setup_next_level(); // 2
 
-          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.has_top(), Is().True());
           AssertThat(pq.top(), Is().EqualTo(lpq_test_data{ 2, 1 }));
           AssertThat(pq.size(), Is().EqualTo(2u));
 
-          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.has_top(), Is().True());
           AssertThat(pq.pull(), Is().EqualTo(lpq_test_data{ 2, 1 }));
           AssertThat(pq.size(), Is().EqualTo(1u));
 
-          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.has_top(), Is().True());
           AssertThat(pq.top(), Is().EqualTo(lpq_test_data{ 2, 2 }));
           AssertThat(pq.size(), Is().EqualTo(1u));
 
-          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.has_top(), Is().True());
         });
       });
 
@@ -3781,15 +3781,15 @@ go_bandit([]() {
 
           pq.setup_next_level();
 
-          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.has_top(), Is().True());
           AssertThat(pq.peek(), Is().EqualTo(lpq_test_data{ 2, 42 }));
           AssertThat(pq.size(), Is().EqualTo(1u));
 
-          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.has_top(), Is().True());
           AssertThat(pq.pull(), Is().EqualTo(lpq_test_data{ 2, 42 }));
           AssertThat(pq.size(), Is().EqualTo(0u));
 
-          AssertThat(pq.can_pull(), Is().False());
+          AssertThat(pq.has_top(), Is().False());
         });
 
         it("can look into priority queue without side-effects [2]", []() {
@@ -3813,15 +3813,15 @@ go_bandit([]() {
 
           pq.setup_next_level();
 
-          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.has_top(), Is().True());
           AssertThat(pq.peek(), Is().EqualTo(lpq_test_data{ 5, 3 }));
           AssertThat(pq.size(), Is().EqualTo(1u));
 
-          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.has_top(), Is().True());
           AssertThat(pq.pull(), Is().EqualTo(lpq_test_data{ 5, 3 }));
           AssertThat(pq.size(), Is().EqualTo(0u));
 
-          AssertThat(pq.can_pull(), Is().False());
+          AssertThat(pq.has_top(), Is().False());
         });
 
         it("is the same after pushing an element", []() {
@@ -3845,14 +3845,14 @@ go_bandit([]() {
 
           pq.setup_next_level(); // 2
 
-          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.has_top(), Is().True());
           AssertThat(pq.top(), Is().EqualTo(lpq_test_data{ 2, 1 }));
           AssertThat(pq.size(), Is().EqualTo(1u));
 
           pq.push(lpq_test_data{ 3, 1 });
           AssertThat(pq.size(), Is().EqualTo(2u));
 
-          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.has_top(), Is().True());
           AssertThat(pq.top(), Is().EqualTo(lpq_test_data{ 2, 1 }));
           AssertThat(pq.size(), Is().EqualTo(2u));
         });
@@ -3881,19 +3881,19 @@ go_bandit([]() {
 
           pq.setup_next_level(); // 2
 
-          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.has_top(), Is().True());
           AssertThat(pq.top(), Is().EqualTo(lpq_test_data{ 2, 1 }));
           AssertThat(pq.size(), Is().EqualTo(2u));
 
-          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.has_top(), Is().True());
           AssertThat(pq.pull(), Is().EqualTo(lpq_test_data{ 2, 1 }));
           AssertThat(pq.size(), Is().EqualTo(1u));
 
-          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.has_top(), Is().True());
           AssertThat(pq.top(), Is().EqualTo(lpq_test_data{ 2, 2 }));
           AssertThat(pq.size(), Is().EqualTo(1u));
 
-          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.has_top(), Is().True());
         });
       });
 
@@ -5882,18 +5882,18 @@ go_bandit([]() {
 
           pq.push(lpq_test_data{ 3, 42 }); // bucket
 
-          AssertThat(pq.can_pull(), Is().False());
+          AssertThat(pq.has_top(), Is().False());
           AssertThat(pq.has_current_level(), Is().False());
           AssertThat(pq.has_next_level(), Is().True());
           pq.setup_next_level();
           AssertThat(pq.has_current_level(), Is().True());
           AssertThat(pq.current_level(), Is().EqualTo(3u));
 
-          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.has_top(), Is().True());
           AssertThat(pq.peek(), Is().EqualTo(lpq_test_data{ 3, 42 }));
-          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.has_top(), Is().True());
           AssertThat(pq.pull(), Is().EqualTo(lpq_test_data{ 3, 42 }));
-          AssertThat(pq.can_pull(), Is().False());
+          AssertThat(pq.has_top(), Is().False());
         });
 
         it("can pull after a peek in overflow", []() {
@@ -5916,18 +5916,18 @@ go_bandit([]() {
 
           pq.push(lpq_test_data{ 7, 3 }); // overflow
 
-          AssertThat(pq.can_pull(), Is().False());
+          AssertThat(pq.has_top(), Is().False());
           AssertThat(pq.has_current_level(), Is().False());
           AssertThat(pq.has_next_level(), Is().True());
           pq.setup_next_level();
           AssertThat(pq.has_current_level(), Is().True());
           AssertThat(pq.current_level(), Is().EqualTo(7u));
 
-          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.has_top(), Is().True());
           AssertThat(pq.peek(), Is().EqualTo(lpq_test_data{ 7, 3 }));
-          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.has_top(), Is().True());
           AssertThat(pq.pull(), Is().EqualTo(lpq_test_data{ 7, 3 }));
-          AssertThat(pq.can_pull(), Is().False());
+          AssertThat(pq.has_top(), Is().False());
         });
       });
     });
