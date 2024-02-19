@@ -23,6 +23,7 @@
 #include <adiar/internal/io/file.h>
 #include <adiar/internal/io/file_stream.h>
 #include <adiar/internal/io/node_arc_stream.h>
+#include <adiar/internal/io/node_random_access.h>
 #include <adiar/internal/io/node_stream.h>
 #include <adiar/internal/io/shared_file_ptr.h>
 #include <adiar/internal/unreachable.h>
@@ -287,8 +288,137 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // Sweep logic with random access
+  //
+  // TODO (nested sweeping):
+  //
+  //   Split `canonical` into `sorted` and `indexable`. Only the latter is of interest. The 'fast
+  //   reduce' optimisation otherwise blocks use of random access.
 
-  // TODO
+  template <typename NodeRandomAccess, typename Policy, typename PriorityQueue>
+  typename Policy::__dd_type
+  __quantify_ra(const exec_policy& ep,
+                NodeRandomAccess& in_nodes,
+                Policy& policy,
+                const bool_op& op,
+                PriorityQueue& pq)
+  {
+    adiar_assert(is_commutative(op), "A commutative operator must be used");
+
+    // Set up output
+    shared_levelized_file<arc> out_arcs;
+    arc_writer aw(out_arcs);
+
+    // Process requests in topological order of both BDDs
+    while (!pq.empty()) {
+      // Set up level
+      pq.setup_next_level();
+      const typename Policy::label_type out_label = pq.current_level();
+      typename Policy::id_type out_id             = 0;
+
+      in_nodes.setup_next_level(out_label);
+
+      const bool should_quantify = policy.should_quantify(out_label);
+
+      while (!pq.empty_level()) {
+        quantify_request<0> req = pq.top();
+
+#ifdef ADIAR_STATS
+        stats_quantify.requests_unique[__quantify_arity_idx(req)] += 1;
+#endif
+
+        // Obtain of first to-be seen node
+        adiar_assert(req.target.first().level() == out_label,
+                     "Level of requests always ought to match the one currently processed");
+
+        const typename Policy::children_type children_fst =
+          in_nodes.at(req.target.first()).children();
+
+        const typename Policy::children_type children_snd = req.target.second().level() == out_label
+          ? in_nodes.at(req.target.second()).children()
+          : Policy::reduction_rule_inv(req.target.second());
+
+        // -----------------------------------------------------------------------------------------
+        // CASE: Quantification of tuple (f,g)
+        if (should_quantify) {
+          const tuple<typename Policy::pointer_type, 4, true> rec_all =
+            __quantify_resolve_request<Policy, 4>(
+              op, { children_fst[false], children_fst[true], children_snd[false], children_snd[true] });
+
+          if (!Policy::partial_quantification || rec_all[2] == Policy::pointer_type::nil()) {
+            // Collapsed to a terminal?
+            if (req.data.source.is_nil() && rec_all[0].is_terminal()) {
+              adiar_assert(rec_all[1] == Policy::pointer_type::nil(),
+                           "Operator should already be applied");
+
+              return typename Policy::dd_type(rec_all[0].value());
+            }
+
+            // No need to output a node as everything fits within a 2-tuple.
+            quantify_request<0>::target_t rec(rec_all[0], rec_all[1]);
+
+            if (rec[0].is_terminal()) {
+              const __quantify_recurse_in__output_terminal handler(aw, rec[0]);
+              request_foreach(pq, req.target, handler);
+            } else {
+              const __quantify_recurse_in__forward handler(pq, rec);
+              request_foreach(pq, req.target, handler);
+            }
+          } else if constexpr (Policy::partial_quantification) {
+            // Store for later, that a node is yet to be done.
+            policy.remaining_nodes++;
+
+            // Output an intermediate node at this level to be quantified later.
+            const node::uid_type out_uid(out_label, out_id++);
+
+            quantify_request<0>::target_t rec0(rec_all[0], rec_all[1]);
+            __quantify_recurse_out<Policy>(pq, aw, out_uid.as_ptr(false), rec0);
+
+            quantify_request<0>::target_t rec1(rec_all[2], rec_all[3]);
+            __quantify_recurse_out<Policy>(pq, aw, out_uid.as_ptr(true), rec1);
+
+            const __quantify_recurse_in__output_node handler(aw, out_uid);
+            request_foreach(pq, req.target, handler);
+          } else {
+            adiar_unreachable(); // LCOV_EXCL_LINE
+          }
+
+          continue;
+        }
+
+        // -----------------------------------------------------------------------------------------
+        // CASE: Regular Level
+        //   The variable should stay: proceed as in the Product Construction by simulating both
+        //   possibilities in parallel.
+
+        const node::uid_type out_uid(out_label, out_id++);
+
+        quantify_request<0>::target_t rec0 = __quantify_resolve_request<Policy, 2>(
+          op, { children_fst[false], children_snd[false] });
+
+        __quantify_recurse_out<Policy>(pq, aw, out_uid.as_ptr(false), rec0);
+
+        quantify_request<0>::target_t rec1 =
+          __quantify_resolve_request<Policy, 2>(op, { children_fst[true], children_snd[true] });
+        __quantify_recurse_out<Policy>(pq, aw, out_uid.as_ptr(true), rec1);
+
+        const __quantify_recurse_in__output_node handler(aw, out_uid);
+        request_foreach(pq, req.target, handler);
+      }
+
+      // Update meta information
+      if (out_id > 0) { aw.push(level_info(out_label, out_id)); }
+
+      out_arcs->max_1level_cut = std::max(out_arcs->max_1level_cut, pq.size());
+    }
+
+    // Ensure the edge case, where the in-going edge from nil to the root pair
+    // does not dominate the max_1level_cut
+    out_arcs->max_1level_cut = std::min(aw.size() - out_arcs->number_of_terminals[false]
+                                        - out_arcs->number_of_terminals[true],
+                                        out_arcs->max_1level_cut);
+
+    return typename Policy::__dd_type(out_arcs, ep);
+  }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -311,6 +441,8 @@ namespace adiar::internal
                 PriorityQueue_1& pq_1,
                 PriorityQueue_2& pq_2)
   {
+    adiar_assert(is_commutative(op), "A commutative operator must be used");
+
     // TODO (optimisation):
     //   Merge 'op' into 'policy'.
 
@@ -360,6 +492,9 @@ namespace adiar::internal
         if (req.empty_carry() && req.target.second().is_node()
             && req.target.first().label() == req.target.second().label()) {
           do {
+#ifdef ADIAR_STATS
+            stats_quantify.pq.pq_2_elems += 1u;
+#endif
             pq_2.push({ req.target, { v.children() }, pq_1.pull().data });
           } while (pq_1.can_pull() && pq_1.top().target == req.target);
           continue;
@@ -372,12 +507,21 @@ namespace adiar::internal
         stats_quantify.requests_unique[__quantify_arity_idx(req)] += 1;
 #endif
 
+        // Recreate children of the two targeted nodes (or possibly the
+        // suppressed node for target.second()).
+        const node::children_type children_fst = req.empty_carry() ? v.children() : req.node_carry[0];
+
+        const node::children_type children_snd = req.target.second().level() == out_label
+          ? v.children()
+          : Policy::reduction_rule_inv(req.target.second());
+
+        adiar_assert(out_id < Policy::max_id, "Has run out of ids");
+
         // -----------------------------------------------------------------------------------------
         // CASE: Quantification of Singleton f into (f[0], f[1]).
-        if (should_quantify
-            && (!Policy::partial_quantification || req.target.second().is_nil())) {
+        if (should_quantify && (!Policy::partial_quantification || req.target.second().is_nil())) {
           quantify_request<0>::target_t rec =
-            __quantify_resolve_request<Policy, 2>(op, v.children().data());
+            __quantify_resolve_request<Policy, 2>(op, children_fst.data());
 
           if (rec[0].is_terminal()) {
             const __quantify_recurse_in__output_terminal handler(aw, rec[0]);
@@ -390,23 +534,13 @@ namespace adiar::internal
           continue;
         }
 
-        // Recreate children of the two targeted nodes (or possibly the
-        // suppressed node for target.second()).
-        const node::children_type children0 = req.empty_carry() ? v.children() : req.node_carry[0];
-
-        const node::children_type children1 = req.target.second().level() == out_label
-          ? v.children()
-          : Policy::reduction_rule_inv(req.target.second());
-
-        adiar_assert(out_id < Policy::max_id, "Has run out of ids");
-
         // -----------------------------------------------------------------------------------------
         // CASE: Partial Quantification of Tuple (f,g).
         if constexpr (Policy::partial_quantification) {
           if (should_quantify) {
             const tuple<typename Policy::pointer_type, 4, true> rec_all =
               __quantify_resolve_request<Policy, 4>(
-                op, { children0[false], children0[true], children1[false], children1[true] });
+                op, { children_fst[false], children_fst[true], children_snd[false], children_snd[true] });
 
             if (rec_all[2] == Policy::pointer_type::nil()) {
               // Collapsed to a terminal?
@@ -435,12 +569,9 @@ namespace adiar::internal
               const node::uid_type out_uid(out_label, out_id++);
 
               quantify_request<0>::target_t rec0(rec_all[0], rec_all[1]);
-
-              __quantify_recurse_out<Policy>(
-                pq_1, aw, out_uid.as_ptr(false), rec0);
+              __quantify_recurse_out<Policy>(pq_1, aw, out_uid.as_ptr(false), rec0);
 
               quantify_request<0>::target_t rec1(rec_all[2], rec_all[3]);
-
               __quantify_recurse_out<Policy>(pq_1, aw, out_uid.as_ptr(true), rec1);
 
               const __quantify_recurse_in__output_node handler(aw, out_uid);
@@ -458,12 +589,12 @@ namespace adiar::internal
         const node::uid_type out_uid(out_label, out_id++);
 
         quantify_request<0>::target_t rec0 = __quantify_resolve_request<Policy, 2>(
-          op, { children0[false], children1[false] });
+          op, { children_fst[false], children_snd[false] });
 
         __quantify_recurse_out<Policy>(pq_1, aw, out_uid.as_ptr(false), rec0);
 
         quantify_request<0>::target_t rec1 =
-          __quantify_resolve_request<Policy, 2>(op, { children0[true], children1[true] });
+          __quantify_resolve_request<Policy, 2>(op, { children_fst[true], children_snd[true] });
         __quantify_recurse_out<Policy>(pq_1, aw, out_uid.as_ptr(true), rec1);
 
         const __quantify_recurse_in__output_node handler(aw, out_uid);
@@ -483,6 +614,99 @@ namespace adiar::internal
                                         out_arcs->max_1level_cut);
 
     return typename Policy::__dd_type(out_arcs, ep);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  // Common logic for a full single Quantification sweep.
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Set up of priority queue for a single top-down quantification sweep with random access.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename NodeRandomAccess,
+            typename PriorityQueue,
+            typename In,
+            typename Policy>
+  typename Policy::__dd_type
+  __quantify_ra(const exec_policy& ep,
+                const In& in,
+                Policy& policy,
+                const bool_op& op,
+                const size_t pq_memory,
+                const size_t max_pq_size)
+  {
+    NodeRandomAccess in_nodes(in);
+
+    // Set up cross-level priority queue with a request for the root
+    PriorityQueue pq({ in }, pq_memory, max_pq_size, stats_quantify.lpq);
+    pq.push({ { in_nodes.root(), ptr_uint64::nil() }, {}, { ptr_uint64::nil() } });
+
+    return __quantify_ra(ep, in_nodes, policy, op, pq);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Memory computations to decide types of priority queue for a single quantification
+  ///        sweep with random access.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename NodeRandomAccess,
+            template <size_t, memory_mode> typename PriorityQueueTemplate,
+            typename In,
+            typename Policy>
+  typename Policy::__dd_type
+  __quantify_ra(const exec_policy& ep, const In& in, Policy& policy, const bool_op& op)
+  {
+    // Compute amount of memory available for auxiliary data structures after having opened all
+    // streams.
+    //
+    // We then may derive an upper bound on the size of auxiliary data structures and check whether
+    // we can run them with a faster internal memory variant.
+    const size_t pq_memory = memory_available()
+      // Input stream
+      - NodeRandomAccess::memory_usage(in)
+      // Output stream
+      - arc_writer::memory_usage();
+
+    const size_t pq_memory_fits =
+      PriorityQueueTemplate<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(pq_memory);
+
+    const bool internal_only =
+      ep.template get<exec_policy::memory>() == exec_policy::memory::Internal;
+    const bool external_only =
+      ep.template get<exec_policy::memory>() == exec_policy::memory::External;
+
+    const size_t pq_bound =
+      std::min({ __quantify_ilevel_upper_bound<Policy, get_2level_cut, 2u>(in, op),
+                 __quantify_ilevel_upper_bound(in) });
+
+    const size_t max_pq_size =
+      internal_only ? std::min(pq_memory_fits, pq_bound) : pq_bound;
+
+    if (!external_only && max_pq_size <= no_lookahead_bound(2)) {
+#ifdef ADIAR_STATS
+      stats_quantify.lpq.unbucketed += 1u;
+#endif
+      using PriorityQueue = PriorityQueueTemplate<0, memory_mode::Internal>;
+
+      return __quantify_ra<NodeRandomAccess, PriorityQueue>(
+        ep, in, policy, op, pq_memory, max_pq_size);
+    } else if (!external_only && max_pq_size <= pq_memory_fits) {
+#ifdef ADIAR_STATS
+      stats_quantify.lpq.internal += 1u;
+#endif
+      using PriorityQueue = PriorityQueueTemplate<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>;
+
+      return __quantify_ra<NodeRandomAccess, PriorityQueue>(
+        ep, in, policy, op, pq_memory, max_pq_size);
+    } else {
+#ifdef ADIAR_STATS
+      stats_quantify.lpq.external += 1u;
+#endif
+      using PriorityQueue = PriorityQueueTemplate<ADIAR_LPQ_LOOKAHEAD, memory_mode::External>;
+
+      return __quantify_ra<NodeRandomAccess, PriorityQueue>(
+        ep, in, policy, op, pq_memory, max_pq_size);
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -534,11 +758,6 @@ namespace adiar::internal
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // Common logic for a full single Quantificaiton sweep.
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Memory computations to decide types of both priority queues for a single quantification
   ///        sweep.
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -549,14 +768,11 @@ namespace adiar::internal
   typename Policy::__dd_type
   __quantify_pq(const exec_policy& ep, const In& in, Policy& policy, const bool_op& op)
   {
-    adiar_assert(is_commutative(op), "A commutative operator must be used");
-
-    // Compute amount of memory available for auxiliary data structures after
-    // having opened all streams.
+    // Compute amount of memory available for auxiliary data structures after having opened all
+    // streams.
     //
-    // We then may derive an upper bound on the size of auxiliary data
-    // structures and check whether we can run them with a faster internal
-    // memory variant.
+    // We then may derive an upper bound on the size of auxiliary data structures and check whether
+    // we can run them with a faster internal memory variant.
     const size_t aux_available_memory = memory_available()
       // Input stream
       - NodeStream::memory_usage()
@@ -635,6 +851,8 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Single-top quantification sweep on node-based inputs.
+  ///
+  /// \pre `in.is_terminal() == false`.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename Policy>
   typename Policy::__dd_type
@@ -643,6 +861,48 @@ namespace adiar::internal
              Policy& policy,
              const bool_op& op)
   {
+    // -------------------------------------------------------------------------
+    // Case: Terminal
+    adiar_assert(!in->is_terminal());
+
+    // -------------------------------------------------------------------------
+    // Case: Do the product construction (with random access)
+    //
+    // Use random access if requested or the width fits half(ish) of the memory
+    // otherwise dedicated to the secondary priority queue.
+    //
+    // TODO (optimisation):
+    //
+    //   Do not depend on *canonical* but only *indexable* (see further above).
+
+    constexpr size_t data_structures_in_pq_2 =
+      quantify_priority_queue_2_t<memory_mode::Internal>::data_structures;
+
+    constexpr size_t data_structures_in_pqs = data_structures_in_pq_2
+      + quantify_priority_queue_1_node_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::data_structures;
+
+    const size_t ra_threshold =
+      (memory_available() * data_structures_in_pq_2) / 2 * (data_structures_in_pqs);
+
+    if ( // Use `__prod2_ra` if user has forced Random Access
+         ep.template get<exec_policy::access>() == exec_policy::access::Random_Access
+         || ( // Heuristically, if the narrowest canonical fits
+              ep.template get<exec_policy::access>() == exec_policy::access::Auto
+              && in->canonical
+              && node_random_access<>::memory_usage(in->width) <= ra_threshold)
+         ) {
+#ifdef ADIAR_STATS
+      stats_quantify.ra.runs += 1u;
+#endif
+      return __quantify_ra<node_random_access<>, quantify_priority_queue_1_node_t>(
+        ep, in, policy, op);
+    }
+
+    // -------------------------------------------------------------------------
+    // Case: Do the product construction (with priority queues)
+#ifdef ADIAR_STATS
+    stats_quantify.pq.runs += 1u;
+#endif
     return __quantify_pq<node_stream<>, quantify_priority_queue_1_node_t>(ep, in, policy, op);
   }
 
@@ -658,6 +918,20 @@ namespace adiar::internal
              Policy& policy,
              const bool_op& op)
   {
+    // -------------------------------------------------------------------------
+    // Case: Terminal.
+    //
+    // NOTE: __dd does cannot represent a single terminal.
+
+    // -------------------------------------------------------------------------
+    // Case: Do the product construction (with random access)
+
+    // TODO (partial quantification):
+    //
+    //   Add `node_arc_random_access` (implemented on-top of `node_arc_stream`).
+
+    // -------------------------------------------------------------------------
+    // Case: Do the product construction (with priority queues)
     return __quantify_pq<node_arc_stream<>, quantify_priority_queue_1_arc_t>(ep, in, policy, op);
   }
 
@@ -706,7 +980,8 @@ namespace adiar::internal
            const typename Policy::label_type label,
            const bool_op& op)
   {
-    // Trivial cases, where there is no need to do any computation
+    // -------------------------------------------------------------------------
+    // Case: Terminal / Disjunct Levels
     if (dd_isterminal(in) || !has_level(in, label)) {
 #ifdef ADIAR_STATS
       stats_quantify.skipped += 1u;
@@ -714,11 +989,12 @@ namespace adiar::internal
       return in;
     }
 
+    // -------------------------------------------------------------------------
+    // Case: Do the product construction
 #ifdef ADIAR_STATS
     stats_quantify.singleton_sweeps += 1u;
 #endif
 
-    // Set up policy and run sweep
     single_quantify_policy<Policy> policy(label);
     return __quantify(ep, in, policy, op);
   }
