@@ -1447,7 +1447,7 @@ go_bandit([]() {
           AssertThat(dec.size(), Is().EqualTo(3u));
 
           // Top the sorter
-          AssertThat(dec.can_pull(), Is().True());
+          AssertThat(dec.has_top(), Is().True());
           const auto r1 = dec.top();
           AssertThat(r1.target, Is().EqualTo(root1.target));
           AssertThat(r1.data.source, Is().EqualTo(flag(root1.data.source)));
@@ -1456,7 +1456,7 @@ go_bandit([]() {
           AssertThat(dec.size(), Is().EqualTo(3u));
 
           // Top it again
-          AssertThat(dec.can_pull(), Is().True());
+          AssertThat(dec.has_top(), Is().True());
           const auto r2 = dec.top();
           AssertThat(r2.target, Is().EqualTo(root1.target));
           AssertThat(r2.data.source, Is().EqualTo(flag(root1.data.source)));
@@ -1479,7 +1479,7 @@ go_bandit([]() {
           AssertThat(dec.size(), Is().EqualTo(4u));
 
           // Skip over the one request from the sorter (but check it truly is that one)
-          AssertThat(dec.can_pull(), Is().True());
+          AssertThat(dec.has_top(), Is().True());
           const auto r1 = dec.pull();
           AssertThat(r1.target, Is().EqualTo(root1.target));
           AssertThat(r1.data.source, Is().EqualTo(flag(root1.data.source)));
@@ -1488,7 +1488,7 @@ go_bandit([]() {
           AssertThat(dec.size(), Is().EqualTo(3u));
 
           // Top the priority queue once
-          AssertThat(dec.can_pull(), Is().True());
+          AssertThat(dec.has_top(), Is().True());
           const auto r2 = dec.top();
           AssertThat(r2.target, Is().EqualTo(root4.target));
           AssertThat(r2.data.source, Is().EqualTo(root4.data.source));
@@ -1497,7 +1497,7 @@ go_bandit([]() {
           AssertThat(dec.size(), Is().EqualTo(3u));
 
           // Top it again
-          AssertThat(dec.can_pull(), Is().True());
+          AssertThat(dec.has_top(), Is().True());
           const auto r3 = dec.top();
           AssertThat(r3.target, Is().EqualTo(root4.target));
           AssertThat(r3.data.source, Is().EqualTo(root4.data.source));
@@ -1515,7 +1515,7 @@ go_bandit([]() {
           AssertThat(dec.empty_level(), Is().False());
           AssertThat(dec.size(), Is().EqualTo(3u));
 
-          AssertThat(dec.can_pull(), Is().True());
+          AssertThat(dec.has_top(), Is().True());
           const auto r1 = dec.top();
           dec.pop();
 
@@ -1525,7 +1525,7 @@ go_bandit([]() {
           AssertThat(dec.empty_level(), Is().False());
           AssertThat(dec.size(), Is().EqualTo(2u));
 
-          AssertThat(dec.can_pull(), Is().True());
+          AssertThat(dec.has_top(), Is().True());
           const auto r2 = dec.top();
           dec.pop();
 
@@ -1535,7 +1535,7 @@ go_bandit([]() {
           AssertThat(dec.empty_level(), Is().True());
           AssertThat(dec.size(), Is().EqualTo(1u));
 
-          AssertThat(dec.can_pull(), Is().False());
+          AssertThat(dec.has_top(), Is().False());
         });
 
         it("can top and pop merge of PQ and Sorter [tie on 'n2']", [&]() {
@@ -1552,7 +1552,7 @@ go_bandit([]() {
           AssertThat(dec.empty_level(), Is().False());
           AssertThat(dec.size(), Is().EqualTo(4u));
 
-          AssertThat(dec.can_pull(), Is().True());
+          AssertThat(dec.has_top(), Is().True());
           const auto r1 = dec.top();
           dec.pop();
 
@@ -1562,7 +1562,7 @@ go_bandit([]() {
           AssertThat(dec.empty_level(), Is().False());
           AssertThat(dec.size(), Is().EqualTo(3u));
 
-          AssertThat(dec.can_pull(), Is().True());
+          AssertThat(dec.has_top(), Is().True());
           const auto r2 = dec.top();
           dec.pop();
 
@@ -1572,7 +1572,7 @@ go_bandit([]() {
           AssertThat(dec.empty_level(), Is().False());
           AssertThat(dec.size(), Is().EqualTo(2u));
 
-          AssertThat(dec.can_pull(), Is().True());
+          AssertThat(dec.has_top(), Is().True());
           const auto r3 = dec.top();
           dec.pop();
 
@@ -1582,7 +1582,7 @@ go_bandit([]() {
           AssertThat(dec.empty_level(), Is().True());
           AssertThat(dec.size(), Is().EqualTo(1u));
 
-          AssertThat(dec.can_pull(), Is().False());
+          AssertThat(dec.has_top(), Is().False());
         });
 
         it("can top and pop merge of PQ and Sorter [tie on 'n1']", [&]() {
@@ -1599,7 +1599,7 @@ go_bandit([]() {
           AssertThat(dec.empty_level(), Is().False());
           AssertThat(dec.size(), Is().EqualTo(4u));
 
-          AssertThat(dec.can_pull(), Is().True());
+          AssertThat(dec.has_top(), Is().True());
           const auto r1 = dec.top();
           dec.pop();
 
@@ -1609,7 +1609,7 @@ go_bandit([]() {
           AssertThat(dec.empty_level(), Is().False());
           AssertThat(dec.size(), Is().EqualTo(3u));
 
-          AssertThat(dec.can_pull(), Is().True());
+          AssertThat(dec.has_top(), Is().True());
           const auto r2 = dec.top();
           dec.pop();
 
@@ -1619,7 +1619,7 @@ go_bandit([]() {
           AssertThat(dec.empty_level(), Is().False());
           AssertThat(dec.size(), Is().EqualTo(2u));
 
-          AssertThat(dec.can_pull(), Is().True());
+          AssertThat(dec.has_top(), Is().True());
           const auto r3 = dec.top();
           dec.pop();
 
@@ -1629,7 +1629,7 @@ go_bandit([]() {
           AssertThat(dec.empty_level(), Is().True());
           AssertThat(dec.size(), Is().EqualTo(1u));
 
-          AssertThat(dec.can_pull(), Is().False());
+          AssertThat(dec.has_top(), Is().False());
         });
 
         it("can top and pop when Sorter is empty", [&]() {
@@ -1655,7 +1655,7 @@ go_bandit([]() {
           AssertThat(dec.empty_level(), Is().False());
           AssertThat(dec.size(), Is().EqualTo(1u));
 
-          AssertThat(dec.can_pull(), Is().True());
+          AssertThat(dec.has_top(), Is().True());
           const auto r = dec.top();
           dec.pop();
 
@@ -1665,7 +1665,7 @@ go_bandit([]() {
           AssertThat(dec.empty_level(), Is().True());
           AssertThat(dec.size(), Is().EqualTo(0u));
 
-          AssertThat(dec.can_pull(), Is().False());
+          AssertThat(dec.has_top(), Is().False());
         });
 
         it("cleans taint flags on targets from outer roots", [&]() {
@@ -1686,7 +1686,7 @@ go_bandit([]() {
           AssertThat(dec.empty_level(), Is().False());
           AssertThat(dec.size(), Is().EqualTo(3u));
 
-          AssertThat(dec.can_pull(), Is().True());
+          AssertThat(dec.has_top(), Is().True());
           const auto r1 = dec.pull();
           AssertThat(r1.target, Is().EqualTo(root1.target));
           AssertThat(r1.data.source, Is().EqualTo(flag(root1.data.source)));
@@ -1708,7 +1708,7 @@ go_bandit([]() {
 
           dec.setup_next_level();
 
-          AssertThat(dec.can_pull(), Is().True());
+          AssertThat(dec.has_top(), Is().True());
           const auto r1 = dec.pull();
           AssertThat(r1.target, Is().EqualTo(root1.target));
           AssertThat(r1.data.source, Is().EqualTo(flag(root1.data.source)));
@@ -1897,19 +1897,22 @@ go_bandit([]() {
           dec.setup_next_level();
 
           AssertThat(dec.empty_level(), Is().False());
-          AssertThat(dec.can_pull(), Is().True());
+          AssertThat(dec.has_top(), Is().True());
           AssertThat(dec.top(), Is().EqualTo(arc(outer_n4, true, outer_n5)));
+          AssertThat(dec.can_pull(), Is().True());
           AssertThat(dec.pull(), Is().EqualTo(arc(outer_n4, true, outer_n5)));
 
           AssertThat(dec.size(), Is().EqualTo(2u));
           AssertThat(dec.empty(), Is().False());
 
           AssertThat(dec.empty_level(), Is().False());
-          AssertThat(dec.can_pull(), Is().True());
+          AssertThat(dec.has_top(), Is().True());
           AssertThat(dec.top(), Is().EqualTo(arc(outer_n4, false, terminal_F)));
+          AssertThat(dec.can_pull(), Is().True());
           AssertThat(dec.pull(), Is().EqualTo(arc(outer_n4, false, terminal_F)));
 
           AssertThat(dec.empty_level(), Is().True());
+          AssertThat(dec.has_top(), Is().False());
           AssertThat(dec.can_pull(), Is().False());
           AssertThat(dec.size(), Is().EqualTo(1u));
           AssertThat(dec.empty(), Is().True());
