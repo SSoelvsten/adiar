@@ -518,67 +518,51 @@ namespace adiar::internal
         adiar_assert(out_id < Policy::max_id, "Has run out of ids");
 
         // -----------------------------------------------------------------------------------------
-        // CASE: Quantification of Singleton f into (f[0], f[1]).
-        if (should_quantify && (!Policy::partial_quantification || req.target.second().is_nil())) {
-          quantify_request<0>::target_t rec =
-            __quantify_resolve_request<Policy, 2>(op, children_fst.data());
+        // CASE: Quantification of tuple (f,g) where g may be 'nil'
+        if (should_quantify) {
+          const tuple<typename Policy::pointer_type, 4, true> rec_all =
+            __quantify_resolve_request<Policy, 4>(
+              op, { children_fst[false], children_fst[true], children_snd[false], children_snd[true] });
 
-          if (rec[0].is_terminal()) {
-            const __quantify_recurse_in__output_terminal handler(aw, rec[0]);
+          if (!Policy::partial_quantification || rec_all[2] == Policy::pointer_type::nil()) {
+            // Collapsed to a terminal?
+            if (req.data.source.is_nil() && rec_all[0].is_terminal()) {
+              adiar_assert(rec_all[1] == Policy::pointer_type::nil(),
+                           "Operator should already be applied");
+
+              return typename Policy::dd_type(rec_all[0].value());
+            }
+
+            // No need to output a node as everything fits within a 2-tuple.
+            quantify_request<0>::target_t rec(rec_all[0], rec_all[1]);
+
+            if (rec[0].is_terminal()) {
+              const __quantify_recurse_in__output_terminal handler(aw, rec[0]);
+              request_foreach(pq_1, pq_2, req.target, handler);
+            } else {
+              const __quantify_recurse_in__forward handler(pq_1, rec);
+              request_foreach(pq_1, pq_2, req.target, handler);
+            }
+          } else if constexpr (Policy::partial_quantification) {
+            // Store for later, that a node is yet to be done.
+            policy.remaining_nodes++;
+
+            // Output an intermediate node at this level to be quantified later.
+            const node::uid_type out_uid(out_label, out_id++);
+
+            quantify_request<0>::target_t rec0(rec_all[0], rec_all[1]);
+            __quantify_recurse_out<Policy>(pq_1, aw, out_uid.as_ptr(false), rec0);
+
+            quantify_request<0>::target_t rec1(rec_all[2], rec_all[3]);
+            __quantify_recurse_out<Policy>(pq_1, aw, out_uid.as_ptr(true), rec1);
+
+            const __quantify_recurse_in__output_node handler(aw, out_uid);
             request_foreach(pq_1, pq_2, req.target, handler);
           } else {
-            const __quantify_recurse_in__forward handler(pq_1, rec);
-            request_foreach(pq_1, pq_2, req.target, handler);
+            adiar_unreachable(); // LCOV_EXCL_LINE
           }
 
           continue;
-        }
-
-        // -----------------------------------------------------------------------------------------
-        // CASE: Partial Quantification of Tuple (f,g).
-        if constexpr (Policy::partial_quantification) {
-          if (should_quantify) {
-            const tuple<typename Policy::pointer_type, 4, true> rec_all =
-              __quantify_resolve_request<Policy, 4>(
-                op, { children_fst[false], children_fst[true], children_snd[false], children_snd[true] });
-
-            if (rec_all[2] == Policy::pointer_type::nil()) {
-              // Collapsed to a terminal?
-              if (req.data.source.is_nil() && rec_all[0].is_terminal()) {
-                adiar_assert(rec_all[1] == Policy::pointer_type::nil(),
-                             "Operator should already be applied");
-
-                return typename Policy::dd_type(rec_all[0].value());
-              }
-
-              // No need to output a node as everything fits within a 2-tuple.
-              quantify_request<0>::target_t rec(rec_all[0], rec_all[1]);
-
-              if (rec[0].is_terminal()) {
-                const __quantify_recurse_in__output_terminal handler(aw, rec[0]);
-                request_foreach(pq_1, pq_2, req.target, handler);
-              } else {
-                const __quantify_recurse_in__forward handler(pq_1, rec);
-                request_foreach(pq_1, pq_2, req.target, handler);
-              }
-            } else {
-              // Store for later, that a node is yet to be done.
-              policy.remaining_nodes++;
-
-              // Output an intermediate node at this level to be quantified later.
-              const node::uid_type out_uid(out_label, out_id++);
-
-              quantify_request<0>::target_t rec0(rec_all[0], rec_all[1]);
-              __quantify_recurse_out<Policy>(pq_1, aw, out_uid.as_ptr(false), rec0);
-
-              quantify_request<0>::target_t rec1(rec_all[2], rec_all[3]);
-              __quantify_recurse_out<Policy>(pq_1, aw, out_uid.as_ptr(true), rec1);
-
-              const __quantify_recurse_in__output_node handler(aw, out_uid);
-              request_foreach(pq_1, pq_2, req.target, handler);
-            }
-            continue;
-          }
         }
 
         // -----------------------------------------------------------------------------------------
@@ -733,17 +717,7 @@ namespace adiar::internal
 
     { // Detach and garbage collect node_stream<>
       NodeStream in_nodes(in);
-      const typename Policy::node_type v = in_nodes.pull();
-      root = v.uid();
-
-      if (policy.should_quantify(v.label())
-          && (v.low().is_terminal() || v.high().is_terminal())) {
-        root = Policy::resolve_root(v, op);
-
-        if (root != v.uid() && root.is_terminal()) {
-          return typename Policy::dd_type(root.value());
-        }
-      }
+      root = in_nodes.pull().uid();
     }
 
     // Set up cross-level priority queue
