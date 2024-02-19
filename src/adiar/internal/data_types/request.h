@@ -292,7 +292,7 @@ namespace adiar::internal
     bool
     empty_carry() const
     {
-      if constexpr (node_carry_size == 0u) return true;
+      static_assert(node_carry_size > 0);
       return node_carry[0][0] == base::pointer_type::nil();
     }
 
