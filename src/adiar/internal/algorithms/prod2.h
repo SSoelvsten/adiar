@@ -23,6 +23,7 @@
 #include <adiar/internal/io/node_random_access.h>
 #include <adiar/internal/io/node_stream.h>
 #include <adiar/internal/memory.h>
+#include <adiar/internal/util.h>
 
 namespace adiar::internal
 {
@@ -112,38 +113,7 @@ namespace adiar::internal
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Run `Handler(...)` as long as there are in-going requests to
-  ///        `target` in the Priority Queue.
-  //////////////////////////////////////////////////////////////////////////////
-  template <typename PriorityQueue, typename Handler>
-  inline void
-  __prod2_recurse_in(PriorityQueue& pq,
-                     const Handler& handler,
-                     const typename PriorityQueue::value_type::target_t& target)
-  {
-    while (pq.has_top() && pq.top().target == target) {
-      handler(pq.top());
-      pq.pop();
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Run `Handler(...)` as long as there are in-going requests to
-  ///        `target` in either of the priority queues.
-  //////////////////////////////////////////////////////////////////////////////
-  template <typename PriorityQueue_1, typename PriorityQueue_2, typename Handler>
-  inline void
-  __prod2_recurse_in(PriorityQueue_1& pq_1,
-                     PriorityQueue_2& pq_2,
-                     const Handler& handler,
-                     const typename PriorityQueue_1::value_type::target_t& target)
-  {
-    __prod2_recurse_in(pq_1, handler, target);
-    __prod2_recurse_in(pq_2, handler, target);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Policy for `__prod2_recurse_in` for an arc to an internal node.
+  /// \brief Policy for `request_foreach` for an arc to an internal node.
   //////////////////////////////////////////////////////////////////////////////
   template <typename Policy>
   struct __prod2_recurse_in__output_node
@@ -169,7 +139,7 @@ namespace adiar::internal
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Policy for `__prod2_recurse_in` for an arc to a terminal.
+  /// \brief Policy for `request_foreach` for an arc to a terminal.
   //////////////////////////////////////////////////////////////////////////////
   template <typename Pointer>
   struct __prod2_recurse_in__output_terminal
@@ -192,8 +162,8 @@ namespace adiar::internal
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Policy for `__prod2_recurse_in` for forwarding a request further,
-  ///        i.e. skipping outputting an internal node.
+  /// \brief Policy for `request_foreach` for forwarding a request further, i.e.
+  ///        skipping outputting an internal node.
   //////////////////////////////////////////////////////////////////////////////
   template <typename PriorityQueue, typename Target>
   struct __prod2_recurse_in__forward
@@ -388,7 +358,7 @@ namespace adiar::internal
           __prod2_recurse_out(prod_pq, aw, op, out_uid.as_ptr(true), r.high);
 
           const __prod2_recurse_in__output_node<Policy> handler(aw, out_uid);
-          __prod2_recurse_in(prod_pq, handler, req.target);
+          request_foreach(prod_pq, req.target, handler);
 
         } else { // std::holds_alternative<prod2_rec_skipto>(root_rec)
           const prod2_rec_skipto r = std::get<prod2_rec_skipto>(rec_res);
@@ -400,10 +370,10 @@ namespace adiar::internal
 
             const typename Policy::pointer_type result = op(r[0], r[1]);
             const __prod2_recurse_in__output_terminal handler(aw, result);
-            __prod2_recurse_in(prod_pq, handler, req.target);
+            request_foreach(prod_pq, req.target, handler);
           } else {
             const __prod2_recurse_in__forward handler(prod_pq, r);
-            __prod2_recurse_in(prod_pq, handler, req.target);
+            request_foreach(prod_pq, req.target, handler);
           }
         }
       }
@@ -535,7 +505,7 @@ namespace adiar::internal
           __prod2_recurse_out(prod_pq_1, aw, op, out_uid.as_ptr(true), r.high);
 
           const __prod2_recurse_in__output_node<Policy> handler(aw, out_uid);
-          __prod2_recurse_in(prod_pq_1, prod_pq_2, handler, req.target);
+          request_foreach(prod_pq_1, prod_pq_2, req.target, handler);
 
         } else { // std::holds_alternative<prod2_rec_skipto>(root_rec)
           const prod2_rec_skipto r = std::get<prod2_rec_skipto>(rec_res);
@@ -547,10 +517,10 @@ namespace adiar::internal
 
             const typename Policy::pointer_type result = op(r[0], r[1]);
             const __prod2_recurse_in__output_terminal handler(aw, result);
-            __prod2_recurse_in(prod_pq_1, prod_pq_2, handler, req.target);
+            request_foreach(prod_pq_1, prod_pq_2, req.target, handler);
           } else {
             const __prod2_recurse_in__forward handler(prod_pq_1, r);
-            __prod2_recurse_in(prod_pq_1, prod_pq_2, handler, req.target);
+            request_foreach(prod_pq_1, prod_pq_2, req.target, handler);
           }
         }
       }
