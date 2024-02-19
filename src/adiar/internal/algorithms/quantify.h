@@ -147,9 +147,9 @@ namespace adiar::internal
       source = pq_2.top().data.source;
       pq_2.pop();
     } else {
-      return true;
+      return false;
     }
-    return false;
+    return true;
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -263,15 +263,12 @@ namespace adiar::internal
         quantify_request<1> req;
 
         if (pq_1.can_pull()
-            && (pq_2.empty()
-                || pq_1.top().target.first() < pq_2.top().target.second())) {
+            && (pq_2.empty() || pq_1.top().target.first() < pq_2.top().target.second())) {
           req = { pq_1.top().target,
                   { { { node::pointer_type::nil(), node::pointer_type::nil() } } },
                   pq_1.top().data };
-          pq_1.pop();
         } else {
           req = pq_2.top();
-          pq_2.pop();
         }
 
         // Seek element from request in stream
@@ -282,15 +279,9 @@ namespace adiar::internal
         // Forward information of node t1 across the level if needed
         if (req.empty_carry() && req.target.second().is_node()
             && req.target.first().label() == req.target.second().label()) {
-          adiar_assert(!req.target.second().is_nil(),
-                       "req.target.second().is_node() ==> !req.target.second().is_nil()");
-
-          pq_2.push({ req.target, { v.children() }, req.data });
-
-          while (pq_1.can_pull() && (pq_1.top().target == req.target)) {
+          do {
             pq_2.push({ req.target, { v.children() }, pq_1.pull().data });
-          }
-
+          } while (pq_1.can_pull() && pq_1.top().target == req.target);
           continue;
         }
 
@@ -309,13 +300,12 @@ namespace adiar::internal
           quantify_request<0>::target_t rec =
             __quantify_resolve_request<Policy, 2>(op, v.children().data());
 
-          do {
+          while (__quantify_update_source_or_break(pq_1, pq_2, req.data.source, req.target)) {
 #ifdef ADIAR_STATS
             stats_quantify.requests[arity_idx] += 1;
 #endif
             __quantify_forward_request<Policy>(pq_1, aw, req.data.source, rec);
-          } while (!__quantify_update_source_or_break(
-            pq_1, pq_2, req.data.source, req.target));
+          }
 
           continue;
         }
@@ -350,14 +340,12 @@ namespace adiar::internal
               // No need to output a node as everything fits within a 2-tuple.
               quantify_request<0>::target_t rec(rec_all[0], rec_all[1]);
 
-              do {
+              while (__quantify_update_source_or_break(pq_1, pq_2, req.data.source, req.target)) {
 #ifdef ADIAR_STATS
                 stats_quantify.requests[arity_idx] += 1;
 #endif
-                __quantify_forward_request<Policy>(
-                  pq_1, aw, req.data.source, rec);
-              } while (!__quantify_update_source_or_break(
-                pq_1, pq_2, req.data.source, req.target));
+                __quantify_forward_request<Policy>(pq_1, aw, req.data.source, rec);
+              }
             } else {
               // Store for later, that a node is yet to be done.
               policy.remaining_nodes++;
@@ -375,14 +363,13 @@ namespace adiar::internal
               __quantify_forward_request<Policy>(
                 pq_1, aw, out_uid.as_ptr(true), rec1);
 
-              if (!req.data.source.is_nil()) {
-                do {
+              while (__quantify_update_source_or_break(pq_1, pq_2, req.data.source, req.target)) {
 #ifdef ADIAR_STATS
-                  stats_quantify.requests[arity_idx] += 1;
+                stats_quantify.requests[arity_idx] += 1;
 #endif
+                if (!req.data.source.is_nil()) {
                   aw.push_internal(arc(req.data.source, out_uid));
-                } while (!__quantify_update_source_or_break(
-                  pq_1, pq_2, req.data.source, req.target));
+                }
               }
             }
             continue;
@@ -408,14 +395,13 @@ namespace adiar::internal
           __quantify_resolve_request<Policy, 2>(op, { children0[true], children1[true] });
         __quantify_forward_request<Policy>(pq_1, aw, out_uid.as_ptr(true), rec1);
 
-        if (!req.data.source.is_nil()) {
-          do {
+        while (__quantify_update_source_or_break(pq_1, pq_2, req.data.source, req.target)) {
 #ifdef ADIAR_STATS
-            stats_quantify.requests[arity_idx] += 1;
+          stats_quantify.requests[arity_idx] += 1;
 #endif
+          if (!req.data.source.is_nil()) {
             aw.push_internal(arc(req.data.source, out_uid));
-          } while (!__quantify_update_source_or_break(
-            pq_1, pq_2, req.data.source, req.target));
+          }
         }
       }
 
