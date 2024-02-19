@@ -3103,7 +3103,7 @@ go_bandit([]() {
           // NOTE: Test failure does NOT indicate a bug, but only indicates a
           //       change. Please verify that this change makes sense and is as
           //       intended.
-          AssertThat(call_history.size(), Is().EqualTo(12u));
+          AssertThat(call_history.size(), Is().EqualTo(11u));
 
           // - First check for at least one variable satisfying the predicate.
           AssertThat(call_history.at(0), Is().EqualTo(4u));
@@ -3117,13 +3117,10 @@ go_bandit([]() {
           AssertThat(call_history.at(6), Is().EqualTo(3u));
           AssertThat(call_history.at(7), Is().EqualTo(4u));
 
-          // - Second top-down sweep (root call)
-          AssertThat(call_history.at(8), Is().EqualTo(0u));
-
           // - Second top-down sweep
-          AssertThat(call_history.at(9), Is().EqualTo(0u));
-          AssertThat(call_history.at(10), Is().EqualTo(2u));
-          AssertThat(call_history.at(11), Is().EqualTo(3u));
+          AssertThat(call_history.at(8), Is().EqualTo(0u));
+          AssertThat(call_history.at(9), Is().EqualTo(2u));
+          AssertThat(call_history.at(10), Is().EqualTo(3u));
         });
 
         it("finishes during repeated transposition with variables 1 and 2 in BDD 12b [&&]", [&]() {
@@ -3206,31 +3203,25 @@ go_bandit([]() {
           // NOTE: Test failure does NOT indicate a bug, but only indicates a
           //       change. Please verify that this change makes sense and is as
           //       intended.
-          AssertThat(call_history.size(), Is().EqualTo(14u));
+          AssertThat(call_history.size(), Is().EqualTo(12u));
 
           // - First check for at least one variable satisfying the predicate.
           AssertThat(call_history.at(0), Is().EqualTo(4u));
           AssertThat(call_history.at(1), Is().EqualTo(3u));
           AssertThat(call_history.at(2), Is().EqualTo(2u));
 
-          // - First top-down sweep (root call)
-          AssertThat(call_history.at(3), Is().EqualTo(0u));
-
           // - First top-down sweep
-          AssertThat(call_history.at(4), Is().EqualTo(0u));
-          AssertThat(call_history.at(5), Is().EqualTo(1u));
-          AssertThat(call_history.at(6), Is().EqualTo(2u));
-          AssertThat(call_history.at(7), Is().EqualTo(3u));
-          AssertThat(call_history.at(8), Is().EqualTo(4u));
-
-          // - Second top-down sweep (root call)
-          AssertThat(call_history.at(9), Is().EqualTo(0u));
+          AssertThat(call_history.at(3), Is().EqualTo(0u));
+          AssertThat(call_history.at(4), Is().EqualTo(1u));
+          AssertThat(call_history.at(5), Is().EqualTo(2u));
+          AssertThat(call_history.at(6), Is().EqualTo(3u));
+          AssertThat(call_history.at(7), Is().EqualTo(4u));
 
           // - Second top-down sweep
-          AssertThat(call_history.at(10), Is().EqualTo(0u));
-          AssertThat(call_history.at(11), Is().EqualTo(2u));
-          AssertThat(call_history.at(12), Is().EqualTo(3u));
-          AssertThat(call_history.at(13), Is().EqualTo(4u));
+          AssertThat(call_history.at(8), Is().EqualTo(0u));
+          AssertThat(call_history.at(9), Is().EqualTo(2u));
+          AssertThat(call_history.at(10), Is().EqualTo(3u));
+          AssertThat(call_history.at(11), Is().EqualTo(4u));
         });
 
         it("finishes during repeated transposition with variables 1 and 2 in BDD 13 [&&]", [&]() {
@@ -3390,7 +3381,7 @@ go_bandit([]() {
           // NOTE: Test failure does NOT indicate a bug, but only indicates a
           //       change. Please verify that this change makes sense and is as
           //       intended.
-          AssertThat(call_history.size(), Is().EqualTo(24u));
+          AssertThat(call_history.size(), Is().EqualTo(22u));
 
           // - First check for at least one variable satisfying the predicate.
           AssertThat(call_history.at(0), Is().EqualTo(7u));
@@ -3401,30 +3392,24 @@ go_bandit([]() {
           AssertThat(call_history.at(5), Is().EqualTo(2u));
           AssertThat(call_history.at(6), Is().EqualTo(1u));
 
-          // - First top-down sweep (root call)
-          AssertThat(call_history.at(7), Is().EqualTo(0u));
-
           // - First top-down sweep
-          AssertThat(call_history.at(8), Is().EqualTo(0u));
-          AssertThat(call_history.at(9), Is().EqualTo(1u));
-          AssertThat(call_history.at(10), Is().EqualTo(2u));
-          AssertThat(call_history.at(11), Is().EqualTo(3u));
-          AssertThat(call_history.at(12), Is().EqualTo(4u));
-          AssertThat(call_history.at(13), Is().EqualTo(5u));
-          AssertThat(call_history.at(14), Is().EqualTo(6u));
-          AssertThat(call_history.at(15), Is().EqualTo(7u));
-
-          // - Second top-down sweep (root call)
-          AssertThat(call_history.at(16), Is().EqualTo(1u));
+          AssertThat(call_history.at(7), Is().EqualTo(0u));
+          AssertThat(call_history.at(8), Is().EqualTo(1u));
+          AssertThat(call_history.at(9), Is().EqualTo(2u));
+          AssertThat(call_history.at(10), Is().EqualTo(3u));
+          AssertThat(call_history.at(11), Is().EqualTo(4u));
+          AssertThat(call_history.at(12), Is().EqualTo(5u));
+          AssertThat(call_history.at(13), Is().EqualTo(6u));
+          AssertThat(call_history.at(14), Is().EqualTo(7u));
 
           // - Second top-down sweep
-          AssertThat(call_history.at(17), Is().EqualTo(1u));
-          AssertThat(call_history.at(18), Is().EqualTo(2u));
-          AssertThat(call_history.at(19), Is().EqualTo(3u));
-          AssertThat(call_history.at(20), Is().EqualTo(4u));
-          AssertThat(call_history.at(21), Is().EqualTo(5u));
-          AssertThat(call_history.at(22), Is().EqualTo(6u));
-          AssertThat(call_history.at(23), Is().EqualTo(7u));
+          AssertThat(call_history.at(15), Is().EqualTo(1u));
+          AssertThat(call_history.at(16), Is().EqualTo(2u));
+          AssertThat(call_history.at(17), Is().EqualTo(3u));
+          AssertThat(call_history.at(18), Is().EqualTo(4u));
+          AssertThat(call_history.at(19), Is().EqualTo(5u));
+          AssertThat(call_history.at(20), Is().EqualTo(6u));
+          AssertThat(call_history.at(21), Is().EqualTo(7u));
         });
 
         it("finishes early during repeated transposition [&&]", [&]() {
@@ -3457,19 +3442,16 @@ go_bandit([]() {
           // NOTE: Test failure does NOT indicate a bug, but only indicates a
           //       change. Please verify that this change makes sense and is as
           //       intended.
-          AssertThat(call_history.size(), Is().EqualTo(6u));
+          AssertThat(call_history.size(), Is().EqualTo(5u));
 
           // - First check for at least one variable satisfying the predicate.
           AssertThat(call_history.at(0), Is().EqualTo(4u));
 
-          // - First top-down sweep (root call)
-          AssertThat(call_history.at(1), Is().EqualTo(0u));
-
           // - First top-down sweep
-          AssertThat(call_history.at(2), Is().EqualTo(0u));
-          AssertThat(call_history.at(3), Is().EqualTo(1u));
-          AssertThat(call_history.at(4), Is().EqualTo(2u));
-          AssertThat(call_history.at(5), Is().EqualTo(3u));
+          AssertThat(call_history.at(1), Is().EqualTo(0u));
+          AssertThat(call_history.at(2), Is().EqualTo(1u));
+          AssertThat(call_history.at(3), Is().EqualTo(2u));
+          AssertThat(call_history.at(4), Is().EqualTo(3u));
 
           // NOTE: Even though there are three levels that should be quantified,
           //       we only do one partial quantification.
@@ -3743,7 +3725,7 @@ go_bandit([]() {
           // NOTE: Test failure does NOT indicate a bug, but only indicates a
           //       change. Please verify that this change makes sense and is as
           //       intended.
-          AssertThat(call_history.size(), Is().EqualTo(42u));
+          AssertThat(call_history.size(), Is().EqualTo(40u));
 
           // - First check for at least one variable satisfying the predicate.
           AssertThat(call_history.at(0), Is().EqualTo(13u));
@@ -3760,42 +3742,36 @@ go_bandit([]() {
           AssertThat(call_history.at(11), Is().EqualTo(2u));
           AssertThat(call_history.at(12), Is().EqualTo(1u));
 
-          // - First top-down sweep (root call)
-          AssertThat(call_history.at(13), Is().EqualTo(0u));
-
           // - First top-down sweep
-          AssertThat(call_history.at(14), Is().EqualTo(0u));
-          AssertThat(call_history.at(15), Is().EqualTo(1u));
-          AssertThat(call_history.at(16), Is().EqualTo(2u));
-          AssertThat(call_history.at(17), Is().EqualTo(3u));
-          AssertThat(call_history.at(18), Is().EqualTo(4u));
-          AssertThat(call_history.at(19), Is().EqualTo(5u));
-          AssertThat(call_history.at(20), Is().EqualTo(6u));
-          AssertThat(call_history.at(21), Is().EqualTo(7u));
-          AssertThat(call_history.at(22), Is().EqualTo(8u));
-          AssertThat(call_history.at(23), Is().EqualTo(9u));
-          AssertThat(call_history.at(24), Is().EqualTo(10u));
-          AssertThat(call_history.at(25), Is().EqualTo(11u));
-          AssertThat(call_history.at(26), Is().EqualTo(12u));
-          AssertThat(call_history.at(27), Is().EqualTo(13u));
-
-          // - Second top-down sweep (root call)
-          AssertThat(call_history.at(28), Is().EqualTo(1u));
+          AssertThat(call_history.at(13), Is().EqualTo(0u));
+          AssertThat(call_history.at(14), Is().EqualTo(1u));
+          AssertThat(call_history.at(15), Is().EqualTo(2u));
+          AssertThat(call_history.at(16), Is().EqualTo(3u));
+          AssertThat(call_history.at(17), Is().EqualTo(4u));
+          AssertThat(call_history.at(18), Is().EqualTo(5u));
+          AssertThat(call_history.at(19), Is().EqualTo(6u));
+          AssertThat(call_history.at(20), Is().EqualTo(7u));
+          AssertThat(call_history.at(21), Is().EqualTo(8u));
+          AssertThat(call_history.at(22), Is().EqualTo(9u));
+          AssertThat(call_history.at(23), Is().EqualTo(10u));
+          AssertThat(call_history.at(24), Is().EqualTo(11u));
+          AssertThat(call_history.at(25), Is().EqualTo(12u));
+          AssertThat(call_history.at(26), Is().EqualTo(13u));
 
           // - Second top-down sweep
-          AssertThat(call_history.at(29), Is().EqualTo(1u));
-          AssertThat(call_history.at(30), Is().EqualTo(2u));
-          AssertThat(call_history.at(31), Is().EqualTo(3u));
-          AssertThat(call_history.at(32), Is().EqualTo(4u));
-          AssertThat(call_history.at(33), Is().EqualTo(5u));
-          AssertThat(call_history.at(34), Is().EqualTo(6u));
-          AssertThat(call_history.at(35), Is().EqualTo(7u));
-          AssertThat(call_history.at(36), Is().EqualTo(8u));
-          AssertThat(call_history.at(37), Is().EqualTo(9u));
-          AssertThat(call_history.at(38), Is().EqualTo(10u));
-          AssertThat(call_history.at(39), Is().EqualTo(11u));
-          AssertThat(call_history.at(40), Is().EqualTo(12u));
-          AssertThat(call_history.at(41), Is().EqualTo(13u));
+          AssertThat(call_history.at(27), Is().EqualTo(1u));
+          AssertThat(call_history.at(28), Is().EqualTo(2u));
+          AssertThat(call_history.at(29), Is().EqualTo(3u));
+          AssertThat(call_history.at(30), Is().EqualTo(4u));
+          AssertThat(call_history.at(31), Is().EqualTo(5u));
+          AssertThat(call_history.at(32), Is().EqualTo(6u));
+          AssertThat(call_history.at(33), Is().EqualTo(7u));
+          AssertThat(call_history.at(34), Is().EqualTo(8u));
+          AssertThat(call_history.at(35), Is().EqualTo(9u));
+          AssertThat(call_history.at(36), Is().EqualTo(10u));
+          AssertThat(call_history.at(37), Is().EqualTo(11u));
+          AssertThat(call_history.at(38), Is().EqualTo(12u));
+          AssertThat(call_history.at(39), Is().EqualTo(13u));
         });
 
         it("switches to nested sweeping when the transposition explodes with BDD 15 [&&]", [&]() {
@@ -4068,7 +4044,7 @@ go_bandit([]() {
           // NOTE: Test failure does NOT indicate a bug, but only indicates a
           //       change. Please verify that this change makes sense and is as
           //       intended.
-          AssertThat(call_history.size(), Is().EqualTo(41u));
+          AssertThat(call_history.size(), Is().EqualTo(40u));
 
           // - First check for at least one variable satisfying the predicate.
           AssertThat(call_history.at(0), Is().EqualTo(13u));
@@ -4085,39 +4061,36 @@ go_bandit([]() {
           AssertThat(call_history.at(11), Is().EqualTo(2u));
           AssertThat(call_history.at(12), Is().EqualTo(1u));
 
-          // - Top-down sweep (root call)
-          AssertThat(call_history.at(13), Is().EqualTo(0u));
-
           // - Top-down sweep
-          AssertThat(call_history.at(14), Is().EqualTo(0u));
-          AssertThat(call_history.at(15), Is().EqualTo(1u));
-          AssertThat(call_history.at(16), Is().EqualTo(2u));
-          AssertThat(call_history.at(17), Is().EqualTo(3u));
-          AssertThat(call_history.at(18), Is().EqualTo(4u));
-          AssertThat(call_history.at(19), Is().EqualTo(5u));
-          AssertThat(call_history.at(20), Is().EqualTo(6u));
-          AssertThat(call_history.at(21), Is().EqualTo(7u));
-          AssertThat(call_history.at(22), Is().EqualTo(8u));
-          AssertThat(call_history.at(23), Is().EqualTo(9u));
-          AssertThat(call_history.at(24), Is().EqualTo(10u));
-          AssertThat(call_history.at(25), Is().EqualTo(11u));
-          AssertThat(call_history.at(26), Is().EqualTo(12u));
-          AssertThat(call_history.at(27), Is().EqualTo(13u));
+          AssertThat(call_history.at(13), Is().EqualTo(0u));
+          AssertThat(call_history.at(14), Is().EqualTo(1u));
+          AssertThat(call_history.at(15), Is().EqualTo(2u));
+          AssertThat(call_history.at(16), Is().EqualTo(3u));
+          AssertThat(call_history.at(17), Is().EqualTo(4u));
+          AssertThat(call_history.at(18), Is().EqualTo(5u));
+          AssertThat(call_history.at(19), Is().EqualTo(6u));
+          AssertThat(call_history.at(20), Is().EqualTo(7u));
+          AssertThat(call_history.at(21), Is().EqualTo(8u));
+          AssertThat(call_history.at(22), Is().EqualTo(9u));
+          AssertThat(call_history.at(23), Is().EqualTo(10u));
+          AssertThat(call_history.at(24), Is().EqualTo(11u));
+          AssertThat(call_history.at(25), Is().EqualTo(12u));
+          AssertThat(call_history.at(26), Is().EqualTo(13u));
 
           // - Nested Sweeping (x0 is gone)
-          AssertThat(call_history.at(28), Is().EqualTo(13u));
-          AssertThat(call_history.at(29), Is().EqualTo(12u));
-          AssertThat(call_history.at(30), Is().EqualTo(11u));
-          AssertThat(call_history.at(31), Is().EqualTo(10u));
-          AssertThat(call_history.at(32), Is().EqualTo(9u));
-          AssertThat(call_history.at(33), Is().EqualTo(8u));
-          AssertThat(call_history.at(34), Is().EqualTo(7u));
-          AssertThat(call_history.at(35), Is().EqualTo(6u));
-          AssertThat(call_history.at(36), Is().EqualTo(5u));
-          AssertThat(call_history.at(37), Is().EqualTo(4u));
-          AssertThat(call_history.at(38), Is().EqualTo(3u));
-          AssertThat(call_history.at(39), Is().EqualTo(2u));
-          AssertThat(call_history.at(40), Is().EqualTo(1u));
+          AssertThat(call_history.at(27), Is().EqualTo(13u));
+          AssertThat(call_history.at(28), Is().EqualTo(12u));
+          AssertThat(call_history.at(29), Is().EqualTo(11u));
+          AssertThat(call_history.at(30), Is().EqualTo(10u));
+          AssertThat(call_history.at(31), Is().EqualTo(9u));
+          AssertThat(call_history.at(32), Is().EqualTo(8u));
+          AssertThat(call_history.at(33), Is().EqualTo(7u));
+          AssertThat(call_history.at(34), Is().EqualTo(6u));
+          AssertThat(call_history.at(35), Is().EqualTo(5u));
+          AssertThat(call_history.at(36), Is().EqualTo(4u));
+          AssertThat(call_history.at(37), Is().EqualTo(3u));
+          AssertThat(call_history.at(38), Is().EqualTo(2u));
+          AssertThat(call_history.at(39), Is().EqualTo(1u));
         });
 
         it("switches to nested sweeping after maximum transpositions with BDD 12b [&&]", [&]() {
@@ -4185,28 +4158,25 @@ go_bandit([]() {
           // NOTE: Test failure does NOT indicate a bug, but only indicates a
           //       change. Please verify that this change makes sense and is as
           //       intended.
-          AssertThat(call_history.size(), Is().EqualTo(13u));
+          AssertThat(call_history.size(), Is().EqualTo(12u));
 
           // - First check for at least one variable satisfying the predicate.
           AssertThat(call_history.at(0), Is().EqualTo(4u));
           AssertThat(call_history.at(1), Is().EqualTo(3u));
           AssertThat(call_history.at(2), Is().EqualTo(2u));
 
-          // - First top-down sweep (root call)
-          AssertThat(call_history.at(3), Is().EqualTo(0u));
-
           // - First top-down sweep
-          AssertThat(call_history.at(4), Is().EqualTo(0u));
-          AssertThat(call_history.at(5), Is().EqualTo(1u));
-          AssertThat(call_history.at(6), Is().EqualTo(2u));
-          AssertThat(call_history.at(7), Is().EqualTo(3u));
-          AssertThat(call_history.at(8), Is().EqualTo(4u));
+          AssertThat(call_history.at(3), Is().EqualTo(0u));
+          AssertThat(call_history.at(4), Is().EqualTo(1u));
+          AssertThat(call_history.at(5), Is().EqualTo(2u));
+          AssertThat(call_history.at(6), Is().EqualTo(3u));
+          AssertThat(call_history.at(7), Is().EqualTo(4u));
 
           // - Nested sweep looking for the 'next_inner' bottom-up
-          AssertThat(call_history.at(9), Is().EqualTo(4u));
-          AssertThat(call_history.at(10), Is().EqualTo(3u));
-          AssertThat(call_history.at(11), Is().EqualTo(2u));
-          AssertThat(call_history.at(12), Is().EqualTo(0u));
+          AssertThat(call_history.at(8), Is().EqualTo(4u));
+          AssertThat(call_history.at(9), Is().EqualTo(3u));
+          AssertThat(call_history.at(10), Is().EqualTo(2u));
+          AssertThat(call_history.at(11), Is().EqualTo(0u));
         });
       });
     });
