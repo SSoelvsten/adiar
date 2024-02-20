@@ -63,11 +63,6 @@ namespace adiar
     // TODO: What is the performance of '<<' rather than 'unsafe_push'? If there
     // is a major difference, then we may want to "inline" the '<<' with its
     // _canonical check here.
-
-    // TODO: Add an approximation of maximum 1-level cut before returning.
-    // It can be approximated as:
-    // max(bdd_if.max_1level_cut, bdd_then.max_1level_cut + bdd_else.max_1level_cut)
-
     internal::node::pointer_type root_then = internal::node::pointer_type::nil();
     internal::node::pointer_type root_else = internal::node::pointer_type::nil();
 
