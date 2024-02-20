@@ -12,6 +12,7 @@
 #include <adiar/internal/data_types/ptr.h>
 #include <adiar/internal/data_types/request.h>
 #include <adiar/internal/dd_func.h>
+#include <adiar/internal/io/node_random_access.h>
 #include <adiar/internal/memory.h>
 #include <adiar/internal/util.h>
 
@@ -987,29 +988,49 @@ namespace adiar::internal
                      "There should be enough memory to include all streams");
 
         // ---------------------------------------------------------------------
-        // Case: Run Inner Sweep (with random access)
-        adiar_assert(ep.template get<exec_policy::access>() != exec_policy::access::Random_Access);
-
-        // ---------------------------------------------------------------------
-        // Case: Run Inner Sweep (with priority queues)
-
-        const size_t inner_pq_memory = policy_impl.pq_memory(inner_memory - inner_stream_memory);
-        adiar_assert(inner_pq_memory <= inner_memory - inner_stream_memory,
+        // Determine memory for priority queue depending on whether random
+        // access can also be used.
+        const size_t minimum_inner_pq_memory = policy_impl.pq_memory(inner_memory - inner_stream_memory);
+        adiar_assert(minimum_inner_pq_memory <= inner_memory - inner_stream_memory,
                      "There should be enough memory to include all streams and priority queue");
 
+        const size_t inner_ra_memory = policy_impl.ra_memory(outer_file);
+        const bool use_random_access = ep.template get<exec_policy::access>() == exec_policy::access::Random_Access
+          || (inner_ra_memory <= inner_memory - inner_stream_memory - minimum_inner_pq_memory
+              && ep.template get<exec_policy::access>() == exec_policy::access::Auto
+              && outer_file->indexable);
+
+        if (use_random_access) {
+#ifdef ADIAR_STATS
+          stats.inner_down.ra_runs += 1;
+#endif
+        } else {
+#ifdef ADIAR_STATS
+          stats.inner_down.pq_runs += 1;
+#endif
+        }
+
+        const size_t inner_pq_memory = use_random_access
+          ? inner_memory - inner_stream_memory - inner_ra_memory
+          : minimum_inner_pq_memory;
+
         const size_t inner_remaining_memory = inner_memory - inner_stream_memory - inner_pq_memory;
+
+        // ---------------------------------------------------------------------
+        // Set up cross-level priority queue for either type of sweep
+        const size_t inner_pq_bound = policy_impl.pq_bound(outer_file, outer_roots.size());
 
         const size_t inner_pq_fits =
           nesting_policy::template pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(
             inner_pq_memory);
 
-        const size_t inner_pq_bound = policy_impl.pq_bound(outer_file, outer_roots.size());
-
         const bool external_only =
           ep.template get<exec_policy::memory>() == exec_policy::memory::External;
+        const bool internal_only =
+          ep.template get<exec_policy::memory>() == exec_policy::memory::Internal;
 
         const size_t inner_pq_max_size =
-          ep.template get<exec_policy::memory>() == exec_policy::memory::Internal
+          internal_only
           ? std::min(inner_pq_fits, inner_pq_bound)
           : inner_pq_bound;
 
@@ -1031,7 +1052,9 @@ namespace adiar::internal
           using decorator_t = down__pq_decorator<inner_pq_t, outer_roots_t>;
           decorator_t decorated_pq(inner_pq, outer_roots);
 
-          return policy_impl.sweep_pq(ep, outer_file, decorated_pq, inner_remaining_memory);
+          return use_random_access
+            ? policy_impl.sweep_ra(ep, outer_file, decorated_pq, inner_remaining_memory)
+            : policy_impl.sweep_pq(ep, outer_file, decorated_pq, inner_remaining_memory);
         } else if (!external_only && inner_pq_max_size <= inner_pq_fits) {
 #ifdef ADIAR_STATS
           lpq_stats.internal += 1u;
@@ -1046,7 +1069,9 @@ namespace adiar::internal
           using decorator_t = down__pq_decorator<inner_pq_t, outer_roots_t>;
           decorator_t decorated_pq(inner_pq, outer_roots);
 
-          return policy_impl.sweep_pq(ep, outer_file, decorated_pq, inner_remaining_memory);
+          return use_random_access
+            ? policy_impl.sweep_ra(ep, outer_file, decorated_pq, inner_remaining_memory)
+            : policy_impl.sweep_pq(ep, outer_file, decorated_pq, inner_remaining_memory);
         } else {
 #ifdef ADIAR_STATS
           lpq_stats.external += 1u;
@@ -1061,7 +1086,9 @@ namespace adiar::internal
           using decorator_t = down__pq_decorator<inner_pq_t, outer_roots_t>;
           decorator_t decorated_pq(inner_pq, outer_roots);
 
-          return policy_impl.sweep_pq(ep, outer_file, decorated_pq, inner_remaining_memory);
+          return use_random_access
+            ? policy_impl.sweep_ra(ep, outer_file, decorated_pq, inner_remaining_memory)
+            : policy_impl.sweep_pq(ep, outer_file, decorated_pq, inner_remaining_memory);
         }
       }
 

@@ -58,6 +58,12 @@ public:
     return inner_memory;
   }
 
+  static size_t
+  ra_memory(const shared_levelized_file<node>& /*outer_file*/)
+  {
+    return std::numeric_limits<size_t>::max();
+  }
+
   //////////////////////////////////////////////////////////////////////////////
   static size_t
   pq_bound(const shared_levelized_file<node>& /*outer_file*/, const size_t /*outer_roots*/)
@@ -118,6 +124,19 @@ public:
     }
 
     return __bdd(af, ep);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief The Sweep Logic for the RA access mode case.
+  //////////////////////////////////////////////////////////////////////////////
+  template <typename inner_pq_t>
+  __bdd
+  sweep_ra(const exec_policy& ep,
+           const shared_levelized_file<node>& outer_file,
+           inner_pq_t& inner_pq,
+           const size_t inner_remaining_memory)
+  {
+    return sweep_pq(ep, outer_file, inner_pq, inner_remaining_memory);
   }
 
 private:
@@ -211,6 +230,12 @@ public:
     return inner_memory;
   }
 
+  static size_t
+  ra_memory(const shared_levelized_file<node>& /*outer_file*/)
+  {
+    return std::numeric_limits<size_t>::max();
+  }
+
   //////////////////////////////////////////////////////////////////////////////
   static size_t
   pq_bound(const shared_levelized_file<node>& /*outer_file*/, const size_t /*outer_roots*/)
@@ -275,6 +300,20 @@ public:
     }
 
     return __bdd(af, ep);
+  }
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief The Sweep Logic for the RA access mode case.
+  //////////////////////////////////////////////////////////////////////////////
+  template <typename inner_pq_t>
+  __bdd
+  sweep_ra(const exec_policy& ep,
+           const shared_levelized_file<node>& outer_file,
+           inner_pq_t& inner_pq,
+           const size_t inner_remaining_memory)
+  {
+    return sweep_pq(ep, outer_file, inner_pq, inner_remaining_memory);
   }
 
 public:
