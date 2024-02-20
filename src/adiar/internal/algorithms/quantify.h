@@ -1017,6 +1017,12 @@ namespace adiar::internal
         * data_structures_in_pq_1;
     }
 
+    static size_t
+    ra_memory(const shared_levelized_file<node>& outer_file)
+    {
+      return node_random_access<>::memory_usage(outer_file);
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////
     size_t
     pq_bound(const typename Policy::shared_node_file_type& outer_file,
@@ -1054,7 +1060,25 @@ namespace adiar::internal
     // bool has_sweep(typename Policy::label_type) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Entry Point for Nested Sweeping framework to start an Inner Sweep.
+    /// \brief Entry Point for Nested Sweeping framework to start an Inner Sweep with Random Access.
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    template <typename PriorityQueue>
+    typename Policy::__dd_type
+    sweep_ra(const exec_policy& ep,
+             const shared_levelized_file<node>& outer_file,
+             PriorityQueue& pq,
+             const size_t inner_remaining_memory) const
+    {
+      adiar_assert(ep.template get<exec_policy::access>() != exec_policy::access::Priority_Queue);
+      adiar_assert(node_random_access<>::memory_usage(outer_file) <= inner_remaining_memory);
+
+      node_random_access<> in_nodes(outer_file);
+      return __quantify_ra(ep, in_nodes, *this, _op, pq);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Entry Point for Nested Sweeping framework to start an Inner Sweep with multiple
+    ///        priority queues.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     template <typename PriorityQueue_1>
     typename Policy::__dd_type
@@ -1063,6 +1087,8 @@ namespace adiar::internal
              PriorityQueue_1& pq_1,
              const size_t inner_remaining_memory) const
     {
+      adiar_assert(ep.template get<exec_policy::access>() != exec_policy::access::Random_Access);
+
       const size_t pq_2_memory_fits =
         quantify_priority_queue_2_t<memory_mode::Internal>::memory_fits(inner_remaining_memory);
 

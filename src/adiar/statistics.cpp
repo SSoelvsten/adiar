@@ -775,8 +775,25 @@ namespace adiar
     o << indent << endl;
 
     {
-      o << indent << bold_on << "inner down sweep" << bold_off << endl;
+      const uintwide total_sweeps = internal::nested_sweeping::stats.inner_down.ra_runs
+        + internal::nested_sweeping::stats.inner_down.pq_runs;
+
+      o << indent << bold_on << label << "inner down sweep" << bold_off << total_sweeps << endl;
       indent_level++;
+
+      o << indent << bold_on << label << "case [random access]" << bold_off
+        << internal::nested_sweeping::stats.inner_down.ra_runs
+        << " = "
+        << internal::percent_frac(internal::nested_sweeping::stats.inner_down.ra_runs, total_sweeps)
+        << percent << endl;
+
+      o << indent << bold_on << label << "case [priority queues]" << bold_off
+        << internal::nested_sweeping::stats.inner_down.pq_runs
+        << " = "
+        << internal::percent_frac(internal::nested_sweeping::stats.inner_down.pq_runs, total_sweeps)
+        << percent << endl;
+
+      o << indent << endl;
 
       o << indent << bold_on << "inputs" << bold_off << endl;
 
