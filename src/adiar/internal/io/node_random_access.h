@@ -81,9 +81,6 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     uid_type _root;
 
-    // TODO: Add canonicity flag to discern whether to compute the index (as
-    //       now) or to use binary search.
-
   public:
     ////////////////////////////////////////////////////////////////////////////
     // node_random_access()
@@ -94,42 +91,42 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a levelized file of nodes.
     ///
-    /// \pre The given levelized file is canonical.
+    /// \pre The given levelized file is *indexable*.
     ////////////////////////////////////////////////////////////////////////////
     node_random_access(const levelized_file<value_type>& f, const bool negate = false)
       : _ns(f, negate)
       , _max_width(f.width)
       , _level_buffer(f.width)
     {
-      adiar_assert(f.canonical);
+      adiar_assert(f.indexable);
       init();
     }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a shared levelized file of nodes.
     ///
-    /// \pre The given shared levelized file is canonical.
+    /// \pre The given shared levelized file is *indexable*.
     ////////////////////////////////////////////////////////////////////////////
     node_random_access(const shared_ptr<levelized_file<value_type>>& f, const bool negate = false)
       : _ns(f, negate)
       , _max_width(f->width)
       , _level_buffer(f->width)
     {
-      adiar_assert(f->canonical);
+      adiar_assert(f->indexable);
       init();
     }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a decision diagram.
     ///
-    /// \pre The given decision diagram is canonical.
+    /// \pre The given decision diagram is indexable.
     ////////////////////////////////////////////////////////////////////////////
     node_random_access(const dd& diagram)
       : _ns(diagram)
       , _max_width(diagram->width)
       , _level_buffer(diagram->width)
     {
-      adiar_assert(diagram->canonical);
+      adiar_assert(diagram->indexable);
       init();
     }
 

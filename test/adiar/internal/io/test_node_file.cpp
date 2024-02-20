@@ -18,6 +18,7 @@ go_bandit([]() {
       /*
                     F
       */
+      std::cout << "A" << std::endl;
       levelized_file<node> nf_F;
       {
         node_writer nw(nf_F);
@@ -27,6 +28,7 @@ go_bandit([]() {
       /*
                     T
       */
+      std::cout << "A" << std::endl;
       levelized_file<node> nf_T;
       {
         node_writer nw(nf_T);
@@ -331,14 +333,30 @@ go_bandit([]() {
                    node::pointer_type(3, node::pointer_type::max_id));
       }
 
-      describe("canonicity", [&]() {
-        it("is true for False terminal", [&]() { AssertThat(nf_F.canonical, Is().True()); });
+      describe("sorted, indexable, is_canonical()", [&]() {
+        it("is true for False terminal", [&]() {
+          AssertThat(nf_F.sorted, Is().True());
+          AssertThat(nf_F.indexable, Is().True());
+          AssertThat(nf_F.is_canonical(), Is().True());
+        });
 
-        it("is true for True terminal", [&]() { AssertThat(nf_T.canonical, Is().True()); });
+        it("is true for True terminal", [&]() {
+          AssertThat(nf_T.sorted, Is().True());
+          AssertThat(nf_T.indexable, Is().True());
+          AssertThat(nf_T.is_canonical(), Is().True());
+        });
 
-        it("is true for single node [1]", [&]() { AssertThat(nf_42.canonical, Is().True()); });
+        it("is true for single node [1]", [&]() {
+          AssertThat(nf_42.sorted, Is().True());
+          AssertThat(nf_42.indexable, Is().True());
+          AssertThat(nf_42.is_canonical(), Is().True());
+        });
 
-        it("is true for single node [2]", [&]() { AssertThat(nf_not42.canonical, Is().True()); });
+        it("is true for single node [2]", [&]() {
+          AssertThat(nf_not42.sorted, Is().True());
+          AssertThat(nf_not42.indexable, Is().True());
+          AssertThat(nf_not42.is_canonical(), Is().True());
+        });
 
         it("is false for single node due to too small Id", [&]() {
           levelized_file<node> nf;
@@ -347,10 +365,16 @@ go_bandit([]() {
             nw << node(21, 42, node::pointer_type(false), node::pointer_type(true));
           }
 
-          AssertThat(nf.canonical, Is().False());
+          AssertThat(nf.sorted, Is().True());
+          AssertThat(nf.indexable, Is().False());
+          AssertThat(nf.is_canonical(), Is().False());
         });
 
-        it("is true for x21 + x42", [&]() { AssertThat(nf_21xor42.canonical, Is().True()); });
+        it("is true for x21 + x42", [&]() {
+          AssertThat(nf_21xor42.sorted, Is().True());
+          AssertThat(nf_21xor42.indexable, Is().True());
+          AssertThat(nf_21xor42.is_canonical(), Is().True());
+        });
 
         it("is false if child ordering with terminals are mismatching", [&]() {
           levelized_file<node> nf;
@@ -364,7 +388,9 @@ go_bandit([]() {
                        node::pointer_type(42, node::pointer_type::max_id - 1));
           }
 
-          AssertThat(nf.canonical, Is().False());
+          AssertThat(nf.sorted, Is().False());
+          AssertThat(nf.indexable, Is().True());
+          AssertThat(nf.is_canonical(), Is().False());
         });
 
         it("is false if id is not reset per level", [&]() {
@@ -379,7 +405,9 @@ go_bandit([]() {
                        node::pointer_type(42, node::pointer_type::max_id - 1));
           }
 
-          AssertThat(nf.canonical, Is().False());
+          AssertThat(nf.sorted, Is().True());
+          AssertThat(nf.indexable, Is().False());
+          AssertThat(nf.is_canonical(), Is().False());
         });
 
         it("is false if id is decremented by more than one", [&]() {
@@ -394,14 +422,22 @@ go_bandit([]() {
                        node::pointer_type(42, node::pointer_type::max_id - 2));
           }
 
-          AssertThat(nf.canonical, Is().False());
+          AssertThat(nf.sorted, Is().True());
+          AssertThat(nf.indexable, Is().False());
+          AssertThat(nf.is_canonical(), Is().False());
         });
 
-        it("is true for ~(x0 + x1) \\/ x2",
-           [&]() { AssertThat(nf_0xnor1_or_2.canonical, Is().True()); });
+        it("is true for ~(x0 + x1) \\/ x2", [&]() {
+          AssertThat(nf_0xnor1_or_2.sorted, Is().True());
+          AssertThat(nf_0xnor1_or_2.indexable, Is().True());
+          AssertThat(nf_0xnor1_or_2.is_canonical(), Is().True());
+        });
 
-        it("is true for (x0 + x1) \\/ x2",
-           [&]() { AssertThat(nf_0xor1_or_2.canonical, Is().True()); });
+        it("is true for (x0 + x1) \\/ x2", [&]() {
+          AssertThat(nf_0xor1_or_2.sorted, Is().True());
+          AssertThat(nf_0xor1_or_2.indexable, Is().True());
+          AssertThat(nf_0xor1_or_2.is_canonical(), Is().True());
+        });
 
         it("is false due to internal uid child is out-of-order compared to a terminal child",
            [&]() {
@@ -423,7 +459,9 @@ go_bandit([]() {
                           node::pointer_type(1, node::pointer_type::max_id - 1));
              }
 
-             AssertThat(nf.canonical, Is().False());
+             AssertThat(nf.sorted, Is().False());
+             AssertThat(nf.indexable, Is().True());
+             AssertThat(nf.is_canonical(), Is().False());
            });
 
         it("is false due to internal uid low-children are out-of-order", [&]() {
@@ -450,7 +488,9 @@ go_bandit([]() {
                        node::pointer_type(1, node::pointer_type::max_id - 1));
           }
 
-          AssertThat(nf.canonical, Is().False());
+          AssertThat(nf.sorted, Is().False());
+          AssertThat(nf.indexable, Is().True());
+          AssertThat(nf.is_canonical(), Is().False());
         });
 
         it("is false due to internal uid high-children are out-of-order", [&]() {
@@ -477,7 +517,9 @@ go_bandit([]() {
                        node::pointer_type(1, node::pointer_type::max_id - 1));
           }
 
-          AssertThat(nf.canonical, Is().False());
+          AssertThat(nf.sorted, Is().False());
+          AssertThat(nf.indexable, Is().True());
+          AssertThat(nf.is_canonical(), Is().False());
         });
       });
 

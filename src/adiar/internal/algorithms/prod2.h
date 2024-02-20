@@ -629,7 +629,7 @@ namespace adiar::internal
              const typename Policy::dd_type& in_1,
              const bool_op& op)
   {
-    adiar_assert(in_0->canonical || in_1->canonical, "At least one input must be canonical");
+    adiar_assert(in_0->indexable || in_1->indexable, "At least one input must be indexable");
 
     const bool internal_only =
       ep.template get<exec_policy::memory>() == exec_policy::memory::Internal;
@@ -643,7 +643,7 @@ namespace adiar::internal
 
     // Possibly flip inputs (and operator) such that 'in_ra' is always the
     // second argument to `__prod2_ra(...)` algorithm.
-    const bool flip_in = in_0->canonical && (!in_1->canonical || in_0.width() <= in_1.width());
+    const bool flip_in = in_0->indexable && (!in_1->indexable || in_0.width() <= in_1.width());
 
     const typename Policy::dd_type& in_pq = flip_in ? in_1 : in_0;
     const typename Policy::dd_type& in_ra = flip_in ? in_0 : in_1;
@@ -849,15 +849,15 @@ namespace adiar::internal
     const size_t ra_threshold =
       (memory_available() * data_structures_in_pq_2) / 2 * (data_structures_in_pqs);
 
-    const size_t width_0   = in_0->canonical ? in_0.width() : Policy::max_id;
-    const size_t width_1   = in_1->canonical ? in_1.width() : Policy::max_id;
+    const size_t width_0   = in_0->indexable ? in_0.width() : Policy::max_id;
+    const size_t width_1   = in_1->indexable ? in_1.width() : Policy::max_id;
     const size_t min_width = std::min(width_0, width_1);
 
     if ( // Use `__prod2_ra` if user has forced Random Access
       ep.template get<exec_policy::access>() == exec_policy::access::Random_Access
       || ( // Heuristically, if the narrowest canonical fits
         ep.template get<exec_policy::access>() == exec_policy::access::Auto
-        && (in_0->canonical || in_1->canonical)
+        && (in_0->indexable || in_1->indexable)
         && (node_random_access<>::memory_usage(min_width) <= ra_threshold))) {
 #ifdef ADIAR_STATS
       stats_prod2.ra.runs += 1u;

@@ -91,6 +91,8 @@ go_bandit([]() {
         // Reduce it
         bdd out(__bdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -195,6 +197,8 @@ go_bandit([]() {
         // Reduce it
         bdd out(__bdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -304,6 +308,8 @@ go_bandit([]() {
         // Reduce it
         bdd out(__bdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -425,6 +431,8 @@ go_bandit([]() {
         // Reduce it
         bdd out(__bdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -551,6 +559,8 @@ go_bandit([]() {
         // Reduce it
         bdd out(__bdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -683,6 +693,8 @@ go_bandit([]() {
         // Reduce it
         bdd out(__bdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -794,6 +806,8 @@ go_bandit([]() {
         // Reduce it
         bdd out(__bdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -900,6 +914,8 @@ go_bandit([]() {
         // Reduce it
         bdd out(__bdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -1005,6 +1021,8 @@ go_bandit([]() {
         // Reduce it
         bdd out(__bdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -1119,6 +1137,8 @@ go_bandit([]() {
         // Reduce it
         bdd out(__bdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -1218,6 +1238,8 @@ go_bandit([]() {
         // Reduce it
         bdd out(__bdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -1319,6 +1341,8 @@ go_bandit([]() {
         // Reduce it
         bdd out(__bdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -1437,6 +1461,8 @@ go_bandit([]() {
         // Reduce it
         bdd out(__bdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -1533,6 +1559,8 @@ go_bandit([]() {
         // Reduce it
         bdd out(__bdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -1667,6 +1695,8 @@ go_bandit([]() {
         // Reduce it
         bdd out(__bdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -1768,6 +1798,8 @@ go_bandit([]() {
         // Reduce it
         bdd out(__bdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -1830,6 +1862,8 @@ go_bandit([]() {
         // Reduce it
         bdd out(__bdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -1883,6 +1917,8 @@ go_bandit([]() {
         // Reduce it
         bdd out(__bdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -1985,6 +2021,8 @@ go_bandit([]() {
         // Reduce it
         bdd out(__bdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -2160,6 +2198,8 @@ go_bandit([]() {
         // Reduce it
         bdd out(__bdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -2342,6 +2382,8 @@ go_bandit([]() {
         // Reduce it
         bdd out(__bdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -2469,6 +2511,8 @@ go_bandit([]() {
         // Reduce it
         bdd out(__bdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -2536,6 +2580,8 @@ go_bandit([]() {
         // Reduce it
         zdd out(__zdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(zdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -2616,6 +2662,8 @@ go_bandit([]() {
         // Reduce it
         zdd out(__zdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(zdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -2732,6 +2780,8 @@ go_bandit([]() {
         // Reduce it
         zdd out(__zdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(zdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -2812,6 +2862,8 @@ go_bandit([]() {
         // Reduce it
         zdd out(__zdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(zdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -2874,6 +2926,8 @@ go_bandit([]() {
         // Reduce it
         zdd out(__zdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(zdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -2940,7 +2994,9 @@ go_bandit([]() {
         // Reduce it
         zdd out(__zdd(in, exec_policy()));
 
-        AssertThat(out->canonical, Is().True());
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
+        AssertThat(out->is_canonical(), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -2993,6 +3049,8 @@ go_bandit([]() {
         // Reduce it
         zdd out(__zdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(zdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -3050,6 +3108,8 @@ go_bandit([]() {
         // Reduce it
         zdd out(__zdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(zdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -3153,6 +3213,8 @@ go_bandit([]() {
         // Reduce it
         zdd out(__zdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(zdd_iscanonical(out), Is().True());
 
         // Check it looks all right
@@ -3289,6 +3351,8 @@ go_bandit([]() {
         // Reduce it
         zdd out(__zdd(in, exec_policy()));
 
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
         AssertThat(zdd_iscanonical(out), Is().True());
 
         // Check it looks all right

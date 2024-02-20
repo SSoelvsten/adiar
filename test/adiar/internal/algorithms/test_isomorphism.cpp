@@ -1529,7 +1529,7 @@ go_bandit([]() {
             w << n4 << n3 << n2 << n1;
           }
 
-          adiar_assert(dd_1b->canonical == false);
+          adiar_assert(dd_1b->is_canonical() == false);
 
           AssertThat(is_isomorphic(exec_policy(), dd(dd_1, false), dd(dd_1b, false)), Is().True());
           AssertThat(is_isomorphic(exec_policy(), dd(dd_1b, false), dd(dd_1, false)), Is().True());
@@ -1568,7 +1568,7 @@ go_bandit([]() {
             w << n5 << n4 << n3 << n2 << n1;
           }
 
-          adiar_assert(dd_2b->canonical == false);
+          adiar_assert(dd_2b->is_canonical() == false);
 
           AssertThat(is_isomorphic(exec_policy(), dd(dd_2, false), dd(dd_2b, false)), Is().True());
           AssertThat(is_isomorphic(exec_policy(), dd(dd_2b, false), dd(dd_2, false)), Is().True());

@@ -1683,13 +1683,14 @@ go_bandit([]() {
           shared_levelized_file<zdd::node_type> zdd_b;
 
           { // Garbage collect writers early
-            node_writer nw_a(zdd_a);
-            nw_a << node(1, node::max_id, terminal_F, terminal_T)
-                 << node(0,
-                         node::max_id,
-                         ptr_uint64(1, ptr_uint64::max_id),
-                         ptr_uint64(1, ptr_uint64::max_id));
+            const node n2(1, node::max_id, terminal_F, terminal_T);
+            const node n1(0, node::max_id, n2.uid(), n2.uid());
 
+            node_writer nw(zdd_a);
+            nw << n2 << n1;
+          }
+
+          { // Garbage collect writers early
             node_writer nw_b(zdd_b);
             nw_b << node(1, node::max_id, terminal_T, terminal_T);
           }
@@ -1739,7 +1740,7 @@ go_bandit([]() {
           /*
           //             _1_                        (1,1)       ---- x0
           //            /   \                       /   \
-          //            3   2      1     ==>    (3,1)   (2,F)    ---- x1
+          //            2   3      1     ==>    (3,1)   (2,F)    ---- x1
           //           / \ / \    / \           /   \    / \
           //           F 4 F T    T T           F (3,T)  F T    ---- x2
           //            / \                        / \
@@ -1749,17 +1750,18 @@ go_bandit([]() {
           shared_levelized_file<zdd::node_type> zdd_b;
 
           { // Garbage collect writers early
-            node_writer nw_a(zdd_a);
-            nw_a << node(2, node::max_id, terminal_T, terminal_T)
-                 << node(1, node::max_id, terminal_F, terminal_T)
-                 << node(1, node::max_id - 1, terminal_F, ptr_uint64(2, ptr_uint64::max_id))
-                 << node(0,
-                         node::max_id,
-                         ptr_uint64(1, ptr_uint64::max_id - 1),
-                         ptr_uint64(1, ptr_uint64::max_id));
+            const node n4(2, node::max_id, terminal_T, terminal_T);
+            const node n3(1, node::max_id, terminal_F, terminal_T);
+            const node n2(1, node::max_id - 1, terminal_F, n4.uid());
+            const node n1(0, node::max_id, n2.uid(), n3.uid());
 
-            node_writer nw_b(zdd_b);
-            nw_b << node(1, node::max_id, terminal_T, terminal_T);
+            node_writer nw(zdd_a);
+            nw << n4 << n3 << n2 << n1;
+          }
+
+          { // Garbage collect writers early
+            node_writer nw(zdd_b);
+            nw << node(1, node::max_id, terminal_T, terminal_T);
           }
 
           __zdd out = zdd_diff(ep, zdd_a, zdd_b);
@@ -1837,8 +1839,8 @@ go_bandit([]() {
           */
 
           { // Garbage collect early and free write-lock
-            node_writer nw_m(zdd_maybe_x0);
-            nw_m << node(0, node::max_id, terminal_T, terminal_T);
+            node_writer nw(zdd_maybe_x0);
+            nw << node(0, node::max_id, terminal_T, terminal_T);
           }
 
           /*
@@ -1993,16 +1995,15 @@ go_bandit([]() {
         //              / \    / \
         //              F T    T T
         */
-
-        node nt_5 = node(2, node::max_id, terminal_T, terminal_T);
-        node nt_4 = node(2, node::max_id - 1, terminal_F, terminal_T);
-        node nt_3 = node(1, node::max_id, nt_4, nt_5);
-        node nt_2 = node(1, node::max_id - 1, nt_5, nt_4);
-        node nt_1 = node(0, node::max_id, nt_2, nt_3);
-
         { // Garbage collect early and free write-lock
-          node_writer nw_t(zdd_thin);
-          nw_t << nt_5 << nt_4 << nt_3 << nt_2 << nt_1;
+          const node n5 = node(2, node::max_id, terminal_T, terminal_T);
+          const node n4 = node(2, node::max_id - 1, terminal_F, terminal_T);
+          const node n3 = node(1, node::max_id, n4, n5);
+          const node n2 = node(1, node::max_id - 1, n5, n4);
+          const node n1 = node(0, node::max_id, n2, n3);
+
+          node_writer nw(zdd_thin);
+          nw << n5 << n4 << n3 << n2 << n1;
         }
 
         // zdd_thin->canonical == true
@@ -2023,18 +2024,17 @@ go_bandit([]() {
         //            / \
         //            F T
         */
-
-        node nw_7 = node(3, node::max_id, terminal_F, terminal_T);
-        node nw_6 = node(2, node::max_id, terminal_T, terminal_T);
-        node nw_5 = node(2, node::max_id - 1, terminal_F, terminal_T);
-        node nw_4 = node(2, node::max_id - 2, terminal_F, nw_7);
-        node nw_3 = node(1, node::max_id, nw_6, nw_5);
-        node nw_2 = node(1, node::max_id - 1, nw_5, nw_4);
-        node nw_1 = node(0, node::max_id, nw_2, nw_3);
-
         { // Garbage collect early and free write-lock
-          node_writer nw_w(zdd_wide);
-          nw_w << nw_7 << nw_6 << nw_5 << nw_4 << nw_3 << nw_2 << nw_1;
+          const node n7 = node(3, node::max_id, terminal_F, terminal_T);
+          const node n6 = node(2, node::max_id, terminal_T, terminal_T);
+          const node n5 = node(2, node::max_id - 1, terminal_F, terminal_T);
+          const node n4 = node(2, node::max_id - 2, terminal_F, n7);
+          const node n3 = node(1, node::max_id, n6, n5);
+          const node n2 = node(1, node::max_id - 1, n5, n4);
+          const node n1 = node(0, node::max_id, n2, n3);
+
+          node_writer nw(zdd_wide);
+          nw << n7 << n6 << n5 << n4 << n3 << n2 << n1;
         }
 
         // zdd_wide->canonical == true
@@ -2243,25 +2243,25 @@ go_bandit([]() {
         //         F T  T T
         */
 
-        node nc_9 = node(3, node::max_id, terminal_T, terminal_T);
-        node nc_8 = node(3, node::max_id - 1, terminal_F, terminal_T);
-        node nc_7 = node(2, node::max_id, terminal_T, terminal_T);
-        node nc_6 = node(2, node::max_id - 1, terminal_F, terminal_T);
-        node nc_5 = node(2, node::max_id - 2, terminal_F, nc_9);
-        node nc_4 = node(2, node::max_id - 3, terminal_F, nc_8);
-        node nc_3 = node(1, node::max_id, nc_5, nc_7);
-        node nc_2 = node(1, node::max_id - 1, nc_4, nc_6);
-        node nc_1 = node(0, node::max_id, nc_2, nc_3);
-
         { // Garbage collect early and free write-lock
-          node_writer nw_c(zdd_canon);
-          nw_c << nc_9 << nc_8 << nc_7 << nc_6 << nc_5 << nc_4 << nc_3 << nc_2 << nc_1;
+          const node n9 = node(3, node::max_id, terminal_T, terminal_T);
+          const node n8 = node(3, node::max_id - 1, terminal_F, terminal_T);
+          const node n7 = node(2, node::max_id, terminal_T, terminal_T);
+          const node n6 = node(2, node::max_id - 1, terminal_F, terminal_T);
+          const node n5 = node(2, node::max_id - 2, terminal_F, n9);
+          const node n4 = node(2, node::max_id - 3, terminal_F, n8);
+          const node n3 = node(1, node::max_id, n5, n7);
+          const node n2 = node(1, node::max_id - 1, n4, n6);
+          const node n1 = node(0, node::max_id, n2, n3);
+
+          node_writer nw(zdd_canon);
+          nw << n9 << n8 << n7 << n6 << n5 << n4 << n3 << n2 << n1;
         }
 
         // zdd_canon->canonical == true
         // zdd_canon->width == 4u
 
-        shared_levelized_file<zdd::node_type> zdd_non_canon;
+        shared_levelized_file<zdd::node_type> zdd_indexable;
         /*
         //  { {0}, {2}, {0, 2}, {1, 3}, {1, 2}, {0, 1, 2} }
         //
@@ -2277,24 +2277,24 @@ go_bandit([]() {
         //               F T
         */
 
-        node nn_7 = node(3, node::max_id, terminal_F, terminal_T);
-        node nn_6 = node(2, node::max_id, terminal_T, terminal_T);
-        node nn_5 = node(2, node::max_id - 1, nn_7, terminal_T);
-        node nn_4 = node(2, node::max_id - 2, terminal_F, terminal_T);
-        node nn_3 = node(1, node::max_id, nn_6, nn_4);
-        node nn_2 = node(1, node::max_id - 1, nn_4, nn_5);
-        node nn_1 = node(0, node::max_id, nn_2, nn_3);
-
         { // Garbage collect early and free write-lock
-          node_writer nw_n(zdd_non_canon);
-          nw_n << nn_7 << nn_6 << nn_5 << nn_4 << nn_3 << nn_2 << nn_1;
+          const node n7 = node(3, node::max_id, terminal_F, terminal_T);
+          const node n6 = node(2, node::max_id, terminal_T, terminal_T);
+          const node n5 = node(2, node::max_id - 1, n7, terminal_T);
+          const node n4 = node(2, node::max_id - 2, terminal_F, terminal_T);
+          const node n3 = node(1, node::max_id, n6, n4);
+          const node n2 = node(1, node::max_id - 1, n4, n5);
+          const node n1 = node(0, node::max_id, n2, n3);
+
+          node_writer nw(zdd_indexable);
+          nw << n7 << n6 << n5 << n4 << n3 << n2 << n1;
         }
 
-        // zdd_non_canon->canonical == false
-        // zdd_non_canon->width == 3u
+        // zdd_indexable->canonical == false
+        // zdd_indexable->width == 3u
 
         /*
-        // Result of [canon] U [non_canon]
+        // Result of [canon] U [indexable]
         //
         //                         (1,1)                              ---- x0
         //                   ______/   \______
@@ -2310,44 +2310,281 @@ go_bandit([]() {
         //      (F,T)   (T,T)     (F,F)   (F,T)     (T,T)   (T,T)
         */
 
-        it("should random access on canonical ([canon] U [non_canon])", [&]() {
-          __zdd out = zdd_union(ep, zdd_canon, zdd_non_canon);
+        it("should random access on non-canonical but still indexable ([canon] U [indexable])", [&]() {
+          __zdd out = zdd_union(ep, zdd_canon, zdd_indexable);
 
           arc_test_stream arcs(out);
 
-          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (2,2)
           AssertThat(arcs.pull_internal(),
                      Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(1, 0) }));
 
-          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (3,3)
           AssertThat(arcs.pull_internal(),
                      Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 1) }));
 
-          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (4,4)
           AssertThat(arcs.pull_internal(),
                      Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 0) }));
 
-          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (5,6)
           AssertThat(arcs.pull_internal(),
-                     Is().EqualTo(arc{ ptr_uint64(1, 1), true, ptr_uint64(2, 1) }));
+                     Is().EqualTo(arc{ ptr_uint64(1, 1), false, ptr_uint64(2, 1) }));
 
-          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (6,5)
           AssertThat(arcs.pull_internal(),
                      Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 2) }));
 
-          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (7,4)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 1), true, ptr_uint64(2, 3) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (8,T)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(3, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (9,T)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 1), true, ptr_uint64(3, 1) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (F,7)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 2), false, ptr_uint64(3, 2) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 1), false, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 2), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 3), false, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 3), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(3, 0), false, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(3, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(3, 1), false, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(3, 1), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(3, 2), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(3, 2), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1, 2u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2, 4u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(3, 3u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
+
+          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+                     Is().EqualTo(2u));
+          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+                     Is().EqualTo(9u));
+        });
+
+        it("should random access on non-canonical but still indexable ([indexable] U [canon])", [&]() {
+          __zdd out = zdd_union(ep, zdd_indexable, zdd_canon);
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (2,2)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(1, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (3,3)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 1) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (4,4)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (6,5)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 1), false, ptr_uint64(2, 1) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (5,6)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 2) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (4,7)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 1), true, ptr_uint64(2, 3) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (T,8)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(3, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (T,9)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 1), true, ptr_uint64(3, 1) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (7,F)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 2), false, ptr_uint64(3, 2) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 1), false, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 2), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 3), false, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 3), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(3, 0), false, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(3, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(3, 1), false, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(3, 1), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(3, 2), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(3, 2), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1, 2u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2, 4u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(3, 3u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
+
+          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+                     Is().EqualTo(2u));
+          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+                     Is().EqualTo(9u));
+        });
+
+        shared_levelized_file<zdd::node_type> zdd_unindexable;
+        /*
+        // Same as `zdd_indexable` but the identifiers are messed up to not be indexable
+        */
+
+        { // Garbage collect early and free write-lock
+          const node n7 = node(3, node::max_id, terminal_F, terminal_T);
+          const node n6 = node(2, node::max_id, terminal_T, terminal_T);
+          const node n5 = node(2, node::max_id - 1, n7, terminal_T);
+          const node n4 = node(2, node::max_id - 2, terminal_F, terminal_T);
+          const node n3 = node(1, node::max_id, n6, n4);
+          const node n2 = node(1, node::max_id - 2, n4, n5); // bad index
+          const node n1 = node(0, node::max_id - 1, n2, n3); // bad index
+
+          node_writer nw(zdd_unindexable);
+          nw << n7 << n6 << n5 << n4 << n3 << n2 << n1;
+        }
+
+        // zdd_unindexable->canonical == false
+        // zdd_unindexable->width == 3u
+
+        it("should random access on indexable ([canon] U [unindexable])", [&]() {
+          __zdd out = zdd_union(ep, zdd_canon, zdd_unindexable);
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (2,2)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(1, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (3,3)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 1) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (4,4)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (7,4)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 1), true, ptr_uint64(2, 1) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (6,5)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 2) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (5,6)
           AssertThat(arcs.pull_internal(),
                      Is().EqualTo(arc{ ptr_uint64(1, 1), false, ptr_uint64(2, 3) }));
 
-          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (F,7)
           AssertThat(arcs.pull_internal(),
                      Is().EqualTo(arc{ ptr_uint64(2, 2), false, ptr_uint64(3, 0) }));
 
-          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (8,T)
           AssertThat(arcs.pull_internal(),
                      Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(3, 1) }));
 
-          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (9,T)
           AssertThat(arcs.pull_internal(),
                      Is().EqualTo(arc{ ptr_uint64(2, 3), true, ptr_uint64(3, 2) }));
 
@@ -2418,44 +2655,44 @@ go_bandit([]() {
                      Is().EqualTo(9u));
         });
 
-        it("should random access on canonical ([non_canon] U [canon])", [&]() {
-          __zdd out = zdd_union(ep, zdd_canon, zdd_non_canon);
+        it("should random access on indexable ([unindexable] U [canon])", [&]() {
+          __zdd out = zdd_union(ep, zdd_unindexable, zdd_canon);
 
           arc_test_stream arcs(out);
 
-          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (2,2)
           AssertThat(arcs.pull_internal(),
                      Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(1, 0) }));
 
-          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (3,3)
           AssertThat(arcs.pull_internal(),
                      Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 1) }));
 
-          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (4,4)
           AssertThat(arcs.pull_internal(),
                      Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 0) }));
 
-          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (7,4)
           AssertThat(arcs.pull_internal(),
                      Is().EqualTo(arc{ ptr_uint64(1, 1), true, ptr_uint64(2, 1) }));
 
-          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (6,5)
           AssertThat(arcs.pull_internal(),
                      Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 2) }));
 
-          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (5,6)
           AssertThat(arcs.pull_internal(),
                      Is().EqualTo(arc{ ptr_uint64(1, 1), false, ptr_uint64(2, 3) }));
 
-          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (F,7)
           AssertThat(arcs.pull_internal(),
                      Is().EqualTo(arc{ ptr_uint64(2, 2), false, ptr_uint64(3, 0) }));
 
-          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (8,T)
           AssertThat(arcs.pull_internal(),
                      Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(3, 1) }));
 
-          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (9,T)
           AssertThat(arcs.pull_internal(),
                      Is().EqualTo(arc{ ptr_uint64(2, 3), true, ptr_uint64(3, 2) }));
 
@@ -3113,11 +3350,10 @@ go_bandit([]() {
 
       describe("zdd_diff", [&]() {
         it("should flip non-commutative operator", [&]() {
-          // Note, one of the inputs (`zdd_non_ra`) is not indexable (and
-          // hence not canonical). Hence, random access should be done on the
-          // other one (`zdd_ra`) by flipping the arguments. Therefore, the
-          // operator should be flipped too; otherwise the result would not be
-          // correct. We can see this on the (non-commutative) '-' operator.
+          // Note, one of the inputs (`zdd_non_ra`) is not indexable (and hence not canonical).
+          // Hence, random access should be done on the other one (`zdd_ra`) by flipping the
+          // arguments. Therefore, the operator should be flipped too; otherwise the result would
+          // not be correct. We can see this on the (non-commutative) '-' operator.
 
           shared_levelized_file<zdd::node_type> zdd_ra;
           /*

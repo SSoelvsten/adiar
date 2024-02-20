@@ -862,7 +862,7 @@ namespace adiar::internal
          ep.template get<exec_policy::access>() == exec_policy::access::Random_Access
          || ( // Heuristically, if the narrowest canonical fits
               ep.template get<exec_policy::access>() == exec_policy::access::Auto
-              && in->canonical
+              && in->indexable
               && node_random_access<>::memory_usage(in->width) <= ra_threshold)
          ) {
 #ifdef ADIAR_STATS

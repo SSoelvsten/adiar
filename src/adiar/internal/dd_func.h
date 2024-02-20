@@ -7,29 +7,20 @@
 
 namespace adiar::internal
 {
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   // Collection of simple functions common to all types of decision diagrams.
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief  Check whether a given decision diagram is canonical.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief  Check whether a decision diagram is canonical.
   ///
-  /// \details In Adiar, the word *canonical* refers to the following two
-  /// stronger guarantees on the total ordering of nodes.
-  ///
-  /// 1. Nodes within a level are effectively sorted based on their children:
-  ///    high first, then low.
-  ///
-  /// 2. Identifiers are from \ref max_id and down (when read bottom-up)
-  ///
-  /// If this is true, then equality checking can be done in a single cheap
-  /// linear scan rather than with an *O(N log N)* time-forwarding algorithm.
-  //////////////////////////////////////////////////////////////////////////////
+  /// \copydetails adiar::internal::file_traits<node>::is_canonical
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename DD>
   bool
   dd_iscanonical(const DD& dd)
   {
     // TODO: Move into 'dd' class...
-    return dd->canonical;
+    return dd->is_canonical();
   }
 
   //////////////////////////////////////////////////////////////////////////////

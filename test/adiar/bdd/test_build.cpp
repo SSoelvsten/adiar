@@ -17,6 +17,8 @@ go_bandit([]() {
         level_info_test_stream ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->width, Is().EqualTo(0u));
@@ -46,6 +48,8 @@ go_bandit([]() {
         level_info_test_stream ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->width, Is().EqualTo(0u));
@@ -87,6 +91,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(1u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
@@ -116,6 +122,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(1u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
@@ -145,6 +153,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(1u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
@@ -174,6 +184,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(1u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
@@ -203,6 +215,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(1u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
@@ -232,6 +246,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(1u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
@@ -266,6 +282,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
@@ -298,6 +316,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
@@ -335,6 +355,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
@@ -367,6 +389,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
@@ -403,6 +427,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(1u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
@@ -444,6 +470,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
@@ -485,6 +513,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
@@ -520,6 +550,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(1u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
@@ -560,6 +592,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
@@ -600,6 +634,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
@@ -635,6 +671,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(1u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
@@ -671,6 +709,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
@@ -707,6 +747,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
@@ -759,6 +801,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(4u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(3u));
@@ -811,6 +855,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(4u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(3u));
@@ -855,6 +901,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(3u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(2u));
@@ -907,6 +955,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(4u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(3u));
@@ -951,6 +1001,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(3u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(2u));
@@ -1011,6 +1063,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(5u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(4u));
@@ -1050,6 +1104,8 @@ go_bandit([]() {
         AssertThat(res.max_2level_cut(cut::Internal_True), Is().EqualTo(0u));
         AssertThat(res.max_2level_cut(cut::All), Is().EqualTo(1u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
@@ -1091,6 +1147,8 @@ go_bandit([]() {
         AssertThat(res.max_2level_cut(cut::Internal_True), Is().EqualTo(1u));
         AssertThat(res.max_2level_cut(cut::All), Is().EqualTo(2u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
@@ -1132,6 +1190,8 @@ go_bandit([]() {
         AssertThat(res.max_2level_cut(cut::Internal_True), Is().EqualTo(1u));
         AssertThat(res.max_2level_cut(cut::All), Is().EqualTo(2u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
@@ -1167,6 +1227,8 @@ go_bandit([]() {
         AssertThat(res.max_2level_cut(cut::Internal_True), Is().EqualTo(0u));
         AssertThat(res.max_2level_cut(cut::All), Is().EqualTo(1u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
@@ -1207,6 +1269,8 @@ go_bandit([]() {
         AssertThat(res.max_2level_cut(cut::Internal_True), Is().EqualTo(1u));
         AssertThat(res.max_2level_cut(cut::All), Is().EqualTo(2u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
@@ -1247,6 +1311,8 @@ go_bandit([]() {
         AssertThat(res.max_2level_cut(cut::Internal_True), Is().EqualTo(1u));
         AssertThat(res.max_2level_cut(cut::All), Is().EqualTo(2u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
@@ -1303,6 +1369,8 @@ go_bandit([]() {
         AssertThat(res.max_2level_cut(cut::Internal_True), Is().EqualTo(3u));
         AssertThat(res.max_2level_cut(cut::All), Is().EqualTo(4u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
@@ -1329,6 +1397,8 @@ go_bandit([]() {
         AssertThat(res.max_1level_cut(cut::Internal_True), Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut::All], Is().EqualTo(1u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
@@ -1373,6 +1443,8 @@ go_bandit([]() {
         AssertThat(res.max_2level_cut(cut::Internal_True), Is().EqualTo(2u));
         AssertThat(res.max_2level_cut(cut::All), Is().EqualTo(3u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
@@ -1417,6 +1489,8 @@ go_bandit([]() {
         AssertThat(res.max_2level_cut(cut::Internal_True), Is().EqualTo(2u));
         AssertThat(res.max_2level_cut(cut::All), Is().EqualTo(3u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
@@ -1469,6 +1543,8 @@ go_bandit([]() {
         AssertThat(res.max_2level_cut(cut::Internal_True), Is().EqualTo(3u));
         AssertThat(res.max_2level_cut(cut::All), Is().EqualTo(4u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
@@ -1529,6 +1605,8 @@ go_bandit([]() {
         AssertThat(res.max_2level_cut(cut::Internal_True), Is().EqualTo(4u));
         AssertThat(res.max_2level_cut(cut::All), Is().EqualTo(5u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res.number_of_terminals(false), Is().EqualTo(1u));
@@ -1568,6 +1646,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(1u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
@@ -1609,6 +1689,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
@@ -1680,6 +1762,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(5u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(4u));
@@ -1713,6 +1797,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(1u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
@@ -1754,6 +1840,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
@@ -1825,6 +1913,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(5u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(4u));
@@ -1858,6 +1948,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(1u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
@@ -1894,6 +1986,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
@@ -1930,6 +2024,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(2u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
@@ -1982,6 +2078,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(4u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(3u));
@@ -2034,6 +2132,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(4u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(3u));
@@ -2086,6 +2186,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut::All], Is().EqualTo(4u));
 
+        AssertThat(res->sorted, Is().True());
+        AssertThat(res->indexable, Is().True());
         AssertThat(bdd_iscanonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(3u));
