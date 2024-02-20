@@ -146,7 +146,7 @@ namespace adiar::internal
         const size_t width = dd_policy::max_id - out_id;
         out_writer.unsafe_push(level_info(label, width));
 
-        if (width > 1u) { out_writer.unsafe_set_canonical(false); }
+        if (width > 1u) { out_writer.unsafe_set_sorted(false); }
       }
 
       // Set up priority queue for next level (or collapse to a terminal)

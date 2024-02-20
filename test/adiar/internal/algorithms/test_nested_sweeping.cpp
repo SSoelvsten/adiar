@@ -2104,7 +2104,9 @@ go_bandit([]() {
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(1u));
 
-          AssertThat(out->canonical, Is().True());
+          AssertThat(out->sorted, Is().True());
+          AssertThat(out->indexable, Is().True());
+          AssertThat(out->is_canonical(), Is().True());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
           AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
@@ -2179,7 +2181,9 @@ go_bandit([]() {
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(2u));
 
-          AssertThat(out->canonical, Is().False());
+          AssertThat(out->sorted, Is().False());
+          AssertThat(out->indexable, Is().True());
+          AssertThat(out->is_canonical(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
           AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(2u));
@@ -2258,7 +2262,9 @@ go_bandit([]() {
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(2u));
 
-          AssertThat(out->canonical, Is().False());
+          AssertThat(out->sorted, Is().False());
+          AssertThat(out->indexable, Is().True());
+          AssertThat(out->is_canonical(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
           AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(2u));
@@ -2369,7 +2375,9 @@ go_bandit([]() {
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(2u));
 
-          AssertThat(out->canonical, Is().False());
+          AssertThat(out->sorted, Is().False());
+          AssertThat(out->indexable, Is().True());
+          AssertThat(out->is_canonical(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(3u));
           AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(3u));
@@ -2488,7 +2496,9 @@ go_bandit([]() {
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(1u));
 
-          AssertThat(out->canonical, Is().True());
+          AssertThat(out->sorted, Is().True());
+          AssertThat(out->indexable, Is().True());
+          AssertThat(out->is_canonical(), Is().True());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(1u)); // <-- NOTE: not '3u'
           AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
@@ -2591,7 +2601,9 @@ go_bandit([]() {
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(1u));
 
-          AssertThat(out->canonical, Is().True());
+          AssertThat(out->sorted, Is().True());
+          AssertThat(out->indexable, Is().True());
+          AssertThat(out->is_canonical(), Is().True());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(1u));
           AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
@@ -2706,7 +2718,9 @@ go_bandit([]() {
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(3u));
 
-          AssertThat(out->canonical, Is().False());
+          AssertThat(out->sorted, Is().False());
+          AssertThat(out->indexable, Is().True());
+          AssertThat(out->is_canonical(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(2u));
           AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(5u));
@@ -2834,7 +2848,9 @@ go_bandit([]() {
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(2u));
 
-          AssertThat(out->canonical, Is().True());
+          AssertThat(out->sorted, Is().True());
+          AssertThat(out->indexable, Is().True());
+          AssertThat(out->is_canonical(), Is().True());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(2u));
           AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(2u));
@@ -2936,7 +2952,9 @@ go_bandit([]() {
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(1u));
 
-          AssertThat(out->canonical, Is().True());
+          AssertThat(out->sorted, Is().True());
+          AssertThat(out->indexable, Is().True());
+          AssertThat(out->is_canonical(), Is().True());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
           AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
@@ -3001,7 +3019,9 @@ go_bandit([]() {
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(0u));
 
-          AssertThat(out->canonical, Is().True());
+          AssertThat(out->sorted, Is().True());
+          AssertThat(out->indexable, Is().True());
+          AssertThat(out->is_canonical(), Is().True());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
           AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
@@ -3087,7 +3107,9 @@ go_bandit([]() {
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(0u));
 
-          AssertThat(out->canonical, Is().True());
+          AssertThat(out->sorted, Is().True());
+          AssertThat(out->indexable, Is().True());
+          AssertThat(out->is_canonical(), Is().True());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
           AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
@@ -4940,7 +4962,7 @@ go_bandit([]() {
         }
 
         // Just a sanity check we created the input as intended
-        AssertThat(in->canonical, Is().True());
+        AssertThat(in->is_canonical(), Is().True());
 
         test_not_sweep<> inner_impl(2);
 
@@ -6317,7 +6339,7 @@ go_bandit([]() {
 
           AssertThat(out->width, Is().EqualTo(2u));
 
-          AssertThat(out->canonical, Is().True());
+          AssertThat(out->is_canonical(), Is().True());
 
           // Over-approximation:
           //   4 and 5 are only merged after the second inner sweep for x2. This
@@ -6451,7 +6473,9 @@ go_bandit([]() {
 
           AssertThat(out->width, Is().EqualTo(3u));
 
-          AssertThat(out->canonical, Is().False());
+          AssertThat(out->sorted, Is().False());
+          AssertThat(out->indexable, Is().True());
+          AssertThat(out->is_canonical(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(4u));
           AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(5u));

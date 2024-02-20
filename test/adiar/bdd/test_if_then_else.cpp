@@ -1977,7 +1977,9 @@ go_bandit([]() {
         }
 
         __bdd out = bdd_ite(bdd_x0, bdd_x2, bdd_x1_and_x3);
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->canonical, Is().False());
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->sorted, Is().True());
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->indexable, Is().False());
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->is_canonical(), Is().False());
 
         node_test_stream ns(out);
 
@@ -2081,7 +2083,9 @@ go_bandit([]() {
         }
 
         __bdd out = bdd_ite(bdd_not(bdd_x0_xor_x1), bdd_then, bdd_else);
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->canonical, Is().False());
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->sorted, Is().False());
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->indexable, Is().False());
+        AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->is_canonical(), Is().False());
 
         node_test_stream ns(out);
 
@@ -2249,12 +2253,18 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(out_1), Is().True());
 
         bdd out_2 = bdd_ite(bdd_if, bdd_a, bdd_not(bdd_b));
+        AssertThat(out_2->sorted, Is().False());
+        AssertThat(out_2->indexable, Is().True());
         AssertThat(bdd_iscanonical(out_2), Is().False());
 
         bdd out_3 = bdd_ite(bdd_if, bdd_a, bdd_not(bdd_c));
+        AssertThat(out_3->sorted, Is().True());
+        AssertThat(out_3->indexable, Is().True());
         AssertThat(bdd_iscanonical(out_3), Is().True());
 
         bdd out_4 = bdd_ite(bdd_if, bdd_not(bdd_b), bdd_not(bdd_a));
+        AssertThat(out_4->sorted, Is().False());
+        AssertThat(out_4->indexable, Is().True());
         AssertThat(bdd_iscanonical(out_4), Is().False());
       });
 
@@ -2283,12 +2293,18 @@ go_bandit([]() {
         }
 
         bdd out_1 = bdd_ite(bdd_if, bdd_a, bdd_b);
+        AssertThat(out_1->sorted, Is().True());
+        AssertThat(out_1->indexable, Is().True());
         AssertThat(bdd_iscanonical(out_1), Is().True());
 
         bdd out_2 = bdd_ite(bdd_not(bdd_if), bdd_a, bdd_b);
+        AssertThat(out_2->sorted, Is().False());
+        AssertThat(out_2->indexable, Is().True());
         AssertThat(bdd_iscanonical(out_2), Is().False());
 
         bdd out_3 = bdd_ite(bdd_not(bdd_if), bdd_b, bdd_a);
+        AssertThat(out_3->sorted, Is().True());
+        AssertThat(out_3->indexable, Is().True());
         AssertThat(bdd_iscanonical(out_3), Is().True());
       });
 

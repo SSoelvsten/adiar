@@ -202,7 +202,8 @@ namespace adiar::internal
   __reduce_init_output()
   {
     shared_levelized_file<typename dd_policy::node_type> out_file;
-    out_file->canonical = true;
+    out_file->sorted    = true;
+    out_file->indexable = true;
 
     out_file->max_1level_cut[cut::Internal]       = 0u;
     out_file->max_1level_cut[cut::Internal_False] = 0u;

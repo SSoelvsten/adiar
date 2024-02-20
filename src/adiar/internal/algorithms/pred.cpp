@@ -269,7 +269,7 @@ namespace adiar::internal
 
     // Compare their content to discern whether there exists an isomorphism
     // between them.
-    if (f0->canonical && f1->canonical && negate0 == negate1) {
+    if (f0->is_canonical() && f1->is_canonical() && negate0 == negate1) {
 #ifdef ADIAR_STATS
       stats_equality.fast_check.runs += 1u;
 #endif
