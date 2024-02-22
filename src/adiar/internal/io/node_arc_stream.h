@@ -72,7 +72,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a shared arc file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_arc_stream(shared_ptr<levelized_file<arc>>& file, const bool negate = false)
+    node_arc_stream(const shared_ptr<levelized_file<arc>>& file, const bool negate = false)
       : _stream(/*need to sort before attach*/)
     {
       attach(file, negate);
