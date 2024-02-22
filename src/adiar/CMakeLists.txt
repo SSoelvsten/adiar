@@ -81,6 +81,7 @@ set(HEADERS
   internal/io/levelized_file.h
   internal/io/levelized_file_stream.h
   internal/io/levelized_file_writer.h
+  internal/io/levelized_random_access.h
 
   internal/io/shared_file_ptr.h
 
