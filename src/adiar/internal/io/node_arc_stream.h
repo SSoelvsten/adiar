@@ -23,7 +23,14 @@ namespace adiar::internal
   class node_arc_stream : protected arc_stream<!Reverse>
   {
   private:
+    /// \brief Arc-based input to-be converted into nodes on-the-fly.
     arc_stream<!Reverse> _stream;
+
+    /// \brief Whether a converted node has been buffered.
+    bool _has_peeked = false;
+
+    /// \brief Latest converted node.
+    node _peeked;
 
   public:
     static size_t
@@ -116,7 +123,7 @@ namespace adiar::internal
     bool
     can_pull() const
     {
-      return _stream.can_pull_internal() || _stream.can_pull_terminal();
+      return _has_peeked || _stream.can_pull_internal() || _stream.can_pull_terminal();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -127,15 +134,12 @@ namespace adiar::internal
     const node
     pull()
     {
-      const arc a_first  = take_internal() ? _stream.pull_internal() : _stream.pull_terminal();
-      const arc a_second = take_internal() ? _stream.pull_internal() : _stream.pull_terminal();
-
-      // Merge into a node (providing low arc first)
-      if constexpr (Reverse) {
-        return node_of(a_second, a_first);
-      } else {
-        return node_of(a_first, a_second);
+      adiar_assert(can_pull());
+      if (_has_peeked) {
+        _has_peeked = false;
+        return _peeked;
       }
+      return merge_next();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -146,16 +150,12 @@ namespace adiar::internal
     const node
     peek()
     {
-      // TODO: This does not work, if `take_internal()` is the same value twice...
-      const arc a_first  = take_internal() ? _stream.peek_internal() : _stream.peek_terminal();
-      const arc a_second = take_internal() ? _stream.peek_internal() : _stream.peek_terminal();
-
-      // Merge into a node (providing low arc first)
-      if constexpr (Reverse) {
-        return node_of(a_second, a_first);
-      } else {
-        return node_of(a_first, a_second);
+      adiar_assert(can_pull());
+      if (!_has_peeked) {
+        _has_peeked = true;
+        _peeked = merge_next();
       }
+      return _peeked;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -170,6 +170,22 @@ namespace adiar::internal
     // TODO
 
   private:
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    const node
+    merge_next()
+    {
+      const arc a_first  = take_internal() ? _stream.pull_internal() : _stream.pull_terminal();
+      const arc a_second = take_internal() ? _stream.pull_internal() : _stream.pull_terminal();
+
+      // Merge into a node (providing low arc first)
+      if constexpr (Reverse) {
+        return node_of(a_second, a_first);
+      } else {
+        return node_of(a_first, a_second);
+      }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     bool
     take_internal()
     {

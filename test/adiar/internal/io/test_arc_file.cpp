@@ -379,40 +379,38 @@ go_bandit([]() {
         AssertThat(af.semi_transposed, Is().False());
       });
 
-      it("can read single-node BDD [in-order]", []() {
-        levelized_file<arc> af;
+      levelized_file<arc> x0_ordered;
+      /*
+      //       1         ---- x0
+      //      / \
+      //      F T
+      */
+      {
+        arc_writer aw(x0_ordered);
+        aw.push_terminal(arc(arc::pointer_type(0, 0), false, arc::pointer_type(false)));
+        aw.push_terminal(arc(arc::pointer_type(0, 0), true, arc::pointer_type(true)));
 
-        {
-          arc_writer aw(af);
-          aw.push_terminal(arc(arc::pointer_type(0, 0), false, arc::pointer_type(false)));
-          aw.push_terminal(arc(arc::pointer_type(0, 0), true, arc::pointer_type(true)));
+        aw.push(level_info(0, 1));
+        aw.detach();
+      }
 
-          aw.push(level_info(0, 1));
-          aw.detach();
-        }
+      levelized_file<arc> x0_unordered;
+      /*
+      //       1         ---- x0
+      //      / \
+      //      F T        <-- arcs swapped
+      */
+      {
+        arc_writer aw(x0_unordered);
+        aw.push_terminal(arc(arc::pointer_type(0, 0), true, arc::pointer_type(true)));
+        aw.push_terminal(arc(arc::pointer_type(0, 0), false, arc::pointer_type(false)));
 
-        node_arc_stream ns(af);
+        aw.push(level_info(0, 1));
+        aw.detach();
+      }
 
-        AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(),
-                   Is().EqualTo(node(0, 0, node::pointer_type(false), node::pointer_type(true))));
-
-        AssertThat(ns.can_pull(), Is().False());
-      });
-
-      it("can read single-node BDD [out-of-order]", []() {
-        levelized_file<arc> af;
-
-        {
-          arc_writer aw(af);
-          aw.push_terminal(arc(arc::pointer_type(0, 0), true, arc::pointer_type(true)));
-          aw.push_terminal(arc(arc::pointer_type(0, 0), false, arc::pointer_type(false)));
-
-          aw.push(level_info(0, 1));
-          aw.detach();
-        }
-
-        node_arc_stream ns(af);
+      it("can pull from 'x0' BDD [in-order]", [&]() {
+        node_arc_stream ns(x0_ordered);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(),
@@ -421,49 +419,109 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().False());
       });
 
-      it("can read larger BDD [internals already sorted]", []() {
-        /*
-        //             1        ---- x0
-        //            / \
-        //            2 |       ---- x1
-        //           / \|
-        //           F _3_      ---- x2
-        //            /   \
-        //            4   5     ---- x3
-        //           / \ / \
-        //           F T T F
-        */
-        levelized_file<arc> af;
+      it("can pull single-node BDD [out-of-order]", [&]() {
+        node_arc_stream ns(x0_unordered);
 
-        {
-          arc_writer aw(af);
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(0, 0, node::pointer_type(false), node::pointer_type(true))));
 
-          aw.push(level_info(0, 1));
+        AssertThat(ns.can_pull(), Is().False());
+      });
 
-          aw.push_internal(arc(arc::pointer_type(0, 0), false, arc::pointer_type(1, 0)));
-          aw.push_terminal(arc(arc::pointer_type(1, 0), false, arc::pointer_type(false)));
+      it("can reattach to same file", [&]() {
+        node_arc_stream ns(x0_ordered);
 
-          aw.push(level_info(1, 1));
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(0, 0, node::pointer_type(false), node::pointer_type(true))));
 
-          aw.push_internal(arc(arc::pointer_type(0, 0), true, arc::pointer_type(2, 0)));
-          aw.push_internal(arc(arc::pointer_type(1, 0), true, arc::pointer_type(2, 0)));
+        AssertThat(ns.can_pull(), Is().False());
+      });
 
-          aw.push(level_info(2, 1));
+      it("can peek single-node BDD [in-order]", [&]() {
+        node_arc_stream ns(x0_ordered);
 
-          aw.push_internal(arc(arc::pointer_type(2, 0), false, arc::pointer_type(3, 0)));
-          aw.push_terminal(arc(arc::pointer_type(3, 0), false, arc::pointer_type(false)));
-          aw.push_terminal(arc(arc::pointer_type(3, 0), true, arc::pointer_type(true)));
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.peek(),
+                   Is().EqualTo(node(0, 0, node::pointer_type(false), node::pointer_type(true))));
 
-          aw.push_internal(arc(arc::pointer_type(2, 0), true, arc::pointer_type(3, 1)));
-          aw.push_terminal(arc(arc::pointer_type(3, 1), false, arc::pointer_type(true)));
-          aw.push_terminal(arc(arc::pointer_type(3, 1), true, arc::pointer_type(false)));
+        AssertThat(ns.can_pull(), Is().True());
+      });
 
-          aw.push(level_info(3, 2));
+      it("can peek single-node BDD [out-of-order]", [&]() {
+        node_arc_stream ns(x0_unordered);
 
-          aw.detach();
-        }
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.peek(),
+                   Is().EqualTo(node(0, 0, node::pointer_type(false), node::pointer_type(true))));
 
-        node_arc_stream ns(af);
+        AssertThat(ns.can_pull(), Is().True());
+      });
+
+      it("can pull after peek of single-node BDD", [&]() {
+        node_arc_stream ns(x0_ordered);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.peek(),
+                   Is().EqualTo(node(0, 0, node::pointer_type(false), node::pointer_type(true))));
+
+        AssertThat(ns.can_pull(), Is().True());
+
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(0, 0, node::pointer_type(false), node::pointer_type(true))));
+
+        AssertThat(ns.can_pull(), Is().False());
+      });
+
+      levelized_file<arc> large_untransposed;
+      /*
+      //             1        ---- x0
+      //            / \
+      //            2 |       ---- x1
+      //           / \|
+      //           F _3_      ---- x2
+      //            /   \
+      //            4   5     ---- x3
+      //           / \ / \
+      //           F T T F
+      */
+
+      {
+        arc_writer aw(large_untransposed);
+
+        aw.push(level_info(0, 1));
+
+        aw.push_internal(arc(arc::pointer_type(0, 0), false, arc::pointer_type(1, 0)));
+        aw.push_internal(arc(arc::pointer_type(0, 0), true, arc::pointer_type(2, 0)));
+
+        aw.push(level_info(1, 1));
+
+        aw.push_terminal(arc(arc::pointer_type(1, 0), false, arc::pointer_type(false)));
+        aw.push_internal(arc(arc::pointer_type(1, 0), true, arc::pointer_type(2, 0)));
+
+        aw.push(level_info(2, 1));
+
+        aw.push_internal(arc(arc::pointer_type(2, 0), false, arc::pointer_type(3, 0)));
+        aw.push_internal(arc(arc::pointer_type(2, 0), true, arc::pointer_type(3, 1)));
+
+        aw.push(level_info(3, 2));
+
+        aw.push_terminal(arc(arc::pointer_type(3, 0), false, arc::pointer_type(false)));
+        aw.push_terminal(arc(arc::pointer_type(3, 0), true, arc::pointer_type(true)));
+
+        aw.push_terminal(arc(arc::pointer_type(3, 1), false, arc::pointer_type(true)));
+        aw.push_terminal(arc(arc::pointer_type(3, 1), true, arc::pointer_type(false)));
+
+        aw.detach();
+
+        large_untransposed.semi_transposed = false;
+      }
+
+      it("can pull larger BDD [internals already sorted]", [&]() {
+        AssertThat(large_untransposed.semi_transposed, Is().False());
+
+        node_arc_stream ns(large_untransposed);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(),
@@ -488,7 +546,72 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().False());
       });
 
-      it("can read larger BDD [internals need sorting]", []() {
+      it("can peek and pull larger BDD", [&]() {
+        AssertThat(large_untransposed.semi_transposed, Is().False());
+
+        node_arc_stream ns(large_untransposed);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.peek(),
+                   Is().EqualTo(node(0, 0, node::pointer_type(1, 0), node::pointer_type(2, 0))));
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(0, 0, node::pointer_type(1, 0), node::pointer_type(2, 0))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.peek(),
+                   Is().EqualTo(node(1, 0, node::pointer_type(false), node::pointer_type(2, 0))));
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(1, 0, node::pointer_type(false), node::pointer_type(2, 0))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.peek(),
+                   Is().EqualTo(node(2, 0, node::pointer_type(3, 0), node::pointer_type(3, 1))));
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(2, 0, node::pointer_type(3, 0), node::pointer_type(3, 1))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.peek(),
+                   Is().EqualTo(node(3, 0, node::pointer_type(false), node::pointer_type(true))));
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(3, 0, node::pointer_type(false), node::pointer_type(true))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.peek(),
+                   Is().EqualTo(node(3, 1, node::pointer_type(true), node::pointer_type(false))));
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(3, 1, node::pointer_type(true), node::pointer_type(false))));
+
+        AssertThat(ns.can_pull(), Is().False());
+      });
+
+      it("can peek the same node twice in larger BDD", [&]() {
+        AssertThat(large_untransposed.semi_transposed, Is().False());
+
+        node_arc_stream ns(large_untransposed);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(0, 0, node::pointer_type(1, 0), node::pointer_type(2, 0))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.peek(),
+                   Is().EqualTo(node(1, 0, node::pointer_type(false), node::pointer_type(2, 0))));
+        AssertThat(ns.peek(),
+                   Is().EqualTo(node(1, 0, node::pointer_type(false), node::pointer_type(2, 0))));
+
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(1, 0, node::pointer_type(false), node::pointer_type(2, 0))));
+
+        AssertThat(ns.can_pull(), Is().True());
+      });
+
+      it("can pull larger BDD [internals need sorting]", []() {
+        levelized_file<arc> af;
         /*
         //       1     ---- x0
         //      / \
@@ -498,7 +621,6 @@ go_bandit([]() {
         //     / \
         //     F T
         */
-        levelized_file<arc> af;
 
         {
           arc_writer aw(af);
@@ -520,7 +642,11 @@ go_bandit([]() {
           aw.detach();
         }
 
+        AssertThat(af.semi_transposed, Is().True());
+
         node_arc_stream ns(af);
+
+        AssertThat(af.semi_transposed, Is().False());
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(),
@@ -537,19 +663,8 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().False());
       });
 
-      it("can read single-node BDD [negated]", []() {
-        levelized_file<arc> af;
-
-        {
-          arc_writer aw(af);
-          aw.push_terminal(arc(arc::pointer_type(0, 0), false, arc::pointer_type(false)));
-          aw.push_terminal(arc(arc::pointer_type(0, 0), true, arc::pointer_type(true)));
-
-          aw.push(level_info(0, 1));
-          aw.detach();
-        }
-
-        node_arc_stream ns(af, true);
+      it("can read single-node BDD [negated]", [&]() {
+        node_arc_stream ns(x0_ordered, true);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(),
@@ -558,69 +673,83 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().False());
       });
 
-      it("can read single-node BDD [reverse]", []() {
-        levelized_file<arc> af;
+      levelized_file<arc> large_untransposed2;
+      /*
+      //         1       ---- x0
+      //        / \
+      //       /  2      ---- x1
+      //       | / \
+      //       3 F 4     ---- x2
+      //      / \ / \
+      //      F  5  T    ---- x3
+      //        / \
+      //        F T
+      */
 
-        {
-          arc_writer aw(af);
-          aw.push_terminal(arc(arc::pointer_type(0, 0), false, arc::pointer_type(false)));
-          aw.push_terminal(arc(arc::pointer_type(0, 0), true, arc::pointer_type(true)));
+      {
+        arc_writer aw(large_untransposed2);
 
-          aw.push(level_info(0, 1));
-          aw.detach();
-        }
+        aw.push(level_info(0, 1));
 
-        node_arc_stream<true> ns(af);
+        aw.push_internal(arc(arc::pointer_type(0, 0), false, arc::pointer_type(2, 0)));
+        aw.push_internal(arc(arc::pointer_type(0, 0), true, arc::pointer_type(1, 0)));
+
+        aw.push(level_info(1, 1));
+
+        aw.push_terminal(arc(arc::pointer_type(1, 0), false, arc::pointer_type(false)));
+        aw.push_internal(arc(arc::pointer_type(1, 0), true, arc::pointer_type(2, 1)));
+
+
+        aw.push(level_info(2, 2));
+
+        aw.push_terminal(arc(arc::pointer_type(2, 0), false, arc::pointer_type(false)));
+        aw.push_internal(arc(arc::pointer_type(2, 0), true, arc::pointer_type(3, 0)));
+
+        aw.push_internal(arc(arc::pointer_type(2, 1), false, arc::pointer_type(3, 0)));
+        aw.push_terminal(arc(arc::pointer_type(2, 1), true, arc::pointer_type(true)));
+
+        aw.push(level_info(3, 1));
+
+        aw.push_terminal(arc(arc::pointer_type(3, 0), false, arc::pointer_type(false)));
+        aw.push_terminal(arc(arc::pointer_type(3, 0), true, arc::pointer_type(true)));
+
+        aw.detach();
+
+        large_untransposed2.semi_transposed = false;
+      }
+
+      it("can pull larger BDD [reverse]", [&]() {
+        AssertThat(large_untransposed2.semi_transposed, Is().False());
+
+        node_arc_stream<true> ns(large_untransposed2);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(),
-                   Is().EqualTo(node(0, 0, node::pointer_type(false), node::pointer_type(true))));
+                   Is().EqualTo(node(3, 0, node::pointer_type(false), node::pointer_type(true))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(2, 1, node::pointer_type(3, 0), node::pointer_type(true))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(2, 0, node::pointer_type(false), node::pointer_type(3, 0))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(1, 0, node::pointer_type(false), node::pointer_type(2, 1))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(0, 0, node::pointer_type(2, 0), node::pointer_type(1, 0))));
 
         AssertThat(ns.can_pull(), Is().False());
       });
 
-      it("can read larger BDD [reverse]", []() {
-        /*
-        //         1       ---- x0
-        //        / \
-        //       /  2      ---- x1
-        //       | / \
-        //       3 F 4     ---- x2
-        //      / \ / \
-        //      F  5  T    ---- x3
-        //        / \
-        //        F T
-        */
-        levelized_file<arc> af;
+      it("can pull larger BDD [negated + reverse]", [&]() {
+        AssertThat(large_untransposed2.semi_transposed, Is().False());
 
-        {
-          arc_writer aw(af);
-
-          aw.push(level_info(0, 1));
-
-          aw.push_internal(arc(arc::pointer_type(0, 0), true, arc::pointer_type(1, 0)));
-          aw.push_terminal(arc(arc::pointer_type(1, 0), false, arc::pointer_type(false)));
-
-          aw.push(level_info(1, 1));
-
-          aw.push_internal(arc(arc::pointer_type(0, 0), false, arc::pointer_type(2, 0)));
-          aw.push_terminal(arc(arc::pointer_type(2, 0), false, arc::pointer_type(false)));
-
-          aw.push_internal(arc(arc::pointer_type(1, 0), true, arc::pointer_type(2, 1)));
-          aw.push_terminal(arc(arc::pointer_type(2, 1), true, arc::pointer_type(true)));
-
-          aw.push(level_info(2, 2));
-
-          aw.push_internal(arc(arc::pointer_type(2, 0), true, arc::pointer_type(3, 0)));
-          aw.push_internal(arc(arc::pointer_type(2, 1), false, arc::pointer_type(3, 0)));
-
-          aw.push_terminal(arc(arc::pointer_type(3, 0), false, arc::pointer_type(false)));
-          aw.push_terminal(arc(arc::pointer_type(3, 0), true, arc::pointer_type(true)));
-
-          aw.detach();
-        }
-
-        node_arc_stream<true> ns(af, true);
+        node_arc_stream<true> ns(large_untransposed2, true);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(),
@@ -643,39 +772,6 @@ go_bandit([]() {
                    Is().EqualTo(node(0, 0, node::pointer_type(2, 0), node::pointer_type(1, 0))));
 
         AssertThat(ns.can_pull(), Is().False());
-      });
-
-      it("can reattach to same file", []() {
-        levelized_file<arc> af;
-
-        {
-          arc_writer aw(af);
-          aw.push_terminal(arc(arc::pointer_type(0, 0), false, arc::pointer_type(false)));
-          aw.push_terminal(arc(arc::pointer_type(0, 0), true, arc::pointer_type(true)));
-
-          aw.push(level_info(0, 1));
-          aw.detach();
-        }
-
-        {
-          node_arc_stream ns(af);
-
-          AssertThat(ns.can_pull(), Is().True());
-          AssertThat(ns.pull(),
-                     Is().EqualTo(node(0, 0, node::pointer_type(false), node::pointer_type(true))));
-
-          AssertThat(ns.can_pull(), Is().False());
-        }
-
-        {
-          node_arc_stream ns(af);
-
-          AssertThat(ns.can_pull(), Is().True());
-          AssertThat(ns.pull(),
-                     Is().EqualTo(node(0, 0, node::pointer_type(false), node::pointer_type(true))));
-
-          AssertThat(ns.can_pull(), Is().False());
-        }
       });
     });
   });
