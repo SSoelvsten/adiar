@@ -861,14 +861,14 @@ go_bandit([]() {
       it("quantifies T terminal-only BDD as itself", [&]() {
         __bdd out = bdd_exists(terminal_T, 42);
 
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(terminal_T));
+        AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(terminal_T));
         AssertThat(out.negate, Is().False());
       });
 
       it("quantifies F terminal-only BDD as itself", [&]() {
         __bdd out = bdd_exists(terminal_F, 21);
 
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(terminal_F));
+        AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(terminal_F));
         AssertThat(out.negate, Is().False());
       });
 
@@ -878,7 +878,7 @@ go_bandit([]() {
         it("shortcuts quantification on non-existent label in input [BDD 1]", [&]() {
           __bdd out = bdd_exists(ep, bdd_1, 42);
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
+          AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
           AssertThat(out.negate, Is().False());
         });
 
@@ -891,25 +891,25 @@ go_bandit([]() {
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->levels(), Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->width, Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->width, Is().EqualTo(0u));
 
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
             Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                      Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
                      Is().EqualTo(0u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
                      Is().EqualTo(1u));
         });
 
@@ -922,25 +922,25 @@ go_bandit([]() {
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->levels(), Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->width, Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->width, Is().EqualTo(0u));
 
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
             Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                      Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
                      Is().EqualTo(0u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
                      Is().EqualTo(1u));
         });
 
@@ -1531,7 +1531,7 @@ go_bandit([]() {
         it("shortcuts quantification on non-existent label in input [BDD 1]", [&]() {
           __bdd out = bdd_exists(ep, bdd_1, 42);
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
+          AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
           AssertThat(out.negate, Is().False());
         });
 
@@ -1544,23 +1544,23 @@ go_bandit([]() {
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->levels(), Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
 
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
             Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                      Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
                      Is().EqualTo(0u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
                      Is().EqualTo(1u));
         });
 
@@ -1573,25 +1573,25 @@ go_bandit([]() {
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->levels(), Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->width, Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->width, Is().EqualTo(0u));
 
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
             Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                      Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
                      Is().EqualTo(0u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
                      Is().EqualTo(1u));
         });
 
@@ -2345,12 +2345,12 @@ go_bandit([]() {
       it("returns input on always-false predicate BDD 1 [const &]", [&]() {
         bdd in    = bdd_1;
         __bdd out = bdd_exists(in, [](const bdd::label_type) -> bool { return false; });
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
+        AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
       });
 
       it("returns input on always-false predicate BDD 1 [&&]", [&]() {
         __bdd out = bdd_exists(bdd_1, [](const bdd::label_type) -> bool { return false; });
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
+        AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
       });
 
       describe("algorithm: Singleton", [&]() {
@@ -4214,7 +4214,7 @@ go_bandit([]() {
       it("returns input on 'optional::none' generator BDD 1 [&&]", [&]() {
         __bdd out = bdd_exists(bdd_1, []() -> optional<bdd::label_type> { return {}; });
 
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
+        AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
       });
 
       describe("algorithm: Singleton", [&]() {
@@ -4713,14 +4713,14 @@ go_bandit([]() {
       it("quantifies T terminal-only BDD as itself", [&]() {
         __bdd out = bdd_forall(terminal_T, 42);
 
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(terminal_T));
+        AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(terminal_T));
         AssertThat(out.negate, Is().False());
       });
 
       it("quantifies F terminal-only BDD as itself", [&]() {
         __bdd out = bdd_forall(terminal_F, 21);
 
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(terminal_F));
+        AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(terminal_F));
         AssertThat(out.negate, Is().False());
       });
 
@@ -4999,12 +4999,12 @@ go_bandit([]() {
       it("returns input on always-false predicate BDD 1 [const &]", [&]() {
         bdd in    = bdd_1;
         __bdd out = bdd_forall(in, [](const bdd::label_type) -> bool { return false; });
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
+        AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
       });
 
       it("returns input on always-false predicate BDD 1 [&&]", [&]() {
         __bdd out = bdd_forall(bdd_1, [](const bdd::label_type) -> bool { return false; });
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
+        AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
       });
 
       describe("algorithm: Singleton", [&]() {
@@ -5235,7 +5235,7 @@ go_bandit([]() {
       it("returns input on 'optional::none' generator in BDD 1 [&&]", [&]() {
         __bdd out = bdd_forall(bdd_1, []() { return make_optional<bdd::label_type>(); });
 
-        AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
+        AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
       });
 
       describe("algorithm: Singleton", [&]() {
