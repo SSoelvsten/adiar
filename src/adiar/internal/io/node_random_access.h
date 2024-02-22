@@ -14,12 +14,10 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Random-access to the contents of a levelized file of node.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename T = node, bool Reverse = false>
+  template <typename T = node>
   class node_random_access
   {
     using value_type = T;
-
-    static_assert(!Reverse, "Reversed logic is not implemented.");
 
     using uid_type   = typename value_type::uid_type;
     using label_type = typename value_type::label_type;
@@ -29,15 +27,13 @@ namespace adiar::internal
     static size_t
     memory_usage(tpie::memory_size_type max_width)
     {
-      return node_stream<Reverse>::memory_usage()
-        + tpie::array<value_type>::memory_usage(max_width);
+      return node_stream<>::memory_usage() + tpie::array<value_type>::memory_usage(max_width);
     }
 
     static size_t
     memory_usage(const dd& diagram)
     {
-      return node_stream<Reverse>::memory_usage()
-        + tpie::array<value_type>::memory_usage(diagram->width);
+      return node_stream<>::memory_usage() + tpie::array<value_type>::memory_usage(diagram->width);
     }
 
   public:
@@ -52,7 +48,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief File stream to obtain the contents of each level
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_stream<Reverse> _ns;
+    node_stream</*default (top-down) direction*/> _ns;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Maximum width of the contents of 'lfs'. This is the maximum number of elements needed
