@@ -1036,6 +1036,8 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
+          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(1u));
+
           AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(0u));
 
           AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
@@ -1138,6 +1140,8 @@ go_bandit([]() {
           AssertThat(levels.pull(), Is().EqualTo(level_info(3, 2u)));
 
           AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(3u));
 
           AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
 
@@ -1248,6 +1252,8 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
+          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(2u));
+
           AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(3u));
 
           AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
@@ -1305,6 +1311,8 @@ go_bandit([]() {
           AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
 
           AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(1u));
 
           AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(1u));
 
@@ -1389,6 +1397,8 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
+          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(2u));
+
           AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(2u));
 
           AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
@@ -1453,6 +1463,8 @@ go_bandit([]() {
           AssertThat(levels.pull(), Is().EqualTo(level_info(1, 2u)));
 
           AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(2u));
 
           AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(2u));
 
@@ -1532,6 +1544,8 @@ go_bandit([]() {
           AssertThat(levels.pull(), Is().EqualTo(level_info(3, 2u)));
 
           AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(2u));
 
           AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(2u));
 
@@ -1636,6 +1650,8 @@ go_bandit([]() {
           AssertThat(levels.pull(), Is().EqualTo(level_info(3, 3u)));
 
           AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(3u));
 
           AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
 
@@ -1763,6 +1779,8 @@ go_bandit([]() {
           AssertThat(levels.pull(), Is().EqualTo(level_info(3, 2u)));
 
           AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(4u));
 
           AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
 
@@ -1892,6 +1910,8 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
+          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(4u));
+
           AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
 
           AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
@@ -1949,6 +1969,8 @@ go_bandit([]() {
           AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
 
           AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(1u));
 
           AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(1u));
 
@@ -2080,6 +2102,8 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
+          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(3u));
+
           AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
 
           AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
@@ -2178,6 +2202,8 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
+          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(2u));
+
           AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(2u));
 
           AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
@@ -2236,6 +2262,8 @@ go_bandit([]() {
           AssertThat(levels.pull(), Is().EqualTo(level_info(1, 2u)));
 
           AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(2u));
 
           AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(2u));
 
@@ -2342,6 +2370,8 @@ go_bandit([]() {
           AssertThat(levels.pull(), Is().EqualTo(level_info(2, 3u)));
 
           AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(3u));
 
           AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(3u));
 
@@ -2493,6 +2523,8 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
+          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(4u));
+
           AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
 
           AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
@@ -2592,6 +2624,8 @@ go_bandit([]() {
           AssertThat(levels.pull(), Is().EqualTo(level_info(3, 1u)));
 
           AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(3u));
 
           AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
 
@@ -2801,6 +2835,8 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
+          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(4u));
+
           AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
 
           AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
@@ -2908,6 +2944,8 @@ go_bandit([]() {
           AssertThat(levels.pull(), Is().EqualTo(level_info(3, 3u)));
 
           AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(4u));
 
           AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
 
@@ -3017,6 +3055,8 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
+          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(4u));
+
           AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
 
           AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
@@ -3125,6 +3165,8 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
+          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(4u));
+
           AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
 
           AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
@@ -3226,6 +3268,8 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
+          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(3u));
+
           AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
 
           AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
@@ -3317,6 +3361,8 @@ go_bandit([]() {
              AssertThat(levels.pull(), Is().EqualTo(level_info(2, 3u)));
 
              AssertThat(levels.can_pull(), Is().False());
+
+             AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(3u));
 
              AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
 

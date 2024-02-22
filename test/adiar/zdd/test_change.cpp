@@ -174,6 +174,8 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+
         AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(1u));
 
@@ -234,6 +236,8 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+
         AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(1u));
 
@@ -286,6 +290,8 @@ go_bandit([]() {
         AssertThat(levels.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
+
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
 
         AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(1u));
@@ -403,6 +409,8 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+
         AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(1u));
 
@@ -470,6 +478,8 @@ go_bandit([]() {
         AssertThat(levels.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
+
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
 
         AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(2u));
@@ -578,6 +588,8 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+
         AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(0u));
 
@@ -629,6 +641,8 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+
         AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(1u));
 
@@ -671,6 +685,8 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+
         AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(0u));
 
@@ -710,6 +726,8 @@ go_bandit([]() {
         AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
+
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
 
         AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(0u));
@@ -761,6 +779,8 @@ go_bandit([]() {
         AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
+
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
 
         AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(1u));
@@ -833,6 +853,8 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+
         AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(3u));
 
@@ -901,6 +923,8 @@ go_bandit([]() {
         AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
+
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
 
         AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(2u));
@@ -979,6 +1003,8 @@ go_bandit([]() {
         AssertThat(levels.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
+
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
 
         AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(3u));
@@ -1073,6 +1099,8 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+
         AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(1u));
 
@@ -1128,6 +1156,8 @@ go_bandit([]() {
         AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
+
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
 
         AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(2u));
@@ -1197,6 +1227,8 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+
           AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
                      Is().GreaterThanOrEqualTo(2u));
 
@@ -1259,6 +1291,8 @@ go_bandit([]() {
         AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
+
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
 
         AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(1u));
@@ -1347,6 +1381,8 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+
         AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(3u));
 
@@ -1410,6 +1446,8 @@ go_bandit([]() {
           AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
 
           AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
 
           AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
                      Is().GreaterThanOrEqualTo(1u));
@@ -1548,6 +1586,8 @@ go_bandit([]() {
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
 
           AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
 
           AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
                      Is().GreaterThanOrEqualTo(0u));

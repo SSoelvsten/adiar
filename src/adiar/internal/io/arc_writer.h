@@ -134,6 +134,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
       stats_arc_file.push_level += 1;
 #endif
+      _file_ptr->width = std::max<size_t>(_file_ptr->width, li.width());
       levelized_file_writer::push(li);
     }
 
