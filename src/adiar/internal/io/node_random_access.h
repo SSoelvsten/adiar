@@ -8,16 +8,24 @@
 
 namespace adiar::internal
 {
-  // TODO: Generalize parts of 'node_random_access' to reuse it with levelized files with other
-  //       types of content. Yet, what use-case do we have for this?
-
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Random-access to the contents of a levelized file of node.
+  ///
+  /// \tparam StreamType Stream to wrap with levelized random access
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename T = node>
-  class node_random_access
+  //
+  // TODO: Generalize parts of 'node_random_access' to reuse it with levelized files with other
+  //       types of content. Yet, what use-case do we have for this?
+  //
+  // TODO: Support 'StreamType<Reverse>'
+  template <typename StreamType>
+  class levelized_random_access
   {
-    using value_type = T;
+  private:
+    using stream_type = StreamType/*<Default (top-down) direction>*/;
+
+  public:
+    using value_type = typename stream_type::value_type;
 
     using uid_type   = typename value_type::uid_type;
     using label_type = typename value_type::label_type;
@@ -27,13 +35,13 @@ namespace adiar::internal
     static size_t
     memory_usage(tpie::memory_size_type max_width)
     {
-      return node_stream<>::memory_usage() + tpie::array<value_type>::memory_usage(max_width);
+      return stream_type::memory_usage() + tpie::array<value_type>::memory_usage(max_width);
     }
 
     static size_t
     memory_usage(const dd& diagram)
     {
-      return node_stream<>::memory_usage() + tpie::array<value_type>::memory_usage(diagram->width);
+      return stream_type::memory_usage() + tpie::array<value_type>::memory_usage(diagram->width);
     }
 
   public:
@@ -48,7 +56,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief File stream to obtain the contents of each level
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_stream</*default (top-down) direction*/> _ns;
+    stream_type _stream;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Maximum width of the contents of 'lfs'. This is the maximum number of elements needed
@@ -79,7 +87,7 @@ namespace adiar::internal
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    // node_random_access()
+    // levelized_random_access()
     // { }
     //
     // TODO: Add 'attach(...)', 'attached()' 'detach()' working multi-usage.
@@ -89,11 +97,11 @@ namespace adiar::internal
     ///
     /// \pre The given levelized file is *indexable*.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_random_access(const levelized_file<value_type>& f, const bool negate = false)
-      : _ns(f, negate)
+    levelized_random_access(const levelized_file<value_type>& f, const bool negate = false)
+      : _stream(f, negate)
       , _max_width(f.width)
       , _level_buffer(f.width)
-      , _root(_ns.peek().uid())
+      , _root(_stream.peek().uid())
     {
       adiar_assert(f.indexable);
       init();
@@ -104,11 +112,11 @@ namespace adiar::internal
     ///
     /// \pre The given shared levelized file is *indexable*.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_random_access(const shared_ptr<levelized_file<value_type>>& f, const bool negate = false)
-      : _ns(f, negate)
+    levelized_random_access(const shared_ptr<levelized_file<value_type>>& f, const bool negate = false)
+      : _stream(f, negate)
       , _max_width(f->width)
       , _level_buffer(f->width)
-      , _root(_ns.peek().uid())
+      , _root(_stream.peek().uid())
     {
       adiar_assert(f->indexable);
       init();
@@ -119,25 +127,19 @@ namespace adiar::internal
     ///
     /// \pre The given decision diagram is indexable.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_random_access(const dd& diagram)
-      : _ns(diagram)
-      , _max_width(diagram->width)
-      , _level_buffer(diagram->width)
-      , _root(_ns.peek().uid())
-    {
-      adiar_assert(diagram->indexable);
-      init();
-    }
+    levelized_random_access(const dd& diagram)
+      : levelized_random_access(diagram.file_ptr(), diagram.is_negated())
+    {}
 
   private:
     void
     init()
     {
-      adiar_assert(_ns.can_pull(), "given file should be non-empty");
+      adiar_assert(_stream.can_pull(), "given file should be non-empty");
 
       // Skip the terminal node for terminal only BDDs. This way, 'has_next_level' is a mere
       // 'can_pull' on the underlying stream.
-      if (_root.is_terminal()) { _ns.pull(); }
+      if (_root.is_terminal()) { _stream.pull(); }
     }
 
   public:
@@ -156,7 +158,7 @@ namespace adiar::internal
     bool
     has_next_level() const
     {
-      return _ns.can_pull();
+      return _stream.can_pull();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -167,7 +169,7 @@ namespace adiar::internal
     label_type
     next_level()
     {
-      return _ns.peek().uid().label();
+      return _stream.peek().uid().label();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -191,11 +193,11 @@ namespace adiar::internal
       if (!has_next_level()) { return; }
 
       // Skip all levels not of interest
-      while (_ns.can_pull() && _ns.peek().uid().label() < level) { _ns.pull(); }
+      while (_stream.can_pull() && _stream.peek().uid().label() < level) { _stream.pull(); }
 
       // Copy over all elements from the requested level
-      while (_ns.can_pull() && _ns.peek().uid().label() == level) {
-        _level_buffer[_curr_width++] = _ns.pull();
+      while (_stream.can_pull() && _stream.peek().uid().label() == level) {
+        _level_buffer[_curr_width++] = _stream.pull();
       }
     }
 
@@ -270,6 +272,11 @@ namespace adiar::internal
       return at(current_width() - ((uid_type::max_id + 1u) - u.id()));
     }
   };
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Random-access to the contents of a levelized file of node.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  using node_random_access = levelized_random_access<node_stream<>>;
 }
 
 #endif // ADIAR_INTERNAL_IO_NODE_RANDOM_ACCESS_H
