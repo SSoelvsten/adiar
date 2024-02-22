@@ -3,249 +3,12 @@
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/data_types/node.h>
-#include <adiar/internal/io/levelized_file.h>
-#include <adiar/internal/io/levelized_file_stream.h>
+#include <adiar/internal/dd.h>
+#include <adiar/internal/io/levelized_random_access.h>
+#include <adiar/internal/io/node_stream.h>
 
 namespace adiar::internal
 {
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// \brief Random-access to the contents of a levelized file of node.
-  ///
-  /// \tparam StreamType Stream to wrap with levelized random access
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  //
-  // TODO: Generalize parts of 'node_random_access' to reuse it with levelized files with other
-  //       types of content. Yet, what use-case do we have for this?
-  //
-  // TODO: Support 'StreamType<Reverse>'
-  template <typename StreamType>
-  class levelized_random_access
-  {
-  private:
-    using stream_type = StreamType/*<Default (top-down) direction>*/;
-
-  public:
-    using value_type = typename stream_type::value_type;
-
-    using uid_type   = typename value_type::uid_type;
-    using label_type = typename value_type::label_type;
-    using id_type    = typename value_type::id_type;
-
-  public:
-    static size_t
-    memory_usage(tpie::memory_size_type max_width)
-    {
-      return stream_type::memory_usage() + tpie::array<value_type>::memory_usage(max_width);
-    }
-
-    static size_t
-    memory_usage(const dd& diagram)
-    {
-      return stream_type::memory_usage() + tpie::array<value_type>::memory_usage(diagram->width);
-    }
-
-  public:
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Value to mark there is no current level.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    static constexpr label_type no_level = -1;
-
-    static_assert(uid_type::max_label < no_level, "'no_level' should be an invalid label value");
-
-  private:
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief File stream to obtain the contents of each level
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    stream_type _stream;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Maximum width of the contents of 'lfs'. This is the maximum number of elements needed
-    ///        to be placed within.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    const id_type _max_width;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Buffer with all elements of the current level.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    tpie::array<value_type> _level_buffer;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Buffer with all elements of the current level.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    // TODO: Turn into 'signed int'.
-    label_type _curr_level = no_level;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Width of the current level.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    id_type _curr_width = 0;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Root of the diagram.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    const uid_type _root;
-
-  public:
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    // levelized_random_access()
-    // { }
-    //
-    // TODO: Add 'attach(...)', 'attached()' 'detach()' working multi-usage.
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Construct attached to a levelized file of nodes.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    levelized_random_access(const levelized_file<value_type>& f, const bool negate = false)
-      : _stream(f, negate)
-      , _max_width(f.width)
-      , _level_buffer(f.width)
-      , _root(_stream.peek().uid())
-    {
-      init();
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Construct attached to a shared levelized file of nodes.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    levelized_random_access(const shared_ptr<levelized_file<value_type>>& f, const bool negate = false)
-      : _stream(f, negate)
-      , _max_width(f->width)
-      , _level_buffer(f->width)
-      , _root(_stream.peek().uid())
-    {
-      init();
-    }
-
-  private:
-    void
-    init()
-    {
-      adiar_assert(_stream.can_pull(), "given file should be non-empty");
-
-      // Skip the terminal node for terminal only BDDs. This way, 'has_next_level' is a mere
-      // 'can_pull' on the underlying stream.
-      if (_root.is_terminal()) { _stream.pull(); }
-    }
-
-  public:
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Return root of the diagram.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    uid_type
-    root() const
-    {
-      return _root;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether there are any more levels.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    bool
-    has_next_level() const
-    {
-      return _stream.can_pull();
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief The immediate next available non-empty level.
-    ///
-    /// \pre `has_next_level() == true`
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    label_type
-    next_level()
-    {
-      return _stream.peek().uid().label();
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Sets up the random access buffer for the specified level.
-    ///
-    /// \param level The next level to provide random access to. If the requested level does not
-    ///              exist, then the buffer will be empty.
-    ///
-    /// \pre `has_current_level() == false` or `current_level() < level`
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    void
-    setup_next_level(const label_type level)
-    {
-      adiar_assert(!has_current_level() || current_level() < level);
-
-      // Set to new level and mark the entire buffer's content garbage.
-      _curr_level = level;
-      _curr_width = 0;
-
-      // Stop early when going "beyond" the available levels
-      if (!has_next_level()) { return; }
-
-      // Skip all levels not of interest
-      while (_stream.can_pull() && _stream.peek().uid().label() < level) { _stream.pull(); }
-
-      // Copy over all elements from the requested level
-      while (_stream.can_pull() && _stream.peek().uid().label() == level) {
-        _level_buffer[_curr_width++] = _stream.pull();
-      }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Sets up the random access buffer for the immediate next available non-empty level.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    void
-    setup_next_level()
-    {
-      setup_next_level(next_level());
-    }
-
-  public:
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether there is any current level to access elements from.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    bool
-    has_current_level() const
-    {
-      return _curr_level != no_level;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief The label of the current level.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    label_type
-    current_level() const
-    {
-      return _curr_level;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief The width of the current level, i.e. the number of elements one can access to.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    label_type
-    current_width() const
-    {
-      return _curr_width;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether the current level is empty.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    bool
-    empty_level() const
-    {
-      return _curr_width == 0u;
-    }
-
-  public:
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Obtain the element of the current level at the given index.
-    ///
-    /// \pre `idx < current_width()`
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    const value_type&
-    at(id_type idx) const
-    {
-      adiar_assert(idx < current_width());
-      return _level_buffer[idx];
-    }
-  };
-
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Random-access to the contents of a levelized file of node.
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -253,6 +16,20 @@ namespace adiar::internal
     : public levelized_random_access<node_stream<>>
   {
     using parent_type = levelized_random_access<node_stream<>>;
+
+  public:
+    static size_t
+    memory_usage(tpie::memory_size_type max_width)
+    {
+      // To support overloading with both 'width' and 'diagram', we need both in this class.
+      return parent_type::memory_usage(max_width);
+    }
+
+    static size_t
+    memory_usage(const dd& diagram)
+    {
+      return parent_type::memory_usage(diagram->width);
+    }
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -290,12 +67,13 @@ namespace adiar::internal
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Obtain the node with the given uid.
+    /// \brief Obtain the node at the given index.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     const value_type&
-    at(id_type idx) const
+    at(idx_type idx) const
     {
-      return levelized_random_access<node_stream<>>::at(idx);
+      // To properly support overloading with both 'idx' and 'uid', we need both in this class.
+      return parent_type::at(idx);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -306,9 +84,8 @@ namespace adiar::internal
     {
       adiar_assert(u.label() == current_level());
 
-      // adiar_assert(... < current_width()); is in 'return at(...)'
-      const id_type idx = current_width() - ((uid_type::max_id + 1u) - u.id());
-      return levelized_random_access<node_stream<>>::at(idx);
+      const idx_type idx = current_width() - ((uid_type::max_id + 1u) - u.id());
+      return parent_type::at(idx);
     }
   };
 }
