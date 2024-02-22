@@ -205,6 +205,8 @@ go_bandit([]() {
 
         AssertThat(meta_arcs.can_pull(), Is().False());
 
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(1u));
 
@@ -259,6 +261,8 @@ go_bandit([]() {
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2, 2u)));
 
         AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(2u));
@@ -549,6 +553,8 @@ go_bandit([]() {
 
         AssertThat(meta_arcs.can_pull(), Is().False());
 
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(1u));
 
@@ -590,6 +596,8 @@ go_bandit([]() {
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(1u));
@@ -652,6 +660,8 @@ go_bandit([]() {
 
         AssertThat(meta_arcs.can_pull(), Is().False());
 
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(1u));
 
@@ -699,6 +709,8 @@ go_bandit([]() {
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2, 1u)));
 
         AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(2u));
@@ -765,6 +777,8 @@ go_bandit([]() {
 
         AssertThat(meta_arcs.can_pull(), Is().False());
 
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(2u));
 
@@ -829,6 +843,8 @@ go_bandit([]() {
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(2u));
@@ -968,6 +984,8 @@ go_bandit([]() {
 
         AssertThat(meta_arcs.can_pull(), Is().False());
 
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(2u));
 
@@ -1023,6 +1041,8 @@ go_bandit([]() {
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(1, 2u)));
 
         AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(2u));
@@ -1084,6 +1104,8 @@ go_bandit([]() {
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(3, 2u)));
 
         AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(2u));
@@ -1225,6 +1247,8 @@ go_bandit([]() {
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(2u));

@@ -337,6 +337,8 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(2u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
@@ -384,6 +386,8 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(2u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
@@ -423,6 +427,8 @@ go_bandit([]() {
         AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(1u));
 
@@ -464,6 +470,8 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(1u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
@@ -503,6 +511,8 @@ go_bandit([]() {
         AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(1u));
 
@@ -544,6 +554,8 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(1u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
@@ -584,6 +596,8 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(1u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
@@ -623,6 +637,8 @@ go_bandit([]() {
         AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(1u));
 
@@ -704,6 +720,8 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(1u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
@@ -762,6 +780,8 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+
         AssertThat((std::get<__bdd::shared_arc_file_type>(out._union))->max_1level_cut,
                    Is().EqualTo(2u));
 
@@ -819,6 +839,8 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(2u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
@@ -874,6 +896,8 @@ go_bandit([]() {
         AssertThat(levels.pull(), Is().EqualTo(level_info(1, 2u)));
 
         AssertThat(levels.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(2u));
 
@@ -958,6 +982,8 @@ go_bandit([]() {
         AssertThat(levels.pull(), Is().EqualTo(level_info(2, 2u)));
 
         AssertThat(levels.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(4u));
 
@@ -1114,6 +1140,8 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(4u));
+
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(6u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
@@ -1221,6 +1249,8 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(3u));
+
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(3u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
@@ -1298,6 +1328,8 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(2u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
@@ -1374,6 +1406,8 @@ go_bandit([]() {
         AssertThat(levels.pull(), Is().EqualTo(level_info(2, 2u)));
 
         AssertThat(levels.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(2u));
 
@@ -1498,6 +1532,8 @@ go_bandit([]() {
         AssertThat(levels.pull(), Is().EqualTo(level_info(3, 1u)));
 
         AssertThat(levels.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(4u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(4u));
 
@@ -1627,6 +1663,8 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(4u));
+
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(4u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
@@ -1745,6 +1783,8 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(3u));
+
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(3u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
@@ -1848,6 +1888,8 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(4u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
@@ -1949,6 +1991,8 @@ go_bandit([]() {
         AssertThat(levels.pull(), Is().EqualTo(level_info(3, 2u)));
 
         AssertThat(levels.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(4u));
 
         AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(4u));
 
