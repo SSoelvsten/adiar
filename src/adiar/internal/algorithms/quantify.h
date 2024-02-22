@@ -863,12 +863,12 @@ namespace adiar::internal
          || ( // Heuristically, if the narrowest canonical fits
               ep.template get<exec_policy::access>() == exec_policy::access::Auto
               && in->indexable
-              && node_random_access<>::memory_usage(in->width) <= ra_threshold)
+              && node_random_access::memory_usage(in->width) <= ra_threshold)
          ) {
 #ifdef ADIAR_STATS
       stats_quantify.ra.runs += 1u;
 #endif
-      return __quantify_ra<node_random_access<>, quantify_priority_queue_1_node_t>(
+      return __quantify_ra<node_random_access, quantify_priority_queue_1_node_t>(
         ep, in, policy, op);
     }
 
@@ -1020,7 +1020,7 @@ namespace adiar::internal
     static size_t
     ra_memory(const shared_levelized_file<node>& outer_file)
     {
-      return node_random_access<>::memory_usage(outer_file);
+      return node_random_access::memory_usage(outer_file);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1070,9 +1070,9 @@ namespace adiar::internal
              const size_t inner_remaining_memory) const
     {
       adiar_assert(ep.template get<exec_policy::access>() != exec_policy::access::Priority_Queue);
-      adiar_assert(node_random_access<>::memory_usage(outer_file) <= inner_remaining_memory);
+      adiar_assert(node_random_access::memory_usage(outer_file) <= inner_remaining_memory);
 
-      node_random_access<> in_nodes(outer_file);
+      node_random_access in_nodes(outer_file);
       return __quantify_ra(ep, in_nodes, *this, _op, pq);
     }
 

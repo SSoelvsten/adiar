@@ -22,6 +22,9 @@ namespace adiar::internal
   template <bool Reverse = false>
   class node_arc_stream : protected arc_stream<!Reverse>
   {
+  public:
+    using value_type = node;
+
   private:
     /// \brief Arc-based input to-be converted into nodes on-the-fly.
     arc_stream<!Reverse> _stream;
