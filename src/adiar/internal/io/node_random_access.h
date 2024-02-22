@@ -94,8 +94,6 @@ namespace adiar::internal
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a levelized file of nodes.
-    ///
-    /// \pre The given levelized file is *indexable*.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     levelized_random_access(const levelized_file<value_type>& f, const bool negate = false)
       : _stream(f, negate)
@@ -103,14 +101,11 @@ namespace adiar::internal
       , _level_buffer(f.width)
       , _root(_stream.peek().uid())
     {
-      adiar_assert(f.indexable);
       init();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a shared levelized file of nodes.
-    ///
-    /// \pre The given shared levelized file is *indexable*.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     levelized_random_access(const shared_ptr<levelized_file<value_type>>& f, const bool negate = false)
       : _stream(f, negate)
@@ -118,18 +113,8 @@ namespace adiar::internal
       , _level_buffer(f->width)
       , _root(_stream.peek().uid())
     {
-      adiar_assert(f->indexable);
       init();
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Construct attached to a decision diagram.
-    ///
-    /// \pre The given decision diagram is indexable.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    levelized_random_access(const dd& diagram)
-      : levelized_random_access(diagram.file_ptr(), diagram.is_negated())
-    {}
 
   private:
     void
@@ -259,6 +244,59 @@ namespace adiar::internal
       adiar_assert(idx < current_width());
       return _level_buffer[idx];
     }
+  };
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Random-access to the contents of a levelized file of node.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  class node_random_access
+    : public levelized_random_access<node_stream<>>
+  {
+    using parent_type = levelized_random_access<node_stream<>>;
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Construct attached to a levelized file of nodes.
+    ///
+    /// \pre The given levelized file is *indexable*.
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    node_random_access(const levelized_file<value_type>& f, const bool negate = false)
+      : parent_type(f, negate)
+    {
+      adiar_assert(f.indexable);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Construct attached to a shared levelized file of nodes.
+    ///
+    /// \pre The given shared levelized file is *indexable*.
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    node_random_access(const shared_ptr<levelized_file<value_type>>& f, const bool negate = false)
+      : parent_type(f, negate)
+    {
+      adiar_assert(f->indexable);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Construct attached to a decision diagram.
+    ///
+    /// \pre The given decision diagram is indexable.
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    node_random_access(const dd& diagram)
+      : node_random_access(diagram.file_ptr(), diagram.is_negated())
+    {
+      adiar_assert(diagram->indexable);
+    }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain the node with the given uid.
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    const value_type&
+    at(id_type idx) const
+    {
+      return levelized_random_access<node_stream<>>::at(idx);
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the node with the given uid.
@@ -269,14 +307,10 @@ namespace adiar::internal
       adiar_assert(u.label() == current_level());
 
       // adiar_assert(... < current_width()); is in 'return at(...)'
-      return at(current_width() - ((uid_type::max_id + 1u) - u.id()));
+      const id_type idx = current_width() - ((uid_type::max_id + 1u) - u.id());
+      return levelized_random_access<node_stream<>>::at(idx);
     }
   };
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// \brief Random-access to the contents of a levelized file of node.
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  using node_random_access = levelized_random_access<node_stream<>>;
 }
 
 #endif // ADIAR_INTERNAL_IO_NODE_RANDOM_ACCESS_H
