@@ -75,7 +75,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Root of the diagram.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    uid_type _root;
+    const uid_type _root;
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -93,6 +93,7 @@ namespace adiar::internal
       : _ns(f, negate)
       , _max_width(f.width)
       , _level_buffer(f.width)
+      , _root(_ns.peek().uid())
     {
       adiar_assert(f.indexable);
       init();
@@ -107,6 +108,7 @@ namespace adiar::internal
       : _ns(f, negate)
       , _max_width(f->width)
       , _level_buffer(f->width)
+      , _root(_ns.peek().uid())
     {
       adiar_assert(f->indexable);
       init();
@@ -121,6 +123,7 @@ namespace adiar::internal
       : _ns(diagram)
       , _max_width(diagram->width)
       , _level_buffer(diagram->width)
+      , _root(_ns.peek().uid())
     {
       adiar_assert(diagram->indexable);
       init();
@@ -132,8 +135,8 @@ namespace adiar::internal
     {
       adiar_assert(_ns.can_pull(), "given file should be non-empty");
 
-      // Skip the terminal node for terminal only BDDs.
-      _root = _ns.peek().uid();
+      // Skip the terminal node for terminal only BDDs. This way, 'has_next_level' is a mere
+      // 'can_pull' on the underlying stream.
       if (_root.is_terminal()) { _ns.pull(); }
     }
 
