@@ -87,9 +87,10 @@ namespace adiar::internal
     // TODO: Add 'attach(...)', 'attached()' 'detach()' working multi-usage.
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Construct attached to a levelized file of nodes.
+    /// \brief Construct attached to a mutable levelized file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    levelized_random_access(const levelized_file<value_type>& f, const bool negate = false)
+    template <typename T>
+    levelized_random_access(levelized_file<T>& f, const bool negate = false)
       : _stream(f, negate)
       , _max_width(f.width)
       , _level_buffer(f.width)
@@ -99,9 +100,23 @@ namespace adiar::internal
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Construct attached to a shared levelized file of nodes.
+    /// \brief Construct attached to an immutable levelized file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    levelized_random_access(const shared_ptr<levelized_file<value_type>>& f, const bool negate = false)
+    template <typename T>
+    levelized_random_access(const levelized_file<T>& f, const bool negate = false)
+      : _stream(f, negate)
+      , _max_width(f.width)
+      , _level_buffer(f.width)
+      , _root(_stream.peek().uid())
+    {
+      init();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Construct attached to an immutable shared levelized file.
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    template <typename T>
+    levelized_random_access(const shared_ptr<levelized_file<T>>& f, const bool negate = false)
       : _stream(f, negate)
       , _max_width(f->width)
       , _level_buffer(f->width)

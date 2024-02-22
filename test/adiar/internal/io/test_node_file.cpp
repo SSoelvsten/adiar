@@ -1251,20 +1251,6 @@ go_bandit([]() {
             AssertThat(nra.at(B_n1.uid()), Is().EqualTo(B_n1));
           });
 
-          it("provides random access to root [idx]", [&]() {
-            node_random_access nra(nf_B);
-            nra.setup_next_level(0u);
-
-            AssertThat(nra.at(0u), Is().EqualTo(B_n1));
-          });
-
-          it("provides random access to root [uid]", [&]() {
-            node_random_access nra(nf_B);
-            nra.setup_next_level(0u);
-
-            AssertThat(nra.at(B_n1.uid()), Is().EqualTo(B_n1));
-          });
-
           it("provides random access to non-root single-node level [idx]", [&]() {
             node_random_access nra(nf_B);
             nra.setup_next_level(1u);
@@ -1279,7 +1265,7 @@ go_bandit([]() {
             AssertThat(nra.at(B_n2.uid()), Is().EqualTo(B_n2));
           });
 
-          it("provides in-order access to multi-node level in reverse [idx]", [&]() {
+          it("provides in-order access to multi-node level [idx]", [&]() {
             node_random_access nra(nf_B);
             nra.setup_next_level(2u);
 
@@ -1288,7 +1274,7 @@ go_bandit([]() {
             AssertThat(nra.at(2u), Is().EqualTo(B_n5));
           });
 
-          it("provides in-order random access to multi-node level [uid]", [&]() {
+          it("provides in-order access to multi-node level [uid]", [&]() {
             node_random_access nra(nf_B);
             nra.setup_next_level(2u);
 
