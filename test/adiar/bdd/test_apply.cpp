@@ -351,23 +351,23 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->levels(), Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
 
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
             Is().EqualTo(1u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
             Is().EqualTo(0u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                      Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
                      Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
                      Is().EqualTo(0u));
         });
 
@@ -386,30 +386,30 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->levels(), Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
 
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
             Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                      Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
                      Is().EqualTo(0u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
                      Is().EqualTo(1u));
         });
 
         it("should shortcut on irrelevance on x0 /\\ T", [&]() {
           __bdd out = bdd_and(bdd_x0, bdd_T);
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_x0));
+          AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
           AssertThat(out.negate, Is().False());
         });
 
@@ -423,23 +423,23 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->levels(), Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
 
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
             Is().EqualTo(1u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
             Is().EqualTo(0u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                      Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
                      Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
                      Is().EqualTo(0u));
         });
 
@@ -453,30 +453,30 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->levels(), Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
 
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
             Is().EqualTo(1u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
             Is().EqualTo(0u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                      Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
                      Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
                      Is().EqualTo(0u));
         });
 
         it("should return input on being given the same BDD twice", [&]() {
           __bdd out = bdd_and(bdd_1, bdd_1);
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_1));
+          AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
           AssertThat(out.negate, Is().False());
         });
       });
@@ -485,14 +485,14 @@ go_bandit([]() {
         it("should shortcut on negating on T and x0", [&]() {
           __bdd out = bdd_nand(bdd_x0, bdd_T);
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_x0));
+          AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
           AssertThat(out.negate, Is().True());
         });
 
         it("should shortcut on negating on T and x0", [&]() {
           __bdd out = bdd_nand(bdd_x0, bdd_T);
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_x0));
+          AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
           AssertThat(out.negate, Is().True());
         });
 
@@ -506,23 +506,23 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->levels(), Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
 
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
             Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                      Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
                      Is().EqualTo(0u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
                      Is().EqualTo(1u));
         });
       });
@@ -537,23 +537,23 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->levels(), Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
 
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
             Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                      Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
                      Is().EqualTo(0u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
                      Is().EqualTo(1u));
         });
 
@@ -573,37 +573,37 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->levels(), Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
 
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
             Is().EqualTo(1u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
             Is().EqualTo(0u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                      Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
                      Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
                      Is().EqualTo(0u));
         });
 
         it("should shortcut on irrelevance on x0 \\/ F", [&]() {
           __bdd out = bdd_or(bdd_x0, bdd_F);
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_x0));
+          AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
           AssertThat(out.negate, Is().False());
         });
 
         it("should OR shortcut on irrelevance F \\/ x0", [&]() {
           __bdd out = bdd_or(bdd_F, bdd_x0);
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_x0));
+          AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
           AssertThat(out.negate, Is().False());
         });
 
@@ -617,23 +617,23 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->levels(), Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
 
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
             Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                      Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
                      Is().EqualTo(0u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
                      Is().EqualTo(1u));
         });
 
@@ -647,23 +647,23 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->levels(), Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
 
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
             Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                      Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
                      Is().EqualTo(0u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
                      Is().EqualTo(1u));
         });
       });
@@ -679,23 +679,23 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->levels(), Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
 
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
             Is().EqualTo(1u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
             Is().EqualTo(0u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                      Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
                      Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
                      Is().EqualTo(0u));
         });
       });
@@ -710,23 +710,23 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->levels(), Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
 
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
             Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                      Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
                      Is().EqualTo(0u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
                      Is().EqualTo(1u));
         });
 
@@ -739,37 +739,37 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->levels(), Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
 
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
             Is().EqualTo(1u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
             Is().EqualTo(0u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                      Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
                      Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
                      Is().EqualTo(0u));
         });
 
         it("should shortcut on negating on x0 ^ T", [&]() {
           __bdd out = bdd_xor(bdd_x0, bdd_T);
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_x0));
+          AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
           AssertThat(out.negate, Is().True());
         });
 
         it("should shortcut on negating on T ^ x0", [&]() {
           __bdd out = bdd_xor(bdd_x0, bdd_T);
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_x0));
+          AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
           AssertThat(out.negate, Is().True());
         });
 
@@ -783,23 +783,23 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->levels(), Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
 
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
             Is().EqualTo(1u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
             Is().EqualTo(0u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                      Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
                      Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
                      Is().EqualTo(0u));
         });
 
@@ -813,23 +813,23 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->levels(), Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
 
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
             Is().EqualTo(1u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
             Is().EqualTo(0u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                      Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
                      Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
                      Is().EqualTo(0u));
         });
       });
@@ -844,23 +844,23 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->levels(), Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
 
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
             Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                      Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
                      Is().EqualTo(0u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
                      Is().EqualTo(1u));
         });
 
@@ -873,23 +873,23 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->levels(), Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
 
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
             Is().EqualTo(1u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
             Is().EqualTo(0u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                      Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
                      Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
                      Is().EqualTo(0u));
         });
 
@@ -902,30 +902,30 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->levels(), Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
 
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
             Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                      Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
                      Is().EqualTo(0u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
                      Is().EqualTo(1u));
         });
 
         it("should shortcut on irrelevance on T -> x0", [&]() {
           __bdd out = bdd_imp(bdd_T, bdd_x0);
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_x0));
+          AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
           AssertThat(out.negate, Is().False());
         });
 
@@ -939,23 +939,23 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->levels(), Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
 
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_False],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
             Is().EqualTo(0u));
           AssertThat(
-            out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::Internal_True],
+            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
             Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->max_1level_cut[cut::All],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                      Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
                      Is().EqualTo(0u));
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
                      Is().EqualTo(1u));
         });
 
@@ -963,7 +963,7 @@ go_bandit([]() {
            [&]() {
              __bdd out = bdd_imp(bdd_not(bdd_2), bdd_2);
 
-             AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_2));
+             AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_2));
              AssertThat(out.negate,
                         Is().False()); // negated the already negated input doubly-negating
            });
@@ -971,7 +971,7 @@ go_bandit([]() {
         it("should return input when given the same BDD twice, where one is negated [2]", [&]() {
           __bdd out = bdd_imp(bdd_2, bdd_not(bdd_2));
 
-          AssertThat(out.get<shared_levelized_file<bdd::node_type>>(), Is().EqualTo(bdd_2));
+          AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_2));
           AssertThat(out.negate, Is().True()); // negated the first of the two
         });
       });
@@ -1036,13 +1036,13 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(0u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
                      Is().EqualTo(2u));
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(0u));
         });
 
@@ -1141,13 +1141,13 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(3u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(3u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(4u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
                      Is().EqualTo(4u));
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(4u));
         });
 
@@ -1252,13 +1252,13 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(3u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(3u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
                      Is().EqualTo(3u));
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(1u));
         });
       });
@@ -1312,13 +1312,13 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
                      Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(2u));
         });
 
@@ -1397,13 +1397,13 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(2u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
                      Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(4u));
         });
       });
@@ -1464,13 +1464,13 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(2u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
                      Is().EqualTo(2u));
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(2u));
         });
 
@@ -1545,13 +1545,13 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(2u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
                      Is().EqualTo(3u));
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(3u));
         });
 
@@ -1651,13 +1651,13 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(3u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(3u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(4u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
                      Is().EqualTo(5u));
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(4u));
         });
 
@@ -1780,13 +1780,13 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(4u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(4u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(4u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
                      Is().EqualTo(4u));
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(5u));
         });
 
@@ -1910,13 +1910,13 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(4u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(4u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(4u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
                      Is().EqualTo(5u));
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(6u));
         });
       });
@@ -1970,13 +1970,13 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(1u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
                      Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(2u));
         });
       });
@@ -2102,13 +2102,13 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(3u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(3u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(4u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
                      Is().EqualTo(4u));
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(4u));
         });
       });
@@ -2143,11 +2143,11 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(0u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
                      Is().EqualTo(0u));
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(2u));
         });
 
@@ -2202,13 +2202,13 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(2u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
                      Is().EqualTo(2u));
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(2u));
         });
 
@@ -2263,13 +2263,13 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(2u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
                      Is().EqualTo(2u));
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(2u));
         });
 
@@ -2371,13 +2371,13 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(3u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(3u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(3u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(3u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
                      Is().EqualTo(4u));
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(2u));
         });
 
@@ -2523,13 +2523,13 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(4u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(4u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(4u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
                      Is().EqualTo(7u));
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(3u));
         });
 
@@ -2625,13 +2625,13 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(3u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(3u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(4u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
                      Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(6u));
         });
 
@@ -2727,11 +2727,11 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(4u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
                      Is().EqualTo(1u));
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(6u));
         });
 
@@ -2835,13 +2835,13 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(4u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(4u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(4u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
                      Is().EqualTo(5u));
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(6u));
         });
 
@@ -2945,13 +2945,13 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(4u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(4u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(4u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
                      Is().EqualTo(5u));
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(6u));
         });
 
@@ -3055,13 +3055,13 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(4u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(4u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(4u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
                      Is().EqualTo(5u));
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(6u));
         });
 
@@ -3165,13 +3165,13 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(4u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(4u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(4u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
                      Is().EqualTo(5u));
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(6u));
         });
       });
@@ -3268,13 +3268,13 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().False());
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(3u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(3u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(4u));
 
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
                      Is().EqualTo(3u));
-          AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(4u));
         });
 
@@ -3362,13 +3362,13 @@ go_bandit([]() {
 
              AssertThat(levels.can_pull(), Is().False());
 
-             AssertThat(out.get<shared_levelized_file<arc>>()->width, Is().EqualTo(3u));
+             AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(3u));
 
-             AssertThat(out.get<shared_levelized_file<arc>>()->max_1level_cut, Is().EqualTo(4u));
+             AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(4u));
 
-             AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[false],
+             AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
                         Is().EqualTo(3u));
-             AssertThat(out.get<shared_levelized_file<arc>>()->number_of_terminals[true],
+             AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                         Is().EqualTo(3u));
            });
       });
