@@ -145,7 +145,10 @@ namespace adiar::internal
                          const quantify_request<0>::target_t& target)
   {
     adiar_assert(!target.first().is_nil(),
-                 "pointer_type::nil() should only ever end up being placed in target[1]");
+                 "pointer_type::nil() should only ever end up being placed in target.second()");
+
+    adiar_assert(source.is_nil() || source.level() < target.first().level(),
+                 "Request should be placed further downwards");
 
     if (target.first().is_terminal()) {
       adiar_assert(target.second().is_nil(), "Operator should already be resolved at this point");
@@ -168,7 +171,9 @@ namespace adiar::internal
   public:
     __quantify_recurse_in__output_node(arc_writer& aw, const UId& out_uid)
       : _aw(aw), _out_uid(out_uid)
-    {}
+    {
+      adiar_assert(out_uid.is_node());
+    }
 
     template <typename Request>
     inline void
@@ -196,7 +201,9 @@ namespace adiar::internal
   public:
     __quantify_recurse_in__output_terminal(arc_writer& aw, const Pointer& out_terminal)
       : _aw(aw), _out_terminal(out_terminal)
-    {}
+    {
+      adiar_assert(out_terminal.is_terminal());
+    }
 
     template <typename Request>
     inline void
@@ -220,12 +227,16 @@ namespace adiar::internal
   public:
     __quantify_recurse_in__forward(PriorityQueue &pq, const Target& t)
       : _pq(pq), _t(t)
-    {}
+    {
+      adiar_assert(t.first().is_node(), "Forwarding should only be used for internal nodes");
+    }
 
     template <typename Request>
     inline void
     operator() (const Request& req) const
     {
+      adiar_assert(req.data.source.is_nil() || req.data.source.level() < this->_t.first().level(),
+                   "Request should be forwarded downwards");
 #ifdef ADIAR_STATS
       stats_quantify.requests[__quantify_arity_idx(req)] += 1;
 #endif
