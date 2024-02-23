@@ -512,7 +512,7 @@ go_bandit([]() {
     // a later sweep.
     */
 
-    // This is definitely NOT canonical... it is not worth making.
+    // This is definitely NOT canonical... it is not worth making it so.
     const node n13_16 = node(7, node::max_id, ptr_uint64(false), ptr_uint64(true));
     const node n13_15 = node(6, node::max_id, ptr_uint64(false), ptr_uint64(true));
     const node n13_14 = node(6, node::max_id - 1, ptr_uint64(true), ptr_uint64(false));
