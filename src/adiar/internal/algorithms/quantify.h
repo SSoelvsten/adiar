@@ -844,10 +844,6 @@ namespace adiar::internal
     //
     // Use random access if requested or the width fits half(ish) of the memory
     // otherwise dedicated to the secondary priority queue.
-    //
-    // TODO (optimisation):
-    //
-    //   Do not depend on *canonical* but only *indexable* (see further above).
 
     constexpr size_t data_structures_in_pq_2 =
       quantify_priority_queue_2_t<memory_mode::Internal>::data_structures;
