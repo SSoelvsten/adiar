@@ -22,8 +22,8 @@
 #include <adiar/internal/io/arc_writer.h>
 #include <adiar/internal/io/file.h>
 #include <adiar/internal/io/file_stream.h>
-#include <adiar/internal/io/node_arc_stream.h>
 #include <adiar/internal/io/node_arc_random_access.h>
+#include <adiar/internal/io/node_arc_stream.h>
 #include <adiar/internal/io/node_random_access.h>
 #include <adiar/internal/io/node_stream.h>
 #include <adiar/internal/io/shared_file_ptr.h>
@@ -171,14 +171,15 @@ namespace adiar::internal
 
   public:
     __quantify_recurse_in__output_node(arc_writer& aw, const UId& out_uid)
-      : _aw(aw), _out_uid(out_uid)
+      : _aw(aw)
+      , _out_uid(out_uid)
     {
       adiar_assert(out_uid.is_node());
     }
 
     template <typename Request>
     inline void
-    operator() (const Request& req) const
+    operator()(const Request& req) const
     {
 #ifdef ADIAR_STATS
       stats_quantify.requests[__quantify_arity_idx(req)] += 1;
@@ -201,14 +202,15 @@ namespace adiar::internal
 
   public:
     __quantify_recurse_in__output_terminal(arc_writer& aw, const Pointer& out_terminal)
-      : _aw(aw), _out_terminal(out_terminal)
+      : _aw(aw)
+      , _out_terminal(out_terminal)
     {
       adiar_assert(out_terminal.is_terminal());
     }
 
     template <typename Request>
     inline void
-    operator() (const Request& req) const
+    operator()(const Request& req) const
     {
       this->_aw.push_terminal({ req.data.source, this->_out_terminal });
     }
@@ -222,19 +224,20 @@ namespace adiar::internal
   struct __quantify_recurse_in__forward
   {
   private:
-    PriorityQueue &_pq;
+    PriorityQueue& _pq;
     const Target& _t;
 
   public:
-    __quantify_recurse_in__forward(PriorityQueue &pq, const Target& t)
-      : _pq(pq), _t(t)
+    __quantify_recurse_in__forward(PriorityQueue& pq, const Target& t)
+      : _pq(pq)
+      , _t(t)
     {
       adiar_assert(t.first().is_node(), "Forwarding should only be used for internal nodes");
     }
 
     template <typename Request>
     inline void
-    operator() (const Request& req) const
+    operator()(const Request& req) const
     {
       adiar_assert(req.data.source.is_nil() || req.data.source.level() < this->_t.first().level(),
                    "Request should be forwarded downwards");
@@ -268,14 +271,11 @@ namespace adiar::internal
       if (ts[i] == Policy::pointer_type::nil()) { break; }
 
       // Move new unique element at next spot for 'ts_max_idx'
-      if (ts[ts_max_idx] != ts[i]
-          && (!ts[i].is_terminal() || Policy::keep_terminal(op, ts[i]))) {
+      if (ts[ts_max_idx] != ts[i] && (!ts[i].is_terminal() || Policy::keep_terminal(op, ts[i]))) {
         ts[++ts_max_idx] = ts[i];
       }
     }
-    for (size_t i = ts_max_idx + 1; i < ts.size(); ++i) {
-      ts[i] = Policy::pointer_type::nil();
-    }
+    for (size_t i = ts_max_idx + 1; i < ts.size(); ++i) { ts[i] = Policy::pointer_type::nil(); }
 
     // Is the final element a collapsing terminal?
     const bool max_shortcuts =
@@ -354,7 +354,8 @@ namespace adiar::internal
         if (should_quantify) {
           const tuple<typename Policy::pointer_type, 4, true> rec_all =
             __quantify_resolve_request<Policy, 4>(
-              op, { children_fst[false], children_fst[true], children_snd[false], children_snd[true] });
+              op,
+              { children_fst[false], children_fst[true], children_snd[false], children_snd[true] });
 
           if (!Policy::partial_quantification || rec_all[2] == Policy::pointer_type::nil()) {
             // Collapsed to a terminal?
@@ -404,8 +405,8 @@ namespace adiar::internal
 
         const node::uid_type out_uid(out_label, out_id++);
 
-        quantify_request<0>::target_t rec0 = __quantify_resolve_request<Policy, 2>(
-          op, { children_fst[false], children_snd[false] });
+        quantify_request<0>::target_t rec0 =
+          __quantify_resolve_request<Policy, 2>(op, { children_fst[false], children_snd[false] });
 
         __quantify_recurse_out<Policy>(pq, aw, out_uid.as_ptr(false), rec0);
 
@@ -426,7 +427,7 @@ namespace adiar::internal
     // Ensure the edge case, where the in-going edge from nil to the root pair
     // does not dominate the max_1level_cut
     out_arcs->max_1level_cut = std::min(aw.size() - out_arcs->number_of_terminals[false]
-                                        - out_arcs->number_of_terminals[true],
+                                          - out_arcs->number_of_terminals[true],
                                         out_arcs->max_1level_cut);
 
     return typename Policy::__dd_type(out_arcs, ep);
@@ -521,7 +522,8 @@ namespace adiar::internal
 
         // Recreate children of the two targeted nodes (or possibly the
         // suppressed node for target.second()).
-        const node::children_type children_fst = req.empty_carry() ? v.children() : req.node_carry[0];
+        const node::children_type children_fst =
+          req.empty_carry() ? v.children() : req.node_carry[0];
 
         const node::children_type children_snd = req.target.second().level() == out_label
           ? v.children()
@@ -534,7 +536,8 @@ namespace adiar::internal
         if (should_quantify) {
           const tuple<typename Policy::pointer_type, 4, true> rec_all =
             __quantify_resolve_request<Policy, 4>(
-              op, { children_fst[false], children_fst[true], children_snd[false], children_snd[true] });
+              op,
+              { children_fst[false], children_fst[true], children_snd[false], children_snd[true] });
 
           if (!Policy::partial_quantification || rec_all[2] == Policy::pointer_type::nil()) {
             // Collapsed to a terminal?
@@ -584,8 +587,8 @@ namespace adiar::internal
 
         const node::uid_type out_uid(out_label, out_id++);
 
-        quantify_request<0>::target_t rec0 = __quantify_resolve_request<Policy, 2>(
-          op, { children_fst[false], children_snd[false] });
+        quantify_request<0>::target_t rec0 =
+          __quantify_resolve_request<Policy, 2>(op, { children_fst[false], children_snd[false] });
 
         __quantify_recurse_out<Policy>(pq_1, aw, out_uid.as_ptr(false), rec0);
 
@@ -620,10 +623,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Set up of priority queue for a single top-down quantification sweep with random access.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename NodeRandomAccess,
-            typename PriorityQueue,
-            typename In,
-            typename Policy>
+  template <typename NodeRandomAccess, typename PriorityQueue, typename In, typename Policy>
   typename Policy::__dd_type
   __quantify_ra(const exec_policy& ep,
                 const In& in,
@@ -646,7 +646,8 @@ namespace adiar::internal
   ///        sweep with random access.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename NodeRandomAccess,
-            template <size_t, memory_mode> typename PriorityQueueTemplate,
+            template <size_t, memory_mode>
+            typename PriorityQueueTemplate,
             typename In,
             typename Policy>
   typename Policy::__dd_type
@@ -675,8 +676,7 @@ namespace adiar::internal
       std::min({ __quantify_ilevel_upper_bound<Policy, get_2level_cut, 2u>(in, op),
                  __quantify_ilevel_upper_bound(in) });
 
-    const size_t max_pq_size =
-      internal_only ? std::min(pq_memory_fits, pq_bound) : pq_bound;
+    const size_t max_pq_size = internal_only ? std::min(pq_memory_fits, pq_bound) : pq_bound;
 
     if (!external_only && max_pq_size <= no_lookahead_bound(2)) {
 #ifdef ADIAR_STATS
@@ -748,7 +748,8 @@ namespace adiar::internal
   ///        sweep.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename NodeStream,
-            template <size_t, memory_mode> typename PriorityQueue_1_Template,
+            template <size_t, memory_mode>
+            typename PriorityQueue_1_Template,
             typename Policy,
             typename In>
   typename Policy::__dd_type
@@ -776,7 +777,8 @@ namespace adiar::internal
       * data_structures_in_pq_1;
 
     const size_t pq_1_memory_fits =
-      PriorityQueue_1_Template<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(pq_1_internal_memory);
+      PriorityQueue_1_Template<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(
+        pq_1_internal_memory);
 
     const size_t pq_2_internal_memory = aux_available_memory - pq_1_internal_memory;
 
@@ -795,8 +797,7 @@ namespace adiar::internal
     const size_t max_pq_1_size =
       internal_only ? std::min(pq_1_memory_fits, pq_1_bound) : pq_1_bound;
 
-    const size_t pq_2_bound =
-      __quantify_ilevel_upper_bound<Policy, get_1level_cut, 0u>(in, op);
+    const size_t pq_2_bound = __quantify_ilevel_upper_bound<Policy, get_1level_cut, 0u>(in, op);
 
     const size_t max_pq_2_size =
       internal_only ? std::min(pq_2_memory_fits, pq_2_bound) : pq_2_bound;
@@ -808,8 +809,14 @@ namespace adiar::internal
       using PriorityQueue_1 = PriorityQueue_1_Template<0, memory_mode::Internal>;
       using PriorityQueue_2 = quantify_priority_queue_2_t<memory_mode::Internal>;
 
-      return __quantify_pq<NodeStream, PriorityQueue_1, PriorityQueue_2>(
-        ep, in, policy, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
+      return __quantify_pq<NodeStream, PriorityQueue_1, PriorityQueue_2>(ep,
+                                                                         in,
+                                                                         policy,
+                                                                         op,
+                                                                         pq_1_internal_memory,
+                                                                         max_pq_1_size,
+                                                                         pq_2_internal_memory,
+                                                                         max_pq_2_size);
     } else if (!external_only && max_pq_1_size <= pq_1_memory_fits
                && max_pq_2_size <= pq_2_memory_fits) {
 #ifdef ADIAR_STATS
@@ -818,8 +825,14 @@ namespace adiar::internal
       using PriorityQueue_1 = PriorityQueue_1_Template<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>;
       using PriorityQueue_2 = quantify_priority_queue_2_t<memory_mode::Internal>;
 
-      return __quantify_pq<NodeStream, PriorityQueue_1, PriorityQueue_2>(
-        ep, in, policy, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
+      return __quantify_pq<NodeStream, PriorityQueue_1, PriorityQueue_2>(ep,
+                                                                         in,
+                                                                         policy,
+                                                                         op,
+                                                                         pq_1_internal_memory,
+                                                                         max_pq_1_size,
+                                                                         pq_2_internal_memory,
+                                                                         max_pq_2_size);
     } else {
 #ifdef ADIAR_STATS
       stats_quantify.lpq.external += 1u;
@@ -861,18 +874,17 @@ namespace adiar::internal
       quantify_priority_queue_2_t<memory_mode::Internal>::data_structures;
 
     constexpr size_t data_structures_in_pqs = data_structures_in_pq_2
-      + quantify_priority_queue_1_node_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::data_structures;
+      + quantify_priority_queue_1_node_t<ADIAR_LPQ_LOOKAHEAD,
+                                         memory_mode::Internal>::data_structures;
 
     const size_t ra_threshold =
       (memory_available() * data_structures_in_pq_2) / 2 * (data_structures_in_pqs);
 
     if ( // Use `__prod2_ra` if user has forced Random Access
-         ep.template get<exec_policy::access>() == exec_policy::access::Random_Access
-         || ( // Heuristically, if the narrowest canonical fits
-              ep.template get<exec_policy::access>() == exec_policy::access::Auto
-              && in->indexable
-              && node_random_access::memory_usage(in->width) <= ra_threshold)
-         ) {
+      ep.template get<exec_policy::access>() == exec_policy::access::Random_Access
+      || ( // Heuristically, if the narrowest canonical fits
+        ep.template get<exec_policy::access>() == exec_policy::access::Auto && in->indexable
+        && node_random_access::memory_usage(in->width) <= ra_threshold)) {
 #ifdef ADIAR_STATS
       stats_quantify.ra.runs += 1u;
 #endif
@@ -918,7 +930,8 @@ namespace adiar::internal
       quantify_priority_queue_2_t<memory_mode::Internal>::data_structures;
 
     constexpr size_t data_structures_in_pqs = data_structures_in_pq_2
-      + quantify_priority_queue_1_node_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::data_structures;
+      + quantify_priority_queue_1_node_t<ADIAR_LPQ_LOOKAHEAD,
+                                         memory_mode::Internal>::data_structures;
 
     const size_t ra_threshold =
       (memory_available() * data_structures_in_pq_2) / 2 * (data_structures_in_pqs);
@@ -926,11 +939,10 @@ namespace adiar::internal
     const size_t width = in.template get<typename Policy::shared_arc_file_type>()->width;
 
     if ( // Use `__prod2_ra` if user has forced Random Access
-         ep.template get<exec_policy::access>() == exec_policy::access::Random_Access
-         || ( // Heuristically, if the narrowest canonical fits
-              ep.template get<exec_policy::access>() == exec_policy::access::Auto
-              && node_arc_random_access::memory_usage(width) <= ra_threshold)
-         ) {
+      ep.template get<exec_policy::access>() == exec_policy::access::Random_Access
+      || ( // Heuristically, if the narrowest canonical fits
+        ep.template get<exec_policy::access>() == exec_policy::access::Auto
+        && node_arc_random_access::memory_usage(width) <= ra_threshold)) {
 #ifdef ADIAR_STATS
       stats_quantify.ra.runs += 1u;
 #endif
@@ -1066,9 +1078,8 @@ namespace adiar::internal
              const size_t /*outer_roots*/) const
     {
       const typename Policy::dd_type outer_wrapper(outer_file);
-      return std::min(
-        __quantify_ilevel_upper_bound<Policy, get_2level_cut, 2u>(outer_wrapper, _op),
-        __quantify_ilevel_upper_bound(outer_wrapper));
+      return std::min(__quantify_ilevel_upper_bound<Policy, get_2level_cut, 2u>(outer_wrapper, _op),
+                      __quantify_ilevel_upper_bound(outer_wrapper));
     }
 
   public:
@@ -1479,8 +1490,7 @@ namespace adiar::internal
     bool
     has_sweep(const typename Policy::label_type l)
     {
-      return l == next_level(l) ? Policy::quantify_onset
-                                : !Policy::quantify_onset;
+      return l == next_level(l) ? Policy::quantify_onset : !Policy::quantify_onset;
     }
 
   private:
@@ -1568,15 +1578,12 @@ namespace adiar::internal
         return quantify<Policy>(ep, dd, on_level.value(), op);
       } else { // !Policy::quantify_onset
         // TODO: only designed for 'OR' at this point in time
-        if (!on_level) {
-          return typename Policy::dd_type(dd->number_of_terminals[true] > 0);
-        }
+        if (!on_level) { return typename Policy::dd_type(dd->number_of_terminals[true] > 0); }
 
         // Quantify everything below 'label'
         for (;;) {
           const typename Policy::label_type off_level =
-            quantify__get_deepest<Policy>(
-              dd, Policy::max_label, on_level.value());
+            quantify__get_deepest<Policy>(dd, Policy::max_label, on_level.value());
 
           if (Policy::max_label < off_level) { break; }
 

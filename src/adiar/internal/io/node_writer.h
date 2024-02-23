@@ -199,8 +199,7 @@ namespace adiar::internal
       adiar_assert(first_push == !has_pushed(),
                    "'push' function has only been designed for use on empty files");
 
-      adiar_assert(!_latest_node.is_terminal(),
-                   "Cannot push after having pushed a terminal");
+      adiar_assert(!_latest_node.is_terminal(), "Cannot push after having pushed a terminal");
 
       const bool new_level = !first_push && _latest_node.label() != n.label();
 
@@ -218,13 +217,12 @@ namespace adiar::internal
         _file_ptr->indexable &= n.is_terminal() || n.id() == node::max_id;
       } else {
         // Check it is sorted and indexable
-        _file_ptr->sorted    &= new_level
+        _file_ptr->sorted &= new_level
           || (n.high() < _latest_node.high()
               || (n.high() == _latest_node.high() && n.low() < _latest_node.low()));
 
-        _file_ptr->indexable &= new_level
-          ? n.id() == node::max_id
-          : n.uid().id() == _latest_node.id() - 1u;
+        _file_ptr->indexable &=
+          new_level ? n.id() == node::max_id : n.uid().id() == _latest_node.id() - 1u;
       }
 
       // -------------------------------------------------------------------------------------------

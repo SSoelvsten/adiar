@@ -165,7 +165,8 @@ go_bandit([]() {
       nw_6 << node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))                 // 8
            << node(3, node::max_id - 1, ptr_uint64(true), ptr_uint64(false))             // 7
            << node(2, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true)) // 6
-           << node(2, node::max_id - 1, ptr_uint64(3, ptr_uint64::max_id - 1), ptr_uint64(false)) // 5
+           << node(
+                2, node::max_id - 1, ptr_uint64(3, ptr_uint64::max_id - 1), ptr_uint64(false)) // 5
            << node(2, node::max_id - 2, ptr_uint64(false), ptr_uint64(3, ptr_uint64::max_id))  // 4
            << node(1,
                    node::max_id,
@@ -846,10 +847,10 @@ go_bandit([]() {
     {
       const node n7 = node(3, node::max_id, bdd::pointer_type(false), bdd::pointer_type(true));
       const node n6 = node(2, node::max_id, bdd::pointer_type(false), bdd::pointer_type(true));
-      const node n5 = node(2, node::max_id-1, bdd::pointer_type(true), bdd::pointer_type(false));
-      const node n4 = node(2, node::max_id-2, n7.uid(), bdd::pointer_type(false));
+      const node n5 = node(2, node::max_id - 1, bdd::pointer_type(true), bdd::pointer_type(false));
+      const node n4 = node(2, node::max_id - 2, n7.uid(), bdd::pointer_type(false));
       const node n3 = node(1, node::max_id, n5.uid(), n6.uid());
-      const node n2 = node(1, node::max_id-1, n5.uid(), n4.uid());
+      const node n2 = node(1, node::max_id - 1, n5.uid(), n4.uid());
       const node n1 = node(0, node::max_id, n2.uid(), n3.uid());
 
       node_writer nw(bdd_17);
@@ -895,15 +896,12 @@ go_bandit([]() {
 
           AssertThat(out.get<__bdd::shared_node_file_type>()->width, Is().EqualTo(0u));
 
-          AssertThat(
-            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
-            Is().EqualTo(0u));
-          AssertThat(
-            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
-            Is().EqualTo(0u));
-          AssertThat(
-            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
-            Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
+                     Is().EqualTo(1u));
           AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                      Is().EqualTo(1u));
 
@@ -926,15 +924,12 @@ go_bandit([]() {
 
           AssertThat(out.get<__bdd::shared_node_file_type>()->width, Is().EqualTo(0u));
 
-          AssertThat(
-            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
-            Is().EqualTo(0u));
-          AssertThat(
-            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
-            Is().EqualTo(0u));
-          AssertThat(
-            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
-            Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
+                     Is().EqualTo(1u));
           AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                      Is().EqualTo(1u));
 
@@ -1459,7 +1454,8 @@ go_bandit([]() {
                         Is().EqualTo(2u));
            });
 
-        it("resolves nodes in a different order than with a secondary priority queue [BDD 17]", [&]() {
+        it("resolves nodes in a different order than with a secondary priority queue [BDD 17]",
+           [&]() {
              __bdd out = bdd_exists(ep, bdd_17, 0);
 
              arc_test_stream arcs(out);
@@ -1546,15 +1542,12 @@ go_bandit([]() {
 
           AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
 
-          AssertThat(
-            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
-            Is().EqualTo(0u));
-          AssertThat(
-            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
-            Is().EqualTo(0u));
-          AssertThat(
-            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
-            Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
+                     Is().EqualTo(1u));
           AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                      Is().EqualTo(1u));
 
@@ -1577,15 +1570,12 @@ go_bandit([]() {
 
           AssertThat(out.get<__bdd::shared_node_file_type>()->width, Is().EqualTo(0u));
 
-          AssertThat(
-            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
-            Is().EqualTo(0u));
-          AssertThat(
-            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
-            Is().EqualTo(0u));
-          AssertThat(
-            out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
-            Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
+                     Is().EqualTo(1u));
           AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                      Is().EqualTo(1u));
 
@@ -2277,67 +2267,67 @@ go_bandit([]() {
            });
 
         it("resolves nodes in a different order than with random access [BDD 17]", [&]() {
-             __bdd out = bdd_exists(ep, bdd_17, 0);
+          __bdd out = bdd_exists(ep, bdd_17, 0);
 
-             arc_test_stream arcs(out);
+          arc_test_stream arcs(out);
 
-             AssertThat(arcs.can_pull_internal(), Is().True()); // (5,_)
-             AssertThat(arcs.pull_internal(),
-                        Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (5,_)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 0) }));
 
-             AssertThat(arcs.can_pull_internal(), Is().True()); // (4,6)
-             AssertThat(arcs.pull_internal(),
-                        Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 1) }));
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (4,6)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 1) }));
 
-             AssertThat(arcs.can_pull_internal(), Is().True()); // (7,_)
-             AssertThat(arcs.pull_internal(),
-                        Is().EqualTo(arc{ ptr_uint64(2, 1), false, ptr_uint64(3, 0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (7,_)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 1), false, ptr_uint64(3, 0) }));
 
-             AssertThat(arcs.can_pull_internal(), Is().False());
+          AssertThat(arcs.can_pull_internal(), Is().False());
 
-             AssertThat(arcs.can_pull_terminal(), Is().True()); // (5,_)
-             AssertThat(arcs.pull_terminal(),
-                        Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(true) }));
-             AssertThat(arcs.can_pull_terminal(), Is().True());
-             AssertThat(arcs.pull_terminal(),
-                        Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(false) }));
+          AssertThat(arcs.can_pull_terminal(), Is().True()); // (5,_)
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(true) }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(false) }));
 
-             AssertThat(arcs.can_pull_terminal(), Is().True()); // (4,6)
-             AssertThat(arcs.pull_terminal(),
-                        Is().EqualTo(arc{ ptr_uint64(2, 1), true, ptr_uint64(true) }));
+          AssertThat(arcs.can_pull_terminal(), Is().True()); // (4,6)
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 1), true, ptr_uint64(true) }));
 
-             AssertThat(arcs.can_pull_terminal(), Is().True()); // (7,_)
-             AssertThat(arcs.pull_terminal(),
-                        Is().EqualTo(arc{ ptr_uint64(3, 0), false, ptr_uint64(false) }));
-             AssertThat(arcs.can_pull_terminal(), Is().True()); // (7,_)
-             AssertThat(arcs.pull_terminal(),
-                        Is().EqualTo(arc{ ptr_uint64(3, 0), true, ptr_uint64(true) }));
+          AssertThat(arcs.can_pull_terminal(), Is().True()); // (7,_)
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(3, 0), false, ptr_uint64(false) }));
+          AssertThat(arcs.can_pull_terminal(), Is().True()); // (7,_)
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(3, 0), true, ptr_uint64(true) }));
 
-             AssertThat(arcs.can_pull_terminal(), Is().False());
+          AssertThat(arcs.can_pull_terminal(), Is().False());
 
-             level_info_test_stream levels(out);
+          level_info_test_stream levels(out);
 
-             AssertThat(levels.can_pull(), Is().True());
-             AssertThat(levels.pull(), Is().EqualTo(level_info(1u, 1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1u, 1u)));
 
-             AssertThat(levels.can_pull(), Is().True());
-             AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 2u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 2u)));
 
-             AssertThat(levels.can_pull(), Is().True());
-             AssertThat(levels.pull(), Is().EqualTo(level_info(3u, 1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(3u, 1u)));
 
-             AssertThat(levels.can_pull(), Is().False());
+          AssertThat(levels.can_pull(), Is().False());
 
-             AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
 
-             AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
-                        Is().GreaterThanOrEqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                     Is().GreaterThanOrEqualTo(2u));
 
-             AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
-                        Is().EqualTo(2u));
-             AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
-                        Is().EqualTo(3u));
-           });
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(3u));
+        });
       });
     });
 

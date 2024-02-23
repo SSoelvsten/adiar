@@ -990,12 +990,14 @@ namespace adiar::internal
         // ---------------------------------------------------------------------
         // Determine memory for priority queue depending on whether random
         // access can also be used.
-        const size_t minimum_inner_pq_memory = policy_impl.pq_memory(inner_memory - inner_stream_memory);
+        const size_t minimum_inner_pq_memory =
+          policy_impl.pq_memory(inner_memory - inner_stream_memory);
         adiar_assert(minimum_inner_pq_memory <= inner_memory - inner_stream_memory,
                      "There should be enough memory to include all streams and priority queue");
 
         const size_t inner_ra_memory = policy_impl.ra_memory(outer_file);
-        const bool use_random_access = ep.template get<exec_policy::access>() == exec_policy::access::Random_Access
+        const bool use_random_access =
+          ep.template get<exec_policy::access>() == exec_policy::access::Random_Access
           || (inner_ra_memory <= inner_memory - inner_stream_memory - minimum_inner_pq_memory
               && ep.template get<exec_policy::access>() == exec_policy::access::Auto
               && outer_file->indexable);
@@ -1030,9 +1032,7 @@ namespace adiar::internal
           ep.template get<exec_policy::memory>() == exec_policy::memory::Internal;
 
         const size_t inner_pq_max_size =
-          internal_only
-          ? std::min(inner_pq_fits, inner_pq_bound)
-          : inner_pq_bound;
+          internal_only ? std::min(inner_pq_fits, inner_pq_bound) : inner_pq_bound;
 
         // TODO (bdd_compose): ask 'nesting_policy' implementation for the initalizer list
         if (!external_only

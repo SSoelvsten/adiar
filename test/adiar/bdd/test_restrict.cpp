@@ -328,12 +328,10 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
                    Is().EqualTo(0u));
-        AssertThat(
-          out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
-          Is().EqualTo(1u));
-        AssertThat(
-          out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
-          Is().EqualTo(0u));
+        AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
+                   Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
+                   Is().EqualTo(0u));
         AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                    Is().EqualTo(1u));
 
@@ -361,12 +359,10 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
                    Is().EqualTo(0u));
-        AssertThat(
-          out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
-          Is().EqualTo(0u));
-        AssertThat(
-          out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
-          Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
+                   Is().EqualTo(0u));
+        AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
+                   Is().EqualTo(1u));
         AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                    Is().EqualTo(1u));
 
@@ -392,12 +388,10 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
                    Is().EqualTo(0u));
-        AssertThat(
-          out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
-          Is().EqualTo(1u));
-        AssertThat(
-          out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
-          Is().EqualTo(0u));
+        AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
+                   Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
+                   Is().EqualTo(0u));
         AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                    Is().EqualTo(1u));
 
@@ -423,12 +417,10 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
                    Is().EqualTo(0u));
-        AssertThat(
-          out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
-          Is().EqualTo(0u));
-        AssertThat(
-          out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
-          Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
+                   Is().EqualTo(0u));
+        AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
+                   Is().EqualTo(1u));
         AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                    Is().EqualTo(1u));
 
@@ -869,12 +861,10 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
                    Is().EqualTo(0u));
-        AssertThat(
-          out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
-          Is().EqualTo(1u));
-        AssertThat(
-          out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
-          Is().EqualTo(0u));
+        AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
+                   Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
+                   Is().EqualTo(0u));
         AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                    Is().EqualTo(1u));
 
@@ -898,12 +888,10 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
                    Is().EqualTo(0u));
-        AssertThat(
-          out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
-          Is().EqualTo(0u));
-        AssertThat(
-          out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
-          Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
+                   Is().EqualTo(0u));
+        AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
+                   Is().EqualTo(1u));
         AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                    Is().EqualTo(1u));
 
@@ -1169,12 +1157,10 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
                    Is().EqualTo(0u));
-        AssertThat(
-          out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
-          Is().EqualTo(0u));
-        AssertThat(
-          out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
-          Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
+                   Is().EqualTo(0u));
+        AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
+                   Is().EqualTo(1u));
         AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                    Is().EqualTo(1u));
 
@@ -1273,12 +1259,10 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
                    Is().EqualTo(0u));
-        AssertThat(
-          out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
-          Is().EqualTo(1u));
-        AssertThat(
-          out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
-          Is().EqualTo(0u));
+        AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
+                   Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
+                   Is().EqualTo(0u));
         AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
                    Is().EqualTo(1u));
 

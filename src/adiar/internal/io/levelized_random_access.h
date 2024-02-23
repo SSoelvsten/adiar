@@ -22,7 +22,7 @@ namespace adiar::internal
   class levelized_random_access
   {
   private:
-    using stream_type = StreamType/*<Default (top-down) direction>*/;
+    using stream_type = StreamType /*<Default (top-down) direction>*/;
 
   public:
     using value_type = typename stream_type::value_type;

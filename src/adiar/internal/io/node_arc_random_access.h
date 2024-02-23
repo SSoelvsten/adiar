@@ -9,8 +9,7 @@
 
 namespace adiar::internal
 {
-  class node_arc_random_access
-    : public levelized_random_access<node_arc_stream<>>
+  class node_arc_random_access : public levelized_random_access<node_arc_stream<>>
   {
     using parent_type = levelized_random_access<node_arc_stream<>>;
 
@@ -38,7 +37,7 @@ namespace adiar::internal
     node_arc_random_access(levelized_file<arc>& f, const bool negate = false)
       : parent_type(f, negate)
     {
-      //adiar_assert(f.indexable);
+      // adiar_assert(f.indexable);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -49,7 +48,7 @@ namespace adiar::internal
     node_arc_random_access(const shared_ptr<levelized_file<arc>>& f, const bool negate = false)
       : parent_type(f, negate)
     {
-      //adiar_assert(f->indexable);
+      // adiar_assert(f->indexable);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -60,7 +59,7 @@ namespace adiar::internal
     node_arc_random_access(const __dd& diagram)
       : node_arc_random_access(diagram.template get<__dd::shared_arc_file_type>(), diagram.negate)
     {
-      //adiar_assert(diagram->indexable);
+      // adiar_assert(diagram->indexable);
     }
 
   public:
