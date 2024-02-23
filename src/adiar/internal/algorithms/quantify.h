@@ -23,6 +23,7 @@
 #include <adiar/internal/io/file.h>
 #include <adiar/internal/io/file_stream.h>
 #include <adiar/internal/io/node_arc_stream.h>
+#include <adiar/internal/io/node_arc_random_access.h>
 #include <adiar/internal/io/node_random_access.h>
 #include <adiar/internal/io/node_stream.h>
 #include <adiar/internal/io/shared_file_ptr.h>
@@ -899,19 +900,45 @@ namespace adiar::internal
              Policy& policy,
              const bool_op& op)
   {
-    // -------------------------------------------------------------------------
+    adiar_assert(in.template has<typename Policy::shared_arc_file_type>(),
+                 "__quantify(..., Policy::__dd_type, ...) is only designed for arc-based inputs");
+
+    // ---------------------------------------------------------------------------------------------
     // Case: Terminal.
     //
-    // NOTE: __dd does cannot represent a single terminal.
+    // NOTE: __dd cannot represent a single terminal.
 
-    // -------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
     // Case: Do the product construction (with random access)
-
-    // TODO (partial quantification):
     //
-    //   Add `node_arc_random_access` (implemented on-top of `node_arc_stream`).
+    // Use random access if requested or the width fits half(ish) of the memory otherwise dedicated
+    // to the secondary priority queue.
 
-    // -------------------------------------------------------------------------
+    constexpr size_t data_structures_in_pq_2 =
+      quantify_priority_queue_2_t<memory_mode::Internal>::data_structures;
+
+    constexpr size_t data_structures_in_pqs = data_structures_in_pq_2
+      + quantify_priority_queue_1_node_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::data_structures;
+
+    const size_t ra_threshold =
+      (memory_available() * data_structures_in_pq_2) / 2 * (data_structures_in_pqs);
+
+    const size_t width = in.template get<typename Policy::shared_arc_file_type>()->width;
+
+    if ( // Use `__prod2_ra` if user has forced Random Access
+         ep.template get<exec_policy::access>() == exec_policy::access::Random_Access
+         || ( // Heuristically, if the narrowest canonical fits
+              ep.template get<exec_policy::access>() == exec_policy::access::Auto
+              && node_arc_random_access::memory_usage(width) <= ra_threshold)
+         ) {
+#ifdef ADIAR_STATS
+      stats_quantify.ra.runs += 1u;
+#endif
+      return __quantify_ra<node_arc_random_access, quantify_priority_queue_1_arc_t>(
+        ep, in, policy, op);
+    }
+
+    // ---------------------------------------------------------------------------------------------
     // Case: Do the product construction (with priority queues)
 #ifdef ADIAR_STATS
     stats_quantify.pq.runs += 1u;
