@@ -2523,70 +2523,148 @@ go_bandit([]() {
         const exec_policy ep =
           exec_policy::quantify::Nested & exec_policy::quantify::transposition_max(0);
 
-        it("quantifies odd variables in BDD 4", [&]() {
-          std::vector<bdd::label_type> call_history;
+        describe("access mode: random access", [&]() {
+          it("quantifies odd variables in BDD 4", [&]() {
+            std::vector<bdd::label_type> call_history;
 
-          bdd out = bdd_exists(ep, bdd_4, [&call_history](const bdd::label_type x) -> bool {
-            call_history.push_back(x);
-            return x % 2;
+            bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
+                                 bdd_4,
+                                 [&call_history](const bdd::label_type x) -> bool {
+              call_history.push_back(x);
+              return x % 2;
+            });
+
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (3)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(
+                                    node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
+
+            AssertThat(out_nodes.can_pull(), Is().False());
+
+            level_info_test_stream out_meta(out);
+
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
+
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
+
+            AssertThat(out_meta.can_pull(), Is().False());
+
+            // TODO: meta variables...
+
+            // Check call history
+            //
+            // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+            //       that this change makes sense and is as intended.
+            AssertThat(call_history.size(), Is().EqualTo(4u));
+
+            // - First check for at least one variable satisfying the predicate.
+            //   This is then used for the inital transposition
+            AssertThat(call_history.at(0), Is().EqualTo(3u));
+
+            // - Nested sweep looking for the 'next_inner' bottom-up
+            AssertThat(call_history.at(1), Is().EqualTo(2u));
+            AssertThat(call_history.at(2), Is().EqualTo(1u));
+            AssertThat(call_history.at(3), Is().EqualTo(0u));
           });
 
-          node_test_stream out_nodes(out);
+          it("quantifies odd variables in BDD 1", [&]() {
+            bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
+                                 bdd_1,
+                                 [](const bdd::label_type x) -> bool { return x % 2; });
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (3)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+            node_test_stream out_nodes(out);
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(
-                       node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
+            AssertThat(out_nodes.can_pull(), Is().True());
+            AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
-          AssertThat(out_nodes.can_pull(), Is().False());
+            AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+            level_info_test_stream out_meta(out);
 
-          AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
+            AssertThat(out_meta.can_pull(), Is().False());
 
-          AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
-
-          AssertThat(out_meta.can_pull(), Is().False());
-
-          // TODO: meta variables...
-
-          // Check call history
-          //
-          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
-          //       that this change makes sense and is as intended.
-          AssertThat(call_history.size(), Is().EqualTo(4u));
-
-          // - First check for at least one variable satisfying the predicate.
-          //   This is then used for the inital transposition
-          AssertThat(call_history.at(0), Is().EqualTo(3u));
-
-          // - Nested sweep looking for the 'next_inner' bottom-up
-          AssertThat(call_history.at(1), Is().EqualTo(2u));
-          AssertThat(call_history.at(2), Is().EqualTo(1u));
-          AssertThat(call_history.at(3), Is().EqualTo(0u));
+            // TODO: meta variables...
+          });
         });
 
-        it("quantifies odd variables in BDD 1", [&]() {
-          bdd out = bdd_exists(ep, bdd_1, [](const bdd::label_type x) -> bool { return x % 2; });
+        describe("access mode: priority queue", [&]() {
+          it("quantifies odd variables in BDD 4", [&]() {
+            std::vector<bdd::label_type> call_history;
 
-          node_test_stream out_nodes(out);
+            bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
+                                 bdd_4,
+                                 [&call_history](const bdd::label_type x) -> bool {
+              call_history.push_back(x);
+              return x % 2;
+            });
 
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+            node_test_stream out_nodes(out);
 
-          AssertThat(out_nodes.can_pull(), Is().False());
+            AssertThat(out_nodes.can_pull(), Is().True()); // (3)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
-          level_info_test_stream out_meta(out);
+            AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(
+                                    node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
 
-          AssertThat(out_meta.can_pull(), Is().False());
+            AssertThat(out_nodes.can_pull(), Is().False());
 
-          // TODO: meta variables...
+            level_info_test_stream out_meta(out);
+
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
+
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
+
+            AssertThat(out_meta.can_pull(), Is().False());
+
+            // TODO: meta variables...
+
+            // Check call history
+            //
+            // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+            //       that this change makes sense and is as intended.
+            AssertThat(call_history.size(), Is().EqualTo(4u));
+
+            // - First check for at least one variable satisfying the predicate.
+            //   This is then used for the inital transposition
+            AssertThat(call_history.at(0), Is().EqualTo(3u));
+
+            // - Nested sweep looking for the 'next_inner' bottom-up
+            AssertThat(call_history.at(1), Is().EqualTo(2u));
+            AssertThat(call_history.at(2), Is().EqualTo(1u));
+            AssertThat(call_history.at(3), Is().EqualTo(0u));
+          });
+
+          it("quantifies odd variables in BDD 1", [&]() {
+            bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
+                                 bdd_1,
+                                 [](const bdd::label_type x) -> bool { return x % 2; });
+
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True());
+            AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+            AssertThat(out_nodes.can_pull(), Is().False());
+
+            level_info_test_stream out_meta(out);
+
+            AssertThat(out_meta.can_pull(), Is().False());
+
+            // TODO: meta variables...
+          });
         });
 
         it("quantifies with always-true predicate in BDD 4 [&&]", [&]() {
@@ -4345,58 +4423,121 @@ go_bandit([]() {
         });
       });
 
-      describe("quantify_alg == Nested", [&]() {
+      describe("algorithm: Nested", [&]() {
         const exec_policy ep = exec_policy::quantify::Nested;
 
-        it("quantifies 3, 1 in BDD 4 [&&]", [&]() {
-          bdd out = bdd_exists(ep, bdd_4, [var = 3]() mutable -> optional<bdd::label_type> {
-            if (var == 42) { return {}; }
+        describe("access mode: random access", [&]() {
+          it("quantifies 3, 1 in BDD 4 [&&]", [&]() {
+            bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
+                                 bdd_4,
+                                 [var = 3]() mutable -> optional<bdd::label_type> {
+                if (var == 42) { return {}; }
 
-            const bdd::label_type ret = var;
-            var                       = ret == 1 ? 42 : var - 2;
-            return { ret };
+                const bdd::label_type ret = var;
+                var                       = ret == 1 ? 42 : var - 2;
+                return { ret };
+              });
+
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (3)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(
+                                    node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
+
+            AssertThat(out_nodes.can_pull(), Is().False());
+
+            level_info_test_stream out_meta(out);
+
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
+
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
+
+            AssertThat(out_meta.can_pull(), Is().False());
           });
 
-          node_test_stream out_nodes(out);
+          it("quantifies 1 in BDD 1 [&&]", [&]() {
+            bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
+                                 bdd_1,
+                                 [var = 1]() mutable -> optional<bdd::label_type> {
+                if (var == 0) { return {}; }
+                return { var-- };
+              });
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (3)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+            node_test_stream out_nodes(out);
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(
-                       node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
+            AssertThat(out_nodes.can_pull(), Is().True());
+            AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
-          AssertThat(out_nodes.can_pull(), Is().False());
+            AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+            level_info_test_stream out_meta(out);
 
-          AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
-
-          AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
-
-          AssertThat(out_meta.can_pull(), Is().False());
+            AssertThat(out_meta.can_pull(), Is().False());
+          });
         });
 
-        it("quantifies 1 in BDD 1 [&&]", [&]() {
-          bdd out = bdd_exists(ep, bdd_1, [var = 1]() mutable -> optional<bdd::label_type> {
-            if (var == 0) { return {}; }
-            return { var-- };
+        describe("access mode: priority queue", [&]() {
+          it("quantifies 3, 1 in BDD 4 [&&]", [&]() {
+            bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
+                                 bdd_4,
+                                 [var = 3]() mutable -> optional<bdd::label_type> {
+                if (var == 42) { return {}; }
+
+                const bdd::label_type ret = var;
+                var                       = ret == 1 ? 42 : var - 2;
+                return { ret };
+              });
+
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (3)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(
+                                    node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
+
+            AssertThat(out_nodes.can_pull(), Is().False());
+
+            level_info_test_stream out_meta(out);
+
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
+
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
+
+            AssertThat(out_meta.can_pull(), Is().False());
           });
 
-          node_test_stream out_nodes(out);
+          it("quantifies 1 in BDD 1 [&&]", [&]() {
+            bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
+                                 bdd_1,
+                                 [var = 1]() mutable -> optional<bdd::label_type> {
+                if (var == 0) { return {}; }
+                return { var-- };
+              });
 
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+            node_test_stream out_nodes(out);
 
-          AssertThat(out_nodes.can_pull(), Is().False());
+            AssertThat(out_nodes.can_pull(), Is().True());
+            AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
-          level_info_test_stream out_meta(out);
+            AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out_meta.can_pull(), Is().False());
+            level_info_test_stream out_meta(out);
+
+            AssertThat(out_meta.can_pull(), Is().False());
+          });
         });
 
         it("bails out on a level that only shortcuts", [&]() {
