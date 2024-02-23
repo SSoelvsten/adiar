@@ -913,6 +913,9 @@ namespace adiar::internal
 
     // -------------------------------------------------------------------------
     // Case: Do the product construction (with priority queues)
+#ifdef ADIAR_STATS
+    stats_quantify.pq.runs += 1u;
+#endif
     return __quantify_pq<node_arc_stream<>, quantify_priority_queue_1_arc_t>(ep, in, policy, op);
   }
 
