@@ -256,40 +256,43 @@ namespace adiar::internal
   __quantify_resolve_request(const bool_op& op,
                              std::array<typename Policy::pointer_type, Targets> ts)
   {
-    { // Sort array with pointers
-      // TODO (optimisation): Abuse array is tiny with single-swap (2) / insertion-sort (3+)
-      std::sort(ts.begin(), ts.end(), std::less<>());
-    }
+    // Sort array with pointers
+    // TODO (optimisation): Abuse array is tiny with single-swap (2) / insertion-sort (3+)
+    std::sort(ts.begin(), ts.end(), std::less<>());
 
-    // Remove duplicate pointers from array (abusing sorting). The policy may
-    // also prune some terminals.
+    // Remove duplicate pointers from array (abusing sorting). The policy may also prune some
+    // terminals.
     size_t ts_max_idx = 0;
     for (size_t i = ts_max_idx + 1; i < ts.size(); ++i) {
       adiar_assert(ts_max_idx < i, "i is always ahead of 'ts_max_idx'");
 
       // Stop early at maximum value of 'nil'
-      if (ts[i] == Policy::pointer_type::nil()) { break; }
+      if (ts[i].is_nil()) { break; }
 
       // Move new unique element at next spot for 'ts_max_idx'
       if (ts[ts_max_idx] != ts[i] && (!ts[i].is_terminal() || Policy::keep_terminal(op, ts[i]))) {
         ts[++ts_max_idx] = ts[i];
       }
     }
+
+    // Set remaining values to nil
     for (size_t i = ts_max_idx + 1; i < ts.size(); ++i) { ts[i] = Policy::pointer_type::nil(); }
 
     // Is the final element a collapsing terminal?
     const bool max_shortcuts =
       ts[ts_max_idx].is_terminal() && Policy::collapse_to_terminal(op, ts[ts_max_idx]);
 
-    // Are there only terminals left (should be combined)
+    // Are there only terminals left? These should be combined with the operator
     const bool only_terminals = ts[0].is_terminal() /* sorted => ts[1].is_terminal() */;
 
-    // If there are more than two targets but one of the two apply, then prune
-    // it all the way down to a single target.
+    // If there are more than two targets but one of the two apply, then prune it all the way down
+    // to a single target.
     if (1 <= ts_max_idx && (max_shortcuts || only_terminals)) {
-      adiar_assert(!ts[1].is_nil(), "Cannot be nil at i <= ts_max_elem");
       ts[0] = max_shortcuts ? ts[ts_max_idx] : op(ts[0], ts[1]);
-      for (size_t i = 1u; i <= ts_max_idx; ++i) { ts[i] = Policy::pointer_type::nil(); }
+      for (size_t i = 1u; i <= ts_max_idx; ++i) {
+        adiar_assert(!ts[i].is_nil(), "Cannot be nil at i <= ts_max_elem");
+        ts[i] = Policy::pointer_type::nil();
+      }
     }
 
     // Return final (sorted and pruned) set of targets.
