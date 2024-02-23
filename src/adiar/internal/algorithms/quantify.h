@@ -846,15 +846,15 @@ namespace adiar::internal
              Policy& policy,
              const bool_op& op)
   {
-    // -------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
     // Case: Terminal
     adiar_assert(!in->is_terminal());
 
-    // -------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
     // Case: Do the product construction (with random access)
     //
-    // Use random access if requested or the width fits half(ish) of the memory
-    // otherwise dedicated to the secondary priority queue.
+    // Use random access if requested or the width fits half(ish) of the memory otherwise dedicated
+    // to the secondary priority queue.
 
     constexpr size_t data_structures_in_pq_2 =
       quantify_priority_queue_2_t<memory_mode::Internal>::data_structures;
@@ -879,7 +879,7 @@ namespace adiar::internal
         ep, in, policy, op);
     }
 
-    // -------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
     // Case: Do the product construction (with priority queues)
 #ifdef ADIAR_STATS
     stats_quantify.pq.runs += 1u;
