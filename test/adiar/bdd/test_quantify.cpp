@@ -3127,461 +3127,946 @@ go_bandit([]() {
           & exec_policy::quantify::transposition_growth(1.5)
           & exec_policy::quantify::transposition_max(2);
 
-        it("collapses during initial transposition of all variables in BDD 4 [&&]", [&]() {
-          std::vector<bdd::label_type> call_history;
-          bdd out = bdd_exists(ep, bdd_4, [&call_history](const bdd::label_type x) -> bool {
-            call_history.push_back(x);
-            return true;
+        describe("access mode: random access", [&]() {
+          it("collapses during initial transposition of all variables in BDD 4 [&&]", [&]() {
+            std::vector<bdd::label_type> call_history;
+            bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
+                                 bdd_4,
+                                 [&call_history](const bdd::label_type x) -> bool {
+              call_history.push_back(x);
+              return true;
+            });
+
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True());
+            AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+            AssertThat(out_nodes.can_pull(), Is().False());
+
+            level_info_test_stream out_meta(out);
+            AssertThat(out_meta.can_pull(), Is().False());
+
+            // TODO: meta variables...
+
+            // Check call history
+            //
+            // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+            //       that this change makes sense and is as intended.
+            AssertThat(call_history.size(), Is().EqualTo(4u));
+
+            // - First check for at least one variable satisfying the predicate.
+            AssertThat(call_history.at(0), Is().EqualTo(3u));
+
+            // - First top-down sweep
+            AssertThat(call_history.at(1), Is().EqualTo(0u));
+            AssertThat(call_history.at(2), Is().EqualTo(1u));
+            AssertThat(call_history.at(3), Is().EqualTo(2u));
           });
 
-          node_test_stream out_nodes(out);
+          it("finishes during initial transposition of even variables in BDD 4 [const &]", [&]() {
+            std::vector<bdd::label_type> call_history;
 
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
-          AssertThat(out_nodes.can_pull(), Is().False());
+            const bdd in  = bdd_4;
+            const bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
+                                       in,
+                                       [&call_history](const bdd::label_type x) -> bool {
+              call_history.push_back(x);
+              return !(x % 2);
+            });
 
-          level_info_test_stream out_meta(out);
-          AssertThat(out_meta.can_pull(), Is().False());
+            node_test_stream out_nodes(out);
 
-          // TODO: meta variables...
+            AssertThat(out_nodes.can_pull(), Is().True()); // (5)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
-          // Check call history
-          //
-          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
-          //       that this change makes sense and is as intended.
-          AssertThat(call_history.size(), Is().EqualTo(4u));
+            AssertThat(out_nodes.can_pull(), Is().True()); // (2')
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(
+                                    node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
 
-          // - First check for at least one variable satisfying the predicate.
-          AssertThat(call_history.at(0), Is().EqualTo(3u));
+            AssertThat(out_nodes.can_pull(), Is().False());
 
-          // - First top-down sweep
-          AssertThat(call_history.at(1), Is().EqualTo(0u));
-          AssertThat(call_history.at(2), Is().EqualTo(1u));
-          AssertThat(call_history.at(3), Is().EqualTo(2u));
+            level_info_test_stream out_meta(out);
+
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
+
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
+
+            AssertThat(out_meta.can_pull(), Is().False());
+
+            // TODO: meta variables ...
+
+            // Check call history
+            //
+            // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+            //       that this change makes sense and is as intended.
+            AssertThat(call_history.size(), Is().EqualTo(6u));
+
+            // - First check for at least one variable satisfying the predicate.
+            AssertThat(call_history.at(0), Is().EqualTo(3u));
+            AssertThat(call_history.at(1), Is().EqualTo(2u));
+
+            // - First top-down sweep
+            AssertThat(call_history.at(2), Is().EqualTo(0u));
+            AssertThat(call_history.at(3), Is().EqualTo(1u));
+            AssertThat(call_history.at(4), Is().EqualTo(2u));
+            AssertThat(call_history.at(5), Is().EqualTo(3u));
+          });
+
+          it("collapses during repeated transposition with variables 1 and 2 in BDD 12a [&&]", [&]() {
+            std::vector<bdd::label_type> call_history;
+            bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
+                                 bdd_12a,
+                                 [&call_history](const bdd::label_type x) -> bool {
+              call_history.push_back(x);
+              return 0 < x && x < 3;
+            });
+
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True());
+            AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+            AssertThat(out_nodes.can_pull(), Is().False());
+
+            level_info_test_stream out_meta(out);
+            AssertThat(out_meta.can_pull(), Is().False());
+
+            // TODO: meta variables...
+
+            // Check call history
+            //
+            // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+            //       that this change makes sense and is as intended.
+            AssertThat(call_history.size(), Is().EqualTo(11u));
+
+            // - First check for at least one variable satisfying the predicate.
+            AssertThat(call_history.at(0), Is().EqualTo(4u));
+            AssertThat(call_history.at(1), Is().EqualTo(3u));
+            AssertThat(call_history.at(2), Is().EqualTo(2u));
+
+            // - First top-down sweep
+            AssertThat(call_history.at(3), Is().EqualTo(0u));
+            AssertThat(call_history.at(4), Is().EqualTo(1u));
+            AssertThat(call_history.at(5), Is().EqualTo(2u));
+            AssertThat(call_history.at(6), Is().EqualTo(3u));
+            AssertThat(call_history.at(7), Is().EqualTo(4u));
+
+            // - Second top-down sweep
+            AssertThat(call_history.at(8), Is().EqualTo(0u));
+            AssertThat(call_history.at(9), Is().EqualTo(2u));
+            AssertThat(call_history.at(10), Is().EqualTo(3u));
+          });
+
+          it("finishes during repeated transposition with variables 1 and 2 in BDD 12b [&&]", [&]() {
+            std::vector<bdd::label_type> call_history;
+            bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
+                                 bdd_12b,
+                                 [&call_history](const bdd::label_type x) -> bool {
+              call_history.push_back(x);
+              return 0 < x && x < 3;
+            });
+
+            /* expected
+            //             1        ---- x0
+            //            / \
+            //           /   \      ---- x1
+            //          /     \
+            //          |     |     ---- x2
+            //          |     |
+            //          ?     ?     ---- x3
+            //         / \   / \
+            //         |  \  T |
+            //         |   \__ /
+            //         7      8     ---- x4
+            //        / \    / \
+            //        T F    F T
+            //
+            // The 'T' terminal at 'x3' is due to the pair (7,8) collapsing to the
+            // 'T' terminal. This tuple is created from (7,F,8) which in turn is
+            // created from (5,6,8) from the quantification (3,4) from (2).
+            */
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (8)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(
+                                    node(4, node::max_id, node::pointer_type(false), node::pointer_type(true))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (7)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(
+                                         4, node::max_id - 1, node::pointer_type(true), node::pointer_type(false))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (5,6,8)
+            AssertThat(
+                       out_nodes.pull(),
+                       Is().EqualTo(node(
+                                         3, node::max_id, node::pointer_type(true), node::pointer_type(4, node::max_id))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (5,6)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(3,
+                                         node::max_id - 1,
+                                         node::pointer_type(4, node::max_id - 1),
+                                         node::pointer_type(4, node::max_id))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(0,
+                                         node::max_id,
+                                         node::pointer_type(3, node::max_id - 1),
+                                         node::pointer_type(3, node::max_id))));
+
+            AssertThat(out_nodes.can_pull(), Is().False());
+
+            level_info_test_stream out_meta(out);
+
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u, 2u)));
+
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 2u)));
+
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
+
+            AssertThat(out_meta.can_pull(), Is().False());
+
+            // TODO: meta variables...
+
+            // Check call history
+            //
+            // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+            //       that this change makes sense and is as intended.
+            AssertThat(call_history.size(), Is().EqualTo(12u));
+
+            // - First check for at least one variable satisfying the predicate.
+            AssertThat(call_history.at(0), Is().EqualTo(4u));
+            AssertThat(call_history.at(1), Is().EqualTo(3u));
+            AssertThat(call_history.at(2), Is().EqualTo(2u));
+
+            // - First top-down sweep
+            AssertThat(call_history.at(3), Is().EqualTo(0u));
+            AssertThat(call_history.at(4), Is().EqualTo(1u));
+            AssertThat(call_history.at(5), Is().EqualTo(2u));
+            AssertThat(call_history.at(6), Is().EqualTo(3u));
+            AssertThat(call_history.at(7), Is().EqualTo(4u));
+
+            // - Second top-down sweep
+            AssertThat(call_history.at(8), Is().EqualTo(0u));
+            AssertThat(call_history.at(9), Is().EqualTo(2u));
+            AssertThat(call_history.at(10), Is().EqualTo(3u));
+            AssertThat(call_history.at(11), Is().EqualTo(4u));
+          });
+
+          it("finishes during repeated transposition with variables 1 and 2 in BDD 13 [&&]", [&]() {
+            std::vector<bdd::label_type> call_history;
+            bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
+                                 bdd_13,
+                                 [&call_history](const bdd::label_type x) -> bool {
+              call_history.push_back(x);
+              return x < 2;
+            });
+
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (16)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(
+                                    node(7, node::max_id, node::pointer_type(false), node::pointer_type(true))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (15)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(
+                                    node(6, node::max_id, node::pointer_type(false), node::pointer_type(true))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (15,16)
+            AssertThat(
+                       out_nodes.pull(),
+                       Is().EqualTo(node(
+                                         6, node::max_id - 1, node::pointer_type(7, node::max_id), node::pointer_type(true))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (14)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(
+                                         6, node::max_id - 2, node::pointer_type(true), node::pointer_type(false))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (14,16)
+            AssertThat(
+                       out_nodes.pull(),
+                       Is().EqualTo(node(
+                                         6, node::max_id - 3, node::pointer_type(true), node::pointer_type(7, node::max_id))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (13,15)
+            AssertThat(
+                       out_nodes.pull(),
+                       Is().EqualTo(node(
+                                         5, node::max_id, node::pointer_type(6, node::max_id), node::pointer_type(true))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (13,15,16)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(5,
+                                         node::max_id - 1,
+                                         node::pointer_type(6, node::max_id - 1),
+                                         node::pointer_type(true))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (13,14,16)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(5,
+                                         node::max_id - 2,
+                                         node::pointer_type(6, node::max_id - 3),
+                                         node::pointer_type(true))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (12,15,16)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(5,
+                                         node::max_id - 3,
+                                         node::pointer_type(true),
+                                         node::pointer_type(6, node::max_id - 1))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (12,14)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(5,
+                                         node::max_id - 4,
+                                         node::pointer_type(true),
+                                         node::pointer_type(6, node::max_id - 2))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (12,14,16)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(5,
+                                         node::max_id - 5,
+                                         node::pointer_type(true),
+                                         node::pointer_type(6, node::max_id - 3))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (9,11,16)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(4,
+                                         node::max_id,
+                                         node::pointer_type(5, node::max_id - 5),
+                                         node::pointer_type(5, node::max_id - 1))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (8,11,16)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(4,
+                                         node::max_id - 1,
+                                         node::pointer_type(5, node::max_id - 3),
+                                         node::pointer_type(5, node::max_id - 2))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (9,10,16)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(4,
+                                         node::max_id - 2,
+                                         node::pointer_type(5, node::max_id - 2),
+                                         node::pointer_type(5, node::max_id - 3))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (8,10)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(4,
+                                         node::max_id - 3,
+                                         node::pointer_type(5, node::max_id),
+                                         node::pointer_type(5, node::max_id - 4))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (6,7,9,16)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(3,
+                                         node::max_id,
+                                         node::pointer_type(4, node::max_id - 2),
+                                         node::pointer_type(4, node::max_id))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (6,7,8)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(3,
+                                         node::max_id - 1,
+                                         node::pointer_type(4, node::max_id - 3),
+                                         node::pointer_type(4, node::max_id - 1))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (4,5,6,7)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(2,
+                                         node::max_id,
+                                         node::pointer_type(3, node::max_id - 1),
+                                         node::pointer_type(3, node::max_id))));
+
+            AssertThat(out_nodes.can_pull(), Is().False());
+
+            level_info_test_stream out_meta(out);
+
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(7u, 1u)));
+
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(6u, 4u)));
+
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u, 6u)));
+
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u, 4u)));
+
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 2u)));
+
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
+
+            AssertThat(out_meta.can_pull(), Is().False());
+
+            // TODO: meta variables...
+
+            // Check call history
+            //
+            // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+            //       that this change makes sense and is as intended.
+            AssertThat(call_history.size(), Is().EqualTo(22u));
+
+            // - First check for at least one variable satisfying the predicate.
+            AssertThat(call_history.at(0), Is().EqualTo(7u));
+            AssertThat(call_history.at(1), Is().EqualTo(6u));
+            AssertThat(call_history.at(2), Is().EqualTo(5u));
+            AssertThat(call_history.at(3), Is().EqualTo(4u));
+            AssertThat(call_history.at(4), Is().EqualTo(3u));
+            AssertThat(call_history.at(5), Is().EqualTo(2u));
+            AssertThat(call_history.at(6), Is().EqualTo(1u));
+
+            // - First top-down sweep
+            AssertThat(call_history.at(7), Is().EqualTo(0u));
+            AssertThat(call_history.at(8), Is().EqualTo(1u));
+            AssertThat(call_history.at(9), Is().EqualTo(2u));
+            AssertThat(call_history.at(10), Is().EqualTo(3u));
+            AssertThat(call_history.at(11), Is().EqualTo(4u));
+            AssertThat(call_history.at(12), Is().EqualTo(5u));
+            AssertThat(call_history.at(13), Is().EqualTo(6u));
+            AssertThat(call_history.at(14), Is().EqualTo(7u));
+
+            // - Second top-down sweep
+            AssertThat(call_history.at(15), Is().EqualTo(1u));
+            AssertThat(call_history.at(16), Is().EqualTo(2u));
+            AssertThat(call_history.at(17), Is().EqualTo(3u));
+            AssertThat(call_history.at(18), Is().EqualTo(4u));
+            AssertThat(call_history.at(19), Is().EqualTo(5u));
+            AssertThat(call_history.at(20), Is().EqualTo(6u));
+            AssertThat(call_history.at(21), Is().EqualTo(7u));
+          });
+
+          it("finishes early during repeated transposition [&&]", [&]() {
+            std::vector<bdd::label_type> call_history;
+            bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
+                                 bdd_10,
+                                 [&call_history](const bdd::label_type x) -> bool {
+              call_history.push_back(x);
+              return 1 < x;
+            });
+
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(
+                                    node(0, node::max_id, node::pointer_type(false), node::pointer_type(true))));
+
+            AssertThat(out_nodes.can_pull(), Is().False());
+
+            level_info_test_stream out_meta(out);
+
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
+
+            AssertThat(out_meta.can_pull(), Is().False());
+
+            // TODO: meta variables...
+
+            // Check call history
+            //
+            // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+            //       that this change makes sense and is as intended.
+            AssertThat(call_history.size(), Is().EqualTo(5u));
+
+            // - First check for at least one variable satisfying the predicate.
+            AssertThat(call_history.at(0), Is().EqualTo(4u));
+
+            // - First top-down sweep
+            AssertThat(call_history.at(1), Is().EqualTo(0u));
+            AssertThat(call_history.at(2), Is().EqualTo(1u));
+            AssertThat(call_history.at(3), Is().EqualTo(2u));
+            AssertThat(call_history.at(4), Is().EqualTo(3u));
+
+            // NOTE: Even though there are three levels that should be quantified, we only do one
+            //       partial quantification.
+          });
         });
 
-        it("finishes during initial transposition of even variables in BDD 4 [const &]", [&]() {
-          std::vector<bdd::label_type> call_history;
+        describe("access mode: priority queue", [&]() {
+          it("collapses during initial transposition of all variables in BDD 4 [&&]", [&]() {
+            std::vector<bdd::label_type> call_history;
+            bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
+                                 bdd_4,
+                                 [&call_history](const bdd::label_type x) -> bool {
+              call_history.push_back(x);
+              return true;
+            });
 
-          const bdd in  = bdd_4;
-          const bdd out = bdd_exists(ep, in, [&call_history](const bdd::label_type x) -> bool {
-            call_history.push_back(x);
-            return !(x % 2);
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True());
+            AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+            AssertThat(out_nodes.can_pull(), Is().False());
+
+            level_info_test_stream out_meta(out);
+            AssertThat(out_meta.can_pull(), Is().False());
+
+            // TODO: meta variables...
+
+            // Check call history
+            //
+            // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+            //       that this change makes sense and is as intended.
+            AssertThat(call_history.size(), Is().EqualTo(4u));
+
+            // - First check for at least one variable satisfying the predicate.
+            AssertThat(call_history.at(0), Is().EqualTo(3u));
+
+            // - First top-down sweep
+            AssertThat(call_history.at(1), Is().EqualTo(0u));
+            AssertThat(call_history.at(2), Is().EqualTo(1u));
+            AssertThat(call_history.at(3), Is().EqualTo(2u));
           });
 
-          node_test_stream out_nodes(out);
+          it("finishes during initial transposition of even variables in BDD 4 [const &]", [&]() {
+            std::vector<bdd::label_type> call_history;
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (5)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+            const bdd in  = bdd_4;
+            const bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
+                                       in,
+                                       [&call_history](const bdd::label_type x) -> bool {
+              call_history.push_back(x);
+              return !(x % 2);
+            });
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (2')
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(
-                       node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
+            node_test_stream out_nodes(out);
 
-          AssertThat(out_nodes.can_pull(), Is().False());
+            AssertThat(out_nodes.can_pull(), Is().True()); // (5)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
-          level_info_test_stream out_meta(out);
+            AssertThat(out_nodes.can_pull(), Is().True()); // (2')
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(
+                                    node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
 
-          AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
+            AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
+            level_info_test_stream out_meta(out);
 
-          AssertThat(out_meta.can_pull(), Is().False());
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
 
-          // TODO: meta variables ...
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
 
-          // Check call history
-          //
-          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
-          //       that this change makes sense and is as intended.
-          AssertThat(call_history.size(), Is().EqualTo(6u));
+            AssertThat(out_meta.can_pull(), Is().False());
 
-          // - First check for at least one variable satisfying the predicate.
-          AssertThat(call_history.at(0), Is().EqualTo(3u));
-          AssertThat(call_history.at(1), Is().EqualTo(2u));
+            // TODO: meta variables ...
 
-          // - First top-down sweep
-          AssertThat(call_history.at(2), Is().EqualTo(0u));
-          AssertThat(call_history.at(3), Is().EqualTo(1u));
-          AssertThat(call_history.at(4), Is().EqualTo(2u));
-          AssertThat(call_history.at(5), Is().EqualTo(3u));
-        });
+            // Check call history
+            //
+            // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+            //       that this change makes sense and is as intended.
+            AssertThat(call_history.size(), Is().EqualTo(6u));
 
-        it("collapses during repeated transposition with variables 1 and 2 in BDD 12a [&&]", [&]() {
-          std::vector<bdd::label_type> call_history;
-          bdd out = bdd_exists(ep, bdd_12a, [&call_history](const bdd::label_type x) -> bool {
-            call_history.push_back(x);
-            return 0 < x && x < 3;
+            // - First check for at least one variable satisfying the predicate.
+            AssertThat(call_history.at(0), Is().EqualTo(3u));
+            AssertThat(call_history.at(1), Is().EqualTo(2u));
+
+            // - First top-down sweep
+            AssertThat(call_history.at(2), Is().EqualTo(0u));
+            AssertThat(call_history.at(3), Is().EqualTo(1u));
+            AssertThat(call_history.at(4), Is().EqualTo(2u));
+            AssertThat(call_history.at(5), Is().EqualTo(3u));
           });
 
-          node_test_stream out_nodes(out);
+          it("collapses during repeated transposition with variables 1 and 2 in BDD 12a [&&]", [&]() {
+            std::vector<bdd::label_type> call_history;
+            bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
+                                 bdd_12a,
+                                 [&call_history](const bdd::label_type x) -> bool {
+              call_history.push_back(x);
+              return 0 < x && x < 3;
+            });
 
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
-          AssertThat(out_nodes.can_pull(), Is().False());
+            node_test_stream out_nodes(out);
 
-          level_info_test_stream out_meta(out);
-          AssertThat(out_meta.can_pull(), Is().False());
+            AssertThat(out_nodes.can_pull(), Is().True());
+            AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+            AssertThat(out_nodes.can_pull(), Is().False());
 
-          // TODO: meta variables...
+            level_info_test_stream out_meta(out);
+            AssertThat(out_meta.can_pull(), Is().False());
 
-          // Check call history
-          //
-          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
-          //       that this change makes sense and is as intended.
-          AssertThat(call_history.size(), Is().EqualTo(11u));
+            // TODO: meta variables...
 
-          // - First check for at least one variable satisfying the predicate.
-          AssertThat(call_history.at(0), Is().EqualTo(4u));
-          AssertThat(call_history.at(1), Is().EqualTo(3u));
-          AssertThat(call_history.at(2), Is().EqualTo(2u));
+            // Check call history
+            //
+            // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+            //       that this change makes sense and is as intended.
+            AssertThat(call_history.size(), Is().EqualTo(11u));
 
-          // - First top-down sweep
-          AssertThat(call_history.at(3), Is().EqualTo(0u));
-          AssertThat(call_history.at(4), Is().EqualTo(1u));
-          AssertThat(call_history.at(5), Is().EqualTo(2u));
-          AssertThat(call_history.at(6), Is().EqualTo(3u));
-          AssertThat(call_history.at(7), Is().EqualTo(4u));
+            // - First check for at least one variable satisfying the predicate.
+            AssertThat(call_history.at(0), Is().EqualTo(4u));
+            AssertThat(call_history.at(1), Is().EqualTo(3u));
+            AssertThat(call_history.at(2), Is().EqualTo(2u));
 
-          // - Second top-down sweep
-          AssertThat(call_history.at(8), Is().EqualTo(0u));
-          AssertThat(call_history.at(9), Is().EqualTo(2u));
-          AssertThat(call_history.at(10), Is().EqualTo(3u));
-        });
+            // - First top-down sweep
+            AssertThat(call_history.at(3), Is().EqualTo(0u));
+            AssertThat(call_history.at(4), Is().EqualTo(1u));
+            AssertThat(call_history.at(5), Is().EqualTo(2u));
+            AssertThat(call_history.at(6), Is().EqualTo(3u));
+            AssertThat(call_history.at(7), Is().EqualTo(4u));
 
-        it("finishes during repeated transposition with variables 1 and 2 in BDD 12b [&&]", [&]() {
-          std::vector<bdd::label_type> call_history;
-          bdd out = bdd_exists(ep, bdd_12b, [&call_history](const bdd::label_type x) -> bool {
-            call_history.push_back(x);
-            return 0 < x && x < 3;
+            // - Second top-down sweep
+            AssertThat(call_history.at(8), Is().EqualTo(0u));
+            AssertThat(call_history.at(9), Is().EqualTo(2u));
+            AssertThat(call_history.at(10), Is().EqualTo(3u));
           });
 
-          /* expected
-          //             1        ---- x0
-          //            / \
-          //           /   \      ---- x1
-          //          /     \
-          //          |     |     ---- x2
-          //          |     |
-          //          ?     ?     ---- x3
-          //         / \   / \
-          //         |  \  T |
-          //         |   \__ /
-          //         7      8     ---- x4
-          //        / \    / \
-          //        T F    F T
-          //
-          // The 'T' terminal at 'x3' is due to the pair (7,8) collapsing to the
-          // 'T' terminal. This tuple is created from (7,F,8) which in turn is
-          // created from (5,6,8) from the quantification (3,4) from (2).
-          */
-          node_test_stream out_nodes(out);
+          it("finishes during repeated transposition with variables 1 and 2 in BDD 12b [&&]", [&]() {
+            std::vector<bdd::label_type> call_history;
+            bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
+                                 bdd_12b,
+                                 [&call_history](const bdd::label_type x) -> bool {
+              call_history.push_back(x);
+              return 0 < x && x < 3;
+            });
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (8)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(
-                       node(4, node::max_id, node::pointer_type(false), node::pointer_type(true))));
+            /* expected
+            //             1        ---- x0
+            //            / \
+            //           /   \      ---- x1
+            //          /     \
+            //          |     |     ---- x2
+            //          |     |
+            //          ?     ?     ---- x3
+            //         / \   / \
+            //         |  \  T |
+            //         |   \__ /
+            //         7      8     ---- x4
+            //        / \    / \
+            //        T F    F T
+            //
+            // The 'T' terminal at 'x3' is due to the pair (7,8) collapsing to the
+            // 'T' terminal. This tuple is created from (7,F,8) which in turn is
+            // created from (5,6,8) from the quantification (3,4) from (2).
+            */
+            node_test_stream out_nodes(out);
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (7)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(node(
-                       4, node::max_id - 1, node::pointer_type(true), node::pointer_type(false))));
+            AssertThat(out_nodes.can_pull(), Is().True()); // (8)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(
+                                    node(4, node::max_id, node::pointer_type(false), node::pointer_type(true))));
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (5,6,8)
-          AssertThat(
-            out_nodes.pull(),
-            Is().EqualTo(node(
-              3, node::max_id, node::pointer_type(true), node::pointer_type(4, node::max_id))));
+            AssertThat(out_nodes.can_pull(), Is().True()); // (7)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(
+                                         4, node::max_id - 1, node::pointer_type(true), node::pointer_type(false))));
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (5,6)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(node(3,
-                                       node::max_id - 1,
-                                       node::pointer_type(4, node::max_id - 1),
-                                       node::pointer_type(4, node::max_id))));
+            AssertThat(out_nodes.can_pull(), Is().True()); // (5,6,8)
+            AssertThat(
+                       out_nodes.pull(),
+                       Is().EqualTo(node(
+                                         3, node::max_id, node::pointer_type(true), node::pointer_type(4, node::max_id))));
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(node(0,
-                                       node::max_id,
-                                       node::pointer_type(3, node::max_id - 1),
-                                       node::pointer_type(3, node::max_id))));
+            AssertThat(out_nodes.can_pull(), Is().True()); // (5,6)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(3,
+                                         node::max_id - 1,
+                                         node::pointer_type(4, node::max_id - 1),
+                                         node::pointer_type(4, node::max_id))));
 
-          AssertThat(out_nodes.can_pull(), Is().False());
+            AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(0,
+                                         node::max_id,
+                                         node::pointer_type(3, node::max_id - 1),
+                                         node::pointer_type(3, node::max_id))));
 
-          level_info_test_stream out_meta(out);
+            AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u, 2u)));
+            level_info_test_stream out_meta(out);
 
-          AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 2u)));
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u, 2u)));
 
-          AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 2u)));
 
-          AssertThat(out_meta.can_pull(), Is().False());
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
 
-          // TODO: meta variables...
+            AssertThat(out_meta.can_pull(), Is().False());
 
-          // Check call history
-          //
-          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
-          //       that this change makes sense and is as intended.
-          AssertThat(call_history.size(), Is().EqualTo(12u));
+            // TODO: meta variables...
 
-          // - First check for at least one variable satisfying the predicate.
-          AssertThat(call_history.at(0), Is().EqualTo(4u));
-          AssertThat(call_history.at(1), Is().EqualTo(3u));
-          AssertThat(call_history.at(2), Is().EqualTo(2u));
+            // Check call history
+            //
+            // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+            //       that this change makes sense and is as intended.
+            AssertThat(call_history.size(), Is().EqualTo(12u));
 
-          // - First top-down sweep
-          AssertThat(call_history.at(3), Is().EqualTo(0u));
-          AssertThat(call_history.at(4), Is().EqualTo(1u));
-          AssertThat(call_history.at(5), Is().EqualTo(2u));
-          AssertThat(call_history.at(6), Is().EqualTo(3u));
-          AssertThat(call_history.at(7), Is().EqualTo(4u));
+            // - First check for at least one variable satisfying the predicate.
+            AssertThat(call_history.at(0), Is().EqualTo(4u));
+            AssertThat(call_history.at(1), Is().EqualTo(3u));
+            AssertThat(call_history.at(2), Is().EqualTo(2u));
 
-          // - Second top-down sweep
-          AssertThat(call_history.at(8), Is().EqualTo(0u));
-          AssertThat(call_history.at(9), Is().EqualTo(2u));
-          AssertThat(call_history.at(10), Is().EqualTo(3u));
-          AssertThat(call_history.at(11), Is().EqualTo(4u));
-        });
+            // - First top-down sweep
+            AssertThat(call_history.at(3), Is().EqualTo(0u));
+            AssertThat(call_history.at(4), Is().EqualTo(1u));
+            AssertThat(call_history.at(5), Is().EqualTo(2u));
+            AssertThat(call_history.at(6), Is().EqualTo(3u));
+            AssertThat(call_history.at(7), Is().EqualTo(4u));
 
-        it("finishes during repeated transposition with variables 1 and 2 in BDD 13 [&&]", [&]() {
-          std::vector<bdd::label_type> call_history;
-          bdd out = bdd_exists(ep, bdd_13, [&call_history](const bdd::label_type x) -> bool {
-            call_history.push_back(x);
-            return x < 2;
+            // - Second top-down sweep
+            AssertThat(call_history.at(8), Is().EqualTo(0u));
+            AssertThat(call_history.at(9), Is().EqualTo(2u));
+            AssertThat(call_history.at(10), Is().EqualTo(3u));
+            AssertThat(call_history.at(11), Is().EqualTo(4u));
           });
 
-          node_test_stream out_nodes(out);
+          it("finishes during repeated transposition with variables 1 and 2 in BDD 13 [&&]", [&]() {
+            std::vector<bdd::label_type> call_history;
+            bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
+                                 bdd_13,
+                                 [&call_history](const bdd::label_type x) -> bool {
+              call_history.push_back(x);
+              return x < 2;
+            });
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (16)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(
-                       node(7, node::max_id, node::pointer_type(false), node::pointer_type(true))));
+            node_test_stream out_nodes(out);
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (15)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(
-                       node(6, node::max_id, node::pointer_type(false), node::pointer_type(true))));
+            AssertThat(out_nodes.can_pull(), Is().True()); // (16)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(
+                                    node(7, node::max_id, node::pointer_type(false), node::pointer_type(true))));
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (15,16)
-          AssertThat(
-            out_nodes.pull(),
-            Is().EqualTo(node(
-              6, node::max_id - 1, node::pointer_type(7, node::max_id), node::pointer_type(true))));
+            AssertThat(out_nodes.can_pull(), Is().True()); // (15)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(
+                                    node(6, node::max_id, node::pointer_type(false), node::pointer_type(true))));
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (14)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(node(
-                       6, node::max_id - 2, node::pointer_type(true), node::pointer_type(false))));
+            AssertThat(out_nodes.can_pull(), Is().True()); // (15,16)
+            AssertThat(
+                       out_nodes.pull(),
+                       Is().EqualTo(node(
+                                         6, node::max_id - 1, node::pointer_type(7, node::max_id), node::pointer_type(true))));
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (14,16)
-          AssertThat(
-            out_nodes.pull(),
-            Is().EqualTo(node(
-              6, node::max_id - 3, node::pointer_type(true), node::pointer_type(7, node::max_id))));
+            AssertThat(out_nodes.can_pull(), Is().True()); // (14)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(
+                                         6, node::max_id - 2, node::pointer_type(true), node::pointer_type(false))));
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (13,15)
-          AssertThat(
-            out_nodes.pull(),
-            Is().EqualTo(node(
-              5, node::max_id, node::pointer_type(6, node::max_id), node::pointer_type(true))));
+            AssertThat(out_nodes.can_pull(), Is().True()); // (14,16)
+            AssertThat(
+                       out_nodes.pull(),
+                       Is().EqualTo(node(
+                                         6, node::max_id - 3, node::pointer_type(true), node::pointer_type(7, node::max_id))));
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (13,15,16)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(node(5,
-                                       node::max_id - 1,
-                                       node::pointer_type(6, node::max_id - 1),
-                                       node::pointer_type(true))));
+            AssertThat(out_nodes.can_pull(), Is().True()); // (13,15)
+            AssertThat(
+                       out_nodes.pull(),
+                       Is().EqualTo(node(
+                                         5, node::max_id, node::pointer_type(6, node::max_id), node::pointer_type(true))));
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (13,14,16)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(node(5,
-                                       node::max_id - 2,
-                                       node::pointer_type(6, node::max_id - 3),
-                                       node::pointer_type(true))));
+            AssertThat(out_nodes.can_pull(), Is().True()); // (13,15,16)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(5,
+                                         node::max_id - 1,
+                                         node::pointer_type(6, node::max_id - 1),
+                                         node::pointer_type(true))));
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (12,15,16)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(node(5,
-                                       node::max_id - 3,
-                                       node::pointer_type(true),
-                                       node::pointer_type(6, node::max_id - 1))));
+            AssertThat(out_nodes.can_pull(), Is().True()); // (13,14,16)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(5,
+                                         node::max_id - 2,
+                                         node::pointer_type(6, node::max_id - 3),
+                                         node::pointer_type(true))));
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (12,14)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(node(5,
-                                       node::max_id - 4,
-                                       node::pointer_type(true),
-                                       node::pointer_type(6, node::max_id - 2))));
+            AssertThat(out_nodes.can_pull(), Is().True()); // (12,15,16)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(5,
+                                         node::max_id - 3,
+                                         node::pointer_type(true),
+                                         node::pointer_type(6, node::max_id - 1))));
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (12,14,16)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(node(5,
-                                       node::max_id - 5,
-                                       node::pointer_type(true),
-                                       node::pointer_type(6, node::max_id - 3))));
+            AssertThat(out_nodes.can_pull(), Is().True()); // (12,14)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(5,
+                                         node::max_id - 4,
+                                         node::pointer_type(true),
+                                         node::pointer_type(6, node::max_id - 2))));
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (9,11,16)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(node(4,
-                                       node::max_id,
-                                       node::pointer_type(5, node::max_id - 5),
-                                       node::pointer_type(5, node::max_id - 1))));
+            AssertThat(out_nodes.can_pull(), Is().True()); // (12,14,16)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(5,
+                                         node::max_id - 5,
+                                         node::pointer_type(true),
+                                         node::pointer_type(6, node::max_id - 3))));
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (8,11,16)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(node(4,
-                                       node::max_id - 1,
-                                       node::pointer_type(5, node::max_id - 3),
-                                       node::pointer_type(5, node::max_id - 2))));
+            AssertThat(out_nodes.can_pull(), Is().True()); // (9,11,16)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(4,
+                                         node::max_id,
+                                         node::pointer_type(5, node::max_id - 5),
+                                         node::pointer_type(5, node::max_id - 1))));
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (9,10,16)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(node(4,
-                                       node::max_id - 2,
-                                       node::pointer_type(5, node::max_id - 2),
-                                       node::pointer_type(5, node::max_id - 3))));
+            AssertThat(out_nodes.can_pull(), Is().True()); // (8,11,16)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(4,
+                                         node::max_id - 1,
+                                         node::pointer_type(5, node::max_id - 3),
+                                         node::pointer_type(5, node::max_id - 2))));
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (8,10)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(node(4,
-                                       node::max_id - 3,
-                                       node::pointer_type(5, node::max_id),
-                                       node::pointer_type(5, node::max_id - 4))));
+            AssertThat(out_nodes.can_pull(), Is().True()); // (9,10,16)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(4,
+                                         node::max_id - 2,
+                                         node::pointer_type(5, node::max_id - 2),
+                                         node::pointer_type(5, node::max_id - 3))));
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (6,7,9,16)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(node(3,
-                                       node::max_id,
-                                       node::pointer_type(4, node::max_id - 2),
-                                       node::pointer_type(4, node::max_id))));
+            AssertThat(out_nodes.can_pull(), Is().True()); // (8,10)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(4,
+                                         node::max_id - 3,
+                                         node::pointer_type(5, node::max_id),
+                                         node::pointer_type(5, node::max_id - 4))));
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (6,7,8)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(node(3,
-                                       node::max_id - 1,
-                                       node::pointer_type(4, node::max_id - 3),
-                                       node::pointer_type(4, node::max_id - 1))));
+            AssertThat(out_nodes.can_pull(), Is().True()); // (6,7,9,16)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(3,
+                                         node::max_id,
+                                         node::pointer_type(4, node::max_id - 2),
+                                         node::pointer_type(4, node::max_id))));
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (4,5,6,7)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(node(2,
-                                       node::max_id,
-                                       node::pointer_type(3, node::max_id - 1),
-                                       node::pointer_type(3, node::max_id))));
+            AssertThat(out_nodes.can_pull(), Is().True()); // (6,7,8)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(3,
+                                         node::max_id - 1,
+                                         node::pointer_type(4, node::max_id - 3),
+                                         node::pointer_type(4, node::max_id - 1))));
 
-          AssertThat(out_nodes.can_pull(), Is().False());
+            AssertThat(out_nodes.can_pull(), Is().True()); // (4,5,6,7)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(2,
+                                         node::max_id,
+                                         node::pointer_type(3, node::max_id - 1),
+                                         node::pointer_type(3, node::max_id))));
 
-          level_info_test_stream out_meta(out);
+            AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(7u, 1u)));
+            level_info_test_stream out_meta(out);
 
-          AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(6u, 4u)));
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(7u, 1u)));
 
-          AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u, 6u)));
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(6u, 4u)));
 
-          AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u, 4u)));
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(5u, 6u)));
 
-          AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 2u)));
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(4u, 4u)));
 
-          AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 2u)));
 
-          AssertThat(out_meta.can_pull(), Is().False());
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
 
-          // TODO: meta variables...
+            AssertThat(out_meta.can_pull(), Is().False());
 
-          // Check call history
-          //
-          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
-          //       that this change makes sense and is as intended.
-          AssertThat(call_history.size(), Is().EqualTo(22u));
+            // TODO: meta variables...
 
-          // - First check for at least one variable satisfying the predicate.
-          AssertThat(call_history.at(0), Is().EqualTo(7u));
-          AssertThat(call_history.at(1), Is().EqualTo(6u));
-          AssertThat(call_history.at(2), Is().EqualTo(5u));
-          AssertThat(call_history.at(3), Is().EqualTo(4u));
-          AssertThat(call_history.at(4), Is().EqualTo(3u));
-          AssertThat(call_history.at(5), Is().EqualTo(2u));
-          AssertThat(call_history.at(6), Is().EqualTo(1u));
+            // Check call history
+            //
+            // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+            //       that this change makes sense and is as intended.
+            AssertThat(call_history.size(), Is().EqualTo(22u));
 
-          // - First top-down sweep
-          AssertThat(call_history.at(7), Is().EqualTo(0u));
-          AssertThat(call_history.at(8), Is().EqualTo(1u));
-          AssertThat(call_history.at(9), Is().EqualTo(2u));
-          AssertThat(call_history.at(10), Is().EqualTo(3u));
-          AssertThat(call_history.at(11), Is().EqualTo(4u));
-          AssertThat(call_history.at(12), Is().EqualTo(5u));
-          AssertThat(call_history.at(13), Is().EqualTo(6u));
-          AssertThat(call_history.at(14), Is().EqualTo(7u));
+            // - First check for at least one variable satisfying the predicate.
+            AssertThat(call_history.at(0), Is().EqualTo(7u));
+            AssertThat(call_history.at(1), Is().EqualTo(6u));
+            AssertThat(call_history.at(2), Is().EqualTo(5u));
+            AssertThat(call_history.at(3), Is().EqualTo(4u));
+            AssertThat(call_history.at(4), Is().EqualTo(3u));
+            AssertThat(call_history.at(5), Is().EqualTo(2u));
+            AssertThat(call_history.at(6), Is().EqualTo(1u));
 
-          // - Second top-down sweep
-          AssertThat(call_history.at(15), Is().EqualTo(1u));
-          AssertThat(call_history.at(16), Is().EqualTo(2u));
-          AssertThat(call_history.at(17), Is().EqualTo(3u));
-          AssertThat(call_history.at(18), Is().EqualTo(4u));
-          AssertThat(call_history.at(19), Is().EqualTo(5u));
-          AssertThat(call_history.at(20), Is().EqualTo(6u));
-          AssertThat(call_history.at(21), Is().EqualTo(7u));
-        });
+            // - First top-down sweep
+            AssertThat(call_history.at(7), Is().EqualTo(0u));
+            AssertThat(call_history.at(8), Is().EqualTo(1u));
+            AssertThat(call_history.at(9), Is().EqualTo(2u));
+            AssertThat(call_history.at(10), Is().EqualTo(3u));
+            AssertThat(call_history.at(11), Is().EqualTo(4u));
+            AssertThat(call_history.at(12), Is().EqualTo(5u));
+            AssertThat(call_history.at(13), Is().EqualTo(6u));
+            AssertThat(call_history.at(14), Is().EqualTo(7u));
 
-        it("finishes early during repeated transposition [&&]", [&]() {
-          std::vector<bdd::label_type> call_history;
-          bdd out = bdd_exists(ep, bdd_10, [&call_history](const bdd::label_type x) -> bool {
-            call_history.push_back(x);
-            return 1 < x;
+            // - Second top-down sweep
+            AssertThat(call_history.at(15), Is().EqualTo(1u));
+            AssertThat(call_history.at(16), Is().EqualTo(2u));
+            AssertThat(call_history.at(17), Is().EqualTo(3u));
+            AssertThat(call_history.at(18), Is().EqualTo(4u));
+            AssertThat(call_history.at(19), Is().EqualTo(5u));
+            AssertThat(call_history.at(20), Is().EqualTo(6u));
+            AssertThat(call_history.at(21), Is().EqualTo(7u));
           });
 
-          node_test_stream out_nodes(out);
+          it("finishes early during repeated transposition [&&]", [&]() {
+            std::vector<bdd::label_type> call_history;
+            bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
+                                 bdd_10,
+                                 [&call_history](const bdd::label_type x) -> bool {
+              call_history.push_back(x);
+              return 1 < x;
+            });
 
-          AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(
-                       node(0, node::max_id, node::pointer_type(false), node::pointer_type(true))));
+            node_test_stream out_nodes(out);
 
-          AssertThat(out_nodes.can_pull(), Is().False());
+            AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(
+                                    node(0, node::max_id, node::pointer_type(false), node::pointer_type(true))));
 
-          level_info_test_stream out_meta(out);
+            AssertThat(out_nodes.can_pull(), Is().False());
 
-          AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
+            level_info_test_stream out_meta(out);
 
-          AssertThat(out_meta.can_pull(), Is().False());
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
 
-          // TODO: meta variables...
+            AssertThat(out_meta.can_pull(), Is().False());
 
-          // Check call history
-          //
-          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
-          //       that this change makes sense and is as intended.
-          AssertThat(call_history.size(), Is().EqualTo(5u));
+            // TODO: meta variables...
 
-          // - First check for at least one variable satisfying the predicate.
-          AssertThat(call_history.at(0), Is().EqualTo(4u));
+            // Check call history
+            //
+            // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+            //       that this change makes sense and is as intended.
+            AssertThat(call_history.size(), Is().EqualTo(5u));
 
-          // - First top-down sweep
-          AssertThat(call_history.at(1), Is().EqualTo(0u));
-          AssertThat(call_history.at(2), Is().EqualTo(1u));
-          AssertThat(call_history.at(3), Is().EqualTo(2u));
-          AssertThat(call_history.at(4), Is().EqualTo(3u));
+            // - First check for at least one variable satisfying the predicate.
+            AssertThat(call_history.at(0), Is().EqualTo(4u));
 
-          // NOTE: Even though there are three levels that should be quantified, we only do one
-          //       partial quantification.
+            // - First top-down sweep
+            AssertThat(call_history.at(1), Is().EqualTo(0u));
+            AssertThat(call_history.at(2), Is().EqualTo(1u));
+            AssertThat(call_history.at(3), Is().EqualTo(2u));
+            AssertThat(call_history.at(4), Is().EqualTo(3u));
+
+            // NOTE: Even though there are three levels that should be quantified, we only do one
+            //       partial quantification.
+          });
         });
 
         it("quantifies exploding BDD 15 with unbounded repeated transposition", [&]() {
