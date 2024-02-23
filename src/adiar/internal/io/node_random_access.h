@@ -12,8 +12,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Random-access to the contents of a levelized file of node.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  class node_random_access
-    : public levelized_random_access<node_stream<>>
+  class node_random_access : public levelized_random_access<node_stream<>>
   {
     using parent_type = levelized_random_access<node_stream<>>;
 

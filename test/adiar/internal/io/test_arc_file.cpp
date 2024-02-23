@@ -700,7 +700,6 @@ go_bandit([]() {
         aw.push_terminal(arc(arc::pointer_type(1, 0), false, arc::pointer_type(false)));
         aw.push_internal(arc(arc::pointer_type(1, 0), true, arc::pointer_type(2, 1)));
 
-
         aw.push(level_info(2, 2));
 
         aw.push_terminal(arc(arc::pointer_type(2, 0), false, arc::pointer_type(false)));
@@ -792,7 +791,7 @@ go_bandit([]() {
         aw.detach();
       }
 
-      const node A_n1(1,0, node::pointer_type(false), node::pointer_type(true));
+      const node A_n1(1, 0, node::pointer_type(false), node::pointer_type(true));
 
       levelized_file<arc> afB;
       /*
@@ -815,9 +814,9 @@ go_bandit([]() {
         aw.push_internal(arc(arc::pointer_type(1, 0), false, arc::pointer_type(2, 0)));
         aw.push_internal(arc(arc::pointer_type(1, 0), true, arc::pointer_type(2, 1)));
         aw.push_internal(arc(arc::pointer_type(0, 0), true, arc::pointer_type(2, 2)));
-        aw.push_internal(arc(arc::pointer_type(2, 0), true, arc::pointer_type(4,0)));
-        aw.push_internal(arc(arc::pointer_type(2, 1), true, arc::pointer_type(4,1)));
-        aw.push_internal(arc(arc::pointer_type(2, 2), false, arc::pointer_type(4,1)));
+        aw.push_internal(arc(arc::pointer_type(2, 0), true, arc::pointer_type(4, 0)));
+        aw.push_internal(arc(arc::pointer_type(2, 1), true, arc::pointer_type(4, 1)));
+        aw.push_internal(arc(arc::pointer_type(2, 2), false, arc::pointer_type(4, 1)));
 
         aw.push_terminal(arc(arc::pointer_type(2, 0), false, arc::pointer_type(true)));
         aw.push_terminal(arc(arc::pointer_type(2, 1), false, arc::pointer_type(false)));
@@ -835,13 +834,13 @@ go_bandit([]() {
         aw.detach();
       }
 
-      const node B_n7(4,1, node::pointer_type(false), node::pointer_type(true));
-      const node B_n6(4,0, node::pointer_type(true), node::pointer_type(false));
-      const node B_n5(2,2, B_n7.uid(), node::pointer_type(true));
-      const node B_n4(2,1, node::pointer_type(false), B_n7.uid());
-      const node B_n3(2,0, node::pointer_type(true), B_n6.uid());
-      const node B_n2(1,0, B_n3.uid(), B_n4.uid());
-      const node B_n1(0,0, B_n2.uid(), B_n5.uid());
+      const node B_n7(4, 1, node::pointer_type(false), node::pointer_type(true));
+      const node B_n6(4, 0, node::pointer_type(true), node::pointer_type(false));
+      const node B_n5(2, 2, B_n7.uid(), node::pointer_type(true));
+      const node B_n4(2, 1, node::pointer_type(false), B_n7.uid());
+      const node B_n3(2, 0, node::pointer_type(true), B_n6.uid());
+      const node B_n2(1, 0, B_n3.uid(), B_n4.uid());
+      const node B_n1(0, 0, B_n2.uid(), B_n5.uid());
 
       describe(".setup_next_level(...) + .[has_]current_level() + ", [&]() {
         it("has empty levels before root [A]", [&]() {
@@ -1148,7 +1147,7 @@ go_bandit([]() {
           levelized_file<arc> in = levelized_file<arc>::copy(afB);
           node_arc_random_access nara(in);
 
-          AssertThat(nara.root(), Is().EqualTo(arc::pointer_type(0,0)));
+          AssertThat(nara.root(), Is().EqualTo(arc::pointer_type(0, 0)));
         });
 
         it("provides root after accessing node below it [B]", [&]() {

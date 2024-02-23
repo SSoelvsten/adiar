@@ -125,12 +125,13 @@ namespace adiar::internal
   public:
     __prod2_recurse_in__output_node(arc_writer& aw,
                                     const typename Policy::node_type::uid_type& out_uid)
-      : _aw(aw), _out_uid(out_uid)
+      : _aw(aw)
+      , _out_uid(out_uid)
     {}
 
     template <typename Request>
     inline void
-    operator() (const Request& req) const
+    operator()(const Request& req) const
     {
       if (Policy::no_skip || !req.data.source.is_nil()) {
         this->_aw.push_internal({ req.data.source, this->_out_uid });
@@ -150,12 +151,13 @@ namespace adiar::internal
 
   public:
     __prod2_recurse_in__output_terminal(arc_writer& aw, const Pointer& out_terminal)
-      : _aw(aw), _out_terminal(out_terminal)
+      : _aw(aw)
+      , _out_terminal(out_terminal)
     {}
 
     template <typename Request>
     inline void
-    operator() (const Request& req) const
+    operator()(const Request& req) const
     {
       this->_aw.push_terminal({ req.data.source, this->_out_terminal });
     }
@@ -169,17 +171,18 @@ namespace adiar::internal
   struct __prod2_recurse_in__forward
   {
   private:
-    PriorityQueue &_pq;
+    PriorityQueue& _pq;
     const Target& _t;
 
   public:
-    __prod2_recurse_in__forward(PriorityQueue &pq, const Target& t)
-      : _pq(pq), _t(t)
+    __prod2_recurse_in__forward(PriorityQueue& pq, const Target& t)
+      : _pq(pq)
+      , _t(t)
     {}
 
     template <typename Request>
     inline void
-    operator() (const Request& req) const
+    operator()(const Request& req) const
     {
       this->_pq.push({ this->_t, {}, req.data });
     }

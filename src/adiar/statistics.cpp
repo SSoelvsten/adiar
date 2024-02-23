@@ -782,14 +782,12 @@ namespace adiar
       indent_level++;
 
       o << indent << bold_on << label << "case [random access]" << bold_off
-        << internal::nested_sweeping::stats.inner_down.ra_runs
-        << " = "
+        << internal::nested_sweeping::stats.inner_down.ra_runs << " = "
         << internal::percent_frac(internal::nested_sweeping::stats.inner_down.ra_runs, total_sweeps)
         << percent << endl;
 
       o << indent << bold_on << label << "case [priority queues]" << bold_off
-        << internal::nested_sweeping::stats.inner_down.pq_runs
-        << " = "
+        << internal::nested_sweeping::stats.inner_down.pq_runs << " = "
         << internal::percent_frac(internal::nested_sweeping::stats.inner_down.pq_runs, total_sweeps)
         << percent << endl;
 

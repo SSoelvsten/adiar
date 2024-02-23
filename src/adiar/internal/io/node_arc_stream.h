@@ -156,7 +156,7 @@ namespace adiar::internal
       adiar_assert(can_pull());
       if (!_has_peeked) {
         _has_peeked = true;
-        _peeked = merge_next();
+        _peeked     = merge_next();
       }
       return _peeked;
     }
