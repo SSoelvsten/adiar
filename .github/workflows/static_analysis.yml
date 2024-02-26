@@ -40,6 +40,7 @@ jobs:
           max_ctu_depth: 4
           std: c++17
           output_file: ./cppcheck_report.txt
+          other_options: --suppress=missingInclude
 
       - name: 'Print cppcheck_report.txt'
         run: cat ./cppcheck_report.txt
