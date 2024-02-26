@@ -14,13 +14,13 @@
 
 namespace adiar
 {
-  template<bool ShortcuttingValue>
+  template <bool ShortcuttingValue>
   class bdd_quantify_policy : public bdd_policy
   {
   private:
     // Inherit from `bool_op` to hide these compile-time simplifications `bool_op` (see #162)
-    static constexpr bdd::pointer_type shortcutting_terminal = ShortcuttingValue;
-    static constexpr bdd::pointer_type irrelevant_terminal   = !ShortcuttingValue;
+    static constexpr bdd::pointer_type shortcutting_terminal = bdd::pointer_type(ShortcuttingValue);
+    static constexpr bdd::pointer_type irrelevant_terminal = bdd::pointer_type(!ShortcuttingValue);
 
   public:
     static inline bdd::pointer_type
@@ -55,11 +55,12 @@ namespace adiar
 
     // LCOV_EXCL_START
     static inline bdd::pointer_type
-    resolve_terminals(const bdd::pointer_type&/*a*/, const bdd::pointer_type&/*b*/)
+    resolve_terminals(const bdd::pointer_type& /*a*/, const bdd::pointer_type& /*b*/)
     {
       // Since only a single terminal terminal survives, this piece of code is never executed.
       adiar_unreachable();
     }
+
     // LCOV_EXCL_STOP
 
   public:
