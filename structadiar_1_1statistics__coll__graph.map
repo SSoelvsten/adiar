@@ -1,28 +1,28 @@
 <map id="adiar::statistics" name="adiar::statistics">
-<area shape="rect" id="node1" title="Available statistics from algorithm&#39;s and data structures." alt="" coords="1892,464,2015,491"/>
-<area shape="rect" id="node2" href="$structadiar_1_1statistics_1_1intercut__t.html" title="Intercut algorithm statistics." alt="" coords="1023,503,1153,545"/>
-<area shape="rect" id="node3" href="$structadiar_1_1statistics_1_1____alg__base.html" title="Common statistics for all algorithms." alt="" coords="504,453,635,494"/>
-<area shape="rect" id="node6" href="$structadiar_1_1statistics_1_1select__t.html" title="Select algorithm statistics." alt="" coords="1425,22,1556,63"/>
-<area shape="rect" id="node8" href="$structadiar_1_1statistics_1_1prod2__t.html" title="2&#45;ary Product Construction algorithm statistics." alt="" coords="839,637,970,678"/>
-<area shape="rect" id="node13" href="$structadiar_1_1statistics_1_1reduce__t.html" title="Reduce algorithm statistics." alt="" coords="839,125,970,166"/>
-<area shape="rect" id="node18" href="$structadiar_1_1statistics_1_1quantify__t.html" title="Quantification algorithm statistics." alt="" coords="839,558,970,599"/>
-<area shape="rect" id="node20" href="$structadiar_1_1statistics_1_1prod3__t.html" title="3&#45;ary Product Construction algorithm statistics." alt="" coords="1023,343,1153,385"/>
-<area shape="rect" id="node21" href="$structadiar_1_1statistics_1_1optmin__t.html" title="Boolean Optimization algorithm statistics." alt="" coords="1425,395,1556,437"/>
-<area shape="rect" id="node22" href="$structadiar_1_1statistics_1_1equality__t.html" title="Equality Checking algorithm statistics." alt="" coords="839,819,970,861"/>
-<area shape="rect" id="node25" href="$structadiar_1_1statistics_1_1count__t.html" title="Counting algorithm statistics." alt="" coords="1023,450,1153,491"/>
-<area shape="rect" id="node4" href="$structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html" title="Type and usage of this algorithm&#39;s levelized priority queue." alt="" coords="249,582,397,623"/>
-<area shape="rect" id="node5" href="$structadiar_1_1statistics_1_1levelized__priority__queue__t.html" title="Levelized Priority Queue statistics." alt="" coords="5,737,200,778"/>
-<area shape="rect" id="node7" href="$structadiar_1_1statistics_1_1arc__file__t.html" title="Arc Files statistics." alt="" coords="1588,285,1719,326"/>
-<area shape="rect" id="node9" href="$structadiar_1_1statistics_1_1prod2__t_1_1ra__t.html" title="Statistics for the double priority queue implementation." alt="" coords="504,694,635,735"/>
-<area shape="rect" id="node10" href="$structadiar_1_1statistics_1_1prod2__t_1_1pq__t.html" title="Statistics for the double priority queue implementation." alt="" coords="504,629,635,670"/>
-<area shape="rect" id="node11" href="$structadiar_1_1statistics_1_1nested__sweeping__t.html" title="Nested Sweeping statistics." alt="" coords="1580,213,1727,254"/>
-<area shape="rect" id="node12" href="$structadiar_1_1statistics_1_1nested__sweeping__t_1_1outer__up__t.html" title="Outer Reduce Sweep." alt="" coords="1177,139,1401,181"/>
-<area shape="rect" id="node14" href="$structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__up__t.html" title="Inner Up Sweep(s)" alt="" coords="1178,205,1401,246"/>
-<area shape="rect" id="node15" href="$structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__down__t.html" title="Root Requests generated for Inner Down Sweep." alt="" coords="1195,271,1383,327"/>
-<area shape="rect" id="node16" href="$structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__down__t_1_1inputs__t.html" title=" " alt="" coords="811,191,999,247"/>
-<area shape="rect" id="node17" href="$structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__down__t_1_1requests__t.html" title=" " alt="" coords="811,271,999,327"/>
-<area shape="rect" id="node19" href="$structadiar_1_1statistics_1_1quantify__t_1_1nested__policy__t.html" title="Nested multi&#45;variable sweeping." alt="" coords="471,563,668,605"/>
-<area shape="rect" id="node23" href="$structadiar_1_1statistics_1_1equality__t_1_1fast__t.html" title="Statistics from O(N) linear&#45;scan equality checking algorithm." alt="" coords="503,882,635,923"/>
-<area shape="rect" id="node24" href="$structadiar_1_1statistics_1_1equality__t_1_1slow__t.html" title="Statistics from O(N log N) time&#45;forward processing equality checking algorithm." alt="" coords="501,817,638,858"/>
-<area shape="rect" id="node26" href="$structadiar_1_1statistics_1_1node__file__t.html" title="Node Files statistics." alt="" coords="1588,859,1719,901"/>
+<area shape="rect" id="node1" title="Available statistics from algorithm&#39;s and data structures." alt="" coords="1892,509,2015,536"/>
+<area shape="rect" id="node2" href="$structadiar_1_1statistics_1_1intercut__t.html" title="Intercut algorithm statistics." alt="" coords="1023,501,1153,542"/>
+<area shape="rect" id="node3" href="$structadiar_1_1statistics_1_1____alg__base.html" title="Common statistics for all algorithms." alt="" coords="504,498,635,539"/>
+<area shape="rect" id="node6" href="$structadiar_1_1statistics_1_1select__t.html" title="Select algorithm statistics." alt="" coords="1425,554,1556,595"/>
+<area shape="rect" id="node8" href="$structadiar_1_1statistics_1_1prod2__t.html" title="2&#45;ary Product Construction algorithm statistics." alt="" coords="839,615,970,657"/>
+<area shape="rect" id="node13" href="$structadiar_1_1statistics_1_1reduce__t.html" title="Reduce algorithm statistics." alt="" coords="839,191,970,233"/>
+<area shape="rect" id="node18" href="$structadiar_1_1statistics_1_1quantify__t.html" title="Quantification algorithm statistics." alt="" coords="839,739,970,781"/>
+<area shape="rect" id="node20" href="$structadiar_1_1statistics_1_1prod3__t.html" title="3&#45;ary Product Construction algorithm statistics." alt="" coords="1023,289,1153,330"/>
+<area shape="rect" id="node21" href="$structadiar_1_1statistics_1_1optmin__t.html" title="Boolean Optimization algorithm statistics." alt="" coords="1425,390,1556,431"/>
+<area shape="rect" id="node22" href="$structadiar_1_1statistics_1_1equality__t.html" title="Equality Checking algorithm statistics." alt="" coords="839,941,970,982"/>
+<area shape="rect" id="node25" href="$structadiar_1_1statistics_1_1count__t.html" title="Counting algorithm statistics." alt="" coords="1023,446,1153,487"/>
+<area shape="rect" id="node4" href="$structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html" title="Type and usage of this algorithm&#39;s levelized priority queue." alt="" coords="249,665,397,706"/>
+<area shape="rect" id="node5" href="$structadiar_1_1statistics_1_1levelized__priority__queue__t.html" title="Levelized Priority Queue statistics." alt="" coords="5,858,200,899"/>
+<area shape="rect" id="node7" href="$structadiar_1_1statistics_1_1arc__file__t.html" title="Arc Files statistics." alt="" coords="1588,330,1719,371"/>
+<area shape="rect" id="node9" href="$structadiar_1_1statistics_1_1____random__access__base.html" title="Common statistics for algorithms using random access." alt="" coords="482,650,657,691"/>
+<area shape="rect" id="node10" href="$structadiar_1_1statistics_1_1____pq2__base.html" title="Common statistics for algorithms using a second priority queue." alt="" coords="504,733,635,774"/>
+<area shape="rect" id="node11" href="$structadiar_1_1statistics_1_1nested__sweeping__t.html" title="Nested Sweeping statistics." alt="" coords="1580,130,1727,171"/>
+<area shape="rect" id="node12" href="$structadiar_1_1statistics_1_1nested__sweeping__t_1_1outer__up__t.html" title="Outer Reduce Sweep." alt="" coords="1177,162,1401,203"/>
+<area shape="rect" id="node14" href="$structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__up__t.html" title="Inner Up Sweep(s)" alt="" coords="1178,97,1401,138"/>
+<area shape="rect" id="node15" href="$structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__down__t.html" title="Root Requests generated for Inner Down Sweep." alt="" coords="1195,16,1383,72"/>
+<area shape="rect" id="node16" href="$structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__down__t_1_1inputs__t.html" title=" " alt="" coords="811,5,999,61"/>
+<area shape="rect" id="node17" href="$structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__down__t_1_1requests__t.html" title=" " alt="" coords="811,85,999,141"/>
+<area shape="rect" id="node19" href="$structadiar_1_1statistics_1_1quantify__t_1_1nested__policy__t.html" title="Nested multi&#45;variable sweeping." alt="" coords="471,815,668,857"/>
+<area shape="rect" id="node23" href="$structadiar_1_1statistics_1_1equality__t_1_1fast__t.html" title="Statistics from O(N) linear&#45;scan equality checking algorithm." alt="" coords="503,938,635,979"/>
+<area shape="rect" id="node24" href="$structadiar_1_1statistics_1_1equality__t_1_1slow__t.html" title="Statistics from O(N log N) time&#45;forward processing equality checking algorithm." alt="" coords="501,1003,638,1045"/>
+<area shape="rect" id="node26" href="$structadiar_1_1statistics_1_1node__file__t.html" title="Node Files statistics." alt="" coords="1588,981,1719,1022"/>
 </map>

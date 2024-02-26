@@ -1,6 +1,8 @@
 var structadiar_1_1statistics =
 [
     [ "__alg_base", "structadiar_1_1statistics_1_1____alg__base.html", "structadiar_1_1statistics_1_1____alg__base" ],
+    [ "__pq2_base", "structadiar_1_1statistics_1_1____pq2__base.html", "structadiar_1_1statistics_1_1____pq2__base" ],
+    [ "__random_access_base", "structadiar_1_1statistics_1_1____random__access__base.html", "structadiar_1_1statistics_1_1____random__access__base" ],
     [ "arc_file_t", "structadiar_1_1statistics_1_1arc__file__t.html", "structadiar_1_1statistics_1_1arc__file__t" ],
     [ "count_t", "structadiar_1_1statistics_1_1count__t.html", "structadiar_1_1statistics_1_1count__t" ],
     [ "equality_t", "structadiar_1_1statistics_1_1equality__t.html", "structadiar_1_1statistics_1_1equality__t" ],

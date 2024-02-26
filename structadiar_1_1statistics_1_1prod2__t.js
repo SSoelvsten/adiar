@@ -1,10 +1,8 @@
 var structadiar_1_1statistics_1_1prod2__t =
 [
-    [ "pq_t", "structadiar_1_1statistics_1_1prod2__t_1_1pq__t.html", "structadiar_1_1statistics_1_1prod2__t_1_1pq__t" ],
-    [ "ra_t", "structadiar_1_1statistics_1_1prod2__t_1_1ra__t.html", "structadiar_1_1statistics_1_1prod2__t_1_1ra__t" ],
     [ "lpq", "structadiar_1_1statistics_1_1prod2__t.html#ab769667ff5ecea10ecd9e2589b7e72bf", null ],
-    [ "pq", "structadiar_1_1statistics_1_1prod2__t.html#a8bb9d4f8332175f125fc51b413f1d996", null ],
-    [ "ra", "structadiar_1_1statistics_1_1prod2__t.html#abfe9703ad33905349780ae5c43ad69f2", null ],
+    [ "pq", "structadiar_1_1statistics_1_1prod2__t.html#a4defc72a3e57101a719cd9d6e896fcf5", null ],
+    [ "ra", "structadiar_1_1statistics_1_1prod2__t.html#a9532dfd44a95a3ad07d2886776f66fbf", null ],
     [ "trivial_file", "structadiar_1_1statistics_1_1prod2__t.html#a3fb3fbf6dce52ee96fac9d9f183fb5fb", null ],
     [ "trivial_terminal", "structadiar_1_1statistics_1_1prod2__t.html#a6d3f4d0066639dda6b702f51d3bdff09", null ]
 ];

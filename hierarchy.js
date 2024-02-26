@@ -18,6 +18,8 @@ var hierarchy =
       [ "adiar::__bdd", "classadiar_1_1____bdd.html", null ],
       [ "adiar::__zdd", "classadiar_1_1____zdd.html", null ]
     ] ],
+    [ "adiar::statistics::__pq2_base", "structadiar_1_1statistics_1_1____pq2__base.html", null ],
+    [ "adiar::statistics::__random_access_base", "structadiar_1_1statistics_1_1____random__access__base.html", null ],
     [ "adiar::statistics::arc_file_t", "structadiar_1_1statistics_1_1arc__file__t.html", null ],
     [ "adiar::builder< dd_policy >", "classadiar_1_1builder.html", null ],
     [ "adiar::builder_ptr< dd_policy >", "classadiar_1_1builder__ptr.html", null ],
@@ -37,9 +39,7 @@ var hierarchy =
     [ "adiar::statistics::quantify_t::nested_policy_t", "structadiar_1_1statistics_1_1quantify__t_1_1nested__policy__t.html", null ],
     [ "adiar::statistics::nested_sweeping_t", "structadiar_1_1statistics_1_1nested__sweeping__t.html", null ],
     [ "adiar::statistics::node_file_t", "structadiar_1_1statistics_1_1node__file__t.html", null ],
-    [ "adiar::statistics::prod2_t::pq_t", "structadiar_1_1statistics_1_1prod2__t_1_1pq__t.html", null ],
     [ "adiar::exec_policy::quantify", "classadiar_1_1exec__policy_1_1quantify.html", null ],
-    [ "adiar::statistics::prod2_t::ra_t", "structadiar_1_1statistics_1_1prod2__t_1_1ra__t.html", null ],
     [ "adiar::statistics::nested_sweeping_t::inner_down_t::requests_t", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__down__t_1_1requests__t.html", null ],
     [ "adiar::statistics::equality_t::slow_t", "structadiar_1_1statistics_1_1equality__t_1_1slow__t.html", null ],
     [ "adiar::statistics", "structadiar_1_1statistics.html", null ],
