@@ -680,24 +680,21 @@ namespace adiar::internal
 #endif
       using PriorityQueue = PriorityQueueTemplate<0, memory_mode::Internal>;
 
-      return __quantify_ra<NodeRandomAccess, PriorityQueue>(
-        ep, in, policy, pq_memory, max_pq_size);
+      return __quantify_ra<NodeRandomAccess, PriorityQueue>(ep, in, policy, pq_memory, max_pq_size);
     } else if (!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
       stats_quantify.lpq.internal += 1u;
 #endif
       using PriorityQueue = PriorityQueueTemplate<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>;
 
-      return __quantify_ra<NodeRandomAccess, PriorityQueue>(
-        ep, in, policy, pq_memory, max_pq_size);
+      return __quantify_ra<NodeRandomAccess, PriorityQueue>(ep, in, policy, pq_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
       stats_quantify.lpq.external += 1u;
 #endif
       using PriorityQueue = PriorityQueueTemplate<ADIAR_LPQ_LOOKAHEAD, memory_mode::External>;
 
-      return __quantify_ra<NodeRandomAccess, PriorityQueue>(
-        ep, in, policy, pq_memory, max_pq_size);
+      return __quantify_ra<NodeRandomAccess, PriorityQueue>(ep, in, policy, pq_memory, max_pq_size);
     }
   }
 
@@ -734,8 +731,7 @@ namespace adiar::internal
     // Set up per-level priority queue
     PriorityQueue_2 pq_2(pq_2_memory, max_pq_2_size);
 
-    return __quantify_pq<NodeStream, PriorityQueue_1, PriorityQueue_2>(
-      ep, in, policy, pq_1, pq_2);
+    return __quantify_pq<NodeStream, PriorityQueue_1, PriorityQueue_2>(ep, in, policy, pq_1, pq_2);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -804,13 +800,8 @@ namespace adiar::internal
       using PriorityQueue_1 = PriorityQueue_1_Template<0, memory_mode::Internal>;
       using PriorityQueue_2 = quantify_priority_queue_2_t<memory_mode::Internal>;
 
-      return __quantify_pq<NodeStream, PriorityQueue_1, PriorityQueue_2>(ep,
-                                                                         in,
-                                                                         policy,
-                                                                         pq_1_internal_memory,
-                                                                         max_pq_1_size,
-                                                                         pq_2_internal_memory,
-                                                                         max_pq_2_size);
+      return __quantify_pq<NodeStream, PriorityQueue_1, PriorityQueue_2>(
+        ep, in, policy, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
     } else if (!external_only && max_pq_1_size <= pq_1_memory_fits
                && max_pq_2_size <= pq_2_memory_fits) {
 #ifdef ADIAR_STATS
@@ -819,13 +810,8 @@ namespace adiar::internal
       using PriorityQueue_1 = PriorityQueue_1_Template<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>;
       using PriorityQueue_2 = quantify_priority_queue_2_t<memory_mode::Internal>;
 
-      return __quantify_pq<NodeStream, PriorityQueue_1, PriorityQueue_2>(ep,
-                                                                         in,
-                                                                         policy,
-                                                                         pq_1_internal_memory,
-                                                                         max_pq_1_size,
-                                                                         pq_2_internal_memory,
-                                                                         max_pq_2_size);
+      return __quantify_pq<NodeStream, PriorityQueue_1, PriorityQueue_2>(
+        ep, in, policy, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
     } else {
 #ifdef ADIAR_STATS
       stats_quantify.lpq.external += 1u;
@@ -848,9 +834,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename Policy>
   typename Policy::__dd_type
-  __quantify(const exec_policy& ep,
-             const typename Policy::dd_type& in,
-             Policy& policy)
+  __quantify(const exec_policy& ep, const typename Policy::dd_type& in, Policy& policy)
   {
     // ---------------------------------------------------------------------------------------------
     // Case: Terminal
@@ -880,8 +864,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
       stats_quantify.ra.runs += 1u;
 #endif
-      return __quantify_ra<node_random_access, quantify_priority_queue_1_node_t>(
-        ep, in, policy);
+      return __quantify_ra<node_random_access, quantify_priority_queue_1_node_t>(ep, in, policy);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -899,9 +882,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename Policy>
   typename Policy::__dd_type
-  __quantify(const exec_policy& ep,
-             const typename Policy::__dd_type& in,
-             Policy& policy)
+  __quantify(const exec_policy& ep, const typename Policy::__dd_type& in, Policy& policy)
   {
     adiar_assert(in.template has<typename Policy::shared_arc_file_type>(),
                  "__quantify(..., Policy::__dd_type, ...) is only designed for arc-based inputs");
@@ -937,8 +918,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
       stats_quantify.ra.runs += 1u;
 #endif
-      return __quantify_ra<node_arc_random_access, quantify_priority_queue_1_arc_t>(
-        ep, in, policy);
+      return __quantify_ra<node_arc_random_access, quantify_priority_queue_1_arc_t>(ep, in, policy);
     }
 
     // ---------------------------------------------------------------------------------------------
