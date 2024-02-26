@@ -37,13 +37,7 @@ namespace adiar
       return r.uid();
     }
 
-    static inline zdd::pointer_type
-    resolve_terminals(const zdd::pointer_type &a, const zdd::pointer_type &b)
-    {
-      return or_op(a,b);
-    }
-
-  public:
+    public:
     static inline bool
     keep_terminal(const zdd::pointer_type& p)
     {
@@ -51,9 +45,15 @@ namespace adiar
     }
 
     static constexpr bool
-    collapse_to_terminal(const zdd::pointer_type& /*p*/)
+    collapse_to_terminal(const zdd::pointer_type&/*p*/)
     {
       return false;
+    }
+
+    static inline zdd::pointer_type
+    resolve_terminals(const zdd::pointer_type &a, const zdd::pointer_type &b)
+    {
+      return or_op(a,b);
     }
 
   public:

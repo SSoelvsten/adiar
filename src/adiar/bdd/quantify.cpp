@@ -40,13 +40,6 @@ namespace adiar
       return r.uid();
     }
 
-    static inline bdd::pointer_type
-    resolve_terminals(const bdd::pointer_type& a, const bdd::pointer_type& b)
-    {
-      const bool_op& op = ShortcuttingValue ? or_op : and_op;
-      return op(a,b);
-    }
-
   public:
     static inline bool
     keep_terminal(const bdd::pointer_type& p)
@@ -59,6 +52,15 @@ namespace adiar
     {
       return essential(p) == shortcutting_terminal;
     }
+
+    // LCOV_EXCL_START
+    static inline bdd::pointer_type
+    resolve_terminals(const bdd::pointer_type&/*a*/, const bdd::pointer_type&/*b*/)
+    {
+      // Since only a single terminal terminal survives, this piece of code is never executed.
+      adiar_unreachable();
+    }
+    // LCOV_EXCL_STOP
 
   public:
     static inline internal::cut
