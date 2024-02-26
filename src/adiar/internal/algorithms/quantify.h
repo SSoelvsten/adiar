@@ -277,17 +277,20 @@ namespace adiar::internal
     // Set remaining values to nil
     for (size_t i = ts_max_idx + 1; i < ts.size(); ++i) { ts[i] = Policy::pointer_type::nil(); }
 
-    // Is the final element a collapsing terminal?
+    // Is the last surviving element a collapsing terminal?
     const bool max_shortcuts =
       ts[ts_max_idx].is_terminal() && Policy::collapse_to_terminal(ts[ts_max_idx]);
 
     // Are there only terminals left? These should be combined with the operator
-    const bool only_terminals = ts[0].is_terminal() /* sorted => ts[1].is_terminal() */;
+    const bool resolve_terminals =
+      // Are there only terminals left
+      ts[0].is_terminal() /* sorted => ts[1].is_terminal() */
+      // Are there more than one of them?
+      && 0u < ts_max_idx;
 
-    // If there are more than two targets but one of the two apply, then prune it all the way down
-    // to a single target.
-    if (1 <= ts_max_idx && (max_shortcuts || only_terminals)) {
+    if (max_shortcuts || resolve_terminals) {
       ts[0] = max_shortcuts ? ts[ts_max_idx] : Policy::resolve_terminals(ts[0], ts[1]);
+
       for (size_t i = 1u; i <= ts_max_idx; ++i) {
         adiar_assert(!ts[i].is_nil(), "Cannot be nil at i <= ts_max_elem");
         ts[i] = Policy::pointer_type::nil();
