@@ -1,5 +1,6 @@
 #include <utility>
 
+#include <adiar/bool_op.h>
 #include <adiar/zdd.h>
 #include <adiar/zdd/zdd_policy.h>
 
@@ -16,7 +17,7 @@ namespace adiar
   {
   public:
     static inline zdd::pointer_type
-    resolve_root(const zdd::node_type& r, const bool_op& /*op*/)
+    resolve_root(const zdd::node_type& r)
     {
       // TODO: should all but the last case not have a 'suppression taint'?
 
@@ -36,22 +37,28 @@ namespace adiar
       return r.uid();
     }
 
+    static inline zdd::pointer_type
+    resolve_terminals(const zdd::pointer_type &a, const zdd::pointer_type &b)
+    {
+      return or_op(a,b);
+    }
+
   public:
     static inline bool
-    keep_terminal(const bool_op& /*op*/, const zdd::pointer_type& p)
+    keep_terminal(const zdd::pointer_type& p)
     {
       return p.value();
     }
 
     static constexpr bool
-    collapse_to_terminal(const bool_op& /*op*/, const zdd::pointer_type& /*p*/)
+    collapse_to_terminal(const zdd::pointer_type& /*p*/)
     {
       return false;
     }
 
   public:
     static inline internal::cut
-    cut_with_terminals(const bool_op& /*op*/)
+    cut_with_terminals()
     {
       return internal::cut::All;
     }
@@ -64,7 +71,7 @@ namespace adiar
   __zdd
   zdd_project(const exec_policy& ep, const zdd& A, const predicate<zdd::label_type>& dom)
   {
-    return internal::quantify<zdd_project_policy>(ep, A, dom, or_op);
+    return internal::quantify<zdd_project_policy>(ep, A, dom);
   }
 
   __zdd
@@ -76,7 +83,7 @@ namespace adiar
   __zdd
   zdd_project(const exec_policy& ep, zdd&& A, const predicate<zdd::label_type>& dom)
   {
-    return internal::quantify<zdd_project_policy>(ep, std::move(A), dom, or_op);
+    return internal::quantify<zdd_project_policy>(ep, std::move(A), dom);
   }
 
   __zdd
@@ -88,7 +95,7 @@ namespace adiar
   __zdd
   zdd_project(const exec_policy& ep, const zdd& A, const generator<zdd::label_type>& dom)
   {
-    return internal::quantify<zdd_project_policy>(ep, A, dom, or_op);
+    return internal::quantify<zdd_project_policy>(ep, A, dom);
   }
 
   __zdd
@@ -100,7 +107,7 @@ namespace adiar
   __zdd
   zdd_project(const exec_policy& ep, zdd&& A, const generator<zdd::label_type>& dom)
   {
-    return internal::quantify<zdd_project_policy>(ep, std::move(A), dom, or_op);
+    return internal::quantify<zdd_project_policy>(ep, std::move(A), dom);
   }
 
   __zdd

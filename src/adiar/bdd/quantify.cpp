@@ -5,7 +5,6 @@
 
 #include <adiar/internal/algorithms/quantify.h>
 #include <adiar/internal/assert.h>
-#include <adiar/internal/bool_op.h>
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/tuple.h>
@@ -15,47 +14,58 @@
 
 namespace adiar
 {
+  template<bool ShortcuttingValue>
   class bdd_quantify_policy : public bdd_policy
   {
+  private:
+    // Inherit from `bool_op` to hide these compile-time simplifications `bool_op` (see #162)
+    static constexpr bdd::pointer_type shortcutting_terminal = ShortcuttingValue;
+    static constexpr bdd::pointer_type irrelevant_terminal   = !ShortcuttingValue;
+
   public:
     static inline bdd::pointer_type
-    resolve_root(const bdd::node_type& r, const bool_op& op)
+    resolve_root(const bdd::node_type& r)
     {
       // TODO: should all but the last case not have a 'suppression taint'?
 
       // Return shortcutting terminal (including its tainting flag).
-      if (r.low().is_terminal() && can_left_shortcut(op, r.low())) { return r.low(); }
-      if (r.high().is_terminal() && can_right_shortcut(op, r.high())) { return r.high(); }
+      if (essential(r.low()) == shortcutting_terminal) { return r.low(); }
+      if (essential(r.high()) == shortcutting_terminal) { return r.high(); }
 
       // Return other child (including its tainting flag) for irrelevant terminals.
-      if (r.low().is_terminal() && is_left_irrelevant(op, r.low())) { return r.high(); }
-      if (r.high().is_terminal() && is_right_irrelevant(op, r.high())) { return r.low(); }
+      if (essential(r.low()) == irrelevant_terminal) { return r.high(); }
+      if (essential(r.high()) == irrelevant_terminal) { return r.low(); }
 
       // Otherwise return 'nothing'
       return r.uid();
     }
 
+    static inline bdd::pointer_type
+    resolve_terminals(const bdd::pointer_type& a, const bdd::pointer_type& b)
+    {
+      const bool_op& op = ShortcuttingValue ? or_op : and_op;
+      return op(a,b);
+    }
+
   public:
     static inline bool
-    keep_terminal(const bool_op& op, const bdd::pointer_type& p)
+    keep_terminal(const bdd::pointer_type& p)
     {
-      // `op` is commutative, so we can check irrelevancy from either side.
-      return !is_right_irrelevant(op, p);
+      return essential(p) != irrelevant_terminal;
     }
 
     static inline bool
-    collapse_to_terminal(const bool_op& op, const bdd::pointer_type& p)
+    collapse_to_terminal(const bdd::pointer_type& p)
     {
-      // `op` is commutative, so we can check shortcutting from either side.
-      return can_right_shortcut(op, p);
+      return essential(p) == shortcutting_terminal;
     }
 
   public:
     static inline internal::cut
-    cut_with_terminals(const bool_op& op)
+    cut_with_terminals()
     {
-      const bool incl_false = !can_right_shortcut(op, bdd::pointer_type(false));
-      const bool incl_true  = !can_right_shortcut(op, bdd::pointer_type(true));
+      const bool incl_false = bdd::pointer_type(false) != shortcutting_terminal;
+      const bool incl_true  = bdd::pointer_type(true) != shortcutting_terminal;
 
       return internal::cut(incl_false, incl_true);
     }
@@ -68,7 +78,7 @@ namespace adiar
   __bdd
   bdd_exists(const exec_policy& ep, const bdd& f, bdd::label_type var)
   {
-    return internal::quantify<bdd_quantify_policy>(ep, f, var, or_op);
+    return internal::quantify<bdd_quantify_policy<true>>(ep, f, var);
   }
 
   __bdd
@@ -80,7 +90,7 @@ namespace adiar
   __bdd
   bdd_exists(const exec_policy& ep, const bdd& f, const predicate<bdd::label_type>& vars)
   {
-    return internal::quantify<bdd_quantify_policy>(ep, f, vars, or_op);
+    return internal::quantify<bdd_quantify_policy<true>>(ep, f, vars);
   }
 
   __bdd
@@ -92,7 +102,7 @@ namespace adiar
   __bdd
   bdd_exists(const exec_policy& ep, bdd&& f, const predicate<bdd::label_type>& vars)
   {
-    return internal::quantify<bdd_quantify_policy>(ep, std::move(f), vars, or_op);
+    return internal::quantify<bdd_quantify_policy<true>>(ep, std::move(f), vars);
   }
 
   __bdd
@@ -104,7 +114,7 @@ namespace adiar
   __bdd
   bdd_exists(const exec_policy& ep, const bdd& f, const generator<bdd::label_type>& vars)
   {
-    return internal::quantify<bdd_quantify_policy>(ep, f, vars, or_op);
+    return internal::quantify<bdd_quantify_policy<true>>(ep, f, vars);
   }
 
   __bdd
@@ -116,7 +126,7 @@ namespace adiar
   __bdd
   bdd_exists(const exec_policy& ep, bdd&& f, const generator<bdd::label_type>& vars)
   {
-    return internal::quantify<bdd_quantify_policy>(ep, std::move(f), vars, or_op);
+    return internal::quantify<bdd_quantify_policy<true>>(ep, std::move(f), vars);
   }
 
   __bdd
@@ -130,7 +140,7 @@ namespace adiar
   __bdd
   bdd_forall(const exec_policy& ep, const bdd& f, bdd::label_type var)
   {
-    return internal::quantify<bdd_quantify_policy>(ep, f, var, and_op);
+    return internal::quantify<bdd_quantify_policy<false>>(ep, f, var);
   }
 
   __bdd
@@ -142,7 +152,7 @@ namespace adiar
   __bdd
   bdd_forall(const exec_policy& ep, const bdd& f, const predicate<bdd::label_type>& vars)
   {
-    return internal::quantify<bdd_quantify_policy>(ep, f, vars, and_op);
+    return internal::quantify<bdd_quantify_policy<false>>(ep, f, vars);
   }
 
   __bdd
@@ -154,7 +164,7 @@ namespace adiar
   __bdd
   bdd_forall(const exec_policy& ep, bdd&& f, const predicate<bdd::label_type>& vars)
   {
-    return internal::quantify<bdd_quantify_policy>(ep, std::move(f), vars, and_op);
+    return internal::quantify<bdd_quantify_policy<false>>(ep, std::move(f), vars);
   }
 
   __bdd
@@ -166,7 +176,7 @@ namespace adiar
   __bdd
   bdd_forall(const exec_policy& ep, const bdd& f, const generator<bdd::label_type>& vars)
   {
-    return internal::quantify<bdd_quantify_policy>(ep, f, vars, and_op);
+    return internal::quantify<bdd_quantify_policy<false>>(ep, f, vars);
   }
 
   __bdd
@@ -178,7 +188,7 @@ namespace adiar
   __bdd
   bdd_forall(const exec_policy& ep, bdd&& f, const generator<bdd::label_type>& vars)
   {
-    return internal::quantify<bdd_quantify_policy>(ep, std::move(f), vars, and_op);
+    return internal::quantify<bdd_quantify_policy<false>>(ep, std::move(f), vars);
   }
 
   __bdd
