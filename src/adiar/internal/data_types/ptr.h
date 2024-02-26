@@ -469,6 +469,7 @@ namespace adiar::internal
     inline label_type
     label() const
     {
+      adiar_assert(is_node());
       return this->level();
     }
 
@@ -480,6 +481,7 @@ namespace adiar::internal
     inline id_type
     id() const
     {
+      adiar_assert(is_node());
       return this->data() >> out_idx_bits;
     }
 
@@ -493,6 +495,7 @@ namespace adiar::internal
     inline out_idx_type
     out_idx() const
     {
+      adiar_assert(is_node());
       return this->data() & static_cast<raw_type>(max_out_idx);
     }
 
