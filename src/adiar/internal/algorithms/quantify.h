@@ -1276,16 +1276,16 @@ namespace adiar::internal
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// \brief Obtain the deepest lvel that satisfies (or not) the requested level.
+  /// \brief Obtain the deepest level that satisfies (or not) the requested level.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // TODO: optimisations
   //       - initial cheap check on is_terminal.
-  //       - initial 'quantify__get_deepest' should not terminate early but
+  //       - initial '__quantify__get_deepest' should not terminate early but
   //         determine whether any variable may "survive".
   template <typename Policy>
   inline typename Policy::label_type
-  quantify__get_deepest(const typename Policy::dd_type& dd,
-                        const predicate<typename Policy::label_type>& pred)
+  __quantify__get_deepest(const typename Policy::dd_type& dd,
+                          const predicate<typename Policy::label_type>& pred)
   {
     level_info_stream<true /* bottom-up */> lis(dd);
 
@@ -1294,6 +1294,51 @@ namespace adiar::internal
       if (pred(l) == Policy::quantify_onset) { return l; }
     }
     return Policy::max_label + 1;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Heuristically derive a bound for the number of partial sweeps based on the graph meta
+  ///        data.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename Policy>
+  inline typename Policy::label_type
+  __quantify__max_partial_sweeps(const typename Policy::dd_type& dd,
+                                 const predicate<typename Policy::label_type>& pred)
+  {
+    // Extract meta data constants about the DAG
+    const size_t size  = dd.size();
+    const size_t width = dd.width();
+
+    // Keep track of the number of nodes on the top-most levels in relation to the total size
+    size_t seen_nodes = 0u;
+
+    // Threshold to stop after the first n/3 nodes.
+    const size_t max_nodes = size / 3;
+
+    // Final result
+    //
+    // TODO: Turn `result` into a double and decrease the weight of to-be quantified variables
+    //       depending on `seen_nodes`, the number of levels of width `width`, and/or in general a
+    //       (quadratic?) decay in the weight.
+    typename Policy::label_type result = 0u;
+
+    level_info_stream<false /*top-down*/> lis(dd);
+
+    while (lis.can_pull()) {
+      const level_info li = lis.pull();
+
+      if (pred(li.label()) == Policy::quantify_onset) { result++; }
+
+      // Stop at the (first) widest level
+      if (li.width() == width) { break; }
+
+      // Stop when having seen too many nodes
+      seen_nodes += li.width();
+      if (max_nodes < seen_nodes) { break; }
+    }
+
+    adiar_assert(result < Policy::max_label);
+    return result;
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1308,7 +1353,7 @@ namespace adiar::internal
     using unreduced_t = typename Policy::__dd_type;
     // TODO: check for missing std::move(...)
 
-    typename Policy::label_type label = quantify__get_deepest<Policy>(dd, pred);
+    typename Policy::label_type label = __quantify__get_deepest<Policy>(dd, pred);
 
     if (Policy::max_label < label) {
 #ifdef ADIAR_STATS
@@ -1328,7 +1373,7 @@ namespace adiar::internal
         dd = quantify<Policy>(ep, dd, label);
         if (dd_isterminal(dd)) { return dd; }
 
-        label = quantify__get_deepest<Policy>(dd, pred);
+        label = __quantify__get_deepest<Policy>(dd, pred);
       }
       return dd;
     }
@@ -1347,7 +1392,8 @@ namespace adiar::internal
 
       //   2. ... it has not run more than the maximum number of iterations.
       const size_t transposition__max_iterations =
-        ep.template get<exec_policy::quantify::transposition_max>();
+        std::min<size_t>({ ep.template get<exec_policy::quantify::transposition_max>(),
+                           __quantify__max_partial_sweeps<Policy>(dd, pred) });
 
       unreduced_t transposed;
 
@@ -1482,15 +1528,15 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // TODO: optimisations
   //       - initial cheap check on is_terminal.
-  //       - initial 'quantify__get_deepest' should not terminate early but
+  //       - initial '__quantify__get_deepest' should not terminate early but
   //         determine whether any variable may "survive".
   //       clean up
   //       - Make return type 'optional' rather than larger than 'max_label'
   template <typename Policy>
   inline typename Policy::label_type
-  quantify__get_deepest(const typename Policy::dd_type& dd,
-                        const typename Policy::label_type bot_level,
-                        const optional<typename Policy::label_type> top_level)
+  __quantify__get_deepest(const typename Policy::dd_type& dd,
+                          const typename Policy::label_type bot_level,
+                          const optional<typename Policy::label_type> top_level)
   {
     level_info_stream<true /* bottom-up */> lis(dd);
 
@@ -1543,7 +1589,7 @@ namespace adiar::internal
         // Quantify everything below 'label'
         for (;;) {
           const typename Policy::label_type off_level =
-            quantify__get_deepest<Policy>(dd, Policy::max_label, on_level.value());
+            __quantify__get_deepest<Policy>(dd, Policy::max_label, on_level.value());
 
           if (Policy::max_label < off_level) { break; }
 
@@ -1561,7 +1607,7 @@ namespace adiar::internal
         while (bot_level) {
           for (;;) {
             const typename Policy::label_type off_level =
-              quantify__get_deepest<Policy>(dd, bot_level.value(), top_level);
+              __quantify__get_deepest<Policy>(dd, bot_level.value(), top_level);
 
             if (Policy::max_label < off_level) { break; }
 
