@@ -174,20 +174,20 @@ namespace adiar
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief Maximum number of repeated transpositions before switching to
-      ///        nested sweeping
+      ///        nested sweeping.
       //////////////////////////////////////////////////////////////////////////
       class transposition_max
       {
       public:
-        /// \brief Minimal value (equivalent to disabling repeated transpositions)
+        /// \brief Minimal value (equivalent to disabling repeated transpositions).
         static constexpr transposition_max
         min()
         {
           return std::numeric_limits<unsigned char>::min();
         }
 
-        /// \brief Maximal value (in many cases, this is equivalent to only
-        ///        doing repeated transpositions and not nested sweeping)
+        /// \brief Maximal value (equivalent to using the built-in heuristics
+        ///        based on the graph's meta information).
         static constexpr transposition_max
         max()
         {
@@ -200,7 +200,7 @@ namespace adiar
       public:
         /// \brief Default value construction.
         constexpr transposition_max()
-          : _value(1u)
+          : _value(std::numeric_limits<unsigned char>::max())
         {}
 
         /// \brief Wrap an `unsigned char`
