@@ -200,7 +200,7 @@ namespace adiar
       public:
         /// \brief Default value construction.
         constexpr transposition_max()
-          : _value(1u)
+          : _value(0u)
         {}
 
         /// \brief Wrap an `unsigned char`
