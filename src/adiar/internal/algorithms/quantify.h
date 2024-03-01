@@ -1322,7 +1322,7 @@ namespace adiar::internal
 
     const double total_arcs         = 2.0 * size;
     const double weighted_terminals = false_weight * false_terminals + true_weight * true_terminals;
-    const size_t exponent           = 16.0 * (weighted_terminals / total_arcs) + 0.5;
+    const size_t exponent           = 21.0 * (weighted_terminals / total_arcs) + 0.4;
 
     const typename Policy::label_type terminal_threshold =
       (1u << std::min<size_t>(exponent, log2(2*Policy::max_label))) - 1u;
