@@ -1081,7 +1081,7 @@ namespace adiar::internal
     sweep_ra(const exec_policy& ep,
              const shared_levelized_file<node>& outer_file,
              PriorityQueue& pq,
-             const size_t inner_remaining_memory) const
+             [[maybe_unused]] const size_t inner_remaining_memory) const
     {
       adiar_assert(ep.template get<exec_policy::access>() != exec_policy::access::Priority_Queue);
       adiar_assert(node_random_access::memory_usage(outer_file) <= inner_remaining_memory);
