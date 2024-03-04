@@ -26,7 +26,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   const bool_op and_op = [](const internal::ptr_uint64& a,
                             const internal::ptr_uint64& b) -> internal::uid_uint64 {
-    return essential(a & b);
+    return a & b;
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -42,7 +42,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   const bool_op or_op = [](const internal::ptr_uint64& a,
                            const internal::ptr_uint64& b) -> internal::uid_uint64 {
-    return essential(a | b);
+    return a | b;
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -58,7 +58,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   const bool_op xor_op = [](const internal::ptr_uint64& a,
                             const internal::ptr_uint64& b) -> internal::uid_uint64 {
-    return essential(a ^ b);
+    return a ^ b;
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -81,7 +81,7 @@ namespace adiar
   /// \brief Logical 'implication' operator, i.e. the truth table: [1,1,0,1].
   //////////////////////////////////////////////////////////////////////////////
   const bool_op invimp_op = [](const internal::ptr_uint64& a,
-                               const internal::ptr_uint64& b) -> internal::ptr_uint64 {
+                               const internal::ptr_uint64& b) -> internal::uid_uint64 {
     return internal::ptr_uint64(essential(b) <= essential(a));
   };
 
@@ -94,7 +94,7 @@ namespace adiar
   /// \brief Logical 'set difference' operator, i.e. the truth table [0,1,0,0].
   //////////////////////////////////////////////////////////////////////////////
   const bool_op diff_op = [](const internal::ptr_uint64& a,
-                             const internal::ptr_uint64& b) -> internal::ptr_uint64 {
+                             const internal::ptr_uint64& b) -> internal::uid_uint64 {
     return and_op(a, !b);
   };
 
@@ -102,7 +102,7 @@ namespace adiar
   /// \brief Logical 'less' operator, i.e. the truth table [0,0,1,0].
   //////////////////////////////////////////////////////////////////////////////
   const bool_op less_op = [](const internal::ptr_uint64& a,
-                             const internal::ptr_uint64& b) -> internal::ptr_uint64 {
+                             const internal::ptr_uint64& b) -> internal::uid_uint64 {
     return and_op(!a, b);
   };
 }
