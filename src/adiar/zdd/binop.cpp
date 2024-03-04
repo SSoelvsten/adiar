@@ -76,8 +76,8 @@ namespace adiar
         if (can_left_shortcut_zdd(op, p1)) {
           // Shortcuts the left-most path to {Ø} and all others to Ø
           return zdd_terminal(false);
-        } else if (internal::is_left_irrelevant(op, p1)
-                   && internal::is_left_irrelevant(op, false)) {
+        } else if (internal::is_left_idempotent(op, p1)
+                   && internal::is_left_idempotent(op, false)) {
           // Has no change to left-most path to {Ø} and neither any others
           return zdd_2;
         }
@@ -87,8 +87,8 @@ namespace adiar
         if (can_right_shortcut_zdd(op, p2)) {
           // Shortcuts the left-most path to {Ø} and all others to Ø
           return zdd_terminal(false);
-        } else if (internal::is_right_irrelevant(op, p2)
-                   && internal::is_right_irrelevant(op, false)) {
+        } else if (internal::is_right_idempotent(op, p2)
+                   && internal::is_right_idempotent(op, false)) {
           // Has no change to left-most path to {Ø} and neither any others
           return zdd_1;
         }
