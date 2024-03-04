@@ -18,7 +18,7 @@ namespace adiar
   {
   public:
     static __bdd
-    resolve_same_file(const bdd& bdd_1, const bdd& bdd_2, const bool_op& op)
+    resolve_same_file(const bdd& bdd_1, const bdd& bdd_2, const predicate<bool, bool>& op)
     {
       // Compute the results on all children.
       const bool op_F = op(bdd_1.negate, bdd_2.negate);
@@ -32,7 +32,7 @@ namespace adiar
 
   public:
     static __bdd
-    resolve_terminal_root(const bdd& bdd_1, const bdd& bdd_2, const bool_op& op)
+    resolve_terminal_root(const bdd& bdd_1, const bdd& bdd_2, const predicate<bool, bool>& op)
     {
       adiar_assert(bdd_isterminal(bdd_1) || bdd_isterminal(bdd_2));
 
@@ -61,7 +61,7 @@ namespace adiar
 
   public:
     static internal::cut
-    left_cut(const bool_op& op)
+    left_cut(const predicate<bool, bool>& op)
     {
       const bool incl_false = !internal::can_left_shortcut(op, false);
       const bool incl_true  = !internal::can_left_shortcut(op, true);
@@ -70,7 +70,7 @@ namespace adiar
     }
 
     static internal::cut
-    right_cut(const bool_op& op)
+    right_cut(const predicate<bool, bool>& op)
     {
       const bool incl_false = !internal::can_right_shortcut(op, false);
       const bool incl_true  = !internal::can_right_shortcut(op, true);
@@ -80,7 +80,7 @@ namespace adiar
 
   private:
     static internal::tuple<bdd::pointer_type>
-    __resolve_request(const bool_op& op, const internal::tuple<bdd::pointer_type>& r)
+    __resolve_request(const predicate<bool, bool>& op, const internal::tuple<bdd::pointer_type>& r)
     {
       if (r[0].is_terminal() && internal::can_left_shortcut(op, r[0].value())) {
         return { r[0], bdd::pointer_type(true) };
@@ -93,7 +93,7 @@ namespace adiar
 
   public:
     static internal::prod2_rec
-    resolve_request(const bool_op& op,
+    resolve_request(const predicate<bool, bool>& op,
                     const internal::tuple<bdd::pointer_type>& r_low,
                     const internal::tuple<bdd::pointer_type>& r_high)
     {
@@ -106,13 +106,13 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   __bdd
-  bdd_apply(const exec_policy& ep, const bdd& f, const bdd& g, const bool_op& op)
+  bdd_apply(const exec_policy& ep, const bdd& f, const bdd& g, const predicate<bool, bool>& op)
   {
     return internal::prod2<apply_prod2_policy>(ep, f, g, op);
   }
 
   __bdd
-  bdd_apply(const bdd& f, const bdd& g, const bool_op& op)
+  bdd_apply(const bdd& f, const bdd& g, const predicate<bool, bool>& op)
   {
     return bdd_apply(exec_policy(), f, g, op);
   }

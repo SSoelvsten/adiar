@@ -1,6 +1,5 @@
 #include <utility>
 
-#include <adiar/bool_op.h>
 #include <adiar/zdd.h>
 #include <adiar/zdd/zdd_policy.h>
 
