@@ -135,6 +135,9 @@ test/adiar/internal/algorithms/nested_sweeping:
 test/adiar/internal/algorithms/reduce:
 	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/algorithms TEST_NAME=reduce
 
+test/adiar/internal/bool_op:
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal TEST_NAME=bool_op
+
 test/adiar/internal/data_structures/level_merger:
 	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_structures TEST_NAME=level_merger
 
