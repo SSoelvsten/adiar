@@ -1325,7 +1325,7 @@ namespace adiar::internal
     const size_t exponent           = 21.0 * (weighted_terminals / total_arcs) + 0.4;
 
     const typename Policy::label_type terminal_threshold =
-      (1u << std::min<size_t>(exponent, log2(2*Policy::max_label))) - 1u;
+      (1u << std::min<size_t>(exponent, log2(2 * Policy::max_label))) - 1u;
 
     // ---------------------------------------------------------------------------------------------
     // Shallow Variables Heuristic

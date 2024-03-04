@@ -53,7 +53,7 @@ namespace adiar
     static inline zdd::pointer_type
     resolve_terminals(const zdd::pointer_type& a, const zdd::pointer_type& b)
     {
-      return or_op(a, b);
+      return or_op(a.value(), b.value());
     }
 
   public:

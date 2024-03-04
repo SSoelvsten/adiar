@@ -5,97 +5,82 @@
 
 namespace adiar::internal
 {
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether the terminal shortcuts the operator from the right,
-  ///        i.e. `op(T,t) == op(F,t)`.
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether the terminal shortcuts the operator from the right, i.e. `op(T,t) == op(F,t)`.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   inline bool
-  can_right_shortcut(const bool_op& op, const internal::ptr_uint64& terminal)
+  can_right_shortcut(const bool_op& op, const bool terminal)
   {
-    adiar_assert(terminal.is_terminal());
-    return op(internal::ptr_uint64(false), terminal) == op(internal::ptr_uint64(true), terminal);
+    return op(false, terminal) == op(true, terminal);
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether the terminal shortcuts the operator from the left,
-  ///        i.e. `op(t, T) == op(t, F)`.
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether the terminal shortcuts the operator from the left, i.e. `op(t, T) == op(t, F)`.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   inline bool
-  can_left_shortcut(const bool_op& op, const internal::ptr_uint64& terminal)
+  can_left_shortcut(const bool_op& op, const bool terminal)
   {
-    adiar_assert(terminal.is_terminal());
-    return op(terminal, internal::ptr_uint64(false)) == op(terminal, internal::ptr_uint64(true));
+    return op(terminal, false) == op(terminal, true);
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether the terminal is irrelevant for the operator from the right,
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether the terminal value is idempotent from the right with respect to an operator,
   ///        i.e. `op(X, t) == X`.
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  // TODO: Rename 'irrelevant' to 'idempotent'
   inline bool
-  is_right_irrelevant(const bool_op& op, const internal::ptr_uint64& terminal)
+  is_right_irrelevant(const bool_op& op, const bool terminal)
   {
-    adiar_assert(terminal.is_terminal());
-    return op(internal::ptr_uint64(false), terminal) == internal::ptr_uint64(false)
-      && op(internal::ptr_uint64(true), terminal) == internal::ptr_uint64(true);
+    return op(false, terminal) == false && op(true, terminal) == true;
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether the terminal is irrelevant for the operator from the left,
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether the terminal value is idempotent from the left with respect to an operator,
   ///        i.e. `op(t, X) == X`.
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   inline bool
-  is_left_irrelevant(const bool_op& op, const internal::ptr_uint64& terminal)
+  is_left_irrelevant(const bool_op& op, const bool terminal)
   {
-    adiar_assert(terminal.is_terminal());
-    return op(terminal, internal::ptr_uint64(false)) == internal::ptr_uint64(false)
-      && op(terminal, internal::ptr_uint64(true)) == internal::ptr_uint64(true);
+    return op(terminal, false) == false && op(terminal, true) == true;
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether the terminal for this operator negates the value of the other
-  ///        from the right, i.e. `op(X, t) == ~X`.
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether the terminal for this operator negates the value of the other from the right,
+  ///        i.e. `op(X, t) == ~X`.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   inline bool
-  is_right_negating(const bool_op& op, const internal::ptr_uint64& terminal)
+  is_right_negating(const bool_op& op, const bool terminal)
   {
-    adiar_assert(terminal.is_terminal());
-    return op(terminal, internal::ptr_uint64(false)) == internal::ptr_uint64(true)
-      && op(terminal, internal::ptr_uint64(true)) == internal::ptr_uint64(false);
+    return op(terminal, false) == true && op(terminal, true) == false;
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether the terminal for this operator negates the value of the other
-  ///        from the left, i.e. `op(t, X) == ~X`
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether the terminal for this operator negates the value of the other from the left,
+  ///        i.e. `op(t, X) == ~X`
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   inline bool
-  is_left_negating(const bool_op& op, const internal::ptr_uint64& terminal)
+  is_left_negating(const bool_op& op, const bool terminal)
   {
-    adiar_assert(terminal.is_terminal());
-    return op(terminal, internal::ptr_uint64(false)) == internal::ptr_uint64(true)
-      && op(terminal, internal::ptr_uint64(true)) == internal::ptr_uint64(false);
+    return op(terminal, false) == true && op(terminal, true) == false;
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Whether an operator is commutative, `op(X, Y) == op(Y, X)`.
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   inline bool
   is_commutative(const bool_op& op)
   {
-    internal::ptr_uint64 terminal_T = internal::ptr_uint64(true);
-    internal::ptr_uint64 terminal_F = internal::ptr_uint64(false);
-
-    return op(terminal_T, terminal_F) == op(terminal_F, terminal_T);
+    return op(true, false) == op(false, true);
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Return the flipped operator, i.e. `op'(X, Y) == op(Y, X)`.
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   inline bool_op
   flip(const bool_op& op)
   {
     if (is_commutative(op)) return op;
-
-    return [&op](const internal::ptr_uint64& a, const internal::ptr_uint64& b) { return op(b, a); };
+    return [&op](const bool a, const bool b) -> bool { return op(b, a); };
   }
 }
 
