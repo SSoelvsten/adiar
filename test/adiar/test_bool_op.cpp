@@ -111,33 +111,33 @@ go_bandit([]() {
       });
     });
 
-    describe("is_irrelevant", [&]() {
+    describe("is_idempotent", [&]() {
       it("can check on 'true' on the left", [&]() {
-        AssertThat(is_left_irrelevant(and_op, true), Is().True());
-        AssertThat(is_left_irrelevant(or_op, true), Is().False());
-        AssertThat(is_left_irrelevant(xor_op, true), Is().False());
-        AssertThat(is_left_irrelevant(imp_op, true), Is().True());
+        AssertThat(is_left_idempotent(and_op, true), Is().True());
+        AssertThat(is_left_idempotent(or_op, true), Is().False());
+        AssertThat(is_left_idempotent(xor_op, true), Is().False());
+        AssertThat(is_left_idempotent(imp_op, true), Is().True());
       });
 
       it("can check on 'false' on the left", [&]() {
-        AssertThat(is_left_irrelevant(and_op, false), Is().False());
-        AssertThat(is_left_irrelevant(or_op, false), Is().True());
-        AssertThat(is_left_irrelevant(xor_op, false), Is().True());
-        AssertThat(is_left_irrelevant(imp_op, false), Is().False());
+        AssertThat(is_left_idempotent(and_op, false), Is().False());
+        AssertThat(is_left_idempotent(or_op, false), Is().True());
+        AssertThat(is_left_idempotent(xor_op, false), Is().True());
+        AssertThat(is_left_idempotent(imp_op, false), Is().False());
       });
 
       it("can check on 'true' on the right", [&]() {
-        AssertThat(is_right_irrelevant(and_op, true), Is().True());
-        AssertThat(is_right_irrelevant(or_op, true), Is().False());
-        AssertThat(is_right_irrelevant(xor_op, true), Is().False());
-        AssertThat(is_right_irrelevant(imp_op, true), Is().False());
+        AssertThat(is_right_idempotent(and_op, true), Is().True());
+        AssertThat(is_right_idempotent(or_op, true), Is().False());
+        AssertThat(is_right_idempotent(xor_op, true), Is().False());
+        AssertThat(is_right_idempotent(imp_op, true), Is().False());
       });
 
       it("can check on 'false' on the right", [&]() {
-        AssertThat(is_right_irrelevant(and_op, false), Is().False());
-        AssertThat(is_right_irrelevant(or_op, false), Is().True());
-        AssertThat(is_right_irrelevant(xor_op, false), Is().True());
-        AssertThat(is_right_irrelevant(imp_op, false), Is().False());
+        AssertThat(is_right_idempotent(and_op, false), Is().False());
+        AssertThat(is_right_idempotent(or_op, false), Is().True());
+        AssertThat(is_right_idempotent(xor_op, false), Is().True());
+        AssertThat(is_right_idempotent(imp_op, false), Is().False());
       });
     });
 
