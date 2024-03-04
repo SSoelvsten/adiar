@@ -109,7 +109,7 @@ go_bandit([]() {
 
     describe("flip operator", [&]() {
       it("resolves commutative operator (and)", [&]() {
-        const bool_op& flip_and_op = flip(and_op);
+        const predicate<bool, bool>& flip_and_op = flip(and_op);
 
         AssertThat(flip_and_op(true, true), Is().EqualTo(true));
         AssertThat(flip_and_op(true, false), Is().EqualTo(false));
@@ -118,7 +118,7 @@ go_bandit([]() {
       });
 
       it("resolves non-commutative operator (imp)", [&]() {
-        const bool_op& flip_imp_op = flip(imp_op);
+        const predicate<bool, bool>& flip_imp_op = flip(imp_op);
 
         AssertThat(flip_imp_op(true, true), Is().EqualTo(true));
         AssertThat(flip_imp_op(true, false), Is().EqualTo(true));

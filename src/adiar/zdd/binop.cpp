@@ -11,7 +11,7 @@
 namespace adiar
 {
   bool
-  can_left_shortcut_zdd(const bool_op& op, const bool terminal)
+  can_left_shortcut_zdd(const predicate<bool, bool>& op, const bool terminal)
   {
     return // Does it shortcut on this level?
       op(terminal, false) == false
@@ -21,7 +21,7 @@ namespace adiar
   }
 
   bool
-  can_right_shortcut_zdd(const bool_op& op, const bool terminal)
+  can_right_shortcut_zdd(const predicate<bool, bool>& op, const bool terminal)
   {
     return // Does it shortcut on this level?
       op(false, terminal) == false
@@ -31,7 +31,7 @@ namespace adiar
   }
 
   bool
-  zdd_skippable(const bool_op& op, const zdd::node_type::children_type& r_high)
+  zdd_skippable(const predicate<bool, bool>& op, const zdd::node_type::children_type& r_high)
   {
     return (r_high[0].is_terminal() && r_high[1].is_terminal()
             && op(r_high[0].value(), r_high[1].value()) == false)
@@ -47,7 +47,7 @@ namespace adiar
   {
   public:
     static __zdd
-    resolve_same_file(const zdd& zdd_1, const zdd& /*zdd_2*/, const bool_op& op)
+    resolve_same_file(const zdd& zdd_1, const zdd& /*zdd_2*/, const predicate<bool, bool>& op)
     {
       // Compute the results on all children.
       const bool op_F = op(false, false);
@@ -61,7 +61,7 @@ namespace adiar
 
   public:
     static __zdd
-    resolve_terminal_root(const zdd& zdd_1, const zdd& zdd_2, const bool_op& op)
+    resolve_terminal_root(const zdd& zdd_1, const zdd& zdd_2, const predicate<bool, bool>& op)
     {
       adiar_assert(zdd_isterminal(zdd_1) || zdd_isterminal(zdd_2));
 
@@ -98,7 +98,7 @@ namespace adiar
 
   public:
     static internal::cut
-    left_cut(const bool_op& op)
+    left_cut(const predicate<bool, bool>& op)
     {
       const bool incl_false = !can_left_shortcut_zdd(op, false);
       const bool incl_true  = !can_left_shortcut_zdd(op, true);
@@ -107,7 +107,7 @@ namespace adiar
     }
 
     static internal::cut
-    right_cut(const bool_op& op)
+    right_cut(const predicate<bool, bool>& op)
     {
       const bool incl_false = !can_right_shortcut_zdd(op, false);
       const bool incl_true  = !can_right_shortcut_zdd(op, true);
@@ -117,7 +117,7 @@ namespace adiar
 
   private:
     static internal::tuple<zdd::pointer_type>
-    __resolve_request(const bool_op& op, const internal::tuple<zdd::pointer_type>& r)
+    __resolve_request(const predicate<bool, bool>& op, const internal::tuple<zdd::pointer_type>& r)
     {
       if (r[0].is_terminal() && can_left_shortcut_zdd(op, r[0].value())) {
         return { r[0], zdd::pointer_type(true) };
@@ -130,7 +130,7 @@ namespace adiar
 
   public:
     static internal::prod2_rec
-    resolve_request(const bool_op& op,
+    resolve_request(const predicate<bool, bool>& op,
                     const internal::tuple<zdd::pointer_type>& r_low,
                     const internal::tuple<zdd::pointer_type>& r_high)
     {
@@ -151,13 +151,13 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   __zdd
-  zdd_binop(const exec_policy& ep, const zdd& A, const zdd& B, const bool_op& op)
+  zdd_binop(const exec_policy& ep, const zdd& A, const zdd& B, const predicate<bool, bool>& op)
   {
     return internal::prod2<zdd_prod2_policy>(ep, A, B, op);
   }
 
   __zdd
-  zdd_binop(const zdd& A, const zdd& B, const bool_op& op)
+  zdd_binop(const zdd& A, const zdd& B, const predicate<bool, bool>& op)
   {
     return zdd_binop(exec_policy(), A, B, op);
   }

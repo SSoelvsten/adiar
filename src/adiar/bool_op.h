@@ -9,17 +9,6 @@
 namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// \brief   Computes the unique identifier of the resulting terminal based on the pointers to two
-  ///          terminals.
-  ///
-  /// \details By abusing our knowledge of the bit-layout, we can implement all common operations
-  ///          merely as a few fast bit operations.
-  ///
-  /// \remark  For each operator, we provide the truth table [(1,1), (1,0), (0,1), (0,0)].
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  using bool_op = predicate<bool, bool>;
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Logical 'and' operator, i.e. the truth table: [1,0,0,0].
   //////////////////////////////////////////////////////////////////////////////////////////////////
   const predicate<bool, bool> and_op = [](const bool a, const bool b) -> bool { return a & b; };
