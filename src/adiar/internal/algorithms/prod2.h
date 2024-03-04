@@ -97,7 +97,7 @@ namespace adiar::internal
   inline void
   __prod2_recurse_out(PriorityQueue& pq,
                       arc_writer& aw,
-                      const bool_op& op,
+                      const predicate<bool, bool>& op,
                       const ptr_uint64& source,
                       const typename PriorityQueue::value_type::target_t& target)
   {
@@ -193,7 +193,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   template <typename DdPolicy>
   inline shared_levelized_file<node>
-  __prod2_terminal(const tuple<typename DdPolicy::pointer_type>& rp, const bool_op& op)
+  __prod2_terminal(const tuple<typename DdPolicy::pointer_type>& rp, const predicate<bool, bool>& op)
   {
     return build_terminal<DdPolicy>(op(rp[0].value(), rp[1].value()));
   }
@@ -281,7 +281,7 @@ namespace adiar::internal
   __prod2_ra(const exec_policy& ep,
              const typename Policy::dd_type& in_pq,
              const typename Policy::dd_type& in_ra,
-             const bool_op& op,
+             const predicate<bool, bool>& op,
              const size_t pq_memory,
              const size_t max_pq_size)
   {
@@ -403,7 +403,7 @@ namespace adiar::internal
   __prod2_pq(const exec_policy& ep,
              const typename Policy::dd_type& in_0,
              const typename Policy::dd_type& in_1,
-             const bool_op& op,
+             const predicate<bool, bool>& op,
              const size_t pq_1_memory,
              const size_t max_pq_1_size,
              const size_t pq_2_memory,
@@ -548,7 +548,7 @@ namespace adiar::internal
   size_t
   __prod2_ilevel_upper_bound(const typename Policy::dd_type& in_0,
                              const typename Policy::dd_type& in_1,
-                             const bool_op& op)
+                             const predicate<bool, bool>& op)
   {
     // Cuts for left-hand side
     const safe_size_t left_cut_internal = cut::get(in_0, cut::type::Internal);
@@ -575,7 +575,7 @@ namespace adiar::internal
   size_t
   __prod2_2level_upper_bound(const typename Policy::dd_type& in_0,
                              const typename Policy::dd_type& in_1,
-                             const bool_op& op)
+                             const predicate<bool, bool>& op)
   {
     // Left-hand side
     const safe_size_t left_2level_cut = in_0.max_2level_cut(cut::Internal);
@@ -610,7 +610,7 @@ namespace adiar::internal
   size_t
   __prod2_ilevel_upper_bound(const typename Policy::dd_type& in_0,
                              const typename Policy::dd_type& in_1,
-                             const bool_op& op)
+                             const predicate<bool, bool>& op)
   {
     const cut left_ct                    = Policy::left_cut(op);
     const safe_size_t left_terminal_vals = left_ct.number_of_terminals();
@@ -629,7 +629,7 @@ namespace adiar::internal
   __prod2_ra(const exec_policy& ep,
              const typename Policy::dd_type& in_0,
              const typename Policy::dd_type& in_1,
-             const bool_op& op)
+             const predicate<bool, bool>& op)
   {
     adiar_assert(in_0->indexable || in_1->indexable, "At least one input must be indexable");
 
@@ -650,7 +650,7 @@ namespace adiar::internal
     const typename Policy::dd_type& in_pq = flip_in ? in_1 : in_0;
     const typename Policy::dd_type& in_ra = flip_in ? in_0 : in_1;
 
-    const bool_op& ra_op = flip_in ? flip(op) : op;
+    const predicate<bool, bool>& ra_op = flip_in ? flip(op) : op;
 
 #ifdef ADIAR_STATS
     stats_prod2.ra.used_narrowest +=
@@ -701,7 +701,7 @@ namespace adiar::internal
   __prod2_pq(const exec_policy& ep,
              const typename Policy::dd_type& in_0,
              const typename Policy::dd_type& in_1,
-             const bool_op& op)
+             const predicate<bool, bool>& op)
   {
     const bool internal_only =
       ep.template get<exec_policy::memory>() == exec_policy::memory::Internal;
@@ -807,7 +807,7 @@ namespace adiar::internal
   prod2(const exec_policy& ep,
         const typename Policy::dd_type& in_0,
         const typename Policy::dd_type& in_1,
-        const bool_op& op)
+        const predicate<bool, bool>& op)
   {
     // -------------------------------------------------------------------------
     // Case: Same file, i.e. exactly the same DAG.
