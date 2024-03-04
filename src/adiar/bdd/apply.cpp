@@ -10,6 +10,8 @@
 
 namespace adiar
 {
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  // BDD product construction policy
   class apply_prod2_policy
     : public bdd_policy
     , public internal::prod2_mixed_level_merger<bdd_policy>
@@ -18,17 +20,14 @@ namespace adiar
     static __bdd
     resolve_same_file(const bdd& bdd_1, const bdd& bdd_2, const bool_op& op)
     {
-      bdd::pointer_type terminal_1_F = bdd::pointer_type(bdd_1.negate);
-      bdd::pointer_type terminal_2_F = bdd::pointer_type(bdd_2.negate);
-
       // Compute the results on all children.
-      bdd::pointer_type op_F = op(terminal_1_F, terminal_2_F);
-      bdd::pointer_type op_T = op(~terminal_1_F, ~terminal_2_F);
+      const bool op_F = op(bdd_1.negate, bdd_2.negate);
+      const bool op_T = op(!bdd_1.negate, !bdd_2.negate);
 
       // Does it collapse to a terminal?
-      if (op_F == op_T) { return bdd_terminal(op_F.value()); }
+      if (op_F == op_T) { return bdd_terminal(op_F); }
 
-      return op_F == terminal_1_F ? bdd_1 : ~bdd_1;
+      return op_F == bdd_1.negate ? bdd_1 : ~bdd_1;
     }
 
   public:
@@ -38,26 +37,22 @@ namespace adiar
       adiar_assert(bdd_isterminal(bdd_1) || bdd_isterminal(bdd_2));
 
       if (bdd_isterminal(bdd_1) && bdd_isterminal(bdd_2)) {
-        const bdd::pointer_type p1 = bdd::pointer_type(dd_valueof(bdd_1));
-        const bdd::pointer_type p2 = bdd::pointer_type(dd_valueof(bdd_2));
+        const bool p1 = dd_valueof(bdd_1);
+        const bool p2 = dd_valueof(bdd_2);
 
-        return bdd_terminal(op(p1, p2).value());
+        return bdd_terminal(op(p1, p2));
       } else if (bdd_isterminal(bdd_1)) {
-        const bdd::pointer_type p1 = bdd::pointer_type(dd_valueof(bdd_1));
+        const bool p1 = dd_valueof(bdd_1);
 
-        if (can_left_shortcut(op, p1)) {
-          return bdd_terminal(op(p1, bdd::pointer_type(false)).value());
-        }
-        if (is_left_irrelevant(op, p1)) { return bdd_2; }
+        if (internal::can_left_shortcut(op, p1)) { return bdd_terminal(op(p1, false)); }
+        if (internal::is_left_irrelevant(op, p1)) { return bdd_2; }
         // if (is_left_negating(op, p1))
         return bdd_not(bdd_2);
       } else { // if (bdd_isterminal(bdd_2)) {
-        const bdd::pointer_type p2 = bdd::pointer_type(dd_valueof(bdd_2));
+        const bool p2 = dd_valueof(bdd_2);
 
-        if (can_right_shortcut(op, p2)) {
-          return bdd_terminal(op(bdd::pointer_type(false), p2).value());
-        }
-        if (is_right_irrelevant(op, p2)) { return bdd_1; }
+        if (internal::can_right_shortcut(op, p2)) { return bdd_terminal(op(false, p2)); }
+        if (internal::is_right_irrelevant(op, p2)) { return bdd_1; }
         // if (is_right_negating(op, p2))
         return bdd_not(bdd_1);
       }
@@ -68,8 +63,8 @@ namespace adiar
     static internal::cut
     left_cut(const bool_op& op)
     {
-      const bool incl_false = !can_left_shortcut(op, bdd::pointer_type(false));
-      const bool incl_true  = !can_left_shortcut(op, bdd::pointer_type(true));
+      const bool incl_false = !internal::can_left_shortcut(op, false);
+      const bool incl_true  = !internal::can_left_shortcut(op, true);
 
       return internal::cut(incl_false, incl_true);
     }
@@ -77,8 +72,8 @@ namespace adiar
     static internal::cut
     right_cut(const bool_op& op)
     {
-      const bool incl_false = !can_right_shortcut(op, bdd::pointer_type(false));
-      const bool incl_true  = !can_right_shortcut(op, bdd::pointer_type(true));
+      const bool incl_false = !internal::can_right_shortcut(op, false);
+      const bool incl_true  = !internal::can_right_shortcut(op, true);
 
       return internal::cut(incl_false, incl_true);
     }
@@ -87,10 +82,10 @@ namespace adiar
     static internal::tuple<bdd::pointer_type>
     __resolve_request(const bool_op& op, const internal::tuple<bdd::pointer_type>& r)
     {
-      if (r[0].is_terminal() && can_left_shortcut(op, r[0])) {
+      if (r[0].is_terminal() && internal::can_left_shortcut(op, r[0].value())) {
         return { r[0], bdd::pointer_type(true) };
       }
-      if (r[1].is_terminal() && can_right_shortcut(op, r[1])) {
+      if (r[1].is_terminal() && internal::can_right_shortcut(op, r[1].value())) {
         return { bdd::pointer_type(true), r[1] };
       }
       return r;
@@ -109,6 +104,7 @@ namespace adiar
     static constexpr bool no_skip = false;
   };
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   __bdd
   bdd_apply(const exec_policy& ep, const bdd& f, const bdd& g, const bool_op& op)
   {
@@ -121,7 +117,7 @@ namespace adiar
     return bdd_apply(exec_policy(), f, g, op);
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   __bdd
   bdd_and(const exec_policy& ep, const bdd& f, const bdd& g)
   {

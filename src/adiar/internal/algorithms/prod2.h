@@ -102,7 +102,7 @@ namespace adiar::internal
                       const typename PriorityQueue::value_type::target_t& target)
   {
     if (target[0].is_terminal() && target[1].is_terminal()) {
-      const arc out_arc = { source, op(target[0], target[1]) };
+      const arc out_arc = { source, op(target[0].value(), target[1].value()) };
       aw.push_terminal(out_arc);
     } else {
       adiar_assert(source.label() < std::min(target[0], target[1]).label(),
@@ -195,8 +195,7 @@ namespace adiar::internal
   inline shared_levelized_file<node>
   __prod2_terminal(const tuple<typename DdPolicy::pointer_type>& rp, const bool_op& op)
   {
-    // TODO: Abuse that op(tgt[0], tgt[1]) already is a pointer.
-    return build_terminal<DdPolicy>(op(rp[0], rp[1]).value());
+    return build_terminal<DdPolicy>(op(rp[0].value(), rp[1].value()));
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -371,7 +370,7 @@ namespace adiar::internal
               return __prod2_terminal<Policy>(r, op);
             }
 
-            const typename Policy::pointer_type result = op(r[0], r[1]);
+            const typename Policy::pointer_type result = op(r[0].value(), r[1].value());
             const __prod2_recurse_in__output_terminal handler(aw, result);
             request_foreach(prod_pq, req.target, handler);
           } else {
@@ -518,7 +517,7 @@ namespace adiar::internal
               return __prod2_terminal<Policy>(r, op);
             }
 
-            const typename Policy::pointer_type result = op(r[0], r[1]);
+            const typename Policy::pointer_type result = op(r[0].value(), r[1].value());
             const __prod2_recurse_in__output_terminal handler(aw, result);
             request_foreach(prod_pq_1, prod_pq_2, req.target, handler);
           } else {
