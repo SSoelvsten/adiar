@@ -1,10 +1,29 @@
 #ifndef ADIAR_INTERNAL_BOOL_OP_H
 #define ADIAR_INTERNAL_BOOL_OP_H
 
+#include <type_traits>
+
 #include <adiar/bool_op.h>
 
 namespace adiar::internal
 {
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Wrapper of a binary operation with which to precomputes and directly interfaces with
+  ///        *pointers*.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename BinaryOp>
+  class binary_op;
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Type inference of `binary_op<BinaryOp>` based on the given operator.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename BinaryOp>
+  binary_op<BinaryOp>
+  make_binary_op(const BinaryOp& op)
+  {
+    return binary_op<BinaryOp>(op);
+  }
+
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Whether the terminal shortcuts the operator from the right, i.e. `op(T,t) == op(F,t)`.
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81,6 +100,151 @@ namespace adiar::internal
     if (is_commutative(op)) return op;
     return [&op](const bool a, const bool b) -> bool { return op(b, a); };
   }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Specialization for boolean operators, i.e. any `predicate<bool, bool>`.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template<>
+  class binary_op<predicate<bool, bool>>
+  {
+  private:
+    /// \brief Evaluations of predicate
+    ///
+    /// TODO: Replace with Pointer Type
+    const bool _op[2][2];
+
+    /// \brief Pre-computed 'left shortcutting' predicate.
+    const bool _left_shortcutting[2];
+
+    /// \brief Pre-computed 'right shortcutting' predicate.
+    const bool _right_shortcutting[2];
+
+    /// \brief Pre-computed 'left idempotent' predicate.
+    const bool _left_idempotent[2];
+
+    /// \brief Pre-computed 'right idempotent' predicate.
+    const bool _right_idempotent[2];
+
+    /// \brief Pre-computed 'left negating' predicate.
+    const bool _left_negating[2];
+
+    /// \brief Pre-computed 'right negating' predicate.
+    const bool _right_negating[2];
+
+    /// \brief Pre-computed 'commutative' predicate.
+    const bool _commutative;
+
+  private:
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Default constructor only available for internal usage in `::flip()`.
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    binary_op() = default;
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Copy constructor
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    binary_op(const binary_op&) = default;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Move constructor
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    binary_op(binary_op&&) = default;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Construction from `predicate<bool, bool>`
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    binary_op(const predicate<bool, bool>& op)
+      : _op{{op(false,false), op(false, true)}, {op(true,false), op(true,true)}}
+      , _left_shortcutting{ adiar::internal::can_left_shortcut(op, false), adiar::internal::can_left_shortcut(op, true) }
+      , _right_shortcutting{ adiar::internal::can_right_shortcut(op, false), adiar::internal::can_right_shortcut(op, true) }
+      , _left_idempotent{ adiar::internal::is_left_idempotent(op, false), adiar::internal::is_left_idempotent(op, true) }
+      , _right_idempotent{ adiar::internal::is_right_idempotent(op, false), adiar::internal::is_right_idempotent(op, true) }
+      , _left_negating{ adiar::internal::is_left_negating(op, false), adiar::internal::is_left_negating(op, true) }
+      , _right_negating{ adiar::internal::is_right_negating(op, false), adiar::internal::is_right_negating(op, true) }
+      , _commutative(adiar::internal::is_commutative(op))
+    { }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename Pointer>
+    Pointer
+    operator ()(const Pointer& lhs, const Pointer& rhs) const
+    {
+      static_assert(std::is_same<typename Pointer::terminal_type, bool>::value);
+      return _op[lhs.value()][rhs.value()];
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename Pointer>
+    bool
+    can_left_shortcut(const Pointer& p) const
+    {
+      return _left_shortcutting[p.value()];
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename Pointer>
+    bool
+    can_right_shortcut(const Pointer& p) const
+    {
+      return _right_shortcutting[p.value()];
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename Pointer>
+    bool
+    is_left_idempotent(const Pointer& p) const
+    {
+      return _left_idempotent[p.value()];
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename Pointer>
+    bool
+    is_right_idempotent(const Pointer& p) const
+    {
+      return _right_idempotent[p.value()];
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename Pointer>
+    bool
+    is_left_negating(const Pointer& p) const
+    {
+      return _left_negating[p.value()];
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename Pointer>
+    bool
+    is_right_negating(const Pointer& p) const
+    {
+      return _right_negating[p.value()];
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    bool
+    is_commutative() const
+    {
+      return _commutative;
+    }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    using flipped_operator = binary_op<predicate<bool, bool>>;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    flipped_operator
+    flip() const
+    {
+      // TODO: Reuse current computations
+      const predicate<bool, bool> flipped_op = [this](const bool lhs, const bool rhs) -> bool {
+        return this->_op[rhs][lhs];
+      };
+      return flipped_op;
+    }
+  };
 }
 
 #endif // ADIAR_INTERNAL_BOOL_OP_H
