@@ -50,7 +50,7 @@ namespace adiar::internal
   inline bool
   is_right_negating(const predicate<bool, bool>& op, const bool terminal)
   {
-    return op(terminal, false) == true && op(terminal, true) == false;
+    return op(false, terminal) == true && op(true, terminal) == false;
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
