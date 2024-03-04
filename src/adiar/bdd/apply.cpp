@@ -45,14 +45,14 @@ namespace adiar
         const bool p1 = dd_valueof(bdd_1);
 
         if (internal::can_left_shortcut(op, p1)) { return bdd_terminal(op(p1, false)); }
-        if (internal::is_left_irrelevant(op, p1)) { return bdd_2; }
+        if (internal::is_left_idempotent(op, p1)) { return bdd_2; }
         // if (is_left_negating(op, p1))
         return bdd_not(bdd_2);
       } else { // if (bdd_isterminal(bdd_2)) {
         const bool p2 = dd_valueof(bdd_2);
 
         if (internal::can_right_shortcut(op, p2)) { return bdd_terminal(op(false, p2)); }
-        if (internal::is_right_irrelevant(op, p2)) { return bdd_1; }
+        if (internal::is_right_idempotent(op, p2)) { return bdd_1; }
         // if (is_right_negating(op, p2))
         return bdd_not(bdd_1);
       }

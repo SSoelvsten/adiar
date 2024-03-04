@@ -27,9 +27,8 @@ namespace adiar::internal
   /// \brief Whether the terminal value is idempotent from the right with respect to an operator,
   ///        i.e. `op(X, t) == X`.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  // TODO: Rename 'irrelevant' to 'idempotent'
   inline bool
-  is_right_irrelevant(const bool_op& op, const bool terminal)
+  is_right_idempotent(const bool_op& op, const bool terminal)
   {
     return op(false, terminal) == false && op(true, terminal) == true;
   }
@@ -39,7 +38,7 @@ namespace adiar::internal
   ///        i.e. `op(t, X) == X`.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   inline bool
-  is_left_irrelevant(const bool_op& op, const bool terminal)
+  is_left_idempotent(const bool_op& op, const bool terminal)
   {
     return op(terminal, false) == false && op(terminal, true) == true;
   }
