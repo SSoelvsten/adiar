@@ -3,10 +3,10 @@
 go_bandit([]() {
   describe("adiar/bool_op.h", []() {
     it("and_op", [&]() {
-      AssertThat(and_op(true, true), Is().EqualTo(true));
-      AssertThat(and_op(true, false), Is().EqualTo(false));
-      AssertThat(and_op(false, true), Is().EqualTo(false));
-      AssertThat(and_op(false, false), Is().EqualTo(false));
+      AssertThat(adiar::and_op(true, true), Is().EqualTo(true));
+      AssertThat(adiar::and_op(true, false), Is().EqualTo(false));
+      AssertThat(adiar::and_op(false, true), Is().EqualTo(false));
+      AssertThat(adiar::and_op(false, false), Is().EqualTo(false));
     });
 
     it("nand_op", [&]() {
