@@ -57,6 +57,7 @@ namespace adiar
     friend __bdd;
 
     // |- classes [internal]
+    template <typename BinaryOp>
     friend class apply_prod2_policy;
 
     // |- functions

@@ -3129,7 +3129,7 @@ go_bandit([]() {
       });
 
       describe("bdd_imp(f,g)", [&]() {
-        it("Uses random access on the thinnest ([wide] -> [thin])", [&]() {
+        it("uses random access on thinnest ([wide] -> [thin])", [&]() {
           /* Result of [wide] ^ [thin]
           //
           //                      (1,1)                   ---- x0
