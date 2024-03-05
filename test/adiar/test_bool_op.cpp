@@ -17,10 +17,10 @@ go_bandit([]() {
     });
 
     it("or_op", [&]() {
-      AssertThat(or_op(true, true), Is().EqualTo(true));
-      AssertThat(or_op(true, false), Is().EqualTo(true));
-      AssertThat(or_op(false, true), Is().EqualTo(true));
-      AssertThat(or_op(false, false), Is().EqualTo(false));
+      AssertThat(adiar::or_op(true, true), Is().EqualTo(true));
+      AssertThat(adiar::or_op(true, false), Is().EqualTo(true));
+      AssertThat(adiar::or_op(false, true), Is().EqualTo(true));
+      AssertThat(adiar::or_op(false, false), Is().EqualTo(false));
     });
 
     it("nor_op", [&]() {
