@@ -570,5 +570,60 @@ go_bandit([]() {
         AssertThat(op.is_commutative(), Is().True());
       });
     });
+
+    describe("or_op", []() {
+      const adiar::internal::or_op op;
+
+      constexpr ptr_uint64 ptr_false(false);
+      constexpr ptr_uint64 ptr_true(true);
+
+      it("operator() (const bool, const bool)", [&]() {
+        AssertThat(op(false, false), Is().EqualTo(false));
+        AssertThat(op(false, true), Is().EqualTo(true));
+        AssertThat(op(true, false), Is().EqualTo(true));
+        AssertThat(op(true, true), Is().EqualTo(true));
+      });
+
+      it("operator() (const Pointer&, const Pointer&)", [&]() {
+        AssertThat(op(ptr_false, ptr_false), Is().EqualTo(ptr_false));
+        AssertThat(op(ptr_false, ptr_true), Is().EqualTo(ptr_true));
+        AssertThat(op(ptr_true, ptr_false), Is().EqualTo(ptr_true));
+        AssertThat(op(ptr_true, ptr_true), Is().EqualTo(ptr_true));
+      });
+
+      it(".can_left_shortcut(const Pointer&)", [&]() {
+        AssertThat(op.can_left_shortcut(ptr_false), Is().False());
+        AssertThat(op.can_left_shortcut(ptr_true), Is().True());
+      });
+
+      it(".can_right_shortcut(const Pointer&)", [&]() {
+        AssertThat(op.can_right_shortcut(ptr_false), Is().False());
+        AssertThat(op.can_right_shortcut(ptr_true), Is().True());
+      });
+
+      it(".is_left_idempotent(const Pointer&)", [&]() {
+        AssertThat(op.is_left_idempotent(ptr_false), Is().True());
+        AssertThat(op.is_left_idempotent(ptr_true), Is().False());
+      });
+
+      it(".is_right_idempotent(const Pointer&)", [&]() {
+        AssertThat(op.is_right_idempotent(ptr_false), Is().True());
+        AssertThat(op.is_right_idempotent(ptr_true), Is().False());
+      });
+
+      it(".is_left_negating(const Pointer&)", [&]() {
+        AssertThat(op.is_left_negating(ptr_false), Is().False());
+        AssertThat(op.is_left_negating(ptr_true), Is().False());
+      });
+
+      it(".is_right_negating(const Pointer&)", [&]() {
+        AssertThat(op.is_right_negating(ptr_false), Is().False());
+        AssertThat(op.is_right_negating(ptr_true), Is().False());
+      });
+
+      it(".is_commutative()", [&]() {
+        AssertThat(op.is_commutative(), Is().True());
+      });
+    });
   });
  });

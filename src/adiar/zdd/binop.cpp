@@ -229,7 +229,8 @@ namespace adiar
   __zdd
   zdd_union(const exec_policy& ep, const zdd& A, const zdd& B)
   {
-    return zdd_binop(ep, A, B, or_op);
+    zdd_prod2_policy<internal::or_op> policy;
+    return internal::prod2(ep, A, B, policy);
   }
 
   __zdd

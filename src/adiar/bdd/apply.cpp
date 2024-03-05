@@ -183,7 +183,8 @@ namespace adiar
   __bdd
   bdd_or(const exec_policy& ep, const bdd& f, const bdd& g)
   {
-    return bdd_apply(ep, f, g, or_op);
+    apply_prod2_policy<internal::or_op> policy;
+    return internal::prod2(ep, f, g, policy);
   }
 
   __bdd
