@@ -223,7 +223,8 @@ namespace adiar
   __bdd
   bdd_xnor(const exec_policy& ep, const bdd& f, const bdd& g)
   {
-    return bdd_apply(ep, f, g, xnor_op);
+    apply_prod2_policy<internal::xnor_op> policy;
+    return internal::prod2(ep, f, g, policy);
   }
 
   __bdd
@@ -259,7 +260,8 @@ namespace adiar
   __bdd
   bdd_equiv(const exec_policy& ep, const bdd& f, const bdd& g)
   {
-    return bdd_apply(ep, f, g, equiv_op);
+    apply_prod2_policy<internal::equiv_op> policy;
+    return internal::prod2(ep, f, g, policy);
   }
 
   __bdd

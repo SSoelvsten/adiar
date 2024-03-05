@@ -38,10 +38,10 @@ go_bandit([]() {
     });
 
     it("xnor_op", [&]() {
-      AssertThat(xnor_op(true, true), Is().EqualTo(true));
-      AssertThat(xnor_op(true, false), Is().EqualTo(false));
-      AssertThat(xnor_op(false, true), Is().EqualTo(false));
-      AssertThat(xnor_op(false, false), Is().EqualTo(true));
+      AssertThat(adiar::xnor_op(true, true), Is().EqualTo(true));
+      AssertThat(adiar::xnor_op(true, false), Is().EqualTo(false));
+      AssertThat(adiar::xnor_op(false, true), Is().EqualTo(false));
+      AssertThat(adiar::xnor_op(false, false), Is().EqualTo(true));
     });
 
     it("imp_op", [&]() {
@@ -59,10 +59,10 @@ go_bandit([]() {
     });
 
     it("equiv_op", [&]() {
-      AssertThat(equiv_op(true, true), Is().EqualTo(true));
-      AssertThat(equiv_op(true, false), Is().EqualTo(false));
-      AssertThat(equiv_op(false, true), Is().EqualTo(false));
-      AssertThat(equiv_op(false, false), Is().EqualTo(true));
+      AssertThat(adiar::equiv_op(true, true), Is().EqualTo(true));
+      AssertThat(adiar::equiv_op(true, false), Is().EqualTo(false));
+      AssertThat(adiar::equiv_op(false, true), Is().EqualTo(false));
+      AssertThat(adiar::equiv_op(false, false), Is().EqualTo(true));
     });
 
     it("diff_op", [&]() {
