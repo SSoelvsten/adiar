@@ -273,6 +273,136 @@ namespace adiar::internal
       return flipped_op;
     }
   };
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief   Extends a commutative operator with 'left-' and 'right-' specific member functions.
+  ///
+  /// \details This is supposed to be used with the 'Curiously Recurring Template Pattern'
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename BinaryOp>
+  class commutative_op
+  {
+  public:
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename T>
+    static bool
+    can_left_shortcut(const T& t)
+    {
+      return BinaryOp::can_shortcut(t);
+    }
+
+    template<typename T>
+    static bool
+    can_right_shortcut(const T& t)
+    {
+      return BinaryOp::can_shortcut(t);
+    }
+
+    template<typename T>
+    static bool
+    is_left_idempotent(const T& t)
+    {
+      return BinaryOp::is_idempotent(t);
+    }
+
+    template<typename T>
+    static bool
+    is_right_idempotent(const T& t)
+    {
+      return BinaryOp::is_idempotent(t);
+    }
+
+    template<typename T>
+    static bool
+    is_left_negating(const T& t)
+    {
+      return BinaryOp::is_negating(t);
+    }
+
+    template<typename T>
+    static bool
+    is_right_negating(const T& t)
+    {
+      return BinaryOp::is_negating(t);
+    }
+
+    static constexpr bool
+    is_commutative()
+    { return true; }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    using flipped_operator = BinaryOp;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    flipped_operator
+    flip() const
+    {
+      return {};
+    }
+  };
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief   Alternative for `binary_op` hardcoded for a logical 'and'.
+  ///
+  /// \details The benefit of this over `binary_op` is to skip pre-computations and to expose
+  ///          optimisations and simplifications to the compiler.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  class and_op
+    : public commutative_op<and_op>
+  {
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+  public:
+    bool
+    operator ()(const bool lhs, const bool rhs) const
+    {
+      return lhs & rhs;
+    }
+
+    template<typename Pointer>
+    Pointer
+    operator ()(const Pointer& lhs, const Pointer& rhs) const
+    {
+      return lhs & rhs;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+  protected:
+    friend commutative_op<and_op>;
+
+    static bool
+    can_shortcut(const bool p)
+    {
+      return !p;
+    }
+
+    template<typename Pointer>
+    static bool
+    can_shortcut(const Pointer& p)
+    {
+      return can_shortcut(p.value());
+    }
+
+    static bool
+    is_idempotent(const bool p)
+    {
+      return p;
+    }
+
+    template<typename Pointer>
+    static bool
+    is_idempotent(const Pointer& p)
+    {
+      return is_idempotent(p.value());
+    }
+
+    template<typename T>
+    static constexpr bool
+    is_negating(const T&/*t*/)
+    {
+      return false;
+    }
+  };
 }
 
 #endif // ADIAR_INTERNAL_BOOL_OP_H
