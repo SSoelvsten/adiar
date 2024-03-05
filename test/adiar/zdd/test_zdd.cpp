@@ -121,7 +121,7 @@ go_bandit([]() {
       it("should compute {{0}} \\/ {{0},{1}} == {{0}}",
          [&]() { AssertThat((x0 & x0_or_x1) == x0, Is().True()); });
 
-      it("should compute {{0},{1}} \\ {{0} == {{0}}",
+      it("should compute {{0},{1}} \\ {{0}} == {{1}}",
          [&]() { AssertThat((x0_or_x1 - x0) == x1, Is().True()); });
 
       it("should compute {{0},{1}}' == {Ø,{0,1}} with dom {0,1}", [&]() {
