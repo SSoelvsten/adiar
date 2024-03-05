@@ -477,14 +477,14 @@ go_bandit([]() {
           AssertThat(out.negate, Is().True());
         });
 
-        it("should shortcut on negating on T and x0", [&]() {
-          __bdd out = bdd_nand(bdd_x0, bdd_T);
+        it("should shortcut on negating on x0 and T", [&]() {
+          __bdd out = bdd_nand(bdd_T, bdd_x0);
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
           AssertThat(out.negate, Is().True());
         });
 
-        it("should collapse on the same BDD twice, where one is negated [1]", [&]() {
+        it("should collapse on the same BDD twice, where one is negated", [&]() {
           __bdd out = bdd_nand(bdd_2, bdd_not(bdd_2));
 
           node_test_stream out_nodes(out);
