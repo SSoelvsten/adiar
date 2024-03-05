@@ -275,42 +275,42 @@ namespace adiar::internal
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
     template<typename T>
-    static bool
+    static constexpr bool
     can_left_shortcut(const T& t)
     {
       return BinaryOp::can_shortcut(t);
     }
 
     template<typename T>
-    static bool
+    static constexpr bool
     can_right_shortcut(const T& t)
     {
       return BinaryOp::can_shortcut(t);
     }
 
     template<typename T>
-    static bool
+    static constexpr bool
     is_left_idempotent(const T& t)
     {
       return BinaryOp::is_idempotent(t);
     }
 
     template<typename T>
-    static bool
+    static constexpr bool
     is_right_idempotent(const T& t)
     {
       return BinaryOp::is_idempotent(t);
     }
 
     template<typename T>
-    static bool
+    static constexpr bool
     is_left_negating(const T& t)
     {
       return BinaryOp::is_negating(t);
     }
 
     template<typename T>
-    static bool
+    static constexpr bool
     is_right_negating(const T& t)
     {
       return BinaryOp::is_negating(t);
@@ -360,27 +360,27 @@ namespace adiar::internal
   protected:
     friend commutative_op<and_op>;
 
-    static bool
+    static constexpr bool
     can_shortcut(const bool p)
     {
       return !p;
     }
 
     template<typename Pointer>
-    static bool
+    static constexpr bool
     can_shortcut(const Pointer& p)
     {
       return can_shortcut(p.value());
     }
 
-    static bool
+    static constexpr bool
     is_idempotent(const bool p)
     {
       return p;
     }
 
     template<typename Pointer>
-    static bool
+    static constexpr bool
     is_idempotent(const Pointer& p)
     {
       return is_idempotent(p.value());
@@ -484,7 +484,7 @@ namespace adiar::internal
   protected:
     friend commutative_op<or_op>;
 
-    static bool
+    static constexpr bool
     can_shortcut(const bool p)
     {
       return p;
@@ -497,7 +497,7 @@ namespace adiar::internal
       return can_shortcut(p.value());
     }
 
-    static bool
+    static constexpr bool
     is_idempotent(const bool p)
     {
       return !p;
