@@ -18,7 +18,8 @@ namespace adiar
   class bdd_quantify_policy : public bdd_policy
   {
   private:
-    // Inherit from `predicate<bool, bool>` to hide these compile-time simplifications `bool_op` (see #162)
+    // Inherit from `predicate<bool, bool>` to hide these compile-time simplifications `bool_op`
+    // (see #162)
     static constexpr bdd::pointer_type shortcutting_terminal = bdd::pointer_type(ShortcuttingValue);
     static constexpr bdd::pointer_type irrelevant_terminal = bdd::pointer_type(!ShortcuttingValue);
 

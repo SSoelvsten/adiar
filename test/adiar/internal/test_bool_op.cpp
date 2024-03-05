@@ -212,49 +212,38 @@ go_bandit([]() {
       });
 
       describe("is_commutative(...)", []() {
-        it("is true for 'adiar::and_op'", []() {
-          AssertThat(is_commutative(adiar::and_op), Is().True());
-        });
+        it("is true for 'adiar::and_op'",
+           []() { AssertThat(is_commutative(adiar::and_op), Is().True()); });
 
-        it("is true for 'adiar::nand_op'", []() {
-          AssertThat(is_commutative(adiar::nand_op), Is().True());
-        });
+        it("is true for 'adiar::nand_op'",
+           []() { AssertThat(is_commutative(adiar::nand_op), Is().True()); });
 
-        it("is true for 'adiar::or_op'", []() {
-          AssertThat(is_commutative(adiar::or_op), Is().True());
-        });
+        it("is true for 'adiar::or_op'",
+           []() { AssertThat(is_commutative(adiar::or_op), Is().True()); });
 
-        it("is true for 'adiar::nor_op'", []() {
-          AssertThat(is_commutative(adiar::nor_op), Is().True());
-        });
+        it("is true for 'adiar::nor_op'",
+           []() { AssertThat(is_commutative(adiar::nor_op), Is().True()); });
 
-        it("is true for 'adiar::xor_op'", []() {
-          AssertThat(is_commutative(adiar::xor_op), Is().True());
-        });
+        it("is true for 'adiar::xor_op'",
+           []() { AssertThat(is_commutative(adiar::xor_op), Is().True()); });
 
-        it("is true for 'adiar::xnor_op'", []() {
-          AssertThat(is_commutative(adiar::xnor_op), Is().True());
-        });
+        it("is true for 'adiar::xnor_op'",
+           []() { AssertThat(is_commutative(adiar::xnor_op), Is().True()); });
 
-        it("is true for 'adiar::equiv_op'", []() {
-          AssertThat(is_commutative(adiar::equiv_op), Is().True());
-        });
+        it("is true for 'adiar::equiv_op'",
+           []() { AssertThat(is_commutative(adiar::equiv_op), Is().True()); });
 
-        it("is false for 'adiar::imp_op'", []() {
-          AssertThat(is_commutative(adiar::imp_op), Is().False());
-        });
+        it("is false for 'adiar::imp_op'",
+           []() { AssertThat(is_commutative(adiar::imp_op), Is().False()); });
 
-        it("is false for 'adiar::invimp_op'", []() {
-          AssertThat(is_commutative(adiar::invimp_op), Is().False());
-        });
+        it("is false for 'adiar::invimp_op'",
+           []() { AssertThat(is_commutative(adiar::invimp_op), Is().False()); });
 
-        it("is false for 'adiar::diff_op'", []() {
-          AssertThat(is_commutative(adiar::diff_op), Is().False());
-        });
+        it("is false for 'adiar::diff_op'",
+           []() { AssertThat(is_commutative(adiar::diff_op), Is().False()); });
 
-        it("is false for 'adiar::less_op'", []() {
-          AssertThat(is_commutative(adiar::less_op), Is().False());
-        });
+        it("is false for 'adiar::less_op'",
+           []() { AssertThat(is_commutative(adiar::less_op), Is().False()); });
       });
 
       describe("flip(...)", []() {
@@ -279,9 +268,8 @@ go_bandit([]() {
     });
 
     describe("binary_op<predicate<bool, bool>>", []() {
-      it("uses expected number of bytes", []() {
-        AssertThat(sizeof(binary_op<predicate<bool, bool>>), Is().EqualTo(17u));
-      });
+      it("uses expected number of bytes",
+         []() { AssertThat(sizeof(binary_op<predicate<bool, bool>>), Is().EqualTo(17u)); });
 
       constexpr ptr_uint64 ptr_false(false);
       constexpr ptr_uint64 ptr_true(true);
@@ -694,9 +682,7 @@ go_bandit([]() {
         AssertThat(op.is_right_negating(ptr_true), Is().False());
       });
 
-      it(".is_commutative()", [&]() {
-        AssertThat(op.is_commutative(), Is().True());
-      });
+      it(".is_commutative()", [&]() { AssertThat(op.is_commutative(), Is().True()); });
     });
 
     describe("nand_op", []() {
@@ -749,9 +735,7 @@ go_bandit([]() {
         AssertThat(op.is_right_negating(ptr_true), Is().True());
       });
 
-      it(".is_commutative()", [&]() {
-        AssertThat(op.is_commutative(), Is().True());
-      });
+      it(".is_commutative()", [&]() { AssertThat(op.is_commutative(), Is().True()); });
     });
 
     describe("or_op", []() {
@@ -804,9 +788,7 @@ go_bandit([]() {
         AssertThat(op.is_right_negating(ptr_true), Is().False());
       });
 
-      it(".is_commutative()", [&]() {
-        AssertThat(op.is_commutative(), Is().True());
-      });
+      it(".is_commutative()", [&]() { AssertThat(op.is_commutative(), Is().True()); });
     });
 
     describe("nor_op", []() {
@@ -859,9 +841,7 @@ go_bandit([]() {
         AssertThat(op.is_right_negating(ptr_true), Is().False());
       });
 
-      it(".is_commutative()", [&]() {
-        AssertThat(op.is_commutative(), Is().True());
-      });
+      it(".is_commutative()", [&]() { AssertThat(op.is_commutative(), Is().True()); });
     });
 
     describe("xor_op", []() {
@@ -914,9 +894,7 @@ go_bandit([]() {
         AssertThat(op.is_right_negating(ptr_true), Is().True());
       });
 
-      it(".is_commutative()", [&]() {
-        AssertThat(op.is_commutative(), Is().True());
-      });
+      it(".is_commutative()", [&]() { AssertThat(op.is_commutative(), Is().True()); });
     });
 
     describe("xnor_op, equiv_op", []() {
@@ -969,9 +947,7 @@ go_bandit([]() {
         AssertThat(op.is_right_negating(ptr_true), Is().False());
       });
 
-      it(".is_commutative()", [&]() {
-        AssertThat(op.is_commutative(), Is().True());
-      });
+      it(".is_commutative()", [&]() { AssertThat(op.is_commutative(), Is().True()); });
     });
   });
- });
+});

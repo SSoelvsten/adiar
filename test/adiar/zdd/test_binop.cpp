@@ -1755,8 +1755,7 @@ go_bandit([]() {
                      Is().EqualTo(arc{ ptr_uint64(0, 0), false, terminal_F }));
 
           AssertThat(arcs.can_pull_terminal(), Is().True());
-          AssertThat(arcs.pull_terminal(),
-                     Is().EqualTo(arc{ ptr_uint64(0, 0), true, terminal_T }));
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(0, 0), true, terminal_T }));
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -3536,8 +3535,7 @@ go_bandit([]() {
                      Is().EqualTo(arc{ ptr_uint64(0, 0), false, terminal_F }));
 
           AssertThat(arcs.can_pull_terminal(), Is().True());
-          AssertThat(arcs.pull_terminal(),
-                     Is().EqualTo(arc{ ptr_uint64(0, 0), true, terminal_T }));
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(0, 0), true, terminal_T }));
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 

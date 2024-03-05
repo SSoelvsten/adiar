@@ -105,7 +105,8 @@ namespace adiar
   /// \brief The BDD representing the i'th variable.
   ///
   /// \param var
-  ///    The label of the desired variable. This value must be smaller or equals to `bdd::max_label`.
+  ///    The label of the desired variable. This value must be smaller or equals to
+  ///    `bdd::max_label`.
   ///
   /// \returns \f$ x_{var} \f$
   ///
@@ -853,8 +854,8 @@ namespace adiar
   ///     BDD to be quantified.
   ///
   /// \param vars
-  ///     Generator function, that produces variables to be quantified in \em descending order. These
-  ///     values have to be smaller than or equals to `bdd::max_label`.
+  ///     Generator function, that produces variables to be quantified in \em descending order.
+  ///     These values have to be smaller than or equals to `bdd::max_label`.
   ///
   /// \returns   \f$ \exists x_i \in \texttt{gen()} : f \f$
   //////////////////////////////////////////////////////////////////////////////////////////////////
