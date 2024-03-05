@@ -2,32 +2,61 @@
 
 go_bandit([]() {
   describe("adiar/zdd/binop.cpp", []() {
-    // Setup shared zdd's
     shared_levelized_file<zdd::node_type> zdd_F;
-    shared_levelized_file<zdd::node_type> zdd_T;
-
+    /*
+    //          F
+    */
     { // Garbage collect writers to free write-lock
-      node_writer nw_F(zdd_F);
-      nw_F << node(false);
-
-      node_writer nw_T(zdd_T);
-      nw_T << node(true);
+      node_writer nw(zdd_F);
+      nw << node(false);
     }
 
-    ptr_uint64 terminal_T = ptr_uint64(true);
-    ptr_uint64 terminal_F = ptr_uint64(false);
+    shared_levelized_file<zdd::node_type> zdd_T;
+    /*
+    //          T
+    */
+    { // Garbage collect writers to free write-lock
+      node_writer nw(zdd_T);
+      nw << node(true);
+    }
+
+    const zdd::pointer_type terminal_F(false);
+    const zdd::pointer_type terminal_T(true);
 
     shared_levelized_file<zdd::node_type> zdd_x0;
-    shared_levelized_file<zdd::node_type> zdd_x1;
-
+    /*
+    //            1          ---- x0
+    //           / \
+    //           F T
+    */
     { // Garbage collect writers early
-      node_writer nw_x0(zdd_x0);
-      nw_x0 << node(0, node::max_id, terminal_F, terminal_T);
-
-      node_writer nw_x1(zdd_x1);
-      nw_x1 << node(1, node::max_id, terminal_F, terminal_T);
+      node_writer nw(zdd_x0);
+      nw << node(0, node::max_id, terminal_F, terminal_T);
     }
 
+    shared_levelized_file<zdd::node_type> zdd_x1;
+    /*
+    //            1          ---- x1
+    //           / \
+    //           F T
+    */
+    { // Garbage collect writers early
+      node_writer nw(zdd_x1);
+      nw << node(1, node::max_id, terminal_F, terminal_T);
+    }
+
+    shared_levelized_file<zdd::node_type> zdd_x1_T;
+    /*
+    //            1          ---- x1
+    //           / \
+    //           T T
+    */
+    { // Garbage collect writers early
+      node_writer nw(zdd_x1_T);
+      nw << node(1, node::max_id, terminal_T, terminal_T);
+    }
+
+    shared_levelized_file<zdd::node_type> zdd_x0x1_x1;
     /*
     //            1          ---- x0
     //           / \
@@ -36,13 +65,27 @@ go_bandit([]() {
     //           / \
     //           F T
     */
-    shared_levelized_file<zdd::node_type> zdd_x0x1_x1;
-
     { // Garbage collect writers early
       const node n2(1, node::max_id, terminal_F, terminal_T);
       const node n1(0, node::max_id, n2.uid(), n2.uid());
 
       node_writer nw(zdd_x0x1_x1);
+      nw << n2 << n1;
+    }
+
+    shared_levelized_file<zdd::node_type> zdd_x0_x1;
+    /*
+    //            1          ---- x0
+    //           / \
+    //           2 T        ---- x1
+    //          / \
+    //          F T
+    */
+    { // Garbage collect writers early
+      const node n2(1, node::max_id, terminal_F, terminal_T);
+      const node n1(0, node::max_id, n2.uid(), terminal_T);
+
+      node_writer nw(zdd_x0_x1);
       nw << n2 << n1;
     }
 
@@ -278,7 +321,7 @@ go_bandit([]() {
       });
 
       describe("zdd_diff", [&]() {
-        it("should shortcut to Ø on same file for { {x0} }", [&]() {
+        it("should shortcut to Ø on same file for { {0} }", [&]() {
           __zdd out = zdd_diff(zdd_x0, zdd_x0);
 
           node_test_stream out_nodes(out);
@@ -307,7 +350,7 @@ go_bandit([]() {
                      Is().EqualTo(0u));
         });
 
-        it("should shortcut to Ø on same file for { {x1} }", [&]() {
+        it("should shortcut to Ø on same file for { {1} }", [&]() {
           __zdd out = zdd_diff(zdd_x1, zdd_x1);
 
           node_test_stream out_nodes(out);
@@ -394,12 +437,12 @@ go_bandit([]() {
                      Is().EqualTo(0u));
         });
 
-        it("should shortcut on irrelevance on { {x0} } \\ Ø", [&]() {
+        it("should shortcut on irrelevance on { {0} } \\ Ø", [&]() {
           __zdd out_1 = zdd_diff(zdd_x0, zdd_F);
           AssertThat(out_1.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(zdd_x0));
         });
 
-        it("should shortcut on irrelevance on { {x1} } \\ Ø", [&]() {
+        it("should shortcut on irrelevance on { {1} } \\ Ø", [&]() {
           __zdd out_2 = zdd_diff(zdd_x1, zdd_F);
           AssertThat(out_2.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(zdd_x1));
         });
@@ -1693,31 +1736,94 @@ go_bandit([]() {
                      Is().EqualTo(1u));
         });
 
+        it("computes (and skip) { {0}, {1} } \\ { {1} }", [&]() {
+          /*
+          //            1                       (1,1)       ---- x0
+          //           / \                      /   \
+          //           2 T      1     ==>       F   T       ---- x1
+          //          / \      / \
+          //          F T      F T
+          */
+          __zdd out = zdd_diff(ep, zdd_x0_x1, zdd_x1);
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                     Is().GreaterThanOrEqualTo(0u));
+
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(1u));
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(1u));
+        });
+
+        it("computes (and skip) { {1} } \\ { {0}, {1} }", [&]() {
+          /*
+          //                  1                        ---- x0
+          //                 / \
+          //         1       2 T     ==>       F       ---- x1
+          //        / \     / \
+          //        F T     F T
+          */
+          __zdd out = zdd_diff(ep, zdd_x1, zdd_x0_x1);
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->levels(), Is().EqualTo(0u));
+
+          AssertThat(
+            out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal],
+            Is().EqualTo(0u));
+          AssertThat(
+            out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal_False],
+            Is().EqualTo(1u));
+          AssertThat(
+            out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal_True],
+            Is().EqualTo(0u));
+          AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::All],
+                     Is().EqualTo(1u));
+
+          AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[false],
+                     Is().EqualTo(1u));
+          AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[true],
+                     Is().EqualTo(0u));
+        });
+
         it("computes (and skip) { {0,1}, {1} } \\ { {1}, Ø }", [&]() {
           /*
           //             1                      (1,1)       ---- x0
           //             ||                     /   \
           //             2      1     ==>    (2,1)  F       ---- x1
           //            / \    / \            / \
-          //            F T    T T            F F
+          //            F T    T T            F T
           */
-          shared_levelized_file<zdd::node_type> zdd_a;
-          shared_levelized_file<zdd::node_type> zdd_b;
-
-          { // Garbage collect writers early
-            const node n2(1, node::max_id, terminal_F, terminal_T);
-            const node n1(0, node::max_id, n2.uid(), n2.uid());
-
-            node_writer nw(zdd_a);
-            nw << n2 << n1;
-          }
-
-          { // Garbage collect writers early
-            node_writer nw_b(zdd_b);
-            nw_b << node(1, node::max_id, terminal_T, terminal_T);
-          }
-
-          __zdd out = zdd_diff(ep, zdd_a, zdd_b);
+          __zdd out = zdd_diff(ep, zdd_x0x1_x1, zdd_x1_T);
 
           arc_test_stream arcs(out);
 
@@ -3411,6 +3517,136 @@ go_bandit([]() {
       });
 
       describe("zdd_diff", [&]() {
+        it("computes (and skip) { {0}, {1} } \\ { {1} }", [&]() {
+          /*
+          //            1                       (1,1)       ---- x0
+          //           / \                      /   \
+          //           2 T      1     ==>       F   T       ---- x1
+          //          / \      / \
+          //          F T      F T
+          */
+          __zdd out = zdd_diff(ep, zdd_x0_x1, zdd_x1);
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                     Is().GreaterThanOrEqualTo(0u));
+
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(1u));
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(1u));
+        });
+
+        it("computes (and skip) { {1} } \\ { {0}, {1} }", [&]() {
+          /*
+          //                  1                        ---- x0
+          //                 / \
+          //         1       2 T     ==>       F       ---- x1
+          //        / \     / \
+          //        F T     F T
+          */
+          __zdd out = zdd_diff(ep, zdd_x1, zdd_x0_x1);
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->levels(), Is().EqualTo(0u));
+
+          AssertThat(
+            out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal],
+            Is().EqualTo(0u));
+          AssertThat(
+            out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal_False],
+            Is().EqualTo(1u));
+          AssertThat(
+            out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::Internal_True],
+            Is().EqualTo(0u));
+          AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->max_1level_cut[cut::All],
+                     Is().EqualTo(1u));
+
+          AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[false],
+                     Is().EqualTo(1u));
+          AssertThat(out.get<shared_levelized_file<zdd::node_type>>()->number_of_terminals[true],
+                     Is().EqualTo(0u));
+        });
+
+        it("computes (and skip) { {0,1}, {1} } \\ { {1}, Ø }", [&]() {
+          /*
+          //             1                      (1,1)       ---- x0
+          //             ||                     /   \
+          //             2      1     ==>    (2,1)  F       ---- x1
+          //            / \    / \            / \
+          //            F T    T T            F T
+          */
+          __zdd out = zdd_diff(ep, zdd_x0x1_x1, zdd_x1_T);
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), false, terminal_F }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                     Is().GreaterThanOrEqualTo(1u));
+
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(2u));
+          AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(1u));
+        });
+
         it("should flip non-commutative operator", [&]() {
           // Note, one of the inputs (`zdd_non_ra`) is not indexable (and hence not canonical).
           // Hence, random access should be done on the other one (`zdd_ra`) by flipping the
