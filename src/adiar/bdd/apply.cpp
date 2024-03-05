@@ -210,7 +210,8 @@ namespace adiar
   __bdd
   bdd_xor(const exec_policy& ep, const bdd& f, const bdd& g)
   {
-    return bdd_apply(ep, f, g, xor_op);
+    apply_prod2_policy<internal::xor_op> policy;
+    return internal::prod2(ep, f, g, policy);
   }
 
   __bdd

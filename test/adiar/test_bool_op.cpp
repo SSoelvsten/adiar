@@ -31,10 +31,10 @@ go_bandit([]() {
     });
 
     it("xor_op", [&]() {
-      AssertThat(xor_op(true, true), Is().EqualTo(false));
-      AssertThat(xor_op(true, false), Is().EqualTo(true));
-      AssertThat(xor_op(false, true), Is().EqualTo(true));
-      AssertThat(xor_op(false, false), Is().EqualTo(false));
+      AssertThat(adiar::xor_op(true, true), Is().EqualTo(false));
+      AssertThat(adiar::xor_op(true, false), Is().EqualTo(true));
+      AssertThat(adiar::xor_op(false, true), Is().EqualTo(true));
+      AssertThat(adiar::xor_op(false, false), Is().EqualTo(false));
     });
 
     it("xnor_op", [&]() {

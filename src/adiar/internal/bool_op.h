@@ -579,6 +579,68 @@ namespace adiar::internal
       return is_negating(p.value());
     }
   };
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief   Alternative for `binary_op` hardcoded for a logical 'xor'.
+  ///
+  /// \details The benefit of this over `binary_op` is to skip pre-computations and to expose
+  ///          optimisations and simplifications to the compiler.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  class xor_op
+    : public commutative_op<xor_op>
+  {
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+  public:
+    bool
+    operator ()(const bool lhs, const bool rhs) const
+    {
+      return lhs ^ rhs;
+    }
+
+    template<typename Pointer>
+    Pointer
+    operator ()(const Pointer& lhs, const Pointer& rhs) const
+    {
+      return lhs ^ rhs;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+  protected:
+    friend commutative_op<xor_op>;
+
+    template<typename T>
+    static constexpr bool
+    can_shortcut(const T&/*t*/)
+    {
+      return false;
+    }
+
+    static constexpr bool
+    is_idempotent(const bool p)
+    {
+      return !p;
+    }
+
+    template<typename Pointer>
+    static bool
+    is_idempotent(const Pointer& p)
+    {
+      return is_idempotent(p.value());
+    }
+
+    static constexpr bool
+    is_negating(const bool p)
+    {
+      return p;
+    }
+
+    template<typename Pointer>
+    static constexpr bool
+    is_negating(const Pointer& p)
+    {
+      return is_negating(p.value());
+    }
+  };
 }
 
 #endif // ADIAR_INTERNAL_BOOL_OP_H
