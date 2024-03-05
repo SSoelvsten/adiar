@@ -45,17 +45,17 @@ go_bandit([]() {
     });
 
     it("imp_op", [&]() {
-      AssertThat(imp_op(true, true), Is().EqualTo(true));
-      AssertThat(imp_op(true, false), Is().EqualTo(false));
-      AssertThat(imp_op(false, true), Is().EqualTo(true));
-      AssertThat(imp_op(false, false), Is().EqualTo(true));
+      AssertThat(adiar::imp_op(true, true), Is().EqualTo(true));
+      AssertThat(adiar::imp_op(true, false), Is().EqualTo(false));
+      AssertThat(adiar::imp_op(false, true), Is().EqualTo(true));
+      AssertThat(adiar::imp_op(false, false), Is().EqualTo(true));
     });
 
     it("invimp_op", [&]() {
-      AssertThat(invimp_op(true, true), Is().EqualTo(true));
-      AssertThat(invimp_op(true, false), Is().EqualTo(true));
-      AssertThat(invimp_op(false, true), Is().EqualTo(false));
-      AssertThat(invimp_op(false, false), Is().EqualTo(true));
+      AssertThat(adiar::invimp_op(true, true), Is().EqualTo(true));
+      AssertThat(adiar::invimp_op(true, false), Is().EqualTo(true));
+      AssertThat(adiar::invimp_op(false, true), Is().EqualTo(false));
+      AssertThat(adiar::invimp_op(false, false), Is().EqualTo(true));
     });
 
     it("equiv_op", [&]() {
@@ -66,17 +66,17 @@ go_bandit([]() {
     });
 
     it("diff_op", [&]() {
-      AssertThat(diff_op(true, true), Is().EqualTo(false));
-      AssertThat(diff_op(true, false), Is().EqualTo(true));
-      AssertThat(diff_op(false, true), Is().EqualTo(false));
-      AssertThat(diff_op(false, false), Is().EqualTo(false));
+      AssertThat(adiar::diff_op(true, true), Is().EqualTo(false));
+      AssertThat(adiar::diff_op(true, false), Is().EqualTo(true));
+      AssertThat(adiar::diff_op(false, true), Is().EqualTo(false));
+      AssertThat(adiar::diff_op(false, false), Is().EqualTo(false));
     });
 
     it("less_op", [&]() {
-      AssertThat(less_op(true, true), Is().EqualTo(false));
-      AssertThat(less_op(true, false), Is().EqualTo(false));
-      AssertThat(less_op(false, true), Is().EqualTo(true));
-      AssertThat(less_op(false, false), Is().EqualTo(false));
+      AssertThat(adiar::less_op(true, true), Is().EqualTo(false));
+      AssertThat(adiar::less_op(true, false), Is().EqualTo(false));
+      AssertThat(adiar::less_op(false, true), Is().EqualTo(true));
+      AssertThat(adiar::less_op(false, false), Is().EqualTo(false));
     });
   });
 });
