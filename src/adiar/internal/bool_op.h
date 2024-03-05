@@ -1,6 +1,7 @@
 #ifndef ADIAR_INTERNAL_BOOL_OP_H
 #define ADIAR_INTERNAL_BOOL_OP_H
 
+#include <array>
 #include <type_traits>
 
 #include <adiar/bool_op.h>
@@ -110,52 +111,36 @@ namespace adiar::internal
   private:
     /// \brief Evaluations of predicate
     ///
-    /// TODO: Replace with Pointer Type
-    const bool _op[2][2];
+    /// TODO: Replace with Pointer Type?
+    std::array<std::array<bool, 2>, 2> _op;
 
     /// \brief Pre-computed 'left shortcutting' predicate.
-    const bool _left_shortcutting[2];
+    std::array<bool, 2> _left_shortcutting;
 
     /// \brief Pre-computed 'right shortcutting' predicate.
-    const bool _right_shortcutting[2];
+    std::array<bool, 2> _right_shortcutting;
 
     /// \brief Pre-computed 'left idempotent' predicate.
-    const bool _left_idempotent[2];
+    std::array<bool, 2> _left_idempotent;
 
     /// \brief Pre-computed 'right idempotent' predicate.
-    const bool _right_idempotent[2];
+    std::array<bool, 2> _right_idempotent;
 
     /// \brief Pre-computed 'left negating' predicate.
-    const bool _left_negating[2];
+    std::array<bool, 2> _left_negating;
 
     /// \brief Pre-computed 'right negating' predicate.
-    const bool _right_negating[2];
+    std::array<bool, 2> _right_negating;
 
     /// \brief Pre-computed 'commutative' predicate.
-    const bool _commutative;
-
-  private:
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Default constructor only available for internal usage in `::flip()`.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    binary_op() = default;
+    bool _commutative;
 
   public:
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Copy constructor
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    binary_op(const binary_op&) = default;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Move constructor
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    binary_op(binary_op&&) = default;
-
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construction from `predicate<bool, bool>`
     ////////////////////////////////////////////////////////////////////////////////////////////////
     binary_op(const predicate<bool, bool>& op)
-      : _op{{op(false,false), op(false, true)}, {op(true,false), op(true,true)}}
+      : _op{{ {{op(false,false), op(false, true)}}, {{op(true,false), op(true,true)}} }}
       , _left_shortcutting{ adiar::internal::can_left_shortcut(op, false), adiar::internal::can_left_shortcut(op, true) }
       , _right_shortcutting{ adiar::internal::can_right_shortcut(op, false), adiar::internal::can_right_shortcut(op, true) }
       , _left_idempotent{ adiar::internal::is_left_idempotent(op, false), adiar::internal::is_left_idempotent(op, true) }
