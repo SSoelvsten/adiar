@@ -3,6 +3,7 @@
 
 #include <adiar/internal/algorithms/prod2.h>
 #include <adiar/internal/assert.h>
+#include <adiar/internal/bool_op.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/data_types/tuple.h>
 #include <adiar/internal/dd_func.h>
@@ -12,17 +13,40 @@ namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // BDD product construction policy
+  template<typename BinaryOp = internal::binary_op<predicate<bool, bool>>>
   class apply_prod2_policy
     : public bdd_policy
     , public internal::prod2_mixed_level_merger<bdd_policy>
   {
+  private:
+    /// \brief Operator
+    BinaryOp _op;
+
   public:
-    static __bdd
-    resolve_same_file(const bdd& bdd_1, const bdd& bdd_2, const predicate<bool, bool>& op)
+    /// \brief Constructor for binary operators known at compile-time.
+    apply_prod2_policy() = default;
+
+    /// \brief Constructor for wrapping an unknown binary operator.
+    apply_prod2_policy(const predicate<bool, bool>& op)
+      : _op(op)
+    {}
+
+  public:
+    /// \brief Flip internal copy of operator
+    void
+    flip()
+    {
+      this->_op = this->_op.flip();
+    }
+
+  public:
+    /// \brief Hook for case of two BDDs with the same node file.
+    __bdd
+    resolve_same_file(const bdd& bdd_1, const bdd& bdd_2) const
     {
       // Compute the results on all children.
-      const bool op_F = op(bdd_1.negate, bdd_2.negate);
-      const bool op_T = op(!bdd_1.negate, !bdd_2.negate);
+      const bool op_F = this->_op(bdd_1.negate, bdd_2.negate);
+      const bool op_T = this->_op(!bdd_1.negate, !bdd_2.negate);
 
       // Does it collapse to a terminal?
       if (op_F == op_T) { return bdd_terminal(op_F); }
@@ -30,9 +54,9 @@ namespace adiar
       return op_F == bdd_1.negate ? bdd_1 : ~bdd_1;
     }
 
-  public:
-    static __bdd
-    resolve_terminal_root(const bdd& bdd_1, const bdd& bdd_2, const predicate<bool, bool>& op)
+    /// \brief Hook for either of the two BDDs being a terminal.
+    __bdd
+    resolve_terminal_root(const bdd& bdd_1, const bdd& bdd_2) const
     {
       adiar_assert(bdd_isterminal(bdd_1) || bdd_isterminal(bdd_2));
 
@@ -40,67 +64,79 @@ namespace adiar
         const bool p1 = dd_valueof(bdd_1);
         const bool p2 = dd_valueof(bdd_2);
 
-        return bdd_terminal(op(p1, p2));
+        return bdd_terminal(this->_op(p1, p2));
       } else if (bdd_isterminal(bdd_1)) {
         const bool p1 = dd_valueof(bdd_1);
 
-        if (internal::can_left_shortcut(op, p1)) { return bdd_terminal(op(p1, false)); }
-        if (internal::is_left_idempotent(op, p1)) { return bdd_2; }
+        if (this->_op.can_left_shortcut(p1)) { return bdd_terminal(this->_op(p1, false)); }
+        if (this->_op.is_left_idempotent(p1)) { return bdd_2; }
         // if (is_left_negating(op, p1))
         return bdd_not(bdd_2);
       } else { // if (bdd_isterminal(bdd_2)) {
         const bool p2 = dd_valueof(bdd_2);
 
-        if (internal::can_right_shortcut(op, p2)) { return bdd_terminal(op(false, p2)); }
-        if (internal::is_right_idempotent(op, p2)) { return bdd_1; }
+        if (this->_op.can_right_shortcut(p2)) { return bdd_terminal(this->_op(false, p2)); }
+        if (this->_op.is_right_idempotent(p2)) { return bdd_1; }
         // if (is_right_negating(op, p2))
         return bdd_not(bdd_1);
       }
       adiar_unreachable(); // LCOV_EXCL_LINE
     }
 
-  public:
-    static internal::cut
-    left_cut(const predicate<bool, bool>& op)
-    {
-      const bool incl_false = !internal::can_left_shortcut(op, false);
-      const bool incl_true  = !internal::can_left_shortcut(op, true);
-
-      return internal::cut(incl_false, incl_true);
-    }
-
-    static internal::cut
-    right_cut(const predicate<bool, bool>& op)
-    {
-      const bool incl_false = !internal::can_right_shortcut(op, false);
-      const bool incl_true  = !internal::can_right_shortcut(op, true);
-
-      return internal::cut(incl_false, incl_true);
-    }
-
   private:
-    static internal::tuple<bdd::pointer_type>
-    __resolve_request(const predicate<bool, bool>& op, const internal::tuple<bdd::pointer_type>& r)
+    /// \brief Applies shortcutting on a recursion target, if possible.
+    internal::tuple<bdd::pointer_type>
+    __resolve_request(const internal::tuple<bdd::pointer_type>& r) const
     {
-      if (r[0].is_terminal() && internal::can_left_shortcut(op, r[0].value())) {
+      if (r[0].is_terminal() && this->_op.can_left_shortcut(r[0])) {
         return { r[0], bdd::pointer_type(true) };
       }
-      if (r[1].is_terminal() && internal::can_right_shortcut(op, r[1].value())) {
+      if (r[1].is_terminal() && this->_op.can_right_shortcut(r[1])) {
         return { bdd::pointer_type(true), r[1] };
       }
       return r;
     }
 
   public:
-    static internal::prod2_rec
-    resolve_request(const predicate<bool, bool>& op,
-                    const internal::tuple<bdd::pointer_type>& r_low,
-                    const internal::tuple<bdd::pointer_type>& r_high)
+    /// \brief Hook for changing the targets of a new node's children.
+    internal::prod2_rec
+    resolve_request(const internal::tuple<bdd::pointer_type>& r_low,
+                    const internal::tuple<bdd::pointer_type>& r_high) const
     {
-      return internal::prod2_rec_output{ __resolve_request(op, r_low),
-                                         __resolve_request(op, r_high) };
+      return internal::prod2_rec_output{ __resolve_request(r_low), __resolve_request(r_high) };
     }
 
+    /// \brief Hook for applying an operator to a pair of terminals.
+    bdd::pointer_type
+    operator() (const bdd::pointer_type& a, const bdd::pointer_type& b) const
+    {
+      return this->_op(a,b);
+    }
+
+  public:
+    /// \brief Hook for deriving the cut type of the left-hand-side.
+    internal::cut
+    left_cut() const
+    {
+      const bool incl_false = !this->_op.can_left_shortcut(false);
+      const bool incl_true  = !this->_op.can_left_shortcut(true);
+
+      return internal::cut(incl_false, incl_true);
+    }
+
+    /// \brief Hook for deriving the cut type of the right-hand-side.
+    internal::cut
+    right_cut() const
+    {
+      const bool incl_false = !this->_op.can_right_shortcut(false);
+      const bool incl_true  = !this->_op.can_right_shortcut(true);
+
+      return internal::cut(incl_false, incl_true);
+    }
+
+    /// \brief Whether this policy may introduce skipping of nodes.
+    ///
+    /// \detail This variable can be used at compile-time to prune conditional statements.
     static constexpr bool no_skip = false;
   };
 
@@ -108,7 +144,8 @@ namespace adiar
   __bdd
   bdd_apply(const exec_policy& ep, const bdd& f, const bdd& g, const predicate<bool, bool>& op)
   {
-    return internal::prod2<apply_prod2_policy>(ep, f, g, op);
+    apply_prod2_policy<internal::binary_op<predicate<bool, bool>>> policy(op);
+    return internal::prod2(ep, f, g, policy);
   }
 
   __bdd
