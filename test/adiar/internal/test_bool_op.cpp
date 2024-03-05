@@ -6,126 +6,182 @@ go_bandit([]() {
   describe("adiar/internal/bool_op.h", []() {
     describe("predicate<bool, bool> predicates", []() {
       describe("can_shortcut", []() {
-        it("can check on 'false' on the left", []() {
+        it("is correct for 'adiar::and_op'", []() {
           AssertThat(can_left_shortcut(adiar::and_op, false), Is().True());
-          AssertThat(can_left_shortcut(adiar::or_op, false), Is().False());
-          AssertThat(can_left_shortcut(adiar::xor_op, false), Is().False());
-          AssertThat(can_left_shortcut(adiar::imp_op, false), Is().True());
-          AssertThat(can_left_shortcut(adiar::diff_op, false), Is().True());
-        });
-
-        it("can check on 'true' on the left", []() {
           AssertThat(can_left_shortcut(adiar::and_op, true), Is().False());
-          AssertThat(can_left_shortcut(adiar::or_op, true), Is().True());
-          AssertThat(can_left_shortcut(adiar::xor_op, true), Is().False());
-          AssertThat(can_left_shortcut(adiar::imp_op, true), Is().False());
-          AssertThat(can_left_shortcut(adiar::diff_op, true), Is().False());
-        });
 
-        it("can check on 'false' on the right", []() {
           AssertThat(can_right_shortcut(adiar::and_op, false), Is().True());
-          AssertThat(can_right_shortcut(adiar::or_op, false), Is().False());
-          AssertThat(can_right_shortcut(adiar::xor_op, false), Is().False());
-          AssertThat(can_right_shortcut(adiar::imp_op, false), Is().False());
-          AssertThat(can_right_shortcut(adiar::diff_op, false), Is().False());
+          AssertThat(can_right_shortcut(adiar::and_op, true), Is().False());
         });
 
-        it("can check on 'true' on the right", []() {
-          AssertThat(can_right_shortcut(adiar::and_op, true), Is().False());
+        it("is correct for 'adiar::or_op'", []() {
+          AssertThat(can_left_shortcut(adiar::or_op, false), Is().False());
+          AssertThat(can_left_shortcut(adiar::or_op, true), Is().True());
+
+          AssertThat(can_right_shortcut(adiar::or_op, false), Is().False());
           AssertThat(can_right_shortcut(adiar::or_op, true), Is().True());
+        });
+
+        it("is correct for 'adiar::xor_op'", []() {
+          AssertThat(can_left_shortcut(adiar::xor_op, false), Is().False());
+          AssertThat(can_left_shortcut(adiar::xor_op, true), Is().False());
+
+          AssertThat(can_right_shortcut(adiar::xor_op, false), Is().False());
           AssertThat(can_right_shortcut(adiar::xor_op, true), Is().False());
+        });
+
+        it("is correct for 'adiar::imp_op'", []() {
+          AssertThat(can_left_shortcut(adiar::imp_op, false), Is().True());
+          AssertThat(can_left_shortcut(adiar::imp_op, true), Is().False());
+
+          AssertThat(can_right_shortcut(adiar::imp_op, false), Is().False());
           AssertThat(can_right_shortcut(adiar::imp_op, true), Is().True());
+        });
+
+        it("is correct for 'adiar::diff_op'", []() {
+          AssertThat(can_left_shortcut(adiar::diff_op, false), Is().True());
+          AssertThat(can_left_shortcut(adiar::diff_op, true), Is().False());
+
+          AssertThat(can_right_shortcut(adiar::diff_op, false), Is().False());
           AssertThat(can_right_shortcut(adiar::diff_op, true), Is().True());
         });
       });
 
       describe("is_idempotent", []() {
-        it("can check on 'false' on the left", []() {
+        it("is correct for 'adiar::and_op'", []() {
           AssertThat(is_left_idempotent(adiar::and_op, false), Is().False());
-          AssertThat(is_left_idempotent(adiar::or_op, false), Is().True());
-          AssertThat(is_left_idempotent(adiar::xor_op, false), Is().True());
-          AssertThat(is_left_idempotent(adiar::imp_op, false), Is().False());
-          AssertThat(is_left_idempotent(adiar::diff_op, false), Is().False());
-        });
-
-        it("can check on 'true' on the left", []() {
           AssertThat(is_left_idempotent(adiar::and_op, true), Is().True());
-          AssertThat(is_left_idempotent(adiar::or_op, true), Is().False());
-          AssertThat(is_left_idempotent(adiar::xor_op, true), Is().False());
-          AssertThat(is_left_idempotent(adiar::imp_op, true), Is().True());
-          AssertThat(is_left_idempotent(adiar::diff_op, true), Is().False());
-        });
 
-        it("can check on 'false' on the right", []() {
           AssertThat(is_right_idempotent(adiar::and_op, false), Is().False());
-          AssertThat(is_right_idempotent(adiar::or_op, false), Is().True());
-          AssertThat(is_right_idempotent(adiar::xor_op, false), Is().True());
-          AssertThat(is_right_idempotent(adiar::imp_op, false), Is().False());
-          AssertThat(is_right_idempotent(adiar::diff_op, false), Is().True());
+          AssertThat(is_right_idempotent(adiar::and_op, true), Is().True());
         });
 
-        it("can check on 'true' on the right", []() {
-          AssertThat(is_right_idempotent(adiar::and_op, true), Is().True());
+        it("is correct for 'adiar::or_op'", []() {
+          AssertThat(is_left_idempotent(adiar::or_op, false), Is().True());
+          AssertThat(is_left_idempotent(adiar::or_op, true), Is().False());
+
+          AssertThat(is_right_idempotent(adiar::or_op, false), Is().True());
           AssertThat(is_right_idempotent(adiar::or_op, true), Is().False());
+        });
+
+        it("is correct for 'adiar::xor_op'", []() {
+          AssertThat(is_left_idempotent(adiar::xor_op, false), Is().True());
+          AssertThat(is_left_idempotent(adiar::xor_op, true), Is().False());
+
+          AssertThat(is_right_idempotent(adiar::xor_op, false), Is().True());
           AssertThat(is_right_idempotent(adiar::xor_op, true), Is().False());
+        });
+
+        it("is correct for 'adiar::imp_op'", []() {
+          AssertThat(is_left_idempotent(adiar::imp_op, false), Is().False());
+          AssertThat(is_left_idempotent(adiar::imp_op, true), Is().True());
+
+          AssertThat(is_right_idempotent(adiar::imp_op, false), Is().False());
           AssertThat(is_right_idempotent(adiar::imp_op, true), Is().False());
+        });
+
+        it("is correct for 'adiar::diff_op'", []() {
+          AssertThat(is_left_idempotent(adiar::diff_op, false), Is().False());
+          AssertThat(is_left_idempotent(adiar::diff_op, true), Is().False());
+
+          AssertThat(is_right_idempotent(adiar::diff_op, false), Is().True());
           AssertThat(is_right_idempotent(adiar::diff_op, true), Is().False());
         });
       });
 
       describe("is_negating", []() {
-        it("can check on 'false' on the left", []() {
+        it("is correct for 'adiar::and_op'", []() {
           AssertThat(is_left_negating(adiar::and_op, false), Is().False());
-          AssertThat(is_left_negating(adiar::or_op, false), Is().False());
-          AssertThat(is_left_negating(adiar::xor_op, false), Is().False());
-          AssertThat(is_left_negating(adiar::imp_op, false), Is().False());
-          AssertThat(is_left_negating(adiar::invimp_op, false), Is().True());
-          AssertThat(is_left_negating(adiar::diff_op, false), Is().False());
-        });
-
-        it("can check on 'true' on the left", []() {
           AssertThat(is_left_negating(adiar::and_op, true), Is().False());
-          AssertThat(is_left_negating(adiar::or_op, true), Is().False());
-          AssertThat(is_left_negating(adiar::xor_op, true), Is().True());
-          AssertThat(is_left_negating(adiar::imp_op, true), Is().False());
-          AssertThat(is_left_negating(adiar::invimp_op, true), Is().False());
-          AssertThat(is_left_negating(adiar::diff_op, true), Is().True());
-        });
 
-        it("can check on 'false' on the right", []() {
           AssertThat(is_right_negating(adiar::and_op, false), Is().False());
-          AssertThat(is_right_negating(adiar::or_op, false), Is().False());
-          AssertThat(is_right_negating(adiar::xor_op, false), Is().False());
-          AssertThat(is_right_negating(adiar::imp_op, false), Is().True());
-          AssertThat(is_right_negating(adiar::invimp_op, false), Is().False());
-          AssertThat(is_right_negating(adiar::diff_op, false), Is().False());
+          AssertThat(is_right_negating(adiar::and_op, true), Is().False());
         });
 
-        it("can check on 'true' on the right", []() {
-          AssertThat(is_right_negating(adiar::and_op, true), Is().False());
+        it("is correct for 'adiar::or_op'", []() {
+          AssertThat(is_left_negating(adiar::or_op, false), Is().False());
+          AssertThat(is_left_negating(adiar::or_op, true), Is().False());
+
+          AssertThat(is_right_negating(adiar::or_op, false), Is().False());
           AssertThat(is_right_negating(adiar::or_op, true), Is().False());
+        });
+
+        it("is correct for 'adiar::xor_op'", []() {
+          AssertThat(is_left_negating(adiar::xor_op, false), Is().False());
+          AssertThat(is_left_negating(adiar::xor_op, true), Is().True());
+
+          AssertThat(is_right_negating(adiar::xor_op, false), Is().False());
           AssertThat(is_right_negating(adiar::xor_op, true), Is().True());
+        });
+
+        it("is correct for 'adiar::imp_op'", []() {
+          AssertThat(is_left_negating(adiar::imp_op, false), Is().False());
+          AssertThat(is_left_negating(adiar::imp_op, true), Is().False());
+
+          AssertThat(is_right_negating(adiar::imp_op, false), Is().True());
           AssertThat(is_right_negating(adiar::imp_op, true), Is().False());
+        });
+
+        it("is correct for 'adiar::invimp_op'", []() {
+          AssertThat(is_left_negating(adiar::invimp_op, false), Is().True());
+          AssertThat(is_left_negating(adiar::invimp_op, true), Is().False());
+
+          AssertThat(is_right_negating(adiar::invimp_op, false), Is().False());
           AssertThat(is_right_negating(adiar::invimp_op, true), Is().False());
+        });
+
+        it("is correct for 'adiar::diff_op'", []() {
+          AssertThat(is_left_negating(adiar::diff_op, false), Is().False());
+          AssertThat(is_left_negating(adiar::diff_op, true), Is().True());
+
+          AssertThat(is_right_negating(adiar::diff_op, false), Is().False());
           AssertThat(is_right_negating(adiar::diff_op, true), Is().False());
         });
       });
 
       describe("is_commutative(...)", []() {
-        it("identifies commutative operators", []() {
+        it("is true for 'adiar::and_op'", []() {
           AssertThat(is_commutative(adiar::and_op), Is().True());
+        });
+
+        it("is true for 'adiar::nand_op'", []() {
           AssertThat(is_commutative(adiar::nand_op), Is().True());
+        });
+
+        it("is true for 'adiar::or_op'", []() {
           AssertThat(is_commutative(adiar::or_op), Is().True());
+        });
+
+        it("is true for 'adiar::nor_op'", []() {
           AssertThat(is_commutative(adiar::nor_op), Is().True());
+        });
+
+        it("is true for 'adiar::xor_op'", []() {
           AssertThat(is_commutative(adiar::xor_op), Is().True());
+        });
+
+        it("is true for 'adiar::xnor_op'", []() {
+          AssertThat(is_commutative(adiar::xnor_op), Is().True());
+        });
+
+        it("is true for 'adiar::equiv_op'", []() {
           AssertThat(is_commutative(adiar::equiv_op), Is().True());
         });
 
-        it("identifies non-commutative operators", []() {
+        it("is false for 'adiar::imp_op'", []() {
           AssertThat(is_commutative(adiar::imp_op), Is().False());
+        });
+
+        it("is false for 'adiar::invimp_op'", []() {
           AssertThat(is_commutative(adiar::invimp_op), Is().False());
+        });
+
+        it("is false for 'adiar::diff_op'", []() {
           AssertThat(is_commutative(adiar::diff_op), Is().False());
-          AssertThat(is_commutative(adiar::diff_op), Is().False());
+        });
+
+        it("is false for 'adiar::less_op'", []() {
+          AssertThat(is_commutative(adiar::less_op), Is().False());
         });
       });
 
