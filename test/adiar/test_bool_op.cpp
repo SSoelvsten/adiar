@@ -10,10 +10,10 @@ go_bandit([]() {
     });
 
     it("nand_op", [&]() {
-      AssertThat(nand_op(true, true), Is().EqualTo(false));
-      AssertThat(nand_op(true, false), Is().EqualTo(true));
-      AssertThat(nand_op(false, true), Is().EqualTo(true));
-      AssertThat(nand_op(false, false), Is().EqualTo(true));
+      AssertThat(adiar::nand_op(true, true), Is().EqualTo(false));
+      AssertThat(adiar::nand_op(true, false), Is().EqualTo(true));
+      AssertThat(adiar::nand_op(false, true), Is().EqualTo(true));
+      AssertThat(adiar::nand_op(false, false), Is().EqualTo(true));
     });
 
     it("or_op", [&]() {
@@ -24,10 +24,10 @@ go_bandit([]() {
     });
 
     it("nor_op", [&]() {
-      AssertThat(nor_op(true, true), Is().EqualTo(false));
-      AssertThat(nor_op(true, false), Is().EqualTo(false));
-      AssertThat(nor_op(false, true), Is().EqualTo(false));
-      AssertThat(nor_op(false, false), Is().EqualTo(true));
+      AssertThat(adiar::nor_op(true, true), Is().EqualTo(false));
+      AssertThat(adiar::nor_op(true, false), Is().EqualTo(false));
+      AssertThat(adiar::nor_op(false, true), Is().EqualTo(false));
+      AssertThat(adiar::nor_op(false, false), Is().EqualTo(true));
     });
 
     it("xor_op", [&]() {

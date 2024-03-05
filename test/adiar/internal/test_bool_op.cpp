@@ -14,12 +14,28 @@ go_bandit([]() {
           AssertThat(can_right_shortcut(adiar::and_op, true), Is().False());
         });
 
+        it("is correct for 'adiar::nand_op'", []() {
+          AssertThat(can_left_shortcut(adiar::nand_op, false), Is().True());
+          AssertThat(can_left_shortcut(adiar::nand_op, true), Is().False());
+
+          AssertThat(can_right_shortcut(adiar::nand_op, false), Is().True());
+          AssertThat(can_right_shortcut(adiar::nand_op, true), Is().False());
+        });
+
         it("is correct for 'adiar::or_op'", []() {
           AssertThat(can_left_shortcut(adiar::or_op, false), Is().False());
           AssertThat(can_left_shortcut(adiar::or_op, true), Is().True());
 
           AssertThat(can_right_shortcut(adiar::or_op, false), Is().False());
           AssertThat(can_right_shortcut(adiar::or_op, true), Is().True());
+        });
+
+        it("is correct for 'adiar::nor_op'", []() {
+          AssertThat(can_left_shortcut(adiar::nor_op, false), Is().False());
+          AssertThat(can_left_shortcut(adiar::nor_op, true), Is().True());
+
+          AssertThat(can_right_shortcut(adiar::nor_op, false), Is().False());
+          AssertThat(can_right_shortcut(adiar::nor_op, true), Is().True());
         });
 
         it("is correct for 'adiar::xor_op'", []() {
@@ -56,12 +72,28 @@ go_bandit([]() {
           AssertThat(is_right_idempotent(adiar::and_op, true), Is().True());
         });
 
+        it("is correct for 'adiar::nand_op'", []() {
+          AssertThat(is_left_idempotent(adiar::nand_op, false), Is().False());
+          AssertThat(is_left_idempotent(adiar::nand_op, true), Is().False());
+
+          AssertThat(is_right_idempotent(adiar::nand_op, false), Is().False());
+          AssertThat(is_right_idempotent(adiar::nand_op, true), Is().False());
+        });
+
         it("is correct for 'adiar::or_op'", []() {
           AssertThat(is_left_idempotent(adiar::or_op, false), Is().True());
           AssertThat(is_left_idempotent(adiar::or_op, true), Is().False());
 
           AssertThat(is_right_idempotent(adiar::or_op, false), Is().True());
           AssertThat(is_right_idempotent(adiar::or_op, true), Is().False());
+        });
+
+        it("is correct for 'adiar::nor_op'", []() {
+          AssertThat(is_left_idempotent(adiar::nor_op, false), Is().False());
+          AssertThat(is_left_idempotent(adiar::nor_op, true), Is().False());
+
+          AssertThat(is_right_idempotent(adiar::nor_op, false), Is().False());
+          AssertThat(is_right_idempotent(adiar::nor_op, true), Is().False());
         });
 
         it("is correct for 'adiar::xor_op'", []() {
@@ -98,12 +130,28 @@ go_bandit([]() {
           AssertThat(is_right_negating(adiar::and_op, true), Is().False());
         });
 
+        it("is correct for 'adiar::nand_op'", []() {
+          AssertThat(is_left_negating(adiar::nand_op, false), Is().False());
+          AssertThat(is_left_negating(adiar::nand_op, true), Is().True());
+
+          AssertThat(is_right_negating(adiar::nand_op, false), Is().False());
+          AssertThat(is_right_negating(adiar::nand_op, true), Is().True());
+        });
+
         it("is correct for 'adiar::or_op'", []() {
           AssertThat(is_left_negating(adiar::or_op, false), Is().False());
           AssertThat(is_left_negating(adiar::or_op, true), Is().False());
 
           AssertThat(is_right_negating(adiar::or_op, false), Is().False());
           AssertThat(is_right_negating(adiar::or_op, true), Is().False());
+        });
+
+        it("is correct for 'adiar::nor_op'", []() {
+          AssertThat(is_left_negating(adiar::nor_op, false), Is().True());
+          AssertThat(is_left_negating(adiar::nor_op, true), Is().False());
+
+          AssertThat(is_right_negating(adiar::nor_op, false), Is().True());
+          AssertThat(is_right_negating(adiar::nor_op, true), Is().False());
         });
 
         it("is correct for 'adiar::xor_op'", []() {
@@ -627,6 +675,61 @@ go_bandit([]() {
       });
     });
 
+    describe("nand_op", []() {
+      const adiar::internal::nand_op op;
+
+      constexpr ptr_uint64 ptr_false(false);
+      constexpr ptr_uint64 ptr_true(true);
+
+      it("operator() (const bool, const bool)", [&]() {
+        AssertThat(op(false, false), Is().EqualTo(true));
+        AssertThat(op(false, true), Is().EqualTo(true));
+        AssertThat(op(true, false), Is().EqualTo(true));
+        AssertThat(op(true, true), Is().EqualTo(false));
+      });
+
+      it("operator() (const Pointer&, const Pointer&)", [&]() {
+        AssertThat(op(ptr_false, ptr_false), Is().EqualTo(ptr_true));
+        AssertThat(op(ptr_false, ptr_true), Is().EqualTo(ptr_true));
+        AssertThat(op(ptr_true, ptr_false), Is().EqualTo(ptr_true));
+        AssertThat(op(ptr_true, ptr_true), Is().EqualTo(ptr_false));
+      });
+
+      it(".can_left_shortcut(const Pointer&)", [&]() {
+        AssertThat(op.can_left_shortcut(ptr_false), Is().True());
+        AssertThat(op.can_left_shortcut(ptr_true), Is().False());
+      });
+
+      it(".can_right_shortcut(const Pointer&)", [&]() {
+        AssertThat(op.can_right_shortcut(ptr_false), Is().True());
+        AssertThat(op.can_right_shortcut(ptr_true), Is().False());
+      });
+
+      it(".is_left_idempotent(const Pointer&)", [&]() {
+        AssertThat(op.is_left_idempotent(ptr_false), Is().False());
+        AssertThat(op.is_left_idempotent(ptr_true), Is().False());
+      });
+
+      it(".is_right_idempotent(const Pointer&)", [&]() {
+        AssertThat(op.is_right_idempotent(ptr_false), Is().False());
+        AssertThat(op.is_right_idempotent(ptr_true), Is().False());
+      });
+
+      it(".is_left_negating(const Pointer&)", [&]() {
+        AssertThat(op.is_left_negating(ptr_false), Is().False());
+        AssertThat(op.is_left_negating(ptr_true), Is().True());
+      });
+
+      it(".is_right_negating(const Pointer&)", [&]() {
+        AssertThat(op.is_right_negating(ptr_false), Is().False());
+        AssertThat(op.is_right_negating(ptr_true), Is().True());
+      });
+
+      it(".is_commutative()", [&]() {
+        AssertThat(op.is_commutative(), Is().True());
+      });
+    });
+
     describe("or_op", []() {
       const adiar::internal::or_op op;
 
@@ -674,6 +777,61 @@ go_bandit([]() {
 
       it(".is_right_negating(const Pointer&)", [&]() {
         AssertThat(op.is_right_negating(ptr_false), Is().False());
+        AssertThat(op.is_right_negating(ptr_true), Is().False());
+      });
+
+      it(".is_commutative()", [&]() {
+        AssertThat(op.is_commutative(), Is().True());
+      });
+    });
+
+    describe("nor_op", []() {
+      const adiar::internal::nor_op op;
+
+      constexpr ptr_uint64 ptr_false(false);
+      constexpr ptr_uint64 ptr_true(true);
+
+      it("operator() (const bool, const bool)", [&]() {
+        AssertThat(op(false, false), Is().EqualTo(true));
+        AssertThat(op(false, true), Is().EqualTo(false));
+        AssertThat(op(true, false), Is().EqualTo(false));
+        AssertThat(op(true, true), Is().EqualTo(false));
+      });
+
+      it("operator() (const Pointer&, const Pointer&)", [&]() {
+        AssertThat(op(ptr_false, ptr_false), Is().EqualTo(ptr_true));
+        AssertThat(op(ptr_false, ptr_true), Is().EqualTo(ptr_false));
+        AssertThat(op(ptr_true, ptr_false), Is().EqualTo(ptr_false));
+        AssertThat(op(ptr_true, ptr_true), Is().EqualTo(ptr_false));
+      });
+
+      it(".can_left_shortcut(const Pointer&)", [&]() {
+        AssertThat(op.can_left_shortcut(ptr_false), Is().False());
+        AssertThat(op.can_left_shortcut(ptr_true), Is().True());
+      });
+
+      it(".can_right_shortcut(const Pointer&)", [&]() {
+        AssertThat(op.can_right_shortcut(ptr_false), Is().False());
+        AssertThat(op.can_right_shortcut(ptr_true), Is().True());
+      });
+
+      it(".is_left_idempotent(const Pointer&)", [&]() {
+        AssertThat(op.is_left_idempotent(ptr_false), Is().False());
+        AssertThat(op.is_left_idempotent(ptr_true), Is().False());
+      });
+
+      it(".is_right_idempotent(const Pointer&)", [&]() {
+        AssertThat(op.is_right_idempotent(ptr_false), Is().False());
+        AssertThat(op.is_right_idempotent(ptr_true), Is().False());
+      });
+
+      it(".is_left_negating(const Pointer&)", [&]() {
+        AssertThat(op.is_left_negating(ptr_false), Is().True());
+        AssertThat(op.is_left_negating(ptr_true), Is().False());
+      });
+
+      it(".is_right_negating(const Pointer&)", [&]() {
+        AssertThat(op.is_right_negating(ptr_false), Is().True());
         AssertThat(op.is_right_negating(ptr_true), Is().False());
       });
 

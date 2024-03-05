@@ -171,7 +171,8 @@ namespace adiar
   __bdd
   bdd_nand(const exec_policy& ep, const bdd& f, const bdd& g)
   {
-    return bdd_apply(ep, f, g, nand_op);
+    apply_prod2_policy<internal::nand_op> policy;
+    return internal::prod2(ep, f, g, policy);
   }
 
   __bdd
@@ -196,7 +197,8 @@ namespace adiar
   __bdd
   bdd_nor(const exec_policy& ep, const bdd& f, const bdd& g)
   {
-    return bdd_apply(ep, f, g, nor_op);
+    apply_prod2_policy<internal::nor_op> policy;
+    return internal::prod2(ep, f, g, policy);
   }
 
   __bdd
