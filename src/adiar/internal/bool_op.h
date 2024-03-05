@@ -152,67 +152,110 @@ namespace adiar::internal
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
+    bool
+    operator ()(const bool lhs, const bool rhs) const
+    {
+      return this->_op[lhs][rhs];
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     template<typename Pointer>
     Pointer
     operator ()(const Pointer& lhs, const Pointer& rhs) const
     {
       static_assert(std::is_same<typename Pointer::terminal_type, bool>::value);
-      return _op[lhs.value()][rhs.value()];
+      return (*this)(lhs.value(), rhs.value());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
+    bool
+    can_left_shortcut(const bool p) const
+    {
+      return this->_left_shortcutting[p];
+    }
+
     template<typename Pointer>
     bool
     can_left_shortcut(const Pointer& p) const
     {
-      return _left_shortcutting[p.value()];
+      return this->can_left_shortcut(p.value());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
+    bool
+    can_right_shortcut(const bool p) const
+    {
+      return this->_right_shortcutting[p];
+    }
+
     template<typename Pointer>
     bool
     can_right_shortcut(const Pointer& p) const
     {
-      return _right_shortcutting[p.value()];
+      return this->can_right_shortcut(p.value());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
+    bool
+    is_left_idempotent(const bool p) const
+    {
+      return this->_left_idempotent[p];
+    }
+
     template<typename Pointer>
     bool
     is_left_idempotent(const Pointer& p) const
     {
-      return _left_idempotent[p.value()];
+      return this->is_left_idempotent(p.value());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
+    bool
+    is_right_idempotent(const bool p) const
+    {
+      return this->_right_idempotent[p];
+    }
+
     template<typename Pointer>
     bool
     is_right_idempotent(const Pointer& p) const
     {
-      return _right_idempotent[p.value()];
+      return this->is_right_idempotent(p.value());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
+    bool
+    is_left_negating(const bool p) const
+    {
+      return this->_left_negating[p];
+    }
+
     template<typename Pointer>
     bool
     is_left_negating(const Pointer& p) const
     {
-      return _left_negating[p.value()];
+      return this->is_left_negating(p.value());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
+    bool
+    is_right_negating(const bool p) const
+    {
+      return this->_right_negating[p];
+    }
+
     template<typename Pointer>
     bool
     is_right_negating(const Pointer& p) const
     {
-      return _right_negating[p.value()];
+      return this->is_right_negating(p.value());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     bool
     is_commutative() const
     {
-      return _commutative;
+      return this->_commutative;
     }
 
   public:
