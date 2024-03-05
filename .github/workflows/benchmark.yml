@@ -42,6 +42,61 @@ jobs:
     outputs:
       should_skip: ${{ steps.skip_check.outputs.should_skip }}
 
+  run_picotrav:
+    name: 'Performance Regression: Picotrav ${{ matrix.circuit }}'
+    runs-on: ubuntu-latest
+
+    needs: [fetch-branch, fetch-remote, skip_duplicate]
+    if: ${{ needs.skip_duplicate.outputs.should_skip != 'true' }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { circuit: adder }
+          - { circuit: arbiter }
+          - { circuit: mem_ctrl }
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: 'ssoelvsten/bdd-benchmark'
+          submodules: 'recursive'
+          fetch-depth: '0'
+
+      - name: 'apt install'
+        run: |
+          sudo apt update
+          sudo apt install libboost-all-dev
+
+      - name: 'pip install'
+        run: |
+          sudo pip install wget
+
+      - name: 'python3 regression.py'
+        run: |
+          python3 ./regression.py <<< "picotrav
+          yes
+          ${{ matrix.circuit }}
+          adiar
+          8192
+          origin
+          main
+          ${{ needs.fetch-remote.outputs.remote }}
+          ${{ needs.fetch-branch.outputs.branch }}
+          no
+          no
+          3
+          10
+          "
+
+      - name: 'post regression_adiar.out'
+        if: always()
+        uses: mshick/add-pr-comment@main
+        with:
+          message-path: ./regression_adiar.out
+          message-id: 'benchmark_picotrav_${{ matrix.circuit }}'
+
   run_qbf:
     name: 'Performance Regression: QBF ${{ matrix.category }}/${{ matrix.circuit }}'
     runs-on: ubuntu-latest
@@ -99,8 +154,8 @@ jobs:
           message-path: ./regression_adiar.out
           message-id: 'benchmark_qbf_${{ matrix.circuit }}'
 
-  run_picotrav:
-    name: 'Performance Regression: Picotrav ${{ matrix.circuit }}'
+  run_queens:
+    name: 'Performance Regression: ${{ matrix.N }}-Queens'
     runs-on: ubuntu-latest
 
     needs: [fetch-branch, fetch-remote, skip_duplicate]
@@ -110,9 +165,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { circuit: adder }
-          - { circuit: arbiter }
-          - { circuit: mem_ctrl }
+          - { N: 12 }
+          - { N: 14 }
 
     steps:
       - uses: actions/checkout@v2
@@ -132,9 +186,8 @@ jobs:
 
       - name: 'python3 regression.py'
         run: |
-          python3 ./regression.py <<< "picotrav
-          yes
-          ${{ matrix.circuit }}
+          python3 ./regression.py <<< "queens
+          ${{ matrix.N }}
           adiar
           8192
           origin
@@ -152,7 +205,7 @@ jobs:
         uses: mshick/add-pr-comment@main
         with:
           message-path: ./regression_adiar.out
-          message-id: 'benchmark_picotrav_${{ matrix.circuit }}'
+          message-id: 'benchmark_queens_${{ matrix.N }}'
 
   run_dummy:
     name: 'Performance Regression: ${{ matrix.title }}'
@@ -164,13 +217,15 @@ jobs:
     strategy:
       matrix:
         include:
+          - title: 'Picotrav adder'
+          - title: 'Picotrav arbiter'
+          - title: 'Picotrav mem_ctrl'
+          - title: '12-Queens'
+          - title: '14-Queens'
           - title: 'QBF breakthrough/3x4_19_bwnib'
           - title: 'QBF breakthrough/3x5_11_bwnib'
           - title: 'QBF domineering/5x5_13_bwnib'
           - title: 'QBF ep/8x8_7_e-8-1_p-3-4_bwnib'
-          - title: 'Picotrav adder'
-          - title: 'Picotrav arbiter'
-          - title: 'Picotrav mem_ctrl'
 
     steps:
     - name: Echo skip
