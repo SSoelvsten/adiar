@@ -11,6 +11,7 @@ go_bandit([]() {
           AssertThat(can_left_shortcut(adiar::or_op, false), Is().False());
           AssertThat(can_left_shortcut(adiar::xor_op, false), Is().False());
           AssertThat(can_left_shortcut(adiar::imp_op, false), Is().True());
+          AssertThat(can_left_shortcut(adiar::diff_op, false), Is().True());
         });
 
         it("can check on 'true' on the left", []() {
@@ -18,6 +19,7 @@ go_bandit([]() {
           AssertThat(can_left_shortcut(adiar::or_op, true), Is().True());
           AssertThat(can_left_shortcut(adiar::xor_op, true), Is().False());
           AssertThat(can_left_shortcut(adiar::imp_op, true), Is().False());
+          AssertThat(can_left_shortcut(adiar::diff_op, true), Is().False());
         });
 
         it("can check on 'false' on the right", []() {
@@ -25,6 +27,7 @@ go_bandit([]() {
           AssertThat(can_right_shortcut(adiar::or_op, false), Is().False());
           AssertThat(can_right_shortcut(adiar::xor_op, false), Is().False());
           AssertThat(can_right_shortcut(adiar::imp_op, false), Is().False());
+          AssertThat(can_right_shortcut(adiar::diff_op, false), Is().False());
         });
 
         it("can check on 'true' on the right", []() {
@@ -32,6 +35,7 @@ go_bandit([]() {
           AssertThat(can_right_shortcut(adiar::or_op, true), Is().True());
           AssertThat(can_right_shortcut(adiar::xor_op, true), Is().False());
           AssertThat(can_right_shortcut(adiar::imp_op, true), Is().True());
+          AssertThat(can_right_shortcut(adiar::diff_op, true), Is().True());
         });
       });
 
@@ -41,6 +45,7 @@ go_bandit([]() {
           AssertThat(is_left_idempotent(adiar::or_op, false), Is().True());
           AssertThat(is_left_idempotent(adiar::xor_op, false), Is().True());
           AssertThat(is_left_idempotent(adiar::imp_op, false), Is().False());
+          AssertThat(is_left_idempotent(adiar::diff_op, false), Is().False());
         });
 
         it("can check on 'true' on the left", []() {
@@ -48,6 +53,7 @@ go_bandit([]() {
           AssertThat(is_left_idempotent(adiar::or_op, true), Is().False());
           AssertThat(is_left_idempotent(adiar::xor_op, true), Is().False());
           AssertThat(is_left_idempotent(adiar::imp_op, true), Is().True());
+          AssertThat(is_left_idempotent(adiar::diff_op, true), Is().False());
         });
 
         it("can check on 'false' on the right", []() {
@@ -55,6 +61,7 @@ go_bandit([]() {
           AssertThat(is_right_idempotent(adiar::or_op, false), Is().True());
           AssertThat(is_right_idempotent(adiar::xor_op, false), Is().True());
           AssertThat(is_right_idempotent(adiar::imp_op, false), Is().False());
+          AssertThat(is_right_idempotent(adiar::diff_op, false), Is().True());
         });
 
         it("can check on 'true' on the right", []() {
@@ -62,6 +69,7 @@ go_bandit([]() {
           AssertThat(is_right_idempotent(adiar::or_op, true), Is().False());
           AssertThat(is_right_idempotent(adiar::xor_op, true), Is().False());
           AssertThat(is_right_idempotent(adiar::imp_op, true), Is().False());
+          AssertThat(is_right_idempotent(adiar::diff_op, true), Is().False());
         });
       });
 
@@ -72,6 +80,7 @@ go_bandit([]() {
           AssertThat(is_left_negating(adiar::xor_op, false), Is().False());
           AssertThat(is_left_negating(adiar::imp_op, false), Is().False());
           AssertThat(is_left_negating(adiar::invimp_op, false), Is().True());
+          AssertThat(is_left_negating(adiar::diff_op, false), Is().False());
         });
 
         it("can check on 'true' on the left", []() {
@@ -80,6 +89,7 @@ go_bandit([]() {
           AssertThat(is_left_negating(adiar::xor_op, true), Is().True());
           AssertThat(is_left_negating(adiar::imp_op, true), Is().False());
           AssertThat(is_left_negating(adiar::invimp_op, true), Is().False());
+          AssertThat(is_left_negating(adiar::diff_op, true), Is().True());
         });
 
         it("can check on 'false' on the right", []() {
@@ -88,6 +98,7 @@ go_bandit([]() {
           AssertThat(is_right_negating(adiar::xor_op, false), Is().False());
           AssertThat(is_right_negating(adiar::imp_op, false), Is().True());
           AssertThat(is_right_negating(adiar::invimp_op, false), Is().False());
+          AssertThat(is_right_negating(adiar::diff_op, false), Is().False());
         });
 
         it("can check on 'true' on the right", []() {
@@ -96,6 +107,7 @@ go_bandit([]() {
           AssertThat(is_right_negating(adiar::xor_op, true), Is().True());
           AssertThat(is_right_negating(adiar::imp_op, true), Is().False());
           AssertThat(is_right_negating(adiar::invimp_op, true), Is().False());
+          AssertThat(is_right_negating(adiar::diff_op, true), Is().False());
         });
       });
 
@@ -118,7 +130,7 @@ go_bandit([]() {
       });
 
       describe("flip(...)", []() {
-        it("resolves commutative operator (and)", []() {
+        it("resolves commutative operator 'adiar::and_op'", []() {
           const predicate<bool, bool>& flip_and_op = flip(adiar::and_op);
 
           AssertThat(flip_and_op(true, true), Is().EqualTo(true));
@@ -127,7 +139,7 @@ go_bandit([]() {
           AssertThat(flip_and_op(false, false), Is().EqualTo(false));
         });
 
-        it("resolves non-commutative operator (imp)", []() {
+        it("resolves non-commutative operator 'adiar::imp_op'", []() {
           const predicate<bool, bool>& flip_imp_op = flip(adiar::imp_op);
 
           AssertThat(flip_imp_op(true, true), Is().EqualTo(true));
@@ -191,6 +203,15 @@ go_bandit([]() {
           AssertThat(op(ptr_true, ptr_false), Is().EqualTo(ptr_true));
           AssertThat(op(ptr_true, ptr_true), Is().EqualTo(ptr_true));
         });
+
+        it("has (pre-computed) values for 'adiar::diff_op'", [&]() {
+          binary_op<predicate<bool, bool>> op(adiar::diff_op);
+
+          AssertThat(op(ptr_false, ptr_false), Is().EqualTo(ptr_false));
+          AssertThat(op(ptr_false, ptr_true), Is().EqualTo(ptr_false));
+          AssertThat(op(ptr_true, ptr_false), Is().EqualTo(ptr_true));
+          AssertThat(op(ptr_true, ptr_true), Is().EqualTo(ptr_false));
+        });
       });
 
       describe(".can_shortcut(ptr_uint64)", [&]() {
@@ -242,6 +263,16 @@ go_bandit([]() {
 
           AssertThat(op.can_left_shortcut(ptr_true), Is().True());
           AssertThat(op.can_right_shortcut(ptr_true), Is().False());
+        });
+
+        it("has (pre-computed) values for 'adiar::diff_op'", [&]() {
+          binary_op<predicate<bool, bool>> op(adiar::diff_op);
+
+          AssertThat(op.can_left_shortcut(ptr_false), Is().True());
+          AssertThat(op.can_right_shortcut(ptr_false), Is().False());
+
+          AssertThat(op.can_left_shortcut(ptr_true), Is().False());
+          AssertThat(op.can_right_shortcut(ptr_true), Is().True());
         });
       });
 
@@ -295,6 +326,16 @@ go_bandit([]() {
           AssertThat(op.is_left_idempotent(ptr_true), Is().False());
           AssertThat(op.is_right_idempotent(ptr_true), Is().True());
         });
+
+        it("has (pre-computed) values for 'adiar::diff_op'", [&]() {
+          binary_op<predicate<bool, bool>> op(adiar::diff_op);
+
+          AssertThat(op.is_left_idempotent(ptr_false), Is().False());
+          AssertThat(op.is_right_idempotent(ptr_false), Is().True());
+
+          AssertThat(op.is_left_idempotent(ptr_true), Is().False());
+          AssertThat(op.is_right_idempotent(ptr_true), Is().False());
+        });
       });
 
       describe(".is_negating(ptr_uint64)", [&]() {
@@ -347,31 +388,46 @@ go_bandit([]() {
           AssertThat(op.is_left_negating(ptr_true), Is().False());
           AssertThat(op.is_right_negating(ptr_true), Is().False());
         });
+
+        it("has (pre-computed) values for 'adiar::invimp_op'", [&]() {
+          binary_op<predicate<bool, bool>> op(adiar::diff_op);
+
+          AssertThat(op.is_left_negating(ptr_false), Is().False());
+          AssertThat(op.is_right_negating(ptr_false), Is().False());
+
+          AssertThat(op.is_left_negating(ptr_true), Is().True());
+          AssertThat(op.is_right_negating(ptr_true), Is().False());
+        });
       });
 
       describe(".is_commutative()", [&]() {
-        it("has (pre-computed) values for 'adiar::and_op'", [&]() {
+        it("has (pre-computed) values for 'adiar::and_op'", []() {
           binary_op<predicate<bool, bool>> op(adiar::and_op);
           AssertThat(op.is_commutative(), Is().True());
         });
 
-        it("has (pre-computed) value for 'adiar::or_op'", [&]() {
+        it("has (pre-computed) value for 'adiar::or_op'", []() {
           binary_op<predicate<bool, bool>> op(adiar::or_op);
           AssertThat(op.is_commutative(), Is().True());
         });
 
-        it("has (pre-computed) value for 'adiar::xor_op'", [&]() {
+        it("has (pre-computed) value for 'adiar::xor_op'", []() {
           binary_op<predicate<bool, bool>> op(adiar::xor_op);
           AssertThat(op.is_commutative(), Is().True());
         });
 
-        it("has (pre-computed) value for 'adiar::imp_op'", [&]() {
+        it("has (pre-computed) value for 'adiar::imp_op'", []() {
           binary_op<predicate<bool, bool>> op(adiar::imp_op);
           AssertThat(op.is_commutative(), Is().False());
         });
 
-        it("has (pre-computed) value for 'adiar::invimp_op'", [&]() {
+        it("has (pre-computed) value for 'adiar::invimp_op'", []() {
           binary_op<predicate<bool, bool>> op(adiar::invimp_op);
+          AssertThat(op.is_commutative(), Is().False());
+        });
+
+        it("has (pre-computed) value for 'adiar::diff_op'", []() {
+          binary_op<predicate<bool, bool>> op(adiar::diff_op);
           AssertThat(op.is_commutative(), Is().False());
         });
       });
@@ -427,6 +483,33 @@ go_bandit([]() {
           AssertThat(flipped_op.is_left_negating(ptr_true), Is().False());
           AssertThat(flipped_op.is_right_negating(ptr_false), Is().False());
           AssertThat(flipped_op.is_right_negating(ptr_true), Is().False());
+
+          AssertThat(flipped_op.is_commutative(), Is().False());
+        });
+
+        it("flips correctly 'adiar::diff_op'", [&]() {
+          const binary_op<predicate<bool, bool>> op(adiar::diff_op);
+          const typename binary_op<predicate<bool, bool>>::flipped_operator flipped_op = op.flip();
+
+          AssertThat(flipped_op(ptr_false, ptr_false), Is().EqualTo(ptr_false));
+          AssertThat(flipped_op(ptr_false, ptr_true), Is().EqualTo(ptr_true));
+          AssertThat(flipped_op(ptr_true, ptr_false), Is().EqualTo(ptr_false));
+          AssertThat(flipped_op(ptr_true, ptr_true), Is().EqualTo(ptr_false));
+
+          AssertThat(flipped_op.can_left_shortcut(ptr_false), Is().False());
+          AssertThat(flipped_op.can_left_shortcut(ptr_true), Is().True());
+          AssertThat(flipped_op.can_right_shortcut(ptr_false), Is().True());
+          AssertThat(flipped_op.can_right_shortcut(ptr_true), Is().False());
+
+          AssertThat(flipped_op.is_left_idempotent(ptr_false), Is().True());
+          AssertThat(flipped_op.is_left_idempotent(ptr_true), Is().False());
+          AssertThat(flipped_op.is_right_idempotent(ptr_false), Is().False());
+          AssertThat(flipped_op.is_right_idempotent(ptr_true), Is().False());
+
+          AssertThat(flipped_op.is_left_negating(ptr_false), Is().False());
+          AssertThat(flipped_op.is_left_negating(ptr_true), Is().False());
+          AssertThat(flipped_op.is_right_negating(ptr_false), Is().False());
+          AssertThat(flipped_op.is_right_negating(ptr_true), Is().True());
 
           AssertThat(flipped_op.is_commutative(), Is().False());
         });
