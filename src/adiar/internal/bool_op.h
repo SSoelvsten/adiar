@@ -395,6 +395,68 @@ namespace adiar::internal
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief   Alternative for `binary_op` hardcoded for a logical 'nand'.
+  ///
+  /// \details The benefit of this over `binary_op` is to skip pre-computations and to expose
+  ///          optimisations and simplifications to the compiler.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  class nand_op
+    : public commutative_op<nand_op>
+  {
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+  public:
+    bool
+    operator ()(const bool lhs, const bool rhs) const
+    {
+      return !(lhs & rhs);
+    }
+
+    template<typename Pointer>
+    Pointer
+    operator ()(const Pointer& lhs, const Pointer& rhs) const
+    {
+      return !(lhs & rhs);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+  protected:
+    friend commutative_op<nand_op>;
+
+    static constexpr bool
+    can_shortcut(const bool p)
+    {
+      return !p;
+    }
+
+    template<typename Pointer>
+    static constexpr bool
+    can_shortcut(const Pointer& p)
+    {
+      return can_shortcut(p.value());
+    }
+
+    template<typename T>
+    static constexpr bool
+    is_idempotent(const T&/*t*/)
+    {
+      return false;
+    }
+
+    static constexpr bool
+    is_negating(const bool p)
+    {
+      return p;
+    }
+
+    template<typename Pointer>
+    static constexpr bool
+    is_negating(const Pointer& p)
+    {
+      return is_negating(p.value());
+    }
+  };
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief   Alternative for `binary_op` hardcoded for a logical 'or'.
   ///
   /// \details The benefit of this over `binary_op` is to skip pre-computations and to expose
@@ -453,6 +515,68 @@ namespace adiar::internal
     is_negating(const T&/*t*/)
     {
       return false;
+    }
+  };
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief   Alternative for `binary_op` hardcoded for a logical 'nor'.
+  ///
+  /// \details The benefit of this over `binary_op` is to skip pre-computations and to expose
+  ///          optimisations and simplifications to the compiler.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  class nor_op
+    : public commutative_op<nor_op>
+  {
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+  public:
+    bool
+    operator ()(const bool lhs, const bool rhs) const
+    {
+      return !(lhs | rhs);
+    }
+
+    template<typename Pointer>
+    Pointer
+    operator ()(const Pointer& lhs, const Pointer& rhs) const
+    {
+      return !(lhs | rhs);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+  protected:
+    friend commutative_op<nor_op>;
+
+    static constexpr bool
+    can_shortcut(const bool p)
+    {
+      return p;
+    }
+
+    template<typename Pointer>
+    static bool
+    can_shortcut(const Pointer& p)
+    {
+      return can_shortcut(p.value());
+    }
+
+    template <typename T>
+    static constexpr bool
+    is_idempotent(const T&/**/)
+    {
+      return false;
+    }
+
+    static constexpr bool
+    is_negating(const bool p)
+    {
+      return !p;
+    }
+
+    template<typename Pointer>
+    static constexpr bool
+    is_negating(const Pointer& p)
+    {
+      return is_negating(p.value());
     }
   };
 }
