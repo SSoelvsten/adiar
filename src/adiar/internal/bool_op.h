@@ -95,7 +95,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Specialization for boolean operators, i.e. any `predicate<bool, bool>`.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template<>
+  template <>
   class binary_op<predicate<bool, bool>>
   {
   private:
@@ -130,28 +130,35 @@ namespace adiar::internal
     /// \brief Construction from `predicate<bool, bool>`
     ////////////////////////////////////////////////////////////////////////////////////////////////
     binary_op(const predicate<bool, bool>& op)
-      : _op{{ {{op(false,false), op(false, true)}}, {{op(true,false), op(true,true)}} }}
-      , _left_shortcutting{ adiar::internal::can_left_shortcut(op, false), adiar::internal::can_left_shortcut(op, true) }
-      , _right_shortcutting{ adiar::internal::can_right_shortcut(op, false), adiar::internal::can_right_shortcut(op, true) }
-      , _left_idempotent{ adiar::internal::is_left_idempotent(op, false), adiar::internal::is_left_idempotent(op, true) }
-      , _right_idempotent{ adiar::internal::is_right_idempotent(op, false), adiar::internal::is_right_idempotent(op, true) }
-      , _left_negating{ adiar::internal::is_left_negating(op, false), adiar::internal::is_left_negating(op, true) }
-      , _right_negating{ adiar::internal::is_right_negating(op, false), adiar::internal::is_right_negating(op, true) }
+      : _op{ { { { op(false, false), op(false, true) } },
+               { { op(true, false), op(true, true) } } } }
+      , _left_shortcutting{ adiar::internal::can_left_shortcut(op, false),
+                            adiar::internal::can_left_shortcut(op, true) }
+      , _right_shortcutting{ adiar::internal::can_right_shortcut(op, false),
+                             adiar::internal::can_right_shortcut(op, true) }
+      , _left_idempotent{ adiar::internal::is_left_idempotent(op, false),
+                          adiar::internal::is_left_idempotent(op, true) }
+      , _right_idempotent{ adiar::internal::is_right_idempotent(op, false),
+                           adiar::internal::is_right_idempotent(op, true) }
+      , _left_negating{ adiar::internal::is_left_negating(op, false),
+                        adiar::internal::is_left_negating(op, true) }
+      , _right_negating{ adiar::internal::is_right_negating(op, false),
+                         adiar::internal::is_right_negating(op, true) }
       , _commutative(adiar::internal::is_commutative(op))
-    { }
+    {}
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
     bool
-    operator ()(const bool lhs, const bool rhs) const
+    operator()(const bool lhs, const bool rhs) const
     {
       return this->_op[lhs][rhs];
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename Pointer>
+    template <typename Pointer>
     Pointer
-    operator ()(const Pointer& lhs, const Pointer& rhs) const
+    operator()(const Pointer& lhs, const Pointer& rhs) const
     {
       static_assert(std::is_same<typename Pointer::terminal_type, bool>::value);
       return (*this)(lhs.value(), rhs.value());
@@ -164,7 +171,7 @@ namespace adiar::internal
       return this->_left_shortcutting[p];
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     bool
     can_left_shortcut(const Pointer& p) const
     {
@@ -178,7 +185,7 @@ namespace adiar::internal
       return this->_right_shortcutting[p];
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     bool
     can_right_shortcut(const Pointer& p) const
     {
@@ -192,7 +199,7 @@ namespace adiar::internal
       return this->_left_idempotent[p];
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     bool
     is_left_idempotent(const Pointer& p) const
     {
@@ -206,7 +213,7 @@ namespace adiar::internal
       return this->_right_idempotent[p];
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     bool
     is_right_idempotent(const Pointer& p) const
     {
@@ -220,7 +227,7 @@ namespace adiar::internal
       return this->_left_negating[p];
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     bool
     is_left_negating(const Pointer& p) const
     {
@@ -234,7 +241,7 @@ namespace adiar::internal
       return this->_right_negating[p];
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     bool
     is_right_negating(const Pointer& p) const
     {
@@ -274,42 +281,42 @@ namespace adiar::internal
   {
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename T>
+    template <typename T>
     static constexpr bool
     can_left_shortcut(const T& t)
     {
       return BinaryOp::can_shortcut(t);
     }
 
-    template<typename T>
+    template <typename T>
     static constexpr bool
     can_right_shortcut(const T& t)
     {
       return BinaryOp::can_shortcut(t);
     }
 
-    template<typename T>
+    template <typename T>
     static constexpr bool
     is_left_idempotent(const T& t)
     {
       return BinaryOp::is_idempotent(t);
     }
 
-    template<typename T>
+    template <typename T>
     static constexpr bool
     is_right_idempotent(const T& t)
     {
       return BinaryOp::is_idempotent(t);
     }
 
-    template<typename T>
+    template <typename T>
     static constexpr bool
     is_left_negating(const T& t)
     {
       return BinaryOp::is_negating(t);
     }
 
-    template<typename T>
+    template <typename T>
     static constexpr bool
     is_right_negating(const T& t)
     {
@@ -318,7 +325,9 @@ namespace adiar::internal
 
     static constexpr bool
     is_commutative()
-    { return true; }
+    {
+      return true;
+    }
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -338,20 +347,19 @@ namespace adiar::internal
   /// \details The benefit of this over `binary_op` is to skip pre-computations and to expose
   ///          optimisations and simplifications to the compiler.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  class and_op
-    : public commutative_op<and_op>
+  class and_op : public commutative_op<and_op>
   {
     ////////////////////////////////////////////////////////////////////////////////////////////////
   public:
     bool
-    operator ()(const bool lhs, const bool rhs) const
+    operator()(const bool lhs, const bool rhs) const
     {
       return lhs & rhs;
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     Pointer
-    operator ()(const Pointer& lhs, const Pointer& rhs) const
+    operator()(const Pointer& lhs, const Pointer& rhs) const
     {
       return lhs & rhs;
     }
@@ -366,7 +374,7 @@ namespace adiar::internal
       return !p;
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     static constexpr bool
     can_shortcut(const Pointer& p)
     {
@@ -379,16 +387,16 @@ namespace adiar::internal
       return p;
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     static constexpr bool
     is_idempotent(const Pointer& p)
     {
       return is_idempotent(p.value());
     }
 
-    template<typename T>
+    template <typename T>
     static constexpr bool
-    is_negating(const T&/*t*/)
+    is_negating(const T& /*t*/)
     {
       return false;
     }
@@ -400,20 +408,19 @@ namespace adiar::internal
   /// \details The benefit of this over `binary_op` is to skip pre-computations and to expose
   ///          optimisations and simplifications to the compiler.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  class nand_op
-    : public commutative_op<nand_op>
+  class nand_op : public commutative_op<nand_op>
   {
     ////////////////////////////////////////////////////////////////////////////////////////////////
   public:
     bool
-    operator ()(const bool lhs, const bool rhs) const
+    operator()(const bool lhs, const bool rhs) const
     {
       return !(lhs & rhs);
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     Pointer
-    operator ()(const Pointer& lhs, const Pointer& rhs) const
+    operator()(const Pointer& lhs, const Pointer& rhs) const
     {
       return !(lhs & rhs);
     }
@@ -428,16 +435,16 @@ namespace adiar::internal
       return !p;
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     static constexpr bool
     can_shortcut(const Pointer& p)
     {
       return can_shortcut(p.value());
     }
 
-    template<typename T>
+    template <typename T>
     static constexpr bool
-    is_idempotent(const T&/*t*/)
+    is_idempotent(const T& /*t*/)
     {
       return false;
     }
@@ -448,7 +455,7 @@ namespace adiar::internal
       return p;
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     static constexpr bool
     is_negating(const Pointer& p)
     {
@@ -462,20 +469,19 @@ namespace adiar::internal
   /// \details The benefit of this over `binary_op` is to skip pre-computations and to expose
   ///          optimisations and simplifications to the compiler.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  class or_op
-    : public commutative_op<or_op>
+  class or_op : public commutative_op<or_op>
   {
     ////////////////////////////////////////////////////////////////////////////////////////////////
   public:
     bool
-    operator ()(const bool lhs, const bool rhs) const
+    operator()(const bool lhs, const bool rhs) const
     {
       return lhs | rhs;
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     Pointer
-    operator ()(const Pointer& lhs, const Pointer& rhs) const
+    operator()(const Pointer& lhs, const Pointer& rhs) const
     {
       return lhs | rhs;
     }
@@ -490,7 +496,7 @@ namespace adiar::internal
       return p;
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     static bool
     can_shortcut(const Pointer& p)
     {
@@ -503,16 +509,16 @@ namespace adiar::internal
       return !p;
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     static bool
     is_idempotent(const Pointer& p)
     {
       return is_idempotent(p.value());
     }
 
-    template<typename T>
+    template <typename T>
     static constexpr bool
-    is_negating(const T&/*t*/)
+    is_negating(const T& /*t*/)
     {
       return false;
     }
@@ -524,20 +530,19 @@ namespace adiar::internal
   /// \details The benefit of this over `binary_op` is to skip pre-computations and to expose
   ///          optimisations and simplifications to the compiler.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  class nor_op
-    : public commutative_op<nor_op>
+  class nor_op : public commutative_op<nor_op>
   {
     ////////////////////////////////////////////////////////////////////////////////////////////////
   public:
     bool
-    operator ()(const bool lhs, const bool rhs) const
+    operator()(const bool lhs, const bool rhs) const
     {
       return !(lhs | rhs);
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     Pointer
-    operator ()(const Pointer& lhs, const Pointer& rhs) const
+    operator()(const Pointer& lhs, const Pointer& rhs) const
     {
       return !(lhs | rhs);
     }
@@ -552,7 +557,7 @@ namespace adiar::internal
       return p;
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     static bool
     can_shortcut(const Pointer& p)
     {
@@ -561,7 +566,7 @@ namespace adiar::internal
 
     template <typename T>
     static constexpr bool
-    is_idempotent(const T&/**/)
+    is_idempotent(const T& /**/)
     {
       return false;
     }
@@ -572,7 +577,7 @@ namespace adiar::internal
       return !p;
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     static constexpr bool
     is_negating(const Pointer& p)
     {
@@ -586,20 +591,19 @@ namespace adiar::internal
   /// \details The benefit of this over `binary_op` is to skip pre-computations and to expose
   ///          optimisations and simplifications to the compiler.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  class xor_op
-    : public commutative_op<xor_op>
+  class xor_op : public commutative_op<xor_op>
   {
     ////////////////////////////////////////////////////////////////////////////////////////////////
   public:
     bool
-    operator ()(const bool lhs, const bool rhs) const
+    operator()(const bool lhs, const bool rhs) const
     {
       return lhs ^ rhs;
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     Pointer
-    operator ()(const Pointer& lhs, const Pointer& rhs) const
+    operator()(const Pointer& lhs, const Pointer& rhs) const
     {
       return lhs ^ rhs;
     }
@@ -608,9 +612,9 @@ namespace adiar::internal
   protected:
     friend commutative_op<xor_op>;
 
-    template<typename T>
+    template <typename T>
     static constexpr bool
-    can_shortcut(const T&/*t*/)
+    can_shortcut(const T& /*t*/)
     {
       return false;
     }
@@ -621,7 +625,7 @@ namespace adiar::internal
       return !p;
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     static bool
     is_idempotent(const Pointer& p)
     {
@@ -634,7 +638,7 @@ namespace adiar::internal
       return p;
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     static constexpr bool
     is_negating(const Pointer& p)
     {
@@ -648,20 +652,19 @@ namespace adiar::internal
   /// \details The benefit of this over `binary_op` is to skip pre-computations and to expose
   ///          optimisations and simplifications to the compiler.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  class xnor_op
-    : public commutative_op<xnor_op>
+  class xnor_op : public commutative_op<xnor_op>
   {
     ////////////////////////////////////////////////////////////////////////////////////////////////
   public:
     bool
-    operator ()(const bool lhs, const bool rhs) const
+    operator()(const bool lhs, const bool rhs) const
     {
       return !(lhs ^ rhs);
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     Pointer
-    operator ()(const Pointer& lhs, const Pointer& rhs) const
+    operator()(const Pointer& lhs, const Pointer& rhs) const
     {
       return !(lhs ^ rhs);
     }
@@ -670,9 +673,9 @@ namespace adiar::internal
   protected:
     friend commutative_op<xnor_op>;
 
-    template<typename T>
+    template <typename T>
     static constexpr bool
-    can_shortcut(const T&/*t*/)
+    can_shortcut(const T& /*t*/)
     {
       return false;
     }
@@ -683,7 +686,7 @@ namespace adiar::internal
       return p;
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     static bool
     is_idempotent(const Pointer& p)
     {
@@ -696,7 +699,7 @@ namespace adiar::internal
       return !p;
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     static constexpr bool
     is_negating(const Pointer& p)
     {

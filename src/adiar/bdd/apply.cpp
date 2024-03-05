@@ -13,7 +13,7 @@ namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // BDD product construction policy
-  template<typename BinaryOp = internal::binary_op<predicate<bool, bool>>>
+  template <typename BinaryOp = internal::binary_op<predicate<bool, bool>>>
   class apply_prod2_policy
     : public bdd_policy
     , public internal::prod2_mixed_level_merger<bdd_policy>
@@ -108,9 +108,9 @@ namespace adiar
 
     /// \brief Hook for applying an operator to a pair of terminals.
     bdd::pointer_type
-    operator() (const bdd::pointer_type& a, const bdd::pointer_type& b) const
+    operator()(const bdd::pointer_type& a, const bdd::pointer_type& b) const
     {
-      return this->_op(a,b);
+      return this->_op(a, b);
     }
 
   public:
