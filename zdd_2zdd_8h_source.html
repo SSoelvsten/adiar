@@ -120,11 +120,11 @@ $(document).ready(function(){initNavTree('zdd_2zdd_8h_source.html',''); initResi
 <div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="classadiar_1_1____zdd.html#a533fe6e7e1f60aad370d888a39fca857">   44</a></span>&#160;    <a class="code" href="classadiar_1_1____zdd.html#a533fe6e7e1f60aad370d888a39fca857">__zdd</a>(<span class="keyword">const</span> <a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp; <a class="code" href="classadiar_1_1zdd.html">zdd</a>);</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="comment">// NOTE:</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="comment">//   &#39;__dd&#39; class includes &#39;max_1level_cut&#39; and &#39;max_2level_cut&#39; operations.</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="comment">//   This does not take the potential extra &#39;false&#39; arc into account.</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="comment">//   &#39;__dd&#39; class includes &#39;max_1level_cut&#39; and &#39;max_2level_cut&#39; operations. This does not take</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="comment">//   the potential extra &#39;false&#39; arc into account.</span></div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="comment">//</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="comment">//   For now, we do not care to add this, since we are not using `__zdd` in</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="comment">//   a context where it is necessary such as &#39;zdd_union&#39;.</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="comment">//   For now, we do not care to add this, since we are not using `__zdd` in a context where it</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="comment">//   is necessary such as &#39;zdd_union&#39;.</span></div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  };</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
 <div class="line"><a name="l00061"></a><span class="lineno"><a class="line" href="classadiar_1_1zdd.html">   61</a></span>&#160;  <span class="keyword">class </span><a class="code" href="classadiar_1_1zdd.html">zdd</a> : <span class="keyword">public</span> <a class="code" href="classadiar_1_1internal_1_1dd.html">internal::dd</a></div>
@@ -161,89 +161,86 @@ $(document).ready(function(){initNavTree('zdd_2zdd_8h_source.html',''); initResi
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160; </div>
 <div class="line"><a name="l00126"></a><span class="lineno"><a class="line" href="classadiar_1_1zdd.html#ac0c2fe2a7a2d912bada835af1fd6625b">  126</a></span>&#160;    <a class="code" href="classadiar_1_1zdd.html#ac0c2fe2a7a2d912bada835af1fd6625b">zdd</a>(<a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp;&amp; A);</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160; </div>
-<div class="line"><a name="l00139"></a><span class="lineno"><a class="line" href="classadiar_1_1zdd.html#aadf949017b5699fadee6313010172c1d">  139</a></span>&#160;    <a class="code" href="classadiar_1_1zdd.html#aadf949017b5699fadee6313010172c1d">zdd</a>(<a class="code" href="classadiar_1_1____zdd.html">__zdd</a>&amp;&amp; A);</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160; </div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;    <span class="comment">// Accessors overwrite</span></div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    internal::cut::size_type</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;    max_1level_cut(<span class="keyword">const</span> internal::cut ct)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;      <span class="keywordflow">return</span> add_false_cofactor(ct, <a class="code" href="classadiar_1_1internal_1_1dd.html#a8de1d3d1e39f7e61b1fd1e2be4dfd336">file</a>-&gt;max_1level_cut);</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;    }</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160; </div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;    internal::cut::size_type</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;    max_2level_cut(<span class="keyword">const</span> internal::cut ct)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;      <span class="keywordflow">return</span> add_false_cofactor(ct, <a class="code" href="classadiar_1_1internal_1_1dd.html#a8de1d3d1e39f7e61b1fd1e2be4dfd336">file</a>-&gt;max_2level_cut);</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;    }</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160; </div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160; </div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;  <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;    internal::cut::size_type</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    add_false_cofactor(<span class="keyword">const</span> internal::cut ct, <span class="keyword">const</span> internal::cuts_t&amp; ilevel_cuts)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;      <span class="keyword">const</span> internal::safe_size_t cut_size = ilevel_cuts[ct];</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160; </div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;      <span class="comment">// Bit-mask (allowing implicit conversion to size_t with bit-operators) to</span></div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;      <span class="comment">// get the cut-type WITHOUT the false arcs.</span></div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;      constexpr <span class="keywordtype">size_t</span> bit_mask         = internal::cut::Internal_True;</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;      <span class="keyword">const</span> internal::cut ct_excl_false = <span class="keyword">static_cast&lt;</span>internal::cut<span class="keyword">&gt;</span>(ct &amp; bit_mask);</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160; </div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;      <span class="comment">// In product construction algorithms we need to take into account the</span></div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;      <span class="comment">// (single) suppressed false arc, which may suddenly become visible (e.g.</span></div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;      <span class="comment">// &#39;zdd_union&#39;). Here, the DAG gets stuck inside of a copy of only one of</span></div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;      <span class="comment">// the input ZDDs. To get there, one followed an arc of the input but</span></div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;      <span class="comment">// afterwards one pairs with an invisible false arc that spans all levels.</span></div>
+<div class="line"><a name="l00138"></a><span class="lineno"><a class="line" href="classadiar_1_1zdd.html#aadf949017b5699fadee6313010172c1d">  138</a></span>&#160;    <a class="code" href="classadiar_1_1zdd.html#aadf949017b5699fadee6313010172c1d">zdd</a>(<a class="code" href="classadiar_1_1____zdd.html">__zdd</a>&amp;&amp; A);</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160; </div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;    <span class="comment">// Accessors overwrite</span></div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;  <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;    internal::cut::size_type</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    max_1level_cut(<span class="keyword">const</span> internal::cut ct)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;      <span class="keywordflow">return</span> add_false_cofactor(ct, <a class="code" href="classadiar_1_1internal_1_1dd.html#a8de1d3d1e39f7e61b1fd1e2be4dfd336">file</a>-&gt;max_1level_cut);</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;    }</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160; </div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;    internal::cut::size_type</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;    max_2level_cut(<span class="keyword">const</span> internal::cut ct)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;      <span class="keywordflow">return</span> add_false_cofactor(ct, <a class="code" href="classadiar_1_1internal_1_1dd.html#a8de1d3d1e39f7e61b1fd1e2be4dfd336">file</a>-&gt;max_2level_cut);</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;    }</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160; </div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160; </div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    internal::cut::size_type</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;    add_false_cofactor(<span class="keyword">const</span> internal::cut ct, <span class="keyword">const</span> internal::cuts_t&amp; ilevel_cuts)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;      <span class="keyword">const</span> internal::safe_size_t cut_size = ilevel_cuts[ct];</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160; </div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;      <span class="comment">// Bit-mask (allowing implicit conversion to size_t with bit-operators) to get the cut-type</span></div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;      <span class="comment">// WITHOUT the false arcs.</span></div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;      constexpr <span class="keywordtype">size_t</span> bit_mask         = internal::cut::Internal_True;</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;      <span class="keyword">const</span> internal::cut ct_excl_false = <span class="keyword">static_cast&lt;</span>internal::cut<span class="keyword">&gt;</span>(ct &amp; bit_mask);</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160; </div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;      <span class="comment">// In product construction algorithms we need to take into account the (single) suppressed</span></div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;      <span class="comment">// false arc, which may suddenly become visible (e.g. &#39;zdd_union&#39;). Here, the DAG gets stuck</span></div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;      <span class="comment">// inside of a copy of only one of the input ZDDs. To get there, one followed an arc of the</span></div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;      <span class="comment">// input but afterwards one pairs with an invisible false arc that spans all levels.</span></div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;      <span class="comment">//</span></div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;      <span class="comment">// We do not need to account for this invisible false arc in the following two cases</span></div>
 <div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;      <span class="comment">//</span></div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;      <span class="comment">// We do not need to account for this invisible false arc in the following</span></div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;      <span class="comment">// two cases</span></div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;      <span class="comment">//</span></div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;      <span class="comment">// - If the requested cut does not include false arcs.</span></div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;      <span class="comment">//</span></div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;      <span class="comment">// - If the cut size is strictly larger than the corresponding cut</span></div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;      <span class="comment">//   excluding false. In this case, we already have a false arc to pair</span></div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;      <span class="comment">//   with.</span></div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;      <span class="keyword">const</span> <span class="keywordtype">size_t</span> add_suppressed = !ct.includes(<span class="keyword">false</span>) &amp;&amp; cut_size == ilevel_cuts[ct_excl_false];</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160; </div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;      <span class="keywordflow">return</span> internal::to_size(cut_size + add_suppressed);</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;    }</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160; </div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160; </div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;    <span class="comment">// Assignment operator overloadings</span></div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;  <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;    <a class="code" href="classadiar_1_1zdd.html#afa961c0e0bb4ddccd438aa02822f599b">zdd</a>&amp;</div>
-<div class="line"><a name="l00214"></a><span class="lineno"><a class="line" href="classadiar_1_1zdd.html#ae8cfa4b2465ee05d94a88ee7a22051ee">  214</a></span>&#160;    <a class="code" href="classadiar_1_1zdd.html#ae8cfa4b2465ee05d94a88ee7a22051ee">operator=</a>(<span class="keyword">const</span> <a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp; other);</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160; </div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;    <a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp;</div>
-<div class="line"><a name="l00221"></a><span class="lineno"><a class="line" href="classadiar_1_1zdd.html#ac2877bd6be4cf583d9a9160230da1724">  221</a></span>&#160;    <a class="code" href="classadiar_1_1zdd.html#ac2877bd6be4cf583d9a9160230da1724">operator=</a>(<a class="code" href="classadiar_1_1____zdd.html">__zdd</a>&amp;&amp; other);</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160; </div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;      <span class="comment">// - If the requested cut does not include false arcs.</span></div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;      <span class="comment">//</span></div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;      <span class="comment">// - If the cut size is strictly larger than the corresponding cut excluding false. In this</span></div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;      <span class="comment">//   case, we already have a false arc to pair with.</span></div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;      <span class="keyword">const</span> <span class="keywordtype">size_t</span> add_suppressed = !ct.includes(<span class="keyword">false</span>) &amp;&amp; cut_size == ilevel_cuts[ct_excl_false];</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160; </div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;      <span class="keywordflow">return</span> internal::to_size(cut_size + add_suppressed);</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;    }</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160; </div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160; </div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;    <span class="comment">// Assignment operator overloadings</span></div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;  <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;    <a class="code" href="classadiar_1_1zdd.html#afa961c0e0bb4ddccd438aa02822f599b">zdd</a>&amp;</div>
+<div class="line"><a name="l00210"></a><span class="lineno"><a class="line" href="classadiar_1_1zdd.html#ae8cfa4b2465ee05d94a88ee7a22051ee">  210</a></span>&#160;    <a class="code" href="classadiar_1_1zdd.html#ae8cfa4b2465ee05d94a88ee7a22051ee">operator=</a>(<span class="keyword">const</span> <a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp; other);</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160; </div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;    <a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp;</div>
+<div class="line"><a name="l00217"></a><span class="lineno"><a class="line" href="classadiar_1_1zdd.html#ac2877bd6be4cf583d9a9160230da1724">  217</a></span>&#160;    <a class="code" href="classadiar_1_1zdd.html#ac2877bd6be4cf583d9a9160230da1724">operator=</a>(<a class="code" href="classadiar_1_1____zdd.html">__zdd</a>&amp;&amp; other);</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160; </div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;    <a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp;</div>
+<div class="line"><a name="l00223"></a><span class="lineno"><a class="line" href="classadiar_1_1zdd.html#ab18d66fa90879d17f67be765e5a79a11">  223</a></span>&#160;    <a class="code" href="classadiar_1_1zdd.html#ab18d66fa90879d17f67be765e5a79a11">operator&amp;=</a>(<span class="keyword">const</span> <a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp; other);</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160; </div>
 <div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;    <a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp;</div>
-<div class="line"><a name="l00227"></a><span class="lineno"><a class="line" href="classadiar_1_1zdd.html#ab18d66fa90879d17f67be765e5a79a11">  227</a></span>&#160;    <a class="code" href="classadiar_1_1zdd.html#ab18d66fa90879d17f67be765e5a79a11">operator&amp;=</a>(<span class="keyword">const</span> <a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp; other);</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160; </div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;    <a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp;</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;    <a class="code" href="classadiar_1_1zdd.html#ab18d66fa90879d17f67be765e5a79a11">operator&amp;=</a>(<a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp;&amp; other);</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160; </div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;    <a class="code" href="classadiar_1_1zdd.html#ab18d66fa90879d17f67be765e5a79a11">operator&amp;=</a>(<a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp;&amp; other);</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160; </div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;    <a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp;</div>
+<div class="line"><a name="l00234"></a><span class="lineno"><a class="line" href="classadiar_1_1zdd.html#afd2bff4462b212467f2245b3479cbd16">  234</a></span>&#160;    <a class="code" href="classadiar_1_1zdd.html#afd2bff4462b212467f2245b3479cbd16">operator|=</a>(<span class="keyword">const</span> <a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp; other);</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160; </div>
 <div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;    <a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp;</div>
-<div class="line"><a name="l00238"></a><span class="lineno"><a class="line" href="classadiar_1_1zdd.html#afd2bff4462b212467f2245b3479cbd16">  238</a></span>&#160;    <a class="code" href="classadiar_1_1zdd.html#afd2bff4462b212467f2245b3479cbd16">operator|=</a>(<span class="keyword">const</span> <a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp; other);</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160; </div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    <a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp;</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    <a class="code" href="classadiar_1_1zdd.html#afd2bff4462b212467f2245b3479cbd16">operator|=</a>(<a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp;&amp; other);</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160; </div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;    <a class="code" href="classadiar_1_1zdd.html#afd2bff4462b212467f2245b3479cbd16">operator|=</a>(<a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp;&amp; other);</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160; </div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;    <a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp;</div>
+<div class="line"><a name="l00245"></a><span class="lineno"><a class="line" href="classadiar_1_1zdd.html#af9f6df0b3c03612f34f5039c276035c7">  245</a></span>&#160;    <a class="code" href="classadiar_1_1zdd.html#af9f6df0b3c03612f34f5039c276035c7">operator-=</a>(<span class="keyword">const</span> <a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp; other);</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160; </div>
 <div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;    <a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp;</div>
-<div class="line"><a name="l00249"></a><span class="lineno"><a class="line" href="classadiar_1_1zdd.html#af9f6df0b3c03612f34f5039c276035c7">  249</a></span>&#160;    <a class="code" href="classadiar_1_1zdd.html#af9f6df0b3c03612f34f5039c276035c7">operator-=</a>(<span class="keyword">const</span> <a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp; other);</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160; </div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;    <a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp;</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    <a class="code" href="classadiar_1_1zdd.html#af9f6df0b3c03612f34f5039c276035c7">operator-=</a>(<a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp;&amp; other);</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;  };</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;}</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160; </div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// ADIAR_ZDD_ZDD_H</span></div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    <a class="code" href="classadiar_1_1zdd.html#af9f6df0b3c03612f34f5039c276035c7">operator-=</a>(<a class="code" href="classadiar_1_1zdd.html">zdd</a>&amp;&amp; other);</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;  };</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;}</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160; </div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// ADIAR_ZDD_ZDD_H</span></div>
 <div class="ttc" id="aclassadiar_1_1____zdd_html"><div class="ttname"><a href="classadiar_1_1____zdd.html">adiar::__zdd</a></div><div class="ttdoc">A (possibly unreduced) Zero-suppressed Decision Diagram.</div><div class="ttdef"><b>Definition:</b> zdd.h:24</div></div>
 <div class="ttc" id="aclassadiar_1_1____zdd_html_a021e7080658ecb52a8120ed559f31e9f"><div class="ttname"><a href="classadiar_1_1____zdd.html#a021e7080658ecb52a8120ed559f31e9f">adiar::__zdd::__zdd</a></div><div class="ttdeci">__zdd()</div><div class="ttdoc">Default constructor with an empty result.</div></div>
 <div class="ttc" id="aclassadiar_1_1____zdd_html_a533fe6e7e1f60aad370d888a39fca857"><div class="ttname"><a href="classadiar_1_1____zdd.html#a533fe6e7e1f60aad370d888a39fca857">adiar::__zdd::__zdd</a></div><div class="ttdeci">__zdd(const zdd &amp;zdd)</div><div class="ttdoc">Conversion constructor from a bdd to pass along a prior value.</div></div>
 <div class="ttc" id="aclassadiar_1_1____zdd_html_a65226cc094b18dd90dcdec8501209af6"><div class="ttname"><a href="classadiar_1_1____zdd.html#a65226cc094b18dd90dcdec8501209af6">adiar::__zdd::__zdd</a></div><div class="ttdeci">__zdd(const shared_arc_file_type &amp;f, const exec_policy &amp;ep)</div><div class="ttdoc">Wrapper for an algorithm's unreduced output.</div></div>
 <div class="ttc" id="aclassadiar_1_1____zdd_html_a96bab59f59ddbb66b38bbeb1688d58cf"><div class="ttname"><a href="classadiar_1_1____zdd.html#a96bab59f59ddbb66b38bbeb1688d58cf">adiar::__zdd::__zdd</a></div><div class="ttdeci">__zdd(const shared_node_file_type &amp;f)</div><div class="ttdoc">Wrapper for an algorithm's already reduced output.</div></div>
-<div class="ttc" id="aclassadiar_1_1exec__policy_html"><div class="ttname"><a href="classadiar_1_1exec__policy.html">adiar::exec_policy</a></div><div class="ttdoc">Settings to dictate the execution of Adiar's algorithms.</div><div class="ttdef"><b>Definition:</b> exec_policy.h:35</div></div>
+<div class="ttc" id="aclassadiar_1_1exec__policy_html"><div class="ttname"><a href="classadiar_1_1exec__policy.html">adiar::exec_policy</a></div><div class="ttdoc">Settings to dictate the execution of Adiar's algorithms.</div><div class="ttdef"><b>Definition:</b> exec_policy.h:34</div></div>
 <div class="ttc" id="aclassadiar_1_1internal_1_1____dd_html"><div class="ttname"><a href="classadiar_1_1internal_1_1____dd.html">adiar::internal::__dd</a></div><div class="ttdef"><b>Definition:</b> dd.h:47</div></div>
 <div class="ttc" id="aclassadiar_1_1internal_1_1____dd_html_a073bd9314a5213108cdb99e4175dc5ae"><div class="ttname"><a href="classadiar_1_1internal_1_1____dd.html#a073bd9314a5213108cdb99e4175dc5ae">adiar::internal::__dd::shared_arc_file_type</a></div><div class="ttdeci">shared_levelized_file&lt; arc_type &gt; shared_arc_file_type</div><div class="ttdoc">Type of the file object arc-based representation of a diagram.</div><div class="ttdef"><b>Definition:</b> dd.h:67</div></div>
 <div class="ttc" id="aclassadiar_1_1internal_1_1____dd_html_a0e3ab4aa5b10f26683c9d7b7bfb577b1"><div class="ttname"><a href="classadiar_1_1internal_1_1____dd.html#a0e3ab4aa5b10f26683c9d7b7bfb577b1">adiar::internal::__dd::shared_node_file_type</a></div><div class="ttdeci">shared_levelized_file&lt; node_type &gt; shared_node_file_type</div><div class="ttdoc">Type of the file object node-based representation of a diagram.</div><div class="ttdef"><b>Definition:</b> dd.h:57</div></div>

@@ -103,7 +103,7 @@ Predicates</h1>
 <div class="line">{</div>
 <div class="line">  <span class="keywordflow">return</span> x % 2;</div>
 <div class="line">};</div>
-<div class="ttc" id="agroup__module____functional_html_ga8faa1a3ec042e38209635188c27636de"><div class="ttname"><a href="group__module____functional.html#ga8faa1a3ec042e38209635188c27636de">adiar::predicate</a></div><div class="ttdeci">function&lt; bool(Args...)&gt; predicate</div><div class="ttdoc">Predicate function given value(s) of type(s) Args.</div><div class="ttdef"><b>Definition:</b> functional.h:48</div></div>
+<div class="ttc" id="agroup__module____functional_html_ga8faa1a3ec042e38209635188c27636de"><div class="ttname"><a href="group__module____functional.html#ga8faa1a3ec042e38209635188c27636de">adiar::predicate</a></div><div class="ttdeci">function&lt; bool(Args...)&gt; predicate</div><div class="ttdoc">Predicate function given value(s) of type(s) Args.</div><div class="ttdef"><b>Definition:</b> functional.h:49</div></div>
 </div><!-- fragment --><p>In <a class="el" href="page__basic.html">Basic Usage</a>, we showed how to use it to quantify a single variable. You can parse the above predicate to <code><a class="el" href="group__module____bdd.html#gacf8f50868fb8eac4eff5587173ab703c" title="Existential quantification of a single variable.">adiar::bdd_exists</a></code> to quantify all odd variables at once.</p>
 <div class="fragment"><div class="line"><a class="code" href="classadiar_1_1bdd.html">adiar::bdd</a> _ = <a class="code" href="group__module____bdd.html#gacf8f50868fb8eac4eff5587173ab703c">adiar::bdd_exists</a>(f, is_odd);</div>
 <div class="ttc" id="aclassadiar_1_1bdd_html"><div class="ttname"><a href="classadiar_1_1bdd.html">adiar::bdd</a></div><div class="ttdoc">A reduced Binary Decision Diagram.</div><div class="ttdef"><b>Definition:</b> bdd.h:53</div></div>
@@ -136,7 +136,7 @@ Generators</h2>
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line"><a class="code" href="classadiar_1_1bdd.html">adiar::bdd</a> _ = <a class="code" href="group__module____bdd.html#gacf8f50868fb8eac4eff5587173ab703c">adiar::bdd_exists</a>(f, gen);</div>
-<div class="ttc" id="anamespaceadiar_html_ac00584c842920c2e4fd92d13b5112746"><div class="ttname"><a href="namespaceadiar.html#ac00584c842920c2e4fd92d13b5112746">adiar::optional</a></div><div class="ttdeci">std::optional&lt; T &gt; optional</div><div class="ttdoc">An optional value, i.e. a possibly existent value.</div><div class="ttdef"><b>Definition:</b> types.h:54</div></div>
+<div class="ttc" id="anamespaceadiar_html_ac00584c842920c2e4fd92d13b5112746"><div class="ttname"><a href="namespaceadiar.html#ac00584c842920c2e4fd92d13b5112746">adiar::optional</a></div><div class="ttdeci">std::optional&lt; T &gt; optional</div><div class="ttdoc">An optional value, i.e. a possibly existent value.</div><div class="ttdef"><b>Definition:</b> types.h:51</div></div>
 </div><!-- fragment --><p>Similarly, one can parse an (<em>ascending</em>) iterator or generator <code><a class="el" href="group__module____bdd.html#gafbf9600fb919ec4d16144c8744ee276e" title="Restrict a single variable to a constant value.">adiar::bdd_restrict</a></code> to restrict multiple variables. Doing so is going to be significantly faster.</p>
 <h2><a class="anchor" id="autotoc_md29"></a>
 Consumers</h2>

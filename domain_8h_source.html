@@ -98,29 +98,29 @@ $(document).ready(function(){initNavTree('domain_8h_source.html',''); initResiza
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef ADIAR_DOMAIN_H</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define ADIAR_DOMAIN_H</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;adiar/exception.h&gt;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;adiar/functional.h&gt;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &lt;adiar/internal/io/file.h&gt;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &lt;adiar/internal/io/shared_file_ptr.h&gt;</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">// TODO: Make &#39;domain_var&#39; independent of node type. Then remove this include.</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &lt;adiar/internal/data_types/node.h&gt;</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceadiar.html">adiar</a></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;{</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
-<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="group__module____domain.html#gabffcbfe753972ad7bb25244829364343">   33</a></span>&#160;  <span class="keyword">using</span> <a class="code" href="group__module____domain.html#gabffcbfe753972ad7bb25244829364343">domain_var</a> = internal::node::label_type;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; </div>
-<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="group__module____domain.html#ga8bff450c02a2bfa77b10d76557905a77">   38</a></span>&#160;  constexpr <a class="code" href="group__module____domain.html#gabffcbfe753972ad7bb25244829364343">domain_var</a> <a class="code" href="group__module____domain.html#ga8bff450c02a2bfa77b10d76557905a77">domain_max</a> = internal::node::max_label;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keywordtype">void</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="group__module____domain.html#ga6e829c6a97a6b871e9f650a7f3a45e63">   44</a></span>&#160;  <a class="code" href="group__module____domain.html#ga6e829c6a97a6b871e9f650a7f3a45e63">domain_set</a>(<span class="keyword">const</span> <a class="code" href="group__module____domain.html#gabffcbfe753972ad7bb25244829364343">domain_var</a> varcount);</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keywordtype">void</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno"><a class="line" href="group__module____domain.html#ga7014a19ae7d9ad390bd35b7a1e3df3ec">   55</a></span>&#160;  <a class="code" href="group__module____domain.html#ga6e829c6a97a6b871e9f650a7f3a45e63">domain_set</a>(<span class="keyword">const</span> <a class="code" href="group__module____functional.html#ga13ea491f2be12fdc18cf118b931a423a">generator&lt;domain_var&gt;</a>&amp; dom);</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;adiar/exception.h&gt;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;adiar/functional.h&gt;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;adiar/internal/io/file.h&gt;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &lt;adiar/internal/io/shared_file_ptr.h&gt;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">// TODO: Make &#39;domain_var&#39; independent of node type. Then remove this include.</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &lt;adiar/internal/data_types/node.h&gt;</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceadiar.html">adiar</a></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;{</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
+<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="group__module____domain.html#gabffcbfe753972ad7bb25244829364343">   32</a></span>&#160;  <span class="keyword">using</span> <a class="code" href="group__module____domain.html#gabffcbfe753972ad7bb25244829364343">domain_var</a> = internal::node::label_type;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; </div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="group__module____domain.html#ga8bff450c02a2bfa77b10d76557905a77">   37</a></span>&#160;  constexpr <a class="code" href="group__module____domain.html#gabffcbfe753972ad7bb25244829364343">domain_var</a> <a class="code" href="group__module____domain.html#ga8bff450c02a2bfa77b10d76557905a77">domain_max</a> = internal::node::max_label;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keywordtype">void</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="group__module____domain.html#ga6e829c6a97a6b871e9f650a7f3a45e63">   43</a></span>&#160;  <a class="code" href="group__module____domain.html#ga6e829c6a97a6b871e9f650a7f3a45e63">domain_set</a>(<span class="keyword">const</span> <a class="code" href="group__module____domain.html#gabffcbfe753972ad7bb25244829364343">domain_var</a> varcount);</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keywordtype">void</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="group__module____domain.html#ga7014a19ae7d9ad390bd35b7a1e3df3ec">   54</a></span>&#160;  <a class="code" href="group__module____domain.html#ga6e829c6a97a6b871e9f650a7f3a45e63">domain_set</a>(<span class="keyword">const</span> <a class="code" href="group__module____functional.html#ga13ea491f2be12fdc18cf118b931a423a">generator&lt;domain_var&gt;</a>&amp; dom);</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ForwardIt&gt;</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keywordtype">void</span></div>
 <div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="group__module____domain.html#ga1fa604b1892c0111c4fde4183f11b140">   68</a></span>&#160;  <a class="code" href="group__module____domain.html#ga6e829c6a97a6b871e9f650a7f3a45e63">domain_set</a>(ForwardIt begin, ForwardIt end)</div>
@@ -128,30 +128,30 @@ $(document).ready(function(){initNavTree('domain_8h_source.html',''); initResiza
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="group__module____domain.html#ga6e829c6a97a6b871e9f650a7f3a45e63">domain_set</a>(<a class="code" href="group__module____functional.html#ga0bb6ca574a1999bd9895ed6517e92972">make_generator</a>(begin, end));</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  }</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keywordtype">void</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno"><a class="line" href="group__module____domain.html#ga84a96ae56dba7e41a43767a1be7449d6">   86</a></span>&#160;  <a class="code" href="group__module____domain.html#ga6e829c6a97a6b871e9f650a7f3a45e63">domain_set</a>(<span class="keyword">const</span> internal::shared_file&lt;domain_var&gt;&amp; dom);</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="keywordtype">void</span></div>
-<div class="line"><a name="l00094"></a><span class="lineno"><a class="line" href="group__module____domain.html#gaeb7fdbf6de32b88b515a65856384593f">   94</a></span>&#160;  <a class="code" href="group__module____domain.html#gaeb7fdbf6de32b88b515a65856384593f">domain_unset</a>();</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <span class="keywordtype">bool</span></div>
-<div class="line"><a name="l00100"></a><span class="lineno"><a class="line" href="group__module____domain.html#ga8424919bff298b87ef08f326db6e0d75">  100</a></span>&#160;  <a class="code" href="group__module____domain.html#ga8424919bff298b87ef08f326db6e0d75">domain_isset</a>();</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160; </div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  internal::shared_file&lt;domain_var&gt;</div>
-<div class="line"><a name="l00116"></a><span class="lineno"><a class="line" href="group__module____domain.html#ga16dd313513e71a44a3619b2a9c01a400">  116</a></span>&#160;  <a class="code" href="group__module____domain.html#ga16dd313513e71a44a3619b2a9c01a400">domain_get</a>();</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160; </div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  <a class="code" href="group__module____domain.html#gabffcbfe753972ad7bb25244829364343">domain_var</a></div>
-<div class="line"><a name="l00124"></a><span class="lineno"><a class="line" href="group__module____domain.html#ga3e441288a02c1e7ad0d19b8055860f3a">  124</a></span>&#160;  <a class="code" href="group__module____domain.html#ga3e441288a02c1e7ad0d19b8055860f3a">domain_size</a>();</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160; </div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;}</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160; </div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// ADIAR_DOMAIN_H</span></div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="keywordtype">void</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno"><a class="line" href="group__module____domain.html#ga84a96ae56dba7e41a43767a1be7449d6">   85</a></span>&#160;  <a class="code" href="group__module____domain.html#ga6e829c6a97a6b871e9f650a7f3a45e63">domain_set</a>(<span class="keyword">const</span> internal::shared_file&lt;domain_var&gt;&amp; dom);</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160; </div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keywordtype">void</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno"><a class="line" href="group__module____domain.html#gaeb7fdbf6de32b88b515a65856384593f">   93</a></span>&#160;  <a class="code" href="group__module____domain.html#gaeb7fdbf6de32b88b515a65856384593f">domain_unset</a>();</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160; </div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00099"></a><span class="lineno"><a class="line" href="group__module____domain.html#ga8424919bff298b87ef08f326db6e0d75">   99</a></span>&#160;  <a class="code" href="group__module____domain.html#ga8424919bff298b87ef08f326db6e0d75">domain_isset</a>();</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160; </div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  internal::shared_file&lt;domain_var&gt;</div>
+<div class="line"><a name="l00115"></a><span class="lineno"><a class="line" href="group__module____domain.html#ga16dd313513e71a44a3619b2a9c01a400">  115</a></span>&#160;  <a class="code" href="group__module____domain.html#ga16dd313513e71a44a3619b2a9c01a400">domain_get</a>();</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160; </div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  <a class="code" href="group__module____domain.html#gabffcbfe753972ad7bb25244829364343">domain_var</a></div>
+<div class="line"><a name="l00123"></a><span class="lineno"><a class="line" href="group__module____domain.html#ga3e441288a02c1e7ad0d19b8055860f3a">  123</a></span>&#160;  <a class="code" href="group__module____domain.html#ga3e441288a02c1e7ad0d19b8055860f3a">domain_size</a>();</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160; </div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;}</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160; </div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// ADIAR_DOMAIN_H</span></div>
 <div class="ttc" id="agroup__module____domain_html_ga16dd313513e71a44a3619b2a9c01a400"><div class="ttname"><a href="group__module____domain.html#ga16dd313513e71a44a3619b2a9c01a400">adiar::domain_get</a></div><div class="ttdeci">internal::shared_file&lt; domain_var &gt; domain_get()</div><div class="ttdoc">Returns the global domain.</div></div>
 <div class="ttc" id="agroup__module____domain_html_ga3e441288a02c1e7ad0d19b8055860f3a"><div class="ttname"><a href="group__module____domain.html#ga3e441288a02c1e7ad0d19b8055860f3a">adiar::domain_size</a></div><div class="ttdeci">domain_var domain_size()</div><div class="ttdoc">The size of the domain.</div></div>
 <div class="ttc" id="agroup__module____domain_html_ga6e829c6a97a6b871e9f650a7f3a45e63"><div class="ttname"><a href="group__module____domain.html#ga6e829c6a97a6b871e9f650a7f3a45e63">adiar::domain_set</a></div><div class="ttdeci">void domain_set(const domain_var varcount)</div><div class="ttdoc">Set the domain globally for all of Adiar to be [0, varcount).</div></div>
 <div class="ttc" id="agroup__module____domain_html_ga8424919bff298b87ef08f326db6e0d75"><div class="ttname"><a href="group__module____domain.html#ga8424919bff298b87ef08f326db6e0d75">adiar::domain_isset</a></div><div class="ttdeci">bool domain_isset()</div><div class="ttdoc">Whether Adiar has a global domain.</div></div>
-<div class="ttc" id="agroup__module____domain_html_ga8bff450c02a2bfa77b10d76557905a77"><div class="ttname"><a href="group__module____domain.html#ga8bff450c02a2bfa77b10d76557905a77">adiar::domain_max</a></div><div class="ttdeci">constexpr domain_var domain_max</div><div class="ttdoc">The maximum supported domain variable.</div><div class="ttdef"><b>Definition:</b> domain.h:38</div></div>
-<div class="ttc" id="agroup__module____domain_html_gabffcbfe753972ad7bb25244829364343"><div class="ttname"><a href="group__module____domain.html#gabffcbfe753972ad7bb25244829364343">adiar::domain_var</a></div><div class="ttdeci">internal::node::label_type domain_var</div><div class="ttdoc">The variable type of a domain variable.</div><div class="ttdef"><b>Definition:</b> domain.h:33</div></div>
+<div class="ttc" id="agroup__module____domain_html_ga8bff450c02a2bfa77b10d76557905a77"><div class="ttname"><a href="group__module____domain.html#ga8bff450c02a2bfa77b10d76557905a77">adiar::domain_max</a></div><div class="ttdeci">constexpr domain_var domain_max</div><div class="ttdoc">The maximum supported domain variable.</div><div class="ttdef"><b>Definition:</b> domain.h:37</div></div>
+<div class="ttc" id="agroup__module____domain_html_gabffcbfe753972ad7bb25244829364343"><div class="ttname"><a href="group__module____domain.html#gabffcbfe753972ad7bb25244829364343">adiar::domain_var</a></div><div class="ttdeci">internal::node::label_type domain_var</div><div class="ttdoc">The variable type of a domain variable.</div><div class="ttdef"><b>Definition:</b> domain.h:32</div></div>
 <div class="ttc" id="agroup__module____domain_html_gaeb7fdbf6de32b88b515a65856384593f"><div class="ttname"><a href="group__module____domain.html#gaeb7fdbf6de32b88b515a65856384593f">adiar::domain_unset</a></div><div class="ttdeci">void domain_unset()</div><div class="ttdoc">Removes any globally shared domain variables (if any).</div></div>
 <div class="ttc" id="agroup__module____functional_html_ga0bb6ca574a1999bd9895ed6517e92972"><div class="ttname"><a href="group__module____functional.html#ga0bb6ca574a1999bd9895ed6517e92972">adiar::make_generator</a></div><div class="ttdeci">generator&lt; typename ForwardIt::value_type &gt; make_generator(ForwardIt &amp;begin, ForwardIt &amp;end)</div><div class="ttdoc">Wrap a begin and end iterator pair into a generator function.</div><div class="ttdef"><b>Definition:</b> functional.h:133</div></div>
 <div class="ttc" id="agroup__module____functional_html_ga13ea491f2be12fdc18cf118b931a423a"><div class="ttname"><a href="group__module____functional.html#ga13ea491f2be12fdc18cf118b931a423a">adiar::generator</a></div><div class="ttdeci">function&lt; optional&lt; RetType &gt;()&gt; generator</div><div class="ttdoc">Generator function that produces a new value of RetType for each call.</div><div class="ttdef"><b>Definition:</b> functional.h:126</div></div>

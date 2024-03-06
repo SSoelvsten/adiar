@@ -1,9 +1,9 @@
 var classadiar_1_1builder__ptr =
 [
-    [ "builder_ptr", "classadiar_1_1builder__ptr.html#a487d1616c7206445c8f2f6c2e143269e", null ],
-    [ "builder_ptr", "classadiar_1_1builder__ptr.html#a552f66020b95cfd8718fb96baf86d2f5", null ],
-    [ "builder_ptr", "classadiar_1_1builder__ptr.html#a4543ee9e7a70e26944425ca26293c750", null ],
-    [ "operator=", "classadiar_1_1builder__ptr.html#ac821e3d2e90961255f9358ee979b6d34", null ],
-    [ "operator=", "classadiar_1_1builder__ptr.html#a9cf0d8878fc26a1fab20207291bf8273", null ],
-    [ "builder< dd_policy >", "classadiar_1_1builder__ptr.html#a0e475e8458c925301b217729f2a169fb", null ]
+    [ "builder_ptr", "classadiar_1_1builder__ptr.html#a094d044cb56667a0a04d9d23ed22f26b", null ],
+    [ "builder_ptr", "classadiar_1_1builder__ptr.html#af5a98e6227085da6037e1ea0de9c12bc", null ],
+    [ "builder_ptr", "classadiar_1_1builder__ptr.html#ad11c298583d50704a980dbe77cadf42c", null ],
+    [ "operator=", "classadiar_1_1builder__ptr.html#a75e4e6cd7098d1267bb3d94ef18b6892", null ],
+    [ "operator=", "classadiar_1_1builder__ptr.html#abe87056b52ca7ed5719719de6ad45654", null ],
+    [ "builder< Policy >", "classadiar_1_1builder__ptr.html#a7405d3226e783c6f77de02ed40c61462", null ]
 ];
