@@ -23,6 +23,9 @@ namespace adiar
     /// \brief Operator
     BinaryOp _op;
 
+    // TODO: replace `_can_..._shortcut` with a `zdd::pointer_type` that is either an (essential)
+    //       pointer or nil. This way, one can remove the conditional on '.is_terminal()'.
+
     /// \brief Pre-computed ZDD-specific variant of 'can left shourtcut'.
     std::array<bool, 2> _can_left_shortcut;
 

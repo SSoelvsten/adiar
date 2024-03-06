@@ -29,7 +29,7 @@ namespace adiar
       }
 
       // Will one of the two options "fall out"?
-      if (r.low().is_terminal() && !r.low().value()) { return r.high(); }
+      if (r.low().is_terminal() && r.low().value() == false) { return r.high(); }
       // if (r.high().is_terminal() && !r.high().value()) { NEVER HAPPENS }
 
       // Otherwise return as-is
