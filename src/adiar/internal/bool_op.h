@@ -378,7 +378,8 @@ namespace adiar::internal
     static constexpr bool
     can_shortcut(const Pointer& p)
     {
-      return unflag(p) == Pointer(false);
+      adiar_assert(!p.is_terminal() || !p.is_flagged()); // Add 'unflag(p)' if necessary
+      return p == Pointer(false);
     }
 
     static constexpr bool
@@ -391,7 +392,8 @@ namespace adiar::internal
     static constexpr bool
     is_idempotent(const Pointer& p)
     {
-      return unflag(p) == Pointer(true);
+      adiar_assert(!p.is_terminal() || !p.is_flagged()); // Add 'unflag(p)' if necessary
+      return p == Pointer(true);
     }
 
     template <typename T>
@@ -439,7 +441,8 @@ namespace adiar::internal
     static constexpr bool
     can_shortcut(const Pointer& p)
     {
-      return unflag(p) == Pointer(false);
+      adiar_assert(!p.is_terminal() || !p.is_flagged()); // Add 'unflag(p)' if necessary
+      return p == Pointer(false);
     }
 
     template <typename T>
@@ -459,7 +462,8 @@ namespace adiar::internal
     static constexpr bool
     is_negating(const Pointer& p)
     {
-      return unflag(p) == Pointer(true);
+      adiar_assert(!p.is_terminal() || !p.is_flagged()); // Add 'unflag(p)' if necessary
+      return p == Pointer(true);
     }
   };
 
@@ -500,7 +504,8 @@ namespace adiar::internal
     static bool
     can_shortcut(const Pointer& p)
     {
-      return unflag(p) == Pointer(true);
+      adiar_assert(!p.is_terminal() || !p.is_flagged()); // Add 'unflag(p)' if necessary
+      return p == Pointer(true);
     }
 
     static constexpr bool
@@ -513,7 +518,8 @@ namespace adiar::internal
     static bool
     is_idempotent(const Pointer& p)
     {
-      return unflag(p) == Pointer(false);
+      adiar_assert(!p.is_terminal() || !p.is_flagged()); // Add 'unflag(p)' if necessary
+      return p == Pointer(false);
     }
 
     template <typename T>
@@ -561,7 +567,8 @@ namespace adiar::internal
     static bool
     can_shortcut(const Pointer& p)
     {
-      return unflag(p) == Pointer(true);
+      adiar_assert(!p.is_terminal() || !p.is_flagged()); // Add 'unflag(p)' if necessary
+      return p == Pointer(true);
     }
 
     template <typename T>
@@ -581,7 +588,8 @@ namespace adiar::internal
     static constexpr bool
     is_negating(const Pointer& p)
     {
-      return unflag(p) == Pointer(false);
+      adiar_assert(!p.is_terminal() || !p.is_flagged()); // Add 'unflag(p)' if necessary
+      return p == Pointer(false);
     }
   };
 
@@ -629,7 +637,8 @@ namespace adiar::internal
     static bool
     is_idempotent(const Pointer& p)
     {
-      return unflag(p) == Pointer(false);
+      adiar_assert(!p.is_terminal() || !p.is_flagged()); // Add 'unflag(p)' if necessary
+      return p == Pointer(false);
     }
 
     static constexpr bool
@@ -642,7 +651,8 @@ namespace adiar::internal
     static constexpr bool
     is_negating(const Pointer& p)
     {
-      return unflag(p) == Pointer(true);
+      adiar_assert(!p.is_terminal() || !p.is_flagged()); // Add 'unflag(p)' if necessary
+      return p == Pointer(true);
     }
   };
 
@@ -690,7 +700,8 @@ namespace adiar::internal
     static bool
     is_idempotent(const Pointer& p)
     {
-      return unflag(p) == Pointer(true);
+      adiar_assert(!p.is_terminal() || !p.is_flagged()); // Add 'unflag(p)' if necessary
+      return p == Pointer(true);
     }
 
     static constexpr bool
@@ -703,7 +714,8 @@ namespace adiar::internal
     static constexpr bool
     is_negating(const Pointer& p)
     {
-      return unflag(p) == Pointer(false);
+      adiar_assert(!p.is_terminal() || !p.is_flagged()); // Add 'unflag(p)' if necessary
+      return p == Pointer(false);
     }
   };
 
