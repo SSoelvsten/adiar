@@ -175,7 +175,7 @@ namespace adiar::internal
     bool
     can_left_shortcut(const Pointer& p) const
     {
-      return this->can_left_shortcut(p.value());
+      return p.is_terminal() && this->can_left_shortcut(p.value());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -189,7 +189,7 @@ namespace adiar::internal
     bool
     can_right_shortcut(const Pointer& p) const
     {
-      return this->can_right_shortcut(p.value());
+      return p.is_terminal() && this->can_right_shortcut(p.value());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -203,7 +203,7 @@ namespace adiar::internal
     bool
     is_left_idempotent(const Pointer& p) const
     {
-      return this->is_left_idempotent(p.value());
+      return p.is_terminal() && this->is_left_idempotent(p.value());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -217,7 +217,7 @@ namespace adiar::internal
     bool
     is_right_idempotent(const Pointer& p) const
     {
-      return this->is_right_idempotent(p.value());
+      return p.is_terminal() && this->is_right_idempotent(p.value());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -231,7 +231,7 @@ namespace adiar::internal
     bool
     is_left_negating(const Pointer& p) const
     {
-      return this->is_left_negating(p.value());
+      return p.is_terminal() && this->is_left_negating(p.value());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -245,7 +245,7 @@ namespace adiar::internal
     bool
     is_right_negating(const Pointer& p) const
     {
-      return this->is_right_negating(p.value());
+      return p.is_terminal() && this->is_right_negating(p.value());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -378,7 +378,7 @@ namespace adiar::internal
     static constexpr bool
     can_shortcut(const Pointer& p)
     {
-      return can_shortcut(p.value());
+      return unflag(p) == Pointer(false);
     }
 
     static constexpr bool
@@ -391,7 +391,7 @@ namespace adiar::internal
     static constexpr bool
     is_idempotent(const Pointer& p)
     {
-      return is_idempotent(p.value());
+      return unflag(p) == Pointer(true);
     }
 
     template <typename T>
@@ -439,7 +439,7 @@ namespace adiar::internal
     static constexpr bool
     can_shortcut(const Pointer& p)
     {
-      return can_shortcut(p.value());
+      return unflag(p) == Pointer(false);
     }
 
     template <typename T>
@@ -459,7 +459,7 @@ namespace adiar::internal
     static constexpr bool
     is_negating(const Pointer& p)
     {
-      return is_negating(p.value());
+      return unflag(p) == Pointer(true);
     }
   };
 
@@ -500,7 +500,7 @@ namespace adiar::internal
     static bool
     can_shortcut(const Pointer& p)
     {
-      return can_shortcut(p.value());
+      return unflag(p) == Pointer(true);
     }
 
     static constexpr bool
@@ -513,7 +513,7 @@ namespace adiar::internal
     static bool
     is_idempotent(const Pointer& p)
     {
-      return is_idempotent(p.value());
+      return unflag(p) == Pointer(false);
     }
 
     template <typename T>
@@ -561,7 +561,7 @@ namespace adiar::internal
     static bool
     can_shortcut(const Pointer& p)
     {
-      return can_shortcut(p.value());
+      return unflag(p) == Pointer(true);
     }
 
     template <typename T>
@@ -581,7 +581,7 @@ namespace adiar::internal
     static constexpr bool
     is_negating(const Pointer& p)
     {
-      return is_negating(p.value());
+      return unflag(p) == Pointer(false);
     }
   };
 
@@ -629,7 +629,7 @@ namespace adiar::internal
     static bool
     is_idempotent(const Pointer& p)
     {
-      return is_idempotent(p.value());
+      return unflag(p) == Pointer(false);
     }
 
     static constexpr bool
@@ -642,7 +642,7 @@ namespace adiar::internal
     static constexpr bool
     is_negating(const Pointer& p)
     {
-      return is_negating(p.value());
+      return unflag(p) == Pointer(true);
     }
   };
 
@@ -690,7 +690,7 @@ namespace adiar::internal
     static bool
     is_idempotent(const Pointer& p)
     {
-      return is_idempotent(p.value());
+      return unflag(p) == Pointer(true);
     }
 
     static constexpr bool
@@ -703,7 +703,7 @@ namespace adiar::internal
     static constexpr bool
     is_negating(const Pointer& p)
     {
-      return is_negating(p.value());
+      return unflag(p) == Pointer(false);
     }
   };
 
