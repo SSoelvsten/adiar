@@ -95,7 +95,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Specialization for boolean operators, i.e. any `predicate<bool, bool>`.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template<>
+  template <>
   class binary_op<predicate<bool, bool>>
   {
   private:
@@ -130,28 +130,35 @@ namespace adiar::internal
     /// \brief Construction from `predicate<bool, bool>`
     ////////////////////////////////////////////////////////////////////////////////////////////////
     binary_op(const predicate<bool, bool>& op)
-      : _op{{ {{op(false,false), op(false, true)}}, {{op(true,false), op(true,true)}} }}
-      , _left_shortcutting{ adiar::internal::can_left_shortcut(op, false), adiar::internal::can_left_shortcut(op, true) }
-      , _right_shortcutting{ adiar::internal::can_right_shortcut(op, false), adiar::internal::can_right_shortcut(op, true) }
-      , _left_idempotent{ adiar::internal::is_left_idempotent(op, false), adiar::internal::is_left_idempotent(op, true) }
-      , _right_idempotent{ adiar::internal::is_right_idempotent(op, false), adiar::internal::is_right_idempotent(op, true) }
-      , _left_negating{ adiar::internal::is_left_negating(op, false), adiar::internal::is_left_negating(op, true) }
-      , _right_negating{ adiar::internal::is_right_negating(op, false), adiar::internal::is_right_negating(op, true) }
+      : _op{ { { { op(false, false), op(false, true) } },
+               { { op(true, false), op(true, true) } } } }
+      , _left_shortcutting{ adiar::internal::can_left_shortcut(op, false),
+                            adiar::internal::can_left_shortcut(op, true) }
+      , _right_shortcutting{ adiar::internal::can_right_shortcut(op, false),
+                             adiar::internal::can_right_shortcut(op, true) }
+      , _left_idempotent{ adiar::internal::is_left_idempotent(op, false),
+                          adiar::internal::is_left_idempotent(op, true) }
+      , _right_idempotent{ adiar::internal::is_right_idempotent(op, false),
+                           adiar::internal::is_right_idempotent(op, true) }
+      , _left_negating{ adiar::internal::is_left_negating(op, false),
+                        adiar::internal::is_left_negating(op, true) }
+      , _right_negating{ adiar::internal::is_right_negating(op, false),
+                         adiar::internal::is_right_negating(op, true) }
       , _commutative(adiar::internal::is_commutative(op))
-    { }
+    {}
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
     bool
-    operator ()(const bool lhs, const bool rhs) const
+    operator()(const bool lhs, const bool rhs) const
     {
       return this->_op[lhs][rhs];
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename Pointer>
+    template <typename Pointer>
     Pointer
-    operator ()(const Pointer& lhs, const Pointer& rhs) const
+    operator()(const Pointer& lhs, const Pointer& rhs) const
     {
       static_assert(std::is_same<typename Pointer::terminal_type, bool>::value);
       return (*this)(lhs.value(), rhs.value());
@@ -164,7 +171,7 @@ namespace adiar::internal
       return this->_left_shortcutting[p];
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     bool
     can_left_shortcut(const Pointer& p) const
     {
@@ -178,7 +185,7 @@ namespace adiar::internal
       return this->_right_shortcutting[p];
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     bool
     can_right_shortcut(const Pointer& p) const
     {
@@ -192,7 +199,7 @@ namespace adiar::internal
       return this->_left_idempotent[p];
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     bool
     is_left_idempotent(const Pointer& p) const
     {
@@ -206,7 +213,7 @@ namespace adiar::internal
       return this->_right_idempotent[p];
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     bool
     is_right_idempotent(const Pointer& p) const
     {
@@ -220,7 +227,7 @@ namespace adiar::internal
       return this->_left_negating[p];
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     bool
     is_left_negating(const Pointer& p) const
     {
@@ -234,7 +241,7 @@ namespace adiar::internal
       return this->_right_negating[p];
     }
 
-    template<typename Pointer>
+    template <typename Pointer>
     bool
     is_right_negating(const Pointer& p) const
     {

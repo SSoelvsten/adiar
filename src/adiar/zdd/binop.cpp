@@ -93,7 +93,7 @@ namespace adiar
   public:
     /// \brief Hook for case of two BDDs with the same node file.
     __zdd
-    resolve_same_file(const zdd& zdd_1, const zdd&/*zdd_2*/) const
+    resolve_same_file(const zdd& zdd_1, const zdd& /*zdd_2*/) const
     {
       // Compute the results on all children.
       const bool op_F = this->_op(false, false);
@@ -180,9 +180,9 @@ namespace adiar
 
     /// \brief Hook for applying an operator to a pair of terminals.
     zdd::pointer_type
-    operator() (const zdd::pointer_type& a, const zdd::pointer_type& b) const
+    operator()(const zdd::pointer_type& a, const zdd::pointer_type& b) const
     {
-      return this->_op(a,b);
+      return this->_op(a, b);
     }
 
   public:
