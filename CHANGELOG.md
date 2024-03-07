@@ -56,6 +56,14 @@
 - Added `bdd_top()` and `bdd_bot()` as aliases for `bdd_true()` and
   `bdd_false()`.
 
+- Added `bdd_optmin(f, c)` to derive the assignment in *f* that is minimal with
+  respect to the linear cost function *c*.
+
+- Extended `bdd_printdot(f, out)` with a third optional argument `include_id`
+  (*false* by default). If *true*, the level-specific identifiers are included
+  in the output. This is useful for debugging. Otherwise, it displays similar to
+  the literature.
+
 ### Zero-suppressed Decision Diagrams
 
 - Added `zdd_ispoint(A)` predicate together with `zdd_point(...)` as an alias
@@ -70,13 +78,19 @@
 - `zdd_onset(A, ...)` and `zdd_offset(A, ...)` are now overloaded for a single
   variable. By default, this single variable is the *top* variable.
 
+- Extended `zdd_printdot(A, out)` with a third optional argument `include_id`
+  (*false* by default). If *true*, the level-specific identifiers are included
+  in the output. This is useful for debugging. Otherwise, it displays similar to
+  the literature.
+
 ## Optimisations
 
-- The algorithms `bdd_apply`, `zdd_binop`, and their derivatives now use a
-  level-by-level random access on one of the input (if possible). This
-  circumvents using an entire priority queue, thereby drastically improving
-  performance. This is especially beneficial when applying an operator to a very
-  large decision diagram together with a narrow one.
+- The algorithms `bdd_apply`, `zdd_binop`, their derivatives, and `bdd_exists`,
+  `bdd_forall`, and `zdd_project` now use a level-by-level random access on one
+  of the input (if possible). This circumvents using an entire priority queue,
+  thereby drastically improving performance. This is especially beneficial when
+  applying an operator to a very large decision diagram together with a narrow
+  one.
 
   With `exec_policy::access` one can turn this optimisation off and/or force it
   to always be used.
@@ -84,26 +98,14 @@
 - The functions `bdd_equal` and `zdd_equal` terminate in constant time, if the
   width of the two decision diagrams are not the same.
 
-- Added proper support for quantification of multiple variable. To this end, we
-  have implemented three separate algorithms. One can use
-  `exec_policy::quantify` to pick between the three:
+- Added proper support for quantification of multiple variable. This is done
+  with the new *nested sweeping* framework to add support for an I/O-efficient
+  simulation of BDD operations that (may) recurse on intermediate results. This
+  provides a completely new multi-variable quantification operations that is
+  similar to the one in other BDD packages
 
-  1. The *v1.x* approach of quantifying a single variable at a time is still
-     available (`exec_policy::quantify::Singleton`).
-
-  2. The *v1.x* algorithm has been generalized to (partially) handle multiple
-     variables at once in a single sweep (`exec_policy::quantify::Partial`).
-     Furthermore, this generalized sweep can be rerun on its own unreduced
-     result (skipping the possibly costly and unecessary Reduce sweep).
-
-  3. Implemented the *nested sweeping* framework to add support for an
-     I/O-efficient simulation of BDD operations that (may) recurse on
-     intermediate results. This provides a completely new multi-variable
-     quantification operations that is similar to the one in other BDD packages
-     (`exec_policy::quantify::Nested`).
-
-  By default, one or more of the above algorithms are used in conjunction
-  (`exec_policy::quantify::Auto`).
+  With `exec_policy::quantify::algorithm`, one can pick between this and the
+  previous approach of quantifying one variable at a time.
 
 ## Bug Fixes
 
@@ -142,6 +144,8 @@ interacting with Adiar's files directly, e.g. you have used the `bdd_restrict`,
 
 Other breaking changes are:
 
+- All deprecated function from *v1.x* have been removed.
+
 - The functions of the entire public API now follows a common and consistent
   naming scheme of `{prefix}_{nocase}`. To this end, for example `is_true(f)`
   has been renamed into `bdd_istrue(f)`.
@@ -170,7 +174,10 @@ Other breaking changes are:
 - The `memory_mode` enum introduced in *v1.2* on/off has been moved to
   `exec_policy::memory`.
 
-- All deprecated function from *v1.x* have been removed.
+- The *canonicity* of a BDD and ZDD has been split in two: whether it is
+  *indexable* and *sorted*. Hence, to check whether the node file of a BDD is
+  `canonical` either keep using the `bdd_iscanonical(f)` predicate or turn
+  `f->canonical` into a function call.
 
 - `bdd_counter(...)` and `zdd_sized_set` have been removed.
 
