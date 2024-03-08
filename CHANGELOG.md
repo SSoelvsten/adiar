@@ -29,16 +29,16 @@
   argument. This can be used to set parameters for the algorithms to non-default
   values.
 
-- The library's version number can be found in *<adiar/version.h>* provides as
-  compile-time known and inlinable integers and strings.
+- The library's version number is now available in *<adiar/version.h>* as
+  compile-time and inlinable integers and strings.
 
 ### Binary Decision Diagrams
 
-- The functions `bdd_and(...)` and `bdd_or(...)` now support negated variables.
-  This can either be parsed as a boolean flag or by negating the label.
+- The BDD builder functions `bdd_and(...)` and `bdd_or(...)` now support negated
+  variables. This can either be parsed as a boolean flag or by negating the label.
 
-- Added `bdd_iscube(f)` predicate together with `bdd_cube(...)` as an alias for
-  `bdd_and(...)`.
+- Added `bdd_iscube(f)` predicate. Furthermore,  `bdd_cube(...)` is added as an
+  alias for `bdd_and(...)`.
 
 - Added `bdd_isvar(f)`, `bdd_isithvar(f)`, `bdd_isnithvar(f)` predicates.
 
@@ -48,9 +48,9 @@
 - Added `bdd_restrict(f, x, v)` as an overload to restrict a single variable.
 
 - Added `bdd_low(f)` and `bdd_high(f)` as an overload of `bdd_restrict` to
-  restrict the *top* variable to *false* or *true*, respectively.
+  restrict the *top* variable to *false* and *true*, respectively.
 
-- Added `bdd_const(bool_value)` and `bdd_isconst(f)` as a preferred alias for
+- Added `bdd_const(bool_value)` and `bdd_isconst(f)` as an alias for
   `bdd_terminal()` and `bdd_isterminal()`.
 
 - Added `bdd_top()` and `bdd_bot()` as aliases for `bdd_true()` and
@@ -95,17 +95,23 @@
   With `exec_policy::access` one can turn this optimisation off and/or force it
   to always be used.
 
-- The functions `bdd_equal` and `zdd_equal` terminate in constant time, if the
-  width of the two decision diagrams are not the same.
+- The functions `bdd_equal(f,g)` and `zdd_equal(A,B)` terminate in constant time,
+  if the width of the two decision diagrams are not the same.
 
 - Added proper support for quantification of multiple variable. This is done
-  with the new *nested sweeping* framework to add support for an I/O-efficient
+  with the new *Nested Sweeping* framework to add support for an I/O-efficient
   simulation of BDD operations that (may) recurse on intermediate results. This
   provides a completely new multi-variable quantification operations that is
   similar to the one in other BDD packages
 
   With `exec_policy::quantify::algorithm`, one can pick between this and the
   previous approach of quantifying one variable at a time.
+
+- `bdd_apply(f,g,op)` and `zdd_binop(A,B,op)` now precompute whether the
+  operator *op* is shortcutting, idempotent or negating for either Boolean
+  value. The commutative operators, e.g. *and*, *or*, and *xor*, are also
+  pre-compiled with these predicates to further optimise conditional
+  if-statements.
 
 ## Bug Fixes
 
@@ -120,18 +126,14 @@
 
 There has been a major rewrite of the internal logic of Adiar to pay off
 technical debt and to get Adiar ready for an I/O-efficient implementation of the
-much more complex BDD operations, e.g. multi-variable quantification. At the
-same time, this also brings Adiar much closer to support other types of decision
+*Nested Sweeping* framework used for multi-variable quantification. At the same
+time, this also brings Adiar much closer to support other types of decision
 diagrams (e.g. QMDDs) and to store BDDs on disk and loading them again later.
 
 - All internal logic in *<adiar/internal/...>* has been moved into its nested
   namespace `adiar::internal`. If you use anything from this namespace (e.g. the
   *node* and the *node_writer* classes) then you are not guaranteed non-breaking
   changes.
-
-- The entire public API has been overhauled to have a consistent
-  `{prefix}_{nocase}` naming scheme. For example, `adiar::adiar_set_domain(...)`
-  has been renamed into `adiar::domain_set(...)`.
 
 - Files, streams and their writers have been moved, rewritten, and renamed.
   Since newly added *predicates* and *generator* functions superseed any use of
@@ -147,8 +149,9 @@ Other breaking changes are:
 - All deprecated function from *v1.x* have been removed.
 
 - The functions of the entire public API now follows a common and consistent
-  naming scheme of `{prefix}_{nocase}`. To this end, for example `is_true(f)`
-  has been renamed into `bdd_istrue(f)`.
+  `{prefix}_{nocase}` naming scheme. For example, `is_true(f)` has been renamed
+  into `bdd_istrue(f)` and `adiar::adiar_set_domain(...)` has been renamed into
+  `adiar::domain_set(...)`.
 
 - `zdd_ithvar(i)`
   - The semantics have been changed to be more akin to the BDD semantics. That
@@ -175,16 +178,16 @@ Other breaking changes are:
   `exec_policy::memory`.
 
 - The *canonicity* of a BDD and ZDD has been split in two: whether it is
-  *indexable* and *sorted*. Hence, to check whether the node file of a BDD is
-  `canonical` either keep using the `bdd_iscanonical(f)` predicate or turn
+  *indexable* and *sorted*. To check whether the node file of a BDD is
+  `canonical` now either keep using the `bdd_iscanonical(f)` predicate or turn
   `f->canonical` into a function call.
 
-- `bdd_counter(...)` and `zdd_sized_set` have been removed.
+- `bdd_counter(...)` and `zdd_sized_set(...)` have been removed.
 
-- The two-level granularity of statistics has been removed. If you want to
-  compile Adiar with statistics you just have to set the CMake variable
-  `ADIAR_STATS` to *ON*; the CMake variable `ADIAR_STATS_EXTRA` has been removed
-  as its highly detailed statistics is now included within `ADIAR_STATS`.
+- The two-levels of statistics have been merged. If you want to compile Adiar
+  with statistics you just have to set the CMake variable `ADIAR_STATS` to *ON*;
+  the CMake variable `ADIAR_STATS_EXTRA` has been removed as its highly detailed
+  statistics is now included within `ADIAR_STATS`.
 
 ## License
 Adiar 2.0.0 is distributed under the MIT license. But, notice that it depends on
