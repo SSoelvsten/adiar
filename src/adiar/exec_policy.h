@@ -150,7 +150,7 @@ namespace adiar
 
       public:
         constexpr transposition_growth()
-          : _value(1.5f)
+          : _value(1.7f)
         {}
 
         /// \brief Wrap a `float`.
