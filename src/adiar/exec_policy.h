@@ -150,7 +150,7 @@ namespace adiar
 
       public:
         constexpr transposition_growth()
-          : _value(1.5f)
+          : _value(std::numeric_limits<float>::max())
         {}
 
         /// \brief Wrap a `float`.
