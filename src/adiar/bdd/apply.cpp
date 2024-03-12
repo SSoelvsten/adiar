@@ -88,12 +88,8 @@ namespace adiar
     internal::tuple<bdd::pointer_type>
     __resolve_request(const internal::tuple<bdd::pointer_type>& r) const
     {
-      if (this->_op.can_left_shortcut(r[0])) {
-        return { r[0], bdd::pointer_type(true) };
-      }
-      if (this->_op.can_right_shortcut(r[1])) {
-        return { bdd::pointer_type(true), r[1] };
-      }
+      if (this->_op.can_left_shortcut(r[0])) { return { r[0], bdd::pointer_type(true) }; }
+      if (this->_op.can_right_shortcut(r[1])) { return { bdd::pointer_type(true), r[1] }; }
       return r;
     }
 

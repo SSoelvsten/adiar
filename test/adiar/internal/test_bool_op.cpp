@@ -270,8 +270,9 @@ go_bandit([]() {
     const ptr_uint64 ptr_false(false);
     const ptr_uint64 ptr_true(true);
 
-    const ptr_uint64 ptr_internal__min(0,0);
-    const ptr_uint64 ptr_internal__max = flag(ptr_uint64(ptr_uint64::max_label, ptr_uint64::max_id));
+    const ptr_uint64 ptr_internal__min(0, 0);
+    const ptr_uint64 ptr_internal__max =
+      flag(ptr_uint64(ptr_uint64::max_label, ptr_uint64::max_id));
 
     const ptr_uint64 ptr_nil = ptr_uint64::nil();
 
@@ -821,17 +822,14 @@ go_bandit([]() {
         AssertThat(op.can_left_shortcut(ptr_true), Is().False());
       });
 
-      it(".can_left_shortcut(const Pointer&) [internal]", [&]() {
-        AssertThat(op.can_left_shortcut(ptr_internal__min), Is().False());
-      });
+      it(".can_left_shortcut(const Pointer&) [internal]",
+         [&]() { AssertThat(op.can_left_shortcut(ptr_internal__min), Is().False()); });
 
-      it(".can_left_shortcut(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.can_left_shortcut(ptr_internal__max), Is().False());
-      });
+      it(".can_left_shortcut(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.can_left_shortcut(ptr_internal__max), Is().False()); });
 
-      it(".can_left_shortcut(const Pointer&) [nil]", [&]() {
-        AssertThat(op.can_left_shortcut(ptr_nil), Is().False());
-      });
+      it(".can_left_shortcut(const Pointer&) [nil]",
+         [&]() { AssertThat(op.can_left_shortcut(ptr_nil), Is().False()); });
 
       it(".can_right_shortcut(bool)", [&]() {
         AssertThat(op.can_right_shortcut(false), Is().True());
@@ -843,17 +841,14 @@ go_bandit([]() {
         AssertThat(op.can_right_shortcut(ptr_true), Is().False());
       });
 
-      it(".can_right_shortcut(const Pointer&) [internal]", [&]() {
-        AssertThat(op.can_right_shortcut(ptr_internal__min), Is().False());
-      });
+      it(".can_right_shortcut(const Pointer&) [internal]",
+         [&]() { AssertThat(op.can_right_shortcut(ptr_internal__min), Is().False()); });
 
-      it(".can_right_shortcut(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.can_right_shortcut(ptr_internal__max), Is().False());
-      });
+      it(".can_right_shortcut(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.can_right_shortcut(ptr_internal__max), Is().False()); });
 
-      it(".can_right_shortcut(const Pointer&) [nil]", [&]() {
-        AssertThat(op.can_right_shortcut(ptr_nil), Is().False());
-      });
+      it(".can_right_shortcut(const Pointer&) [nil]",
+         [&]() { AssertThat(op.can_right_shortcut(ptr_nil), Is().False()); });
 
       it(".is_left_idempotent(bool)", [&]() {
         AssertThat(op.is_left_idempotent(false), Is().False());
@@ -865,17 +860,14 @@ go_bandit([]() {
         AssertThat(op.is_left_idempotent(ptr_true), Is().True());
       });
 
-      it(".is_left_idempotent(const Pointer&) [internal]", [&]() {
-        AssertThat(op.is_left_idempotent(ptr_internal__min), Is().False());
-      });
+      it(".is_left_idempotent(const Pointer&) [internal]",
+         [&]() { AssertThat(op.is_left_idempotent(ptr_internal__min), Is().False()); });
 
-      it(".is_left_idempotent(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.is_left_idempotent(ptr_internal__max), Is().False());
-      });
+      it(".is_left_idempotent(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.is_left_idempotent(ptr_internal__max), Is().False()); });
 
-      it(".is_left_idempotent(const Pointer&) [nil]", [&]() {
-        AssertThat(op.is_left_idempotent(ptr_nil), Is().False());
-      });
+      it(".is_left_idempotent(const Pointer&) [nil]",
+         [&]() { AssertThat(op.is_left_idempotent(ptr_nil), Is().False()); });
 
       it(".is_right_idempotent(bool)", [&]() {
         AssertThat(op.is_right_idempotent(false), Is().False());
@@ -887,17 +879,14 @@ go_bandit([]() {
         AssertThat(op.is_right_idempotent(ptr_true), Is().True());
       });
 
-      it(".is_right_idempotent(const Pointer&) [internal]", [&]() {
-        AssertThat(op.is_right_idempotent(ptr_internal__min), Is().False());
-      });
+      it(".is_right_idempotent(const Pointer&) [internal]",
+         [&]() { AssertThat(op.is_right_idempotent(ptr_internal__min), Is().False()); });
 
-      it(".is_right_idempotent(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.is_right_idempotent(ptr_internal__max), Is().False());
-      });
+      it(".is_right_idempotent(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.is_right_idempotent(ptr_internal__max), Is().False()); });
 
-      it(".is_right_idempotent(const Pointer&) [nil]", [&]() {
-        AssertThat(op.is_right_idempotent(ptr_nil), Is().False());
-      });
+      it(".is_right_idempotent(const Pointer&) [nil]",
+         [&]() { AssertThat(op.is_right_idempotent(ptr_nil), Is().False()); });
 
       it(".is_left_negating(bool)", [&]() {
         AssertThat(op.is_left_negating(false), Is().False());
@@ -909,17 +898,14 @@ go_bandit([]() {
         AssertThat(op.is_left_negating(ptr_true), Is().False());
       });
 
-      it(".is_left_negating(const Pointer&) [internal]", [&]() {
-        AssertThat(op.is_left_negating(ptr_internal__min), Is().False());
-      });
+      it(".is_left_negating(const Pointer&) [internal]",
+         [&]() { AssertThat(op.is_left_negating(ptr_internal__min), Is().False()); });
 
-      it(".is_left_negating(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.is_left_negating(ptr_internal__max), Is().False());
-      });
+      it(".is_left_negating(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.is_left_negating(ptr_internal__max), Is().False()); });
 
-      it(".is_left_negating(const Pointer&) [nil]", [&]() {
-        AssertThat(op.is_left_negating(ptr_nil), Is().False());
-      });
+      it(".is_left_negating(const Pointer&) [nil]",
+         [&]() { AssertThat(op.is_left_negating(ptr_nil), Is().False()); });
 
       it(".is_right_negating(bool)", [&]() {
         AssertThat(op.is_right_negating(false), Is().False());
@@ -931,17 +917,14 @@ go_bandit([]() {
         AssertThat(op.is_right_negating(ptr_true), Is().False());
       });
 
-      it(".is_right_negating(const Pointer&) [internal]", [&]() {
-        AssertThat(op.is_right_negating(ptr_internal__min), Is().False());
-      });
+      it(".is_right_negating(const Pointer&) [internal]",
+         [&]() { AssertThat(op.is_right_negating(ptr_internal__min), Is().False()); });
 
-      it(".is_right_negating(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.is_right_negating(ptr_internal__max), Is().False());
-      });
+      it(".is_right_negating(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.is_right_negating(ptr_internal__max), Is().False()); });
 
-      it(".is_right_negating(const Pointer&) [nil]", [&]() {
-        AssertThat(op.is_right_negating(ptr_nil), Is().False());
-      });
+      it(".is_right_negating(const Pointer&) [nil]",
+         [&]() { AssertThat(op.is_right_negating(ptr_nil), Is().False()); });
 
       it(".is_commutative()", [&]() { AssertThat(op.is_commutative(), Is().True()); });
     });
@@ -973,17 +956,14 @@ go_bandit([]() {
         AssertThat(op.can_left_shortcut(ptr_true), Is().False());
       });
 
-      it(".can_left_shortcut(const Pointer&) [internal]", [&]() {
-        AssertThat(op.can_left_shortcut(ptr_internal__min), Is().False());
-      });
+      it(".can_left_shortcut(const Pointer&) [internal]",
+         [&]() { AssertThat(op.can_left_shortcut(ptr_internal__min), Is().False()); });
 
-      it(".can_left_shortcut(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.can_left_shortcut(ptr_internal__max), Is().False());
-      });
+      it(".can_left_shortcut(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.can_left_shortcut(ptr_internal__max), Is().False()); });
 
-      it(".can_left_shortcut(const Pointer&) [nil]", [&]() {
-        AssertThat(op.can_left_shortcut(ptr_nil), Is().False());
-      });
+      it(".can_left_shortcut(const Pointer&) [nil]",
+         [&]() { AssertThat(op.can_left_shortcut(ptr_nil), Is().False()); });
 
       it(".can_right_shortcut(bool)", [&]() {
         AssertThat(op.can_right_shortcut(false), Is().True());
@@ -995,17 +975,14 @@ go_bandit([]() {
         AssertThat(op.can_right_shortcut(ptr_true), Is().False());
       });
 
-      it(".can_right_shortcut(const Pointer&) [internal]", [&]() {
-        AssertThat(op.can_right_shortcut(ptr_internal__min), Is().False());
-      });
+      it(".can_right_shortcut(const Pointer&) [internal]",
+         [&]() { AssertThat(op.can_right_shortcut(ptr_internal__min), Is().False()); });
 
-      it(".can_right_shortcut(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.can_right_shortcut(ptr_internal__max), Is().False());
-      });
+      it(".can_right_shortcut(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.can_right_shortcut(ptr_internal__max), Is().False()); });
 
-      it(".can_right_shortcut(const Pointer&) [nil]", [&]() {
-        AssertThat(op.can_right_shortcut(ptr_nil), Is().False());
-      });
+      it(".can_right_shortcut(const Pointer&) [nil]",
+         [&]() { AssertThat(op.can_right_shortcut(ptr_nil), Is().False()); });
 
       it(".is_left_idempotent(bool)", [&]() {
         AssertThat(op.is_left_idempotent(false), Is().False());
@@ -1017,17 +994,14 @@ go_bandit([]() {
         AssertThat(op.is_left_idempotent(ptr_true), Is().False());
       });
 
-      it(".is_left_idempotent(const Pointer&) [internal]", [&]() {
-        AssertThat(op.is_left_idempotent(ptr_internal__min), Is().False());
-      });
+      it(".is_left_idempotent(const Pointer&) [internal]",
+         [&]() { AssertThat(op.is_left_idempotent(ptr_internal__min), Is().False()); });
 
-      it(".is_left_idempotent(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.is_left_idempotent(ptr_internal__max), Is().False());
-      });
+      it(".is_left_idempotent(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.is_left_idempotent(ptr_internal__max), Is().False()); });
 
-      it(".is_left_idempotent(const Pointer&) [nil]", [&]() {
-        AssertThat(op.is_left_idempotent(ptr_nil), Is().False());
-      });
+      it(".is_left_idempotent(const Pointer&) [nil]",
+         [&]() { AssertThat(op.is_left_idempotent(ptr_nil), Is().False()); });
 
       it(".is_right_idempotent(bool)", [&]() {
         AssertThat(op.is_right_idempotent(false), Is().False());
@@ -1039,17 +1013,14 @@ go_bandit([]() {
         AssertThat(op.is_right_idempotent(ptr_true), Is().False());
       });
 
-      it(".is_right_idempotent(const Pointer&) [internal]", [&]() {
-        AssertThat(op.is_right_idempotent(ptr_internal__min), Is().False());
-      });
+      it(".is_right_idempotent(const Pointer&) [internal]",
+         [&]() { AssertThat(op.is_right_idempotent(ptr_internal__min), Is().False()); });
 
-      it(".is_right_idempotent(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.is_right_idempotent(ptr_internal__max), Is().False());
-      });
+      it(".is_right_idempotent(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.is_right_idempotent(ptr_internal__max), Is().False()); });
 
-      it(".is_right_idempotent(const Pointer&) [nil]", [&]() {
-        AssertThat(op.is_right_idempotent(ptr_nil), Is().False());
-      });
+      it(".is_right_idempotent(const Pointer&) [nil]",
+         [&]() { AssertThat(op.is_right_idempotent(ptr_nil), Is().False()); });
 
       it(".is_left_negating(bool)", [&]() {
         AssertThat(op.is_left_negating(false), Is().False());
@@ -1061,17 +1032,14 @@ go_bandit([]() {
         AssertThat(op.is_left_negating(ptr_true), Is().True());
       });
 
-      it(".is_left_negating(const Pointer&) [internal]", [&]() {
-        AssertThat(op.is_left_negating(ptr_internal__min), Is().False());
-      });
+      it(".is_left_negating(const Pointer&) [internal]",
+         [&]() { AssertThat(op.is_left_negating(ptr_internal__min), Is().False()); });
 
-      it(".is_left_negating(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.is_left_negating(ptr_internal__max), Is().False());
-      });
+      it(".is_left_negating(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.is_left_negating(ptr_internal__max), Is().False()); });
 
-      it(".is_left_negating(const Pointer&) [nil]", [&]() {
-        AssertThat(op.is_left_negating(ptr_nil), Is().False());
-      });
+      it(".is_left_negating(const Pointer&) [nil]",
+         [&]() { AssertThat(op.is_left_negating(ptr_nil), Is().False()); });
 
       it(".is_right_negating(bool)", [&]() {
         AssertThat(op.is_right_negating(false), Is().False());
@@ -1083,17 +1051,14 @@ go_bandit([]() {
         AssertThat(op.is_right_negating(ptr_true), Is().True());
       });
 
-      it(".is_right_negating(const Pointer&) [internal]", [&]() {
-        AssertThat(op.is_right_negating(ptr_internal__min), Is().False());
-      });
+      it(".is_right_negating(const Pointer&) [internal]",
+         [&]() { AssertThat(op.is_right_negating(ptr_internal__min), Is().False()); });
 
-      it(".is_right_negating(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.is_right_negating(ptr_internal__max), Is().False());
-      });
+      it(".is_right_negating(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.is_right_negating(ptr_internal__max), Is().False()); });
 
-      it(".is_right_negating(const Pointer&) [nil]", [&]() {
-        AssertThat(op.is_right_negating(ptr_nil), Is().False());
-      });
+      it(".is_right_negating(const Pointer&) [nil]",
+         [&]() { AssertThat(op.is_right_negating(ptr_nil), Is().False()); });
 
       it(".is_commutative()", [&]() { AssertThat(op.is_commutative(), Is().True()); });
     });
@@ -1125,17 +1090,14 @@ go_bandit([]() {
         AssertThat(op.can_left_shortcut(ptr_true), Is().True());
       });
 
-      it(".can_left_shortcut(const Pointer&) [internal]", [&]() {
-        AssertThat(op.can_left_shortcut(ptr_internal__min), Is().False());
-      });
+      it(".can_left_shortcut(const Pointer&) [internal]",
+         [&]() { AssertThat(op.can_left_shortcut(ptr_internal__min), Is().False()); });
 
-      it(".can_left_shortcut(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.can_left_shortcut(ptr_internal__max), Is().False());
-      });
+      it(".can_left_shortcut(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.can_left_shortcut(ptr_internal__max), Is().False()); });
 
-      it(".can_left_shortcut(const Pointer&) [nil]", [&]() {
-        AssertThat(op.can_left_shortcut(ptr_nil), Is().False());
-      });
+      it(".can_left_shortcut(const Pointer&) [nil]",
+         [&]() { AssertThat(op.can_left_shortcut(ptr_nil), Is().False()); });
 
       it(".can_right_shortcut(bool)", [&]() {
         AssertThat(op.can_right_shortcut(false), Is().False());
@@ -1147,17 +1109,14 @@ go_bandit([]() {
         AssertThat(op.can_right_shortcut(ptr_true), Is().True());
       });
 
-      it(".can_right_shortcut(const Pointer&) [internal]", [&]() {
-        AssertThat(op.can_right_shortcut(ptr_internal__min), Is().False());
-      });
+      it(".can_right_shortcut(const Pointer&) [internal]",
+         [&]() { AssertThat(op.can_right_shortcut(ptr_internal__min), Is().False()); });
 
-      it(".can_right_shortcut(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.can_right_shortcut(ptr_internal__max), Is().False());
-      });
+      it(".can_right_shortcut(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.can_right_shortcut(ptr_internal__max), Is().False()); });
 
-      it(".can_right_shortcut(const Pointer&) [nil]", [&]() {
-        AssertThat(op.can_right_shortcut(ptr_nil), Is().False());
-      });
+      it(".can_right_shortcut(const Pointer&) [nil]",
+         [&]() { AssertThat(op.can_right_shortcut(ptr_nil), Is().False()); });
 
       it(".is_left_idempotent(bool)", [&]() {
         AssertThat(op.is_left_idempotent(false), Is().True());
@@ -1169,17 +1128,14 @@ go_bandit([]() {
         AssertThat(op.is_left_idempotent(ptr_true), Is().False());
       });
 
-      it(".is_left_idempotent(const Pointer&) [internal]", [&]() {
-        AssertThat(op.is_left_idempotent(ptr_internal__min), Is().False());
-      });
+      it(".is_left_idempotent(const Pointer&) [internal]",
+         [&]() { AssertThat(op.is_left_idempotent(ptr_internal__min), Is().False()); });
 
-      it(".is_left_idempotent(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.is_left_idempotent(ptr_internal__max), Is().False());
-      });
+      it(".is_left_idempotent(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.is_left_idempotent(ptr_internal__max), Is().False()); });
 
-      it(".is_left_idempotent(const Pointer&) [nil]", [&]() {
-        AssertThat(op.is_left_idempotent(ptr_nil), Is().False());
-      });
+      it(".is_left_idempotent(const Pointer&) [nil]",
+         [&]() { AssertThat(op.is_left_idempotent(ptr_nil), Is().False()); });
 
       it(".is_right_idempotent(bool)", [&]() {
         AssertThat(op.is_right_idempotent(false), Is().True());
@@ -1191,17 +1147,14 @@ go_bandit([]() {
         AssertThat(op.is_right_idempotent(ptr_true), Is().False());
       });
 
-      it(".is_right_idempotent(const Pointer&) [internal]", [&]() {
-        AssertThat(op.is_right_idempotent(ptr_internal__min), Is().False());
-      });
+      it(".is_right_idempotent(const Pointer&) [internal]",
+         [&]() { AssertThat(op.is_right_idempotent(ptr_internal__min), Is().False()); });
 
-      it(".is_right_idempotent(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.is_right_idempotent(ptr_internal__max), Is().False());
-      });
+      it(".is_right_idempotent(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.is_right_idempotent(ptr_internal__max), Is().False()); });
 
-      it(".is_right_idempotent(const Pointer&) [nil]", [&]() {
-        AssertThat(op.is_right_idempotent(ptr_nil), Is().False());
-      });
+      it(".is_right_idempotent(const Pointer&) [nil]",
+         [&]() { AssertThat(op.is_right_idempotent(ptr_nil), Is().False()); });
 
       it(".is_left_negating(bool)", [&]() {
         AssertThat(op.is_left_negating(false), Is().False());
@@ -1213,17 +1166,14 @@ go_bandit([]() {
         AssertThat(op.is_left_negating(ptr_true), Is().False());
       });
 
-      it(".is_left_negating(const Pointer&) [internal]", [&]() {
-        AssertThat(op.is_left_negating(ptr_internal__min), Is().False());
-      });
+      it(".is_left_negating(const Pointer&) [internal]",
+         [&]() { AssertThat(op.is_left_negating(ptr_internal__min), Is().False()); });
 
-      it(".is_left_negating(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.is_left_negating(ptr_internal__max), Is().False());
-      });
+      it(".is_left_negating(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.is_left_negating(ptr_internal__max), Is().False()); });
 
-      it(".is_left_negating(const Pointer&) [nil]", [&]() {
-        AssertThat(op.is_left_negating(ptr_nil), Is().False());
-      });
+      it(".is_left_negating(const Pointer&) [nil]",
+         [&]() { AssertThat(op.is_left_negating(ptr_nil), Is().False()); });
 
       it(".is_right_negating(bool)", [&]() {
         AssertThat(op.is_right_negating(false), Is().False());
@@ -1235,17 +1185,14 @@ go_bandit([]() {
         AssertThat(op.is_right_negating(ptr_true), Is().False());
       });
 
-      it(".is_right_negating(const Pointer&) [internal]", [&]() {
-        AssertThat(op.is_right_negating(ptr_internal__min), Is().False());
-      });
+      it(".is_right_negating(const Pointer&) [internal]",
+         [&]() { AssertThat(op.is_right_negating(ptr_internal__min), Is().False()); });
 
-      it(".is_right_negating(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.is_right_negating(ptr_internal__max), Is().False());
-      });
+      it(".is_right_negating(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.is_right_negating(ptr_internal__max), Is().False()); });
 
-      it(".is_right_negating(const Pointer&) [nil]", [&]() {
-        AssertThat(op.is_right_negating(ptr_nil), Is().False());
-      });
+      it(".is_right_negating(const Pointer&) [nil]",
+         [&]() { AssertThat(op.is_right_negating(ptr_nil), Is().False()); });
 
       it(".is_commutative()", [&]() { AssertThat(op.is_commutative(), Is().True()); });
     });
@@ -1277,17 +1224,14 @@ go_bandit([]() {
         AssertThat(op.can_left_shortcut(ptr_true), Is().True());
       });
 
-      it(".can_left_shortcut(const Pointer&) [internal]", [&]() {
-        AssertThat(op.can_left_shortcut(ptr_internal__min), Is().False());
-      });
+      it(".can_left_shortcut(const Pointer&) [internal]",
+         [&]() { AssertThat(op.can_left_shortcut(ptr_internal__min), Is().False()); });
 
-      it(".can_left_shortcut(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.can_left_shortcut(ptr_internal__max), Is().False());
-      });
+      it(".can_left_shortcut(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.can_left_shortcut(ptr_internal__max), Is().False()); });
 
-      it(".can_left_shortcut(const Pointer&) [nil]", [&]() {
-        AssertThat(op.can_left_shortcut(ptr_nil), Is().False());
-      });
+      it(".can_left_shortcut(const Pointer&) [nil]",
+         [&]() { AssertThat(op.can_left_shortcut(ptr_nil), Is().False()); });
 
       it(".can_right_shortcut(const Pointer&)", [&]() {
         AssertThat(op.can_right_shortcut(ptr_false), Is().False());
@@ -1299,17 +1243,14 @@ go_bandit([]() {
         AssertThat(op.can_right_shortcut(true), Is().True());
       });
 
-      it(".can_right_shortcut(const Pointer&) [internal]", [&]() {
-        AssertThat(op.can_right_shortcut(ptr_internal__min), Is().False());
-      });
+      it(".can_right_shortcut(const Pointer&) [internal]",
+         [&]() { AssertThat(op.can_right_shortcut(ptr_internal__min), Is().False()); });
 
-      it(".can_right_shortcut(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.can_right_shortcut(ptr_internal__max), Is().False());
-      });
+      it(".can_right_shortcut(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.can_right_shortcut(ptr_internal__max), Is().False()); });
 
-      it(".can_right_shortcut(const Pointer&) [nil]", [&]() {
-        AssertThat(op.can_right_shortcut(ptr_nil), Is().False());
-      });
+      it(".can_right_shortcut(const Pointer&) [nil]",
+         [&]() { AssertThat(op.can_right_shortcut(ptr_nil), Is().False()); });
 
       it(".is_left_idempotent(bool)", [&]() {
         AssertThat(op.is_left_idempotent(false), Is().False());
@@ -1321,17 +1262,14 @@ go_bandit([]() {
         AssertThat(op.is_left_idempotent(ptr_true), Is().False());
       });
 
-      it(".is_left_idempotent(const Pointer&) [internal]", [&]() {
-        AssertThat(op.is_left_idempotent(ptr_internal__min), Is().False());
-      });
+      it(".is_left_idempotent(const Pointer&) [internal]",
+         [&]() { AssertThat(op.is_left_idempotent(ptr_internal__min), Is().False()); });
 
-      it(".is_left_idempotent(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.is_left_idempotent(ptr_internal__max), Is().False());
-      });
+      it(".is_left_idempotent(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.is_left_idempotent(ptr_internal__max), Is().False()); });
 
-      it(".is_left_idempotent(const Pointer&) [nil]", [&]() {
-        AssertThat(op.is_left_idempotent(ptr_nil), Is().False());
-      });
+      it(".is_left_idempotent(const Pointer&) [nil]",
+         [&]() { AssertThat(op.is_left_idempotent(ptr_nil), Is().False()); });
 
       it(".is_right_idempotent(bool)", [&]() {
         AssertThat(op.is_right_idempotent(false), Is().False());
@@ -1343,17 +1281,14 @@ go_bandit([]() {
         AssertThat(op.is_right_idempotent(ptr_true), Is().False());
       });
 
-      it(".is_right_idempotent(const Pointer&) [internal]", [&]() {
-        AssertThat(op.is_right_idempotent(ptr_internal__min), Is().False());
-      });
+      it(".is_right_idempotent(const Pointer&) [internal]",
+         [&]() { AssertThat(op.is_right_idempotent(ptr_internal__min), Is().False()); });
 
-      it(".is_right_idempotent(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.is_right_idempotent(ptr_internal__max), Is().False());
-      });
+      it(".is_right_idempotent(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.is_right_idempotent(ptr_internal__max), Is().False()); });
 
-      it(".is_right_idempotent(const Pointer&) [nil]", [&]() {
-        AssertThat(op.is_right_idempotent(ptr_nil), Is().False());
-      });
+      it(".is_right_idempotent(const Pointer&) [nil]",
+         [&]() { AssertThat(op.is_right_idempotent(ptr_nil), Is().False()); });
 
       it(".is_left_negating(bool)", [&]() {
         AssertThat(op.is_left_negating(false), Is().True());
@@ -1365,17 +1300,14 @@ go_bandit([]() {
         AssertThat(op.is_left_negating(ptr_true), Is().False());
       });
 
-      it(".is_left_negating(const Pointer&) [internal]", [&]() {
-        AssertThat(op.is_left_negating(ptr_internal__min), Is().False());
-      });
+      it(".is_left_negating(const Pointer&) [internal]",
+         [&]() { AssertThat(op.is_left_negating(ptr_internal__min), Is().False()); });
 
-      it(".is_left_negating(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.is_left_negating(ptr_internal__max), Is().False());
-      });
+      it(".is_left_negating(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.is_left_negating(ptr_internal__max), Is().False()); });
 
-      it(".is_left_negating(const Pointer&) [nil]", [&]() {
-        AssertThat(op.is_left_negating(ptr_nil), Is().False());
-      });
+      it(".is_left_negating(const Pointer&) [nil]",
+         [&]() { AssertThat(op.is_left_negating(ptr_nil), Is().False()); });
 
       it(".is_right_negating(bool)", [&]() {
         AssertThat(op.is_right_negating(false), Is().True());
@@ -1387,17 +1319,14 @@ go_bandit([]() {
         AssertThat(op.is_right_negating(ptr_true), Is().False());
       });
 
-      it(".is_right_negating(const Pointer&) [internal]", [&]() {
-        AssertThat(op.is_right_negating(ptr_internal__min), Is().False());
-      });
+      it(".is_right_negating(const Pointer&) [internal]",
+         [&]() { AssertThat(op.is_right_negating(ptr_internal__min), Is().False()); });
 
-      it(".is_right_negating(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.is_right_negating(ptr_internal__max), Is().False());
-      });
+      it(".is_right_negating(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.is_right_negating(ptr_internal__max), Is().False()); });
 
-      it(".is_right_negating(const Pointer&) [nil]", [&]() {
-        AssertThat(op.is_right_negating(ptr_nil), Is().False());
-      });
+      it(".is_right_negating(const Pointer&) [nil]",
+         [&]() { AssertThat(op.is_right_negating(ptr_nil), Is().False()); });
 
       it(".is_commutative()", [&]() { AssertThat(op.is_commutative(), Is().True()); });
     });
@@ -1429,17 +1358,14 @@ go_bandit([]() {
         AssertThat(op.can_left_shortcut(ptr_true), Is().False());
       });
 
-      it(".can_left_shortcut(const Pointer&) [internal]", [&]() {
-        AssertThat(op.can_left_shortcut(ptr_internal__min), Is().False());
-      });
+      it(".can_left_shortcut(const Pointer&) [internal]",
+         [&]() { AssertThat(op.can_left_shortcut(ptr_internal__min), Is().False()); });
 
-      it(".can_left_shortcut(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.can_left_shortcut(ptr_internal__max), Is().False());
-      });
+      it(".can_left_shortcut(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.can_left_shortcut(ptr_internal__max), Is().False()); });
 
-      it(".can_left_shortcut(const Pointer&) [nil]", [&]() {
-        AssertThat(op.can_left_shortcut(ptr_nil), Is().False());
-      });
+      it(".can_left_shortcut(const Pointer&) [nil]",
+         [&]() { AssertThat(op.can_left_shortcut(ptr_nil), Is().False()); });
 
       it(".can_right_shortcut(bool)", [&]() {
         AssertThat(op.can_right_shortcut(false), Is().False());
@@ -1451,17 +1377,14 @@ go_bandit([]() {
         AssertThat(op.can_right_shortcut(ptr_true), Is().False());
       });
 
-      it(".can_right_shortcut(const Pointer&) [internal]", [&]() {
-        AssertThat(op.can_right_shortcut(ptr_internal__min), Is().False());
-      });
+      it(".can_right_shortcut(const Pointer&) [internal]",
+         [&]() { AssertThat(op.can_right_shortcut(ptr_internal__min), Is().False()); });
 
-      it(".can_right_shortcut(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.can_right_shortcut(ptr_internal__max), Is().False());
-      });
+      it(".can_right_shortcut(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.can_right_shortcut(ptr_internal__max), Is().False()); });
 
-      it(".can_right_shortcut(const Pointer&) [nil]", [&]() {
-        AssertThat(op.can_right_shortcut(ptr_nil), Is().False());
-      });
+      it(".can_right_shortcut(const Pointer&) [nil]",
+         [&]() { AssertThat(op.can_right_shortcut(ptr_nil), Is().False()); });
 
       it(".is_left_idempotent(bool)", [&]() {
         AssertThat(op.is_left_idempotent(false), Is().True());
@@ -1473,17 +1396,14 @@ go_bandit([]() {
         AssertThat(op.is_left_idempotent(ptr_true), Is().False());
       });
 
-      it(".is_left_idempotent(const Pointer&) [internal]", [&]() {
-        AssertThat(op.is_left_idempotent(ptr_internal__min), Is().False());
-      });
+      it(".is_left_idempotent(const Pointer&) [internal]",
+         [&]() { AssertThat(op.is_left_idempotent(ptr_internal__min), Is().False()); });
 
-      it(".is_left_idempotent(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.is_left_idempotent(ptr_internal__max), Is().False());
-      });
+      it(".is_left_idempotent(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.is_left_idempotent(ptr_internal__max), Is().False()); });
 
-      it(".is_left_idempotent(const Pointer&) [nil]", [&]() {
-        AssertThat(op.is_left_idempotent(ptr_nil), Is().False());
-      });
+      it(".is_left_idempotent(const Pointer&) [nil]",
+         [&]() { AssertThat(op.is_left_idempotent(ptr_nil), Is().False()); });
 
       it(".is_right_idempotent(bool)", [&]() {
         AssertThat(op.is_right_idempotent(false), Is().True());
@@ -1495,17 +1415,14 @@ go_bandit([]() {
         AssertThat(op.is_right_idempotent(ptr_true), Is().False());
       });
 
-      it(".is_right_idempotent(const Pointer&) [internal]", [&]() {
-        AssertThat(op.is_right_idempotent(ptr_internal__min), Is().False());
-      });
+      it(".is_right_idempotent(const Pointer&) [internal]",
+         [&]() { AssertThat(op.is_right_idempotent(ptr_internal__min), Is().False()); });
 
-      it(".is_right_idempotent(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.is_right_idempotent(ptr_internal__max), Is().False());
-      });
+      it(".is_right_idempotent(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.is_right_idempotent(ptr_internal__max), Is().False()); });
 
-      it(".is_right_idempotent(const Pointer&) [nil]", [&]() {
-        AssertThat(op.is_right_idempotent(ptr_nil), Is().False());
-      });
+      it(".is_right_idempotent(const Pointer&) [nil]",
+         [&]() { AssertThat(op.is_right_idempotent(ptr_nil), Is().False()); });
 
       it(".is_left_negating(bool)", [&]() {
         AssertThat(op.is_left_negating(false), Is().False());
@@ -1517,17 +1434,14 @@ go_bandit([]() {
         AssertThat(op.is_left_negating(ptr_true), Is().True());
       });
 
-      it(".is_left_negating(const Pointer&) [internal]", [&]() {
-        AssertThat(op.is_left_negating(ptr_internal__min), Is().False());
-      });
+      it(".is_left_negating(const Pointer&) [internal]",
+         [&]() { AssertThat(op.is_left_negating(ptr_internal__min), Is().False()); });
 
-      it(".is_left_negating(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.is_left_negating(ptr_internal__max), Is().False());
-      });
+      it(".is_left_negating(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.is_left_negating(ptr_internal__max), Is().False()); });
 
-      it(".is_left_negating(const Pointer&) [nil]", [&]() {
-        AssertThat(op.is_left_negating(ptr_nil), Is().False());
-      });
+      it(".is_left_negating(const Pointer&) [nil]",
+         [&]() { AssertThat(op.is_left_negating(ptr_nil), Is().False()); });
 
       it(".is_right_negating(bool)", [&]() {
         AssertThat(op.is_right_negating(false), Is().False());
@@ -1539,17 +1453,14 @@ go_bandit([]() {
         AssertThat(op.is_right_negating(ptr_true), Is().True());
       });
 
-      it(".is_right_negating(const Pointer&) [internal]", [&]() {
-        AssertThat(op.is_right_negating(ptr_internal__min), Is().False());
-      });
+      it(".is_right_negating(const Pointer&) [internal]",
+         [&]() { AssertThat(op.is_right_negating(ptr_internal__min), Is().False()); });
 
-      it(".is_right_negating(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.is_right_negating(ptr_internal__max), Is().False());
-      });
+      it(".is_right_negating(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.is_right_negating(ptr_internal__max), Is().False()); });
 
-      it(".is_right_negating(const Pointer&) [nil]", [&]() {
-        AssertThat(op.is_right_negating(ptr_nil), Is().False());
-      });
+      it(".is_right_negating(const Pointer&) [nil]",
+         [&]() { AssertThat(op.is_right_negating(ptr_nil), Is().False()); });
 
       it(".is_commutative()", [&]() { AssertThat(op.is_commutative(), Is().True()); });
     });
@@ -1581,17 +1492,14 @@ go_bandit([]() {
         AssertThat(op.can_left_shortcut(ptr_true), Is().False());
       });
 
-      it(".can_left_shortcut(const Pointer&) [internal]", [&]() {
-        AssertThat(op.can_left_shortcut(ptr_internal__min), Is().False());
-      });
+      it(".can_left_shortcut(const Pointer&) [internal]",
+         [&]() { AssertThat(op.can_left_shortcut(ptr_internal__min), Is().False()); });
 
-      it(".can_left_shortcut(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.can_left_shortcut(ptr_internal__max), Is().False());
-      });
+      it(".can_left_shortcut(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.can_left_shortcut(ptr_internal__max), Is().False()); });
 
-      it(".can_left_shortcut(const Pointer&) [nil]", [&]() {
-        AssertThat(op.can_left_shortcut(ptr_nil), Is().False());
-      });
+      it(".can_left_shortcut(const Pointer&) [nil]",
+         [&]() { AssertThat(op.can_left_shortcut(ptr_nil), Is().False()); });
 
       it(".can_right_shortcut(bool)", [&]() {
         AssertThat(op.can_right_shortcut(false), Is().False());
@@ -1603,17 +1511,14 @@ go_bandit([]() {
         AssertThat(op.can_right_shortcut(ptr_true), Is().False());
       });
 
-      it(".can_right_shortcut(const Pointer&) [internal]", [&]() {
-        AssertThat(op.can_right_shortcut(ptr_internal__min), Is().False());
-      });
+      it(".can_right_shortcut(const Pointer&) [internal]",
+         [&]() { AssertThat(op.can_right_shortcut(ptr_internal__min), Is().False()); });
 
-      it(".can_right_shortcut(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.can_right_shortcut(ptr_internal__max), Is().False());
-      });
+      it(".can_right_shortcut(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.can_right_shortcut(ptr_internal__max), Is().False()); });
 
-      it(".can_right_shortcut(const Pointer&) [nil]", [&]() {
-        AssertThat(op.can_right_shortcut(ptr_nil), Is().False());
-      });
+      it(".can_right_shortcut(const Pointer&) [nil]",
+         [&]() { AssertThat(op.can_right_shortcut(ptr_nil), Is().False()); });
 
       it(".is_left_idempotent(bool)", [&]() {
         AssertThat(op.is_left_idempotent(false), Is().False());
@@ -1625,17 +1530,14 @@ go_bandit([]() {
         AssertThat(op.is_left_idempotent(ptr_true), Is().True());
       });
 
-      it(".is_left_idempotent(const Pointer&) [internal]", [&]() {
-        AssertThat(op.is_left_idempotent(ptr_internal__min), Is().False());
-      });
+      it(".is_left_idempotent(const Pointer&) [internal]",
+         [&]() { AssertThat(op.is_left_idempotent(ptr_internal__min), Is().False()); });
 
-      it(".is_left_idempotent(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.is_left_idempotent(ptr_internal__max), Is().False());
-      });
+      it(".is_left_idempotent(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.is_left_idempotent(ptr_internal__max), Is().False()); });
 
-      it(".is_left_idempotent(const Pointer&) [nil]", [&]() {
-        AssertThat(op.is_left_idempotent(ptr_nil), Is().False());
-      });
+      it(".is_left_idempotent(const Pointer&) [nil]",
+         [&]() { AssertThat(op.is_left_idempotent(ptr_nil), Is().False()); });
 
       it(".is_right_idempotent(bool)", [&]() {
         AssertThat(op.is_right_idempotent(false), Is().False());
@@ -1647,17 +1549,14 @@ go_bandit([]() {
         AssertThat(op.is_right_idempotent(ptr_true), Is().True());
       });
 
-      it(".is_right_idempotent(const Pointer&) [internal]", [&]() {
-        AssertThat(op.is_right_idempotent(ptr_internal__min), Is().False());
-      });
+      it(".is_right_idempotent(const Pointer&) [internal]",
+         [&]() { AssertThat(op.is_right_idempotent(ptr_internal__min), Is().False()); });
 
-      it(".is_right_idempotent(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.is_right_idempotent(ptr_internal__max), Is().False());
-      });
+      it(".is_right_idempotent(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.is_right_idempotent(ptr_internal__max), Is().False()); });
 
-      it(".is_right_idempotent(const Pointer&) [nil]", [&]() {
-        AssertThat(op.is_right_idempotent(ptr_nil), Is().False());
-      });
+      it(".is_right_idempotent(const Pointer&) [nil]",
+         [&]() { AssertThat(op.is_right_idempotent(ptr_nil), Is().False()); });
 
       it(".is_left_negating(bool)", [&]() {
         AssertThat(op.is_left_negating(false), Is().True());
@@ -1669,17 +1568,14 @@ go_bandit([]() {
         AssertThat(op.is_left_negating(ptr_true), Is().False());
       });
 
-      it(".is_left_negating(const Pointer&) [internal]", [&]() {
-        AssertThat(op.is_left_negating(ptr_internal__min), Is().False());
-      });
+      it(".is_left_negating(const Pointer&) [internal]",
+         [&]() { AssertThat(op.is_left_negating(ptr_internal__min), Is().False()); });
 
-      it(".is_left_negating(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.is_left_negating(ptr_internal__max), Is().False());
-      });
+      it(".is_left_negating(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.is_left_negating(ptr_internal__max), Is().False()); });
 
-      it(".is_left_negating(const Pointer&) [nil]", [&]() {
-        AssertThat(op.is_left_negating(ptr_nil), Is().False());
-      });
+      it(".is_left_negating(const Pointer&) [nil]",
+         [&]() { AssertThat(op.is_left_negating(ptr_nil), Is().False()); });
 
       it(".is_right_negating(bool)", [&]() {
         AssertThat(op.is_right_negating(false), Is().True());
@@ -1691,17 +1587,14 @@ go_bandit([]() {
         AssertThat(op.is_right_negating(ptr_true), Is().False());
       });
 
-      it(".is_right_negating(const Pointer&) [internal]", [&]() {
-        AssertThat(op.is_right_negating(ptr_internal__min), Is().False());
-      });
+      it(".is_right_negating(const Pointer&) [internal]",
+         [&]() { AssertThat(op.is_right_negating(ptr_internal__min), Is().False()); });
 
-      it(".is_right_negating(const Pointer&) [flagged internal]", [&]() {
-        AssertThat(op.is_right_negating(ptr_internal__max), Is().False());
-      });
+      it(".is_right_negating(const Pointer&) [flagged internal]",
+         [&]() { AssertThat(op.is_right_negating(ptr_internal__max), Is().False()); });
 
-      it(".is_right_negating(const Pointer&) [nil]", [&]() {
-        AssertThat(op.is_right_negating(ptr_nil), Is().False());
-      });
+      it(".is_right_negating(const Pointer&) [nil]",
+         [&]() { AssertThat(op.is_right_negating(ptr_nil), Is().False()); });
 
       it(".is_commutative()", [&]() { AssertThat(op.is_commutative(), Is().True()); });
     });
