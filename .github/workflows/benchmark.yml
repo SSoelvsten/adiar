@@ -109,9 +109,10 @@ jobs:
       matrix:
         include:
           - { category: breakthrough, circuit: 3x4_19_bwnib }
-          - { category: breakthrough, circuit: 3x5_11_bwnib }
-          - { category: domineering,  circuit: 5x5_13_bwnib }
-          - { category: ep,           circuit: 8x8_7_e-8-1_p-3-4_bwnib }
+          - { category: connect4,     circuit: 4x4_9_connect3_bwnib }
+          - { category: domineering,  circuit: 6x6_11_bwnib }
+          - { category: ep,           circuit: 8x8_11_e-8-1_p-2-3_bwnib }
+          - { category: ep_dual,      circuit: 8x8_10_e-8-1_p-3-4_bwnib }
 
     steps:
       - uses: actions/checkout@v2
