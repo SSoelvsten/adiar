@@ -213,83 +213,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////////////////////////
     class nested
     {
-    public:
-      //////////////////////////////////////////////////////////////////////////////////////////////
-      /// \brief   Chosen epsilon value for Nested Sweeping to start skipping the expensive node
-      ///          merging computations (if applicable).
-      ///
-      /// \details During Nested Sweeping, if a later sweep will touch a level again, one can
-      ///          postpone merging duplicate nodes. This does no apply to the last Reduce sweep up.
-      ///          So, the final diagram is still canonical.
-      ///
-      /// \details Setting this value to *1.0* is equivalent to always using the fast reduce. On the
-      ///          other hand, setting it to a negative value turns this optimisation of.
-      ///
-      /// \details To safe on space, the value is stored in a char. Hence, this option can only be
-      ///          set in increments of ~1%.
-      //////////////////////////////////////////////////////////////////////////////////////////////
-      class fast_reduce
-      {
-      public:
-        /// \brief Minimal value
-        static constexpr fast_reduce
-        min()
-        {
-          return -1.0f;
-        }
 
-        /// \brief Maximal value
-        static constexpr fast_reduce
-        max()
-        {
-          return 1.0f;
-        }
-
-      private:
-        signed char _value;
-
-        /// \brief Number of ticks in the interval [0,1] and [-1,0]
-        static constexpr float ticks = std::numeric_limits<signed char>::max();
-
-        /// \brief Convert into a `signed char`
-        static constexpr signed char
-        from_float(float f)
-        {
-          // Truncate `f` to be in the interval [-1,1]
-          if (1.0f < f) {
-            f = 1.0f;
-          } else if (f < -1.0f) {
-            f = -1.0f;
-          }
-
-          // Multiply by 'ticks' to extend the interval *[-1,1]* into *[-ticks,ticks]*. Then,
-          // convert to an integral value. This introduces a loss of precision.
-          return static_cast<signed char>(f * ticks);
-        }
-
-      public:
-        /// \brief Default value construction.
-        constexpr fast_reduce()
-          : _value(0.05f)
-        {}
-
-        /// \brief Conversion constructor from `float`.
-        constexpr fast_reduce(float f)
-          : _value{ from_float(f) }
-        {}
-
-        /// \brief Reobtain this value as a `float`.
-        operator float() const
-        {
-          return static_cast<double>(this->_value) / ticks;
-        }
-
-        bool
-        operator==(const fast_reduce& other) const
-        {
-          return this->_value == other._value;
-        }
-      };
     };
 
   private:
@@ -320,12 +244,6 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////////////////////////
     quantify::transposition_max _quantify__transposition_max /*default*/;
     ;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Chosen epsilon value for Nested Sweeping to start skipping the expensive node merging
-    ///        computations (if applicable).
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    nested::fast_reduce _nested__fast_reduce /*default*/;
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -378,13 +296,6 @@ namespace adiar
       : _quantify__transposition_max(tm)
     {}
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Conversion construction from Nested Sweeping threshold for fast Reduce.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    exec_policy(const nested::fast_reduce& fr)
-      : _nested__fast_reduce(fr)
-    {}
-
     // TODO: constructor with defaults for a specific 'version number'?
 
   public:
@@ -420,7 +331,7 @@ namespace adiar
         && this->_quantify__algorithm == ep._quantify__algorithm
         && this->_quantify__transposition_growth == ep._quantify__transposition_growth
         && this->_quantify__transposition_max == ep._quantify__transposition_max
-        && this->_nested__fast_reduce == ep._nested__fast_reduce;
+        ;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -532,26 +443,6 @@ namespace adiar
       exec_policy ep = *this;
       return ep.set(tm);
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Set the quantify strategy.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    exec_policy&
-    set(const nested::fast_reduce& fr)
-    {
-      this->_nested__fast_reduce = fr;
-      return *this;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Create a copy with the quantify strategy changed.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    exec_policy
-    operator&(const nested::fast_reduce& fr) const
-    {
-      exec_policy ep = *this;
-      return ep.set(fr);
-    }
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -602,16 +493,6 @@ namespace adiar
   exec_policy::get<exec_policy::quantify::transposition_max>() const
   {
     return this->_quantify__transposition_max;
-  }
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////
-  /// \brief Chosen Nested Sweeping fast reduce epsilon value.
-  ////////////////////////////////////////////////////////////////////////////////////////////////
-  template <>
-  inline const exec_policy::nested::fast_reduce&
-  exec_policy::get<exec_policy::nested::fast_reduce>() const
-  {
-    return this->_nested__fast_reduce;
   }
 
   /// \}
