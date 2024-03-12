@@ -44,7 +44,8 @@ namespace adiar::internal
     ///
     /// \details The `__reduce_level` algorithm merges duplicate subtrees by use of two sorting
     ///          steps. Yet, these cost I/Os and computation time. This is an alternative, that does
-    ///          not merge subtrees.
+    ///          not apply any reduction rules. This is only useful, if one can already guarantee
+    ///          the unreduced input in fact already is reduced, e.g. variable reordering.
     ///
     /// \warning Where `__reduce_level` only requires the priority queue can contain a 1-level cut
     ///          (since it processes all nodes of a level in bulk), this variation induces a 2-level
@@ -74,11 +75,6 @@ namespace adiar::internal
       // Pull out all nodes from pq and terminal_arcs for this level
       typename dd_policy::id_type out_id = dd_policy::max_id;
 
-      // Remember previously outputted node
-      node out_node = { node::uid_type(),
-                        node::pointer_type::nil(),
-                        node::pointer_type::nil() } /* <-- dummy value */;
-
       while (pq.can_pull()
              || (arcs.can_pull_terminal() && arcs.peek_terminal().source().label() == label)) {
         // TODO (MDD / QMDD):
@@ -90,7 +86,7 @@ namespace adiar::internal
         adiar_assert(n.label() == label, "Label is for desired level");
 
         // TODO (dd_replace):
-        //   Disable the following if-statement for faster performance
+        //   Disable the following if-statements for faster performance
 
         node::pointer_type t;
 
@@ -110,23 +106,12 @@ namespace adiar::internal
           // Store terminal value for epilogue
           if (t.is_terminal()) { terminal_val = t.value(); }
         } else {
-          // Apply Reduction rule 2
-          if (out_node.low() == unflag(n.low()) && out_node.high() == unflag(n.high())) {
-            // TODO (reordering): make this branch trivially false with 'final_canonical'
-#ifdef ADIAR_STATS
-            stats.removed_by_rule_2 += 1u;
-#endif
-            // Decrease 1-level cut over-approximation
-            __reduce_decrement_cut(one_level_cut, n.low());
-            __reduce_decrement_cut(one_level_cut, n.high());
-          } else {
-            // TODO (canonicity): mark canonical false if order is wrong
+          // TODO (canonicity): mark canonical false if order is wrong
 
-            // Output node
-            adiar_assert(out_id > 0, "Should still have more ids left");
-            out_node = node(label, out_id--, unflag(n.low()), unflag(n.high()));
-            out_writer.unsafe_push(out_node);
-          }
+          // Output node
+          adiar_assert(out_id > 0, "Should still have more ids left");
+          const typename dd_policy::node_type out_node(label, out_id--, unflag(n.low()), unflag(n.high()));
+          out_writer.unsafe_push(out_node);
 
           t = out_node.uid();
         }
