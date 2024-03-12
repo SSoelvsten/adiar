@@ -9,17 +9,20 @@
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
 #include <adiar/internal/data_types/request.h>
 
-////////////////////////////////////////////////////////////////////////////////
-/// Policy that provides the most simplistic top-down sweep to test the Inner
-/// Down Sweep in isolation. The algorithm within is a simple 'mark and sweep'
-/// GC that somewhat negates the entire DAG (but kills the nodes on the nesting
-/// level).
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// Policy that provides the most simplistic top-down sweep to test the Inner Down Sweep in
+/// isolation. The algorithm within is a simple 'mark and sweep' GC that somewhat negates the entire
+/// DAG (but kills the nodes on the nesting level).
 ///
-/// \tparam only_gc when set to true, then each request created will only have a
-///                 single non-nil member, i.e. it is a request preserving a
-///                 subtree but (presumably) not changing it.
-////////////////////////////////////////////////////////////////////////////////
-template <bool FinalCanonical = true, bool only_gc = false>
+/// \tparam FinalCanonical Whether the final BDD should be canonical (see `FastReduce`).
+///
+/// \tparam FastReduce     Whether to use the 'fast reduce' algorithm.
+///
+/// \tparam OnlyGC         When set to true, then each request created will only have a single
+///                        non-nil member, i.e. it is a request preserving a subtree but (presumably)
+///                        not changing it.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+template <bool FinalCanonical = true, bool FastReduce = false, bool OnlyGC = false>
 class test_not_sweep
   : public bdd_policy
   , public statistics::__alg_base::__lpq_t
@@ -44,14 +47,14 @@ public:
   {}
 
 public:
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   static size_t
   stream_memory()
   {
     return node_stream<>::memory_usage() + arc_writer::memory_usage();
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   static size_t
   pq_memory(const size_t inner_memory)
   {
@@ -64,7 +67,7 @@ public:
     return std::numeric_limits<size_t>::max();
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   static size_t
   pq_bound(const shared_levelized_file<node>& /*outer_file*/, const size_t /*outer_roots*/)
   {
@@ -72,9 +75,9 @@ public:
   }
 
 public:
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief The Sweep Logic for the PQ access mode case.
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename inner_pq_t>
   __bdd
   sweep_pq(const exec_policy& ep,
@@ -126,9 +129,9 @@ public:
     return __bdd(af, ep);
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief The Sweep Logic for the RA access mode case.
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename inner_pq_t>
   __bdd
   sweep_ra(const exec_policy& ep,
@@ -140,7 +143,7 @@ public:
   }
 
 private:
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   template <bool is_high, typename inner_pq_t>
   void
   forward_arc(inner_pq_t& inner_pq,
@@ -156,18 +159,18 @@ private:
   }
 
 public:
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Whether it wants to sweep on some level.
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   bool
   has_sweep(node::pointer_type::label_type l) const
   {
     return (l % _nesting_modulo) == 0u;
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Pick PQ type and Run Sweep.
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename outer_roots_t>
   __bdd
   sweep(const exec_policy& ep,
@@ -179,21 +182,21 @@ public:
       ep, *this, outer_file, outer_roots, inner_memory, *this);
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Create request
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   static inline request_t
   request_from_node(const node& n, const ptr_uint64& parent)
   {
     // Always pick high child
-    return request_t({ n.high(), only_gc ? node::pointer_type::nil() : n.high() }, {}, { parent });
+    return request_t({ n.high(), OnlyGC ? node::pointer_type::nil() : n.high() }, {}, { parent });
   }
 
-  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////
   static constexpr bool final_canonical = FinalCanonical;
+  static constexpr bool fast_reduce = FastReduce;
 };
 
-template <bool FinalCanonical = true>
 class test_terminal_sweep
   : public bdd_policy
   , public statistics::__alg_base::__lpq_t
@@ -216,14 +219,14 @@ public:
   {}
 
 public:
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   static size_t
   stream_memory()
   {
     return 0u;
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   static size_t
   pq_memory(const size_t inner_memory)
   {
@@ -236,7 +239,7 @@ public:
     return std::numeric_limits<size_t>::max();
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   static size_t
   pq_bound(const shared_levelized_file<node>& /*outer_file*/, const size_t /*outer_roots*/)
   {
@@ -244,9 +247,9 @@ public:
   }
 
 public:
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief The Sweep Logic for the PQ access mode case.
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename inner_pq_t>
   __bdd
   sweep_pq(const exec_policy& ep,
@@ -302,9 +305,9 @@ public:
     return __bdd(af, ep);
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief The Sweep Logic for the RA access mode case.
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename inner_pq_t>
   __bdd
   sweep_ra(const exec_policy& ep,
@@ -316,18 +319,18 @@ public:
   }
 
 public:
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Whether it wants to sweep on some level.
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   bool
   has_sweep(node::pointer_type::label_type l) const
   {
     return (l % _nesting_modulo) == 0u;
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Pick PQ type and Run Sweep.
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename outer_roots_t>
   __bdd
   sweep(const exec_policy& ep,
@@ -339,9 +342,9 @@ public:
       ep, *this, outer_file, outer_roots, inner_memory, *this);
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Create request
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   static inline request_t
   request_from_node(const node& n, const ptr_uint64& parent)
   {
@@ -349,8 +352,9 @@ public:
     return request_t({ n.low() }, {}, { parent });
   }
 
-  ////////////////////////////////////////////////////////////////////////////
-  static constexpr bool final_canonical = FinalCanonical;
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+  static constexpr bool final_canonical = true;
+  static constexpr bool fast_reduce = false;
 };
 
 go_bandit([]() {
@@ -3357,7 +3361,7 @@ go_bandit([]() {
         });
 
         it("can collapse to a terminal", []() {
-          test_terminal_sweep<> test_policy(2);
+          test_terminal_sweep test_policy(2);
 
           /*
           //  nil
@@ -3413,7 +3417,6 @@ go_bandit([]() {
       });
 
       describe("inner::up(...)", []() {
-        using test_policy = test_not_sweep<>;
         using outer_pq_t  = nested_sweeping::outer::up__pq_t<1, memory_mode::Internal>;
 
         {
@@ -3485,6 +3488,8 @@ go_bandit([]() {
           }
 
           it("reduces forest and pushes roots back out", [&]() {
+            using test_policy = test_not_sweep</*FinalCanonical*/ true, /*FastReduce*/ false>;
+
             shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
             node_writer out_writer(out);
 
@@ -3502,7 +3507,7 @@ go_bandit([]() {
             //        / \
             //        T F
             */
-            nested_sweeping::inner::up<test_policy>(exec_policy::nested::fast_reduce(-1.0),
+            nested_sweeping::inner::up<test_policy>(exec_policy(),
                                                     stream_outer,
                                                     out_pq,
                                                     out_writer,
@@ -3576,6 +3581,8 @@ go_bandit([]() {
           });
 
           it("uses fast reduce with non-negative value [non-adjacent duplicates]", [&]() {
+            using test_policy = test_not_sweep</*FinalCanonical*/ true, /*FastReduce*/ true>;
+
             shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
             node_writer out_writer(out);
 
@@ -3595,7 +3602,7 @@ go_bandit([]() {
             //            / \
             //            T F
             */
-            nested_sweeping::inner::up<test_policy>(exec_policy::nested::fast_reduce(1.0),
+            nested_sweeping::inner::up<test_policy>(exec_policy(),
                                                     stream_outer,
                                                     out_pq,
                                                     out_writer,
@@ -3670,6 +3677,8 @@ go_bandit([]() {
           });
 
           it("reduces forest canonically anyway if 'is_last_inner == true'", [&]() {
+            using test_policy = test_not_sweep</*FinalCanonical*/ true, /*FastReduce*/ true>;
+
             shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
             node_writer out_writer(out);
 
@@ -3687,7 +3696,7 @@ go_bandit([]() {
             //        / \
             //        T F
             */
-            nested_sweeping::inner::up<test_policy>(exec_policy::nested::fast_reduce(1.0),
+            nested_sweeping::inner::up<test_policy>(exec_policy(),
                                                     stream_outer,
                                                     out_pq,
                                                     out_writer,
@@ -3759,9 +3768,107 @@ go_bandit([]() {
 
             AssertThat(out_pq.can_pull(), Is().False());
           });
+
+          it("reduces forest non-canonically despite 'is_last_inner == true' [non-adjacent duplicates]", [&]() {
+            using test_policy = test_not_sweep</*FinalCanonical*/ true, /*FastReduce*/ true>;
+
+            shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
+            node_writer out_writer(out);
+
+            const size_t available_memory = memory_available();
+
+            outer_pq_t out_pq({ in_outer }, available_memory / 2, in_outer->max_1level_cut);
+            out_pq.setup_next_level(2);
+
+            /* output
+            //       1     _2_           ---- x1
+            //  -   - \ - / - \  -   -   -    -
+            //        3   4   5          ---- x2
+            //       / \ / \ / \
+            //       T | F T T |
+            //         \___ ___/
+            //             6             ---- x3
+            //            / \
+            //            T F
+            */
+            nested_sweeping::inner::up<test_policy>(exec_policy(),
+                                                    stream_outer,
+                                                    out_pq,
+                                                    out_writer,
+                                                    in_inner,
+                                                    available_memory / 2,
+                                                    false);
+
+            // Check meta variables before detach computations
+            AssertThat(out->width, Is().EqualTo(3u));
+
+            AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(2u));
+            AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(3u));
+            AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(5u));
+            AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(6u));
+
+            AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+            AssertThat(out->number_of_terminals[true], Is().EqualTo(4u));
+
+            // Check node and meta files are correct
+            out_writer.detach();
+
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // 6
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(3, node::max_id, terminal_T, terminal_F)));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // 5
+            AssertThat(
+              out_nodes.pull(),
+              Is().EqualTo(node(2, node::max_id, terminal_T, ptr_uint64(3, ptr_uint64::max_id))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // 4
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(2, node::max_id - 1, terminal_F, terminal_T)));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // 3
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(
+                         node(2, node::max_id - 2, terminal_T, ptr_uint64(3, ptr_uint64::max_id))));
+
+            AssertThat(out_nodes.can_pull(), Is().False());
+
+            level_info_test_stream out_meta(out);
+
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
+
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 3u)));
+
+            AssertThat(out_meta.can_pull(), Is().False());
+
+            // Check outer priority queue is correct
+            AssertThat(out_pq.size(), Is().EqualTo(3u));
+
+            out_pq.setup_next_level();
+
+            AssertThat(out_pq.can_pull(), Is().True());
+            AssertThat(out_pq.pull(),
+                       Is().EqualTo(arc(n2, true, ptr_uint64(2, ptr_uint64::max_id))));
+
+            AssertThat(out_pq.can_pull(), Is().True());
+            AssertThat(out_pq.pull(),
+                       Is().EqualTo(arc(n2, false, ptr_uint64(2, ptr_uint64::max_id - 1))));
+
+            AssertThat(out_pq.can_pull(), Is().True());
+            AssertThat(out_pq.pull(),
+                       Is().EqualTo(arc(n1, true, ptr_uint64(2, ptr_uint64::max_id - 2))));
+
+            AssertThat(out_pq.can_pull(), Is().False());
+          });
         }
 
         it("uses fast reduce with non-negative value [adjacent duplicates]", []() {
+          using test_policy = test_not_sweep</*FinalCanonical*/ true, /*FastReduce*/ true>;
+
           /* input (same as above but with nodes 4 and 5 swapped)
           //
           //         _0__              ---- x0
@@ -3846,7 +3953,7 @@ go_bandit([]() {
           //            / \
           //            T F
           */
-          nested_sweeping::inner::up<test_policy>(exec_policy::nested::fast_reduce(1.0),
+          nested_sweeping::inner::up<test_policy>(exec_policy(),
                                                   stream_outer,
                                                   out_pq,
                                                   out_writer,
@@ -3917,6 +4024,8 @@ go_bandit([]() {
         });
 
         it("includes outer_pq terminals in cut size", []() {
+          using test_policy = test_not_sweep</*FinalCanonical*/ true, /*FastReduce*/ false>;
+
           /* input
           //     _1_            ---- x1
           //  - / - \ -   -   -    -
@@ -3975,7 +4084,7 @@ go_bandit([]() {
           //    |  / \
           //    F  F T
           */
-          nested_sweeping::inner::up<test_policy>(exec_policy::nested::fast_reduce(-1.0),
+          nested_sweeping::inner::up<test_policy>(exec_policy(),
                                                   stream_outer,
                                                   out_pq,
                                                   out_writer,
@@ -4026,6 +4135,8 @@ go_bandit([]() {
         });
 
         it("includes outer_arcs terminals in cut size", []() {
+          using test_policy = test_not_sweep</*FinalCanonical*/ true, /*FastReduce*/ false>;
+
           /* input
           //     _1_            ---- x1
           //  - / - \ -   -   -    -
@@ -4086,7 +4197,7 @@ go_bandit([]() {
           //       / \
           //       F T
           */
-          nested_sweeping::inner::up<test_policy>(exec_policy::nested::fast_reduce(-1.0),
+          nested_sweeping::inner::up<test_policy>(exec_policy(),
                                                   stream_outer,
                                                   out_pq,
                                                   out_writer,
@@ -4134,6 +4245,8 @@ go_bandit([]() {
         });
 
         it("includes account for tainted arcs of 1-level cut", []() {
+          using test_policy = test_not_sweep</*FinalCanonical*/ true, /*FastReduce*/ false>;
+
           /* input
           //      1_            ---- x1
           //  -   - \ -   -   -    -
@@ -4195,7 +4308,7 @@ go_bandit([]() {
           //       / \
           //       F T <-- T tainted in global cut
           */
-          nested_sweeping::inner::up<test_policy>(exec_policy::nested::fast_reduce(-1.0),
+          nested_sweeping::inner::up<test_policy>(exec_policy(),
                                                   stream_outer,
                                                   out_pq,
                                                   out_writer,
@@ -4243,6 +4356,8 @@ go_bandit([]() {
         });
 
         it("leaves file empty if everything collapsed to a terminal", []() {
+          using test_policy = test_not_sweep</*FinalCanonical*/ true, /*FastReduce*/ false>;
+
           /* input
           //      1_            ---- x1
           //  -   - \ -   -   -    -
@@ -4296,7 +4411,7 @@ go_bandit([]() {
           //  -   - \ -   -   -    -
           //        T <-- in 'out_pq', not in 'out'
           */
-          nested_sweeping::inner::up<test_policy>(exec_policy::nested::fast_reduce(-1.0),
+          nested_sweeping::inner::up<test_policy>(exec_policy(),
                                                   stream_outer,
                                                   out_pq,
                                                   out_writer,
@@ -4338,6 +4453,8 @@ go_bandit([]() {
         });
 
         it("can deal with some root arcs go to a terminal", []() {
+          using test_policy = test_not_sweep</*FinalCanonical*/ true, /*FastReduce*/ false>;
+
           /* input
           //     _1_            ---- x1
           //  - / - \ -   -   -    -
@@ -4394,7 +4511,7 @@ go_bandit([]() {
           //    |  / \
           //    F  F T
           */
-          nested_sweeping::inner::up<test_policy>(exec_policy::nested::fast_reduce(-1.0),
+          nested_sweeping::inner::up<test_policy>(exec_policy(),
                                                   stream_outer,
                                                   out_pq,
                                                   out_writer,
@@ -5245,7 +5362,7 @@ go_bandit([]() {
           in->max_1level_cut = 4;
         }
 
-        test_terminal_sweep<> inner_impl(2);
+        test_terminal_sweep inner_impl(2);
 
         /* output
         //        1            ---- x1
@@ -5332,7 +5449,7 @@ go_bandit([]() {
           in->max_1level_cut = 2;
         }
 
-        test_terminal_sweep<> inner_impl(3);
+        test_terminal_sweep inner_impl(3);
 
         /* output
         //         _1_        ---- x2
@@ -5842,7 +5959,7 @@ go_bandit([]() {
           in->max_1level_cut = 1;
         }
 
-        test_terminal_sweep<> inner_impl(2);
+        test_terminal_sweep inner_impl(2);
 
         /* output
         //     T
@@ -5910,7 +6027,7 @@ go_bandit([]() {
           in->max_1level_cut = 1;
         }
 
-        test_terminal_sweep<> inner_impl(4);
+        test_terminal_sweep inner_impl(4);
         /* output
         //     T   <-- reduced from  2'    ---- x2
         //                          / \
@@ -6002,7 +6119,7 @@ go_bandit([]() {
             in->max_1level_cut = 3;
           }
 
-          test_not_sweep<true, true> inner_impl(2);
+          test_not_sweep</*FinalCanonical*/ true, /*FastReduce*/ false, /*OnlyGC*/ true> inner_impl(2);
 
           /* output
           //        _1_      ---- x1
@@ -6139,7 +6256,7 @@ go_bandit([]() {
             in->max_1level_cut = 3;
           }
 
-          test_not_sweep<true, true> inner_impl(2);
+          test_not_sweep</*FinalCanonical*/ true, /*FastReduce*/ false, /*OnlyGC*/ true> inner_impl(2);
 
           /* output
           //        _1_      ---- x1
@@ -6232,11 +6349,9 @@ go_bandit([]() {
         //       /   \    ||
         //       |   |    ||
         //       5   7    6       ---- x5      <-- (5) and (7) should be merged but (6) blocks the
-        view for fast-reduce
-        //      / \ / \  / \                       NOTE: the picture is (for sake of clarity)
-        out-of-order
-        //      |  X  |  F T
-        //      \ / \ /
+        //      / \ / \  / \                       view for fast-reduce
+        //      |  X  |  F T                       NOTE: the picture is (for sake of clarity)
+        //      \ / \ /                            out-of-order
         //       8   9            ---- x6 (%2)
         //      / \ / \
         //      F | T  \
@@ -6324,7 +6439,7 @@ go_bandit([]() {
           //    T  F   F  T
           */
 
-          test_not_sweep</*final_canonical*/ true> inner_impl(2);
+          test_not_sweep</*FinalCanonical*/ true, /*FastReduce*/ true> inner_impl(2);
 
           const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
@@ -6380,16 +6495,16 @@ go_bandit([]() {
           AssertThat(out->is_canonical(), Is().True());
 
           // Over-approximation:
-          //   4 and 5 are only merged after the second inner sweep for x2. This
+          //   5 and 7 are only merged after the second inner sweep for x2. This
           //   propagates to 3 only in the last sweep, which in turn taints the
-          //   arc 1 ---> 4/5 which is added onto the final cut-size.
+          //   arc 1 ---> 5/7 which is added onto the final cut-size.
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(2u));
           AssertThat(out->max_1level_cut[cut::Internal], Is().LessThanOrEqualTo(3u));
 
           // Over-approximation:
           //   See above.
           AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(2u));
-          AssertThat(out->max_1level_cut[cut::Internal_False], Is().LessThanOrEqualTo(3u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().LessThanOrEqualTo(4u));
 
           // Over-approximation:
           //   See above.
@@ -6401,9 +6516,9 @@ go_bandit([]() {
           AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(6u));
 
           AssertThat(out->max_2level_cut[cut::Internal], Is().GreaterThanOrEqualTo(2u));
-          AssertThat(out->max_2level_cut[cut::Internal], Is().LessThanOrEqualTo(3u));
+          AssertThat(out->max_2level_cut[cut::Internal], Is().LessThanOrEqualTo(4u));
           AssertThat(out->max_2level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(2u));
-          AssertThat(out->max_2level_cut[cut::Internal_False], Is().LessThanOrEqualTo(4u));
+          AssertThat(out->max_2level_cut[cut::Internal_False], Is().LessThanOrEqualTo(5u));
           AssertThat(out->max_2level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(3u));
           AssertThat(out->max_2level_cut[cut::Internal_True], Is().LessThanOrEqualTo(5u));
           AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(6u));
@@ -6438,7 +6553,7 @@ go_bandit([]() {
           //     F  T T  F
           */
 
-          test_not_sweep</*final_canonical*/ false> inner_impl(2);
+          test_not_sweep</*FinalCanonical*/ false, /*FastReduce*/ true> inner_impl(2);
 
           const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
 
