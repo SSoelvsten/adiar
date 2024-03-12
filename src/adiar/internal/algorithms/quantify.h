@@ -182,7 +182,7 @@ namespace adiar::internal
     operator()(const Request& req) const
     {
 #ifdef ADIAR_STATS
-      stats_quantify.requests[__quantify_arity_idx(req)] += 1;
+      stats_quantify.requests[__quantify_arity_idx(req)] += 1u;
 #endif
       if (!req.data.source.is_nil()) {
         this->_aw.push_internal({ req.data.source, this->_out_uid });
@@ -242,7 +242,7 @@ namespace adiar::internal
       adiar_assert(req.data.source.is_nil() || req.data.source.level() < this->_t.first().level(),
                    "Request should be forwarded downwards");
 #ifdef ADIAR_STATS
-      stats_quantify.requests[__quantify_arity_idx(req)] += 1;
+      stats_quantify.requests[__quantify_arity_idx(req)] += 1u;
 #endif
       this->_pq.push({ this->_t, {}, req.data });
     }
@@ -337,7 +337,7 @@ namespace adiar::internal
         quantify_request<0> req = pq.top();
 
 #ifdef ADIAR_STATS
-        stats_quantify.requests_unique[__quantify_arity_idx(req)] += 1;
+        stats_quantify.requests_unique[__quantify_arity_idx(req)] += 1u;
 #endif
 
         // Obtain of first to-be seen node
@@ -515,7 +515,7 @@ namespace adiar::internal
                      "Level of requests always ought to match the one currently processed");
 
 #ifdef ADIAR_STATS
-        stats_quantify.requests_unique[__quantify_arity_idx(req)] += 1;
+        stats_quantify.requests_unique[__quantify_arity_idx(req)] += 1u;
 #endif
 
         // Recreate children of the two targeted nodes (or possibly the
