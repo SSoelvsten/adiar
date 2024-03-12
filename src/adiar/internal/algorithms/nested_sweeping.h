@@ -542,7 +542,7 @@ namespace adiar::internal
         {
           if (a.source().is_nil() || (a.source().label() < _next_inner && a.target().is_node())) {
 #ifdef ADIAR_STATS
-            nested_sweeping::stats.inner_down.requests.preserving += 1;
+            nested_sweeping::stats.inner_down.requests.preserving += 1u;
 #endif
             _outer_roots.push(a);
           } else {
@@ -571,7 +571,7 @@ namespace adiar::internal
           adiar_assert(e.data.source.is_nil() || e.data.source.label() < _next_inner);
           if (e.target.first().is_terminal()) {
 #ifdef ADIAR_STATS
-            nested_sweeping::stats.inner_down.requests.terminals += 1;
+            nested_sweeping::stats.inner_down.requests.terminals += 1u;
 #endif
             _outer_pq.push({ e.data.source, e.target.first() });
           } else {
@@ -1004,11 +1004,11 @@ namespace adiar::internal
 
         if (use_random_access) {
 #ifdef ADIAR_STATS
-          stats.inner_down.ra_runs += 1;
+          stats.inner_down.ra_runs += 1u;
 #endif
         } else {
 #ifdef ADIAR_STATS
-          stats.inner_down.pq_runs += 1;
+          stats.inner_down.pq_runs += 1u;
 #endif
         }
 
@@ -1218,12 +1218,12 @@ namespace adiar::internal
         {
           if (v.source().is_flagged()) {
 #ifdef ADIAR_STATS
-            stats.inner_up.outer_arcs += 1;
+            stats.inner_up.outer_arcs += 1u;
 #endif
             _outer_pq.push(arc(unflag(v.source()), v.target()));
           } else {
 #ifdef ADIAR_STATS
-            stats.inner_up.inner_arcs += 1;
+            stats.inner_up.inner_arcs += 1u;
 #endif
             _inner_pq.push(v);
           }
@@ -1500,13 +1500,13 @@ namespace adiar::internal
                        "level and priority queue should be in sync");
 
 #ifdef ADIAR_STATS
-          nested_sweeping::stats.inner_up.reduced_levels += 1;
+          nested_sweeping::stats.inner_up.reduced_levels += 1u;
 #endif
 
           if (/*constexpr*/ !nesting_policy::final_canonical
               || (!is_last_inner && auto_fast_reduce)) {
 #ifdef ADIAR_STATS
-            nested_sweeping::stats.inner_up.reduced_levels__fast += 1;
+            nested_sweeping::stats.inner_up.reduced_levels__fast += 1u;
 #endif
 
             nested_sweeping::__reduce_level__fast<nesting_policy>(
@@ -1677,12 +1677,12 @@ namespace adiar::internal
     // classic Reduce sweep.
     if (next_inner == inner_iter_t::end) {
 #ifdef ADIAR_STATS
-      nested_sweeping::stats.skips += 1;
+      nested_sweeping::stats.skips += 1u;
 #endif
       return reduce<nesting_policy>(typename nesting_policy::__dd_type(dag, ep));
     }
 #ifdef ADIAR_STATS
-    nested_sweeping::stats.runs += 1;
+    nested_sweeping::stats.runs += 1u;
 
     nested_sweeping::stats.outer_up.sum_node_arcs += dag->size(0);
     nested_sweeping::stats.outer_up.sum_terminal_arcs += dag->size(1) + dag->size(2);
@@ -1761,12 +1761,12 @@ namespace adiar::internal
       //   Reduce this level (without decorators).
       if (next_inner == inner_iter_t::end) {
 #ifdef ADIAR_STATS
-        nested_sweeping::stats.outer_up.reduced_levels += 1;
+        nested_sweeping::stats.outer_up.reduced_levels += 1u;
 #endif
 
         if constexpr (!nesting_policy::final_canonical) {
 #ifdef ADIAR_STATS
-          nested_sweeping::stats.outer_up.reduced_levels__fast += 1;
+          nested_sweeping::stats.outer_up.reduced_levels__fast += 1u;
 #endif
 
           nested_sweeping::__reduce_level__fast<nesting_policy>(outer_arcs,
@@ -1805,12 +1805,12 @@ namespace adiar::internal
         outer_pq_decorator_t outer_pq_decorator(outer_pq, outer_roots, next_inner);
 
 #ifdef ADIAR_STATS
-        nested_sweeping::stats.outer_up.reduced_levels += 1;
+        nested_sweeping::stats.outer_up.reduced_levels += 1u;
 #endif
 
         if (/*constexpr*/ !nesting_policy::final_canonical || auto_fast_reduce) {
 #ifdef ADIAR_STATS
-          nested_sweeping::stats.outer_up.reduced_levels__fast += 1;
+          nested_sweeping::stats.outer_up.reduced_levels__fast += 1u;
 #endif
 
           nested_sweeping::__reduce_level__fast<nesting_policy>(outer_arcs,
@@ -1893,13 +1893,13 @@ namespace adiar::internal
                 return reduced_t(reduction_rule_ret.value());
               }
 #ifdef ADIAR_STATS
-              nested_sweeping::stats.inner_down.removed_by_rule_1 += 1;
+              nested_sweeping::stats.inner_down.removed_by_rule_1 += 1u;
 #endif
               outer_pq_decorator.push(arc(node::pointer_type::nil(), flag(reduction_rule_ret)));
             } else {
               do {
 #ifdef ADIAR_STATS
-                nested_sweeping::stats.inner_down.removed_by_rule_1 += 1;
+                nested_sweeping::stats.inner_down.removed_by_rule_1 += 1u;
 #endif
                 outer_pq_decorator.push(
                   arc(outer_arcs.pull_internal().source(), flag(reduction_rule_ret)));
@@ -1953,7 +1953,7 @@ namespace adiar::internal
         // ---------------------------------------------------------------------
         // Inner Down Sweep
 #ifdef ADIAR_STATS
-        nested_sweeping::stats.outer_up.nested_levels += 1;
+        nested_sweeping::stats.outer_up.nested_levels += 1u;
 #endif
         adiar_assert(outer_roots.size() > 0, "Nested Sweep needs some number of requests");
 
@@ -2018,7 +2018,7 @@ namespace adiar::internal
         // Bail out requests for a GC-only Inner Sweep (postponing doing so for
         // a later sweep)
 #ifdef ADIAR_STATS
-        nested_sweeping::stats.outer_up.skipped_nested_levels += 1;
+        nested_sweeping::stats.outer_up.skipped_nested_levels += 1u;
 #endif
         adiar_assert(next_inner <= nesting_policy::pointer_type::max_label,
                      "Has another later sweep to do possible garbage collection");
@@ -2042,8 +2042,8 @@ namespace adiar::internal
                // ---------------------------------------------------------------------
                // Nothing within 'outer_file' should survive
 #ifdef ADIAR_STATS
-        nested_sweeping::stats.outer_up.skipped_nested_levels += 1;
-        nested_sweeping::stats.outer_up.skipped_nested_levels__prune += 1;
+        nested_sweeping::stats.outer_up.skipped_nested_levels += 1u;
+        nested_sweeping::stats.outer_up.skipped_nested_levels__prune += 1u;
 #endif
         if (outer_writer.size() != 0) {
           outer_writer.detach();
@@ -2089,7 +2089,7 @@ namespace adiar::internal
         outer_pq.setup_next_level(stop_level);
       } else if (outer_file->is_terminal()) {
 #ifdef ADIAR_STATS
-        nested_sweeping::stats.outer_up.collapse_to_terminal += 1;
+        nested_sweeping::stats.outer_up.collapse_to_terminal += 1u;
 #endif
         return outer_file;
       }
