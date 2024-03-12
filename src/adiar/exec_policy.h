@@ -270,7 +270,7 @@ namespace adiar
       public:
         /// \brief Default value construction.
         constexpr fast_reduce()
-          : _value(0.05f)
+          : fast_reduce(0.05f)
         {}
 
         /// \brief Conversion constructor from `float`.
