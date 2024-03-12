@@ -752,8 +752,7 @@ namespace adiar
       const uintwide canonical_levels = internal::nested_sweeping::stats.outer_up.reduced_levels
         - internal::nested_sweeping::stats.outer_up.reduced_levels__fast;
 
-      o << indent << label << "canonical"
-        << internal::nested_sweeping::stats.outer_up.reduced_levels << " = "
+      o << indent << label << "canonical" << canonical_levels << " = "
         << internal::percent_frac(canonical_levels,
                                   internal::nested_sweeping::stats.outer_up.reduced_levels)
         << percent << endl;
