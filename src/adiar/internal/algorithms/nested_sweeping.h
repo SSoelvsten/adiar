@@ -27,18 +27,6 @@ namespace adiar::internal
     /// Struct to hold statistics
     extern statistics::nested_sweeping_t stats;
 
-    template <typename pointer_type>
-    inline void
-    __reduce_decrement_cut(cuts_t& c, const pointer_type& p)
-    {
-      if (p.is_terminal()) {
-        c[cut::All]--;
-        c[cut(!p.value(), p.value())]--;
-      } else {
-        for (size_t ct = 0u; ct < cut::size; ct++) { c[ct]--; }
-      }
-    }
-
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief   A faster alternative to `__reduce_level`.
     ///
@@ -61,16 +49,14 @@ namespace adiar::internal
                          node_writer& out_writer,
                          [[maybe_unused]] statistics::reduce_t& stats = internal::stats_reduce)
     {
-      // Count number of arcs that cross this level (including tainted ones)
-      // TODO: move into helper function
-      cuts_t one_level_cut = { { 0u, 0u, 0u, 0u } };
-      __reduce_cut_add(one_level_cut,
+      // Count number of arcs that cross this level. Since all or no levels are reduced with this
+      // logic, no node should suppressed and its parents arcs tainted.
+      cuts_t local_1level_cut   = { { 0u, 0u, 0u, 0u } };
+
+      __reduce_cut_add(local_1level_cut,
                        pq.size_without_terminals(),
                        pq.terminals(false) + arcs.unread_terminals(false),
                        pq.terminals(true) + arcs.unread_terminals(true));
-
-      // Remember the latest terminal value due to Reduction Rule 1
-      bool terminal_val = false /* <-- dummy value */;
 
       // Pull out all nodes from pq and terminal_arcs for this level
       typename dd_policy::id_type out_id = dd_policy::max_id;
@@ -81,55 +67,38 @@ namespace adiar::internal
         //   Use __reduce_get_next node_type::outdegree times to create a node_type::children_type.
         const arc e_high = __reduce_get_next(pq, arcs);
         const arc e_low  = __reduce_get_next(pq, arcs);
+        adiar_assert(essential(e_low.source()) == essential(e_high.source()),
+                     "Obtained arcs for the same node");
+        adiar_assert(!e_low.target().is_flagged(),
+                     "No previous nodes have been suppressed and their arcs tainted");
+        adiar_assert(!e_high.target().is_flagged(),
+                     "No previous nodes have been suppressed and their arcs tainted");
 
-        const node n = node_of(e_low, e_high);
-        adiar_assert(n.label() == label, "Label is for desired level");
-
-        // TODO (dd_replace):
-        //   Disable the following if-statements for faster performance
-
-        node::pointer_type t;
-
-        // Apply Reduction rule 1
-        const node::pointer_type reduction_rule_ret = dd_policy::reduction_rule(n);
-        if (reduction_rule_ret != n.uid()) {
-#ifdef ADIAR_STATS
-          stats.removed_by_rule_1 += 1u;
-#endif
-          // Decrease 1-level cut over-approximation
-          __reduce_decrement_cut(one_level_cut, n.low());
-          __reduce_decrement_cut(one_level_cut, n.high());
-
-          // Taint to-be forwarded uid by Reduction Rule 1.
-          t = flag(reduction_rule_ret);
-
-          // Store terminal value for epilogue
-          if (t.is_terminal()) { terminal_val = t.value(); }
-        } else {
-          // TODO (canonicity): mark canonical false if order is wrong
-
-          // Output node
-          adiar_assert(out_id > 0, "Should still have more ids left");
-          const typename dd_policy::node_type out_node(label, out_id--, unflag(n.low()), unflag(n.high()));
-          out_writer.unsafe_push(out_node);
-
-          t = out_node.uid();
-        }
+        // Output node
+        adiar_assert(out_id > 0, "Should still have more ids left");
+        const typename dd_policy::node_type out_node(label, out_id--, e_low.target(), e_high.target());
+        out_writer.unsafe_push(out_node);
 
         // Forward resulting node to parents
-        adiar_assert(t.is_terminal() || t.out_idx() == false, "Created target is without an index");
+        const node::pointer_type e_src = e_low.source();
+        adiar_assert(e_src == essential(e_src));
 
-        while (arcs.can_pull_internal() && arcs.peek_internal().target() == n.uid()) {
+        const node::pointer_type t = out_node.uid();
+        adiar_assert(t.is_terminal() || t.out_idx() == false, "Created target is without an index");
+        adiar_assert(!t.is_flagged(), "Target does not have suppression taint");
+
+        while (arcs.can_pull_internal() && arcs.peek_internal().target() == e_src) {
           // The out_idx is included in arc.source() pulled from the internal arcs.
           const node::pointer_type s = arcs.pull_internal().source();
           pq.push(arc(s, t));
         }
       }
 
-      out_writer.unsafe_max_1level_cut(one_level_cut);
+      // Update with new possible maximum 1-level cut.
+      out_writer.unsafe_max_1level_cut(local_1level_cut);
 
       // Add number of nodes to level information, if any nodes were pushed to the output.
-      // Furthermore, mark as non-canonical if at least two nodes were output (their order might
+      // Furthermore, mark as unsorted if at least two nodes were output (their order might
       // very much have been wrong).
       if (out_id != dd_policy::max_id) {
         const size_t width = dd_policy::max_id - out_id;
@@ -138,8 +107,9 @@ namespace adiar::internal
         if (width > 1u) { out_writer.unsafe_set_sorted(false); }
       }
 
-      // Set up priority queue for next level (or collapse to a terminal)
-      __reduce_level__epilogue<>(arcs, label, pq, out_writer, terminal_val);
+      // Set up priority queue for next level
+      constexpr bool terminal_value = false; // <-- NOTE: Dummy value
+      __reduce_level__epilogue<>(arcs, label, pq, out_writer, terminal_value);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
