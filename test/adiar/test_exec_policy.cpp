@@ -219,8 +219,7 @@ go_bandit([]() {
             .set(exec_policy::memory::External)
             .set(exec_policy::quantify::Singleton)
             .set(exec_policy::quantify::transposition_growth(4.2f))
-            .set(exec_policy::quantify::transposition_max(42))
-            ;
+            .set(exec_policy::quantify::transposition_max(42));
 
           AssertThat(ep.template get<exec_policy::access>(),
                      Is().EqualTo(exec_policy::access::Priority_Queue));

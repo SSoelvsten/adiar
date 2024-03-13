@@ -212,9 +212,7 @@ namespace adiar
     /// \brief Settings for Nested Sweeping framework
     ////////////////////////////////////////////////////////////////////////////////////////////////
     class nested
-    {
-
-    };
+    {};
 
   private:
     // TODO: Merge all enums into a single 64 bit integer to safe on space?
@@ -330,8 +328,7 @@ namespace adiar
       return this->_memory == ep._memory && this->_access == ep._access
         && this->_quantify__algorithm == ep._quantify__algorithm
         && this->_quantify__transposition_growth == ep._quantify__transposition_growth
-        && this->_quantify__transposition_max == ep._quantify__transposition_max
-        ;
+        && this->_quantify__transposition_max == ep._quantify__transposition_max;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
