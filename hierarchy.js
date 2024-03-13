@@ -28,7 +28,6 @@ var hierarchy =
       [ "adiar::zdd", "classadiar_1_1zdd.html", null ]
     ] ],
     [ "adiar::exec_policy", "classadiar_1_1exec__policy.html", null ],
-    [ "adiar::exec_policy::nested::fast_reduce", "classadiar_1_1exec__policy_1_1nested_1_1fast__reduce.html", null ],
     [ "adiar::statistics::equality_t::fast_t", "structadiar_1_1statistics_1_1equality__t_1_1fast__t.html", null ],
     [ "adiar::statistics::nested_sweeping_t::inner_down_t", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__down__t.html", null ],
     [ "adiar::statistics::nested_sweeping_t::inner_down_t::inputs_t", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__down__t_1_1inputs__t.html", null ],

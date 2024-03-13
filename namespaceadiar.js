@@ -172,7 +172,6 @@ var namespaceadiar =
     [ "domain_unset", "group__module____domain.html#gaeb7fdbf6de32b88b515a65856384593f", null ],
     [ "exec_policy::get< exec_policy::access >", "group__module____adiar.html#ga57bca995782da3873d4289c669333348", null ],
     [ "exec_policy::get< exec_policy::memory >", "group__module____adiar.html#ga3cd8d1fd2568701cea30bb0d21622370", null ],
-    [ "exec_policy::get< exec_policy::nested::fast_reduce >", "group__module____adiar.html#gaf747d3ab81db6fef90536d40dece7dfc", null ],
     [ "exec_policy::get< exec_policy::quantify::algorithm >", "group__module____adiar.html#ga863648dc869191fa7783d9d141456f32", null ],
     [ "exec_policy::get< exec_policy::quantify::transposition_growth >", "group__module____adiar.html#gaccd66b4e0c1f3bc3b24dcbbe49561967", null ],
     [ "exec_policy::get< exec_policy::quantify::transposition_max >", "group__module____adiar.html#gaa561fa58f67a5570feb44b3752706736", null ],
