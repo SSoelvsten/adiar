@@ -51,7 +51,7 @@ namespace adiar::internal
     {
       // Count number of arcs that cross this level. Since all or no levels are reduced with this
       // logic, no node should suppressed and its parents arcs tainted.
-      cuts_t local_1level_cut   = { { 0u, 0u, 0u, 0u } };
+      cuts_t local_1level_cut = { { 0u, 0u, 0u, 0u } };
 
       __reduce_cut_add(local_1level_cut,
                        pq.size_without_terminals(),
@@ -76,7 +76,8 @@ namespace adiar::internal
 
         // Output node
         adiar_assert(out_id > 0, "Should still have more ids left");
-        const typename dd_policy::node_type out_node(label, out_id--, e_low.target(), e_high.target());
+        const typename dd_policy::node_type out_node(
+          label, out_id--, e_low.target(), e_high.target());
         out_writer.unsafe_push(out_node);
 
         // Forward resulting node to parents
@@ -1399,7 +1400,7 @@ namespace adiar::internal
       //////////////////////////////////////////////////////////////////////////////////////////////
       template <typename nesting_policy, typename inner_pq_t, typename outer_pq_t>
       inline void
-      up(const exec_policy&/*ep*/,
+      up(const exec_policy& /*ep*/,
          const arc_stream<>& outer_arcs,
          outer_pq_t& outer_pq,
          node_writer& outer_writer,
