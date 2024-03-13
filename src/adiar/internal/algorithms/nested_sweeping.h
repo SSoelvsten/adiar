@@ -46,6 +46,10 @@ namespace adiar::internal
     ///          steps. Yet, these cost I/Os and computation time. This is an alternative, that does
     ///          not merge subtrees.
     ///
+    /// \warning Where `__reduce_level` only requires the priority queue can contain a 1-level cut
+    ///          (since it processes all nodes of a level in bulk), this variation induces a 2-level
+    ///          cut (since it processes one node at a time).
+    ///
     /// \see __reduce_level
     ////////////////////////////////////////////////////////////////////////////////////////////////
     template <typename dd_policy, typename pq_t, typename arc_stream_t>
@@ -1560,7 +1564,14 @@ namespace adiar::internal
 
         // TODO (optimization):
         //   Resolve `inner_arcs_file->max_1level_cut == 0` in a separate while-loop.
-        const size_t inner_pq_bound = std::max<size_t>(inner_arcs_file->max_1level_cut, 1);
+        size_t inner_pq_bound = std::max<size_t>(inner_arcs_file->max_1level_cut, 1);
+
+        // If 'fast_reduce' will be used, then the priority queue is a 2-level cut
+        if constexpr (nesting_policy::fast_reduce) {
+          if (!nesting_policy::final_canonical || !is_last_inner) {
+            inner_pq_bound = (inner_pq_bound * 3u) / 2u;
+          }
+        }
 
         const size_t inner_pq_max_size =
           ep.template get<exec_policy::memory>() == exec_policy::memory::Internal
@@ -2140,7 +2151,11 @@ namespace adiar::internal
     const tpie::memory_size_type outer_roots_memory_fits =
       internal_roots_sorter_t::memory_fits(outer_pq_memory);
 
-    const size_t pq_roots_bound = dag->max_1level_cut;
+    size_t pq_roots_bound = dag->max_1level_cut;
+    if constexpr (nesting_policy::fast_reduce) {
+      // If 'fast_reduce' will be used, then the priority queue is a 2-level cut
+      pq_roots_bound = (pq_roots_bound * 3u) / 2u;
+    }
 
     const size_t outer_pq_roots_max =
       ep.template get<exec_policy::memory>() == exec_policy::memory::Internal

@@ -6410,7 +6410,7 @@ go_bandit([]() {
           aw.push(level_info(6, 2u));
           aw.push(level_info(7, 2u));
 
-          in->max_1level_cut = 5; // TODO: why is this cut 5 and not 4?
+          in->max_1level_cut = 4;
         }
 
         it("outputs a canonical BDD if set to 'true'", [&]() {
