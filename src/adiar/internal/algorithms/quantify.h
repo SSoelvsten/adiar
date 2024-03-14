@@ -128,7 +128,7 @@ namespace adiar::internal
   /// \brief Zero-indexed value for statistics on the arity of a request.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename Request>
-  size_t
+  bool
   __quantify_arity_idx(const Request& req)
   {
     return req.targets() - 1;
