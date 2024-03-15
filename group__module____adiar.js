@@ -1,7 +1,6 @@
 var group__module____adiar =
 [
     [ "exec_policy", "classadiar_1_1exec__policy.html", [
-      [ "nested", "classadiar_1_1exec__policy_1_1nested.html", null ],
       [ "quantify", "classadiar_1_1exec__policy_1_1quantify.html", [
         [ "transposition_growth", "classadiar_1_1exec__policy_1_1quantify_1_1transposition__growth.html", [
           [ "transposition_growth", "classadiar_1_1exec__policy_1_1quantify_1_1transposition__growth.html#a24177a3f1c3972d288b5f16e29cbbeb1", null ],
