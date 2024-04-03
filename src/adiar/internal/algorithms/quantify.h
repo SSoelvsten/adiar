@@ -1319,15 +1319,14 @@ namespace adiar::internal
     // ---------------------------------------------------------------------------------------------
     // Terminal Count Heuristics
 
-    const size_t false_weight =
-      1 + Policy::collapse_to_terminal(typename Policy::pointer_type(false));
-
-    const size_t true_weight =
-      1 + Policy::collapse_to_terminal(typename Policy::pointer_type(true));
+    const size_t weight[2] = {
+      1u + 9u * !Policy::collapse_to_terminal(typename Policy::pointer_type(false)),
+      1u + 9u * !Policy::collapse_to_terminal(typename Policy::pointer_type(true))
+    };
 
     const double total_arcs         = 2.0 * size;
-    const double weighted_terminals = false_weight * false_terminals + true_weight * true_terminals;
-    const size_t exponent           = 21.0 * (weighted_terminals / total_arcs) + 0.4;
+    const double weighted_terminals = weight[false] * false_terminals + weight[true] * true_terminals;
+    const size_t exponent           = 5.75 * (weighted_terminals / total_arcs) + 0.4;
 
     const typename Policy::label_type terminal_threshold =
       (1u << std::min<size_t>(exponent, log2(2 * Policy::max_label))) - 1u;
