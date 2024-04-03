@@ -1315,7 +1315,7 @@ namespace adiar::internal
     const size_t width           = dd.width();
     const size_t false_terminals = dd.number_of_terminals(false);
     const size_t true_terminals  = dd.number_of_terminals(true);
-    const double total_arcs         = 2.0 * size;
+    const double total_arcs      = 2.0 * size;
 
     // ---------------------------------------------------------------------------------------------
     // Shortcutting Terminal Heuristics
@@ -1328,7 +1328,7 @@ namespace adiar::internal
     const double shortcutting_terminals =
       shortcutting_weight[false] * false_terminals + shortcutting_weight[true] * true_terminals;
 
-    const size_t shortcutting_exponent = 21 * (shortcutting_terminals / total_arcs) + 0.8;
+    const size_t shortcutting_exponent = 21 * (shortcutting_terminals / total_arcs) + 0.7;
 
     const typename Policy::label_type shortcutting_threshold =
       (1u << std::min<size_t>(shortcutting_exponent, log2(2 * Policy::max_label))) - 1u;
@@ -1381,6 +1381,17 @@ namespace adiar::internal
     adiar_assert(shallow_variables <= Policy::max_label);
 
     // ---------------------------------------------------------------------------------------------
+    std::cout << false_terminals << "  " << shortcutting_weight[false] << " "
+              << true_terminals << "  " << shortcutting_weight[true] << " "
+              << total_arcs << " "
+              << width << "  "
+              << shallow_variables << " "
+              << dd.max_1level_cut(cut::Internal) << "  "
+              << dd.max_1level_cut(cut::Internal_False) << "  "
+              << dd.max_1level_cut(cut::Internal_True) << "  "
+              << dd.max_1level_cut(cut::All) << " "
+              << std::endl;
+
     return std::min<size_t>({shortcutting_threshold, idempotent_threshold, shallow_variables});
   }
 
