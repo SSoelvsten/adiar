@@ -1315,22 +1315,39 @@ namespace adiar::internal
     const size_t width           = dd.width();
     const size_t false_terminals = dd.number_of_terminals(false);
     const size_t true_terminals  = dd.number_of_terminals(true);
+    const double total_arcs         = 2.0 * size;
 
     // ---------------------------------------------------------------------------------------------
-    // Terminal Count Heuristics
+    // Shortcutting Terminal Heuristics
 
-    const size_t false_weight =
-      1 + 9 * !Policy::collapse_to_terminal(typename Policy::pointer_type(false));
+    const size_t shortcutting_weight[2] = {
+      Policy::collapse_to_terminal(typename Policy::pointer_type(false)),
+      Policy::collapse_to_terminal(typename Policy::pointer_type(true))
+    };
 
-    const size_t true_weight =
-      1 + 9 * !Policy::collapse_to_terminal(typename Policy::pointer_type(true));
+    const double shortcutting_terminals =
+      shortcutting_weight[false] * false_terminals + shortcutting_weight[true] * true_terminals;
 
-    const double total_arcs         = 2.0 * size;
-    const double weighted_terminals = false_weight * false_terminals + true_weight * true_terminals;
-    const size_t exponent           = 5.75 * (weighted_terminals / total_arcs) + 0.4;
+    const size_t shortcutting_exponent = 21 * (shortcutting_terminals / total_arcs) + 0.8;
 
-    const typename Policy::label_type terminal_threshold =
-      (1u << std::min<size_t>(exponent, log2(2 * Policy::max_label))) - 1u;
+    const typename Policy::label_type shortcutting_threshold =
+      (1u << std::min<size_t>(shortcutting_exponent, log2(2 * Policy::max_label))) - 1u;
+
+    // ---------------------------------------------------------------------------------------------
+    // Idempotent Terminal Heuristics
+
+    const size_t idempotent_weight[2] = {
+      !Policy::collapse_to_terminal(typename Policy::pointer_type(false)),
+      !Policy::collapse_to_terminal(typename Policy::pointer_type(true))
+    };
+
+    const double idempotent_terminals =
+      idempotent_weight[false] * false_terminals + idempotent_weight[true] * true_terminals;
+
+    const size_t idempotent_exponent = 2.0 * (idempotent_terminals / total_arcs) + 0.6;
+
+    const typename Policy::label_type idempotent_threshold =
+      (1u << std::min<size_t>(idempotent_exponent, log2(2 * Policy::max_label))) - 1u;
 
     // ---------------------------------------------------------------------------------------------
     // Shallow Variables Heuristic
@@ -1364,7 +1381,7 @@ namespace adiar::internal
     adiar_assert(shallow_variables <= Policy::max_label);
 
     // ---------------------------------------------------------------------------------------------
-    return std::min<size_t>(terminal_threshold, shallow_variables);
+    return std::min<size_t>({shortcutting_threshold, idempotent_threshold, shallow_variables});
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
