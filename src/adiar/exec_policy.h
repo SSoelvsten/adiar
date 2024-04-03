@@ -192,7 +192,7 @@ namespace adiar
       public:
         /// \brief Default value construction.
         constexpr transposition_max()
-          : _value(std::numeric_limits<unsigned char>::max())
+          : _value(1)
         {}
 
         /// \brief Wrap an `unsigned char`
