@@ -108,11 +108,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { category: breakthrough, circuit: 3x4_19_bwnib }
-          - { category: connect4,     circuit: 4x4_9_connect3_bwnib }
-          - { category: domineering,  circuit: 5x5_13_bwnib }
-          - { category: ep,           circuit: 8x8_7_e-8-1_p-3-4_bwnib }
-          - { category: ep_dual,      circuit: 8x8_6_e-8-1_p-2-3_bwnib }
+          - { category: breakthrough,      circuit: 3x4_19_bwnib }
+          - { category: breakthrough_dual, circuit: 3x6_10_bwnib }
+          - { category: connect4,          circuit: 6x6_11_connect4_bwnib }
+          - { category: domineering,       circuit: 5x5_13_bwnib }
+          - { category: ep,                circuit: 8x8_7_e-8-1_p-3-4_bwnib }
+          - { category: ep_dual,           circuit: 8x8_6_e-8-1_p-2-3_bwnib }
+          - { category: hex,               circuit: hein_08_5x5-11_bwnib }
+          - { category: httt,              circuit: 4x4_9_tippy_bwnib }
 
     steps:
       - uses: actions/checkout@v2
@@ -224,9 +227,13 @@ jobs:
           - title: '12-Queens'
           - title: '14-Queens'
           - title: 'QBF breakthrough/3x4_19_bwnib'
-          - title: 'QBF breakthrough/3x5_11_bwnib'
+          - title: 'QBF breakthrough_dual/3x6_10_bwnib'
+          - title: 'QBF connect4/6x6_11_connect4_bwnib'
           - title: 'QBF domineering/5x5_13_bwnib'
           - title: 'QBF ep/8x8_7_e-8-1_p-3-4_bwnib'
+          - title: 'QBF ep_dual/8x8_6_e-8-1_p-2-3_bwnib'
+          - title: 'QBF hex/hein_08_5x5-11_bwnib'
+          - title: 'QBF httt/4x4_9_tippy_bwnib'
 
     steps:
     - name: Echo skip
