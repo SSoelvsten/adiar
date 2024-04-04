@@ -1329,7 +1329,7 @@ namespace adiar::internal
     const double weighted_terminals = false_weight * false_terminals + true_weight * true_terminals;
 
     const typename Policy::label_type terminal_threshold =
-      (200.0 * weighted_terminals) / total_arcs;
+      (250.0 * weighted_terminals) / total_arcs;
 
     // ---------------------------------------------------------------------------------------------
     // Shallow Variables Heuristic
