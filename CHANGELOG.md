@@ -1,6 +1,6 @@
 # v2.0.0
 
-**Work in Progress**
+**Date: 5th of April, 2024**
 
 ## New Features
 
