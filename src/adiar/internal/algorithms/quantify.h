@@ -1311,26 +1311,8 @@ namespace adiar::internal
                                  const predicate<typename Policy::label_type>& pred)
   {
     // Extract meta data constants about the DAG
-    const size_t size            = dd.size();
-    const size_t width           = dd.width();
-    const size_t false_terminals = dd.number_of_terminals(false);
-    const size_t true_terminals  = dd.number_of_terminals(true);
-
-    // ---------------------------------------------------------------------------------------------
-    // Terminal Count Heuristics
-
-    const size_t false_weight =
-      1 + Policy::collapse_to_terminal(typename Policy::pointer_type(false));
-
-    const size_t true_weight =
-      1 + Policy::collapse_to_terminal(typename Policy::pointer_type(true));
-
-    const double total_arcs         = 2.0 * size;
-    const double weighted_terminals = false_weight * false_terminals + true_weight * true_terminals;
-    const size_t exponent           = 21.0 * (weighted_terminals / total_arcs) + 0.4;
-
-    const typename Policy::label_type terminal_threshold =
-      (1u << std::min<size_t>(exponent, log2(2 * Policy::max_label))) - 1u;
+    const size_t size  = dd.size();
+    const size_t width = dd.width();
 
     // ---------------------------------------------------------------------------------------------
     // Shallow Variables Heuristic
@@ -1364,7 +1346,7 @@ namespace adiar::internal
     adiar_assert(shallow_variables <= Policy::max_label);
 
     // ---------------------------------------------------------------------------------------------
-    return std::min<size_t>(terminal_threshold, shallow_variables);
+    return shallow_variables;
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
