@@ -1435,6 +1435,7 @@ namespace adiar::internal
 
 #ifdef ADIAR_STATS
           stats_quantify.partial_sweeps += 1u;
+          stats_quantify.partial_repetitions += 1u;
 #endif
           transposed = __quantify(ep, transposed, partial_impl);
 

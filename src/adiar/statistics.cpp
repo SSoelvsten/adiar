@@ -527,7 +527,15 @@ namespace adiar
 
       indent_level++;
 
-      o << indent << label << "termination" << internal::stats_quantify.partial_termination << endl;
+      o << indent << label << "repeated transpositions"
+        << internal::stats_quantify.partial_repetitions << " = "
+        << internal::percent_frac(internal::stats_quantify.partial_repetitions,
+                                  internal::stats_quantify.partial_sweeps)
+        << percent << endl;
+      o << indent << label << "termination" << internal::stats_quantify.partial_termination << " = "
+        << internal::percent_frac(internal::stats_quantify.partial_termination,
+                                  internal::stats_quantify.partial_sweeps)
+        << percent << endl;
 
       indent_level--;
     }
