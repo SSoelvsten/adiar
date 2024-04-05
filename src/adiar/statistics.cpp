@@ -490,8 +490,8 @@ namespace adiar
   __printstat_quantify(std::ostream& o)
   {
     const uintwide total_runs = internal::stats_quantify.skipped
-      + internal::stats_quantify.singleton_sweeps + internal::stats_quantify.partial_sweeps
-      + internal::stats_quantify.nested_sweeps;
+      + internal::stats_quantify.singleton_sweeps
+      + (internal::stats_quantify.partial_sweeps - internal::stats_quantify.partial_repetitions);
 
     o << indent << bold_on << label << "Quantification" << bold_off << total_runs << endl;
 
@@ -512,18 +512,14 @@ namespace adiar
       o << indent << endl;
 
       o << indent << bold_on << label << "case [singleton sweep]" << bold_off
-        << internal::stats_quantify.singleton_sweeps << " = "
-        << internal::percent_frac(internal::stats_quantify.singleton_sweeps, total_runs) << percent
-        << endl;
+        << internal::stats_quantify.singleton_sweeps << endl;
     }
 
     {
       o << indent << endl;
 
       o << indent << bold_on << label << "case [partial sweep]" << bold_off
-        << internal::stats_quantify.partial_sweeps << " = "
-        << internal::percent_frac(internal::stats_quantify.partial_sweeps, total_runs) << percent
-        << endl;
+        << internal::stats_quantify.partial_sweeps << endl;
 
       indent_level++;
 
