@@ -1,7 +1,8 @@
 \page page__cite Citing this Project
 
-Please consider to cite one or more of the following papers, if you use Adiar in
-some of your academic work.
+Please consider to cite one or more of the following *relevant* papers, if you
+use Adiar in some of your academic work. By relevant, we ask you to cite the
+paper(s) that "generated" the cited knowledge.
 
 [TOC]
 
