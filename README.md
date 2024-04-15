@@ -19,12 +19,12 @@ when they outgrow the memory limit of the given machine.
 
 
 <div align="center">
-  <img src="/docs/img/queens_time.png"
+  <img src="/docs/tikz/queens.png"
        alt="Running Time of Adiar and other BDD packages solving the N-Queens problem"
        style="max-width:32rem; width:32rem;" />
 </div>
 <div align="center">
-  <p style="margin-bottom:1rem;">Figure: Running time solving *N* Queens (lower is better).</p>
+  <p style="margin-bottom:1rem;">Figure: Running time solving N Queens (lower is better).</p>
 </div>
 
 
