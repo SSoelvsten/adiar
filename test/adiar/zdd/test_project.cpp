@@ -21,8 +21,8 @@ go_bandit([]() {
 
     //////////////////////
     // Non-terminal edge cases
-    ptr_uint64 terminal_F = ptr_uint64(false);
-    ptr_uint64 terminal_T = ptr_uint64(true);
+    const ptr_uint64 terminal_F = ptr_uint64(false);
+    const ptr_uint64 terminal_T = ptr_uint64(true);
 
     // { Ø, {0}, {1}, {1,2}, {1,3}, {1,3,4} }
     /*
@@ -40,13 +40,14 @@ go_bandit([]() {
     */
     shared_levelized_file<zdd::node_type> zdd_1;
     {
+      const node n5(4, node::max_id, terminal_T, terminal_T);
+      const node n4(3, node::max_id, terminal_F, n5.uid());
+      const node n3(2, node::max_id, n4.uid(), terminal_T);
+      const node n2(1, node::max_id, n3.uid(), n3.uid());
+      const node n1(0, node::max_id, n2.uid(), terminal_T);
+
       node_writer nw(zdd_1);
-      nw << node(4, node::max_id, terminal_T, terminal_T)
-         << node(3, node::max_id, terminal_F, ptr_uint64(4, ptr_uint64::max_id))
-         << node(2, node::max_id, ptr_uint64(3, ptr_uint64::max_id), terminal_T)
-         << node(
-              1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(2, ptr_uint64::max_id))
-         << node(0, node::max_id, ptr_uint64(1, ptr_uint64::max_id), terminal_T);
+      nw << n5 << n4 << n3 << n2 << n1;
     }
 
     // { {0}, {2}, {0,3}, {2,4} }
@@ -65,14 +66,13 @@ go_bandit([]() {
     */
     shared_levelized_file<zdd::node_type> zdd_2;
     {
+      const node n4(4, node::max_id, terminal_T, terminal_T);
+      const node n3(3, node::max_id, terminal_T, terminal_T);
+      const node n2(2, node::max_id, terminal_F, n4.uid());
+      const node n1(0, node::max_id, n2.uid(), n3.uid());
+
       node_writer nw(zdd_2);
-      nw << node(4, node::max_id, terminal_T, terminal_T)
-         << node(3, node::max_id, terminal_T, terminal_T)
-         << node(2, node::max_id, terminal_F, ptr_uint64(4, ptr_uint64::max_id))
-         << node(0,
-                 node::max_id,
-                 ptr_uint64(2, ptr_uint64::max_id),
-                 ptr_uint64(3, ptr_uint64::max_id));
+      nw << n4 << n3 << n2 << n1;
     }
 
     // { {0}, {2}, {1,2}, {0,2} }
@@ -87,17 +87,13 @@ go_bandit([]() {
     */
     shared_levelized_file<zdd::node_type> zdd_3;
     {
+      const node n4(2, node::max_id, terminal_T, terminal_T);
+      const node n3(2, node::max_id - 1, terminal_F, terminal_T);
+      const node n2(1, node::max_id, n3.uid(), n4.uid());
+      const node n1(0, node::max_id, n2.uid(), n4.uid());
+
       node_writer nw(zdd_3);
-      nw << node(2, node::max_id, terminal_T, terminal_T)
-         << node(2, node::max_id - 1, terminal_F, terminal_T)
-         << node(1,
-                 node::max_id,
-                 ptr_uint64(2, ptr_uint64::max_id - 1),
-                 ptr_uint64(2, ptr_uint64::max_id))
-         << node(0,
-                 node::max_id,
-                 ptr_uint64(1, ptr_uint64::max_id),
-                 ptr_uint64(2, ptr_uint64::max_id));
+      nw << n4 << n3 << n2 << n1;
     }
 
     // { {4}, {0,2}, {0,4}, {2,4}, {0,2,4} }
@@ -112,21 +108,14 @@ go_bandit([]() {
     */
     shared_levelized_file<zdd::node_type> zdd_4;
     {
+      const node n5(4, node::max_id, terminal_T, terminal_T);
+      const node n4(4, node::max_id - 1, terminal_F, terminal_T);
+      const node n3(2, node::max_id, n4.uid(), n5.uid());
+      const node n2(2, node::max_id - 1, n4.uid(), n4.uid());
+      const node n1(0, node::max_id, n2.uid(), n3.uid());
+
       node_writer nw(zdd_4);
-      nw << node(4, node::max_id, terminal_T, terminal_T)
-         << node(4, node::max_id - 1, terminal_F, terminal_T)
-         << node(2,
-                 node::max_id,
-                 ptr_uint64(4, ptr_uint64::max_id - 1),
-                 ptr_uint64(4, ptr_uint64::max_id))
-         << node(2,
-                 node::max_id - 1,
-                 ptr_uint64(4, ptr_uint64::max_id - 1),
-                 ptr_uint64(4, ptr_uint64::max_id - 1))
-         << node(0,
-                 node::max_id,
-                 ptr_uint64(2, ptr_uint64::max_id - 1),
-                 ptr_uint64(2, ptr_uint64::max_id));
+      nw << n5 << n4 << n3 << n2 << n1;
     }
 
     // { ... }

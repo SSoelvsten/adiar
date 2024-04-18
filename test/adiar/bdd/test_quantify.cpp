@@ -134,10 +134,10 @@ go_bandit([]() {
     */
     shared_levelized_file<bdd::node_type> bdd_5;
 
-    const node n5_4 = node(2, node::max_id, ptr_uint64(false), ptr_uint64(true));
-    const node n5_3 = node(2, node::max_id - 1, ptr_uint64(true), ptr_uint64(false));
-    const node n5_2 = node(1, node::max_id, n5_3.uid(), n5_4.uid());
-    const node n5_1 = node(0, node::max_id, ptr_uint64(false), n5_2.uid());
+    const node n5_4(2, node::max_id, ptr_uint64(false), ptr_uint64(true));
+    const node n5_3(2, node::max_id - 1, ptr_uint64(true), ptr_uint64(false));
+    const node n5_2(1, node::max_id, n5_3.uid(), n5_4.uid());
+    const node n5_1(0, node::max_id, ptr_uint64(false), n5_2.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw_5(bdd_5);
@@ -161,26 +161,17 @@ go_bandit([]() {
     shared_levelized_file<bdd::node_type> bdd_6;
 
     { // Garbage collect writer to free write-lock
+      const node n6_8(3, node::max_id, ptr_uint64(false), ptr_uint64(true));
+      const node n6_7(3, node::max_id - 1, ptr_uint64(true), ptr_uint64(false));
+      const node n6_6(2, node::max_id, n6_8, ptr_uint64(true));
+      const node n6_5(2, node::max_id - 1, n6_7, ptr_uint64(false));
+      const node n6_4(2, node::max_id - 2, ptr_uint64(false), n6_8);
+      const node n6_3(1, node::max_id, n6_4, n6_6);
+      const node n6_2(1, node::max_id - 1, n6_6, n6_5);
+      const node n6_1(0, node::max_id, n6_3, n6_2);
+
       node_writer nw_6(bdd_6);
-      nw_6 << node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))                 // 8
-           << node(3, node::max_id - 1, ptr_uint64(true), ptr_uint64(false))             // 7
-           << node(2, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true)) // 6
-           << node(
-                2, node::max_id - 1, ptr_uint64(3, ptr_uint64::max_id - 1), ptr_uint64(false)) // 5
-           << node(2, node::max_id - 2, ptr_uint64(false), ptr_uint64(3, ptr_uint64::max_id))  // 4
-           << node(1,
-                   node::max_id,
-                   ptr_uint64(2, ptr_uint64::max_id - 2),
-                   ptr_uint64(2, ptr_uint64::max_id)) // 3
-           << node(1,
-                   node::max_id - 1,
-                   ptr_uint64(2, ptr_uint64::max_id),
-                   ptr_uint64(2, ptr_uint64::max_id - 1)) // 2
-           << node(0,
-                   node::max_id,
-                   ptr_uint64(1, ptr_uint64::max_id),
-                   ptr_uint64(1, ptr_uint64::max_id - 1)) // 1
-        ;
+      nw_6 << n6_8 << n6_7 << n6_6 << n6_5 << n6_4 << n6_3 << n6_2 << n6_1;
     }
 
     // BDD 6 with an 'x4' instead of T that can collapse to T during the
@@ -188,37 +179,26 @@ go_bandit([]() {
     shared_levelized_file<bdd::node_type> bdd_6_x4T;
 
     { // Garbage collect writer to free write-lock
+      const node n6_9(4, node::max_id, ptr_uint64(false), ptr_uint64(true));
+      const node n6_8(3, node::max_id, ptr_uint64(false), n6_9);
+      const node n6_7(3, node::max_id - 1, n6_9, ptr_uint64(false));
+      const node n6_6(2, node::max_id, n6_8, n6_9);
+      const node n6_5(2, node::max_id - 1, n6_7, ptr_uint64(false));
+      const node n6_4(2, node::max_id - 2, ptr_uint64(false), n6_8);
+      const node n6_3(1, node::max_id, n6_4, n6_6);
+      const node n6_2(1, node::max_id - 1, n6_6, n6_5);
+      const node n6_1(0, node::max_id, n6_3, n6_2);
+
       node_writer nw_6(bdd_6_x4T);
-      nw_6 << node(4, node::max_id, ptr_uint64(false), ptr_uint64(true))                      // T
-           << node(3, node::max_id, ptr_uint64(false), ptr_uint64(4, ptr_uint64::max_id))     // 8
-           << node(3, node::max_id - 1, ptr_uint64(4, ptr_uint64::max_id), ptr_uint64(false)) // 7
-           << node(2,
-                   node::max_id,
-                   ptr_uint64(3, ptr_uint64::max_id),
-                   ptr_uint64(4, ptr_uint64::max_id)) // 6
-           << node(
-                2, node::max_id - 1, ptr_uint64(3, ptr_uint64::max_id - 1), ptr_uint64(false)) // 5
-           << node(2, node::max_id - 2, ptr_uint64(false), ptr_uint64(3, ptr_uint64::max_id))  // 4
-           << node(1,
-                   node::max_id,
-                   ptr_uint64(2, ptr_uint64::max_id - 2),
-                   ptr_uint64(2, ptr_uint64::max_id)) // 3
-           << node(1,
-                   node::max_id - 1,
-                   ptr_uint64(2, ptr_uint64::max_id),
-                   ptr_uint64(2, ptr_uint64::max_id - 1)) // 2
-           << node(0,
-                   node::max_id,
-                   ptr_uint64(1, ptr_uint64::max_id),
-                   ptr_uint64(1, ptr_uint64::max_id - 1)) // 1
-        ;
+      nw_6 << n6_9 << n6_8 << n6_7 << n6_6 << n6_5 << n6_4 << n6_3 << n6_2 << n6_1;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // BDD 7
     /*
-    //          _1_        ---- x0
-    //         /   \
+    //           1         ---- x0
+    //           X
+    //          / \
     //         2   3       ---- x1
     //        / \ / \
     //        \_ | __\
@@ -229,23 +209,15 @@ go_bandit([]() {
     */
     shared_levelized_file<bdd::node_type> bdd_7;
 
+    const node n7_5(2, node::max_id, ptr_uint64(false), ptr_uint64(true));
+    const node n7_4(2, node::max_id - 1, ptr_uint64(true), ptr_uint64(false));
+    const node n7_3(1, node::max_id, n7_5, n7_4);
+    const node n7_2(1, node::max_id - 1, n7_4, n7_5);
+    const node n7_1(0, node::max_id, n7_3, n7_2);
+
     { // Garbage collect writer to free write-lock
       node_writer nw_7(bdd_7);
-      nw_7 << node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))     // 5
-           << node(2, node::max_id - 1, ptr_uint64(true), ptr_uint64(false)) // 4
-           << node(1,
-                   node::max_id,
-                   ptr_uint64(2, ptr_uint64::max_id - 1),
-                   ptr_uint64(2, ptr_uint64::max_id)) // 3
-           << node(1,
-                   node::max_id - 1,
-                   ptr_uint64(2, ptr_uint64::max_id),
-                   ptr_uint64(2, ptr_uint64::max_id - 1)) // 2
-           << node(0,
-                   node::max_id,
-                   ptr_uint64(1, ptr_uint64::max_id),
-                   ptr_uint64(1, ptr_uint64::max_id - 1)) // 1
-        ;
+      nw_7 << n7_5 << n7_4 << n7_3 << n7_2 << n7_1;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
