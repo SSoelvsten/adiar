@@ -2861,7 +2861,11 @@ go_bandit([]() {
           //        / \
           //        T T
           */
-          zdd out = zdd_project(ep, in, [](const zdd::label_type x) { return x == 5; });
+          zdd out = zdd_project(ep, in, [called = false]() mutable -> optional<zdd::label_type> {
+            if (called) { return {}; }
+            called = true;
+            return 5;
+          });
 
           node_test_stream out_nodes(out);
 
