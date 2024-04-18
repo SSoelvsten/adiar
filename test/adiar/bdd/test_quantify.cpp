@@ -132,15 +132,25 @@ go_bandit([]() {
     //  / \ / \
     //  T F F T
     */
-    shared_levelized_file<bdd::node_type> bdd_5;
+    shared_levelized_file<bdd::node_type> bdd_5F;
 
     const node n5_4(2, node::max_id, ptr_uint64(false), ptr_uint64(true));
     const node n5_3(2, node::max_id - 1, ptr_uint64(true), ptr_uint64(false));
     const node n5_2(1, node::max_id, n5_3.uid(), n5_4.uid());
-    const node n5_1(0, node::max_id, ptr_uint64(false), n5_2.uid());
 
     { // Garbage collect writer to free write-lock
-      node_writer nw_5(bdd_5);
+      const node n5_1(0, node::max_id, ptr_uint64(false), n5_2.uid());
+
+      node_writer nw_5(bdd_5F);
+      nw_5 << n5_4 << n5_3 << n5_2 << n5_1;
+    }
+
+    shared_levelized_file<bdd::node_type> bdd_5T;
+
+    { // Garbage collect writer to free write-lock
+      const node n5_1(0, node::max_id, ptr_uint64(true), n5_2.uid());
+
+      node_writer nw_5(bdd_5T);
       nw_5 << n5_4 << n5_3 << n5_2 << n5_1;
     }
 
@@ -852,6 +862,59 @@ go_bandit([]() {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
+    // BDD 18T
+    /*
+    //         _1_        ---- x0
+    //        /   \
+    //       /    2       ---- x1
+    //      /    / \
+    //      3    T |      ---- x2
+    //     / \     |
+    //     F  4    |      ---- x3
+    //       / \   |
+    //       F T   5      ---- x4
+    //            / \
+    //            T F
+    */
+    shared_levelized_file<bdd::node_type> bdd_18T;
+
+    const node n18_5(4, node::max_id, bdd::pointer_type(true), bdd::pointer_type(false));
+    const node n18_4(3, node::max_id, bdd::pointer_type(true), bdd::pointer_type(false));
+    const node n18_3(2, node::max_id, bdd::pointer_type(false), n18_4.uid());
+
+    {
+      const node n18_2(1, node::max_id, bdd::pointer_type(true), n18_5.uid());
+      const node n18_1(0, node::max_id, n18_3.uid(), n18_2.uid());
+
+      node_writer nw(bdd_18T);
+      nw << n18_5 << n18_4 << n18_3 << n18_2 << n18_1;
+    }
+
+    // BDD 18F
+    /*
+    //         _1_        ---- x0
+    //        /   \
+    //       /    2       ---- x1
+    //      /    / \
+    //      3    F |      ---- x2
+    //     / \     |
+    //     F  4    |      ---- x3
+    //       / \   |
+    //       F T   5      ---- x4
+    //            / \
+    //            T F
+    */
+    shared_levelized_file<bdd::node_type> bdd_18F;
+
+    {
+      const node n18_2(1, node::max_id, bdd::pointer_type(false), n18_5.uid());
+      const node n18_1(0, node::max_id, n18_3.uid(), n18_2.uid());
+
+      node_writer nw(bdd_18F);
+      nw << n18_5 << n18_4 << n18_3 << n18_2 << n18_1;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     describe("bdd_exists(const bdd&, bdd::label_type)", [&]() {
       it("quantifies T terminal-only BDD as itself", [&]() {
         __bdd out = bdd_exists(terminal_T, 42);
@@ -988,7 +1051,7 @@ go_bandit([]() {
         });
 
         it("quantifies root with F terminal [BDD 5]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_5, 0);
+          __bdd out = bdd_exists(ep, bdd_5F, 0);
 
           arc_test_stream arcs(out);
 
@@ -1293,7 +1356,7 @@ go_bandit([]() {
         it("resolves terminal-terminal requests in [BDD 5]", [&]() {
           // NOTE: (2,0) := (3,nil)
 
-          __bdd out = bdd_exists(ep, bdd_5, 1);
+          __bdd out = bdd_exists(ep, bdd_5F, 1);
 
           arc_test_stream arcs(out);
 
@@ -1632,7 +1695,7 @@ go_bandit([]() {
         });
 
         it("quantifies root with F terminal [BDD 5]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_5, 0);
+          __bdd out = bdd_exists(ep, bdd_5F, 0);
 
           arc_test_stream arcs(out);
 
@@ -1928,7 +1991,7 @@ go_bandit([]() {
         });
 
         it("resolves terminal-terminal requests in [BDD 5]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_5, 1);
+          __bdd out = bdd_exists(ep, bdd_5F, 1);
 
           arc_test_stream arcs(out);
 
@@ -2489,7 +2552,26 @@ go_bandit([]() {
           exec_policy::quantify::Nested & exec_policy::quantify::transposition_max(0);
 
         describe("access mode: random access", [&]() {
-          it("quantifies odd variables in BDD 4", [&]() {
+          it("quantifies odd variables in BDD 1", [&]() {
+            bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
+                                 bdd_1,
+                                 [](const bdd::label_type x) -> bool { return x % 2; });
+
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True());
+            AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+            AssertThat(out_nodes.can_pull(), Is().False());
+
+            level_info_test_stream out_meta(out);
+
+            AssertThat(out_meta.can_pull(), Is().False());
+
+            // TODO: meta variables...
+          });
+
+          it("leaves unprunable to-be quantified node behind as-is", [&]() {
             std::vector<bdd::label_type> call_history;
 
             bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
@@ -2527,9 +2609,8 @@ go_bandit([]() {
             // Check call history
             //
             // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
-            // verify
-            //       that this change makes sense and is as intended.
-            AssertThat(call_history.size(), Is().EqualTo(6u));
+            //       verify that this change makes sense and is as intended.
+            AssertThat(call_history.size(), Is().EqualTo(10u));
 
             // - First check for at least one variable satisfying the predicate.
             //   This is then used for the inital transposition
@@ -2539,16 +2620,77 @@ go_bandit([]() {
             AssertThat(call_history.at(1), Is().EqualTo(0u));
             AssertThat(call_history.at(2), Is().EqualTo(1u)); // 2 out of 5 nodes
 
-            // - Nested sweep looking for the 'next_inner' bottom-up
-            AssertThat(call_history.at(3), Is().EqualTo(2u));
+            // - Pruning sweep
+            AssertThat(call_history.at(3), Is().EqualTo(0u));
             AssertThat(call_history.at(4), Is().EqualTo(1u));
-            AssertThat(call_history.at(5), Is().EqualTo(0u));
+            AssertThat(call_history.at(5), Is().EqualTo(2u));
+            AssertThat(call_history.at(6), Is().EqualTo(3u));
+
+            // - Nested sweep looking for the 'next_inner' bottom-up
+            AssertThat(call_history.at(7), Is().EqualTo(2u));
+            AssertThat(call_history.at(8), Is().EqualTo(1u));
+            AssertThat(call_history.at(9), Is().EqualTo(0u));
           });
 
-          it("quantifies odd variables in BDD 1", [&]() {
+          it("prunes to-be quantified nodes with true terminals", [&]() {
+            std::vector<bdd::label_type> call_history;
+
             bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
-                                 bdd_1,
-                                 [](const bdd::label_type x) -> bool { return x % 2; });
+                                 bdd_18T,
+                                 [&call_history](const bdd::label_type x) -> bool {
+                                   call_history.push_back(x);
+                                   return x % 2 == 1;
+                                 });
+
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (2)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(
+                         0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
+
+            AssertThat(out_nodes.can_pull(), Is().False());
+
+            // TODO: meta variables...
+
+            // Check call history
+            //
+            // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
+            //       verify that this change makes sense and is as intended.
+            AssertThat(call_history.size(), Is().EqualTo(9u));
+
+            // - First check for at least one variable satisfying the predicate.
+            //   This is then used for the inital transposition
+            AssertThat(call_history.at(0), Is().EqualTo(4u));
+            AssertThat(call_history.at(1), Is().EqualTo(3u));
+
+            // - Upper bound partial quantifications; capped at N/3(ish) nodes.
+            AssertThat(call_history.at(2), Is().EqualTo(0u)); // ?
+
+            // - Pruning sweep
+            AssertThat(call_history.at(3), Is().EqualTo(0u));
+            AssertThat(call_history.at(4), Is().EqualTo(1u));
+            AssertThat(call_history.at(5), Is().EqualTo(2u));
+            AssertThat(call_history.at(6), Is().EqualTo(3u));
+
+            // - Nested sweep (nothing to be done)
+            AssertThat(call_history.at(7), Is().EqualTo(2u));
+            AssertThat(call_history.at(8), Is().EqualTo(0u));
+          });
+
+          it("collapses root with true terminal during pruning transposition", [&]() {
+            std::vector<bdd::label_type> call_history;
+
+            bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
+                                 bdd_5T,
+                                 [&call_history](const bdd::label_type x) -> bool {
+                                   call_history.push_back(x);
+                                   return x % 2 == 0;
+                                 });
 
             node_test_stream out_nodes(out);
 
@@ -2557,16 +2699,141 @@ go_bandit([]() {
 
             AssertThat(out_nodes.can_pull(), Is().False());
 
-            level_info_test_stream out_meta(out);
+            // Check call history
+            //
+            // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
+            //       verify that this change makes sense and is as intended.
+            AssertThat(call_history.size(), Is().EqualTo(4u));
 
-            AssertThat(out_meta.can_pull(), Is().False());
+            // - First check for at least one variable satisfying the predicate.
+            //   This is then used for the inital transposition
+            AssertThat(call_history.at(0), Is().EqualTo(2u));
+
+            // - Upper bound partial quantifications; capped at N/3(ish) nodes.
+            AssertThat(call_history.at(1), Is().EqualTo(0u));
+            AssertThat(call_history.at(2), Is().EqualTo(1u)); // 2 out of 4 nodes
+
+            // - Pruning sweep
+            AssertThat(call_history.at(3), Is().EqualTo(0u));
+          });
+
+          it("skips to-be quantified nodes with false terminals", [&]() {
+            std::vector<bdd::label_type> call_history;
+
+            bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
+                                 bdd_18F,
+                                 [&call_history](const bdd::label_type x) -> bool {
+                                   call_history.push_back(x);
+                                   return x % 2 == 1;
+                                 });
+
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (5)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(4, node::max_id, ptr_uint64(true), ptr_uint64(false))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (2)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(0,
+                                         node::max_id,
+                                         ptr_uint64(2, ptr_uint64::max_id),
+                                         ptr_uint64(4, ptr_uint64::max_id))));
+
+            AssertThat(out_nodes.can_pull(), Is().False());
 
             // TODO: meta variables...
+
+            // Check call history
+            //
+            // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
+            //       verify that this change makes sense and is as intended.
+            AssertThat(call_history.size(), Is().EqualTo(11u));
+
+            // - First check for at least one variable satisfying the predicate.
+            //   This is then used for the inital transposition
+            AssertThat(call_history.at(0), Is().EqualTo(4u));
+            AssertThat(call_history.at(1), Is().EqualTo(3u));
+
+            // - Upper bound partial quantifications; capped at N/3(ish) nodes.
+            AssertThat(call_history.at(2), Is().EqualTo(0u)); // ?
+
+            // - Pruning sweep
+            AssertThat(call_history.at(3), Is().EqualTo(0u));
+            AssertThat(call_history.at(4), Is().EqualTo(1u));
+            AssertThat(call_history.at(5), Is().EqualTo(2u));
+            AssertThat(call_history.at(6), Is().EqualTo(3u));
+            AssertThat(call_history.at(7), Is().EqualTo(4u));
+
+            // - Nested sweep (nothing to be done)
+            AssertThat(call_history.at(8), Is().EqualTo(4u));
+            AssertThat(call_history.at(9), Is().EqualTo(2u));
+            AssertThat(call_history.at(10), Is().EqualTo(0u));
+          });
+
+          it("collapses to terminal during transposition as root with false is pruned", [&]() {
+            std::vector<bdd::label_type> call_history;
+
+            bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
+                                 bdd_5F,
+                                 [&call_history](const bdd::label_type x) -> bool {
+                                   call_history.push_back(x);
+                                   return x % 2 == 0;
+                                 });
+
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True());
+            AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+            AssertThat(out_nodes.can_pull(), Is().False());
+
+            // Check call history
+            //
+            // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
+            //       verify that this change makes sense and is as intended.
+            AssertThat(call_history.size(), Is().EqualTo(7u));
+
+            // - First check for at least one variable satisfying the predicate.
+            //   This is then used for the inital transposition
+            AssertThat(call_history.at(0), Is().EqualTo(2u));
+
+            // - Upper bound partial quantifications; capped at N/3(ish) nodes.
+            AssertThat(call_history.at(1), Is().EqualTo(0u));
+            AssertThat(call_history.at(2), Is().EqualTo(1u)); // 2 out of 4 nodes
+
+            // - Pruning sweep
+            AssertThat(call_history.at(3), Is().EqualTo(0u));
+            AssertThat(call_history.at(4), Is().EqualTo(1u));
+            AssertThat(call_history.at(5), Is().EqualTo(2u));
           });
         });
 
         describe("access mode: priority queue", [&]() {
-          it("quantifies odd variables in BDD 4", [&]() {
+          it("quantifies odd variables in BDD 1", [&]() {
+            bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
+                                 bdd_1,
+                                 [](const bdd::label_type x) -> bool { return x % 2; });
+
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True());
+            AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+            AssertThat(out_nodes.can_pull(), Is().False());
+
+            level_info_test_stream out_meta(out);
+
+            AssertThat(out_meta.can_pull(), Is().False());
+
+            // TODO: meta variables...
+          });
+
+          it("leaves unprunable to-be quantified node behind as-is", [&]() {
             std::vector<bdd::label_type> call_history;
 
             bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
@@ -2604,9 +2871,8 @@ go_bandit([]() {
             // Check call history
             //
             // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
-            // verify
-            //       that this change makes sense and is as intended.
-            AssertThat(call_history.size(), Is().EqualTo(6u));
+            //       verify that this change makes sense and is as intended.
+            AssertThat(call_history.size(), Is().EqualTo(10u));
 
             // - First check for at least one variable satisfying the predicate.
             //   This is then used for the inital transposition
@@ -2616,16 +2882,77 @@ go_bandit([]() {
             AssertThat(call_history.at(1), Is().EqualTo(0u));
             AssertThat(call_history.at(2), Is().EqualTo(1u)); // 2 out of 5 nodes
 
-            // - Nested sweep looking for the 'next_inner' bottom-up
-            AssertThat(call_history.at(3), Is().EqualTo(2u));
+            // - Pruning sweep
+            AssertThat(call_history.at(3), Is().EqualTo(0u));
             AssertThat(call_history.at(4), Is().EqualTo(1u));
-            AssertThat(call_history.at(5), Is().EqualTo(0u));
+            AssertThat(call_history.at(5), Is().EqualTo(2u));
+            AssertThat(call_history.at(6), Is().EqualTo(3u));
+
+            // - Nested sweep looking for the 'next_inner' bottom-up
+            AssertThat(call_history.at(7), Is().EqualTo(2u));
+            AssertThat(call_history.at(8), Is().EqualTo(1u));
+            AssertThat(call_history.at(9), Is().EqualTo(0u));
           });
 
-          it("quantifies odd variables in BDD 1", [&]() {
+          it("prunes to-be quantified nodes with true terminals", [&]() {
+            std::vector<bdd::label_type> call_history;
+
             bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
-                                 bdd_1,
-                                 [](const bdd::label_type x) -> bool { return x % 2; });
+                                 bdd_18T,
+                                 [&call_history](const bdd::label_type x) -> bool {
+                                   call_history.push_back(x);
+                                   return x % 2 == 1;
+                                 });
+
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (2)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(
+                         0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
+
+            AssertThat(out_nodes.can_pull(), Is().False());
+
+            // TODO: meta variables...
+
+            // Check call history
+            //
+            // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
+            //       verify that this change makes sense and is as intended.
+            AssertThat(call_history.size(), Is().EqualTo(9u));
+
+            // - First check for at least one variable satisfying the predicate.
+            //   This is then used for the inital transposition
+            AssertThat(call_history.at(0), Is().EqualTo(4u));
+            AssertThat(call_history.at(1), Is().EqualTo(3u));
+
+            // - Upper bound partial quantifications; capped at N/3(ish) nodes.
+            AssertThat(call_history.at(2), Is().EqualTo(0u)); // ?
+
+            // - Pruning sweep
+            AssertThat(call_history.at(3), Is().EqualTo(0u));
+            AssertThat(call_history.at(4), Is().EqualTo(1u));
+            AssertThat(call_history.at(5), Is().EqualTo(2u));
+            AssertThat(call_history.at(6), Is().EqualTo(3u));
+
+            // - Nested sweep (nothing to be done)
+            AssertThat(call_history.at(7), Is().EqualTo(2u));
+            AssertThat(call_history.at(8), Is().EqualTo(0u));
+          });
+
+          it("collapses root with true terminal during pruning transposition", [&]() {
+            std::vector<bdd::label_type> call_history;
+
+            bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
+                                 bdd_5T,
+                                 [&call_history](const bdd::label_type x) -> bool {
+                                   call_history.push_back(x);
+                                   return x % 2 == 0;
+                                 });
 
             node_test_stream out_nodes(out);
 
@@ -2634,11 +2961,117 @@ go_bandit([]() {
 
             AssertThat(out_nodes.can_pull(), Is().False());
 
-            level_info_test_stream out_meta(out);
+            // Check call history
+            //
+            // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
+            //       verify that this change makes sense and is as intended.
+            AssertThat(call_history.size(), Is().EqualTo(4u));
 
-            AssertThat(out_meta.can_pull(), Is().False());
+            // - First check for at least one variable satisfying the predicate.
+            //   This is then used for the inital transposition
+            AssertThat(call_history.at(0), Is().EqualTo(2u));
+
+            // - Upper bound partial quantifications; capped at N/3(ish) nodes.
+            AssertThat(call_history.at(1), Is().EqualTo(0u));
+            AssertThat(call_history.at(2), Is().EqualTo(1u)); // 2 out of 4 nodes
+
+            // - Pruning sweep
+            AssertThat(call_history.at(3), Is().EqualTo(0u));
+          });
+
+          it("skips to-be quantified nodes with false terminals", [&]() {
+            std::vector<bdd::label_type> call_history;
+
+            bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
+                                 bdd_18F,
+                                 [&call_history](const bdd::label_type x) -> bool {
+                                   call_history.push_back(x);
+                                   return x % 2 == 1;
+                                 });
+
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (5)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(4, node::max_id, ptr_uint64(true), ptr_uint64(false))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (2)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+            AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+            AssertThat(out_nodes.pull(),
+                       Is().EqualTo(node(0,
+                                         node::max_id,
+                                         ptr_uint64(2, ptr_uint64::max_id),
+                                         ptr_uint64(4, ptr_uint64::max_id))));
+
+            AssertThat(out_nodes.can_pull(), Is().False());
 
             // TODO: meta variables...
+
+            // Check call history
+            //
+            // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
+            //       verify that this change makes sense and is as intended.
+            AssertThat(call_history.size(), Is().EqualTo(11u));
+
+            // - First check for at least one variable satisfying the predicate.
+            //   This is then used for the inital transposition
+            AssertThat(call_history.at(0), Is().EqualTo(4u));
+            AssertThat(call_history.at(1), Is().EqualTo(3u));
+
+            // - Upper bound partial quantifications; capped at N/3(ish) nodes.
+            AssertThat(call_history.at(2), Is().EqualTo(0u)); // ?
+
+            // - Pruning sweep
+            AssertThat(call_history.at(3), Is().EqualTo(0u));
+            AssertThat(call_history.at(4), Is().EqualTo(1u));
+            AssertThat(call_history.at(5), Is().EqualTo(2u));
+            AssertThat(call_history.at(6), Is().EqualTo(3u));
+            AssertThat(call_history.at(7), Is().EqualTo(4u));
+
+            // - Nested sweep (nothing to be done)
+            AssertThat(call_history.at(8), Is().EqualTo(4u));
+            AssertThat(call_history.at(9), Is().EqualTo(2u));
+            AssertThat(call_history.at(10), Is().EqualTo(0u));
+          });
+
+          it("collapses to terminal during transposition as root with false is pruned", [&]() {
+            std::vector<bdd::label_type> call_history;
+
+            bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
+                                 bdd_5F,
+                                 [&call_history](const bdd::label_type x) -> bool {
+                                   call_history.push_back(x);
+                                   return x % 2 == 0;
+                                 });
+
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True());
+            AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+            AssertThat(out_nodes.can_pull(), Is().False());
+
+            // Check call history
+            //
+            // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
+            //       verify that this change makes sense and is as intended.
+            AssertThat(call_history.size(), Is().EqualTo(7u));
+
+            // - First check for at least one variable satisfying the predicate.
+            //   This is then used for the inital transposition
+            AssertThat(call_history.at(0), Is().EqualTo(2u));
+
+            // - Upper bound partial quantifications; capped at N/3(ish) nodes.
+            AssertThat(call_history.at(1), Is().EqualTo(0u));
+            AssertThat(call_history.at(2), Is().EqualTo(1u)); // 2 out of 4 nodes
+
+            // - Pruning sweep
+            AssertThat(call_history.at(3), Is().EqualTo(0u));
+            AssertThat(call_history.at(4), Is().EqualTo(1u));
+            AssertThat(call_history.at(5), Is().EqualTo(2u));
           });
         });
 
@@ -2773,7 +3206,7 @@ go_bandit([]() {
           //
           // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
           //       that this change makes sense and is as intended.
-          AssertThat(call_history.size(), Is().EqualTo(9u));
+          AssertThat(call_history.size(), Is().EqualTo(14u));
 
           // - First check for at least one variable satisfying the predicate.
           //   This is then used for the inital transposition
@@ -2785,11 +3218,18 @@ go_bandit([]() {
           AssertThat(call_history.at(3), Is().EqualTo(1u));
           AssertThat(call_history.at(4), Is().EqualTo(2u)); // 4 out of 8 nodes
 
+          // - Pruning sweep
+          AssertThat(call_history.at(5), Is().EqualTo(0u));
+          AssertThat(call_history.at(6), Is().EqualTo(1u));
+          AssertThat(call_history.at(7), Is().EqualTo(2u));
+          AssertThat(call_history.at(8), Is().EqualTo(3u));
+          AssertThat(call_history.at(9), Is().EqualTo(4u));
+
           // - Nested sweep looking for the 'next_inner' bottom-up
-          AssertThat(call_history.at(5), Is().EqualTo(4u));
-          AssertThat(call_history.at(6), Is().EqualTo(2u));
-          AssertThat(call_history.at(7), Is().EqualTo(1u));
-          AssertThat(call_history.at(8), Is().EqualTo(0u));
+          AssertThat(call_history.at(10), Is().EqualTo(4u));
+          AssertThat(call_history.at(11), Is().EqualTo(2u));
+          AssertThat(call_history.at(12), Is().EqualTo(1u));
+          AssertThat(call_history.at(13), Is().EqualTo(0u));
         });
 
         it("kills intermediate dead partial solutions multiple times", [&]() {
@@ -3131,8 +3571,7 @@ go_bandit([]() {
             // Check call history
             //
             // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
-            // verify
-            //       that this change makes sense and is as intended.
+            //       verify that this change makes sense and is as intended.
             AssertThat(call_history.size(), Is().EqualTo(6u));
 
             // - First check for at least one variable satisfying the predicate.
@@ -3187,8 +3626,7 @@ go_bandit([]() {
             // Check call history
             //
             // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
-            // verify
-            //       that this change makes sense and is as intended.
+            //       verify that this change makes sense and is as intended.
             AssertThat(call_history.size(), Is().EqualTo(8u));
 
             // - First check for at least one variable satisfying the predicate.
@@ -3230,8 +3668,7 @@ go_bandit([]() {
                // Check call history
                //
                // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
-               // verify
-               //       that this change makes sense and is as intended.
+               //       verify that this change makes sense and is as intended.
                AssertThat(call_history.size(), Is().EqualTo(14u));
 
                // - First check for at least one variable satisfying the predicate.
@@ -3339,8 +3776,7 @@ go_bandit([]() {
               // Check call history
               //
               // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
-              // verify
-              //       that this change makes sense and is as intended.
+              //       verify that this change makes sense and is as intended.
               AssertThat(call_history.size(), Is().EqualTo(15u));
 
               // - First check for at least one variable satisfying the predicate.
@@ -3527,8 +3963,7 @@ go_bandit([]() {
             // Check call history
             //
             // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
-            // verify
-            //       that this change makes sense and is as intended.
+            //       verify that this change makes sense and is as intended.
             AssertThat(call_history.size(), Is().EqualTo(26u));
 
             // - First check for at least one variable satisfying the predicate.
@@ -3596,8 +4031,7 @@ go_bandit([]() {
             // Check call history
             //
             // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
-            // verify
-            //       that this change makes sense and is as intended.
+            //       verify that this change makes sense and is as intended.
             AssertThat(call_history.size(), Is().EqualTo(8u));
 
             // - First check for at least one variable satisfying the predicate.
@@ -3891,8 +4325,7 @@ go_bandit([]() {
               // Check call history
               //
               // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
-              // verify
-              //       that this change makes sense and is as intended.
+              //       verify that this change makes sense and is as intended.
               AssertThat(call_history.size(), Is().EqualTo(47u));
 
               // - First check for at least one variable satisfying the predicate.
@@ -3976,8 +4409,7 @@ go_bandit([]() {
             // Check call history
             //
             // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
-            // verify
-            //       that this change makes sense and is as intended.
+            //       verify that this change makes sense and is as intended.
             AssertThat(call_history.size(), Is().EqualTo(6u));
 
             // - First check for at least one variable satisfying the predicate.
@@ -4032,8 +4464,7 @@ go_bandit([]() {
             // Check call history
             //
             // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
-            // verify
-            //       that this change makes sense and is as intended.
+            //       verify that this change makes sense and is as intended.
             AssertThat(call_history.size(), Is().EqualTo(8u));
 
             // - First check for at least one variable satisfying the predicate.
@@ -4075,8 +4506,7 @@ go_bandit([]() {
                // Check call history
                //
                // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
-               // verify
-               //       that this change makes sense and is as intended.
+               //       verify that this change makes sense and is as intended.
                AssertThat(call_history.size(), Is().EqualTo(14u));
 
                // - First check for at least one variable satisfying the predicate.
@@ -4184,8 +4614,7 @@ go_bandit([]() {
               // Check call history
               //
               // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
-              // verify
-              //       that this change makes sense and is as intended.
+              //       verify that this change makes sense and is as intended.
               AssertThat(call_history.size(), Is().EqualTo(15u));
 
               // - First check for at least one variable satisfying the predicate.
@@ -4372,8 +4801,7 @@ go_bandit([]() {
             // Check call history
             //
             // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
-            // verify
-            //       that this change makes sense and is as intended.
+            //       verify that this change makes sense and is as intended.
             AssertThat(call_history.size(), Is().EqualTo(26u));
 
             // - First check for at least one variable satisfying the predicate.
@@ -4441,8 +4869,7 @@ go_bandit([]() {
             // Check call history
             //
             // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
-            // verify
-            //       that this change makes sense and is as intended.
+            //       verify that this change makes sense and is as intended.
             AssertThat(call_history.size(), Is().EqualTo(8u));
 
             // - First check for at least one variable satisfying the predicate.
@@ -4736,8 +5163,7 @@ go_bandit([]() {
               // Check call history
               //
               // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
-              // verify
-              //       that this change makes sense and is as intended.
+              //       verify that this change makes sense and is as intended.
               AssertThat(call_history.size(), Is().EqualTo(47u));
 
               // - First check for at least one variable satisfying the predicate.
@@ -5262,7 +5688,7 @@ go_bandit([]() {
           //
           // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
           //       that this change makes sense and is as intended.
-          AssertThat(call_history.size(), Is().EqualTo(6u));
+          AssertThat(call_history.size(), Is().EqualTo(10u));
 
           // - First check for at least one variable satisfying the predicate.
           AssertThat(call_history.at(0), Is().EqualTo(3u));
@@ -5271,10 +5697,16 @@ go_bandit([]() {
           AssertThat(call_history.at(1), Is().EqualTo(0u));
           AssertThat(call_history.at(2), Is().EqualTo(1u)); // 2 out of 5 nodes
 
-          // - Check nested sweep has nothing left to-do
-          AssertThat(call_history.at(3), Is().EqualTo(2u));
+          // - Pruning sweep
+          AssertThat(call_history.at(3), Is().EqualTo(0u));
           AssertThat(call_history.at(4), Is().EqualTo(1u));
-          AssertThat(call_history.at(5), Is().EqualTo(0u));
+          AssertThat(call_history.at(5), Is().EqualTo(2u));
+          AssertThat(call_history.at(6), Is().EqualTo(3u));
+
+          // - Check nested sweep has nothing left to-do
+          AssertThat(call_history.at(7), Is().EqualTo(2u));
+          AssertThat(call_history.at(8), Is().EqualTo(1u));
+          AssertThat(call_history.at(9), Is().EqualTo(0u));
         });
 
         it("uses nested sweeping if no shallow variables are to-be quantified [&&]", [&]() {
@@ -5357,7 +5789,7 @@ go_bandit([]() {
           //
           // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
           //       that this change makes sense and is as intended.
-          AssertThat(call_history.size(), Is().EqualTo(12u));
+          AssertThat(call_history.size(), Is().EqualTo(18u));
 
           // - First check for at least one variable satisfying the predicate.
           AssertThat(call_history.at(0), Is().EqualTo(7u));
@@ -5368,14 +5800,22 @@ go_bandit([]() {
           AssertThat(call_history.at(3), Is().EqualTo(2u));
           AssertThat(call_history.at(4), Is().EqualTo(3u)); // 7 out of 16 nodes
 
-          // - Nested Sweep
-          AssertThat(call_history.at(5), Is().EqualTo(6u));
-          AssertThat(call_history.at(6), Is().EqualTo(5u));
-          AssertThat(call_history.at(7), Is().EqualTo(4u));
+          // - Pruning sweep
+          AssertThat(call_history.at(5), Is().EqualTo(0u));
+          AssertThat(call_history.at(6), Is().EqualTo(1u));
+          AssertThat(call_history.at(7), Is().EqualTo(2u));
           AssertThat(call_history.at(8), Is().EqualTo(3u));
-          AssertThat(call_history.at(9), Is().EqualTo(2u));
-          AssertThat(call_history.at(10), Is().EqualTo(1u));
-          AssertThat(call_history.at(11), Is().EqualTo(0u));
+          AssertThat(call_history.at(9), Is().EqualTo(4u));
+          AssertThat(call_history.at(10), Is().EqualTo(5u));
+          AssertThat(call_history.at(11), Is().EqualTo(6u));
+          AssertThat(call_history.at(12), Is().EqualTo(7u));
+
+          // - Nested Sweep
+          AssertThat(call_history.at(13), Is().EqualTo(4u));
+          AssertThat(call_history.at(14), Is().EqualTo(3u));
+          AssertThat(call_history.at(15), Is().EqualTo(2u));
+          AssertThat(call_history.at(16), Is().EqualTo(1u));
+          AssertThat(call_history.at(17), Is().EqualTo(0u));
         });
       });
     });
@@ -6579,7 +7019,7 @@ go_bandit([]() {
           // TODO: top-down dependant?
           int calls = 0;
 
-          const bdd out = bdd_forall(ep, bdd_5, [&calls](const bdd::label_type) -> bool {
+          const bdd out = bdd_forall(ep, bdd_5F, [&calls](const bdd::label_type) -> bool {
             calls++;
             return true;
           });
