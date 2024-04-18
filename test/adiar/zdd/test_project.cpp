@@ -277,6 +277,26 @@ go_bandit([]() {
       nw << nc << nb << na << n9_3 << n9_2 << n9_1 << n8 << n7 << n6 << n5 << n4 << n3 << n2 << n1;
     }
 
+    // { Ø, {0,1} }
+    /*
+    //                    _1_      ---- x0
+    //                   /   \
+    //                   |   2     ---- x1
+    //                   |  / \
+    //                   3  F T    ---- x3
+    //                  / \
+    //                  T F
+    */
+    shared_levelized_file<zdd::node_type> zdd_7;
+    {
+      const node n3(3, node::max_id, terminal_T, terminal_F);
+      const node n2(1, node::max_id, terminal_F, terminal_T);
+      const node n1(0, node::max_id, n3.uid(), n2.uid());
+
+      node_writer nw(zdd_7);
+      nw << n3 << n2 << n1;
+    }
+
     // TODO: Turn 'GreaterThanOrEqualTo' in max 1-level cuts below into an
     // 'EqualTo'.
 
@@ -506,7 +526,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
         });
 
-        it("bails out of inner sweep for zdd_4 with dom = { x | x % 2 == 0 } [const &]", [&]() {
+        it("bails out of inner sweep for zdd_1 with dom = { x | x % 2 == 0 } [const &]", [&]() {
           const zdd in = zdd_1;
 
           /* Expected: { Ø, {0}, {2}, {4} }
@@ -592,6 +612,220 @@ go_bandit([]() {
 
           AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
           AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
+        });
+
+        it("does not prune on 'shortcutting' terminals during transposition [&& zdd_1]", [&]() {
+          std::vector<bdd::label_type> call_history;
+
+          /* Expected: { Ø, {5} }
+          //
+          //          1         ---- x0
+          //         / \
+          //         2 T        ---- x1
+          //        ||
+          //        ||          ---- x2
+          //        ||
+          //         4          ---- x3
+          //        / \
+          //        T T         ---- x4
+          */
+          zdd out = zdd_project(ep, zdd_1, [&call_history](const zdd::label_type x) {
+            call_history.push_back(x);
+            return x == 0 || x % 2;
+          });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id, terminal_T, terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(
+                       1, node::max_id, ptr_uint64(3, node::max_id), ptr_uint64(3, node::max_id))));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(0, node::max_id, ptr_uint64(1, node::max_id), terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream ms(out);
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(3, 1u)));
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(ms.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(2u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(2u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(3u));
+          AssertThat(out->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(3u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+          AssertThat(out->number_of_terminals[true], Is().EqualTo(3u));
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
+          //       verify that this change makes sense and is as intended.
+          AssertThat(call_history.size(), Is().EqualTo(11u));
+
+          // - First check for at least one variable satisfying the predicate.
+          //   This is then used for the inital transposition
+          AssertThat(call_history.at(0), Is().EqualTo(4u));
+
+          // - Upper bound partial quantifications; capped at N/3(ish) nodes.
+          AssertThat(call_history.at(1), Is().EqualTo(0u)); // 1 out of 4 nodes
+
+          // - Pruning sweep
+          AssertThat(call_history.at(2), Is().EqualTo(0u));
+          AssertThat(call_history.at(3), Is().EqualTo(1u));
+          AssertThat(call_history.at(4), Is().EqualTo(2u));
+          AssertThat(call_history.at(5), Is().EqualTo(3u));
+          AssertThat(call_history.at(6), Is().EqualTo(4u));
+
+          // - Nested sweep looking for the 'next_inner' bottom-up
+          AssertThat(call_history.at(7), Is().EqualTo(3u));
+          AssertThat(call_history.at(8), Is().EqualTo(2u)); // <-- still exists
+          AssertThat(call_history.at(9), Is().EqualTo(1u));
+          AssertThat(call_history.at(10), Is().EqualTo(0u));
+        });
+
+        it("does not prune on 'shortcutting' terminals during transposition [&& zdd_7]", [&]() {
+          std::vector<bdd::label_type> call_history;
+
+          /* Expected: { Ø, {0} }
+          //
+          //          1         ---- x0
+          //         / \
+          //         T T
+          */
+          zdd out = zdd_project(ep, zdd_7, [&call_history](const zdd::label_type x) {
+            call_history.push_back(x);
+            return x == 0;
+          });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id, terminal_T, terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream ms(out);
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(ms.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(1u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+          AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
+          //       verify that this change makes sense and is as intended.
+          AssertThat(call_history.size(), Is().EqualTo(7u));
+
+          // - First check for at least one variable satisfying the predicate.
+          //   This is then used for the inital transposition
+          AssertThat(call_history.at(0), Is().EqualTo(3u));
+
+          // - Upper bound partial quantifications; capped at N/3(ish) nodes.
+          AssertThat(call_history.at(1), Is().EqualTo(0u)); // 1 out of 4 nodes
+
+          // - Pruning sweep
+          AssertThat(call_history.at(2), Is().EqualTo(0u));
+          AssertThat(call_history.at(3), Is().EqualTo(1u));
+          AssertThat(call_history.at(4), Is().EqualTo(3u));
+
+          // - Nested sweep looking for the 'next_inner' bottom-up
+          AssertThat(call_history.at(5), Is().EqualTo(1u));
+          AssertThat(call_history.at(6), Is().EqualTo(0u));
+        });
+
+        it("prunes idempotent to-be quantified nodes during transposition [&&]", [&]() {
+          std::vector<bdd::label_type> call_history;
+
+          /* Expected: { Ø, {5} }
+          //
+          //         1       ---- x0
+          //        / \
+          //        T |
+          //          |
+          //          3      ---- x3
+          //         / \
+          //         T T
+          */
+          zdd out = zdd_project(ep, zdd_2, [&call_history](const zdd::label_type x) {
+            call_history.push_back(x);
+            return x == 0 || x % 2;
+          });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id, terminal_T, terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(0, node::max_id, terminal_T, ptr_uint64(3, node::max_id))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream ms(out);
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(3, 1u)));
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(ms.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(0u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(3u));
+          AssertThat(out->max_1level_cut[cut::All], Is().GreaterThanOrEqualTo(3u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+          AssertThat(out->number_of_terminals[true], Is().EqualTo(3u));
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
+          //       verify that this change makes sense and is as intended.
+          AssertThat(call_history.size(), Is().EqualTo(8u));
+
+          // - First check for at least one variable satisfying the predicate.
+          //   This is then used for the inital transposition
+          AssertThat(call_history.at(0), Is().EqualTo(4u));
+
+          // - Upper bound partial quantifications; capped at N/3(ish) nodes.
+          AssertThat(call_history.at(1), Is().EqualTo(0u)); // 1 out of 4 nodes
+
+          // - Pruning sweep
+          AssertThat(call_history.at(2), Is().EqualTo(0u));
+          AssertThat(call_history.at(3), Is().EqualTo(2u));
+          AssertThat(call_history.at(4), Is().EqualTo(3u));
+          AssertThat(call_history.at(5), Is().EqualTo(4u));
+
+          // - Nested sweep looking for the 'next_inner' bottom-up
+          AssertThat(call_history.at(6), Is().EqualTo(3u));
+          AssertThat(call_history.at(7), Is().EqualTo(0u));
         });
       });
 
@@ -910,7 +1144,7 @@ go_bandit([]() {
           // NOTE: Test failure does NOT indicate a bug, but only indicates a
           //       change. Please verify that this change makes sense and is as
           //       intended.
-          AssertThat(call_history.size(), Is().EqualTo(5u));
+          AssertThat(call_history.size(), Is().EqualTo(8u));
 
           // - First check for at least one variable satisfying the predicate.
           AssertThat(call_history.at(0), Is().EqualTo(4u));
@@ -919,9 +1153,14 @@ go_bandit([]() {
           AssertThat(call_history.at(1), Is().EqualTo(0u));
           AssertThat(call_history.at(2), Is().EqualTo(2u)); // width and 3 out of 5 nodes
 
+          // - Pruning sweep
+          AssertThat(call_history.at(3), Is().EqualTo(0u));
+          AssertThat(call_history.at(4), Is().EqualTo(2u));
+          AssertThat(call_history.at(5), Is().EqualTo(4u));
+
           // - Nested sweep checking if any other than the deepest variable needs quantifying
-          AssertThat(call_history.at(3), Is().EqualTo(2u));
-          AssertThat(call_history.at(4), Is().EqualTo(0u));
+          AssertThat(call_history.at(6), Is().EqualTo(2u));
+          AssertThat(call_history.at(7), Is().EqualTo(0u));
         });
 
         it("quantifies exploding zdd_5 with unbounded transpositions", [&]() {
