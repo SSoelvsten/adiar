@@ -1358,7 +1358,6 @@ namespace adiar::internal
            typename Policy::dd_type dd,
            const predicate<typename Policy::label_type>& pred)
   {
-    using unreduced_t = typename Policy::__dd_type;
     // TODO: check for missing std::move(...)
 
     typename Policy::label_type label = __quantify__get_deepest<Policy>(dd, pred);
@@ -1389,72 +1388,11 @@ namespace adiar::internal
     case exec_policy::quantify::Nested: {
       // ---------------------------------------------------------------------
       // Case: Nested Sweeping
-      const size_t dd_size = dd.size();
-
-      // Do Partial Quantification as long as...
-      //   1. ... it stays smaller than 1+epsilon of the input size.
-      const size_t transposition__size_threshold = (std::min(
-        static_cast<double>(std::numeric_limits<size_t>::max() / 2u),
-        static_cast<double>(ep.template get<exec_policy::quantify::transposition_growth>())
-          * static_cast<double>(dd_size)));
-
-      //   2. ... it has not run more than the maximum number of iterations.
-      const size_t transposition__max_iterations =
-        std::min<size_t>({ ep.template get<exec_policy::quantify::transposition_max>(),
-                           __quantify__max_partial_sweeps<Policy>(dd, pred) });
-
-      unreduced_t transposed;
-
-      // If transposition__max_iterations is 0, then only quantify the lowest level.
-      if (transposition__max_iterations == 0) {
-        // Singleton Quantification of bottom-most level
 #ifdef ADIAR_STATS
-        stats_quantify.singleton_sweeps += 1u;
+      stats_quantify.nested_sweeps += 1u;
 #endif
-        transposed = quantify<Policy>(ep, std::move(dd), label);
-      } else {
-        // Partial Quantification
-#ifdef ADIAR_STATS
-        stats_quantify.partial_sweeps += 1u;
-#endif
-        partial_quantify_policy<Policy> partial_impl(pred);
-        transposed = __quantify(ep, std::move(dd), partial_impl);
-
-        if (partial_impl.remaining_nodes == 0) {
-#ifdef ADIAR_STATS
-          stats_quantify.partial_termination += 1u;
-#endif
-          return transposed;
-        }
-
-        for (size_t i = 1; i < transposition__max_iterations; ++i) {
-          if (transposition__size_threshold < transposed.size()) { break; }
-
-          // Reset policy and rerun partial quantification
-          partial_impl.reset();
-
-#ifdef ADIAR_STATS
-          stats_quantify.partial_sweeps += 1u;
-          stats_quantify.partial_repetitions += 1u;
-#endif
-          transposed = __quantify(ep, transposed, partial_impl);
-
-          // Reduce result, if no work is left to be done.
-          if (partial_impl.remaining_nodes == 0) {
-#ifdef ADIAR_STATS
-            stats_quantify.partial_termination += 1u;
-#endif
-            return transposed;
-          }
-        }
-      }
-      { // Nested Sweeping
-#ifdef ADIAR_STATS
-        stats_quantify.nested_sweeps += 1u;
-#endif
-        multi_quantify_policy__pred<Policy> inner_impl(pred);
-        return nested_sweep<>(ep, std::move(transposed), inner_impl);
-      }
+      multi_quantify_policy__pred<Policy> inner_impl(pred);
+      return nested_sweep<>(ep, std::move(dd), inner_impl);
     }
 
       // LCOV_EXCL_START
