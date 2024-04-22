@@ -1237,20 +1237,26 @@ namespace adiar::internal
       }
 
       // -------------------------------------------------------------------------------------------
-      // CASE: Prune max child
-      const typename Policy::pointer_type max_child = std::max(n.low(), n.high());
-
-      if (Policy::collapse_to_terminal(max_child)) {
-        // Collapse to terminal
-        return max_child;
+      // CASE: Prune low()
+      //
+      // TODO (ZDD): Remove 'Policy::keep_terminal' depending on semantics in Policy
+      if (Policy::collapse_to_terminal(n.low())) {
+        return n.low();
       }
-      if (max_child.is_terminal() && !Policy::keep_terminal(max_child)) {
-        // Non-collapsing and irrelevant, terminal. Skip to 'other'
-        return std::min(n.low(), n.high());
+      if (n.low().is_terminal() && !Policy::keep_terminal(n.low())) {
+        return n.high();
       }
 
-      // TODO: Symmetric for 'false' pointer (NOTE: it's not 'max')
+      // -------------------------------------------------------------------------------------------
+      // CASE: Prune high()
+      if (Policy::collapse_to_terminal(n.high())) {
+        return n.high();
+      }
+      if (n.high().is_terminal() && !Policy::keep_terminal(n.high())) {
+        return n.low();
+      }
 
+      // -------------------------------------------------------------------------------------------
       // No pruning possible. Do nothing.
       return n;
     }
