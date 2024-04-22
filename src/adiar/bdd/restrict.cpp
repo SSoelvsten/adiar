@@ -1,6 +1,8 @@
 #include <adiar/bdd.h>
 #include <adiar/bdd/bdd_policy.h>
 
+#include <adiar/types.h>
+
 #include <adiar/internal/algorithms/select.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/io/file_stream.h>
@@ -10,34 +12,35 @@
 namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
-  class bdd_restrict_policy : public bdd_policy
+  template <typename AssignmentPolicy>
+  class bdd_restrict_policy : public bdd_policy, public AssignmentPolicy
   {
   public:
-    template <typename AssignmentMgr>
-    static internal::select_rec
-    keep_node(const bdd::node_type& n, AssignmentMgr& /*amgr*/)
-    {
-      return n;
-    }
-
-    template <typename AssignmentMgr>
-    static internal::select_rec
-    fix_false(const bdd::node_type& n, AssignmentMgr& /*amgr*/)
-    {
-      return n.low();
-    }
-
-    template <typename AssignmentMgr>
-    static internal::select_rec
-    fix_true(const bdd::node_type& n, AssignmentMgr& /*amgr*/)
-    {
-      return n.high();
-    }
+    template <typename Arg>
+    bdd_restrict_policy(const Arg &a)
+      : AssignmentPolicy(a)
+    {}
 
   public:
-    template <typename AssignmentMgr>
-    static inline bdd
-    terminal(bool terminal_val, AssignmentMgr& /*amgr*/)
+    internal::select_rec
+    process(const bdd::node_type& n)
+    {
+      switch (AssignmentPolicy::current_assignment()) {
+      case assignment::False: {
+        return n.low();
+      }
+      case assignment::True: {
+        return n.high();
+      }
+      case assignment::None:
+      default: {
+        return n;
+      }
+      }
+    }
+
+    bdd
+    terminal(bool terminal_val)
     {
       return bdd_terminal(terminal_val);
     }
@@ -47,29 +50,38 @@ namespace adiar
   // Variant: Generator-based Restrict
   class restrict_generator_mgr
   {
+    assignment _current = assignment::None;
+
     const generator<pair<bdd::label_type, bool>>& _generator;
-    optional<pair<bdd::label_type, bool>> _next_pair;
+    optional<pair<bdd::label_type, bool>> _peeked;
 
   public:
     restrict_generator_mgr(const generator<pair<bdd::label_type, bool>>& g)
       : _generator(g)
     {
-      _next_pair = _generator();
+      _peeked = _generator();
     }
 
     bool
     empty() const
     {
-      return !_next_pair.has_value();
+      return !_peeked.has_value();
     }
 
-    assignment
-    assignment_for_level(bdd::label_type level)
+    void
+    setup_level(bdd::label_type level)
     {
-      while (_next_pair && _next_pair.value().first < level) { _next_pair = _generator(); }
-      return _next_pair && _next_pair.value().first == level
-        ? static_cast<assignment>(_next_pair.value().second)
+      while (_peeked && _peeked.value().first < level) { _peeked = _generator(); }
+      _current = _peeked && _peeked.value().first == level
+        ? static_cast<assignment>(_peeked.value().second)
         : assignment::None;
+    }
+
+  protected:
+    const assignment&
+    current_assignment()
+    {
+      return _current;
     }
   };
 
@@ -78,10 +90,10 @@ namespace adiar
                const bdd& f,
                const generator<pair<bdd::label_type, bool>>& xs)
   {
-    restrict_generator_mgr amgr(xs);
+    bdd_restrict_policy<restrict_generator_mgr> policy(xs);
 
-    if (amgr.empty() || bdd_isterminal(f)) { return f; }
-    return internal::select<bdd_restrict_policy>(ep, f, amgr);
+    if (policy.empty() || bdd_isterminal(f)) { return f; }
+    return internal::select(ep, f, policy);
   }
 
   __bdd
