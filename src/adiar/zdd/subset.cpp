@@ -133,6 +133,8 @@ namespace adiar
     {
       return zdd_terminal(terminal_val);
     }
+
+    static constexpr bool skip_reduce = true;
   };
 
   __zdd
@@ -228,6 +230,7 @@ namespace adiar
       return zdd_terminal(!AssignmentPolicy::has_level_excl() && terminal_val);
     }
 
+    static constexpr bool skip_reduce = true;
   };
 
   __zdd

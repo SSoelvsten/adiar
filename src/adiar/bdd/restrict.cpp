@@ -44,6 +44,8 @@ namespace adiar
     {
       return bdd_terminal(terminal_val);
     }
+
+    static constexpr bool skip_reduce = true;
   };
 
   //////////////////////////////////////////////////////////////////////////////

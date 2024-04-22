@@ -133,7 +133,9 @@ namespace adiar::internal
         if (std::holds_alternative<typename Policy::node_type>(rec)) {
           const node rec_node = std::get<typename Policy::node_type>(rec);
 
-          output_changes |= rec_node != n;
+          if constexpr (Policy::skip_reduce) {
+            output_changes |= rec_node != n;
+          }
 
           // Output/Forward outgoing arcs
           __select_recurse_out(pq, aw, n.uid().as_ptr(false), rec_node.low());
@@ -153,7 +155,9 @@ namespace adiar::internal
           const typename Policy::pointer_type rec_target =
             std::get<typename Policy::pointer_type>(rec);
 
-          output_changes = true;
+          if constexpr (Policy::skip_reduce) {
+            output_changes = true;
+          }
 
           // Output/Forward extension of arc
           while (pq.can_pull() && pq.top().target == n.uid()) {
@@ -173,7 +177,9 @@ namespace adiar::internal
       if (level_size > 0) { aw.push(level_info(level, level_size)); }
     }
 
-    if (!output_changes) { return dd; }
+    if constexpr (Policy::skip_reduce) {
+      if (!output_changes) { return dd; }
+    }
 
     return typename Policy::__dd_type(out_arcs, ep);
   }
