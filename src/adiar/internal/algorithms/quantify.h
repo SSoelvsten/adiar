@@ -10,6 +10,7 @@
 #include <adiar/functional.h>
 
 #include <adiar/internal/algorithms/nested_sweeping.h>
+#include <adiar/internal/algorithms/select.h>
 #include <adiar/internal/assert.h>
 #include <adiar/internal/block_size.h>
 #include <adiar/internal/bool_op.h>
@@ -394,36 +395,6 @@ namespace adiar::internal
         }
 
         // -----------------------------------------------------------------------------------------
-        // CASE: Pruning Quantification
-        //   Prune based on terminals for shallow to-be quantified variables dealt with during
-        //   nested sweeping.
-        if constexpr (Policy::pruning_quantification) {
-          if (policy.should_prune()) {
-            adiar_assert(req.target.second().is_nil(),
-                         "Pruning should only happen above to-be quantified variable");
-
-            const typename Policy::pointer_type prune_target = policy.prune(children_fst);
-
-            if (prune_target.is_terminal()) {
-              if (req.data.source.is_nil()) {
-                return typename Policy::dd_type(prune_target.value());
-              }
-
-              const __quantify_recurse_in__output_terminal handler(aw, prune_target);
-              request_foreach(pq, req.target, handler);
-
-              continue;
-            } else if (prune_target.is_node()) {
-              quantify_request<0>::target_t rec(prune_target, Policy::pointer_type::nil());
-              const __quantify_recurse_in__forward handler(pq, rec);
-              request_foreach(pq, req.target, handler);
-
-              continue;
-            }
-          }
-        }
-
-        // -----------------------------------------------------------------------------------------
         // CASE: Regular Level
         //   The variable should stay: proceed as in the Product Construction by simulating both
         //   possibilities in parallel.
@@ -599,37 +570,6 @@ namespace adiar::internal
           }
 
           continue;
-        }
-
-        // -----------------------------------------------------------------------------------------
-        // CASE: Pruning Quantification
-        //   Prune based on terminals for shallow to-be quantified variables dealt with during
-        //   nested sweeping.
-        if constexpr (Policy::pruning_quantification) {
-          if (policy.should_prune()) {
-            adiar_assert(req.target.second().is_nil(),
-                         "Pruning should only happen above to-be quantified variable");
-
-            const typename Policy::pointer_type prune_target = policy.prune(children_fst);
-
-            if (prune_target.is_terminal()) {
-              if (req.data.source.is_nil()) {
-                return typename Policy::dd_type(prune_target.value());
-              }
-
-              const __quantify_recurse_in__output_terminal handler(aw, prune_target);
-              request_foreach(pq_1, pq_2, req.target, handler);
-
-              continue;
-            } else if (prune_target.is_node()) {
-              quantify_request<0>::target_t rec(prune_target, Policy::pointer_type::nil());
-
-              const __quantify_recurse_in__forward handler(pq_1, rec);
-              request_foreach(pq_1, pq_2, req.target, handler);
-
-              continue;
-            }
-          }
         }
 
         // -----------------------------------------------------------------------------------------
@@ -1017,11 +957,6 @@ namespace adiar::internal
     /// \brief Disable logic for partial quantification during sweep.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     static constexpr bool partial_quantification = false;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Disable logic for pruning quantification during sweep.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    static constexpr bool pruning_quantification = false;
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1130,11 +1065,6 @@ namespace adiar::internal
     /// \brief The partial quantification logic of the top-down sweep can be disabled.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     static constexpr bool partial_quantification = false;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Disable logic for pruning quantification during sweep.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    static constexpr bool pruning_quantification = false;
 
     // bool has_sweep(typename Policy::label_type) const;
 
@@ -1274,55 +1204,41 @@ namespace adiar::internal
 
   private:
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Deepest level that needs to-be quantified.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    const typename Policy::label_type _deepest;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Predicate for whether a level should be swept on (or not).
     ////////////////////////////////////////////////////////////////////////////////////////////////
     const pred_t& _pred;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Stores result of `_pred` to save on computation time
+    /// \brief Stores result of `_pred` to save on computation time.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     bool _pred_result;
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    pruning_quantify_policy(const pred_t& pred, typename Policy::label_type deepest)
-      : _deepest(deepest)
-      , _pred(pred)
+    pruning_quantify_policy(const pred_t& pred)
+      : _pred(pred)
       , _pred_result(false)
     {}
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    inline bool
-    should_quantify(typename Policy::label_type level)
+    void
+    setup_level(typename Policy::label_type level)
     {
-      const bool result = level == _deepest;
-      _pred_result      = should_prune(level);
-      return result;
+      _pred_result = _pred(level) == Policy::quantify_onset;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    inline bool
-    should_prune(typename Policy::label_type level) const
+    internal::select_rec
+    process(const typename Policy::node_type& n)
     {
-      return _pred(level) == Policy::quantify_onset;
-    }
+      // -------------------------------------------------------------------------------------------
+      // CASE: Not to-be quantified node.
+      if (!_pred_result) {
+        return n;
+      }
 
-    inline bool
-    should_prune() const
-    {
-      return _pred_result;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    typename Policy::pointer_type
-    prune(const typename Policy::node_type::children_type& c) const
-    {
-      const typename Policy::pointer_type max_child = std::max(c[0], c[1]);
+      // -------------------------------------------------------------------------------------------
+      // CASE: Prune max child
+      const typename Policy::pointer_type max_child = std::max(n.low(), n.high());
 
       if (Policy::collapse_to_terminal(max_child)) {
         // Collapse to terminal
@@ -1330,22 +1246,22 @@ namespace adiar::internal
       }
       if (max_child.is_terminal() && !Policy::keep_terminal(max_child)) {
         // Non-collapsing and irrelevant, terminal. Skip to 'other'
-        return std::min(c[0], c[1]);
+        return std::min(n.low(), n.high());
       }
 
-      // Return 'nothing'
-      return Policy::pointer_type::nil();
+      // TODO: Symmetric for 'false' pointer (NOTE: it's not 'max')
+
+      // No pruning possible. Do nothing.
+      return n;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Enable partial quantification logic.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    static constexpr bool partial_quantification = false;
+    typename Policy::dd_type
+    terminal(bool terminal_val)
+    {
+      return typename Policy::dd_type(terminal_val);
+    }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Disable logic for pruning quantification during sweep.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    static constexpr bool pruning_quantification = true;
+    static constexpr bool skip_reduce = false;
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1399,11 +1315,6 @@ namespace adiar::internal
     /// \brief Enable partial quantification logic.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     static constexpr bool partial_quantification = true;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Disable logic for pruning quantification during sweep.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    static constexpr bool pruning_quantification = false;
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1572,8 +1483,8 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
         stats_quantify.singleton_sweeps += 1u;
 #endif
-        pruning_quantify_policy<Policy> pruning_impl(pred, label);
-        transposed = __quantify(ep, std::move(dd), pruning_impl);
+        pruning_quantify_policy<Policy> pruning_impl(pred);
+        transposed = select(ep, std::move(dd), pruning_impl);
       } else {
         // Partial Quantification
 #ifdef ADIAR_STATS
