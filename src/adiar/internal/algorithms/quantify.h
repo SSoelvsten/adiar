@@ -305,12 +305,6 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // Sweep logic with random access
-  //
-  // TODO (nested sweeping):
-  //
-  //   Split `canonical` into `sorted` and `indexable`. Only the latter is of interest. The 'fast
-  //   reduce' optimisation otherwise blocks use of random access.
-
   template <typename NodeRandomAccess, typename Policy, typename PriorityQueue>
   typename Policy::__dd_type
   __quantify_ra(const exec_policy& ep,
