@@ -739,7 +739,7 @@ go_bandit([]() {
           //
           // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
           //       verify that this change makes sense and is as intended.
-          AssertThat(call_history.size(), Is().EqualTo(8u));
+          AssertThat(call_history.size(), Is().EqualTo(6u));
 
           // - First check for at least one variable satisfying the predicate.
           //   This is then used for the inital transposition
@@ -754,9 +754,7 @@ go_bandit([]() {
           AssertThat(call_history.at(4), Is().EqualTo(3u));
 
           // - Nested sweep looking for the 'next_inner' bottom-up
-          AssertThat(call_history.at(5), Is().EqualTo(3u));
-          AssertThat(call_history.at(6), Is().EqualTo(1u));
-          AssertThat(call_history.at(7), Is().EqualTo(0u));
+          AssertThat(call_history.at(5), Is().EqualTo(0u));
         });
 
         it("prunes idempotent to-be quantified nodes during transposition [&&]", [&]() {
