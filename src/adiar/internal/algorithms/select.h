@@ -81,11 +81,11 @@ namespace adiar::internal
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  template <typename SelectPolicy, typename AssignmentMgr, typename PriorityQueue>
-  typename SelectPolicy::__dd_type
+  template <typename Policy, typename PriorityQueue>
+  typename Policy::__dd_type
   __select(const exec_policy& ep,
-           const typename SelectPolicy::dd_type& dd,
-           AssignmentMgr& amgr,
+           const typename Policy::dd_type& dd,
+           Policy& policy,
            const size_t pq_memory,
            const size_t pq_max_size)
   {
@@ -100,52 +100,48 @@ namespace adiar::internal
     node_stream<> ns(dd);
 
     // Set up priority queue with initial request to the root
-    PriorityQueue select_pq({ dd }, pq_memory, pq_max_size, stats_select.lpq);
+    PriorityQueue pq({ dd }, pq_memory, pq_max_size, stats_select.lpq);
     {
       const node root = ns.peek();
-      select_pq.push({ { root.uid() }, {}, { SelectPolicy::pointer_type::nil() } });
+      pq.push({ { root.uid() }, {}, { Policy::pointer_type::nil() } });
     }
 
     // Process all to-be-visited nodes in topological order
-    while (!select_pq.empty()) {
+    while (!pq.empty()) {
       // Set up next level
-      select_pq.setup_next_level();
+      pq.setup_next_level();
 
-      const typename SelectPolicy::label_type level = select_pq.current_level();
-      typename SelectPolicy::id_type level_size     = 0;
+      const typename Policy::label_type level = pq.current_level();
+      typename Policy::id_type level_size     = 0;
 
-      const assignment a = amgr.assignment_for_level(level);
+      policy.setup_level(level);
 
       // Update max 1-level cut
-      out_arcs->max_1level_cut = std::max(out_arcs->max_1level_cut, select_pq.size());
+      out_arcs->max_1level_cut = std::max(out_arcs->max_1level_cut, pq.size());
 
       // Process entire level
-      while (!select_pq.empty_level()) {
+      while (!pq.empty_level()) {
         // Seek requested node
-        const node n = ns.seek(select_pq.top().target[0]);
+        const node n = ns.seek(pq.top().target[0]);
 
-        adiar_assert(select_pq.top().target == n.uid());
+        adiar_assert(pq.top().target == n.uid());
         adiar_assert(n.uid().label() == level);
 
-        // Process node
-        // TODO: Move the switch on `a` into Selection Policy?
-        const select_rec rec = a == assignment::False ? SelectPolicy::fix_false(n, amgr)
-          : a == assignment::True                     ? SelectPolicy::fix_true(n, amgr)
-                                  : /*a == assignment::None:*/ SelectPolicy::keep_node(n, amgr);
+        const select_rec rec = policy.process(n);
 
         // Output/Forward resulting node
-        if (std::holds_alternative<typename SelectPolicy::node_type>(rec)) {
-          const node rec_node = std::get<typename SelectPolicy::node_type>(rec);
+        if (std::holds_alternative<typename Policy::node_type>(rec)) {
+          const node rec_node = std::get<typename Policy::node_type>(rec);
 
           output_changes |= rec_node != n;
 
           // Output/Forward outgoing arcs
-          __select_recurse_out(select_pq, aw, n.uid().as_ptr(false), rec_node.low());
-          __select_recurse_out(select_pq, aw, n.uid().as_ptr(true), rec_node.high());
+          __select_recurse_out(pq, aw, n.uid().as_ptr(false), rec_node.low());
+          __select_recurse_out(pq, aw, n.uid().as_ptr(true), rec_node.high());
 
           // Output ingoing arcs
-          while (select_pq.can_pull() && select_pq.top().target == rec_node.uid()) {
-            const select_request request_pq = select_pq.pull();
+          while (pq.can_pull() && pq.top().target == rec_node.uid()) {
+            const select_request request_pq = pq.pull();
 
             if (!request_pq.data.source.is_nil()) {
               aw.push_internal({ request_pq.data.source, rec_node.uid() });
@@ -154,21 +150,21 @@ namespace adiar::internal
 
           level_size++;
         } else { // std::holds_alternative<node::pointer_type>(rec_res)
-          const typename SelectPolicy::pointer_type rec_target =
-            std::get<typename SelectPolicy::pointer_type>(rec);
+          const typename Policy::pointer_type rec_target =
+            std::get<typename Policy::pointer_type>(rec);
 
           output_changes = true;
 
           // Output/Forward extension of arc
-          while (select_pq.can_pull() && select_pq.top().target == n.uid()) {
-            const typename SelectPolicy::pointer_type source = select_pq.pull().data.source;
+          while (pq.can_pull() && pq.top().target == n.uid()) {
+            const typename Policy::pointer_type source = pq.pull().data.source;
 
             if (rec_target.is_terminal() && source.is_nil()) {
               // Edge-case: restriction to a terminal
-              return SelectPolicy::terminal(rec_target.value(), amgr);
+              return policy.terminal(rec_target.value());
             }
 
-            __select_recurse_out(select_pq, aw, source, rec_target);
+            __select_recurse_out(pq, aw, source, rec_target);
           }
         }
       }
@@ -179,20 +175,20 @@ namespace adiar::internal
 
     if (!output_changes) { return dd; }
 
-    return typename SelectPolicy::__dd_type(out_arcs, ep);
+    return typename Policy::__dd_type(out_arcs, ep);
   }
 
-  template <typename SelectPolicy>
+  template <typename Policy>
   size_t
-  __select_2level_upper_bound(const typename SelectPolicy::dd_type& dd)
+  __select_2level_upper_bound(const typename Policy::dd_type& dd)
   {
     const safe_size_t max_2level_cut = dd.max_2level_cut(cut::Internal);
     return to_size(max_2level_cut + 2u);
   }
 
-  template <typename SelectPolicy, typename AssignmentMgr>
-  typename SelectPolicy::__dd_type
-  select(const exec_policy& ep, const typename SelectPolicy::dd_type& dd, AssignmentMgr& amgr)
+  template <typename Policy>
+  typename Policy::__dd_type
+  select(const exec_policy& ep, const typename Policy::dd_type& dd, Policy& policy)
   {
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.
@@ -212,7 +208,7 @@ namespace adiar::internal
     const bool external_only =
       ep.template get<exec_policy::memory>() == exec_policy::memory::External;
 
-    const size_t pq_bound = __select_2level_upper_bound<SelectPolicy>(dd);
+    const size_t pq_bound = __select_2level_upper_bound<Policy>(dd);
 
     const size_t max_pq_size = internal_only ? std::min(pq_memory_fits, pq_bound) : pq_bound;
 
@@ -220,26 +216,23 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
       stats_select.lpq.unbucketed += 1u;
 #endif
-      return __select<SelectPolicy,
-                      AssignmentMgr,
+      return __select<Policy,
                       select_priority_queue_t<0, memory_mode::Internal>>(
-        ep, dd, amgr, aux_available_memory, max_pq_size);
+        ep, dd, policy, aux_available_memory, max_pq_size);
     } else if (!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
       stats_select.lpq.internal += 1u;
 #endif
-      return __select<SelectPolicy,
-                      AssignmentMgr,
+      return __select<Policy,
                       select_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>>(
-        ep, dd, amgr, aux_available_memory, max_pq_size);
+        ep, dd, policy, aux_available_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
       stats_select.lpq.external += 1u;
 #endif
-      return __select<SelectPolicy,
-                      AssignmentMgr,
+      return __select<Policy,
                       select_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::External>>(
-        ep, dd, amgr, aux_available_memory, max_pq_size);
+        ep, dd, policy, aux_available_memory, max_pq_size);
     }
   }
 }
