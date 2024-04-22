@@ -675,7 +675,7 @@ go_bandit([]() {
           //
           // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
           //       verify that this change makes sense and is as intended.
-          AssertThat(call_history.size(), Is().EqualTo(11u));
+          AssertThat(call_history.size(), Is().EqualTo(12u));
 
           // - First check for at least one variable satisfying the predicate.
           //   This is then used for the inital transposition
@@ -692,10 +692,11 @@ go_bandit([]() {
           AssertThat(call_history.at(6), Is().EqualTo(4u));
 
           // - Nested sweep looking for the 'next_inner' bottom-up
-          AssertThat(call_history.at(7), Is().EqualTo(3u));
-          AssertThat(call_history.at(8), Is().EqualTo(2u)); // <-- still exists
-          AssertThat(call_history.at(9), Is().EqualTo(1u));
-          AssertThat(call_history.at(10), Is().EqualTo(0u));
+          AssertThat(call_history.at(7), Is().EqualTo(4u));
+          AssertThat(call_history.at(8), Is().EqualTo(3u));
+          AssertThat(call_history.at(9), Is().EqualTo(2u)); // <-- still exists
+          AssertThat(call_history.at(10), Is().EqualTo(1u));
+          AssertThat(call_history.at(11), Is().EqualTo(0u));
         });
 
         it("does not prune on 'shortcutting' terminals during transposition [&& zdd_7]", [&]() {
@@ -738,7 +739,7 @@ go_bandit([]() {
           //
           // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
           //       verify that this change makes sense and is as intended.
-          AssertThat(call_history.size(), Is().EqualTo(7u));
+          AssertThat(call_history.size(), Is().EqualTo(8u));
 
           // - First check for at least one variable satisfying the predicate.
           //   This is then used for the inital transposition
@@ -753,8 +754,9 @@ go_bandit([]() {
           AssertThat(call_history.at(4), Is().EqualTo(3u));
 
           // - Nested sweep looking for the 'next_inner' bottom-up
-          AssertThat(call_history.at(5), Is().EqualTo(1u));
-          AssertThat(call_history.at(6), Is().EqualTo(0u));
+          AssertThat(call_history.at(5), Is().EqualTo(3u));
+          AssertThat(call_history.at(6), Is().EqualTo(1u));
+          AssertThat(call_history.at(7), Is().EqualTo(0u));
         });
 
         it("prunes idempotent to-be quantified nodes during transposition [&&]", [&]() {
@@ -808,7 +810,7 @@ go_bandit([]() {
           //
           // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
           //       verify that this change makes sense and is as intended.
-          AssertThat(call_history.size(), Is().EqualTo(8u));
+          AssertThat(call_history.size(), Is().EqualTo(9u));
 
           // - First check for at least one variable satisfying the predicate.
           //   This is then used for the inital transposition
@@ -824,8 +826,9 @@ go_bandit([]() {
           AssertThat(call_history.at(5), Is().EqualTo(4u));
 
           // - Nested sweep looking for the 'next_inner' bottom-up
-          AssertThat(call_history.at(6), Is().EqualTo(3u));
-          AssertThat(call_history.at(7), Is().EqualTo(0u));
+          AssertThat(call_history.at(6), Is().EqualTo(4u));
+          AssertThat(call_history.at(7), Is().EqualTo(3u));
+          AssertThat(call_history.at(8), Is().EqualTo(0u));
         });
       });
 
@@ -1144,7 +1147,7 @@ go_bandit([]() {
           // NOTE: Test failure does NOT indicate a bug, but only indicates a
           //       change. Please verify that this change makes sense and is as
           //       intended.
-          AssertThat(call_history.size(), Is().EqualTo(8u));
+          AssertThat(call_history.size(), Is().EqualTo(9u));
 
           // - First check for at least one variable satisfying the predicate.
           AssertThat(call_history.at(0), Is().EqualTo(4u));
@@ -1159,8 +1162,9 @@ go_bandit([]() {
           AssertThat(call_history.at(5), Is().EqualTo(4u));
 
           // - Nested sweep checking if any other than the deepest variable needs quantifying
-          AssertThat(call_history.at(6), Is().EqualTo(2u));
-          AssertThat(call_history.at(7), Is().EqualTo(0u));
+          AssertThat(call_history.at(6), Is().EqualTo(4u));
+          AssertThat(call_history.at(7), Is().EqualTo(2u));
+          AssertThat(call_history.at(8), Is().EqualTo(0u));
         });
 
         it("quantifies exploding zdd_5 with unbounded transpositions", [&]() {

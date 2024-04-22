@@ -3206,7 +3206,7 @@ go_bandit([]() {
           //
           // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
           //       that this change makes sense and is as intended.
-          AssertThat(call_history.size(), Is().EqualTo(14u));
+          AssertThat(call_history.size(), Is().EqualTo(15u));
 
           // - First check for at least one variable satisfying the predicate.
           //   This is then used for the inital transposition
@@ -3227,9 +3227,10 @@ go_bandit([]() {
 
           // - Nested sweep looking for the 'next_inner' bottom-up
           AssertThat(call_history.at(10), Is().EqualTo(4u));
-          AssertThat(call_history.at(11), Is().EqualTo(2u));
-          AssertThat(call_history.at(12), Is().EqualTo(1u));
-          AssertThat(call_history.at(13), Is().EqualTo(0u));
+          AssertThat(call_history.at(11), Is().EqualTo(3u));
+          AssertThat(call_history.at(12), Is().EqualTo(2u));
+          AssertThat(call_history.at(13), Is().EqualTo(1u));
+          AssertThat(call_history.at(14), Is().EqualTo(0u));
         });
 
         it("kills intermediate dead partial solutions multiple times", [&]() {
