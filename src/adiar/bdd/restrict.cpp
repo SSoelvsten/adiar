@@ -1,6 +1,5 @@
 #include <adiar/bdd.h>
 #include <adiar/bdd/bdd_policy.h>
-
 #include <adiar/types.h>
 
 #include <adiar/internal/algorithms/select.h>
@@ -13,11 +12,13 @@ namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
   template <typename AssignmentPolicy>
-  class bdd_restrict_policy : public bdd_policy, public AssignmentPolicy
+  class bdd_restrict_policy
+    : public bdd_policy
+    , public AssignmentPolicy
   {
   public:
     template <typename Arg>
-    bdd_restrict_policy(const Arg &a)
+    bdd_restrict_policy(const Arg& a)
       : AssignmentPolicy(a)
     {}
 

@@ -1232,29 +1232,19 @@ namespace adiar::internal
     {
       // -------------------------------------------------------------------------------------------
       // CASE: Not to-be quantified node.
-      if (!_pred_result) {
-        return n;
-      }
+      if (!_pred_result) { return n; }
 
       // -------------------------------------------------------------------------------------------
       // CASE: Prune low()
       //
       // TODO (ZDD): Remove 'Policy::keep_terminal' depending on semantics in Policy
-      if (Policy::collapse_to_terminal(n.low())) {
-        return n.low();
-      }
-      if (n.low().is_terminal() && !Policy::keep_terminal(n.low())) {
-        return n.high();
-      }
+      if (Policy::collapse_to_terminal(n.low())) { return n.low(); }
+      if (n.low().is_terminal() && !Policy::keep_terminal(n.low())) { return n.high(); }
 
       // -------------------------------------------------------------------------------------------
       // CASE: Prune high()
-      if (Policy::collapse_to_terminal(n.high())) {
-        return n.high();
-      }
-      if (n.high().is_terminal() && !Policy::keep_terminal(n.high())) {
-        return n.low();
-      }
+      if (Policy::collapse_to_terminal(n.high())) { return n.high(); }
+      if (n.high().is_terminal() && !Policy::keep_terminal(n.high())) { return n.low(); }
 
       // -------------------------------------------------------------------------------------------
       // No pruning possible. Do nothing.
@@ -1363,7 +1353,6 @@ namespace adiar::internal
   struct quantify__pred_profile
   {
   private:
-
   public:
     /// \brief Total number of nodes in the diagram.
     size_t dd_size;
@@ -1399,36 +1388,24 @@ namespace adiar::internal
     };
 
     /// \brief The *deepest* to-be quantified level.
-    var_data deepest_var
-    {
-      0,
-      std::numeric_limits<size_t>::max(),
-      Policy::max_id+1
-    };
+    var_data deepest_var{ 0, std::numeric_limits<size_t>::max(), Policy::max_id + 1 };
 
     /// \brief The *shallowest* to-be quantified level.
-    var_data shallowest_var
-    {
-      Policy::max_label+1,
-      std::numeric_limits<size_t>::max(),
-      Policy::max_id+1
-    };
+    var_data shallowest_var{ Policy::max_label + 1,
+                             std::numeric_limits<size_t>::max(),
+                             Policy::max_id + 1 };
 
     /// \brief The *widest* to-be quantified level.
-    var_data widest_var
-    {
-      Policy::max_label+1,
+    var_data widest_var{
+      Policy::max_label + 1,
       std::numeric_limits<size_t>::max(),
       0,
     };
 
     /// \brief The *narrowest* to-be quantified level.
-    var_data narrowest_var
-    {
-      Policy::max_label+1,
-      std::numeric_limits<size_t>::max(),
-      Policy::max_id+1
-    };
+    var_data narrowest_var{ Policy::max_label + 1,
+                            std::numeric_limits<size_t>::max(),
+                            Policy::max_id + 1 };
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1439,7 +1416,8 @@ namespace adiar::internal
   __quantify__pred_profile(const typename Policy::dd_type& dd,
                            const predicate<typename Policy::label_type>& pred)
   {
-    // TODO: tighten definition of 'shallow' and 'deep' variables based on widest level
+    // TODO: tighten 'shallow' to only be above shallowest widest level (inclusive)
+    // TODO: tighten 'deep' to not be 'shallow'
 
     quantify__pred_profile<Policy> res;
     res.dd_size  = dd_nodecount(dd);
@@ -1449,14 +1427,14 @@ namespace adiar::internal
     level_info_stream<true /* bottom-up */> lis(dd);
 
     const size_t third_dd_size = res.dd_size / 3;
-    size_t nodes_below = 0u;
+    size_t nodes_below         = 0u;
 
     while (lis.can_pull()) {
       const level_info li = lis.pull();
       if (pred(li.label()) == Policy::quantify_onset) {
-        res.quant_all_vars     += 1u;
-        res.quant_all_size     += li.width();
-        res.quant_deep_vars    += nodes_below + 1 <= third_dd_size;
+        res.quant_all_vars += 1u;
+        res.quant_all_size += li.width();
+        res.quant_deep_vars += nodes_below + 1 <= third_dd_size;
         res.quant_shallow_vars += res.dd_size - third_dd_size <= nodes_below + li.width();
 
         { // Shallowest variable (always updated due to bottom-up direction).
@@ -1465,17 +1443,11 @@ namespace adiar::internal
           res.shallowest_var.width       = li.width();
         }
         // Deepest variable.
-        if (res.deepest_var.level < li.level()) {
-          res.deepest_var = res.shallowest_var;
-        }
+        if (res.deepest_var.level < li.level()) { res.deepest_var = res.shallowest_var; }
         // Widest variable
-        if (res.widest_var.width < li.width()) {
-          res.widest_var = res.shallowest_var;
-        }
+        if (res.widest_var.width < li.width()) { res.widest_var = res.shallowest_var; }
         // Narrowest variable
-        if (li.width() < res.narrowest_var.width) {
-          res.narrowest_var = res.shallowest_var;
-        }
+        if (li.width() < res.narrowest_var.width) { res.narrowest_var = res.shallowest_var; }
       }
 
       nodes_below += li.width();

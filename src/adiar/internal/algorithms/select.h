@@ -133,9 +133,7 @@ namespace adiar::internal
         if (std::holds_alternative<typename Policy::node_type>(rec)) {
           const node rec_node = std::get<typename Policy::node_type>(rec);
 
-          if constexpr (Policy::skip_reduce) {
-            output_changes |= rec_node != n;
-          }
+          if constexpr (Policy::skip_reduce) { output_changes |= rec_node != n; }
 
           // Output/Forward outgoing arcs
           __select_recurse_out(pq, aw, n.uid().as_ptr(false), rec_node.low());
@@ -155,9 +153,7 @@ namespace adiar::internal
           const typename Policy::pointer_type rec_target =
             std::get<typename Policy::pointer_type>(rec);
 
-          if constexpr (Policy::skip_reduce) {
-            output_changes = true;
-          }
+          if constexpr (Policy::skip_reduce) { output_changes = true; }
 
           // Output/Forward extension of arc
           while (pq.can_pull() && pq.top().target == n.uid()) {
@@ -222,22 +218,19 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
       stats_select.lpq.unbucketed += 1u;
 #endif
-      return __select<Policy,
-                      select_priority_queue_t<0, memory_mode::Internal>>(
+      return __select<Policy, select_priority_queue_t<0, memory_mode::Internal>>(
         ep, dd, policy, aux_available_memory, max_pq_size);
     } else if (!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
       stats_select.lpq.internal += 1u;
 #endif
-      return __select<Policy,
-                      select_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>>(
+      return __select<Policy, select_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>>(
         ep, dd, policy, aux_available_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
       stats_select.lpq.external += 1u;
 #endif
-      return __select<Policy,
-                      select_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::External>>(
+      return __select<Policy, select_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::External>>(
         ep, dd, policy, aux_available_memory, max_pq_size);
     }
   }
