@@ -36,14 +36,14 @@ jobs:
         os: [macos-latest]
         cc:
           # GNU Compiler
-          - { cc: gcc,   v: 10, cxx: g++, xcode: latest }
+          - { cc: gcc,   v: 11, cxx: g++, xcode: latest } # oldest supported on Apple Silicon
           - { cc: gcc,   v: 12, cxx: g++, xcode: latest }
+          - { cc: gcc,   v: 13, cxx: g++, xcode: latest }
 
           # Clang Compiler
-          - { cc: clang, cxx: clang++, xcode: 13.1 } # oldest
-          - { cc: clang, cxx: clang++, xcode: 13.4 }
-          - { cc: clang, cxx: clang++, xcode: 14.0 }
-          - { cc: clang, cxx: clang++, xcode: 14.2 } # newest
+          - { cc: clang, cxx: clang++, xcode: 14.3 } # oldest supported
+          - { cc: clang, cxx: clang++, xcode: 15.0 }
+          - { cc: clang, cxx: clang++, xcode: latest }
 
     steps:
     # Git repo set up
@@ -68,7 +68,7 @@ jobs:
       run: |
         if [ "${{matrix.cc.cc}}" = "gcc" ]; then
           echo "================================"
-          echo "Compiler"
+          echo GCC "Compiler"
           brew install ${{matrix.cc.cc}}@${{matrix.cc.v}}
         fi
 
