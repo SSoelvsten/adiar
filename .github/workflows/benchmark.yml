@@ -11,7 +11,7 @@ jobs:
 
     steps:
     - id: identify
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_HEAD_REF#refs/heads/})"
+      run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
 
     outputs:
       branch: ${{ steps.identify.outputs.branch }}
@@ -22,8 +22,7 @@ jobs:
 
     steps:
       - id: identify
-        run: |
-          echo "##[set-output name=remote;]$(if [ ${GITHUB_REPOSITORY} == 'SSoelvsten/adiar' ]; then echo 'origin'; else echo '${GITHUB_REPOSITORY}'; fi)"
+        run: echo "remote=${GITHUB_REPOSITORY}" >> $GITHUB_OUTPUT
 
     outputs:
       remote: ${{ steps.identify.outputs.remote }}
