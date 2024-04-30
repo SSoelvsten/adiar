@@ -1359,6 +1359,131 @@ namespace adiar::internal
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename Policy>
+  struct quantify__pred_profile
+  {
+  private:
+
+  public:
+    /// \brief Total number of nodes in the diagram.
+    size_t dd_size;
+
+    /// \brief Width of the diagram.
+    size_t dd_width;
+
+    /// \brief Total number of variables in the diagram.
+    size_t dd_vars;
+
+    /// \brief Number of nodes of *all* to-be quantified levels.
+    size_t quant_all_size = 0u;
+
+    /// \brief Number of *all* to-be quantified levels.
+    size_t quant_all_vars = 0u;
+
+    /// \brief Number of *deep* to-be quantified levels, i.e. the last N/3 nodes.
+    size_t quant_deep_vars = 0u;
+
+    /// \brief Number of *shallow* to-be quantified levels, i.e. the first N/3 nodes.
+    size_t quant_shallow_vars = 0u;
+
+    struct var_data
+    {
+      /// \brief The to-be quantified variable.
+      typename Policy::label_type level;
+
+      /// \brief Number of nodes below this level (not inclusive)
+      size_t nodes_below;
+
+      /// \brief Number of nodes on said level
+      typename Policy::id_type width;
+    };
+
+    /// \brief The *deepest* to-be quantified level.
+    var_data deepest_var
+    {
+      0,
+      std::numeric_limits<size_t>::max(),
+      Policy::max_id+1
+    };
+
+    /// \brief The *shallowest* to-be quantified level.
+    var_data shallowest_var
+    {
+      Policy::max_label+1,
+      std::numeric_limits<size_t>::max(),
+      Policy::max_id+1
+    };
+
+    /// \brief The *widest* to-be quantified level.
+    var_data widest_var
+    {
+      Policy::max_label+1,
+      std::numeric_limits<size_t>::max(),
+      0,
+    };
+
+    /// \brief The *narrowest* to-be quantified level.
+    var_data narrowest_var
+    {
+      Policy::max_label+1,
+      std::numeric_limits<size_t>::max(),
+      Policy::max_id+1
+    };
+  };
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Obtain the deepest level that satisfies (or not) the requested level.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename Policy>
+  inline quantify__pred_profile<Policy>
+  __quantify__pred_profile(const typename Policy::dd_type& dd,
+                           const predicate<typename Policy::label_type>& pred)
+  {
+    // TODO: tighten definition of 'shallow' and 'deep' variables based on widest level
+
+    quantify__pred_profile<Policy> res;
+    res.dd_size  = dd_nodecount(dd);
+    res.dd_width = dd_width(dd);
+    res.dd_vars  = dd_varcount(dd);
+
+    level_info_stream<true /* bottom-up */> lis(dd);
+
+    const size_t third_dd_size = res.dd_size / 3;
+    size_t nodes_below = 0u;
+
+    while (lis.can_pull()) {
+      const level_info li = lis.pull();
+      if (pred(li.label()) == Policy::quantify_onset) {
+        res.quant_all_vars     += 1u;
+        res.quant_all_size     += li.width();
+        res.quant_deep_vars    += nodes_below + 1 <= third_dd_size;
+        res.quant_shallow_vars += res.dd_size - third_dd_size <= nodes_below + li.width();
+
+        { // Shallowest variable (always updated due to bottom-up direction).
+          res.shallowest_var.level       = li.level();
+          res.shallowest_var.nodes_below = nodes_below;
+          res.shallowest_var.width       = li.width();
+        }
+        // Deepest variable.
+        if (res.deepest_var.level < li.level()) {
+          res.deepest_var = res.shallowest_var;
+        }
+        // Widest variable
+        if (res.widest_var.width < li.width()) {
+          res.widest_var = res.shallowest_var;
+        }
+        // Narrowest variable
+        if (li.width() < res.narrowest_var.width) {
+          res.narrowest_var = res.shallowest_var;
+        }
+      }
+
+      nodes_below += li.width();
+    }
+    return res;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Obtain the deepest level that satisfies (or not) the requested level.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // TODO: optimisations
@@ -1380,54 +1505,6 @@ namespace adiar::internal
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// \brief Heuristically derive a bound for the number of partial sweeps based on the graph meta
-  ///        data.
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename Policy>
-  inline typename Policy::label_type
-  __quantify__max_partial_sweeps(const typename Policy::dd_type& dd,
-                                 const predicate<typename Policy::label_type>& pred)
-  {
-    // Extract meta data constants about the DAG
-    const size_t size  = dd.size();
-    const size_t width = dd.width();
-
-    // ---------------------------------------------------------------------------------------------
-    // Shallow Variables Heuristic
-
-    // Keep track of the number of nodes on the top-most levels in relation to the total size
-    size_t seen_nodes = 0u;
-
-    // Threshold to stop after the first n/3 nodes.
-    const size_t max_nodes = size / 3;
-
-    // TODO: Turn `shallow_variables` into a double and decrease the weight of to-be quantified
-    //       variables depending on `seen_nodes`, the number of levels of width `width`, and/or in
-    //       general using a (quadratic?) decay.
-    typename Policy::label_type shallow_variables = 0u;
-
-    level_info_stream<false /*top-down*/> lis(dd);
-
-    while (lis.can_pull()) {
-      const level_info li = lis.pull();
-
-      if (pred(li.label()) == Policy::quantify_onset) { shallow_variables++; }
-
-      // Stop at the (first) widest level
-      if (li.width() == width) { break; }
-
-      // Stop when having seen too many nodes
-      seen_nodes += li.width();
-      if (max_nodes < seen_nodes) { break; }
-    }
-
-    adiar_assert(shallow_variables <= Policy::max_label);
-
-    // ---------------------------------------------------------------------------------------------
-    return shallow_variables;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Entry Point for Multi-variable Quantification with a Predicate.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename Policy>
@@ -1439,14 +1516,21 @@ namespace adiar::internal
     using unreduced_t = typename Policy::__dd_type;
     // TODO: check for missing std::move(...)
 
-    typename Policy::label_type label = __quantify__get_deepest<Policy>(dd, pred);
+    const quantify__pred_profile<Policy> pred_profile = __quantify__pred_profile<Policy>(dd, pred);
 
-    if (Policy::max_label < label) {
+    // -----------------------------------------------------------------------
+    // Case: Nothing to do
+    if (pred_profile.quant_all_vars == 0u) {
 #ifdef ADIAR_STATS
       stats_quantify.skipped += 1u;
 #endif
       return dd;
     }
+
+    // -----------------------------------------------------------------------
+    // Case: Only one variable to quantify
+    //
+    // TODO: pred_profile.quant_all_vars == 1u
 
     switch (ep.template get<exec_policy::quantify::algorithm>()) {
     case exec_policy::quantify::Singleton: {
@@ -1455,6 +1539,8 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
       stats_quantify.singleton_sweeps += 1u;
 #endif
+      typename Policy::label_type label = pred_profile.deepest_var.level;
+
       while (label <= Policy::max_label) {
         dd = quantify<Policy>(ep, dd, label);
         if (dd_isterminal(dd)) { return dd; }
@@ -1467,19 +1553,18 @@ namespace adiar::internal
     case exec_policy::quantify::Nested: {
       // ---------------------------------------------------------------------
       // Case: Nested Sweeping
-      const size_t dd_size = dd.size();
 
       // Do Partial Quantification as long as...
       //   1. ... it stays smaller than 1+epsilon of the input size.
       const size_t transposition__size_threshold = (std::min(
         static_cast<double>(std::numeric_limits<size_t>::max() / 2u),
         static_cast<double>(ep.template get<exec_policy::quantify::transposition_growth>())
-          * static_cast<double>(dd_size)));
+          * static_cast<double>(pred_profile.dd_size)));
 
       //   2. ... it has not run more than the maximum number of iterations.
       const size_t transposition__max_iterations =
         std::min<size_t>({ ep.template get<exec_policy::quantify::transposition_max>(),
-                           __quantify__max_partial_sweeps<Policy>(dd, pred) });
+                           pred_profile.quant_shallow_vars });
 
       unreduced_t transposed;
 
