@@ -110,11 +110,13 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename AssignmentPolicy>
-  class zdd_offset_policy : public zdd_policy, public AssignmentPolicy
+  class zdd_offset_policy
+    : public zdd_policy
+    , public AssignmentPolicy
   {
   public:
     template <typename Arg>
-    zdd_offset_policy(const Arg &a)
+    zdd_offset_policy(const Arg& a)
       : AssignmentPolicy(a)
     {}
 
@@ -122,9 +124,7 @@ namespace adiar
     internal::select_rec
     process(const zdd::node_type& n)
     {
-      if (AssignmentPolicy::current_matches()) {
-        return n.low();
-      }
+      if (AssignmentPolicy::current_matches()) { return n.low(); }
       return n;
     }
 
@@ -188,7 +188,9 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename AssignmentPolicy>
-  class zdd_onset_policy : public zdd_policy, public AssignmentPolicy
+  class zdd_onset_policy
+    : public zdd_policy
+    , public AssignmentPolicy
   {
   public:
     template <typename Arg>
@@ -213,12 +215,15 @@ namespace adiar
       if (AssignmentPolicy::has_level_incl()) {
         // If recursion goes past the intended level, then it is replaced with
         // the false terminal.
-        const zdd::pointer_type low = n.low().is_terminal() || n.low().label() > AssignmentPolicy::level_incl()
+        const zdd::pointer_type low =
+          n.low().is_terminal() || n.low().label() > AssignmentPolicy::level_incl()
           ? zdd::pointer_type(false)
           : n.low();
 
         // If this applies to high, then the node should be skipped entirely.
-        if (n.high().is_terminal() || n.high().label() > AssignmentPolicy::level_incl()) { return low; }
+        if (n.high().is_terminal() || n.high().label() > AssignmentPolicy::level_incl()) {
+          return low;
+        }
         return zdd::node_type(n.uid(), low, n.high());
       }
       return n;
