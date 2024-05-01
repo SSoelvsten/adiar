@@ -37,10 +37,10 @@ var namespaceadiar =
     [ "unique_ptr", "namespaceadiar.html#a93a4ec5d0d8a82bb459ec5cd77f5af21", null ],
     [ "zdd_builder", "group__module____builder.html#ga0b9034da68843a3fff87b408e2c2b4fe", null ],
     [ "zdd_ptr", "group__module____builder.html#ga6aae72cb62fa2daf7cf69950931dcceb", null ],
-    [ "assignment", "namespaceadiar.html#a723cfcc9239dfdc3cf4cdc74df0265c2", [
-      [ "False", "namespaceadiar.html#a723cfcc9239dfdc3cf4cdc74df0265c2af8320b26d30ab433c5a54546d21f414c", null ],
-      [ "True", "namespaceadiar.html#a723cfcc9239dfdc3cf4cdc74df0265c2af827cf462f62848df37c5e1e94a4da74", null ],
-      [ "None", "namespaceadiar.html#a723cfcc9239dfdc3cf4cdc74df0265c2a6adf97f83acf6453d4a6a4b1070f3754", null ]
+    [ "assignment", "namespaceadiar.html#ae0011ac93212d71c2e4310b76e76d642", [
+      [ "False", "namespaceadiar.html#ae0011ac93212d71c2e4310b76e76d642af8320b26d30ab433c5a54546d21f414c", null ],
+      [ "True", "namespaceadiar.html#ae0011ac93212d71c2e4310b76e76d642af827cf462f62848df37c5e1e94a4da74", null ],
+      [ "None", "namespaceadiar.html#ae0011ac93212d71c2e4310b76e76d642a6adf97f83acf6453d4a6a4b1070f3754", null ]
     ] ],
     [ "adiar_deinit", "group__module____adiar.html#ga9501bb9e871253964682b7ac1942f911", null ],
     [ "adiar_init", "group__module____adiar.html#ga4f0460393f1bb6651306587b11d64660", null ],
