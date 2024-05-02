@@ -1424,33 +1424,38 @@ namespace adiar::internal
     res.dd_width = dd_width(dd);
     res.dd_vars  = dd_varcount(dd);
 
-    level_info_stream<true /* bottom-up */> lis(dd);
+    level_info_stream<false /* top-down */> lis(dd);
 
     const size_t third_dd_size = res.dd_size / 3;
-    size_t nodes_below         = 0u;
+
+    size_t nodes_above         = 0u;
+    size_t nodes_below         = res.dd_size;
 
     while (lis.can_pull()) {
       const level_info li = lis.pull();
+
+      nodes_below -= li.width();
+
       if (pred(li.label()) == Policy::quantify_onset) {
         res.quant_all_vars += 1u;
         res.quant_all_size += li.width();
-        res.quant_deep_vars += nodes_below + 1 <= third_dd_size;
-        res.quant_shallow_vars += res.dd_size - third_dd_size <= nodes_below + li.width();
+        res.quant_deep_vars += nodes_below < third_dd_size;
+        res.quant_shallow_vars += nodes_above <= third_dd_size;
 
-        { // Shallowest variable (always updated due to bottom-up direction).
-          res.shallowest_var.level       = li.level();
-          res.shallowest_var.nodes_below = nodes_below;
-          res.shallowest_var.width       = li.width();
+        { // Deepest variable (always updated due to top-down direction).
+          res.deepest_var.level       = li.level();
+          res.deepest_var.nodes_below = nodes_below;
+          res.deepest_var.width       = li.width();
         }
-        // Deepest variable.
-        if (res.deepest_var.level < li.level()) { res.deepest_var = res.shallowest_var; }
+        // Shallowest variable
+        if (res.shallowest_var.level < li.level()) { res.shallowest_var = res.deepest_var; }
         // Widest variable
-        if (res.widest_var.width < li.width()) { res.widest_var = res.shallowest_var; }
+        if (res.widest_var.width < li.width()) { res.widest_var = res.deepest_var; }
         // Narrowest variable
-        if (li.width() < res.narrowest_var.width) { res.narrowest_var = res.shallowest_var; }
+        if (li.width() < res.narrowest_var.width) { res.narrowest_var = res.deepest_var; }
       }
 
-      nodes_below += li.width();
+      nodes_above += li.width();
     }
     return res;
   }
