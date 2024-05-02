@@ -1430,6 +1430,7 @@ namespace adiar::internal
 
     size_t nodes_above         = 0u;
     size_t nodes_below         = res.dd_size;
+    bool seen_widest           = false;
 
     while (lis.can_pull()) {
       const level_info li = lis.pull();
@@ -1439,8 +1440,8 @@ namespace adiar::internal
       if (pred(li.label()) == Policy::quantify_onset) {
         res.quant_all_vars += 1u;
         res.quant_all_size += li.width();
-        res.quant_deep_vars += nodes_below < third_dd_size;
-        res.quant_shallow_vars += nodes_above <= third_dd_size;
+        res.quant_deep_vars += seen_widest && nodes_below < third_dd_size;
+        res.quant_shallow_vars += !seen_widest && nodes_above <= third_dd_size;
 
         { // Deepest variable (always updated due to top-down direction).
           res.deepest_var.level       = li.level();
@@ -1456,6 +1457,7 @@ namespace adiar::internal
       }
 
       nodes_above += li.width();
+      seen_widest |= li.width() == res.dd_width;
     }
     return res;
   }
