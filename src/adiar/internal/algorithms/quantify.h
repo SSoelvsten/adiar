@@ -1426,11 +1426,10 @@ namespace adiar::internal
 
     level_info_stream<false /* top-down */> lis(dd);
 
-    const size_t third_dd_size = res.dd_size / 3;
+    size_t shallow_threshold = res.dd_size / 3;
 
-    size_t nodes_above         = 0u;
-    size_t nodes_below         = res.dd_size;
-    bool seen_widest           = false;
+    size_t nodes_above       = 0u;
+    size_t nodes_below       = res.dd_size;
 
     while (lis.can_pull()) {
       const level_info li = lis.pull();
@@ -1440,8 +1439,8 @@ namespace adiar::internal
       if (pred(li.label()) == Policy::quantify_onset) {
         res.quant_all_vars += 1u;
         res.quant_all_size += li.width();
-        res.quant_deep_vars += seen_widest && nodes_below < third_dd_size;
-        res.quant_shallow_vars += !seen_widest && nodes_above <= third_dd_size;
+        res.quant_deep_vars += nodes_below < shallow_threshold;
+        res.quant_shallow_vars += nodes_above <= shallow_threshold;
 
         { // Deepest variable (always updated due to top-down direction).
           res.deepest_var.level       = li.level();
@@ -1456,8 +1455,10 @@ namespace adiar::internal
         if (li.width() < res.narrowest_var.width) { res.narrowest_var = res.deepest_var; }
       }
 
+      if (li.width() == res.dd_width) {
+        shallow_threshold = std::min(shallow_threshold, nodes_above);
+      }
       nodes_above += li.width();
-      seen_widest |= li.width() == res.dd_width;
     }
     return res;
   }
