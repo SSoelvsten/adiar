@@ -39,6 +39,7 @@ Thank you, to all the minor contributors to this project's codebase.
 - **[Ayoub Aboutarbouch](https://github.com/itsmeYO92)**
 - **[Jakob Schneider Villumsen](https://github.com/jaschdoc)**
 - **[Maxim Smolskiy](https://github.com/MaximSmolskiy)**
+- **[Nils Husung](https://github.com/nhusung)**
 - **[Sai Rugveth Vankayala](https://github.com/rugveth1210)**
 
 ## Acknowledgements
