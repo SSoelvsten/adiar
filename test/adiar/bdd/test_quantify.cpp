@@ -2614,10 +2614,10 @@ go_bandit([]() {
             AssertThat(call_history.size(), Is().EqualTo(11u));
 
             // - Generate predicate profile
-            AssertThat(call_history.at(0), Is().EqualTo(3u));
-            AssertThat(call_history.at(1), Is().EqualTo(2u));
-            AssertThat(call_history.at(2), Is().EqualTo(1u));
-            AssertThat(call_history.at(3), Is().EqualTo(0u));
+            AssertThat(call_history.at(0), Is().EqualTo(0u));
+            AssertThat(call_history.at(1), Is().EqualTo(1u));
+            AssertThat(call_history.at(2), Is().EqualTo(2u));
+            AssertThat(call_history.at(3), Is().EqualTo(3u));
 
             // - Pruning sweep
             AssertThat(call_history.at(4), Is().EqualTo(0u));
@@ -2663,11 +2663,11 @@ go_bandit([]() {
             AssertThat(call_history.size(), Is().EqualTo(11u));
 
             // - Generate predicate profile
-            AssertThat(call_history.at(0), Is().EqualTo(4u));
-            AssertThat(call_history.at(1), Is().EqualTo(3u));
+            AssertThat(call_history.at(0), Is().EqualTo(0u));
+            AssertThat(call_history.at(1), Is().EqualTo(1u));
             AssertThat(call_history.at(2), Is().EqualTo(2u));
-            AssertThat(call_history.at(3), Is().EqualTo(1u));
-            AssertThat(call_history.at(4), Is().EqualTo(0u));
+            AssertThat(call_history.at(3), Is().EqualTo(3u));
+            AssertThat(call_history.at(4), Is().EqualTo(4u));
 
             // - Pruning sweep
             AssertThat(call_history.at(5), Is().EqualTo(0u));
@@ -2704,9 +2704,9 @@ go_bandit([]() {
             AssertThat(call_history.size(), Is().EqualTo(4u));
 
             // - Generate predicate profile
-            AssertThat(call_history.at(0), Is().EqualTo(2u));
+            AssertThat(call_history.at(0), Is().EqualTo(0u));
             AssertThat(call_history.at(1), Is().EqualTo(1u));
-            AssertThat(call_history.at(2), Is().EqualTo(0u));
+            AssertThat(call_history.at(2), Is().EqualTo(2u));
 
             // - Pruning sweep
             AssertThat(call_history.at(3), Is().EqualTo(0u));
@@ -2750,11 +2750,11 @@ go_bandit([]() {
             AssertThat(call_history.size(), Is().EqualTo(13u));
 
             // - Generate predicate profile
-            AssertThat(call_history.at(0), Is().EqualTo(4u));
-            AssertThat(call_history.at(1), Is().EqualTo(3u));
+            AssertThat(call_history.at(0), Is().EqualTo(0u));
+            AssertThat(call_history.at(1), Is().EqualTo(1u));
             AssertThat(call_history.at(2), Is().EqualTo(2u));
-            AssertThat(call_history.at(3), Is().EqualTo(1u));
-            AssertThat(call_history.at(4), Is().EqualTo(0u));
+            AssertThat(call_history.at(3), Is().EqualTo(3u));
+            AssertThat(call_history.at(4), Is().EqualTo(4u));
 
             // - Pruning sweep
             AssertThat(call_history.at(5), Is().EqualTo(0u));
@@ -2793,9 +2793,9 @@ go_bandit([]() {
             AssertThat(call_history.size(), Is().EqualTo(7u));
 
             // - Generate predicate profile
-            AssertThat(call_history.at(0), Is().EqualTo(2u));
+            AssertThat(call_history.at(0), Is().EqualTo(0u));
             AssertThat(call_history.at(1), Is().EqualTo(1u));
-            AssertThat(call_history.at(2), Is().EqualTo(0u));
+            AssertThat(call_history.at(2), Is().EqualTo(2u));
 
             // - Pruning sweep
             AssertThat(call_history.at(3), Is().EqualTo(0u));
@@ -2866,10 +2866,10 @@ go_bandit([]() {
             AssertThat(call_history.size(), Is().EqualTo(11u));
 
             // - Generate predicate profile
-            AssertThat(call_history.at(0), Is().EqualTo(3u));
-            AssertThat(call_history.at(1), Is().EqualTo(2u));
-            AssertThat(call_history.at(2), Is().EqualTo(1u));
-            AssertThat(call_history.at(3), Is().EqualTo(0u));
+            AssertThat(call_history.at(0), Is().EqualTo(0u));
+            AssertThat(call_history.at(1), Is().EqualTo(1u));
+            AssertThat(call_history.at(2), Is().EqualTo(2u));
+            AssertThat(call_history.at(3), Is().EqualTo(3u));
 
             // - Pruning sweep
             AssertThat(call_history.at(4), Is().EqualTo(0u));
@@ -2915,11 +2915,11 @@ go_bandit([]() {
             AssertThat(call_history.size(), Is().EqualTo(11u));
 
             // - Generate predicate profile
-            AssertThat(call_history.at(0), Is().EqualTo(4u));
-            AssertThat(call_history.at(1), Is().EqualTo(3u));
+            AssertThat(call_history.at(0), Is().EqualTo(0u));
+            AssertThat(call_history.at(1), Is().EqualTo(1u));
             AssertThat(call_history.at(2), Is().EqualTo(2u));
-            AssertThat(call_history.at(3), Is().EqualTo(1u));
-            AssertThat(call_history.at(4), Is().EqualTo(0u));
+            AssertThat(call_history.at(3), Is().EqualTo(3u));
+            AssertThat(call_history.at(4), Is().EqualTo(4u));
 
             // - Pruning sweep
             AssertThat(call_history.at(5), Is().EqualTo(0u));
@@ -2956,9 +2956,9 @@ go_bandit([]() {
             AssertThat(call_history.size(), Is().EqualTo(4u));
 
             // - Generate predicate profile
-            AssertThat(call_history.at(0), Is().EqualTo(2u));
+            AssertThat(call_history.at(0), Is().EqualTo(0u));
             AssertThat(call_history.at(1), Is().EqualTo(1u));
-            AssertThat(call_history.at(2), Is().EqualTo(0u));
+            AssertThat(call_history.at(2), Is().EqualTo(2u));
 
             // - Pruning sweep
             AssertThat(call_history.at(3), Is().EqualTo(0u));
@@ -3002,11 +3002,11 @@ go_bandit([]() {
             AssertThat(call_history.size(), Is().EqualTo(13u));
 
             // - Generate predicate profile
-            AssertThat(call_history.at(0), Is().EqualTo(4u));
-            AssertThat(call_history.at(1), Is().EqualTo(3u));
+            AssertThat(call_history.at(0), Is().EqualTo(0u));
+            AssertThat(call_history.at(1), Is().EqualTo(1u));
             AssertThat(call_history.at(2), Is().EqualTo(2u));
-            AssertThat(call_history.at(3), Is().EqualTo(1u));
-            AssertThat(call_history.at(4), Is().EqualTo(0u));
+            AssertThat(call_history.at(3), Is().EqualTo(3u));
+            AssertThat(call_history.at(4), Is().EqualTo(4u));
 
             // - Pruning sweep
             AssertThat(call_history.at(5), Is().EqualTo(0u));
@@ -3045,9 +3045,9 @@ go_bandit([]() {
             AssertThat(call_history.size(), Is().EqualTo(7u));
 
             // - Generate predicate profile
-            AssertThat(call_history.at(0), Is().EqualTo(2u));
+            AssertThat(call_history.at(0), Is().EqualTo(0u));
             AssertThat(call_history.at(1), Is().EqualTo(1u));
-            AssertThat(call_history.at(2), Is().EqualTo(0u));
+            AssertThat(call_history.at(2), Is().EqualTo(2u));
 
             // - Pruning sweep
             AssertThat(call_history.at(3), Is().EqualTo(0u));
@@ -3190,11 +3190,11 @@ go_bandit([]() {
           AssertThat(call_history.size(), Is().EqualTo(15u));
 
           // - Generate predicate profile
-          AssertThat(call_history.at(0), Is().EqualTo(4u));
-          AssertThat(call_history.at(1), Is().EqualTo(3u));
+          AssertThat(call_history.at(0), Is().EqualTo(0u));
+          AssertThat(call_history.at(1), Is().EqualTo(1u));
           AssertThat(call_history.at(2), Is().EqualTo(2u));
-          AssertThat(call_history.at(3), Is().EqualTo(1u));
-          AssertThat(call_history.at(4), Is().EqualTo(0u));
+          AssertThat(call_history.at(3), Is().EqualTo(3u));
+          AssertThat(call_history.at(4), Is().EqualTo(4u));
 
           // - Pruning sweep
           AssertThat(call_history.at(5), Is().EqualTo(0u));
@@ -3554,10 +3554,10 @@ go_bandit([]() {
             AssertThat(call_history.size(), Is().EqualTo(7u));
 
             // - Generate predicate profile
-            AssertThat(call_history.at(0), Is().EqualTo(3u));
-            AssertThat(call_history.at(1), Is().EqualTo(2u));
-            AssertThat(call_history.at(2), Is().EqualTo(1u));
-            AssertThat(call_history.at(3), Is().EqualTo(0u));
+            AssertThat(call_history.at(0), Is().EqualTo(0u));
+            AssertThat(call_history.at(1), Is().EqualTo(1u));
+            AssertThat(call_history.at(2), Is().EqualTo(2u));
+            AssertThat(call_history.at(3), Is().EqualTo(3u));
 
             // - First top-down sweep
             AssertThat(call_history.at(4), Is().EqualTo(0u));
@@ -3608,10 +3608,10 @@ go_bandit([]() {
             AssertThat(call_history.size(), Is().EqualTo(8u));
 
             // - Generate predicate profile
-            AssertThat(call_history.at(0), Is().EqualTo(3u));
-            AssertThat(call_history.at(1), Is().EqualTo(2u));
-            AssertThat(call_history.at(2), Is().EqualTo(1u));
-            AssertThat(call_history.at(3), Is().EqualTo(0u));
+            AssertThat(call_history.at(0), Is().EqualTo(0u));
+            AssertThat(call_history.at(1), Is().EqualTo(1u));
+            AssertThat(call_history.at(2), Is().EqualTo(2u));
+            AssertThat(call_history.at(3), Is().EqualTo(3u));
 
             // - First top-down sweep
             AssertThat(call_history.at(4), Is().EqualTo(0u));
@@ -3647,11 +3647,11 @@ go_bandit([]() {
             AssertThat(call_history.size(), Is().EqualTo(13u));
 
             // - Generate predicate profile
-            AssertThat(call_history.at(0), Is().EqualTo(4u));
-            AssertThat(call_history.at(1), Is().EqualTo(3u));
+            AssertThat(call_history.at(0), Is().EqualTo(0u));
+            AssertThat(call_history.at(1), Is().EqualTo(1u));
             AssertThat(call_history.at(2), Is().EqualTo(2u));
-            AssertThat(call_history.at(3), Is().EqualTo(1u));
-            AssertThat(call_history.at(4), Is().EqualTo(0u));
+            AssertThat(call_history.at(3), Is().EqualTo(3u));
+            AssertThat(call_history.at(4), Is().EqualTo(4u));
 
             // - First top-down sweep
             AssertThat(call_history.at(5), Is().EqualTo(0u));
@@ -3751,11 +3751,11 @@ go_bandit([]() {
             AssertThat(call_history.size(), Is().EqualTo(14u));
 
             // - Generate predicate profile
-            AssertThat(call_history.at(0), Is().EqualTo(4u));
-            AssertThat(call_history.at(1), Is().EqualTo(3u));
+            AssertThat(call_history.at(0), Is().EqualTo(0u));
+            AssertThat(call_history.at(1), Is().EqualTo(1u));
             AssertThat(call_history.at(2), Is().EqualTo(2u));
-            AssertThat(call_history.at(3), Is().EqualTo(1u));
-            AssertThat(call_history.at(4), Is().EqualTo(0u));
+            AssertThat(call_history.at(3), Is().EqualTo(3u));
+            AssertThat(call_history.at(4), Is().EqualTo(4u));
 
             // - First top-down sweep
             AssertThat(call_history.at(5), Is().EqualTo(0u));
@@ -3935,14 +3935,14 @@ go_bandit([]() {
             AssertThat(call_history.size(), Is().EqualTo(23u));
 
             // - Generate predicate profile
-            AssertThat(call_history.at(0), Is().EqualTo(7u));
-            AssertThat(call_history.at(1), Is().EqualTo(6u));
-            AssertThat(call_history.at(2), Is().EqualTo(5u));
-            AssertThat(call_history.at(3), Is().EqualTo(4u));
-            AssertThat(call_history.at(4), Is().EqualTo(3u));
-            AssertThat(call_history.at(5), Is().EqualTo(2u));
-            AssertThat(call_history.at(6), Is().EqualTo(1u));
-            AssertThat(call_history.at(7), Is().EqualTo(0u));
+            AssertThat(call_history.at(0), Is().EqualTo(0u));
+            AssertThat(call_history.at(1), Is().EqualTo(1u));
+            AssertThat(call_history.at(2), Is().EqualTo(2u));
+            AssertThat(call_history.at(3), Is().EqualTo(3u));
+            AssertThat(call_history.at(4), Is().EqualTo(4u));
+            AssertThat(call_history.at(5), Is().EqualTo(5u));
+            AssertThat(call_history.at(6), Is().EqualTo(6u));
+            AssertThat(call_history.at(7), Is().EqualTo(7u));
 
             // - First top-down sweep
             AssertThat(call_history.at(8), Is().EqualTo(0u));
@@ -3998,11 +3998,11 @@ go_bandit([]() {
             AssertThat(call_history.size(), Is().EqualTo(9u));
 
             // - Generate predicate profile
-            AssertThat(call_history.at(0), Is().EqualTo(4u));
-            AssertThat(call_history.at(1), Is().EqualTo(3u));
+            AssertThat(call_history.at(0), Is().EqualTo(0u));
+            AssertThat(call_history.at(1), Is().EqualTo(1u));
             AssertThat(call_history.at(2), Is().EqualTo(2u));
-            AssertThat(call_history.at(3), Is().EqualTo(1u));
-            AssertThat(call_history.at(4), Is().EqualTo(0u));
+            AssertThat(call_history.at(3), Is().EqualTo(3u));
+            AssertThat(call_history.at(4), Is().EqualTo(4u));
 
             // - First top-down sweep
             AssertThat(call_history.at(5), Is().EqualTo(0u));
@@ -4291,20 +4291,20 @@ go_bandit([]() {
               AssertThat(call_history.size(), Is().EqualTo(41u));
 
               // - Generate predicate profile
-              AssertThat(call_history.at(0), Is().EqualTo(13u));
-              AssertThat(call_history.at(1), Is().EqualTo(12u));
-              AssertThat(call_history.at(2), Is().EqualTo(11u));
-              AssertThat(call_history.at(3), Is().EqualTo(10u));
-              AssertThat(call_history.at(4), Is().EqualTo(9u));
-              AssertThat(call_history.at(5), Is().EqualTo(8u));
-              AssertThat(call_history.at(6), Is().EqualTo(7u));
-              AssertThat(call_history.at(7), Is().EqualTo(6u));
-              AssertThat(call_history.at(8), Is().EqualTo(5u));
-              AssertThat(call_history.at(9), Is().EqualTo(4u));
-              AssertThat(call_history.at(10), Is().EqualTo(3u));
-              AssertThat(call_history.at(11), Is().EqualTo(2u));
-              AssertThat(call_history.at(12), Is().EqualTo(1u));
-              AssertThat(call_history.at(13), Is().EqualTo(0u));
+              AssertThat(call_history.at(0), Is().EqualTo(0u));
+              AssertThat(call_history.at(1), Is().EqualTo(1u));
+              AssertThat(call_history.at(2), Is().EqualTo(2u));
+              AssertThat(call_history.at(3), Is().EqualTo(3u));
+              AssertThat(call_history.at(4), Is().EqualTo(4u));
+              AssertThat(call_history.at(5), Is().EqualTo(5u));
+              AssertThat(call_history.at(6), Is().EqualTo(6u));
+              AssertThat(call_history.at(7), Is().EqualTo(7u));
+              AssertThat(call_history.at(8), Is().EqualTo(8u));
+              AssertThat(call_history.at(9), Is().EqualTo(9u));
+              AssertThat(call_history.at(10), Is().EqualTo(10u));
+              AssertThat(call_history.at(11), Is().EqualTo(11u));
+              AssertThat(call_history.at(12), Is().EqualTo(12u));
+              AssertThat(call_history.at(13), Is().EqualTo(13u));
 
               // - First top-down sweep
               AssertThat(call_history.at(14), Is().EqualTo(0u));
@@ -4367,10 +4367,10 @@ go_bandit([]() {
             AssertThat(call_history.size(), Is().EqualTo(7u));
 
             // - Generate predicate profile
-            AssertThat(call_history.at(0), Is().EqualTo(3u));
-            AssertThat(call_history.at(1), Is().EqualTo(2u));
-            AssertThat(call_history.at(2), Is().EqualTo(1u));
-            AssertThat(call_history.at(3), Is().EqualTo(0u));
+            AssertThat(call_history.at(0), Is().EqualTo(0u));
+            AssertThat(call_history.at(1), Is().EqualTo(1u));
+            AssertThat(call_history.at(2), Is().EqualTo(2u));
+            AssertThat(call_history.at(3), Is().EqualTo(3u));
 
             // - First top-down sweep
             AssertThat(call_history.at(4), Is().EqualTo(0u));
@@ -4421,10 +4421,10 @@ go_bandit([]() {
             AssertThat(call_history.size(), Is().EqualTo(8u));
 
             // - Generate predicate profile
-            AssertThat(call_history.at(0), Is().EqualTo(3u));
-            AssertThat(call_history.at(1), Is().EqualTo(2u));
-            AssertThat(call_history.at(2), Is().EqualTo(1u));
-            AssertThat(call_history.at(3), Is().EqualTo(0u));
+            AssertThat(call_history.at(0), Is().EqualTo(0u));
+            AssertThat(call_history.at(1), Is().EqualTo(1u));
+            AssertThat(call_history.at(2), Is().EqualTo(2u));
+            AssertThat(call_history.at(3), Is().EqualTo(3u));
 
             // - First top-down sweep
             AssertThat(call_history.at(4), Is().EqualTo(0u));
@@ -4460,11 +4460,11 @@ go_bandit([]() {
             AssertThat(call_history.size(), Is().EqualTo(13u));
 
             // - Generate predicate profile
-            AssertThat(call_history.at(0), Is().EqualTo(4u));
-            AssertThat(call_history.at(1), Is().EqualTo(3u));
+            AssertThat(call_history.at(0), Is().EqualTo(0u));
+            AssertThat(call_history.at(1), Is().EqualTo(1u));
             AssertThat(call_history.at(2), Is().EqualTo(2u));
-            AssertThat(call_history.at(3), Is().EqualTo(1u));
-            AssertThat(call_history.at(4), Is().EqualTo(0u));
+            AssertThat(call_history.at(3), Is().EqualTo(3u));
+            AssertThat(call_history.at(4), Is().EqualTo(4u));
 
             // - First top-down sweep
             AssertThat(call_history.at(5), Is().EqualTo(0u));
@@ -4564,11 +4564,11 @@ go_bandit([]() {
             AssertThat(call_history.size(), Is().EqualTo(14u));
 
             // - Generate predicate profile
-            AssertThat(call_history.at(0), Is().EqualTo(4u));
-            AssertThat(call_history.at(1), Is().EqualTo(3u));
+            AssertThat(call_history.at(0), Is().EqualTo(0u));
+            AssertThat(call_history.at(1), Is().EqualTo(1u));
             AssertThat(call_history.at(2), Is().EqualTo(2u));
-            AssertThat(call_history.at(3), Is().EqualTo(1u));
-            AssertThat(call_history.at(4), Is().EqualTo(0u));
+            AssertThat(call_history.at(3), Is().EqualTo(3u));
+            AssertThat(call_history.at(4), Is().EqualTo(4u));
 
             // - First top-down sweep
             AssertThat(call_history.at(5), Is().EqualTo(0u));
@@ -4748,14 +4748,14 @@ go_bandit([]() {
             AssertThat(call_history.size(), Is().EqualTo(23u));
 
             // - Generate predicate profile
-            AssertThat(call_history.at(0), Is().EqualTo(7u));
-            AssertThat(call_history.at(1), Is().EqualTo(6u));
-            AssertThat(call_history.at(2), Is().EqualTo(5u));
-            AssertThat(call_history.at(3), Is().EqualTo(4u));
-            AssertThat(call_history.at(4), Is().EqualTo(3u));
-            AssertThat(call_history.at(5), Is().EqualTo(2u));
-            AssertThat(call_history.at(6), Is().EqualTo(1u));
-            AssertThat(call_history.at(7), Is().EqualTo(0u));
+            AssertThat(call_history.at(0), Is().EqualTo(0u));
+            AssertThat(call_history.at(1), Is().EqualTo(1u));
+            AssertThat(call_history.at(2), Is().EqualTo(2u));
+            AssertThat(call_history.at(3), Is().EqualTo(3u));
+            AssertThat(call_history.at(4), Is().EqualTo(4u));
+            AssertThat(call_history.at(5), Is().EqualTo(5u));
+            AssertThat(call_history.at(6), Is().EqualTo(6u));
+            AssertThat(call_history.at(7), Is().EqualTo(7u));
 
             // - First top-down sweep
             AssertThat(call_history.at(8), Is().EqualTo(0u));
@@ -4811,11 +4811,11 @@ go_bandit([]() {
             AssertThat(call_history.size(), Is().EqualTo(9u));
 
             // - Generate predicate profile
-            AssertThat(call_history.at(0), Is().EqualTo(4u));
-            AssertThat(call_history.at(1), Is().EqualTo(3u));
+            AssertThat(call_history.at(0), Is().EqualTo(0u));
+            AssertThat(call_history.at(1), Is().EqualTo(1u));
             AssertThat(call_history.at(2), Is().EqualTo(2u));
-            AssertThat(call_history.at(3), Is().EqualTo(1u));
-            AssertThat(call_history.at(4), Is().EqualTo(0u));
+            AssertThat(call_history.at(3), Is().EqualTo(3u));
+            AssertThat(call_history.at(4), Is().EqualTo(4u));
 
             // - First top-down sweep
             AssertThat(call_history.at(5), Is().EqualTo(0u));
@@ -5104,20 +5104,20 @@ go_bandit([]() {
               AssertThat(call_history.size(), Is().EqualTo(41u));
 
               // - Generate predicate profile
-              AssertThat(call_history.at(0), Is().EqualTo(13u));
-              AssertThat(call_history.at(1), Is().EqualTo(12u));
-              AssertThat(call_history.at(2), Is().EqualTo(11u));
-              AssertThat(call_history.at(3), Is().EqualTo(10u));
-              AssertThat(call_history.at(4), Is().EqualTo(9u));
-              AssertThat(call_history.at(5), Is().EqualTo(8u));
-              AssertThat(call_history.at(6), Is().EqualTo(7u));
-              AssertThat(call_history.at(7), Is().EqualTo(6u));
-              AssertThat(call_history.at(8), Is().EqualTo(5u));
-              AssertThat(call_history.at(9), Is().EqualTo(4u));
-              AssertThat(call_history.at(10), Is().EqualTo(3u));
-              AssertThat(call_history.at(11), Is().EqualTo(2u));
-              AssertThat(call_history.at(12), Is().EqualTo(1u));
-              AssertThat(call_history.at(13), Is().EqualTo(0u));
+              AssertThat(call_history.at(0), Is().EqualTo(0u));
+              AssertThat(call_history.at(1), Is().EqualTo(1u));
+              AssertThat(call_history.at(2), Is().EqualTo(2u));
+              AssertThat(call_history.at(3), Is().EqualTo(3u));
+              AssertThat(call_history.at(4), Is().EqualTo(4u));
+              AssertThat(call_history.at(5), Is().EqualTo(5u));
+              AssertThat(call_history.at(6), Is().EqualTo(6u));
+              AssertThat(call_history.at(7), Is().EqualTo(7u));
+              AssertThat(call_history.at(8), Is().EqualTo(8u));
+              AssertThat(call_history.at(9), Is().EqualTo(9u));
+              AssertThat(call_history.at(10), Is().EqualTo(10u));
+              AssertThat(call_history.at(11), Is().EqualTo(11u));
+              AssertThat(call_history.at(12), Is().EqualTo(12u));
+              AssertThat(call_history.at(13), Is().EqualTo(13u));
 
               // - First top-down sweep
               AssertThat(call_history.at(14), Is().EqualTo(0u));
@@ -5424,20 +5424,20 @@ go_bandit([]() {
           AssertThat(call_history.size(), Is().EqualTo(41u));
 
           // - Generate predicate profile
-          AssertThat(call_history.at(0), Is().EqualTo(13u));
-          AssertThat(call_history.at(1), Is().EqualTo(12u));
-          AssertThat(call_history.at(2), Is().EqualTo(11u));
-          AssertThat(call_history.at(3), Is().EqualTo(10u));
-          AssertThat(call_history.at(4), Is().EqualTo(9u));
-          AssertThat(call_history.at(5), Is().EqualTo(8u));
-          AssertThat(call_history.at(6), Is().EqualTo(7u));
-          AssertThat(call_history.at(7), Is().EqualTo(6u));
-          AssertThat(call_history.at(8), Is().EqualTo(5u));
-          AssertThat(call_history.at(9), Is().EqualTo(4u));
-          AssertThat(call_history.at(10), Is().EqualTo(3u));
-          AssertThat(call_history.at(11), Is().EqualTo(2u));
-          AssertThat(call_history.at(12), Is().EqualTo(1u));
-          AssertThat(call_history.at(13), Is().EqualTo(0u));
+          AssertThat(call_history.at(0), Is().EqualTo(0u));
+          AssertThat(call_history.at(1), Is().EqualTo(1u));
+          AssertThat(call_history.at(2), Is().EqualTo(2u));
+          AssertThat(call_history.at(3), Is().EqualTo(3u));
+          AssertThat(call_history.at(4), Is().EqualTo(4u));
+          AssertThat(call_history.at(5), Is().EqualTo(5u));
+          AssertThat(call_history.at(6), Is().EqualTo(6u));
+          AssertThat(call_history.at(7), Is().EqualTo(7u));
+          AssertThat(call_history.at(8), Is().EqualTo(8u));
+          AssertThat(call_history.at(9), Is().EqualTo(9u));
+          AssertThat(call_history.at(10), Is().EqualTo(10u));
+          AssertThat(call_history.at(11), Is().EqualTo(11u));
+          AssertThat(call_history.at(12), Is().EqualTo(12u));
+          AssertThat(call_history.at(13), Is().EqualTo(13u));
 
           // - Top-down sweep
           AssertThat(call_history.at(14), Is().EqualTo(0u));
@@ -5538,11 +5538,11 @@ go_bandit([]() {
           AssertThat(call_history.size(), Is().EqualTo(14u));
 
           // - Generate predicate profile
-          AssertThat(call_history.at(0), Is().EqualTo(4u));
-          AssertThat(call_history.at(1), Is().EqualTo(3u));
+          AssertThat(call_history.at(0), Is().EqualTo(0u));
+          AssertThat(call_history.at(1), Is().EqualTo(1u));
           AssertThat(call_history.at(2), Is().EqualTo(2u));
-          AssertThat(call_history.at(3), Is().EqualTo(1u));
-          AssertThat(call_history.at(4), Is().EqualTo(0u));
+          AssertThat(call_history.at(3), Is().EqualTo(3u));
+          AssertThat(call_history.at(4), Is().EqualTo(4u));
 
           // - First top-down sweep
           AssertThat(call_history.at(5), Is().EqualTo(0u));
@@ -5609,10 +5609,10 @@ go_bandit([]() {
           AssertThat(call_history.size(), Is().EqualTo(11u));
 
           // - Generate predicate profile
-          AssertThat(call_history.at(0), Is().EqualTo(3u));
-          AssertThat(call_history.at(1), Is().EqualTo(2u));
-          AssertThat(call_history.at(2), Is().EqualTo(1u));
-          AssertThat(call_history.at(3), Is().EqualTo(0u));
+          AssertThat(call_history.at(0), Is().EqualTo(0u));
+          AssertThat(call_history.at(1), Is().EqualTo(1u));
+          AssertThat(call_history.at(2), Is().EqualTo(2u));
+          AssertThat(call_history.at(3), Is().EqualTo(3u));
 
           // - Pruning sweep
           AssertThat(call_history.at(4), Is().EqualTo(0u));
@@ -5709,14 +5709,14 @@ go_bandit([]() {
           AssertThat(call_history.size(), Is().EqualTo(21u));
 
           // - Generate predicate profile
-          AssertThat(call_history.at(0), Is().EqualTo(7u));
-          AssertThat(call_history.at(1), Is().EqualTo(6u));
-          AssertThat(call_history.at(2), Is().EqualTo(5u));
-          AssertThat(call_history.at(3), Is().EqualTo(4u));
-          AssertThat(call_history.at(4), Is().EqualTo(3u));
-          AssertThat(call_history.at(5), Is().EqualTo(2u));
-          AssertThat(call_history.at(6), Is().EqualTo(1u));
-          AssertThat(call_history.at(7), Is().EqualTo(0u));
+          AssertThat(call_history.at(0), Is().EqualTo(0u));
+          AssertThat(call_history.at(1), Is().EqualTo(1u));
+          AssertThat(call_history.at(2), Is().EqualTo(2u));
+          AssertThat(call_history.at(3), Is().EqualTo(3u));
+          AssertThat(call_history.at(4), Is().EqualTo(4u));
+          AssertThat(call_history.at(5), Is().EqualTo(5u));
+          AssertThat(call_history.at(6), Is().EqualTo(6u));
+          AssertThat(call_history.at(7), Is().EqualTo(7u));
 
           // - Pruning sweep
           AssertThat(call_history.at(8), Is().EqualTo(0u));
