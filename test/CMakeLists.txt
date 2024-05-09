@@ -6,7 +6,8 @@ macro(add_test NAME SOURCE)
 
   # Link up with Bandit
   set(BANDIT_FLAGS "--reporter=info --colorizer=light")
-  target_include_directories (test-${NAME} PRIVATE ${PROJECT_SOURCE_DIR}/external)
+  target_include_directories (test-${NAME}
+                              PRIVATE ${PROJECT_SOURCE_DIR}/external/bandit)
 
   # Link with Adiar
   target_link_libraries(test-${NAME} adiar)
