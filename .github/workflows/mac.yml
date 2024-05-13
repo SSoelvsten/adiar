@@ -66,6 +66,8 @@ jobs:
 
     - name: Install dependencies
       run: |
+        brew cleanup --prune-prefix
+
         if [ "${{matrix.cc.cc}}" = "gcc" ]; then
           echo "================================"
           echo GCC "Compiler"
