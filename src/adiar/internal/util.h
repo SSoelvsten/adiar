@@ -1,10 +1,9 @@
 #ifndef ADIAR_INTERNAL_UTIL_H
 #define ADIAR_INTERNAL_UTIL_H
 
-#include <type_traits>
-
 #include <adiar/functional.h>
 #include <adiar/types.h>
+#include <adiar/type_traits.h>
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/data_types/arc.h>
@@ -27,7 +26,7 @@ namespace adiar::internal
   inline ptr_uint64::label_type
   level_of(const T& t)
   {
-    if constexpr (std::is_integral<T>::value) {
+    if constexpr (is_integral<T>) {
       return t;
     } else {
       return t.level();

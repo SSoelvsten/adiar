@@ -17,6 +17,7 @@ set(HEADERS
   functional.h
   statistics.h
   types.h
+  type_traits.h
   version.h
 
   # adiar/bdd
