@@ -5,11 +5,8 @@
 
 namespace adiar
 {
-  template <bool Condition, typename Type = int>
-  using enable_if = std::enable_if<Condition, Type>;
-
-  template <bool Condition, typename Type = int>
-  using enable_if_t = typename enable_if<Condition, Type>::type;
+  template <bool Condition, typename Type>
+  using enable_if = typename std::enable_if<Condition, Type>::type;
 
   template <typename A, typename B>
   inline constexpr bool is_convertible = std::is_convertible<A, B>::value;
