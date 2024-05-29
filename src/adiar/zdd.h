@@ -984,7 +984,6 @@ namespace adiar
   /// \cond
   __zdd
   zdd_project(const exec_policy& ep, zdd&& A, const generator<zdd::label_type>& dom);
-
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1019,7 +1018,6 @@ namespace adiar
   {
     return zdd_project(std::forward<zdd>(A), make_generator(begin, end));
   }
-
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1040,7 +1038,6 @@ namespace adiar
   {
     return zdd_project(ep, std::forward<zdd>(A), make_generator(begin, end));
   }
-
   /// \endcond
 
   /// \}
