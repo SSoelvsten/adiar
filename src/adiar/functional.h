@@ -3,7 +3,6 @@
 
 #include <functional>
 #include <limits>
-#include <type_traits>
 
 #include <adiar/exception.h>
 #include <adiar/types.h>

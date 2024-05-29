@@ -3,7 +3,8 @@
 
 #include <algorithm>
 #include <limits>
-#include <type_traits>
+
+#include <adiar/type_traits.h>
 
 namespace adiar
 {
@@ -495,9 +496,8 @@ namespace adiar
   /// \brief Lift enum values to `exec_policy`.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename A, typename B>
-  typename std::enable_if<
-    std::is_convertible<A, exec_policy>::value && !std::is_same<A, exec_policy>::value
-      && std::is_convertible<A, exec_policy>::value && !std::is_same<A, exec_policy>::value,
+  typename enable_if<
+    needs_conversion<A, exec_policy> && needs_conversion<B, exec_policy>,
     exec_policy>::type
   operator&(const A& a, const B& b)
   {

@@ -2,9 +2,9 @@
 #define ADIAR_INTERNAL_BOOL_OP_H
 
 #include <array>
-#include <type_traits>
 
 #include <adiar/bool_op.h>
+#include <adiar/type_traits.h>
 
 namespace adiar::internal
 {
@@ -160,7 +160,7 @@ namespace adiar::internal
     Pointer
     operator()(const Pointer& lhs, const Pointer& rhs) const
     {
-      static_assert(std::is_same<typename Pointer::terminal_type, bool>::value);
+      static_assert(is_same<typename Pointer::terminal_type, bool>);
       return (*this)(lhs.value(), rhs.value());
     }
 
