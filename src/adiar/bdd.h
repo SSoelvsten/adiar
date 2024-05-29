@@ -1063,7 +1063,7 @@ namespace adiar
   __bdd
   bdd_forall(bdd&& f, ForwardIt begin, ForwardIt end)
   {
-    return bdd_forall(std::forward<bdd>(f), make_generator(begin, end));
+    return bdd_forall(std::move(f), make_generator(begin, end));
   }
 
   /// \endcond
