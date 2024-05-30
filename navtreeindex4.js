@@ -1,5 +1,22 @@
 var NAVTREEINDEX4 =
 {
+"structadiar_1_1statistics_1_1____alg__base.html#ab769667ff5ecea10ecd9e2589b7e72bf":[4,6,0,0,1],
+"structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html":[4,6,0,0,0],
+"structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html#a18db66cef68fc1e68532347a86bd3d2b":[4,6,0,0,0,6],
+"structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html#a3acfce9e75921a6a4fc7e2829845f08f":[4,6,0,0,0,9],
+"structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html#a5528e809829233a8f28065318e4c06ae":[4,6,0,0,0,0],
+"structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html#a6cbf004655dd759cc729fad62a47321d":[4,6,0,0,0,7],
+"structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html#a6f5781021c252979f0e3e628638d3b16":[4,6,0,0,0,1],
+"structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html#a704d98578648ed0b0daf834b92b21fe7":[4,6,0,0,0,3],
+"structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html#a844804602d4c05ae87cef7f40c10371d":[4,6,0,0,0,4],
+"structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html#acbc2d26c2cafb41e66a1965679dfbc78":[4,6,0,0,0,8],
+"structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html#ace683decb4959f11218dabc75961badb":[4,6,0,0,0,2],
+"structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html#ae485ef1f9462d3c8106dc37a519ca896":[4,6,0,0,0,5],
+"structadiar_1_1statistics_1_1____pq2__base.html":[4,6,0,1],
+"structadiar_1_1statistics_1_1____pq2__base.html#a2b2c76abdce6a5f54773cda73b759ecf":[4,6,0,1,1],
+"structadiar_1_1statistics_1_1____pq2__base.html#af362936d8736946b48884437106cf2a8":[4,6,0,1,0],
+"structadiar_1_1statistics_1_1____random__access__base.html":[4,6,0,2],
+"structadiar_1_1statistics_1_1____random__access__base.html#a18a8492a2654b5205e5a978f37db2639":[4,6,0,2,0],
 "structadiar_1_1statistics_1_1____random__access__base.html#a24e9b22d34e912dbe989291b5590ed4d":[4,6,0,2,3],
 "structadiar_1_1statistics_1_1____random__access__base.html#a76d74299e2eff8eab5f63508f6217311":[4,6,0,2,1],
 "structadiar_1_1statistics_1_1____random__access__base.html#a82f2abe07b92a23e6b7c1abff6519f52":[4,6,0,2,2],
@@ -122,8 +139,9 @@ var NAVTREEINDEX4 =
 "structadiar_1_1statistics_1_1reduce__t.html#ab769667ff5ecea10ecd9e2589b7e72bf":[4,6,0,14,0],
 "structadiar_1_1statistics_1_1select__t.html":[4,6,0,15],
 "structadiar_1_1statistics_1_1select__t.html#ab769667ff5ecea10ecd9e2589b7e72bf":[4,6,0,15,0],
-"types_8h_source.html":[7,0,1,0,12],
+"type__traits_8h_source.html":[7,0,1,0,12],
+"types_8h_source.html":[7,0,1,0,13],
 "version_8h_source.html":[7,0,0,0,0],
 "zdd_2zdd_8h_source.html":[7,0,1,0,2,0],
-"zdd_8h_source.html":[7,0,1,0,13]
+"zdd_8h_source.html":[7,0,1,0,14]
 };

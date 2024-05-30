@@ -12,6 +12,7 @@ var dir_0766ff762b6d0dbf28d2dc262f33dadb =
     [ "exec_policy.h", "exec__policy_8h_source.html", null ],
     [ "functional.h", "functional_8h_source.html", null ],
     [ "statistics.h", "statistics_8h_source.html", null ],
+    [ "type_traits.h", "type__traits_8h_source.html", null ],
     [ "types.h", "types_8h_source.html", null ],
     [ "zdd.h", "zdd_8h_source.html", null ]
 ];
