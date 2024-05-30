@@ -93,7 +93,7 @@ namespace adiar
   {
     using value_type = typename ForwardIt::value_type;
 
-    return [_begin = begin, _end = end](const value_type& x) mutable {
+    return [_begin = std::move(begin), _end = std::move(end)](const value_type& x) mutable {
       if (_begin == _end) {
         throw out_of_range("Iterator range unable to contain all generated values");
       }
@@ -133,9 +133,9 @@ namespace adiar
   {
     using value_type = typename ForwardIt::value_type;
 
-    return [&begin, &end]() {
-      if (begin == end) { return make_optional<value_type>(); }
-      return make_optional<value_type>(*(begin++));
+    return [&begin, &end]() -> optional<value_type> {
+      if (begin == end) { return {}; }
+      return *(begin++);
     };
   }
 
@@ -148,9 +148,9 @@ namespace adiar
   {
     using value_type = typename ForwardIt::value_type;
 
-    return [_begin = begin, _end = end]() mutable {
-      if (_begin == _end) { return make_optional<value_type>(); }
-      return make_optional<value_type>(*(_begin++));
+    return [_begin = std::move(begin), _end = std::move(end)]() mutable -> optional<value_type> {
+      if (_begin == _end) { return {}; }
+      return *(_begin++);
     };
   }
 
@@ -163,9 +163,9 @@ namespace adiar
   {
     using value_type = typename Stream::value_type;
 
-    return [&s]() {
-      if (!s.can_pull()) { return make_optional<value_type>(); }
-      return make_optional<value_type>(s.pull());
+    return [&s]() -> optional<value_type> {
+      if (!s.can_pull()) { return {}; }
+      return s.pull();
     };
   }
 
@@ -176,11 +176,11 @@ namespace adiar
   inline generator<RetType>
   make_generator(const RetType& r)
   {
-    return [=, _end = false]() mutable {
-      if (_end) { return make_optional<RetType>(); }
+    return [=, _end = false]() mutable -> optional<RetType> {
+      if (_end) { return {}; }
 
       _end = true;
-      return make_optional(r);
+      return r;
     };
   }
 
