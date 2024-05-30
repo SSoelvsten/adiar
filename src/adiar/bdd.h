@@ -181,7 +181,7 @@ namespace adiar
   ///
   /// \throws invalid_argument If the iterator does not provide values in descending order.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename ForwardIt>
+  template <typename ForwardIt, typename = enable_if<!is_convertible<ForwardIt, bdd>>>
   bdd
   bdd_and(ForwardIt begin, ForwardIt end)
   {
@@ -239,7 +239,7 @@ namespace adiar
   ///
   /// \throws invalid_argument If the iterator does not provide values in descending order.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename ForwardIt>
+  template <typename ForwardIt, typename = enable_if<!is_convertible<ForwardIt, bdd>>>
   bdd
   bdd_or(ForwardIt begin, ForwardIt end)
   {
@@ -386,19 +386,6 @@ namespace adiar
   __bdd
   bdd_and(const exec_policy& ep, const bdd& f, const bdd& g);
 
-  /// \cond
-  ///
-  /// \see bdd_and
-  ///
-  /// \remark Since `bdd_and<ForwardIt>(begin, end)` has precedence over the implicit conversion
-  ///         from `bdd::shared_node_file_type` to `bdd`, we have to do it explicitly ourselves.
-  inline __bdd
-  bdd_and(const bdd::shared_node_file_type& f, const bdd::shared_node_file_type& g)
-  {
-    return bdd_and(bdd(f), bdd(g));
-  }
-  /// \endcond
-
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \see bdd_and
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -445,19 +432,6 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////////////////////////
   __bdd
   bdd_or(const exec_policy& ep, const bdd& f, const bdd& g);
-
-  /// \cond
-  ///
-  /// \see bdd_or
-  ///
-  /// \remark Since `bdd_or<ForwardIt>(begin, end)` has precedence over the implicit conversion from
-  ///         `bdd::shared_node_file_type` to `bdd`, we have to do it explicitly ourselves.
-  inline __bdd
-  bdd_or(const bdd::shared_node_file_type& f, const bdd::shared_node_file_type& g)
-  {
-    return bdd_or(bdd(f), bdd(g));
-  }
-  /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \see bdd_or
