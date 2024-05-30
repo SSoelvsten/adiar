@@ -293,7 +293,7 @@ namespace adiar
   bdd
   bdd_satmin(const bdd& f, const generator<bdd::label_type>& d, const size_t d_levels)
   {
-    const size_t total_levels = std::min<size_t>(f->levels() + d_levels, bdd::max_label+1);
+    const size_t total_levels = std::min<size_t>(f->levels() + d_levels, bdd::max_label + 1);
     return __bdd_satX<internal::traverse_satmin_visitor>(f, d, total_levels);
   }
 
@@ -305,7 +305,7 @@ namespace adiar
     typename internal::level_stream_t<bdd>::template stream_t<> d_levels(d);
     const generator<bdd::label_type> d_gen = make_generator__levels(d_levels);
 
-    const size_t total_levels = std::min<size_t>(f->levels() + d->levels(), bdd::max_label+1);
+    const size_t total_levels = std::min<size_t>(f->levels() + d->levels(), bdd::max_label + 1);
 
     return __bdd_satX<internal::traverse_satmin_visitor>(f, d_gen, total_levels);
   }
@@ -325,7 +325,7 @@ namespace adiar
   bdd
   bdd_satmax(const bdd& f, const generator<bdd::label_type>& d, const size_t d_levels)
   {
-    const size_t total_levels = std::min<size_t>(f->levels() + d_levels, bdd::max_label+1);
+    const size_t total_levels = std::min<size_t>(f->levels() + d_levels, bdd::max_label + 1);
     return __bdd_satX<internal::traverse_satmax_visitor>(f, d, total_levels);
   }
 
@@ -337,7 +337,7 @@ namespace adiar
     typename internal::level_stream_t<bdd>::template stream_t<> d_levels(d);
     const generator<bdd::label_type> d_gen = make_generator__levels(d_levels);
 
-    const size_t total_levels = std::min<size_t>(f->levels() + d->levels(), bdd::max_label+1);
+    const size_t total_levels = std::min<size_t>(f->levels() + d->levels(), bdd::max_label + 1);
 
     return __bdd_satX<internal::traverse_satmax_visitor>(f, d_gen, total_levels);
   }

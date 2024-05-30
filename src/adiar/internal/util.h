@@ -2,8 +2,8 @@
 #define ADIAR_INTERNAL_UTIL_H
 
 #include <adiar/functional.h>
-#include <adiar/types.h>
 #include <adiar/type_traits.h>
+#include <adiar/types.h>
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/data_types/arc.h>

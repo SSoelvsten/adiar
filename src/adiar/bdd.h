@@ -770,6 +770,7 @@ namespace adiar
   {
     return bdd_exists(f, var);
   }
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -784,6 +785,7 @@ namespace adiar
   {
     return bdd_exists(ep, f, var);
   }
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -847,6 +849,7 @@ namespace adiar
   /// \cond
   __bdd
   bdd_exists(const exec_policy& ep, bdd&& f, const generator<bdd::label_type>& vars);
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -878,6 +881,7 @@ namespace adiar
   {
     return bdd_exists(std::move(f), make_generator(begin, end));
   }
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -897,6 +901,7 @@ namespace adiar
   {
     return bdd_exists(ep, std::move(f), make_generator(begin, end));
   }
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -922,6 +927,7 @@ namespace adiar
   {
     return bdd_forall(f, var);
   }
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1000,6 +1006,7 @@ namespace adiar
   /// \cond
   __bdd
   bdd_forall(const exec_policy& ep, bdd&& f, const generator<bdd::label_type>& vars);
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1031,6 +1038,7 @@ namespace adiar
   {
     return bdd_forall(std::move(f), make_generator(begin, end));
   }
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1050,6 +1058,7 @@ namespace adiar
   {
     return bdd_forall(ep, std::move(f), make_generator(begin, end));
   }
+
   /// \endcond
 
   /// \}
@@ -1357,7 +1366,7 @@ namespace adiar
   bdd
   bdd_satmin(const bdd& f,
              const generator<bdd::label_type>& d,
-             const size_t d_size = bdd::max_label+1);
+             const size_t d_size = bdd::max_label + 1);
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief The lexicographically smallest x such that f(x) is true.
@@ -1373,8 +1382,7 @@ namespace adiar
   ///
   /// \returns A bdd whos only path to the `true` terminal reflects the minimal assignment.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename ForwardIt,
-            typename = enable_if<is_const<typename ForwardIt::reference>>>
+  template <typename ForwardIt, typename = enable_if<is_const<typename ForwardIt::reference>>>
   bdd
   bdd_satmin(const bdd& f, ForwardIt cbegin, ForwardIt cend)
   {
@@ -1426,8 +1434,7 @@ namespace adiar
   ///    If the distance between `begin` and `end` is not big enough to contain all variables in
   ///    `f`.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename ForwardIt,
-            typename = enable_if<is_mutable<typename ForwardIt::reference>>>
+  template <typename ForwardIt, typename = enable_if<is_mutable<typename ForwardIt::reference>>>
   ForwardIt
   bdd_satmin(const bdd& f, ForwardIt begin, ForwardIt end)
   {
@@ -1459,7 +1466,7 @@ namespace adiar
   bdd
   bdd_satmax(const bdd& f,
              const generator<bdd::label_type>& d,
-             const size_t d_size = bdd::max_label+1);
+             const size_t d_size = bdd::max_label + 1);
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief The lexicographically largest x such that f(x) is true.
@@ -1475,8 +1482,7 @@ namespace adiar
   ///
   /// \returns A bdd whos only path to the `true` terminal reflects the minimal assignment.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename ForwardIt,
-            typename = enable_if<is_const<typename ForwardIt::reference>>>
+  template <typename ForwardIt, typename = enable_if<is_const<typename ForwardIt::reference>>>
   bdd
   bdd_satmax(const bdd& f, ForwardIt cbegin, ForwardIt cend)
   {
@@ -1528,8 +1534,7 @@ namespace adiar
   ///    If the distance between `begin` and `end` is not big enough to contain all variables in
   ///    `f`.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename ForwardIt,
-            typename = enable_if<is_mutable<typename ForwardIt::reference>>>
+  template <typename ForwardIt, typename = enable_if<is_mutable<typename ForwardIt::reference>>>
   ForwardIt
   bdd_satmax(const bdd& f, ForwardIt begin, ForwardIt end)
   {

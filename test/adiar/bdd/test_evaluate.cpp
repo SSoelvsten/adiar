@@ -885,7 +885,7 @@ go_bandit([]() {
         it("returns same file for false terminal", [&]() {
           const generator<bdd::label_type> gen = [x = 0]() mutable -> optional<bdd::label_type> {
             if (x > 2) { return {}; }
-            return {x++};
+            return { x++ };
           };
 
           const bdd out = bdd_satmin(bdd_F, gen);
@@ -895,7 +895,7 @@ go_bandit([]() {
         it("returns cube for true terminal", [&]() {
           const generator<bdd::label_type> gen = [x = 0]() mutable -> optional<bdd::label_type> {
             if (x > 2) { return {}; }
-            return {x++};
+            return { x++ };
           };
 
           const bdd out = bdd_satmin(bdd_T, gen);
@@ -948,7 +948,7 @@ go_bandit([]() {
         it("adds disjoint domain [0]", [&]() {
           const generator<bdd::label_type> gen = [x = 1]() mutable -> optional<bdd::label_type> {
             if (x > 2) { return {}; }
-            return {x++};
+            return { x++ };
           };
 
           const bdd out = bdd_satmin(bdd_0, gen);
@@ -1001,7 +1001,7 @@ go_bandit([]() {
         it("adds disjoint domain [3]", [&]() {
           const generator<bdd::label_type> gen = [x = 0]() mutable -> optional<bdd::label_type> {
             if (x > 5) { return {}; }
-            return {x += 2};
+            return { x += 2 };
           };
 
           const bdd out = bdd_satmin(bdd_3, gen);
@@ -1078,7 +1078,7 @@ go_bandit([]() {
         it("merges with overlapping domain [1]", [&]() {
           const generator<bdd::label_type> gen = [x = 0]() mutable -> optional<bdd::label_type> {
             if (x > 4) { return {}; }
-            return {x++};
+            return { x++ };
           };
 
           const bdd out = bdd_satmin(bdd_1, gen);
@@ -1147,7 +1147,7 @@ go_bandit([]() {
         it("merges with overlapping domain [3]", [&]() {
           const generator<bdd::label_type> gen = [x = -1]() mutable -> optional<bdd::label_type> {
             if (x > 6) { return {}; }
-            return {x += 2};
+            return { x += 2 };
           };
 
           const bdd out = bdd_satmin(bdd_3, gen);
@@ -1208,7 +1208,7 @@ go_bandit([]() {
 
       describe("bdd_satmin(f, cbegin, cend)", [&]() {
         it("merges with overlapping domain [1]", [&]() {
-          const std::vector<int> d = {0, 1, 2, 3};
+          const std::vector<int> d = { 0, 1, 2, 3 };
 
           const bdd out = bdd_satmin(bdd_1, d.cbegin(), d.cend());
 
@@ -1216,9 +1216,7 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(
-            out_nodes.pull(),
-            Is().EqualTo(node(3, bdd::max_id, terminal_F, terminal_T)));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::max_id, terminal_F, terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(
@@ -1268,8 +1266,8 @@ go_bandit([]() {
         });
 
         it("merges with overlapping domain [3]", [&]() {
-          const std::vector<int> d = {1, 3, 5, 7};
-          const bdd out = bdd_satmin(bdd_3, d.cbegin(), d.cend());
+          const std::vector<int> d = { 1, 3, 5, 7 };
+          const bdd out            = bdd_satmin(bdd_3, d.cbegin(), d.cend());
 
           // Check it looks all right
           node_test_stream out_nodes(out);
@@ -1326,21 +1324,18 @@ go_bandit([]() {
       });
 
       describe("bdd_satmin(f, cube)", [&]() {
-        it("throws exception for non-cubical input", [&]() {
-          AssertThrows(domain_error, bdd_satmin(bdd_1, bdd_2));
-        });
+        it("throws exception for non-cubical input",
+           [&]() { AssertThrows(domain_error, bdd_satmin(bdd_1, bdd_2)); });
 
         it("merges with overlapping domain [1]", [&]() {
-          const std::vector<int> d = {0, 1, 2, -3};
-          const bdd out = bdd_satmin(bdd_1, bdd_cube(d.rbegin(), d.rend()));
+          const std::vector<int> d = { 0, 1, 2, -3 };
+          const bdd out            = bdd_satmin(bdd_1, bdd_cube(d.rbegin(), d.rend()));
 
           // Check it looks all right
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(
-            out_nodes.pull(),
-            Is().EqualTo(node(3, bdd::max_id, terminal_F, terminal_T)));
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::max_id, terminal_F, terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(
@@ -1390,8 +1385,8 @@ go_bandit([]() {
         });
 
         it("merges with overlapping domain [3]", [&]() {
-          const std::vector<int> d = {1, -3, 5, 7};
-          const bdd out = bdd_satmin(bdd_3, bdd_cube(d.rbegin(), d.rend()));
+          const std::vector<int> d = { 1, -3, 5, 7 };
+          const bdd out            = bdd_satmin(bdd_3, bdd_cube(d.rbegin(), d.rend()));
 
           // Check it looks all right
           node_test_stream out_nodes(out);
@@ -2209,7 +2204,7 @@ go_bandit([]() {
         it("returns same file for false terminal", [&]() {
           const generator<bdd::label_type> gen = [x = 0]() mutable -> optional<bdd::label_type> {
             if (x > 2) { return {}; }
-            return {x++};
+            return { x++ };
           };
 
           const bdd out = bdd_satmax(bdd_F, gen);
@@ -2219,7 +2214,7 @@ go_bandit([]() {
         it("returns cube for true terminal", [&]() {
           const generator<bdd::label_type> gen = [x = 0]() mutable -> optional<bdd::label_type> {
             if (x > 2) { return {}; }
-            return {x++};
+            return { x++ };
           };
 
           const bdd out = bdd_satmax(bdd_T, gen);
@@ -2272,7 +2267,7 @@ go_bandit([]() {
         it("adds disjoint domain [0]", [&]() {
           const generator<bdd::label_type> gen = [x = 1]() mutable -> optional<bdd::label_type> {
             if (x > 2) { return {}; }
-            return {x++};
+            return { x++ };
           };
 
           const bdd out = bdd_satmax(bdd_0, gen);
@@ -2325,7 +2320,7 @@ go_bandit([]() {
         it("adds disjoint domain [3]", [&]() {
           const generator<bdd::label_type> gen = [x = 0]() mutable -> optional<bdd::label_type> {
             if (x > 5) { return {}; }
-            return {x += 2};
+            return { x += 2 };
           };
 
           const bdd out = bdd_satmax(bdd_3, gen);
@@ -2394,7 +2389,7 @@ go_bandit([]() {
         it("merges with overlapping domain [1]", [&]() {
           const generator<bdd::label_type> gen = [x = 0]() mutable -> optional<bdd::label_type> {
             if (x > 4) { return {}; }
-            return {x++};
+            return { x++ };
           };
 
           const bdd out = bdd_satmax(bdd_1, gen);
@@ -2463,7 +2458,7 @@ go_bandit([]() {
         it("merges with overlapping domain [3]", [&]() {
           const generator<bdd::label_type> gen = [x = -1]() mutable -> optional<bdd::label_type> {
             if (x > 6) { return {}; }
-            return {x += 2};
+            return { x += 2 };
           };
 
           const bdd out = bdd_satmax(bdd_3, gen);
@@ -2525,7 +2520,7 @@ go_bandit([]() {
       describe("bdd_satmax(f, cbegin, cend)", [&]() {
         it("merges with overlapping domain [1]", [&]() {
           const std::vector<int> d = { 0, 1, 2, 3, 4 };
-          const bdd out = bdd_satmax(bdd_1, d.cbegin(), d.cend());
+          const bdd out            = bdd_satmax(bdd_1, d.cbegin(), d.cend());
 
           // Check it looks all right
           node_test_stream out_nodes(out);
@@ -2590,7 +2585,7 @@ go_bandit([]() {
 
         it("merges with overlapping domain [3]", [&]() {
           const std::vector<int> d = { 1, 3, 5, 7 };
-          const bdd out = bdd_satmax(bdd_3, d.cbegin(), d.cend());
+          const bdd out            = bdd_satmax(bdd_3, d.cbegin(), d.cend());
 
           // Check it looks all right
           node_test_stream out_nodes(out);
@@ -2647,13 +2642,12 @@ go_bandit([]() {
       });
 
       describe("bdd_satmax(f, cube)", [&]() {
-        it("throws exception for non-cubical input", [&]() {
-          AssertThrows(domain_error, bdd_satmax(bdd_1, bdd_2));
-        });
+        it("throws exception for non-cubical input",
+           [&]() { AssertThrows(domain_error, bdd_satmax(bdd_1, bdd_2)); });
 
         it("merges with overlapping domain [1]", [&]() {
           const std::vector<int> d = { 0, 1, 2, 3, 4 };
-          const bdd out = bdd_satmax(bdd_1, bdd_cube(d.rbegin(), d.rend()));
+          const bdd out            = bdd_satmax(bdd_1, bdd_cube(d.rbegin(), d.rend()));
 
           // Check it looks all right
           node_test_stream out_nodes(out);
@@ -2718,7 +2712,7 @@ go_bandit([]() {
 
         it("merges with overlapping domain [3]", [&]() {
           const std::vector<int> d = { 1, 3, 5, 7 };
-          const bdd out = bdd_satmax(bdd_3, bdd_cube(d.rbegin(), d.rend()));
+          const bdd out            = bdd_satmax(bdd_3, bdd_cube(d.rbegin(), d.rend()));
 
           // Check it looks all right
           node_test_stream out_nodes(out);

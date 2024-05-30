@@ -138,8 +138,7 @@ namespace snowhouse
     ToString(const adiar::internal::level_info& m)
     {
       std::stringstream stream;
-      stream << "level_info: ("
-             << "x" << m.label() << " (" << m.level() << ")"
+      stream << "level_info: (" << "x" << m.label() << " (" << m.level() << ")"
              << ", #nodes = " << m.width() << ")";
       return stream.str();
     }
