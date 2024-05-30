@@ -254,7 +254,65 @@ go_bandit([]() {
       });
 
       describe("<, <=, >, >=", [&]() {
-        // TODO
+        it("checks {{0}} < {{0}, {1}}", [&]() {
+          AssertThat(x0 < x0_or_x1, Is().True());
+          AssertThat(x0 < (x0 | x1), Is().True());
+        });
+
+        it("checks {{0}} < {{1}}", [&]() {
+          AssertThat(x0 < x1, Is().False());
+        });
+
+        it("checks {{0}, {1}} < {{0}, {1}}", [&]() {
+          AssertThat((x0 | x1) < x0_or_x1, Is().False());
+          AssertThat(x0_or_x1 < (x0 | x1), Is().False());
+          AssertThat((x0 | x1) < (x0 | x1), Is().False());
+        });
+
+        it("checks {{0}} <= {{0}, {1}}", [&]() {
+          AssertThat(x0 <= x0_or_x1, Is().True());
+          AssertThat(x0 <= (x0 | x1), Is().True());
+        });
+
+        it("checks {{0}, {1}} <= {{0}, {1}}", [&]() {
+          AssertThat((x0 | x1) <= x0_or_x1, Is().True());
+          AssertThat((x0 | x1) <= (x0 | x1), Is().True());
+        });
+
+        it("checks {{0}} <= {{1}}", [&]() {
+          AssertThat(x0 <= x1, Is().False());
+        });
+
+        it("checks {{0}, {1}} > {{0}}", [&]() {
+          AssertThat(x0_or_x1 > x0, Is().True());
+        });
+
+        it("checks {{0}} > {{1}}", [&]() {
+          AssertThat(x0 > x1, Is().False());
+        });
+
+        it("checks {{0}, {1}} > {{0}, {1}}", [&]() {
+          AssertThat((x0 | x1) > x0_or_x1, Is().False());
+          AssertThat(x0_or_x1 > (x0 | x1), Is().False());
+          AssertThat((x0 | x1) > (x0 | x1), Is().False());
+        });
+
+        it("checks {{0}, {1}} >= {{0}}", [&]() {
+          AssertThat(x0_or_x1 >= x0, Is().True());
+        });
+
+        it("checks {{0}, {1}} >= {{0}, {1}}", [&]() {
+          AssertThat((x0 | x1) >= x0_or_x1, Is().True());
+          AssertThat(x0_or_x1 >= (x0 | x1), Is().True());
+          AssertThat((x0 | x1) >= (x0 | x1), Is().True());
+        });
+
+        it("checks {{0}} >= {{1}}", [&]() {
+          AssertThat(x0 >= x1, Is().False());
+          AssertThat(x0 >= (x0_or_x1 & x1), Is().False());
+          AssertThat((x0_or_x1 & x0) >= x1, Is().False());
+          AssertThat((x0_or_x1 & x0) >= (x0_or_x1 & x1), Is().False());
+        });
       });
     });
 
