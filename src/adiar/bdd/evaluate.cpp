@@ -297,6 +297,19 @@ namespace adiar
     return __bdd_satX<internal::traverse_satmin_visitor>(f, d, total_levels);
   }
 
+  bdd
+  bdd_satmin(const bdd& f, const bdd& d)
+  {
+    if (!bdd_iscube(d)) { throw domain_error("BDD 'd' is not a cube"); }
+
+    typename internal::level_stream_t<bdd>::template stream_t<> d_levels(d);
+    const generator<bdd::label_type> d_gen = make_generator__levels(d_levels);
+
+    const size_t total_levels = std::min<size_t>(f->levels() + d->levels(), bdd::max_label+1);
+
+    return __bdd_satX<internal::traverse_satmin_visitor>(f, d_gen, total_levels);
+  }
+
   void
   bdd_satmin(const bdd& f, const consumer<pair<bdd::label_type, bool>>& c)
   {
@@ -314,6 +327,19 @@ namespace adiar
   {
     const size_t total_levels = std::min<size_t>(f->levels() + d_levels, bdd::max_label+1);
     return __bdd_satX<internal::traverse_satmax_visitor>(f, d, total_levels);
+  }
+
+  bdd
+  bdd_satmax(const bdd& f, const bdd& d)
+  {
+    if (!bdd_iscube(d)) { throw domain_error("BDD 'd' is not a cube"); }
+
+    typename internal::level_stream_t<bdd>::template stream_t<> d_levels(d);
+    const generator<bdd::label_type> d_gen = make_generator__levels(d_levels);
+
+    const size_t total_levels = std::min<size_t>(f->levels() + d->levels(), bdd::max_label+1);
+
+    return __bdd_satX<internal::traverse_satmax_visitor>(f, d_gen, total_levels);
   }
 
   void

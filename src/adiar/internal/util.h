@@ -40,23 +40,41 @@ namespace adiar::internal
   template <typename File>
   struct level_stream_t
   {
-    template <bool reverse = false>
-    using stream_t = level_info_stream<reverse>;
+    template <bool Reverse = false>
+    using stream_t = level_info_stream<Reverse>;
   };
 
   template <>
   struct level_stream_t<file<ptr_uint64::label_type>>
   {
-    template <bool reverse = false>
-    using stream_t = file_stream<ptr_uint64::label_type, reverse>;
+    template <bool Reverse = false>
+    using stream_t = file_stream<ptr_uint64::label_type, Reverse>;
   };
 
   template <>
   struct level_stream_t<shared_file<ptr_uint64::label_type>>
   {
-    template <bool reverse = false>
-    using stream_t = file_stream<ptr_uint64::label_type, reverse>;
+    template <bool Reverse = false>
+    using stream_t = file_stream<ptr_uint64::label_type, Reverse>;
   };
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief  Turn a `level_stream<...>` into a level-only generator function.
+  ///
+  /// \remark The direction (*ascending* vs. *descending*) of the generator is dictated by the given
+  ///         stream's direction.
+  ///
+  /// \see level_stream_t, generator
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename LevelStream>
+  generator<ptr_uint64::label_type>
+  make_generator__levels(LevelStream& ls)
+  {
+    return [&ls]() mutable -> optional<ptr_uint64::label_type> {
+      if (!ls.can_pull()) { return {}; }
+      return level_of(ls.pull());
+    };
+  }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Obtain whether the levels in two files are disjoint.

@@ -1325,6 +1325,128 @@ go_bandit([]() {
         });
       });
 
+      describe("bdd_satmin(f, cube)", [&]() {
+        it("throws exception for non-cubical input", [&]() {
+          AssertThrows(domain_error, bdd_satmin(bdd_1, bdd_2));
+        });
+
+        it("merges with overlapping domain [1]", [&]() {
+          const std::vector<int> d = {0, 1, 2, -3};
+          const bdd out = bdd_satmin(bdd_1, bdd_cube(d.rbegin(), d.rend()));
+
+          // Check it looks all right
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(3, bdd::max_id, terminal_F, terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(2, bdd::max_id, terminal_F, bdd::pointer_type(3, bdd::max_id))));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(1, bdd::max_id, bdd::pointer_type(2, bdd::max_id), terminal_F)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(0, bdd::max_id, bdd::pointer_type(1, bdd::max_id), terminal_F)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(4u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(5u));
+
+          AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(4u));
+          AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(5u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(4u));
+          AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
+        });
+
+        it("merges with overlapping domain [3]", [&]() {
+          const std::vector<int> d = {1, -3, 5, 7};
+          const bdd out = bdd_satmin(bdd_3, bdd_cube(d.rbegin(), d.rend()));
+
+          // Check it looks all right
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, bdd::max_id, terminal_T, terminal_F)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(5, bdd::max_id, bdd::pointer_type(7, bdd::max_id), terminal_F)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(3, bdd::max_id, bdd::pointer_type(5, bdd::max_id), terminal_F)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(1, bdd::max_id, bdd::pointer_type(3, bdd::max_id), terminal_F)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(7, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(4u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(5u));
+
+          AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(4u));
+          AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(5u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(4u));
+          AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
+        });
+      });
+
       describe("bdd_satmin(f, consumer)", [&]() {
         it("never calls consumer for false terminal", [&]() {
           size_t calls  = 0u;
@@ -2469,6 +2591,134 @@ go_bandit([]() {
         it("merges with overlapping domain [3]", [&]() {
           const std::vector<int> d = { 1, 3, 5, 7 };
           const bdd out = bdd_satmax(bdd_3, d.cbegin(), d.cend());
+
+          // Check it looks all right
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(7, bdd::max_id, terminal_F, terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(5, bdd::max_id, terminal_F, bdd::pointer_type(7, bdd::max_id))));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(3, bdd::max_id, terminal_F, bdd::pointer_type(5, bdd::max_id))));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(1, bdd::max_id, terminal_F, bdd::pointer_type(3, bdd::max_id))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(7, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(4u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(5u));
+
+          AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(4u));
+          AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(5u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(4u));
+          AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
+        });
+      });
+
+      describe("bdd_satmax(f, cube)", [&]() {
+        it("throws exception for non-cubical input", [&]() {
+          AssertThrows(domain_error, bdd_satmax(bdd_1, bdd_2));
+        });
+
+        it("merges with overlapping domain [1]", [&]() {
+          const std::vector<int> d = { 0, 1, 2, 3, 4 };
+          const bdd out = bdd_satmax(bdd_1, bdd_cube(d.rbegin(), d.rend()));
+
+          // Check it looks all right
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, bdd::max_id, terminal_F, terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(3, bdd::max_id, terminal_F, bdd::pointer_type(4, bdd::max_id))));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(2, bdd::max_id, bdd::pointer_type(3, bdd::max_id), terminal_F)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(1, bdd::max_id, terminal_F, bdd::pointer_type(2, bdd::max_id))));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(0, bdd::max_id, terminal_F, bdd::pointer_type(1, bdd::max_id))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(5u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(6u));
+
+          AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(5u));
+          AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(6u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(5u));
+          AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
+        });
+
+        it("merges with overlapping domain [3]", [&]() {
+          const std::vector<int> d = { 1, 3, 5, 7 };
+          const bdd out = bdd_satmax(bdd_3, bdd_cube(d.rbegin(), d.rend()));
 
           // Check it looks all right
           node_test_stream out_nodes(out);
