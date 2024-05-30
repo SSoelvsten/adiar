@@ -289,6 +289,31 @@ go_bandit([]() {
       });
 
       describe("-", [&]() {
+        it("does nothing with '+(bdd&)' [x0]", [&]() { AssertThat(+x0 == x0, Is().True()); });
+
+        it("does nothing with '+(__bdd&) [x0 & x1]",
+           [&]() { AssertThat(+(x0 & x1) == x0_and_x1, Is().True()); });
+
+        it("computes 'x0 + x1'", [&]() {
+          const bdd f = x0 + x1;
+          AssertThat(f == (x0 | x1), Is().True());
+        });
+
+        it("accumulates with '+=(bdd&)' operator", [&]() {
+          bdd f = x0;
+          f += x1;
+          AssertThat(f == (x0 | x1), Is().True());
+
+          f += terminal_T;
+          AssertThat(f == terminal_T, Is().True());
+        });
+
+        it("accumulates with '+=(__bdd&&)' operator", [&]() {
+          bdd f = terminal_F;
+          f += x0 & x1;
+          AssertThat(f == (x0 & x1), Is().True());
+        });
+
         it("negates with '-(bdd&)' [x0]", [&]() { AssertThat(-x0 == ~x0, Is().True()); });
 
         it("negates with '-(bdd&)' [x0 & x1]",
@@ -306,7 +331,6 @@ go_bandit([]() {
           bdd f = x0;
           f -= x1;
           AssertThat(f == (x0 & ~x1), Is().True());
-          AssertThat(f != (x0 & ~x1), Is().False());
 
           f -= x0;
           AssertThat(f == terminal_F, Is().True());
@@ -316,10 +340,9 @@ go_bandit([]() {
           bdd f = terminal_T;
           f -= x0 & x1;
           AssertThat(f == ~(x0 & x1), Is().True());
-          AssertThat(f != ~(x0 & x1), Is().False());
         });
 
-        it("computes with __bdd&& and bdd& operators", [&]() {
+        it("computes with '-(__bdd&&)' and '-(bdd&)' operators", [&]() {
           const bdd f = x0_and_x1 - x0 - x1;
           AssertThat(f == terminal_F, Is().True());
           AssertThat(terminal_F == f, Is().True());

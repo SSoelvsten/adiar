@@ -11,7 +11,7 @@
 
 namespace adiar
 {
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   // '__bdd' Constructors
   __bdd::__bdd() = default;
 
@@ -27,7 +27,7 @@ namespace adiar
     : internal::__dd(dd)
   {}
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   // 'bdd' Constructors
   bdd::bdd(bool t)
     : bdd(bdd_terminal(t))
@@ -53,36 +53,26 @@ namespace adiar
     : internal::dd(internal::reduce<bdd_policy>(std::move(f)))
   {}
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   // Operators
-  bdd
-  operator~(__bdd&& in)
-  {
-    return ~bdd(std::move(in));
+#define __BDD_OPER(out_t, op)                           \
+  out_t operator op(__bdd&& lhs, __bdd&& rhs)           \
+  {                                                     \
+    return bdd(std::move(lhs)) op bdd(std::move(rhs));  \
+  }                                                     \
+                                                        \
+  out_t operator op(const bdd& lhs, __bdd&& rhs)        \
+  {                                                     \
+    return lhs op bdd(std::move(rhs));                  \
+  }                                                     \
+                                                        \
+  out_t operator op(__bdd&& lhs, const bdd& rhs)        \
+  {                                                     \
+    return bdd(std::move(lhs)) op rhs;                  \
   }
 
-#define __BDD_OPER(out_t, op)                          \
-  out_t operator op(__bdd&& lhs, __bdd&& rhs)          \
-  {                                                    \
-    return bdd(std::move(lhs)) op bdd(std::move(rhs)); \
-  }                                                    \
-                                                       \
-  out_t operator op(const bdd& lhs, __bdd&& rhs)       \
-  {                                                    \
-    return lhs op bdd(std::move(rhs));                 \
-  }                                                    \
-                                                       \
-  out_t operator op(__bdd&& lhs, const bdd& rhs)       \
-  {                                                    \
-    return bdd(std::move(lhs)) op rhs;                 \
-  }
-
-  __BDD_OPER(__bdd, &);
-  __BDD_OPER(__bdd, |);
-  __BDD_OPER(__bdd, ^);
-  __BDD_OPER(__bdd, -);
-  __BDD_OPER(bool, ==);
-  __BDD_OPER(bool, !=);
+  //////////////////////////////////////////////////////////////////////////////
+  // Operators (Assignment)
 
   bdd&
   bdd::operator=(const bdd& other)
@@ -99,6 +89,54 @@ namespace adiar
     return (*this = internal::reduce<bdd_policy>(std::move(other)));
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  // Operators (Equality Checking)
+
+  __BDD_OPER(bool, ==);
+
+  bool
+  operator==(const bdd& lhs, const bdd& rhs)
+  {
+    return bdd_equal(lhs, rhs);
+  }
+
+  __BDD_OPER(bool, !=);
+
+  bool
+  operator!=(const bdd& lhs, const bdd& rhs)
+  {
+    return bdd_unequal(lhs, rhs);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Operators (Bit)
+
+  bdd
+  operator~(const bdd& f)
+  {
+    return bdd_not(f);
+  }
+
+  bdd
+  operator~(bdd&& f)
+  {
+    return bdd_not(std::move(f));
+  }
+
+  bdd
+  operator~(__bdd&& in)
+  {
+    return ~bdd(std::move(in));
+  }
+
+  __BDD_OPER(__bdd, &);
+
+  __bdd
+  operator&(const bdd& lhs, const bdd& rhs)
+  {
+    return bdd_and(lhs, rhs);
+  }
+
   bdd&
   bdd::operator&=(const bdd& other)
   {
@@ -111,6 +149,14 @@ namespace adiar
     __bdd temp = bdd_and(*this, other);
     other.deref();
     return (*this = std::move(temp));
+  }
+
+  __BDD_OPER(__bdd, |);
+
+  __bdd
+  operator|(const bdd& lhs, const bdd& rhs)
+  {
+    return bdd_or(lhs, rhs);
   }
 
   bdd&
@@ -127,6 +173,14 @@ namespace adiar
     return (*this = std::move(temp));
   }
 
+  __BDD_OPER(__bdd, ^);
+
+  __bdd
+  operator^(const bdd& lhs, const bdd& rhs)
+  {
+    return bdd_xor(lhs, rhs);
+  }
+
   bdd&
   bdd::operator^=(const bdd& other)
   {
@@ -141,6 +195,45 @@ namespace adiar
     return (*this = std::move(temp));
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  // Operators (Set/Arithmetic)
+
+  __BDD_OPER(__bdd, +);
+
+  bdd
+  operator+(const bdd& f)
+  {
+    return f;
+  }
+
+  __bdd
+  operator+(__bdd&& f)
+  {
+    return f;
+  }
+
+  __bdd
+  operator+(const bdd& lhs, const bdd& rhs)
+  {
+    return bdd_or(lhs, rhs);
+  }
+
+  bdd&
+  bdd::operator+=(const bdd& other)
+  {
+    return (*this = bdd_or(*this, other));
+  }
+
+  bdd&
+  bdd::operator+=(bdd&& other)
+  {
+    __bdd temp = bdd_or(*this, other);
+    other.deref();
+    return (*this = std::move(temp));
+  }
+
+  __BDD_OPER(__bdd, -);
+
   bdd&
   bdd::operator-=(const bdd& other)
   {
@@ -153,48 +246,6 @@ namespace adiar
     __bdd temp = bdd_diff(*this, other);
     other.deref();
     return (*this = std::move(temp));
-  }
-
-  bool
-  operator==(const bdd& lhs, const bdd& rhs)
-  {
-    return bdd_equal(lhs, rhs);
-  }
-
-  bool
-  operator!=(const bdd& lhs, const bdd& rhs)
-  {
-    return bdd_unequal(lhs, rhs);
-  }
-
-  bdd
-  operator~(const bdd& f)
-  {
-    return bdd_not(f);
-  }
-
-  bdd
-  operator~(bdd&& f)
-  {
-    return bdd_not(std::forward<bdd>(f));
-  }
-
-  __bdd
-  operator&(const bdd& lhs, const bdd& rhs)
-  {
-    return bdd_and(lhs, rhs);
-  }
-
-  __bdd
-  operator|(const bdd& lhs, const bdd& rhs)
-  {
-    return bdd_or(lhs, rhs);
-  }
-
-  __bdd
-  operator^(const bdd& lhs, const bdd& rhs)
-  {
-    return bdd_xor(lhs, rhs);
   }
 
   bdd
@@ -215,7 +266,7 @@ namespace adiar
     return bdd_diff(lhs, rhs);
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   // Input variables
   bdd::label_type
   bdd_topvar(const bdd& f)
