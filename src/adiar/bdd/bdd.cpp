@@ -234,20 +234,6 @@ namespace adiar
 
   __BDD_OPER(__bdd, -);
 
-  bdd&
-  bdd::operator-=(const bdd& other)
-  {
-    return (*this = bdd_diff(*this, other));
-  }
-
-  bdd&
-  bdd::operator-=(bdd&& other)
-  {
-    __bdd temp = bdd_diff(*this, other);
-    other.deref();
-    return (*this = std::move(temp));
-  }
-
   bdd
   operator-(const bdd& f)
   {
@@ -264,6 +250,42 @@ namespace adiar
   operator-(const bdd& lhs, const bdd& rhs)
   {
     return bdd_diff(lhs, rhs);
+  }
+
+  bdd&
+  bdd::operator-=(const bdd& other)
+  {
+    return (*this = bdd_diff(*this, other));
+  }
+
+  bdd&
+  bdd::operator-=(bdd&& other)
+  {
+    __bdd temp = bdd_diff(*this, other);
+    other.deref();
+    return (*this = std::move(temp));
+  }
+
+  __BDD_OPER(__bdd, *);
+
+  __bdd
+  operator*(const bdd& lhs, const bdd& rhs)
+  {
+    return bdd_and(lhs, rhs);
+  }
+
+  bdd&
+  bdd::operator*=(const bdd& other)
+  {
+    return (*this = bdd_and(*this, other));
+  }
+
+  bdd&
+  bdd::operator*=(bdd&& other)
+  {
+    __bdd temp = bdd_and(*this, other);
+    other.deref();
+    return (*this = std::move(temp));
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
