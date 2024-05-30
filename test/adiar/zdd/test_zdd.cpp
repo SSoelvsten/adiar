@@ -100,8 +100,7 @@ go_bandit([]() {
 
     describe("operators", [&]() {
       describe("==, !=", [&]() {
-        it("rejects Ø == {Ø}",
-           [&]() { AssertThat(terminal_F, Is().Not().EqualTo(terminal_T)); });
+        it("rejects Ø == {Ø}", [&]() { AssertThat(terminal_F, Is().Not().EqualTo(terminal_T)); });
 
         it("accepts {{0}} == {{0}} (different files)", [&]() {
           shared_levelized_file<zdd::node_type> other_nf;
@@ -114,13 +113,9 @@ go_bandit([]() {
           AssertThat(x0, Is().EqualTo(other));
         });
 
-        it("rejects {{0}} == {{1}}", [&]() {
-          AssertThat(x0, Is().Not().EqualTo(x1));
-        });
+        it("rejects {{0}} == {{1}}", [&]() { AssertThat(x0, Is().Not().EqualTo(x1)); });
 
-        it("rejects {{0}, {1}} == {{0}}", [&]() {
-          AssertThat(x0_or_x1, Is().Not().EqualTo(x0));
-        });
+        it("rejects {{0}, {1}} == {{0}}", [&]() { AssertThat(x0_or_x1, Is().Not().EqualTo(x0)); });
       });
 
       describe("~, &, |", [&]() {
@@ -242,13 +237,10 @@ go_bandit([]() {
           AssertThat(A == terminal_F, Is().True());
         });
 
-        it("computes +{{0}} == {{0}} [zdd&]",  [&]() {
-          AssertThat(+x0 == x0, Is().True());
-        });
+        it("computes +{{0}} == {{0}} [zdd&]", [&]() { AssertThat(+x0 == x0, Is().True()); });
 
-        it("computes +{{0}} == {{0}} [__zdd&&]", [&]() {
-          AssertThat(+(x0 & x0_or_x1) == x0, Is().True());
-        });
+        it("computes +{{0}} == {{0}} [__zdd&&]",
+           [&]() { AssertThat(+(x0 & x0_or_x1) == x0, Is().True()); });
 
         it("computes {{0}} + {{1}} == {{0}, {1}}",
            [&]() { AssertThat((x0 + x1) == x0_or_x1, Is().True()); });
@@ -323,21 +315,17 @@ go_bandit([]() {
       });
 
       describe("==, !=", [&]() {
-        it("checks two derivations of same __bdd&& [==]", [&]() {
-          AssertThat((x0 | x1) == ((x0_or_x1 - x1) | x1), Is().True());
-        });
+        it("checks two derivations of same __bdd&& [==]",
+           [&]() { AssertThat((x0 | x1) == ((x0_or_x1 - x1) | x1), Is().True()); });
 
-        it("checks two derivations of same __bdd&& [!=]", [&]() {
-          AssertThat((x0 | x1) != ((x0_or_x1 - x1) | x1), Is().False());
-        });
+        it("checks two derivations of same __bdd&& [!=]",
+           [&]() { AssertThat((x0 | x1) != ((x0_or_x1 - x1) | x1), Is().False()); });
 
-        it("checks two derivations of different __bdd&& [==]", [&]() {
-          AssertThat((x0 | x1) == (x0_or_x1 - x1), Is().False());
-        });
+        it("checks two derivations of different __bdd&& [==]",
+           [&]() { AssertThat((x0 | x1) == (x0_or_x1 - x1), Is().False()); });
 
-        it("checks two derivations of different __bdd&& [!=]", [&]() {
-          AssertThat((x0 | x1) != (x0_or_x1 - x1), Is().True());
-        });
+        it("checks two derivations of different __bdd&& [!=]",
+           [&]() { AssertThat((x0 | x1) != (x0_or_x1 - x1), Is().True()); });
       });
 
       describe("<, <=, >, >=", [&]() {
@@ -346,9 +334,7 @@ go_bandit([]() {
           AssertThat(x0 < (x0 | x1), Is().True());
         });
 
-        it("checks {{0}} < {{1}}", [&]() {
-          AssertThat(x0 < x1, Is().False());
-        });
+        it("checks {{0}} < {{1}}", [&]() { AssertThat(x0 < x1, Is().False()); });
 
         it("checks {{0}, {1}} < {{0}, {1}}", [&]() {
           AssertThat((x0 | x1) < x0_or_x1, Is().False());
@@ -366,17 +352,11 @@ go_bandit([]() {
           AssertThat((x0 | x1) <= (x0 | x1), Is().True());
         });
 
-        it("checks {{0}} <= {{1}}", [&]() {
-          AssertThat(x0 <= x1, Is().False());
-        });
+        it("checks {{0}} <= {{1}}", [&]() { AssertThat(x0 <= x1, Is().False()); });
 
-        it("checks {{0}, {1}} > {{0}}", [&]() {
-          AssertThat(x0_or_x1 > x0, Is().True());
-        });
+        it("checks {{0}, {1}} > {{0}}", [&]() { AssertThat(x0_or_x1 > x0, Is().True()); });
 
-        it("checks {{0}} > {{1}}", [&]() {
-          AssertThat(x0 > x1, Is().False());
-        });
+        it("checks {{0}} > {{1}}", [&]() { AssertThat(x0 > x1, Is().False()); });
 
         it("checks {{0}, {1}} > {{0}, {1}}", [&]() {
           AssertThat((x0 | x1) > x0_or_x1, Is().False());
@@ -384,9 +364,7 @@ go_bandit([]() {
           AssertThat((x0 | x1) > (x0 | x1), Is().False());
         });
 
-        it("checks {{0}, {1}} >= {{0}}", [&]() {
-          AssertThat(x0_or_x1 >= x0, Is().True());
-        });
+        it("checks {{0}, {1}} >= {{0}}", [&]() { AssertThat(x0_or_x1 >= x0, Is().True()); });
 
         it("checks {{0}, {1}} >= {{0}, {1}}", [&]() {
           AssertThat((x0 | x1) >= x0_or_x1, Is().True());

@@ -85,7 +85,7 @@ namespace adiar
   // Operators (Assignment)
 
   zdd&
-  zdd::operator=(const zdd & other)
+  zdd::operator=(const zdd& other)
   {
     this->negate = other.negate;
     this->file   = other.file;

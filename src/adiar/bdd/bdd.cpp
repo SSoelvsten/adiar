@@ -55,20 +55,20 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // Operators
-#define __BDD_OPER(out_t, op)                           \
-  out_t operator op(__bdd&& lhs, __bdd&& rhs)           \
-  {                                                     \
-    return bdd(std::move(lhs)) op bdd(std::move(rhs));  \
-  }                                                     \
-                                                        \
-  out_t operator op(const bdd& lhs, __bdd&& rhs)        \
-  {                                                     \
-    return lhs op bdd(std::move(rhs));                  \
-  }                                                     \
-                                                        \
-  out_t operator op(__bdd&& lhs, const bdd& rhs)        \
-  {                                                     \
-    return bdd(std::move(lhs)) op rhs;                  \
+#define __BDD_OPER(out_t, op)                          \
+  out_t operator op(__bdd&& lhs, __bdd&& rhs)          \
+  {                                                    \
+    return bdd(std::move(lhs)) op bdd(std::move(rhs)); \
+  }                                                    \
+                                                       \
+  out_t operator op(const bdd& lhs, __bdd&& rhs)       \
+  {                                                    \
+    return lhs op bdd(std::move(rhs));                 \
+  }                                                    \
+                                                       \
+  out_t operator op(__bdd&& lhs, const bdd& rhs)       \
+  {                                                    \
+    return bdd(std::move(lhs)) op rhs;                 \
   }
 
   //////////////////////////////////////////////////////////////////////////////
