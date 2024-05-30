@@ -90,7 +90,7 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  // Operators (Equality Checking)
+  // Operators (Relational)
 
   __BDD_OPER(bool, ==);
 

@@ -499,7 +499,7 @@ namespace adiar
   __zdd
   operator&(const zdd&, __zdd&&);
   __zdd
-  operator&(__zdd&&, const __zdd&);
+  operator&(__zdd&&, const zdd&);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////

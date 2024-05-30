@@ -46,14 +46,14 @@ go_bandit([]() {
     zdd terminal_F(terminal_F_nf);
 
     describe("__zdd class", [&]() {
-      it("should copy-construct values from zdd", [&]() {
+      it("copy-constructs values from zdd", [&]() {
         __zdd t1 = x0_or_x1;
         AssertThat(t1.has<shared_levelized_file<zdd::node_type>>(), Is().True());
         AssertThat(t1.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(x0_or_x1_nf));
         AssertThat(t1.negate, Is().False());
       });
 
-      it("should copy-construct values from __zdd", [&]() {
+      it("copy-constructs values from __zdd", [&]() {
         __zdd t1 = x0_or_x1;
         __zdd t2 = t1;
         AssertThat(t2.has<shared_levelized_file<zdd::node_type>>(), Is().True());
@@ -61,7 +61,7 @@ go_bandit([]() {
         AssertThat(t2.negate, Is().False());
       });
 
-      it("should copy-construct values from shared_levelized_file<zdd::node_type>", [&]() {
+      it("copy-constructs values from shared_levelized_file<zdd::node_type>", [&]() {
         __zdd t1 = x0_or_x1;
         AssertThat(t1.has<shared_levelized_file<zdd::node_type>>(), Is().True());
         AssertThat(t1.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(x0_or_x1_nf));
@@ -84,7 +84,7 @@ go_bandit([]() {
 
       af->max_1level_cut = 1;
 
-      it("should copy-construct values from __zdd::shared_arc_file_type", [&]() {
+      it("copy-constructs values from __zdd::shared_arc_file_type", [&]() {
         __zdd t1 = __zdd(af, exec_policy::access::Random_Access);
         AssertThat(t1.has<__zdd::shared_arc_file_type>(), Is().True());
         AssertThat(t1.get<__zdd::shared_arc_file_type>(), Is().EqualTo(af));
@@ -92,96 +92,169 @@ go_bandit([]() {
         AssertThat(t1._policy, Is().EqualTo(exec_policy(exec_policy::access::Random_Access)));
       });
 
-      it("should reduce on copy construct to zdd with __zdd::shared_arc_file_type", [&]() {
+      it("reduces on copy construct to zdd with __zdd::shared_arc_file_type", [&]() {
         zdd out = __zdd(af, exec_policy());
         AssertThat(out, Is().EqualTo(x0_or_x1));
       });
     });
 
     describe("operators", [&]() {
-      it("should reject Ø == {Ø}",
-         [&]() { AssertThat(terminal_F, Is().Not().EqualTo(terminal_T)); });
+      describe("==, !=", [&]() {
+        it("rejects Ø == {Ø}",
+           [&]() { AssertThat(terminal_F, Is().Not().EqualTo(terminal_T)); });
 
-      it("should accept {{0}} == {{0}} (different files)", [&]() {
-        shared_levelized_file<zdd::node_type> x0_nf_2;
+        it("accepts {{0}} == {{0}} (different files)", [&]() {
+          shared_levelized_file<zdd::node_type> other_nf;
+          {
+            node_writer nw(other_nf);
+            nw << node(0, node::max_id, ptr_uint64(false), ptr_uint64(true));
+          }
+          zdd other(other_nf);
 
-        {
-          node_writer nw_0(x0_nf_2);
-          nw_0 << node(0, node::max_id, ptr_uint64(false), ptr_uint64(true));
-        }
+          AssertThat(x0, Is().EqualTo(other));
+        });
 
-        zdd x0_2(x0_nf);
+        it("rejects {{0}} == {{1}}", [&]() {
+          AssertThat(x0, Is().Not().EqualTo(x1));
+        });
 
-        AssertThat(x0, Is().EqualTo(x0_2));
+        it("rejects {{0}, {1}} == {{0}}", [&]() {
+          AssertThat(x0_or_x1, Is().Not().EqualTo(x0));
+        });
       });
 
-      it("should compute {{0}} /\\ {{1}} == {{0}, {1}}",
-         [&]() { AssertThat((x0 | x1) == x0_or_x1, Is().True()); });
+      describe("~, &, |", [&]() {
+        it("computes ~{{0},{1}} == {Ø,{0,1}} with {0,1} domain", [&]() {
+          const std::vector<int> dom = { 0, 1 };
+          domain_set(dom.begin(), dom.end());
 
-      it("should compute {{0}} \\/ {{0},{1}} == {{0}}",
-         [&]() { AssertThat((x0 & x0_or_x1) == x0, Is().True()); });
+          shared_levelized_file<zdd::node_type> expected;
+          {
+            node_writer nw(expected);
+            nw << node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))
+               << node(0, node::max_id, ptr_uint64(true), ptr_uint64(1, ptr_uint64::max_id));
+          }
+          AssertThat(~x0_or_x1 == zdd(expected), Is().True());
+        });
 
-      it("should compute {{0},{1}} \\ {{0}} == {{1}}",
-         [&]() { AssertThat((x0_or_x1 - x0) == x1, Is().True()); });
+        it("computes {{0}} | {{1}} == {{0}, {1}}",
+           [&]() { AssertThat((x0 | x1) == x0_or_x1, Is().True()); });
 
-      it("should compute {{0},{1}}' == {Ø,{0,1}} with dom {0,1}", [&]() {
-        shared_file<zdd::label_type> dom;
-        {
-          label_writer lw(dom);
-          lw << 0 << 1;
-        }
+        it("accumulates with '|=(zdd&)' operator", [&]() {
+          zdd A = terminal_F;
+          A |= x0;
+          AssertThat(A, Is().EqualTo(x0));
 
-        domain_set(dom);
+          A |= x1;
+          AssertThat(A, Is().EqualTo(x0_or_x1));
+        });
 
-        shared_levelized_file<zdd::node_type> expected;
-        {
-          node_writer nw(expected);
-          nw << node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))
-             << node(0, node::max_id, ptr_uint64(true), ptr_uint64(1, ptr_uint64::max_id));
-        }
+        it("computes {{0}} & {{0},{1}} == {{0}}",
+           [&]() { AssertThat((x0 & x0_or_x1) == x0, Is().True()); });
 
-        AssertThat(~x0_or_x1 == zdd(expected), Is().True());
+        it("accumulates with '&=(zdd&)' operator", [&]() {
+          zdd A = x0_or_x1;
+          A &= x0;
+          AssertThat(A, Is().EqualTo(x0));
+
+          A &= x1;
+          AssertThat(A, Is().EqualTo(terminal_F));
+        });
+
+        it("accumulates with '|=(__zdd&&)' and '&=(__zdd&&)'", [&]() {
+          zdd A = x0;
+
+          A |= x0_or_x1 & x1;
+          AssertThat(A, Is().EqualTo(x0_or_x1));
+
+          A &= x0_or_x1 & x1;
+          AssertThat(A, Is().EqualTo(x1));
+        });
+
+        it("computes with __zdd&& operators [~]", [&]() {
+          const std::vector<int> dom = { 0, 1 };
+          domain_set(dom.begin(), dom.end());
+
+          const zdd A = ~(x0 | x1);
+          AssertThat(~x0_or_x1 == A, Is().True());
+        });
+
+        it("computes with __zdd&& operators [&]", [&]() {
+          const zdd A = (x0 & (x0_or_x1 & x0)) & x1;
+          AssertThat(A, Is().EqualTo(terminal_F));
+        });
+
+        it("computes with __zdd&& operators [|]", [&]() {
+          const zdd A = (x0_or_x1 | (x0 | x1)) | x0;
+          AssertThat(A, Is().EqualTo(x0_or_x1));
+        });
+
+        it("computes with __zdd&& operators [|,&]", [&]() {
+          const zdd A = ((x0_or_x1 | x0) | ((x0 & x1) | x1)) & x0;
+          AssertThat(A, Is().EqualTo(x0));
+        });
       });
 
-      it("should compute with __zdd&& operators [|,&,-]", [&]() {
+      describe("-", [&]() {
+        // TODO: Unary Minus
+
+        it("computes {{0},{1}} - {{0}} == {{1}}",
+           [&]() { AssertThat((x0_or_x1 - x0) == x1, Is().True()); });
+
+        it("accumulates with '-=(zdd&)'", [&]() {
+          zdd A = x0_or_x1;
+
+          A -= x0;
+          AssertThat(A == x1, Is().True());
+
+          A -= x1;
+          AssertThat(A == terminal_F, Is().True());
+        });
+
+        it("accumulates with '-=(__zdd&&)'", [&]() {
+          zdd A = x0_or_x1;
+
+          A -= x0 | x1;
+          AssertThat(A == terminal_F, Is().True());
+        });
+
+        // TODO: Unary Plus, Plus, Multiply
+      });
+
+      it("computes with __zdd&& operators [|,&,-]", [&]() {
         zdd out = ((x0_or_x1 - x0) | ((x0 | x1) & (x0_or_x1 - x1))) - (x0_or_x1 - x0);
         AssertThat(x0, Is().EqualTo(out));
       });
 
-      it("should compute with __zdd&& operators [|,~,-,]", [&]() {
-        shared_file<zdd::label_type> dom;
-        {
-          label_writer lw(dom);
-          lw << 0 << 1;
-        }
-
-        domain_set(dom);
+      it("computes with __zdd&& operators [|,~,-,]", [&]() {
+        const std::vector<int> dom = { 0, 1 };
+        domain_set(dom.begin(), dom.end());
 
         zdd out      = ~(~(x0 | x1) - terminal_T);
         zdd expected = x0 | x1 | terminal_T;
         AssertThat(expected, Is().EqualTo(out));
       });
 
-      it("should ?= __zdd&&", [&]() {
-        zdd out = x0_or_x1;
-        out -= x0_or_x1 & x1;
-        AssertThat(out, Is().EqualTo(x0));
+      describe("==, !=", [&]() {
+        it("checks two derivations of same __bdd&& [==]", [&]() {
+          AssertThat((x0 | x1) == ((x0_or_x1 - x1) | x1), Is().True());
+        });
 
-        out |= x0_or_x1 & x1;
-        AssertThat(out, Is().EqualTo(x0_or_x1));
+        it("checks two derivations of same __bdd&& [!=]", [&]() {
+          AssertThat((x0 | x1) != ((x0_or_x1 - x1) | x1), Is().False());
+        });
 
-        out &= x0_or_x1 & x1;
-        AssertThat(out, Is().EqualTo(x1));
+        it("checks two derivations of different __bdd&& [==]", [&]() {
+          AssertThat((x0 | x1) == (x0_or_x1 - x1), Is().False());
+        });
+
+        it("checks two derivations of different __bdd&& [!=]", [&]() {
+          AssertThat((x0 | x1) != (x0_or_x1 - x1), Is().True());
+        });
       });
 
-      it("should check two derivations of same __bdd&&", [&]() {
-        AssertThat((x0 | x1) == ((x0_or_x1 - x1) | x1), Is().True());
-        AssertThat((x0 | x1) != ((x0_or_x1 - x1) | x1), Is().False());
-      });
-
-      it("should check two derivations of different __bdd&&", [&]() {
-        AssertThat((x0 | x1) == (x0_or_x1 - x1), Is().False());
-        AssertThat((x0 | x1) != (x0_or_x1 - x1), Is().True());
+      describe("<, <=, >, >=", [&]() {
+        // TODO
       });
     });
 
