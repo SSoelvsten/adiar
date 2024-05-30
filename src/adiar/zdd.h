@@ -474,6 +474,29 @@ namespace adiar
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \see zdd_union
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  zdd
+  operator+(const zdd& A);
+
+  /// \cond
+  __zdd
+  operator+(__zdd&& A);
+  /// \endcond
+
+  __zdd
+  operator+(const zdd& lhs, const zdd& rhs);
+
+  /// \cond
+  __zdd
+  operator+(__zdd&&, __zdd&&);
+  __zdd
+  operator+(const zdd&, __zdd&&);
+  __zdd
+  operator+(__zdd&&, const zdd&);
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief   The intersection of two families of sets.
   ///
   /// \returns \f$ A \cap B \f$

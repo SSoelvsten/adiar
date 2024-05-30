@@ -246,6 +246,40 @@ namespace adiar
     return (*this = std::move(temp));
   }
 
+  __ZDD_OPER(__zdd, +);
+
+  zdd
+  operator+(const zdd& A)
+  {
+    return A;
+  }
+
+  __zdd
+  operator+(__zdd&& A)
+  {
+    return A;
+  }
+
+  __zdd
+  operator+(const zdd& lhs, const zdd& rhs)
+  {
+    return zdd_union(lhs, rhs);
+  }
+
+  zdd&
+  zdd::operator+=(const zdd& other)
+  {
+    return (*this = zdd_union(*this, other));
+  }
+
+  zdd&
+  zdd::operator+=(zdd&& other)
+  {
+    __zdd temp = zdd_union(*this, other);
+    other.deref();
+    return (*this = std::move(temp));
+  }
+
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // Input variables
   zdd::label_type
