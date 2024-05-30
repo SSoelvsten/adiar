@@ -1384,6 +1384,23 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief The lexicographically smallest x such that f(x) is true.
   ///
+  /// \param f
+  ///    BDD of interest.
+  ///
+  /// \param d
+  ///    BDD cube of variables that ought to be included.
+  ///
+  /// \returns A bdd whos only path to the `true` terminal reflects the minimal assignment.
+  ///
+  /// \throws domain_error
+  ///    If `bdd_iscube(d)` is not satisfied.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  bdd
+  bdd_satmin(const bdd& f, const bdd& d);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief The lexicographically smallest x such that f(x) is true.
+  ///
   /// \param c
   ///    Consumer that is called in ascending order of the bdd's levels with the (var, value)
   ///    pairs of the assignment.
@@ -1465,6 +1482,23 @@ namespace adiar
   {
     return bdd_satmax(f, make_generator(cbegin, cend), std::distance(cbegin, cend));
   }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief The lexicographically largest x such that f(x) is true.
+  ///
+  /// \param f
+  ///    BDD of interest.
+  ///
+  /// \param d
+  ///    BDD cube of variables that ought to be included.
+  ///
+  /// \returns A bdd whos only path to the `true` terminal reflects the minimal assignment.
+  ///
+  /// \throws domain_error
+  ///    If `bdd_iscube(d)` is not satisfied.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  bdd
+  bdd_satmax(const bdd& f, const bdd& d);
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically largest x such that f(x) is true.
