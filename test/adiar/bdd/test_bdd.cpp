@@ -5,8 +5,8 @@ go_bandit([]() {
     shared_levelized_file<bdd::node_type> x0_nf;
 
     {
-      node_writer nw_0(x0_nf);
-      nw_0 << node(0, node::max_id, ptr_uint64(false), ptr_uint64(true));
+      node_writer nw(x0_nf);
+      nw << node(0, node::max_id, ptr_uint64(false), ptr_uint64(true));
     }
 
     bdd x0(x0_nf);
@@ -14,8 +14,8 @@ go_bandit([]() {
     shared_levelized_file<bdd::node_type> x1_nf;
 
     {
-      node_writer nw_1(x1_nf);
-      nw_1 << node(1, node::max_id, ptr_uint64(false), ptr_uint64(true));
+      node_writer nw(x1_nf);
+      nw << node(1, node::max_id, ptr_uint64(false), ptr_uint64(true));
     }
 
     bdd x1(x1_nf);
@@ -23,30 +23,26 @@ go_bandit([]() {
     shared_levelized_file<bdd::node_type> x0_and_x1_nf;
 
     {
-      node_writer nw_01(x0_and_x1_nf);
-
-      nw_01 << node(1, node::max_id, ptr_uint64(false), ptr_uint64(true));
-
-      nw_01 << node(0, node::max_id, ptr_uint64(false), ptr_uint64(1, ptr_uint64::max_id));
+      node_writer nw(x0_and_x1_nf);
+      nw << node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))
+         << node(0, node::max_id, ptr_uint64(false), ptr_uint64(1, ptr_uint64::max_id));
     }
 
     bdd x0_and_x1(x0_and_x1_nf);
     bdd x0_nand_x1(x0_and_x1_nf, true);
 
     shared_levelized_file<bdd::node_type> terminal_T_nf;
-
     {
-      node_writer nw_T(terminal_T_nf);
-      nw_T << node(true);
+      node_writer nw(terminal_T_nf);
+      nw << node(true);
     }
 
     bdd terminal_T(terminal_T_nf);
 
     shared_levelized_file<bdd::node_type> terminal_F_nf;
-
     {
-      node_writer nw_F(terminal_F_nf);
-      nw_F << node(false);
+      node_writer nw(terminal_F_nf);
+      nw << node(false);
     }
 
     bdd terminal_F(terminal_F_nf);
@@ -128,97 +124,168 @@ go_bandit([]() {
          AssertThat(t2.is_negated(), Is().False());
        });
 
-    describe("operators", [&]() {
-      it("should check terminal_F != terminal_T",
-         [&]() { AssertThat(terminal_F, Is().Not().EqualTo(terminal_T)); });
+    describe("operator overloading", [&]() {
+      describe("==, !=", [&]() {
+        it("checks F != T", [&]() { AssertThat(terminal_F, Is().Not().EqualTo(terminal_T)); });
 
-      it("should check terminal_F != ~terminal_F",
-         [&]() { AssertThat(terminal_F, Is().Not().EqualTo(~terminal_F)); });
+        it("checks F != ~F", [&]() { AssertThat(terminal_F, Is().Not().EqualTo(~terminal_F)); });
 
-      it("should check terminal_F == ~terminal_T",
-         [&]() { AssertThat(terminal_F, Is().EqualTo(~terminal_T)); });
+        it("checks F != (x0 & x1)",
+           [&]() { AssertThat(terminal_F, Is().Not().EqualTo(x0_and_x1)); });
 
-      it("should check ~(x0 & x1) != (x0 & x1)",
-         [&]() { AssertThat(x0_and_x1, Is().Not().EqualTo(x0_nand_x1)); });
+        it("checks (x0 & x1) != T",
+           [&]() { AssertThat(x0_and_x1, Is().Not().EqualTo(terminal_T)); });
 
-      shared_levelized_file<bdd::node_type> x0_and_x1_nf2;
+        it("checks '(x0 & x1) != ~(x0 & x1)'",
+           [&]() { AssertThat(x0_and_x1, Is().Not().EqualTo(x0_nand_x1)); });
 
-      {
-        node_writer nw_01(x0_and_x1_nf2);
+        it("checks (x0 & x1) matches itself",
+           [&]() { AssertThat(x0_and_x1, Is().EqualTo(x0_and_x1)); });
 
-        nw_01 << node(1, node::max_id, ptr_uint64(false), ptr_uint64(true));
-
-        nw_01 << node(0, node::max_id, ptr_uint64(false), ptr_uint64(1, ptr_uint64::max_id));
-      }
-
-      it("should check (x0 & x1) == (x0 & x1)", [&]() {
-        bdd other(x0_and_x1_nf2);
-        AssertThat(x0_and_x1, Is().EqualTo(other));
+        it("checks (x0 & x1) matches a copy", [&]() {
+          shared_levelized_file<bdd::node_type> other_nf;
+          {
+            node_writer nw(other_nf);
+            nw << node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))
+               << node(0, node::max_id, ptr_uint64(false), ptr_uint64(1, ptr_uint64::max_id));
+          }
+          const bdd other(other_nf);
+          AssertThat(x0_and_x1, Is().EqualTo(other));
+        });
       });
 
-      it("should compute x0 & x1", [&]() { AssertThat(x0_and_x1 == (x0 & x1), Is().True()); });
+      describe("~, &, |, ^", [&]() {
+        it("negates 'T' into 'F'", [&]() { AssertThat(terminal_F, Is().EqualTo(~terminal_T)); });
 
-      it("should compute bdd& in x0 ?= x1", [&]() {
-        bdd out1 = x0;
-        out1 &= x1;
-        AssertThat(out1 == (x0 & x1), Is().True());
-        AssertThat(out1 != (x0 & x1), Is().False());
+        it("negates '(x0 & x1)' into ~(x0 & x1)'",
+           [&]() { AssertThat(~x0_and_x1, Is().EqualTo(x0_nand_x1)); });
 
-        bdd out2 = x0;
-        out2 |= x1;
-        AssertThat(out2 == (x0 | x1), Is().True());
-        AssertThat(out2 != (x0 | x1), Is().False());
-        AssertThat(out2 != (x0 & x1), Is().True());
+        it("negates '~(x0 & x1)' into '(x0 & x1)'",
+           [&]() { AssertThat(~x0_and_x1, Is().EqualTo(x0_nand_x1)); });
 
-        bdd out3 = x0;
-        out3 ^= x1;
-        AssertThat(out3 == (x0 ^ x1), Is().True());
-        AssertThat(out3 != (x0 ^ x1), Is().False());
-        AssertThat(out3 != (x0 | x1), Is().True());
+        it("computes 'x0 & x1'", [&]() {
+          const bdd f = x0 & x1;
+          AssertThat(f, Is().EqualTo(x0_and_x1));
+        });
+
+        it("computes '~(~x0 | ~x1)'", [&]() {
+          const bdd f = ~(~x0 | ~x1);
+          AssertThat(f, Is().EqualTo(x0_and_x1));
+        });
+
+        it("computes 'x0 ^ x1' to be '(~x0 & x1) | (x0 & ~x1)'", [&]() {
+          const bdd f = x0 ^ x1;
+
+          const bdd g1 = ~x0 & x1;
+          const bdd g2 = x0 & ~x1;
+          const bdd g  = g1 | g2;
+
+          AssertThat(f, Is().EqualTo(g));
+        });
+
+        it("negates 'x0 & x1' __bdd&& into '~(x0 & x1)", [&]() {
+          AssertThat(x0_nand_x1 == ~(x0 & x1), Is().True());
+          AssertThat(x0_nand_x1 != ~(x0 & x1), Is().False());
+        });
+
+        it("resolves 'x0 ^ x1' to be '(~x0 & x1) | (x0 & ~x1)'", [&]() {
+          const bdd f = x0 ^ x1;
+          const bdd g = (~x0 & x1) | (x0 & ~x1);
+          AssertThat(f, Is().EqualTo(g));
+        });
+
+        it("accumulates with '&=(bdd&)' operator", [&]() {
+          bdd f = x0;
+          AssertThat(f == x0, Is().True());
+
+          f &= x1;
+          AssertThat(f == (x0 & x1), Is().True());
+
+          f &= terminal_F;
+          AssertThat(f == terminal_F, Is().True());
+        });
+
+        it("accumulates with '&=(__bdd&&)' operator", [&]() {
+          bdd f = terminal_T;
+          f &= x0 & x1;
+          AssertThat((x0 & x1) == f, Is().True());
+        });
+
+        it("accumulates with '|=(bdd&)' operator", [&]() {
+          bdd f = x0;
+          AssertThat(f == x0, Is().True());
+
+          f |= x1;
+          AssertThat(f == (x0 | x1), Is().True());
+
+          f |= terminal_T;
+          AssertThat(terminal_T == f, Is().True());
+        });
+
+        it("accumulates with '|=(__bdd&&)' operator", [&]() {
+          bdd f = terminal_F;
+          f |= x0 & x1;
+          AssertThat(f == (x0 & x1), Is().True());
+        });
+
+        it("accumulates with '^=(bdd&)' operator", [&]() {
+          bdd f = x0;
+          AssertThat(f == x0, Is().True());
+
+          f ^= x1;
+          AssertThat(f == (x0 ^ x1), Is().True());
+
+          f ^= x0;
+          AssertThat(f == x1, Is().True());
+        });
+
+        it("accumulates with '^=(__bdd&&)' operator", [&]() {
+          bdd f = terminal_T;
+          f ^= x0 & x1;
+          AssertThat(~(x0 & x1) == f, Is().True());
+        });
+
+        it("computes with __bdd&& operators [1]", [&]() {
+          const bdd f = ((x0 & ~x1) | (~x0 & x1)) ^ ((x1 ^ x0) & (~x0 & x1));
+          AssertThat(f == (x0 & ~x1), Is().True());
+          AssertThat((x0 & ~x1) == f, Is().True());
+        });
+
+        it("computes with __bdd&& operators [2]", [&]() {
+          const bdd f = ((x0 & ~x1) | (~x0 & x1)) ^ ((x1 ^ x0) & (~x0 & x1));
+          AssertThat(f == (x0 & ~x1), Is().True());
+          AssertThat((x0 & ~x1) == f, Is().True());
+        });
+
+        it("computes with __bdd&& and bdd& operators [1]", [&]() {
+          // Notice, that the two expressions with terminal_T and terminal_F
+          // shortcut with the operator for a bdd with the negation flag
+          // set correctly.
+          const bdd f = ((x0 & x1) | (~x0 & x1)) ^ ((terminal_T ^ x0) & (terminal_F | x1));
+          AssertThat(f == (x0 & x1), Is().True());
+          AssertThat((x0 & x1) == f, Is().True());
+        });
+
+        it("computes with __bdd&& and bdd& operators [2]", [&]() {
+          // The right-hand-side will evaluate to a bdd, since terminal_T negates.
+          const bdd f = ((~x0 | (x0 & x1)) ^ (terminal_T ^ (x1 ^ x0)));
+          AssertThat(f == (~x0 & x1), Is().True());
+          AssertThat((~x0 & x1) == f, Is().True());
+        });
       });
 
-      it("should negate __bdd&& in ~(x0 & x1)", [&]() {
-        AssertThat(x0_nand_x1 == ~(x0 & x1), Is().True());
-        AssertThat(x0_nand_x1 != ~(x0 & x1), Is().False());
-      });
+      describe("==, !=", [&]() {
+        it("check two derivations of same __bdd&& [==]",
+           [&]() { AssertThat((x0 ^ x1) == ((x0 & ~x1) | (~x0 & x1)), Is().True()); });
 
-      it("should compute with __bdd&& operators", [&]() {
-        bdd out = ((x0 & ~x1) | (~x0 & x1)) ^ ((x1 ^ x0) & (~x0 & x1));
-        AssertThat((x0 & ~x1) == out, Is().True());
-        AssertThat((x0 & ~x1) != out, Is().False());
-      });
+        it("check two derivations of same __bdd&& [!=]",
+           [&]() { AssertThat((x0 ^ x1) != ((x0 & ~x1) | (~x0 & x1)), Is().False()); });
 
-      it("should compute with __bdd&& and bdd& in operators [1]", [&]() {
-        // Notice, that the two expressions with terminal_T and terminal_F
-        // shortcut with the operator for a bdd with the negation flag
-        // set correctly.
-        bdd out = ((x0 & x1) | (~x0 & x1)) ^ ((terminal_T ^ x0) & (terminal_F | x1));
-        AssertThat((x0 & x1) == out, Is().True());
-        AssertThat((x0 & x1) != out, Is().False());
-      });
+        it("checks two derivations of different __bdd&& [==]",
+           [&]() { AssertThat((x0 | x1) == ((x0 & x1) | (~x0 & x1)), Is().False()); });
 
-      it("should compute with __bdd&& and bdd& in operators [2]", [&]() {
-        // The right-hand-side will evaluate to a bdd, since terminal_F negates.
-        bdd out = ((~x0 | (x0 & x1)) ^ (terminal_T ^ (x1 ^ x0)));
-        AssertThat((~x0 & x1) == out, Is().True());
-        AssertThat((~x0 & x1) != out, Is().False());
-      });
-
-      it("should x0 ?= __bdd&&", [&]() {
-        bdd out = x0;
-        out &= x0 & x1;
-        AssertThat((x0 & x1) == out, Is().True());
-        AssertThat((x0 & x1) != out, Is().False());
-      });
-
-      it("should check two derivations of same __bdd&&", [&]() {
-        AssertThat((x0 ^ x1) == ((x0 & ~x1) | (~x0 & x1)), Is().True());
-        AssertThat((x0 ^ x1) != ((x0 & ~x1) | (~x0 & x1)), Is().False());
-      });
-
-      it("should check two derivations of different __bdd&&", [&]() {
-        AssertThat((x0 | x1) == ((x0 & x1) | (~x0 & x1)), Is().False());
-        AssertThat((x0 | x1) != ((x0 & x1) | (~x0 & x1)), Is().True());
+        it("checks two derivations of different __bdd&& [!=]",
+           [&]() { AssertThat((x0 | x1) != ((x0 & x1) | (~x0 & x1)), Is().True()); });
       });
     });
   });
