@@ -196,7 +196,31 @@ go_bandit([]() {
       });
 
       describe("-", [&]() {
-        // TODO: Unary Minus
+        it("computes -{{0},{1}} == {Ø,{0,1}} [zdd&] with {0,1} domain", [&]() {
+          const std::vector<int> dom = { 0, 1 };
+          domain_set(dom.begin(), dom.end());
+
+          shared_levelized_file<zdd::node_type> expected;
+          {
+            node_writer nw(expected);
+            nw << node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))
+               << node(0, node::max_id, ptr_uint64(true), ptr_uint64(1, ptr_uint64::max_id));
+          }
+          AssertThat(-x0_or_x1 == zdd(expected), Is().True());
+        });
+
+        it("computes -{{0},{1}} == {Ø,{0,1}} [__zdd&&] with {0,1} domain", [&]() {
+          const std::vector<int> dom = { 0, 1 };
+          domain_set(dom.begin(), dom.end());
+
+          shared_levelized_file<zdd::node_type> expected;
+          {
+            node_writer nw(expected);
+            nw << node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))
+               << node(0, node::max_id, ptr_uint64(true), ptr_uint64(1, ptr_uint64::max_id));
+          }
+          AssertThat(-(x0 | x1) == zdd(expected), Is().True());
+        });
 
         it("computes {{0},{1}} - {{0}} == {{1}}",
            [&]() { AssertThat((x0_or_x1 - x0) == x1, Is().True()); });

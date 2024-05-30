@@ -215,6 +215,18 @@ namespace adiar
   __ZDD_OPER(__zdd, -);
 
   __zdd
+  operator-(const zdd& A)
+  {
+    return zdd_complement(A);
+  }
+
+  __zdd
+  operator-(__zdd&& A)
+  {
+    return -zdd(std::move(A));
+  }
+
+  __zdd
   operator-(const zdd& lhs, const zdd& rhs)
   {
     return zdd_diff(lhs, rhs);
