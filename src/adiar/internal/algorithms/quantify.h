@@ -1428,8 +1428,8 @@ namespace adiar::internal
 
     size_t shallow_threshold = res.dd_size / 3;
 
-    size_t nodes_above       = 0u;
-    size_t nodes_below       = res.dd_size;
+    size_t nodes_above = 0u;
+    size_t nodes_below = res.dd_size;
 
     while (lis.can_pull()) {
       const level_info li = lis.pull();

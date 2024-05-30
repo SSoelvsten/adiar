@@ -495,8 +495,10 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Lift enum values to `exec_policy`.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename A, typename B,
-            typename = enable_if<needs_conversion<A, exec_policy> && needs_conversion<B, exec_policy>>>
+  template <
+    typename A,
+    typename B,
+    typename = enable_if<needs_conversion<A, exec_policy> && needs_conversion<B, exec_policy>>>
   exec_policy
   operator&(const A& a, const B& b)
   {

@@ -1583,7 +1583,7 @@ namespace adiar::internal
         }
       }
     } // namespace inner
-  }   // namespace nested_sweeping
+  } // namespace nested_sweeping
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Primary logic for the framework for I/O-efficient translation of recursive functions
