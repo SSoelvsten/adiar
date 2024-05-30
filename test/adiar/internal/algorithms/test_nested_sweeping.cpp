@@ -3072,7 +3072,6 @@ go_bandit([]() {
           //     / \
           //     T T
           */
-          const arc::pointer_type terminal_F(false);
           const arc::pointer_type terminal_T(true);
 
           const arc::pointer_type n1(0, 0);
@@ -3141,7 +3140,6 @@ go_bandit([]() {
           //     ||  ||
           //     T   T
           */
-          const arc::pointer_type terminal_F(false);
           const arc::pointer_type terminal_T(true);
 
           const arc::pointer_type n1(0, 0);
@@ -3226,7 +3224,7 @@ go_bandit([]() {
       });
     });
 
-    describe("nested_sweeping:: _ ::sweeps", [&terminal_F, &terminal_T, &outer_dag]() {
+    describe("nested_sweeping:: _ ::sweeps", [&terminal_F, &terminal_T]() {
       describe("inner::down(...)", [&]() {
         using inner_down_sweep = test_not_sweep<>;
         using inner_roots_t =
@@ -5689,7 +5687,6 @@ go_bandit([]() {
         //    / \
         //    T T
         */
-        const ptr_uint64 terminal_F(false);
         const ptr_uint64 terminal_T(true);
 
         const ptr_uint64 n1(0, 0);
