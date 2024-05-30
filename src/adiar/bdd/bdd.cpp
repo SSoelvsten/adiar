@@ -61,7 +61,7 @@ namespace adiar
     return ~bdd(std::move(in));
   }
 
-#define __bdd_oper(out_t, op)                          \
+#define __BDD_OPER(out_t, op)                          \
   out_t operator op(__bdd&& lhs, __bdd&& rhs)          \
   {                                                    \
     return bdd(std::move(lhs)) op bdd(std::move(rhs)); \
@@ -77,10 +77,14 @@ namespace adiar
     return bdd(std::move(lhs)) op rhs;                 \
   }
 
-  __bdd_oper(__bdd, &) __bdd_oper(__bdd, |) __bdd_oper(__bdd, ^) __bdd_oper(bool, ==)
-    __bdd_oper(bool, !=)
+  __BDD_OPER(__bdd, &);
+  __BDD_OPER(__bdd, |);
+  __BDD_OPER(__bdd, ^);
+  __BDD_OPER(bool, ==);
+  __BDD_OPER(bool, !=);
 
-      bdd& bdd::operator=(const bdd & other)
+  bdd&
+  bdd::operator=(const bdd& other)
   {
     this->negate = other.negate;
     this->file   = other.file;
