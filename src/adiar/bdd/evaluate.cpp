@@ -119,11 +119,16 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
+  // TODO: Merge code duplication with Curiously Recurring Template Pattern
+
   template <typename Visitor>
   class bdd_satX__stack
   {
   private:
     Visitor _visitor;
+
+    const generator<bdd::label_type>& _generator;
+    optional<bdd::label_type> _next_domain;
 
     // Reserve an internal memory vector (of up to 8 MiB) for the result.
     // TODO: Abstract the stack into <adiar/internal/data_structures/stack.h>.
@@ -133,21 +138,39 @@ namespace adiar
     stack_type _stack;
 
   public:
-    bdd_satX__stack(const size_t stack_size)
-      : _stack(stack_size)
-    {}
+    bdd_satX__stack(const generator<bdd::label_type>& g, const size_t stack_size)
+      : _generator(g)
+      , _stack(stack_size)
+    {
+      this->_next_domain = this->_generator();
+    }
 
     bdd::pointer_type
     visit(const bdd::node_type& n)
     {
-      const bdd::pointer_type next = _visitor.visit(n);
-      _stack.push({ n.label(), next == n.low() });
+      // Add skipped levels
+      while (this->_next_domain && this->_next_domain.value() <= n.label()) {
+        const bdd::label_type next_domain = this->_next_domain.value();
+        if (next_domain != n.label()) {
+          this->_stack.push({ next_domain, !Visitor::default_direction });
+        }
+        this->_next_domain = this->_generator();
+      }
+      // Update with this level
+      const bdd::pointer_type next = this->_visitor.visit(n);
+      this->_stack.push({ n.label(), next == n.low() });
       return next;
     }
 
     void
     visit(const bool t)
     {
+      // Add skipped levels
+      while (this->_next_domain) {
+        this->_stack.push({ this->_next_domain.value(), !Visitor::default_direction });
+        this->_next_domain = this->_generator();
+      }
+      // Finally, visit terminal
       _visitor.visit(t);
     }
 
@@ -155,8 +178,6 @@ namespace adiar
     bdd
     build_bdd()
     {
-      adiar_assert(!_stack.empty());
-
       // TODO (optimisation): Use 'internal::build_chain' directly to inline
       //                      popping values from the stack.
       return bdd_cube([this]() {
@@ -174,52 +195,106 @@ namespace adiar
   {
   private:
     Visitor _visitor;
+
+    const generator<bdd::label_type>& _generator;
+    optional<bdd::label_type> _next_domain;
+
     const consumer<pair<bdd::label_type, bool>>& _consumer;
 
   public:
-    bdd_satX__functional(const consumer<pair<bdd::label_type, bool>>& c)
-      : _consumer(c)
-    {}
+    bdd_satX__functional(const generator<bdd::label_type>& g,
+                         const consumer<pair<bdd::label_type, bool>>& c)
+      : _generator(g)
+      , _consumer(c)
+    {
+      this->_next_domain = this->_generator();
+    }
 
     bdd::pointer_type
     visit(const bdd::node_type& n)
     {
-      const bdd::pointer_type next = _visitor.visit(n);
-      _consumer({ n.label(), next == n.high() });
+      // Add skipped levels
+      while (this->_next_domain && this->_next_domain.value() <= n.label()) {
+        const bdd::label_type next_domain = this->_next_domain.value();
+        if (next_domain != n.label()) {
+          this->_consumer({ next_domain, !Visitor::default_direction });
+        }
+        this->_next_domain = this->_generator();
+      }
+      // Update with this level
+      const bdd::pointer_type next = this->_visitor.visit(n);
+      this->_consumer({ n.label(), next == n.high() });
       return next;
     }
 
     void
     visit(const bool t)
     {
+      // Add skipped levels
+      while (this->_next_domain && this->_next_domain.value()) {
+        this->_consumer({ this->_next_domain.value(), !Visitor::default_direction });
+        this->_next_domain = this->_generator();
+      }
+      // Finally, visit terminal
       _visitor.visit(t);
     }
   };
 
   template <typename Visitor>
   bdd
-  __bdd_satX(const bdd& f)
+  __bdd_satX(const bdd& f, const generator<bdd::label_type>& dom, const size_t levels)
   {
-    if (bdd_isterminal(f)) { return f; }
+    if (bdd_isfalse(f)) { return f; }
 
-    bdd_satX__stack<Visitor> v(f->levels());
+    bdd_satX__stack<Visitor> v(dom, levels);
     internal::traverse(f, v);
 
     return v.build_bdd();
   }
 
   template <typename Visitor>
+  bdd
+  __bdd_satX(const bdd& f)
+  {
+    if (bdd_istrue(f)) { return f; }
+
+    const generator<bdd::label_type> nothing = []() -> optional<bdd::label_type> { return {}; };
+    return __bdd_satX<Visitor>(f, nothing, f->levels());
+  }
+
+  template <typename Visitor>
+  void
+  __bdd_satX(const bdd& f,
+             const generator<bdd::label_type>& g,
+             const consumer<pair<bdd::label_type, bool>>& c)
+  {
+    if (bdd_isfalse(f)) { return; }
+
+    bdd_satX__functional<Visitor> v(g, c);
+    internal::traverse(f, v);
+  }
+
+  template <typename Visitor>
   void
   __bdd_satX(const bdd& f, const consumer<pair<bdd::label_type, bool>>& c)
   {
-    bdd_satX__functional<Visitor> v(c);
-    internal::traverse(f, v);
+    if (bdd_istrue(f)) { return; }
+
+    const generator<bdd::label_type> nothing = []() -> optional<bdd::label_type> { return {}; };
+    return __bdd_satX<Visitor>(f, nothing, c);
   }
 
   bdd
   bdd_satmin(const bdd& f)
   {
     return __bdd_satX<internal::traverse_satmin_visitor>(f);
+  }
+
+  bdd
+  bdd_satmin(const bdd& f, const generator<bdd::label_type>& d, const size_t d_levels)
+  {
+    const size_t total_levels = std::min<size_t>(f->levels() + d_levels, bdd::max_label+1);
+    return __bdd_satX<internal::traverse_satmin_visitor>(f, d, total_levels);
   }
 
   void
@@ -232,6 +307,13 @@ namespace adiar
   bdd_satmax(const bdd& f)
   {
     return __bdd_satX<internal::traverse_satmax_visitor>(f);
+  }
+
+  bdd
+  bdd_satmax(const bdd& f, const generator<bdd::label_type>& d, const size_t d_levels)
+  {
+    const size_t total_levels = std::min<size_t>(f->levels() + d_levels, bdd::max_label+1);
+    return __bdd_satX<internal::traverse_satmax_visitor>(f, d, total_levels);
   }
 
   void
