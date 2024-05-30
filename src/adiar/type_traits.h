@@ -5,7 +5,7 @@
 
 namespace adiar
 {
-  template <bool Condition, typename Type>
+  template <bool Condition, typename Type = void>
   using enable_if = typename std::enable_if<Condition, Type>::type;
 
   template <typename A, typename B>
@@ -16,6 +16,12 @@ namespace adiar
 
   template <typename A, typename B>
   inline constexpr bool needs_conversion = !is_same<A, B> && is_convertible<A, B>;
+
+  template <typename A>
+  inline constexpr bool is_const = std::is_const<std::remove_reference_t<A>>::value;
+
+  template <typename A>
+  inline constexpr bool is_mutable = !is_const<A>;
 
   template <typename A>
   inline constexpr bool is_integral = std::is_integral<A>::value;
