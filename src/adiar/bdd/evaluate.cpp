@@ -196,32 +196,16 @@ namespace adiar
   private:
     Visitor _visitor;
 
-    const generator<bdd::label_type>& _generator;
-    optional<bdd::label_type> _next_domain;
-
     const consumer<pair<bdd::label_type, bool>>& _consumer;
 
   public:
-    bdd_satX__functional(const generator<bdd::label_type>& g,
-                         const consumer<pair<bdd::label_type, bool>>& c)
-      : _generator(g)
-      , _consumer(c)
-    {
-      this->_next_domain = this->_generator();
-    }
+    bdd_satX__functional(const consumer<pair<bdd::label_type, bool>>& c)
+      : _consumer(c)
+    {}
 
     bdd::pointer_type
     visit(const bdd::node_type& n)
     {
-      // Add skipped levels
-      while (this->_next_domain && this->_next_domain.value() <= n.label()) {
-        const bdd::label_type next_domain = this->_next_domain.value();
-        if (next_domain != n.label()) {
-          this->_consumer({ next_domain, !Visitor::default_direction });
-        }
-        this->_next_domain = this->_generator();
-      }
-      // Update with this level
       const bdd::pointer_type next = this->_visitor.visit(n);
       this->_consumer({ n.label(), next == n.high() });
       return next;
@@ -230,12 +214,6 @@ namespace adiar
     void
     visit(const bool t)
     {
-      // Add skipped levels
-      while (this->_next_domain && this->_next_domain.value()) {
-        this->_consumer({ this->_next_domain.value(), !Visitor::default_direction });
-        this->_next_domain = this->_generator();
-      }
-      // Finally, visit terminal
       _visitor.visit(t);
     }
   };
@@ -264,24 +242,12 @@ namespace adiar
 
   template <typename Visitor>
   void
-  __bdd_satX(const bdd& f,
-             const generator<bdd::label_type>& g,
-             const consumer<pair<bdd::label_type, bool>>& c)
-  {
-    if (bdd_isfalse(f)) { return; }
-
-    bdd_satX__functional<Visitor> v(g, c);
-    internal::traverse(f, v);
-  }
-
-  template <typename Visitor>
-  void
   __bdd_satX(const bdd& f, const consumer<pair<bdd::label_type, bool>>& c)
   {
-    if (bdd_istrue(f)) { return; }
+    if (bdd_isconst(f)) { return; }
 
-    const generator<bdd::label_type> nothing = []() -> optional<bdd::label_type> { return {}; };
-    return __bdd_satX<Visitor>(f, nothing, c);
+    bdd_satX__functional<Visitor> v(c);
+    internal::traverse(f, v);
   }
 
   bdd
