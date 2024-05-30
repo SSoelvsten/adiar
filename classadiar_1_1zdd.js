@@ -18,6 +18,8 @@ var classadiar_1_1zdd =
     [ "number_of_terminals", "classadiar_1_1zdd.html#aef2f8cbd3631a1e42e6554eac2d7e132", null ],
     [ "number_of_terminals", "classadiar_1_1zdd.html#aa97722d01a0549b7ee27d9e9a1798e55", null ],
     [ "operator&=", "classadiar_1_1zdd.html#ab18d66fa90879d17f67be765e5a79a11", null ],
+    [ "operator*=", "classadiar_1_1zdd.html#a0200b2ec2753ae04d7ae6a43259eb74b", null ],
+    [ "operator+=", "classadiar_1_1zdd.html#a04e7501debe8e6d3ac55347c3198e3e0", null ],
     [ "operator-=", "classadiar_1_1zdd.html#af9f6df0b3c03612f34f5039c276035c7", null ],
     [ "operator->", "classadiar_1_1zdd.html#a088788c99e9b13c426b387cf7d89d01b", null ],
     [ "operator=", "classadiar_1_1zdd.html#ac2877bd6be4cf583d9a9160230da1724", null ],
