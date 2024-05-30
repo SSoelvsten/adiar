@@ -287,6 +287,44 @@ go_bandit([]() {
         it("checks two derivations of different __bdd&& [!=]",
            [&]() { AssertThat((x0 | x1) != ((x0 & x1) | (~x0 & x1)), Is().True()); });
       });
+
+      describe("-", [&]() {
+        it("negates with '-(bdd&)' [x0]", [&]() { AssertThat(-x0 == ~x0, Is().True()); });
+
+        it("negates with '-(bdd&)' [x0 & x1]",
+           [&]() { AssertThat(-x0_and_x1 == ~x0_and_x1, Is().True()); });
+
+        it("negates with '-(__bdd&) [x0 & x1]",
+           [&]() { AssertThat(-(x0 & x1) == ~x0_and_x1, Is().True()); });
+
+        it("computes 'x0 - x1'", [&]() {
+          const bdd f = x0 - x1;
+          AssertThat(f == (x0 & ~x1), Is().True());
+        });
+
+        it("accumulates with '-=(bdd&)' operator", [&]() {
+          bdd f = x0;
+          f -= x1;
+          AssertThat(f == (x0 & ~x1), Is().True());
+          AssertThat(f != (x0 & ~x1), Is().False());
+
+          f -= x0;
+          AssertThat(f == terminal_F, Is().True());
+        });
+
+        it("accumulates with '-=(__bdd&&)' operator", [&]() {
+          bdd f = terminal_T;
+          f -= x0 & x1;
+          AssertThat(f == ~(x0 & x1), Is().True());
+          AssertThat(f != ~(x0 & x1), Is().False());
+        });
+
+        it("computes with __bdd&& and bdd& operators", [&]() {
+          const bdd f = x0_and_x1 - x0 - x1;
+          AssertThat(f == terminal_F, Is().True());
+          AssertThat(terminal_F == f, Is().True());
+        });
+      });
     });
   });
 });
