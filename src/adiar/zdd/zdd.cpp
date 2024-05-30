@@ -17,7 +17,7 @@
 
 namespace adiar
 {
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   // '__zdd' Constructors
   __zdd::__zdd()
     : internal::__dd()
@@ -35,7 +35,7 @@ namespace adiar
     : internal::__dd(dd)
   {}
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   // 'zdd' Constructors
   zdd::zdd()
     : zdd(zdd_empty())
@@ -63,9 +63,9 @@ namespace adiar
     : internal::dd(internal::reduce<zdd_policy>(std::move(A)))
   {}
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   // Operators
-#define __zdd_oper(out_t, op)                          \
+#define __ZDD_OPER(out_t, op)                          \
   out_t operator op(__zdd&& lhs, __zdd&& rhs)          \
   {                                                    \
     return zdd(std::move(lhs)) op zdd(std::move(rhs)); \
@@ -81,12 +81,11 @@ namespace adiar
     return zdd(std::move(lhs)) op rhs;                 \
   }
 
-  __zdd_oper(__zdd, &) __zdd_oper(__zdd, |) __zdd_oper(__zdd, -)
+  //////////////////////////////////////////////////////////////////////////////
+  // Operators (Assignment)
 
-    __zdd_oper(bool, ==) __zdd_oper(bool, !=) __zdd_oper(bool, <=) __zdd_oper(bool, >=)
-      __zdd_oper(bool, <) __zdd_oper(bool, >)
-
-        zdd& zdd::operator=(const zdd & other)
+  zdd&
+  zdd::operator=(const zdd & other)
   {
     this->negate = other.negate;
     this->file   = other.file;
@@ -100,6 +99,60 @@ namespace adiar
     return (*this = internal::reduce<zdd_policy>(std::move(other)));
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  // Operators (Relational)
+
+  __ZDD_OPER(bool, ==);
+
+  bool
+  operator==(const zdd& lhs, const zdd& rhs)
+  {
+    return zdd_equal(lhs, rhs);
+  }
+
+  __ZDD_OPER(bool, !=);
+
+  bool
+  operator!=(const zdd& lhs, const zdd& rhs)
+  {
+    return zdd_unequal(lhs, rhs);
+  }
+
+  __ZDD_OPER(bool, <=);
+
+  bool
+  operator<=(const zdd& lhs, const zdd& rhs)
+  {
+    return zdd_subseteq(lhs, rhs);
+  }
+
+  __ZDD_OPER(bool, >=);
+
+  bool
+  operator>=(const zdd& lhs, const zdd& rhs)
+  {
+    return zdd_subseteq(rhs, lhs);
+  }
+
+  __ZDD_OPER(bool, <);
+
+  bool
+  operator<(const zdd& lhs, const zdd& rhs)
+  {
+    return zdd_subset(lhs, rhs);
+  }
+
+  __ZDD_OPER(bool, >);
+
+  bool
+  operator>(const zdd& lhs, const zdd& rhs)
+  {
+    return zdd_subset(rhs, lhs);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Operators (Bit)
+
   __zdd
   operator~(const zdd& A)
   {
@@ -111,6 +164,8 @@ namespace adiar
   {
     return ~zdd(std::move(A));
   }
+
+  __ZDD_OPER(__zdd, &);
 
   __zdd
   operator&(const zdd& lhs, const zdd& rhs)
@@ -132,6 +187,8 @@ namespace adiar
     return (*this = std::move(temp));
   }
 
+  __ZDD_OPER(__zdd, |);
+
   __zdd
   operator|(const zdd& lhs, const zdd& rhs)
   {
@@ -151,6 +208,11 @@ namespace adiar
     other.deref();
     return (*this = std::move(temp));
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Operators (Set/Arithmetic)
+
+  __ZDD_OPER(__zdd, -);
 
   __zdd
   operator-(const zdd& lhs, const zdd& rhs)
@@ -172,43 +234,7 @@ namespace adiar
     return (*this = std::move(temp));
   }
 
-  bool
-  operator==(const zdd& lhs, const zdd& rhs)
-  {
-    return zdd_equal(lhs, rhs);
-  }
-
-  bool
-  operator!=(const zdd& lhs, const zdd& rhs)
-  {
-    return zdd_unequal(lhs, rhs);
-  }
-
-  bool
-  operator<=(const zdd& lhs, const zdd& rhs)
-  {
-    return zdd_subseteq(lhs, rhs);
-  }
-
-  bool
-  operator>=(const zdd& lhs, const zdd& rhs)
-  {
-    return zdd_subseteq(rhs, lhs);
-  }
-
-  bool
-  operator<(const zdd& lhs, const zdd& rhs)
-  {
-    return zdd_subset(lhs, rhs);
-  }
-
-  bool
-  operator>(const zdd& lhs, const zdd& rhs)
-  {
-    return zdd_subset(rhs, lhs);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   // Input variables
   zdd::label_type
   zdd_topvar(const zdd& A)
