@@ -242,7 +242,38 @@ go_bandit([]() {
           AssertThat(A == terminal_F, Is().True());
         });
 
-        // TODO: Unary Plus, Plus, Multiply
+        it("computes +{{0}} == {{0}} [zdd&] with {0,1} domain",  [&]() {
+          const std::vector<int> dom = { 0, 1 };
+          domain_set(dom.begin(), dom.end());
+
+          AssertThat(+x0 == x0, Is().True());
+        });
+
+        it("computes +{{0}} == {{0}} [__zdd&&] with {0,1} domain", [&]() {
+          const std::vector<int> dom = { 0, 1 };
+          domain_set(dom.begin(), dom.end());
+
+          AssertThat(+(x0 & x0_or_x1) == x0, Is().True());
+        });
+
+        it("computes {{0}} + {{1}} == {{0}, {1}}",
+           [&]() { AssertThat((x0 + x1) == x0_or_x1, Is().True()); });
+
+        it("accumulates with '+=(zdd&)' operator", [&]() {
+          zdd A = terminal_F;
+          A += x0;
+          AssertThat(A, Is().EqualTo(x0));
+
+          A += x1;
+          AssertThat(A, Is().EqualTo(x0_or_x1));
+        });
+
+        it("computes with __zdd&& operators [+]", [&]() {
+          const zdd A = (x0_or_x1 + (x0 + x1)) + x0;
+          AssertThat(A, Is().EqualTo(x0_or_x1));
+        });
+
+        // TODO: Multiply
       });
 
       it("computes with __zdd&& operators [|,&,-]", [&]() {
