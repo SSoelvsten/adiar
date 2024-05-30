@@ -280,6 +280,28 @@ namespace adiar
     return (*this = std::move(temp));
   }
 
+  __ZDD_OPER(__zdd, *);
+
+  __zdd
+  operator*(const zdd& lhs, const zdd& rhs)
+  {
+    return zdd_intsec(lhs, rhs);
+  }
+
+  zdd&
+  zdd::operator*=(const zdd& other)
+  {
+    return (*this = zdd_intsec(*this, other));
+  }
+
+  zdd&
+  zdd::operator*=(zdd&& other)
+  {
+    __zdd temp = zdd_intsec(*this, other);
+    other.deref();
+    return (*this = std::move(temp));
+  }
+
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // Input variables
   zdd::label_type

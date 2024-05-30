@@ -149,6 +149,11 @@ go_bandit([]() {
           AssertThat(A, Is().EqualTo(x0_or_x1));
         });
 
+        it("computes with __zdd&& operators [|]", [&]() {
+          const zdd A = (x0_or_x1 | (x0 | x1)) | x0;
+          AssertThat(A, Is().EqualTo(x0_or_x1));
+        });
+
         it("computes {{0}} & {{0},{1}} == {{0}}",
            [&]() { AssertThat((x0 & x0_or_x1) == x0, Is().True()); });
 
@@ -158,6 +163,11 @@ go_bandit([]() {
           AssertThat(A, Is().EqualTo(x0));
 
           A &= x1;
+          AssertThat(A, Is().EqualTo(terminal_F));
+        });
+
+        it("computes with __zdd&& operators [&]", [&]() {
+          const zdd A = (x0 & (x0_or_x1 & x0)) & x1;
           AssertThat(A, Is().EqualTo(terminal_F));
         });
 
@@ -171,6 +181,11 @@ go_bandit([]() {
           AssertThat(A, Is().EqualTo(x1));
         });
 
+        it("computes with __zdd&& operators [|,&]", [&]() {
+          const zdd A = ((x0_or_x1 | x0) | ((x0 & x1) | x1)) & x0;
+          AssertThat(A, Is().EqualTo(x0));
+        });
+
         it("computes with __zdd&& operators [~]", [&]() {
           const std::vector<int> dom = { 0, 1 };
           domain_set(dom.begin(), dom.end());
@@ -178,24 +193,9 @@ go_bandit([]() {
           const zdd A = ~(x0 | x1);
           AssertThat(~x0_or_x1 == A, Is().True());
         });
-
-        it("computes with __zdd&& operators [&]", [&]() {
-          const zdd A = (x0 & (x0_or_x1 & x0)) & x1;
-          AssertThat(A, Is().EqualTo(terminal_F));
-        });
-
-        it("computes with __zdd&& operators [|]", [&]() {
-          const zdd A = (x0_or_x1 | (x0 | x1)) | x0;
-          AssertThat(A, Is().EqualTo(x0_or_x1));
-        });
-
-        it("computes with __zdd&& operators [|,&]", [&]() {
-          const zdd A = ((x0_or_x1 | x0) | ((x0 & x1) | x1)) & x0;
-          AssertThat(A, Is().EqualTo(x0));
-        });
       });
 
-      describe("-", [&]() {
+      describe("-, +, *", [&]() {
         it("computes -{{0},{1}} == {Ø,{0,1}} [zdd&] with {0,1} domain", [&]() {
           const std::vector<int> dom = { 0, 1 };
           domain_set(dom.begin(), dom.end());
@@ -242,17 +242,11 @@ go_bandit([]() {
           AssertThat(A == terminal_F, Is().True());
         });
 
-        it("computes +{{0}} == {{0}} [zdd&] with {0,1} domain",  [&]() {
-          const std::vector<int> dom = { 0, 1 };
-          domain_set(dom.begin(), dom.end());
-
+        it("computes +{{0}} == {{0}} [zdd&]",  [&]() {
           AssertThat(+x0 == x0, Is().True());
         });
 
-        it("computes +{{0}} == {{0}} [__zdd&&] with {0,1} domain", [&]() {
-          const std::vector<int> dom = { 0, 1 };
-          domain_set(dom.begin(), dom.end());
-
+        it("computes +{{0}} == {{0}} [__zdd&&]", [&]() {
           AssertThat(+(x0 & x0_or_x1) == x0, Is().True());
         });
 
@@ -273,21 +267,59 @@ go_bandit([]() {
           AssertThat(A, Is().EqualTo(x0_or_x1));
         });
 
-        // TODO: Multiply
-      });
+        it("computes {{0}} * {{0},{1}} == {{0}}",
+           [&]() { AssertThat((x0 * x0_or_x1) == x0, Is().True()); });
 
-      it("computes with __zdd&& operators [|,&,-]", [&]() {
-        zdd out = ((x0_or_x1 - x0) | ((x0 | x1) & (x0_or_x1 - x1))) - (x0_or_x1 - x0);
-        AssertThat(x0, Is().EqualTo(out));
-      });
+        it("accumulates with '*=(zdd&)' operator", [&]() {
+          zdd A = x0_or_x1;
+          A *= x0;
+          AssertThat(A, Is().EqualTo(x0));
 
-      it("computes with __zdd&& operators [|,~,-,]", [&]() {
-        const std::vector<int> dom = { 0, 1 };
-        domain_set(dom.begin(), dom.end());
+          A *= x1;
+          AssertThat(A, Is().EqualTo(terminal_F));
+        });
 
-        zdd out      = ~(~(x0 | x1) - terminal_T);
-        zdd expected = x0 | x1 | terminal_T;
-        AssertThat(expected, Is().EqualTo(out));
+        it("computes with __zdd&& operators [*]", [&]() {
+          const zdd A = (x0 * (x0_or_x1 & x0)) & x1;
+          AssertThat(A, Is().EqualTo(terminal_F));
+        });
+
+        it("accumulates with '+=(__zdd&&)' and '*=(__zdd&&)'", [&]() {
+          zdd A = x0;
+
+          A += x0_or_x1 & x1;
+          AssertThat(A, Is().EqualTo(x0_or_x1));
+
+          A *= x0_or_x1 & x1;
+          AssertThat(A, Is().EqualTo(x1));
+        });
+
+        it("computes with __zdd&& operators [+,*]", [&]() {
+          const zdd A = ((x0_or_x1 + x0) + ((x0 * x1) + x1)) * x0;
+          AssertThat(A, Is().EqualTo(x0));
+        });
+
+        it("computes with __zdd&& operators [-]", [&]() {
+          const std::vector<int> dom = { 0, 1 };
+          domain_set(dom.begin(), dom.end());
+
+          const zdd A = -(x0 | x1);
+          AssertThat(-x0_or_x1 == A, Is().True());
+        });
+
+        it("computes with __zdd&& operators [|,-,]", [&]() {
+          const std::vector<int> dom = { 0, 1 };
+          domain_set(dom.begin(), dom.end());
+
+          const zdd out      = -(-(x0 | x1) - terminal_T);
+          const zdd expected = x0 | x1 | terminal_T;
+          AssertThat(expected, Is().EqualTo(out));
+        });
+
+        it("computes with __zdd&& operators [-,+,*]", [&]() {
+          const zdd A = ((x0_or_x1 - x0) + ((x0 + x1) * (x0_or_x1 + x1))) - (x0_or_x1 - x0);
+          AssertThat(x0, Is().EqualTo(A));
+        });
       });
 
       describe("==, !=", [&]() {
