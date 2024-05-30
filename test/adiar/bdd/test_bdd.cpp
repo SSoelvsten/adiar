@@ -314,6 +314,26 @@ go_bandit([]() {
           AssertThat(f == (x0 & x1), Is().True());
         });
 
+        it("computes 'x0 + x1'", [&]() {
+          const bdd f = x0 * x1;
+          AssertThat(f == (x0 & x1), Is().True());
+        });
+
+        it("accumulates with '+=(bdd&)' operator", [&]() {
+          bdd f = x0;
+          f *= x1;
+          AssertThat(f == (x0 & x1), Is().True());
+
+          f *= terminal_F;
+          AssertThat(f == terminal_F, Is().True());
+        });
+
+        it("accumulates with '+=(__bdd&&)' operator", [&]() {
+          bdd f = terminal_T;
+          f *= x0 & x1;
+          AssertThat(f == (x0 & x1), Is().True());
+        });
+
         it("negates with '-(bdd&)' [x0]", [&]() { AssertThat(-x0 == ~x0, Is().True()); });
 
         it("negates with '-(bdd&)' [x0 & x1]",
