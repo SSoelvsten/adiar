@@ -80,6 +80,7 @@ namespace adiar
   __BDD_OPER(__bdd, &);
   __BDD_OPER(__bdd, |);
   __BDD_OPER(__bdd, ^);
+  __BDD_OPER(__bdd, -);
   __BDD_OPER(bool, ==);
   __BDD_OPER(bool, !=);
 
@@ -140,6 +141,20 @@ namespace adiar
     return (*this = std::move(temp));
   }
 
+  bdd&
+  bdd::operator-=(const bdd& other)
+  {
+    return (*this = bdd_diff(*this, other));
+  }
+
+  bdd&
+  bdd::operator-=(bdd&& other)
+  {
+    __bdd temp = bdd_diff(*this, other);
+    other.deref();
+    return (*this = std::move(temp));
+  }
+
   bool
   operator==(const bdd& lhs, const bdd& rhs)
   {
@@ -180,6 +195,24 @@ namespace adiar
   operator^(const bdd& lhs, const bdd& rhs)
   {
     return bdd_xor(lhs, rhs);
+  }
+
+  bdd
+  operator-(const bdd& f)
+  {
+    return bdd_not(f);
+  }
+
+  __bdd
+  operator-(__bdd&& f)
+  {
+    return bdd_not(std::move(f));
+  }
+
+  __bdd
+  operator-(const bdd& lhs, const bdd& rhs)
+  {
+    return bdd_diff(lhs, rhs);
   }
 
   //////////////////////////////////////////////////////////////////////////////
