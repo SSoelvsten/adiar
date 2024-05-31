@@ -183,7 +183,6 @@ var group__module____bdd =
     [ "operator!=", "group__module____bdd.html#gaa9b3e19419780c15c4b2534582431894", null ],
     [ "operator&", "group__module____bdd.html#ga395101a1d5c8caa1c34523309a244ab5", null ],
     [ "operator*", "group__module____bdd.html#ga6b98d1102d671cee6ef84a3aa935a29c", null ],
-    [ "operator+", "group__module____bdd.html#ga2adb0465f1e5b167babd34363299c4a3", null ],
     [ "operator+", "group__module____bdd.html#ga2a2bb44c1d5cab59e0611835ea2b6ab7", null ],
     [ "operator+", "group__module____bdd.html#ga3d594113585afae5a28428d5fed8928a", null ],
     [ "operator-", "group__module____bdd.html#gaf5efee225ee540d7fe66495d7f202527", null ],

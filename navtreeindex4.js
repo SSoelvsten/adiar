@@ -1,8 +1,5 @@
 var NAVTREEINDEX4 =
 {
-"page__functional.html#autotoc_md29":[2,1,2,1],
-"page__getting_started.html":[1],
-"page__getting_started.html#autotoc_md3":[1,0],
 "page__getting_started.html#autotoc_md4":[1,1],
 "page__getting_started.html#autotoc_md5":[1,2],
 "page__papers.html":[3],
@@ -167,5 +164,6 @@ var NAVTREEINDEX4 =
 "types_8h_source.html":[7,0,1,0,13],
 "version_8h_source.html":[7,0,0,0,0],
 "zdd_2zdd_8h_source.html":[7,0,1,0,2,0],
-"zdd_8h_source.html":[7,0,1,0,14]
+"zdd_8h_source.html":[7,0,1,0,14],
+"":[5,0,0,0]
 };

@@ -199,7 +199,6 @@ var namespaceadiar =
     [ "operator&", "group__module____zdd.html#ga5ae416661999e847907a8d382f853269", null ],
     [ "operator*", "group__module____bdd.html#ga6b98d1102d671cee6ef84a3aa935a29c", null ],
     [ "operator*", "group__module____zdd.html#gad840d9ae42d9d58219ee22baa89dab99", null ],
-    [ "operator+", "group__module____bdd.html#ga2adb0465f1e5b167babd34363299c4a3", null ],
     [ "operator+", "group__module____bdd.html#ga2a2bb44c1d5cab59e0611835ea2b6ab7", null ],
     [ "operator+", "group__module____bdd.html#ga3d594113585afae5a28428d5fed8928a", null ],
     [ "operator+", "group__module____zdd.html#ga2b4cfae58b576f0abac7fbf020dc6119", null ],

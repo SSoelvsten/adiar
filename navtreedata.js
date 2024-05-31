@@ -70,11 +70,11 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"",
-"functions_c.html",
-"group__module____bdd.html#gac152546ed18e29b57bdb9ac06d0c02aa",
-"group__module____zdd.html#ga7558aa347897eb65e5394853ac8d9468",
-"page__functional.html#autotoc_md29"
+"adiar_8h_source.html",
+"functions_d.html",
+"group__module____bdd.html#gac3a7e91413986fb37e9a024f47bb7ebb",
+"group__module____zdd.html#ga7ac706b96ceb0aa76b9f93bfe37b21aa",
+"page__getting_started.html#autotoc_md4"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
