@@ -111,6 +111,9 @@ test/adiar/bdd/negate:
 test/adiar/bdd/quantify:
 	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=quantify
 
+test/adiar/bdd/replace:
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=replace
+
 test/adiar/bdd/restrict:
 	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=restrict
 

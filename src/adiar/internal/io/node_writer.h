@@ -22,8 +22,8 @@ namespace adiar::internal
   {
   private:
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// Construct a dummy node, that is invalid within a decision diagram and
-    /// hence easy to recognise.
+    /// Construct a dummy node, that is invalid within a decision diagram and hence easy to
+    /// recognise.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     node
     dummy()
@@ -43,13 +43,14 @@ namespace adiar::internal
     size_t _level_size = 0u;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// Variables for 1-level cut
-    /// We will count the following globally
-    /// - The number of arcs pushed at the very bottom
-    /// - The number of (long) arcs that cross at least one pushed level
-    ///
-    /// While for each level we can safely count
-    /// - The number of (short) arcs from a single level to the next
+    // Variables for 1-level cut
+    //
+    // We will count the following globally
+    // - The number of arcs pushed at the very bottom
+    // - The number of (long) arcs that cross at least one pushed level
+    //
+    // While for each level we can safely count
+    // - The number of (short) arcs from a single level to the next
     ////////////////////////////////////////////////////////////////////////////////////////////////
     size_t _terminals_at_bottom[2] = { 0u, 0u };
 
@@ -306,6 +307,15 @@ namespace adiar::internal
       if (n.high().is_terminal()) { _file_ptr->number_of_terminals[n.high().value()]++; }
 
       levelized_file_writer::template push<0>(n);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Change the 1-level cut size to the given one.
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    void
+    unsafe_set_1level_cut(const cuts_t& o)
+    {
+      for (size_t ct = 0u; ct < cut::size; ct++) { _file_ptr->max_1level_cut[ct] = o[ct]; }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////

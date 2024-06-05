@@ -11,9 +11,40 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////////////////////////
   enum class assignment : signed char
   {
-    False = 0, // false
-    True  = 1, // true
-    None  = -1 // TODO: change into '2'?
+    /** Assigning to `false`. */
+    False = 0,
+    /** Assigning to `true`. */
+    True  = 1,
+    /** Assigning to no value (i.e. both `true` and `false` are valid). */
+    None  = -1
+  };
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief   Possible guarantees of a variable permutation/remapping `m` of type `int -> int`.
+  ///
+  /// \details The ordering on the values of `replace_type` reflect the strength of the guarantee.
+  ///          For example, `replace_type::Affine < replace_type::Monotone` since any affine
+  ///          function is also monotone.
+  ///
+  /// \see bdd_replace
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  enum class replace_type : signed char
+  {
+    /** Any variable remapping without any guarantees on `m`. */
+    Non_Monotone = 3,
+
+    /** For any `x < y` then the mapped values preserve that order, i.e. `m(x) < m(y)`. */
+    Monotone     = 2,
+
+    /* TODO (constant time variable replacement): `m(x)` is of the form `ax + b` for a positive
+                                                  fraction `a` and integer `b`. */
+    //Affine      = 1,
+
+    /* TODO (faster version of 'Affine'): `m(x)` is of the form `x + b` for an integer `b`. */
+    //Shift       = 0,
+
+    /** Nothing needs to be done, as `m(x) = x`. */
+    Identity      = -1
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////

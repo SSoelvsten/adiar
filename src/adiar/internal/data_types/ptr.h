@@ -326,6 +326,12 @@ namespace adiar::internal
     /* ========================================== NODES ========================================= */
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
+    // befriend label modifying functions that need access to protected values.
+    friend ptr_uint64
+    replace(const ptr_uint64& p, const level_type new_level);
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     /// When the `is_node` flag is true, then it is a pointer to a node, which next to its level
     /// (i.e. its variable label) also must be identified by its 'level identifier'
     ///
@@ -785,6 +791,29 @@ namespace adiar::internal
     // instructions similar to 'std::min<>'.
     return p.is_node() ? (p._raw & ~(out_idx_mask | ptr_uint64::flag_bit))
                        : (p._raw & ~ptr_uint64::flag_bit);
+  }
+
+  /* =========================================== LEVEL ========================================== */
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Replaces the level with the one given.
+  ///
+  /// \pre `p.is_node()`
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  inline ptr_uint64
+  replace(const ptr_uint64& p, const ptr_uint64::level_type new_level)
+  {
+    adiar_assert(p.is_node());
+    adiar_assert(new_level <= ptr_uint64::max_label);
+
+    constexpr ptr_uint64::raw_type non_labels_mask =
+      ~(static_cast<ptr_uint64::raw_type>(ptr_uint64::max_level) << ptr_uint64::level_shift);
+
+    const ptr_uint64::raw_type non_labels_bits = p._raw & non_labels_mask;
+    const ptr_uint64::raw_type labels_bits =
+      static_cast<ptr_uint64::raw_type>(new_level) << ptr_uint64::level_shift;
+
+    return non_labels_bits | labels_bits;
   }
 
   /* ======================================== CONVERSION ======================================== */
