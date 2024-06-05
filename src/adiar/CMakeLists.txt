@@ -55,6 +55,7 @@ set(HEADERS
   internal/algorithms/prod2.h
   internal/algorithms/quantify.h
   internal/algorithms/reduce.h
+  internal/algorithms/replace.h
   internal/algorithms/select.h
   internal/algorithms/traverse.h
 
@@ -117,6 +118,7 @@ set(SOURCES
   bdd/optmin.cpp
   bdd/pred.cpp
   bdd/quantify.cpp
+  bdd/replace.cpp
   bdd/restrict.cpp
 
   # adiar/zdd/

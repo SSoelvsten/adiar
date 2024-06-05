@@ -1333,7 +1333,7 @@ namespace adiar
   bdd_satcount(const bdd& f);
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// \brief   Count the number of assignments x that make f(x) true.
+  /// \brief   Count the number of assignments *x that make f(x) true.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   uint64_t
   bdd_satcount(const exec_policy& ep, const bdd& f);
@@ -1345,6 +1345,56 @@ namespace adiar
   /// \name Input Variables
   ///
   /// \{
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Replace variables in *f* according to the mapping in *m*.
+  ///
+  /// \param f
+  ///    BDD to replace variables within
+  ///
+  /// \param m
+  ///    Function from BDD label to another (or itself).
+  ///
+  /// \throws invalid_argument if `m` is not a monotonic relabelling.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  bdd
+  bdd_replace(const bdd& f, const function<bdd::label_type(bdd::label_type)> &m);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Replace variables in *f* according to the mapping in *m*.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  bdd
+  bdd_replace(const exec_policy& ep,
+              const bdd& f,
+              const function<bdd::label_type(bdd::label_type)> &m);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Replace variables in *f* according to the mapping in *m*.
+  ///
+  /// \param f
+  ///    BDD to replace variables within
+  ///
+  /// \param m
+  ///    Function from BDD label to another (or itself).
+  ///
+  /// \param m_type
+  ///    Guarantees on the class of variable relabelling, e.g. whether it is monotonic.
+  ///
+  /// \throws invalid_argument if `m_type` classifies `m` as not monotonic.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  bdd
+  bdd_replace(const bdd& f,
+              const function<bdd::label_type(bdd::label_type)> &m,
+              replace_type m_type);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Replace variables in *f* according to the mapping in *m*.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  bdd
+  bdd_replace(const exec_policy& ep,
+              const bdd& f,
+              const function<bdd::label_type(bdd::label_type)> &m,
+              replace_type m_type);
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Get (in \em ascending order) all of the variable labels that occur
