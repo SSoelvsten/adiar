@@ -110,7 +110,7 @@ namespace adiar::internal
 
       // Set up priority queue for next level
       constexpr bool terminal_value = false; // <-- NOTE: Dummy value
-      __reduce_level__epilogue<>(arcs, label, pq, out_writer, terminal_value);
+      __reduce_level__epilogue<>(arcs, pq, out_writer, terminal_value);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -538,6 +538,24 @@ namespace adiar::internal
 #endif
             _outer_roots.push(e);
           }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        /// \brief Whether the priority queue has a current level.
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        bool
+        has_current_level() const
+        {
+          return _outer_pq.has_current_level();
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        /// \brief Obtain the current level from the priority queue.
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        level_type
+        current_level() const
+        {
+          return _outer_pq.current_level();
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
@@ -1617,7 +1635,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
       nested_sweeping::stats.skips += 1u;
 #endif
-      return reduce<nesting_policy>(typename nesting_policy::__dd_type(dag, ep));
+      return reduce(ep, policy_impl, typename nesting_policy::__dd_type(dag, ep));
     }
 #ifdef ADIAR_STATS
     nested_sweeping::stats.runs += 1u;
@@ -1711,6 +1729,7 @@ namespace adiar::internal
                                                                 nested_sweeping::stats.outer_up);
         } else {
           const size_t unreduced_width = outer_level.width();
+
           if (unreduced_width <= outer_internal_sorter_can_fit) {
             __reduce_level<nesting_policy, internal_sorter>(outer_arcs,
                                                             outer_level.level(),

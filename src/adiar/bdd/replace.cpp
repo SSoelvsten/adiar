@@ -37,4 +37,35 @@ namespace adiar
   {
     return bdd_replace(exec_policy(), f, m);
   }
+
+  bdd
+  bdd_replace(const exec_policy& ep,
+              __bdd&& f,
+              const function<bdd::label_type(bdd::label_type)> &m)
+  {
+    return internal::replace<bdd_policy>(ep, std::move(f), m);
+  }
+
+  bdd
+  bdd_replace(__bdd&& f, const function<bdd::label_type(bdd::label_type)> &m)
+  {
+    return internal::replace<bdd_policy>(std::move(f), m);
+  }
+
+  bdd
+  bdd_replace(const exec_policy& ep,
+              __bdd&& f,
+              const function<bdd::label_type(bdd::label_type)> &m,
+              replace_type m_type)
+  {
+    return internal::replace<bdd_policy>(ep, std::move(f), m, m_type);
+  }
+
+  bdd
+  bdd_replace(__bdd&& f,
+              const function<bdd::label_type(bdd::label_type)> &m,
+              replace_type m_type)
+  {
+    return internal::replace<bdd_policy>(std::move(f), m, m_type);
+  }
 }

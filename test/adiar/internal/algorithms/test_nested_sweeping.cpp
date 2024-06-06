@@ -74,6 +74,13 @@ public:
     return 8;
   }
 
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+  constexpr inline bdd::label_type
+  map_level(bdd::label_type x) const
+  {
+    return x;
+  }
+
 public:
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief The Sweep Logic for the PQ access mode case.
@@ -244,6 +251,13 @@ public:
   pq_bound(const shared_levelized_file<node>& /*outer_file*/, const size_t /*outer_roots*/)
   {
     return 1u;
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+  constexpr inline bdd::label_type
+  map_level(bdd::label_type x) const
+  {
+    return x;
   }
 
 public:

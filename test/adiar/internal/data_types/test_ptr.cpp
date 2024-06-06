@@ -809,10 +809,54 @@ go_bandit([]() {
             AssertThat(out, Is().EqualTo(ptr_uint64(21, 0, true)));
           });
 
-          it("preserves flag when replacing variable", [&]() {
+          it("preserves 'flag' when replacing variable", [&]() {
             const ptr_uint64 in = flag(ptr_uint64(21,0));
             const ptr_uint64 out = replace(in, 42);
             AssertThat(out, Is().EqualTo(flag(ptr_uint64(42, 0))));
+          });
+        });
+
+        describe("essential_replace(...)", [&]() {
+          it("does nothing to 'nil'", [&]() {
+            const ptr_uint64 in = ptr_uint64::nil();
+            const ptr_uint64 out = essential_replace(in, 0);
+            AssertThat(out, Is().EqualTo(ptr_uint64::nil()));
+          });
+
+          it("does nothing to 'F'", [&]() {
+            const ptr_uint64 in(false);
+            const ptr_uint64 out = essential_replace(in, 1);
+            AssertThat(out, Is().EqualTo(ptr_uint64(false)));
+          });
+
+          it("does nothing to 'T'", [&]() {
+            const ptr_uint64 in(true);
+            const ptr_uint64 out = essential_replace(in, 2);
+            AssertThat(out, Is().EqualTo(ptr_uint64(true)));
+          });
+
+          it("can shift x2 -> x3", [&]() {
+            const ptr_uint64 in(2,0);
+            const ptr_uint64 out = essential_replace(in, 3);
+            AssertThat(out, Is().EqualTo(ptr_uint64(3,0)));
+          });
+
+          it("can double x2 -> x4", [&]() {
+            const ptr_uint64 in(2,0);
+            const ptr_uint64 out = essential_replace(in, 4);
+            AssertThat(out, Is().EqualTo(ptr_uint64(4,0)));
+          });
+
+          it("preserves 'id' when replacing variable", [&]() {
+            const ptr_uint64 in(0,42);
+            const ptr_uint64 out = essential_replace(in, 2);
+            AssertThat(out, Is().EqualTo(ptr_uint64(2, 42)));
+          });
+
+          it("removes 'out_idx' and 'flag' flag when replacing variable", [&]() {
+            const ptr_uint64 in = flag(ptr_uint64(21, 8, true));
+            const ptr_uint64 out = essential_replace(in, 42);
+            AssertThat(out, Is().EqualTo(ptr_uint64(42, 8)));
           });
         });
       });
