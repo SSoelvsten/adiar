@@ -14,9 +14,9 @@ namespace adiar
     /** Assigning to `false`. */
     False = 0,
     /** Assigning to `true`. */
-    True  = 1,
+    True = 1,
     /** Assigning to no value (i.e. both `true` and `false` are valid). */
-    None  = -1
+    None = -1
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -34,17 +34,17 @@ namespace adiar
     Non_Monotone = 3,
 
     /** For any `x < y` then the mapped values preserve that order, i.e. `m(x) < m(y)`. */
-    Monotone     = 2,
+    Monotone = 2,
 
     /* TODO (constant time variable replacement): `m(x)` is of the form `ax + b` for a positive
                                                   fraction `a` and integer `b`. */
-    //Affine      = 1,
+    // Affine      = 1,
 
     /* TODO (faster version of 'Affine'): `m(x)` is of the form `x + b` for an integer `b`. */
-    //Shift       = 0,
+    // Shift       = 0,
 
     /** Nothing needs to be done, as `m(x) = x`. */
-    Identity      = -1
+    Identity = -1
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1356,7 +1356,7 @@ namespace adiar
   /// \throws invalid_argument if `m` is not a monotonic relabelling.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   bdd
-  bdd_replace(const bdd& f, const function<bdd::label_type(bdd::label_type)> &m);
+  bdd_replace(const bdd& f, const function<bdd::label_type(bdd::label_type)>& m);
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Replace variables in *f* according to the mapping in *m*.
@@ -1364,7 +1364,7 @@ namespace adiar
   bdd
   bdd_replace(const exec_policy& ep,
               const bdd& f,
-              const function<bdd::label_type(bdd::label_type)> &m);
+              const function<bdd::label_type(bdd::label_type)>& m);
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Replace variables in *f* according to the mapping in *m*.
@@ -1382,7 +1382,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////////////////////////
   bdd
   bdd_replace(const bdd& f,
-              const function<bdd::label_type(bdd::label_type)> &m,
+              const function<bdd::label_type(bdd::label_type)>& m,
               replace_type m_type);
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1391,7 +1391,7 @@ namespace adiar
   bdd
   bdd_replace(const exec_policy& ep,
               const bdd& f,
-              const function<bdd::label_type(bdd::label_type)> &m,
+              const function<bdd::label_type(bdd::label_type)>& m,
               replace_type m_type);
 
   /// \cond
@@ -1411,7 +1411,7 @@ namespace adiar
   /// \throws invalid_argument if `m` is not monotonic.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   bdd
-  bdd_replace(__bdd&& f, const function<bdd::label_type(bdd::label_type)> &m);
+  bdd_replace(__bdd&& f, const function<bdd::label_type(bdd::label_type)>& m);
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Replace variables in *f* according to the mapping in *m*.
@@ -1422,7 +1422,7 @@ namespace adiar
   bdd
   bdd_replace(const exec_policy& ep,
               __bdd&& f,
-              const function<bdd::label_type(bdd::label_type)> &m);
+              const function<bdd::label_type(bdd::label_type)>& m);
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Replace variables in *f* according to the mapping in *m*.
@@ -1431,7 +1431,7 @@ namespace adiar
   ///          incorporating the renaming into the Reduce algorithm.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   bdd
-  bdd_replace(__bdd&& f, const function<bdd::label_type(bdd::label_type)> &m, replace_type m_type);
+  bdd_replace(__bdd&& f, const function<bdd::label_type(bdd::label_type)>& m, replace_type m_type);
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Replace variables in *f* according to the mapping in *m*.
@@ -1453,7 +1453,7 @@ namespace adiar
   bdd
   bdd_replace(const exec_policy& ep,
               __bdd&& f,
-              const function<bdd::label_type(bdd::label_type)> &m,
+              const function<bdd::label_type(bdd::label_type)>& m,
               replace_type m_type);
 
   /// \endcond

@@ -7,8 +7,8 @@
 #include <adiar/functional.h>
 #include <adiar/types.h>
 
-#include <adiar/internal/assert.h>
 #include <adiar/internal/algorithms/reduce.h>
+#include <adiar/internal/assert.h>
 
 namespace adiar::internal
 {
@@ -43,9 +43,7 @@ namespace adiar::internal
   inline node
   __replace(const node& n, const replace_func<node>& m)
   {
-    return { __replace(n.uid().as_ptr(), m),
-             __replace(n.low(), m),
-             __replace(n.high(), m) };
+    return { __replace(n.uid().as_ptr(), m), __replace(n.low(), m), __replace(n.high(), m) };
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -55,7 +53,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename Policy, typename LevelInfoStream>
   replace_type
-  __replace__infer_type(LevelInfoStream& ls, const replace_func<Policy> &m)
+  __replace__infer_type(LevelInfoStream& ls, const replace_func<Policy>& m)
   {
     using signed_label = typename std::make_signed<typename Policy::label_type>::type;
 
@@ -90,7 +88,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename Policy>
   inline typename Policy::dd_type
-  __replace__monotonic_scan(const typename Policy::dd_type& dd, const replace_func<Policy> &m)
+  __replace__monotonic_scan(const typename Policy::dd_type& dd, const replace_func<Policy>& m)
   {
     adiar_assert(!dd->is_terminal());
 
@@ -101,24 +99,21 @@ namespace adiar::internal
     out_writer.unsafe_set_sorted(dd->sorted);
     out_writer.unsafe_set_indexable(dd->indexable);
 
-    out_writer.unsafe_set_1level_cut({
-        dd->max_1level_cut[cut::Internal],
+    out_writer.unsafe_set_1level_cut(
+      { dd->max_1level_cut[cut::Internal],
         dd->max_1level_cut[dd.is_negated() ? cut::Internal_True : cut::Internal_False],
         dd->max_1level_cut[dd.is_negated() ? cut::Internal_False : cut::Internal_True],
-        dd->max_1level_cut[cut::All]
-      });
+        dd->max_1level_cut[cut::All] });
 
     { // Copy over nodes (in "reverse" to still follow the same order on disk)
       node_stream<true> in_nodes(dd);
-      while (in_nodes.can_pull()) {
-        out_writer.unsafe_push(__replace(in_nodes.pull(), m));
-      }
+      while (in_nodes.can_pull()) { out_writer.unsafe_push(__replace(in_nodes.pull(), m)); }
     }
     { // Copy over levels (also in "reverse")
       level_info_stream<true> in_levels(dd);
       while (in_levels.can_pull()) {
         const level_info li = in_levels.pull();
-        out_writer.unsafe_push(level_info( m(li.level()), li.width() ));
+        out_writer.unsafe_push(level_info(m(li.level()), li.width()));
       }
     }
 
@@ -127,14 +122,13 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename Policy>
-  class replace_reduce_policy
-    : public Policy
+  class replace_reduce_policy : public Policy
   {
   private:
-    const replace_func<Policy> &_m;
+    const replace_func<Policy>& _m;
 
   public:
-    replace_reduce_policy(const replace_func<Policy> &m)
+    replace_reduce_policy(const replace_func<Policy>& m)
       : _m(m)
     {}
 
@@ -145,13 +139,12 @@ namespace adiar::internal
     }
   };
 
-
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename Policy>
   inline typename Policy::dd_type
   __replace__monotonic_reduce(const exec_policy& ep,
                               const typename Policy::__dd_type& __dd,
-                              const replace_func<Policy> &m)
+                              const replace_func<Policy>& m)
   {
     replace_reduce_policy<Policy> policy(m);
     return reduce(ep, policy, std::move(__dd));
@@ -168,9 +161,9 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename Policy>
   typename Policy::dd_type
-  replace(const exec_policy&/*ep*/,
+  replace(const exec_policy& /*ep*/,
           const typename Policy::dd_type& dd,
-          const replace_func<Policy> &m,
+          const replace_func<Policy>& m,
           replace_type m_type)
   {
     // Return if nothing needs to be remapped
@@ -209,9 +202,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename Policy>
   typename Policy::dd_type
-  replace(const exec_policy& ep,
-          const typename Policy::dd_type& dd,
-          const replace_func<Policy> &m)
+  replace(const exec_policy& ep, const typename Policy::dd_type& dd, const replace_func<Policy>& m)
   {
     level_info_stream<false> ls(dd);
     const replace_type m_type = __replace__infer_type<Policy>(ls, m);
@@ -226,13 +217,14 @@ namespace adiar::internal
   typename Policy::dd_type
   replace(const exec_policy& ep,
           typename Policy::__dd_type&& __dd,
-          const replace_func<Policy> &m,
+          const replace_func<Policy>& m,
           replace_type m_type)
   {
     // Is it already reduced?
     if constexpr (check_reduced) {
       if (__dd.template has<typename Policy::shared_node_file_type>()) {
-        const typename Policy::dd_type dd(__dd.template get<typename Policy::shared_node_file_type>(), __dd.negate);
+        const typename Policy::dd_type dd(
+          __dd.template get<typename Policy::shared_node_file_type>(), __dd.negate);
         return replace<Policy>(ep, dd, m, m_type);
       }
     }
@@ -265,9 +257,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename Policy>
   typename Policy::dd_type
-  replace(typename Policy::__dd_type&& __dd,
-          const replace_func<Policy> &m,
-          replace_type m_type)
+  replace(typename Policy::__dd_type&& __dd, const replace_func<Policy>& m, replace_type m_type)
   {
     const exec_policy ep = __dd._policy;
     return replace<Policy>(ep, std::move(__dd), m, m_type);
@@ -278,13 +268,12 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename Policy>
   typename Policy::dd_type
-  replace(const exec_policy& ep,
-          typename Policy::__dd_type&& __dd,
-          const replace_func<Policy> &m)
+  replace(const exec_policy& ep, typename Policy::__dd_type&& __dd, const replace_func<Policy>& m)
   {
     // Is it already reduced?
     if (__dd.template has<typename Policy::shared_node_file_type>()) {
-      const typename Policy::dd_type dd(__dd.template get<typename Policy::shared_node_file_type>(), __dd.negate);
+      const typename Policy::dd_type dd(__dd.template get<typename Policy::shared_node_file_type>(),
+                                        __dd.negate);
       return replace<Policy>(ep, dd, m);
     }
 
@@ -299,8 +288,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename Policy>
   typename Policy::dd_type
-  replace(typename Policy::__dd_type&& __dd,
-          const replace_func<Policy> &m)
+  replace(typename Policy::__dd_type&& __dd, const replace_func<Policy>& m)
   {
     const exec_policy ep = __dd._policy;
     return replace<Policy>(ep, std::move(__dd), m);

@@ -780,37 +780,37 @@ go_bandit([]() {
 
         describe("replace(...)", [&]() {
           it("shifts x0 -> x1", [&]() {
-            const ptr_uint64 in(0,0);
+            const ptr_uint64 in(0, 0);
             const ptr_uint64 out = replace(in, 1);
-            AssertThat(out, Is().EqualTo(ptr_uint64(1,0)));
+            AssertThat(out, Is().EqualTo(ptr_uint64(1, 0)));
           });
 
           it("doubles x3 -> x6", [&]() {
-            const ptr_uint64 in(3,0);
+            const ptr_uint64 in(3, 0);
             const ptr_uint64 out = replace(in, 6);
-            AssertThat(out, Is().EqualTo(ptr_uint64(6,0)));
+            AssertThat(out, Is().EqualTo(ptr_uint64(6, 0)));
           });
 
           it("squares x3 -> x9", [&]() {
-            const ptr_uint64 in(3,0);
+            const ptr_uint64 in(3, 0);
             const ptr_uint64 out = replace(in, 9);
-            AssertThat(out, Is().EqualTo(ptr_uint64(9,0)));
+            AssertThat(out, Is().EqualTo(ptr_uint64(9, 0)));
           });
 
           it("preserves 'id' when replacing variable", [&]() {
-            const ptr_uint64 in(0,42);
+            const ptr_uint64 in(0, 42);
             const ptr_uint64 out = replace(in, 2);
-            AssertThat(out, Is().EqualTo(ptr_uint64(2,42)));
+            AssertThat(out, Is().EqualTo(ptr_uint64(2, 42)));
           });
 
           it("preserves 'out_idx' when replacing variable", [&]() {
-            const ptr_uint64 in(42,0, true);
+            const ptr_uint64 in(42, 0, true);
             const ptr_uint64 out = replace(in, 21);
             AssertThat(out, Is().EqualTo(ptr_uint64(21, 0, true)));
           });
 
           it("preserves 'flag' when replacing variable", [&]() {
-            const ptr_uint64 in = flag(ptr_uint64(21,0));
+            const ptr_uint64 in  = flag(ptr_uint64(21, 0));
             const ptr_uint64 out = replace(in, 42);
             AssertThat(out, Is().EqualTo(flag(ptr_uint64(42, 0))));
           });
@@ -818,7 +818,7 @@ go_bandit([]() {
 
         describe("essential_replace(...)", [&]() {
           it("does nothing to 'nil'", [&]() {
-            const ptr_uint64 in = ptr_uint64::nil();
+            const ptr_uint64 in  = ptr_uint64::nil();
             const ptr_uint64 out = essential_replace(in, 0);
             AssertThat(out, Is().EqualTo(ptr_uint64::nil()));
           });
@@ -836,25 +836,25 @@ go_bandit([]() {
           });
 
           it("can shift x2 -> x3", [&]() {
-            const ptr_uint64 in(2,0);
+            const ptr_uint64 in(2, 0);
             const ptr_uint64 out = essential_replace(in, 3);
-            AssertThat(out, Is().EqualTo(ptr_uint64(3,0)));
+            AssertThat(out, Is().EqualTo(ptr_uint64(3, 0)));
           });
 
           it("can double x2 -> x4", [&]() {
-            const ptr_uint64 in(2,0);
+            const ptr_uint64 in(2, 0);
             const ptr_uint64 out = essential_replace(in, 4);
-            AssertThat(out, Is().EqualTo(ptr_uint64(4,0)));
+            AssertThat(out, Is().EqualTo(ptr_uint64(4, 0)));
           });
 
           it("preserves 'id' when replacing variable", [&]() {
-            const ptr_uint64 in(0,42);
+            const ptr_uint64 in(0, 42);
             const ptr_uint64 out = essential_replace(in, 2);
             AssertThat(out, Is().EqualTo(ptr_uint64(2, 42)));
           });
 
           it("removes 'out_idx' and 'flag' flag when replacing variable", [&]() {
-            const ptr_uint64 in = flag(ptr_uint64(21, 8, true));
+            const ptr_uint64 in  = flag(ptr_uint64(21, 8, true));
             const ptr_uint64 out = essential_replace(in, 42);
             AssertThat(out, Is().EqualTo(ptr_uint64(42, 8)));
           });

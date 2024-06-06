@@ -667,7 +667,7 @@ namespace adiar::internal
       return !(*this == o);
     }
 
-    /* ========================================== OPERATORS ======================================= */
+    /* ========================================= OPERATORS ====================================== */
   private:
     // HACK: We here assume that either 'min' or 'max' touches every value bit.
     //
@@ -813,8 +813,8 @@ namespace adiar::internal
       ~(static_cast<ptr_uint64::raw_type>(ptr_uint64::max_level) << ptr_uint64::level_shift);
 
     const ptr_uint64::raw_type non_labels_bits = p._raw & non_labels_mask;
-    const ptr_uint64::raw_type labels_bits =
-      static_cast<ptr_uint64::raw_type>(new_level) << ptr_uint64::level_shift;
+    const ptr_uint64::raw_type labels_bits     = static_cast<ptr_uint64::raw_type>(new_level)
+      << ptr_uint64::level_shift;
 
     return non_labels_bits | labels_bits;
   }
@@ -827,11 +827,12 @@ namespace adiar::internal
   {
     adiar_assert(new_level <= ptr_uint64::max_label);
 
-    constexpr ptr_uint64::raw_type id_mask =
-      static_cast<ptr_uint64::raw_type>(ptr_uint64::max_id) << (ptr_uint64::data_shift + ptr_uint64::out_idx_bits);
+    constexpr ptr_uint64::raw_type id_mask = static_cast<ptr_uint64::raw_type>(ptr_uint64::max_id)
+      << (ptr_uint64::data_shift + ptr_uint64::out_idx_bits);
 
     return p.is_node()
-      ? ((p._raw & id_mask) | (static_cast<ptr_uint64::raw_type>(new_level) << ptr_uint64::level_shift))
+      ? ((p._raw & id_mask)
+         | (static_cast<ptr_uint64::raw_type>(new_level) << ptr_uint64::level_shift))
       : (p._raw & ~ptr_uint64::flag_bit);
   }
 
