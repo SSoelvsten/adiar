@@ -20,11 +20,11 @@
 
 namespace adiar::internal
 {
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// Struct to hold statistics
   extern statistics::reduce_t stats_reduce;
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   // Data structures
   struct mapping
   {
@@ -32,12 +32,12 @@ namespace adiar::internal
     node::uid_type new_uid;
   };
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   // Priority queue elements
   //
   // TODO (Attributed Edges):
-  //   First add an 'uint8_t' value with reduce specific flags, e.g. the
-  //   red1_taint used to place something in the local og global 1-level cut.
+  //   First add an 'uint8_t' value with reduce specific flags, e.g. the red1_taint used to place
+  //   something in the local og global 1-level cut.
   struct reduce_arc : public arc
   {
     reduce_arc() = default;
@@ -51,9 +51,9 @@ namespace adiar::internal
     reduce_arc&
     operator=(const reduce_arc& a) = default;
 
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief The level at which this nodes source belongs to.
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     arc::label_type
     level() const
     {
@@ -72,10 +72,10 @@ namespace adiar::internal
     }
   };
 
-  ////////////////////////////////////////////////////////////////////////////
-  /// \brief Decorator on the levelized priority queue to also keep track of
-  ///        the number of arcs to each terminal.
-  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Decorator on the levelized priority queue to also keep track of the number of arcs to
+  ///        each terminal.
+  ////////////////////////////////////////////////////////////////////////////////////////////////
   template <size_t look_ahead, memory_mode mem_mode>
   class reduce_priority_queue
     : public levelized_arc_priority_queue<reduce_arc, reduce_queue_lt, look_ahead, mem_mode>
@@ -84,9 +84,9 @@ namespace adiar::internal
     using inner_lpq =
       levelized_arc_priority_queue<reduce_arc, reduce_queue_lt, look_ahead, mem_mode>;
 
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Number of terminals (of each type) placed within the priority queue.
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     size_t _terminals[2] = { 0u, 0u };
 
   public:
@@ -103,9 +103,9 @@ namespace adiar::internal
       : reduce_priority_queue(files, memory_given, max_size, stats_reduce.lpq)
     {}
 
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Push an arc into the priority queue.
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     void
     push(const arc& a)
     {
@@ -115,9 +115,9 @@ namespace adiar::internal
       inner_lpq::push(a);
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the top arc on the current level and remove it.
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     arc
     pull()
     {
@@ -129,27 +129,27 @@ namespace adiar::internal
       return a;
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Remove the top arc on the current level.
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     void
     pop()
     {
       pull();
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Number of terminals (of each type) placed within the priority queue.
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     const size_t&
     terminals(const bool terminal_value) const
     {
       return _terminals[terminal_value];
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Total number of arcs (across all levels) ignoring terminals.
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     size_t
     size_without_terminals() const
     {
@@ -157,7 +157,7 @@ namespace adiar::internal
     }
   };
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   // Reduction Rule 2 sorting (and back again)
   struct reduce_node_children_lt
   {
@@ -191,12 +191,12 @@ namespace adiar::internal
     }
   };
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   // Helper functions
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Create the output file with correct initial meta data already set.
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename dd_policy>
   shared_levelized_file<typename dd_policy::node_type>
   __reduce_init_output()
@@ -213,9 +213,9 @@ namespace adiar::internal
     return out_file;
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Merging priority queue with terminal_arc stream.
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename pq_t, typename arc_stream_t>
   inline arc
   __reduce_get_next(pq_t& reduce_pq, arc_stream_t& arcs)
@@ -228,9 +228,9 @@ namespace adiar::internal
     }
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Update a cut size with some number of arcs.
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   inline void
   __reduce_cut_add(cuts_t& cut,
                    const cut::size_type internal_arcs,
@@ -243,6 +243,7 @@ namespace adiar::internal
     cut[cut::All] += internal_arcs + false_arcs + true_arcs;
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   inline void
   __reduce_cut_add(cuts_t& cut, const ptr_uint64 target)
   {
@@ -252,36 +253,35 @@ namespace adiar::internal
     cut[cut::All] += 1u;
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   // Algorithm functions
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Epilogue of `__reduce_level` setting the priority queue up for the
   ///        next level (or outputting a terminal).
   ///
   /// \see __reduce_level
-  //////////////////////////////////////////////////////////////////////////////
-  template <typename arc_stream_t, typename label_t, typename pq_t>
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename arc_stream_t, typename pq_t>
   inline void
   __reduce_level__epilogue(arc_stream_t& arcs,
-                           label_t label,
                            pq_t& reduce_pq,
                            node_writer& out_writer,
                            const bool terminal_val);
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Reduce a single level
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Reduce a single level (while also mapping it to a new label).
   ///
   /// \returns width of output level
-  //////////////////////////////////////////////////////////////////////////////
-  template <typename dd_policy,
-            template <typename, typename>
-            typename sorter_t,
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename Policy,
+            template <typename, typename> typename sorter_t,
             typename pq_t,
             typename arc_stream_t>
   size_t
   __reduce_level(arc_stream_t& arcs,
-                 const typename dd_policy::label_type label,
+                 const typename Policy::label_type in_label,
+                 const typename Policy::label_type out_label,
                  pq_t& reduce_pq,
                  node_writer& out_writer,
                  const size_t sorters_memory,
@@ -297,7 +297,7 @@ namespace adiar::internal
     sorter_t<mapping, reduce_uid_lt> red2_mapping(sorters_memory, unreduced_width, 2);
 
     // Pull out all nodes from reduce_pq and terminal_arcs for this level
-    while ((arcs.can_pull_terminal() && arcs.peek_terminal().source().label() == label)
+    while ((arcs.can_pull_terminal() && arcs.peek_terminal().source().label() == in_label)
            || reduce_pq.can_pull()) {
       // TODO (MDD):
       // TODO (QMDD):
@@ -307,10 +307,10 @@ namespace adiar::internal
       const arc e_low  = __reduce_get_next(reduce_pq, arcs);
 
       const node n = node_of(e_low, e_high);
-      adiar_assert(n.label() == label, "Label is for desired level");
+      adiar_assert(n.label() == in_label, "Label is for desired level");
 
       // Apply Reduction rule 1
-      const node::pointer_type reduction_rule_ret = dd_policy::reduction_rule(n);
+      const typename Policy::pointer_type reduction_rule_ret = Policy::reduction_rule(n);
       if (reduction_rule_ret != n.uid()) {
         // Open red1_mapping first (and create file on disk) when at least one
         // element is written to it.
@@ -336,7 +336,7 @@ namespace adiar::internal
     // Sort and apply Reduction rule 2
     child_grouping.sort();
 
-    typename dd_policy::id_type out_id = dd_policy::max_id;
+    typename Policy::id_type out_id = Policy::max_id;
     node out_node = node(node::uid_type(), ptr_uint64::nil(), ptr_uint64::nil());
 
     while (child_grouping.can_pull()) {
@@ -345,7 +345,7 @@ namespace adiar::internal
       if (out_node.low() != unflag(next_node.low())
           || out_node.high() != unflag(next_node.high())) {
         adiar_assert(0 <= out_id, "Should still have more ids left");
-        out_node = node(label, out_id--, unflag(next_node.low()), unflag(next_node.high()));
+        out_node = node(out_label, out_id--, unflag(next_node.low()), unflag(next_node.high()));
         out_writer.unsafe_push(out_node);
 
         __reduce_cut_add(next_node.low().is_flagged() ? tainted_1level_cut : local_1level_cut,
@@ -362,8 +362,8 @@ namespace adiar::internal
     }
 
     // Add number of nodes to level information, if any nodes were pushed to the output.
-    const size_t reduced_width = dd_policy::max_id - out_id;
-    if (reduced_width > 0) { out_writer.unsafe_push(level_info(label, reduced_width)); }
+    const size_t reduced_width = Policy::max_id - out_id;
+    if (reduced_width > 0) { out_writer.unsafe_push(level_info(out_label, reduced_width)); }
 
     // Sort mappings for Reduction rule 2 back in order of arcs.internal
     red2_mapping.sort();
@@ -425,31 +425,57 @@ namespace adiar::internal
     out_writer.unsafe_inc_1level_cut(tainted_1level_cut);
 
     const bool terminal_value = next_red1.new_uid.is_terminal() && next_red1.new_uid.value();
-    __reduce_level__epilogue<>(arcs, label, reduce_pq, out_writer, terminal_value);
+    __reduce_level__epilogue<>(arcs, reduce_pq, out_writer, terminal_value);
 
     adiar_assert(reduced_width <= unreduced_width, "Reduction should only ever remove nodes");
 
     return reduced_width;
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  template <typename arc_stream_t, typename label_t, typename pq_t>
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Reduce a single level (without mapping it to a new label).
+  ///
+  /// \returns width of output level
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename Policy,
+            template <typename, typename> typename sorter_t,
+            typename pq_t,
+            typename arc_stream_t>
+  //[[deprecated("Use '__reduce_label' with a separate 'in_label' and 'out_label'")]]
+  size_t
+  __reduce_level(arc_stream_t& arcs,
+                 const typename Policy::label_type label,
+                 pq_t& reduce_pq,
+                 node_writer& out_writer,
+                 const size_t sorters_memory,
+                 const size_t unreduced_width,
+                 statistics::reduce_t& stats = stats_reduce)
+  {
+    return __reduce_level<Policy, sorter_t, pq_t, arc_stream_t>
+      (arcs, label, label, reduce_pq, out_writer, sorters_memory, unreduced_width, stats);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename arc_stream_t, typename pq_t>
   inline void
   __reduce_level__epilogue(arc_stream_t& arcs,
-                           [[maybe_unused]] label_t label,
                            pq_t& reduce_pq,
                            node_writer& out_writer,
                            const bool terminal_val)
   {
 
-    adiar_assert(reduce_pq.empty_level(), "All forwarded arcs for 'label' should be processed");
+    adiar_assert(reduce_pq.empty_level(), "All forwarded arcs to the current level should be processed");
 
     if (!reduce_pq.empty()) {
-      adiar_assert(!arcs.can_pull_terminal() || arcs.peek_terminal().source().label() < label,
-                   "All terminal arcs for 'label' should be processed");
+      adiar_assert(!arcs.can_pull_terminal()
+                   || !reduce_pq.has_current_level()
+                   || arcs.peek_terminal().source().label() < reduce_pq.current_level(),
+                   "All terminal arcs for 'current_level' should be processed");
 
-      adiar_assert(!arcs.can_pull_internal() || arcs.peek_internal().target().label() < label,
-                   "All internal arcs for 'label' should be processed");
+      adiar_assert(!arcs.can_pull_internal()
+                   || !reduce_pq.has_current_level()
+                   || arcs.peek_internal().target().label() < reduce_pq.current_level(),
+                   "All internal arcs for 'current_level' should be processed");
 
       if (arcs.can_pull_terminal()) {
         reduce_pq.setup_next_level(arcs.peek_terminal().source().label());
@@ -457,16 +483,20 @@ namespace adiar::internal
         reduce_pq.setup_next_level();
       }
     } else if (reduce_pq.size() > 0) {
-      // NOTE: Being 'empty()' does not imply 'size() == 0', due to the
-      //       decorators for Nested Sweeping may claim the priority queue is
-      //       empty() but the size still includes arcs stored in another
-      //       priority queue.
+      // NOTE: Being 'empty()' does not imply 'size() == 0', due to the decorators for Nested
+      //       Sweeping may claim the priority queue is empty() but the size still includes arcs
+      //       stored in another priority queue.
 
-      adiar_assert(!arcs.can_pull_terminal() || arcs.peek_terminal().source().label() < label,
-                   "All terminal arcs for 'label' should be processed");
+      adiar_assert(!arcs.can_pull_terminal()
+                   || !reduce_pq.has_current_level()
+                   || arcs.peek_terminal().source().label() < reduce_pq.current_level(),
+                   "All terminal arcs for 'current_level' should be processed");
 
-      adiar_assert(!arcs.can_pull_internal() || arcs.peek_internal().target().label() < label,
-                   "All internal arcs for 'label' should be processed");
+      adiar_assert(!arcs.can_pull_internal()
+                   || !reduce_pq.has_current_level()
+                   || arcs.peek_internal().target().label() < reduce_pq.current_level(),
+                   "All internal arcs for 'current_level' should be processed");
+
     } else if (!out_writer.has_pushed()) {
       adiar_assert(!arcs.can_pull_internal() && !arcs.can_pull_terminal(),
                    "All nodes should be processed at this point");
@@ -486,12 +516,13 @@ namespace adiar::internal
     }
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Reduce an entire decision diagram bottom-up.
-  //////////////////////////////////////////////////////////////////////////////
-  template <typename dd_policy, typename pq_t>
-  shared_levelized_file<typename dd_policy::node_type>
-  __reduce(const shared_levelized_file<arc>& in_file,
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename Policy, typename pq_t>
+  shared_levelized_file<typename Policy::node_type>
+  __reduce(Policy& policy,
+           const shared_levelized_file<arc>& in_file,
            const size_t lpq_memory,
            const size_t sorters_memory)
   {
@@ -504,8 +535,7 @@ namespace adiar::internal
     level_info_stream<> levels(in_file);
 
     // Set up output
-    shared_levelized_file<typename dd_policy::node_type> out_file =
-      __reduce_init_output<dd_policy>();
+    shared_levelized_file<typename Policy::node_type> out_file = __reduce_init_output<Policy>();
 
     node_writer out_writer(out_file);
 
@@ -516,7 +546,7 @@ namespace adiar::internal
       const arc e_low  = arcs.pull_terminal();
 
       // Apply reduction rule 1, if applicable
-      const ptr_uint64 reduction_rule_ret = dd_policy::reduction_rule(node_of(e_low, e_high));
+      const ptr_uint64 reduction_rule_ret = Policy::reduction_rule(node_of(e_low, e_high));
       if (reduction_rule_ret != e_low.source()) {
 #ifdef ADIAR_STATS
         stats_reduce.removed_by_rule_1 += 1u;
@@ -528,11 +558,11 @@ namespace adiar::internal
         out_writer.unsafe_set_number_of_terminals(!terminal_val, terminal_val);
         __reduce_cut_add(out_file->max_1level_cut, 0u, !terminal_val, terminal_val);
       } else {
-        const typename dd_policy::label_type label = e_low.source().label();
+        const typename Policy::label_type out_level = policy.map_level(e_low.source().level());
 
-        out_writer.unsafe_push(node(label, dd_policy::max_id, e_low.target(), e_high.target()));
+        out_writer.unsafe_push(node(out_level, Policy::max_id, e_low.target(), e_high.target()));
 
-        out_writer.unsafe_push(level_info(label, 1u));
+        out_writer.unsafe_push(level_info(out_level, 1u));
 
         out_file->max_1level_cut[cut::Internal] = 1u;
 
@@ -562,48 +592,51 @@ namespace adiar::internal
     while (levels.can_pull()) {
       adiar_assert(arcs.can_pull_terminal() || !reduce_pq.empty(),
                    "If there is a level, then there should also be something for it.");
-      const level_info current_level_info        = levels.pull();
-      const typename dd_policy::label_type level = current_level_info.level();
+      const level_info current_level_info         = levels.pull();
+      const typename Policy::label_type in_level  = current_level_info.level();
+      const typename Policy::label_type out_level = policy.map_level(in_level);
 
-      adiar_assert(!reduce_pq.has_current_level() || level == reduce_pq.current_level(),
+      adiar_assert(!reduce_pq.has_current_level() || in_level == reduce_pq.current_level(),
                    "level and priority queue should be in sync");
 
       const size_t unreduced_width = current_level_info.width();
       if (unreduced_width <= internal_sorter_can_fit) {
-        __reduce_level<dd_policy, internal_sorter>(
-          arcs, level, reduce_pq, out_writer, sorters_memory, unreduced_width);
+        __reduce_level<Policy, internal_sorter>
+          (arcs, in_level, out_level, reduce_pq, out_writer, sorters_memory, unreduced_width);
       } else {
-        __reduce_level<dd_policy, external_sorter>(
-          arcs, level, reduce_pq, out_writer, sorters_memory, unreduced_width);
+        __reduce_level<Policy, external_sorter>
+          (arcs, in_level, out_level, reduce_pq, out_writer, sorters_memory, unreduced_width);
       }
     }
 
     return out_file;
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Reduce a given edge-based decision diagram.
   ///
-  /// \param dd_policy Which includes the types and the reduction rule
-  /// \param input     The (possibly unreduced) decision diagram.
+  /// \param Policy Which includes the types and the reduction rule
+  /// \param input  The (possibly unreduced) decision diagram.
   ///
   /// \return The reduced decision diagram in a node-based representation
-  //////////////////////////////////////////////////////////////////////////////
-  template <typename dd_policy>
-  typename dd_policy::dd_type
-  reduce(const typename dd_policy::__dd_type& input)
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename Policy>
+  typename Policy::dd_type
+  reduce(const exec_policy &ep,
+         Policy& policy,
+         const typename Policy::__dd_type& input)
   {
     adiar_assert(!input.empty(), "Input for Reduce should always be non-empty");
 
     // Is it already reduced?
-    if (input.template has<typename dd_policy::shared_node_file_type>()) {
-      return typename dd_policy::dd_type(
-        input.template get<typename dd_policy::shared_node_file_type>(), input.negate);
+    if (input.template has<typename Policy::shared_node_file_type>()) {
+      return typename Policy::dd_type(
+        input.template get<typename Policy::shared_node_file_type>(), input.negate);
     }
 
     // Get unreduced input
-    const typename dd_policy::shared_arc_file_type in_file =
-      input.template get<typename dd_policy::shared_arc_file_type>();
+    const typename Policy::shared_arc_file_type in_file =
+      input.template get<typename Policy::shared_arc_file_type>();
 
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.
@@ -626,9 +659,9 @@ namespace adiar::internal
       reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(pq_memory);
 
     const bool internal_only =
-      input._policy.template get<exec_policy::memory>() == exec_policy::memory::Internal;
+      ep.template get<exec_policy::memory>() == exec_policy::memory::Internal;
     const bool external_only =
-      input._policy.template get<exec_policy::memory>() == exec_policy::memory::External;
+      ep.template get<exec_policy::memory>() == exec_policy::memory::External;
 
     const size_t pq_bound = in_file->max_1level_cut;
 
@@ -638,21 +671,48 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
       stats_reduce.lpq.unbucketed += 1u;
 #endif
-      return __reduce<dd_policy, reduce_priority_queue<0, memory_mode::Internal>>(
-        in_file, pq_memory, sorters_memory);
+      return __reduce<Policy, reduce_priority_queue<0, memory_mode::Internal>>
+        (policy, in_file, pq_memory, sorters_memory);
     } else if (!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
       stats_reduce.lpq.internal += 1u;
 #endif
-      return __reduce<dd_policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>>(
-        in_file, pq_memory, sorters_memory);
+      return __reduce<Policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>>
+        (policy, in_file, pq_memory, sorters_memory);
     } else {
 #ifdef ADIAR_STATS
       stats_reduce.lpq.external += 1u;
 #endif
-      return __reduce<dd_policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode::External>>(
-        in_file, pq_memory, sorters_memory);
+      return __reduce<Policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode::External>>
+        (policy, in_file, pq_memory, sorters_memory);
     }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////w
+  /// \brief Default policy for Reduce without any variable remapping.
+  //////////////////////////////////////////////////////////////////////////////////////////////////w
+  template <typename DdPolicy>
+  class default_reduce_policy
+    : public DdPolicy
+  {
+  public:
+    constexpr inline typename DdPolicy::label_type
+    map_level(typename DdPolicy::label_type x) const
+    {
+      return x;
+    }
+  };
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Reduce a given edge-based decision diagram.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename DdPolicy>
+  typename DdPolicy::dd_type
+  reduce(const typename DdPolicy::__dd_type& input)
+  {
+    const exec_policy ep = input._policy;
+    default_reduce_policy<DdPolicy> policy;
+    return reduce(ep, policy, input);
   }
 }
 

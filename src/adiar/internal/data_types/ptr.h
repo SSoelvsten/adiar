@@ -260,7 +260,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Number of bits to shift into the data area.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    static constexpr uint8_t data_shift = flag_shift + 1u;
+    static constexpr uint8_t data_shift = flag_bits;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the raw data values.
@@ -329,6 +329,9 @@ namespace adiar::internal
     // befriend label modifying functions that need access to protected values.
     friend ptr_uint64
     replace(const ptr_uint64& p, const level_type new_level);
+
+    friend ptr_uint64
+    essential_replace(const ptr_uint64& p, const level_type new_level);
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -814,6 +817,22 @@ namespace adiar::internal
       static_cast<ptr_uint64::raw_type>(new_level) << ptr_uint64::level_shift;
 
     return non_labels_bits | labels_bits;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Combination of `essential(p)` and `replace(p, new_level)`.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  inline ptr_uint64
+  essential_replace(const ptr_uint64& p, const ptr_uint64::level_type new_level)
+  {
+    adiar_assert(new_level <= ptr_uint64::max_label);
+
+    constexpr ptr_uint64::raw_type id_mask =
+      static_cast<ptr_uint64::raw_type>(ptr_uint64::max_id) << (ptr_uint64::data_shift + ptr_uint64::out_idx_bits);
+
+    return p.is_node()
+      ? ((p._raw & id_mask) | (static_cast<ptr_uint64::raw_type>(new_level) << ptr_uint64::level_shift))
+      : (p._raw & ~ptr_uint64::flag_bit);
   }
 
   /* ======================================== CONVERSION ======================================== */

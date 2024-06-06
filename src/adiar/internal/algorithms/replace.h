@@ -85,19 +85,34 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename Policy>
-  inline typename Policy::dd_type
-  __replace__monotonic_reduce(const typename Policy::__dd_type& dd, const replace_func<Policy> &m)
+  class replace_reduce_policy
+    : public Policy
   {
-    // TODO: Reduce for monotonic reorderings in `__Dd` types and/or with read-once generators.
-    //
-    // 'internal/algorithms/reduce.h'
-    // - __reduce_level(TODO: Policy, arcs, TODO: in_label, TODO: out_label, ...)
-    // - __reduce(TODO: Policy, ...)
-    // - reduce(TODO: Policy, ...)
-    // - reduce<TODO: NoRenaming<dd_policy>>(...)
-    //
-    // 'internal/algorithms/replace'
-    // - reduce<TODO: Renaming<dd_policy>>(...)
+  private:
+    const replace_func<Policy> &_m;
+
+  public:
+    replace_reduce_policy(const replace_func<Policy> &m)
+      : _m(m)
+    {}
+
+    constexpr inline typename Policy::label_type
+    map_level(typename Policy::label_type x) const
+    {
+      return this->_m(x);
+    }
+  };
+
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename Policy>
+  inline typename Policy::dd_type
+  __replace__monotonic_reduce(const exec_policy& ep,
+                              const typename Policy::__dd_type& __dd,
+                              const replace_func<Policy> &m)
+  {
+    replace_reduce_policy<Policy> policy(m);
+    return reduce(ep, policy, std::move(__dd));
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -180,24 +195,79 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Replace variables based on the given (total) map.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename Policy>
+  template <typename Policy, bool check_reduced = true>
   typename Policy::dd_type
-  replace(const exec_policy&/*ep*/,
-          const typename Policy::__dd_type& dd,
+  replace(const exec_policy& ep,
+          typename Policy::__dd_type&& __dd,
           const replace_func<Policy> &m,
           replace_type m_type)
   {
+    // Is it already reduced?
+    if constexpr (check_reduced) {
+      if (__dd.template has<typename Policy::shared_node_file_type>()) {
+        const typename Policy::dd_type dd(__dd.template get<typename Policy::shared_node_file_type>(), __dd.negate);
+        return replace<Policy>(ep, dd, m, m_type);
+      }
+    }
+
+    // Otherwise, map while reducing
     switch (m_type) {
     case replace_type::Non_Monotone:
       throw invalid_argument("Non-monotonic variable replacement not (yet) supported.");
 
     case replace_type::Monotone:
-      throw invalid_argument("Remappping Reduce not (yet) supported.");
+      return __replace__monotonic_reduce<Policy>(ep, std::move(__dd), m);
 
     case replace_type::Identity:
-      return dd;
+      return typename Policy::dd_type(std::move(__dd));
     }
     adiar_unreachable();
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Replace variables based on the given (total) map.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename Policy>
+  typename Policy::dd_type
+  replace(typename Policy::__dd_type&& __dd,
+          const replace_func<Policy> &m,
+          replace_type m_type)
+  {
+    const exec_policy ep = __dd._policy;
+    return replace<Policy>(ep, std::move(__dd), m, m_type);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Replace variables based on the given (total) map.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename Policy>
+  typename Policy::dd_type
+  replace(const exec_policy& ep,
+          typename Policy::__dd_type&& __dd,
+          const replace_func<Policy> &m)
+  {
+    // Is it already reduced?
+    if (__dd.template has<typename Policy::shared_node_file_type>()) {
+      const typename Policy::dd_type dd(__dd.template get<typename Policy::shared_node_file_type>(), __dd.negate);
+      return replace<Policy>(ep, dd, m);
+    }
+
+    level_info_stream<true> ls(__dd);
+    const replace_type m_type = __replace__infer_type<Policy>(ls, m);
+
+    return replace<Policy, false>(ep, std::move(__dd), m, m_type);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Replace variables based on the given (total) map.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename Policy>
+  typename Policy::dd_type
+  replace(typename Policy::__dd_type&& __dd,
+          const replace_func<Policy> &m)
+  {
+    const exec_policy ep = __dd._policy;
+    return replace<Policy>(ep, std::move(__dd), m);
   }
 }
 

@@ -1396,6 +1396,70 @@ namespace adiar
               const function<bdd::label_type(bdd::label_type)> &m,
               replace_type m_type);
 
+  /// \cond
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Replace variables in *f* according to the mapping in *m*.
+  ///
+  /// \details Unlike the `bdd_replace(const bdd& f, ...)` variants, this saves *2N/B* I/Os by
+  ///          incorporating the renaming into the Reduce algorithm.
+  ///
+  /// \param f
+  ///    Possibly unreduced BDD to replace variables within
+  ///
+  /// \param m
+  ///    Function from BDD label to another (or itself).
+  ///
+  /// \throws invalid_argument if `m` is not monotonic.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  bdd
+  bdd_replace(__bdd&& f, const function<bdd::label_type(bdd::label_type)> &m);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Replace variables in *f* according to the mapping in *m*.
+  ///
+  /// \details Unlike the `bdd_replace(const bdd& f, ...)` variants, this saves *2N/B* I/Os by
+  ///          incorporating the renaming into the Reduce algorithm.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  bdd
+  bdd_replace(const exec_policy& ep,
+              __bdd&& f,
+              const function<bdd::label_type(bdd::label_type)> &m);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Replace variables in *f* according to the mapping in *m*.
+  ///
+  /// \details Unlike the `bdd_replace(const bdd& f, ...)` variants, this saves *2N/B* I/Os by
+  ///          incorporating the renaming into the Reduce algorithm.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  bdd
+  bdd_replace(__bdd&& f, const function<bdd::label_type(bdd::label_type)> &m, replace_type m_type);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Replace variables in *f* according to the mapping in *m*.
+  ///
+  /// \details Unlike the `bdd_replace(const bdd& f, ...)` variants, this saves *2N/B* I/Os by
+  ///          incorporating the renaming into the Reduce algorithm.
+  ///
+  /// \param f
+  ///    Possibly unreduced BDD to replace variables within
+  ///
+  /// \param m
+  ///    Function from BDD label to another (or itself).
+  ///
+  /// \param m_type
+  ///    Guarantees on the class of variable relabelling, e.g. whether it is monotonic.
+  ///
+  /// \throws invalid_argument if `m_type` classifies `m` as not monotonic.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  bdd
+  bdd_replace(const exec_policy& ep,
+              __bdd&& f,
+              const function<bdd::label_type(bdd::label_type)> &m,
+              replace_type m_type);
+
+  /// \endcond
+
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Get (in \em ascending order) all of the variable labels that occur
   ///        in the BDD.
