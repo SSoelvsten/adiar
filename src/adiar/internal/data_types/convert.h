@@ -44,7 +44,8 @@ namespace adiar::internal
     adiar_assert(low.source().is_flagged() == false, "Source is not flagged on low arc");
     adiar_assert(high.source().is_flagged() == false, "Source is not flagged on high arc");
 
-    adiar_assert(essential(low.source()) == low.source() && essential(high.source()) == low.source());
+    adiar_assert(essential(low.source()) == low.source()
+                 && essential(high.source()) == low.source());
 
     return node(low.source(), low.target(), high.target());
   }
@@ -68,7 +69,8 @@ namespace adiar::internal
     adiar_assert(low.source().is_flagged() == false, "Source is not flagged on low arc");
     adiar_assert(high.source().is_flagged() == false, "Source is not flagged on high arc");
 
-    adiar_assert(essential(low.source()) == low.source() && essential(high.source()) == low.source());
+    adiar_assert(essential(low.source()) == low.source()
+                 && essential(high.source()) == low.source());
 
     return node(replace(low.source(), label), low.target(), high.target());
   }

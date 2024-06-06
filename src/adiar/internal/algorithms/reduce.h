@@ -337,7 +337,7 @@ namespace adiar::internal
     child_grouping.sort();
 
     typename Policy::id_type out_id = Policy::max_id;
-    node out_node = node(node::uid_type(), ptr_uint64::nil(), ptr_uint64::nil());
+    node out_node                   = node(node::uid_type(), ptr_uint64::nil(), ptr_uint64::nil());
 
     while (child_grouping.can_pull()) {
       const node next_node = child_grouping.pull();
@@ -451,8 +451,8 @@ namespace adiar::internal
                  const size_t unreduced_width,
                  statistics::reduce_t& stats = stats_reduce)
   {
-    return __reduce_level<Policy, sorter_t, pq_t, arc_stream_t>
-      (arcs, label, label, reduce_pq, out_writer, sorters_memory, unreduced_width, stats);
+    return __reduce_level<Policy, sorter_t, pq_t, arc_stream_t>(
+      arcs, label, label, reduce_pq, out_writer, sorters_memory, unreduced_width, stats);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -464,17 +464,16 @@ namespace adiar::internal
                            const bool terminal_val)
   {
 
-    adiar_assert(reduce_pq.empty_level(), "All forwarded arcs to the current level should be processed");
+    adiar_assert(reduce_pq.empty_level(),
+                 "All forwarded arcs to the current level should be processed");
 
     if (!reduce_pq.empty()) {
-      adiar_assert(!arcs.can_pull_terminal()
-                   || !reduce_pq.has_current_level()
-                   || arcs.peek_terminal().source().label() < reduce_pq.current_level(),
+      adiar_assert(!arcs.can_pull_terminal() || !reduce_pq.has_current_level()
+                     || arcs.peek_terminal().source().label() < reduce_pq.current_level(),
                    "All terminal arcs for 'current_level' should be processed");
 
-      adiar_assert(!arcs.can_pull_internal()
-                   || !reduce_pq.has_current_level()
-                   || arcs.peek_internal().target().label() < reduce_pq.current_level(),
+      adiar_assert(!arcs.can_pull_internal() || !reduce_pq.has_current_level()
+                     || arcs.peek_internal().target().label() < reduce_pq.current_level(),
                    "All internal arcs for 'current_level' should be processed");
 
       if (arcs.can_pull_terminal()) {
@@ -487,14 +486,12 @@ namespace adiar::internal
       //       Sweeping may claim the priority queue is empty() but the size still includes arcs
       //       stored in another priority queue.
 
-      adiar_assert(!arcs.can_pull_terminal()
-                   || !reduce_pq.has_current_level()
-                   || arcs.peek_terminal().source().label() < reduce_pq.current_level(),
+      adiar_assert(!arcs.can_pull_terminal() || !reduce_pq.has_current_level()
+                     || arcs.peek_terminal().source().label() < reduce_pq.current_level(),
                    "All terminal arcs for 'current_level' should be processed");
 
-      adiar_assert(!arcs.can_pull_internal()
-                   || !reduce_pq.has_current_level()
-                   || arcs.peek_internal().target().label() < reduce_pq.current_level(),
+      adiar_assert(!arcs.can_pull_internal() || !reduce_pq.has_current_level()
+                     || arcs.peek_internal().target().label() < reduce_pq.current_level(),
                    "All internal arcs for 'current_level' should be processed");
 
     } else if (!out_writer.has_pushed()) {
@@ -601,11 +598,11 @@ namespace adiar::internal
 
       const size_t unreduced_width = current_level_info.width();
       if (unreduced_width <= internal_sorter_can_fit) {
-        __reduce_level<Policy, internal_sorter>
-          (arcs, in_level, out_level, reduce_pq, out_writer, sorters_memory, unreduced_width);
+        __reduce_level<Policy, internal_sorter>(
+          arcs, in_level, out_level, reduce_pq, out_writer, sorters_memory, unreduced_width);
       } else {
-        __reduce_level<Policy, external_sorter>
-          (arcs, in_level, out_level, reduce_pq, out_writer, sorters_memory, unreduced_width);
+        __reduce_level<Policy, external_sorter>(
+          arcs, in_level, out_level, reduce_pq, out_writer, sorters_memory, unreduced_width);
       }
     }
 
@@ -622,16 +619,14 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename Policy>
   typename Policy::dd_type
-  reduce(const exec_policy &ep,
-         Policy& policy,
-         const typename Policy::__dd_type& input)
+  reduce(const exec_policy& ep, Policy& policy, const typename Policy::__dd_type& input)
   {
     adiar_assert(!input.empty(), "Input for Reduce should always be non-empty");
 
     // Is it already reduced?
     if (input.template has<typename Policy::shared_node_file_type>()) {
-      return typename Policy::dd_type(
-        input.template get<typename Policy::shared_node_file_type>(), input.negate);
+      return typename Policy::dd_type(input.template get<typename Policy::shared_node_file_type>(),
+                                      input.negate);
     }
 
     // Get unreduced input
@@ -671,20 +666,20 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
       stats_reduce.lpq.unbucketed += 1u;
 #endif
-      return __reduce<Policy, reduce_priority_queue<0, memory_mode::Internal>>
-        (policy, in_file, pq_memory, sorters_memory);
+      return __reduce<Policy, reduce_priority_queue<0, memory_mode::Internal>>(
+        policy, in_file, pq_memory, sorters_memory);
     } else if (!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
       stats_reduce.lpq.internal += 1u;
 #endif
-      return __reduce<Policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>>
-        (policy, in_file, pq_memory, sorters_memory);
+      return __reduce<Policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>>(
+        policy, in_file, pq_memory, sorters_memory);
     } else {
 #ifdef ADIAR_STATS
       stats_reduce.lpq.external += 1u;
 #endif
-      return __reduce<Policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode::External>>
-        (policy, in_file, pq_memory, sorters_memory);
+      return __reduce<Policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode::External>>(
+        policy, in_file, pq_memory, sorters_memory);
     }
   }
 
@@ -692,8 +687,7 @@ namespace adiar::internal
   /// \brief Default policy for Reduce without any variable remapping.
   //////////////////////////////////////////////////////////////////////////////////////////////////w
   template <typename DdPolicy>
-  class default_reduce_policy
-    : public DdPolicy
+  class default_reduce_policy : public DdPolicy
   {
   public:
     constexpr inline typename DdPolicy::label_type

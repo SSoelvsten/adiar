@@ -81,7 +81,7 @@ namespace adiar
     internal::stats_reduce = {};
 
     // other algorithms
-    internal::stats_replace = {};
+    internal::stats_replace          = {};
     internal::nested_sweeping::stats = {};
   }
 
@@ -700,12 +700,10 @@ namespace adiar
   void
   __printstat_replace(std::ostream& o)
   {
-    const uintwide total_runs = (internal::stats_replace.terminal_returns
-                                 + internal::stats_replace.identity_returns
-                                 + internal::stats_replace.identity_reduces
-                                 + internal::stats_replace.monotonic_scans
-                                 + internal::stats_replace.monotonic_reduces
-                                 + internal::stats_replace.nested_sweeps);
+    const uintwide total_runs = internal::stats_replace.terminal_returns
+      + internal::stats_replace.identity_returns + internal::stats_replace.identity_reduces
+      + internal::stats_replace.monotonic_scans + internal::stats_replace.monotonic_reduces
+      + internal::stats_replace.nested_sweeps;
 
     o << indent << bold_on << label << "Replace" << bold_off << total_runs << endl;
 
@@ -716,24 +714,20 @@ namespace adiar
       return;
     }
 
-    const uintwide const_runs = (internal::stats_replace.terminal_returns
-                                 + internal::stats_replace.identity_returns);
+    const uintwide const_runs =
+      internal::stats_replace.terminal_returns + internal::stats_replace.identity_returns;
 
-    o << indent << bold_on << label << "case O(1)" << bold_off << const_runs
-      << " = "
-      << internal::percent_frac(const_runs, total_runs)
-      << percent << endl;
+    o << indent << bold_on << label << "case O(1)" << bold_off << const_runs << " = "
+      << internal::percent_frac(const_runs, total_runs) << percent << endl;
 
     indent_level++;
-    o << indent << label << "terminal" << internal::stats_replace.terminal_returns
-      << " = "
-      << internal::percent_frac(internal::stats_replace.terminal_returns, total_runs)
-      << percent << endl;
+    o << indent << label << "terminal" << internal::stats_replace.terminal_returns << " = "
+      << internal::percent_frac(internal::stats_replace.terminal_returns, total_runs) << percent
+      << endl;
 
-    o << indent << label << "identity" << internal::stats_replace.identity_returns
-      << " = "
-      << internal::percent_frac(internal::stats_replace.identity_returns, total_runs)
-      << percent << endl;
+    o << indent << label << "identity" << internal::stats_replace.identity_returns << " = "
+      << internal::percent_frac(internal::stats_replace.identity_returns, total_runs) << percent
+      << endl;
     indent_level--;
 
     o << indent << endl;
@@ -741,32 +735,27 @@ namespace adiar
     o << indent << bold_on << label << "case O(N/B)" << bold_off << endl;
 
     indent_level++;
-    o << indent << label << "monotonic" << internal::stats_replace.monotonic_scans
-      << " = "
-      << internal::percent_frac(internal::stats_replace.monotonic_scans, total_runs)
-      << percent << endl;
+    o << indent << label << "monotonic" << internal::stats_replace.monotonic_scans << " = "
+      << internal::percent_frac(internal::stats_replace.monotonic_scans, total_runs) << percent
+      << endl;
     indent_level--;
 
     o << indent << endl;
 
-    const uintwide reduce_runs = (internal::stats_replace.identity_reduces
-                                  + internal::stats_replace.monotonic_reduces);
+    const uintwide reduce_runs =
+      internal::stats_replace.identity_reduces + internal::stats_replace.monotonic_reduces;
 
-    o << indent << bold_on << label << "case O(sort(N))" << bold_off << reduce_runs
-      << " = "
-      << internal::percent_frac(reduce_runs, total_runs)
-      << percent << endl;
+    o << indent << bold_on << label << "case O(sort(N))" << bold_off << reduce_runs << " = "
+      << internal::percent_frac(reduce_runs, total_runs) << percent << endl;
 
     indent_level++;
-    o << indent << label << "identity" << internal::stats_replace.identity_reduces
-      << " = "
-      << internal::percent_frac(internal::stats_replace.identity_reduces, total_runs)
-      << percent << endl;
+    o << indent << label << "identity" << internal::stats_replace.identity_reduces << " = "
+      << internal::percent_frac(internal::stats_replace.identity_reduces, total_runs) << percent
+      << endl;
 
-    o << indent << label << "monotonic" << internal::stats_replace.monotonic_reduces
-      << " = "
-      << internal::percent_frac(internal::stats_replace.monotonic_reduces, total_runs)
-      << percent << endl;
+    o << indent << label << "monotonic" << internal::stats_replace.monotonic_reduces << " = "
+      << internal::percent_frac(internal::stats_replace.monotonic_reduces, total_runs) << percent
+      << endl;
     indent_level--;
 
     o << indent << endl;
@@ -774,10 +763,9 @@ namespace adiar
     o << indent << bold_on << label << "case O(N sort(T))" << bold_off << endl;
 
     indent_level++;
-    o << indent << label << "non-monotonic" << internal::stats_replace.nested_sweeps
-      << " = "
-      << internal::percent_frac(internal::stats_replace.nested_sweeps, total_runs)
-      << percent << endl;
+    o << indent << label << "non-monotonic" << internal::stats_replace.nested_sweeps << " = "
+      << internal::percent_frac(internal::stats_replace.nested_sweeps, total_runs) << percent
+      << endl;
     indent_level--;
 
     indent_level--;

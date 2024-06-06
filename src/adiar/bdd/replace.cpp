@@ -10,7 +10,7 @@ namespace adiar
   bdd
   bdd_replace(const exec_policy& ep,
               const bdd& f,
-              const function<bdd::label_type(bdd::label_type)> &m,
+              const function<bdd::label_type(bdd::label_type)>& m,
               replace_type m_type)
   {
     return internal::replace<bdd_policy>(ep, f, m, m_type);
@@ -18,7 +18,7 @@ namespace adiar
 
   bdd
   bdd_replace(const bdd& f,
-              const function<bdd::label_type(bdd::label_type)> &m,
+              const function<bdd::label_type(bdd::label_type)>& m,
               replace_type m_type)
   {
     return bdd_replace(exec_policy(), f, m, m_type);
@@ -27,27 +27,25 @@ namespace adiar
   bdd
   bdd_replace(const exec_policy& ep,
               const bdd& f,
-              const function<bdd::label_type(bdd::label_type)> &m)
+              const function<bdd::label_type(bdd::label_type)>& m)
   {
     return internal::replace<bdd_policy>(ep, f, m);
   }
 
   bdd
-  bdd_replace(const bdd& f, const function<bdd::label_type(bdd::label_type)> &m)
+  bdd_replace(const bdd& f, const function<bdd::label_type(bdd::label_type)>& m)
   {
     return bdd_replace(exec_policy(), f, m);
   }
 
   bdd
-  bdd_replace(const exec_policy& ep,
-              __bdd&& f,
-              const function<bdd::label_type(bdd::label_type)> &m)
+  bdd_replace(const exec_policy& ep, __bdd&& f, const function<bdd::label_type(bdd::label_type)>& m)
   {
     return internal::replace<bdd_policy>(ep, std::move(f), m);
   }
 
   bdd
-  bdd_replace(__bdd&& f, const function<bdd::label_type(bdd::label_type)> &m)
+  bdd_replace(__bdd&& f, const function<bdd::label_type(bdd::label_type)>& m)
   {
     return internal::replace<bdd_policy>(std::move(f), m);
   }
@@ -55,16 +53,14 @@ namespace adiar
   bdd
   bdd_replace(const exec_policy& ep,
               __bdd&& f,
-              const function<bdd::label_type(bdd::label_type)> &m,
+              const function<bdd::label_type(bdd::label_type)>& m,
               replace_type m_type)
   {
     return internal::replace<bdd_policy>(ep, std::move(f), m, m_type);
   }
 
   bdd
-  bdd_replace(__bdd&& f,
-              const function<bdd::label_type(bdd::label_type)> &m,
-              replace_type m_type)
+  bdd_replace(__bdd&& f, const function<bdd::label_type(bdd::label_type)>& m, replace_type m_type)
   {
     return internal::replace<bdd_policy>(std::move(f), m, m_type);
   }
