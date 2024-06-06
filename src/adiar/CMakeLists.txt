@@ -146,6 +146,7 @@ set(SOURCES
   internal/algorithms/prod2.cpp
   internal/algorithms/quantify.cpp
   internal/algorithms/reduce.cpp
+  internal/algorithms/replace.cpp
   internal/algorithms/select.cpp
 
   # adiar/internal/data_structures

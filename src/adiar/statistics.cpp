@@ -12,6 +12,7 @@
 #include <adiar/internal/algorithms/prod2.h>
 #include <adiar/internal/algorithms/quantify.h>
 #include <adiar/internal/algorithms/reduce.h>
+#include <adiar/internal/algorithms/replace.h>
 #include <adiar/internal/algorithms/select.h>
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
 #include <adiar/internal/io/arc_file.h>
@@ -51,6 +52,7 @@ namespace adiar
              internal::stats_reduce,
 
              // other algorithms
+             internal::stats_replace,
              internal::nested_sweeping::stats
     };
   }
@@ -79,6 +81,7 @@ namespace adiar
     internal::stats_reduce = {};
 
     // other algorithms
+    internal::stats_replace = {};
     internal::nested_sweeping::stats = {};
   }
 
@@ -695,6 +698,92 @@ namespace adiar
   }
 
   void
+  __printstat_replace(std::ostream& o)
+  {
+    const uintwide total_runs = (internal::stats_replace.terminal_returns
+                                 + internal::stats_replace.identity_returns
+                                 + internal::stats_replace.identity_reduces
+                                 + internal::stats_replace.monotonic_scans
+                                 + internal::stats_replace.monotonic_reduces
+                                 + internal::stats_replace.nested_sweeps);
+
+    o << indent << bold_on << label << "Replace" << bold_off << total_runs << endl;
+
+    indent_level++;
+    if (total_runs == 0u) {
+      o << indent << "Not used" << endl;
+      indent_level--;
+      return;
+    }
+
+    const uintwide const_runs = (internal::stats_replace.terminal_returns
+                                 + internal::stats_replace.identity_returns);
+
+    o << indent << bold_on << label << "case O(1)" << bold_off << const_runs
+      << " = "
+      << internal::percent_frac(const_runs, total_runs)
+      << percent << endl;
+
+    indent_level++;
+    o << indent << label << "terminal" << internal::stats_replace.terminal_returns
+      << " = "
+      << internal::percent_frac(internal::stats_replace.terminal_returns, total_runs)
+      << percent << endl;
+
+    o << indent << label << "identity" << internal::stats_replace.identity_returns
+      << " = "
+      << internal::percent_frac(internal::stats_replace.identity_returns, total_runs)
+      << percent << endl;
+    indent_level--;
+
+    o << indent << endl;
+
+    o << indent << bold_on << label << "case O(N/B)" << bold_off << endl;
+
+    indent_level++;
+    o << indent << label << "monotonic" << internal::stats_replace.monotonic_scans
+      << " = "
+      << internal::percent_frac(internal::stats_replace.monotonic_scans, total_runs)
+      << percent << endl;
+    indent_level--;
+
+    o << indent << endl;
+
+    const uintwide reduce_runs = (internal::stats_replace.identity_reduces
+                                  + internal::stats_replace.monotonic_reduces);
+
+    o << indent << bold_on << label << "case O(sort(N))" << bold_off << reduce_runs
+      << " = "
+      << internal::percent_frac(reduce_runs, total_runs)
+      << percent << endl;
+
+    indent_level++;
+    o << indent << label << "identity" << internal::stats_replace.identity_reduces
+      << " = "
+      << internal::percent_frac(internal::stats_replace.identity_reduces, total_runs)
+      << percent << endl;
+
+    o << indent << label << "monotonic" << internal::stats_replace.monotonic_reduces
+      << " = "
+      << internal::percent_frac(internal::stats_replace.monotonic_reduces, total_runs)
+      << percent << endl;
+    indent_level--;
+
+    o << indent << endl;
+
+    o << indent << bold_on << label << "case O(N sort(T))" << bold_off << endl;
+
+    indent_level++;
+    o << indent << label << "non-monotonic" << internal::stats_replace.nested_sweeps
+      << " = "
+      << internal::percent_frac(internal::stats_replace.nested_sweeps, total_runs)
+      << percent << endl;
+    indent_level--;
+
+    indent_level--;
+  }
+
+  void
   __printstat_nested_sweeping(std::ostream& o)
   {
     const uintwide total_runs =
@@ -984,6 +1073,9 @@ namespace adiar
     o << bold_on << "--== Bottom-Up Sweep Algorithms ==--" << bold_off << endl << endl;
 
     __printstat_reduce(o);
+    o << endl;
+
+    __printstat_replace(o);
 #endif
   }
 }

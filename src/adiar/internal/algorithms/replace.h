@@ -13,6 +13,13 @@
 namespace adiar::internal
 {
   //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// Struct to hold statistics
+  extern statistics::replace_t stats_replace;
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  // Helper Functions
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief A total mapping function.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename T>
@@ -40,6 +47,41 @@ namespace adiar::internal
              __replace(n.low(), m),
              __replace(n.high(), m) };
   }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Infer the replace type.
+  ///
+  /// \param ls A stream of `level_info` structs in *descending* order.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename Policy, typename LevelInfoStream>
+  replace_type
+  __replace__infer_type(LevelInfoStream& ls, const replace_func<Policy> &m)
+  {
+    using signed_label = typename std::make_signed<typename Policy::label_type>::type;
+
+    bool identity = true;
+    bool monotone = true;
+
+    signed_label prev_before = -1;
+    signed_label prev_after  = -1;
+    while (ls.can_pull()) {
+      const signed_label next_before = ls.pull().level();
+      const signed_label next_after  = m(next_before);
+
+      identity &= next_before == next_after;
+      monotone &= prev_before < 0 || prev_after < next_after;
+
+      prev_before = next_before;
+      prev_after  = next_after;
+    }
+
+    if (identity) { return replace_type::Identity; }
+    if (monotone) { return replace_type::Monotone; }
+    return replace_type::Non_Monotone;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  // Algorithms
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Replace the level of all nodes in a single linear scan.
@@ -119,36 +161,7 @@ namespace adiar::internal
   // TODO: Nested Sweeping for non-monotonic reorderings.
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// \brief Infer the replace type.
-  ///
-  /// \param ls A stream of `level_info` structs in *descending* order.
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename Policy, typename LevelInfoStream>
-  replace_type
-  __replace__infer_type(LevelInfoStream& ls, const replace_func<Policy> &m)
-  {
-    using signed_label = typename std::make_signed<typename Policy::label_type>::type;
-
-    bool identity = true;
-    bool monotone = true;
-
-    signed_label prev_before = -1;
-    signed_label prev_after  = -1;
-    while (ls.can_pull()) {
-      const signed_label next_before = ls.pull().level();
-      const signed_label next_after  = m(next_before);
-
-      identity &= next_before == next_after;
-      monotone &= prev_before < 0 || prev_after < next_after;
-
-      prev_before = next_before;
-      prev_after  = next_after;
-    }
-
-    if (identity) { return replace_type::Identity; }
-    if (monotone) { return replace_type::Monotone; }
-    return replace_type::Non_Monotone;
-  }
+  // "Public" interface
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Replace variables based on the given (total) map.
@@ -161,17 +174,31 @@ namespace adiar::internal
           replace_type m_type)
   {
     // Return if nothing needs to be remapped
-    if (dd->is_terminal()) { return dd; }
+    if (dd->is_terminal()) {
+#ifdef ADIAR_STATS
+      stats_replace.terminal_returns += 1u;
+#endif
+      return dd;
+    }
 
     // Map internal nodes
     switch (m_type) {
     case replace_type::Non_Monotone:
+#ifdef ADIAR_STATS
+      stats_replace.nested_sweeps += 1u;
+#endif
       throw invalid_argument("Non-monotonic variable replacement not (yet) supported.");
 
     case replace_type::Monotone:
+#ifdef ADIAR_STATS
+      stats_replace.monotonic_scans += 1u;
+#endif
       return __replace__monotonic_scan<Policy>(dd, m);
 
     case replace_type::Identity:
+#ifdef ADIAR_STATS
+      stats_replace.identity_returns += 1u;
+#endif
       return dd;
     }
     adiar_unreachable();
@@ -213,12 +240,21 @@ namespace adiar::internal
     // Otherwise, map while reducing
     switch (m_type) {
     case replace_type::Non_Monotone:
+#ifdef ADIAR_STATS
+      stats_replace.nested_sweeps += 1u;
+#endif
       throw invalid_argument("Non-monotonic variable replacement not (yet) supported.");
 
     case replace_type::Monotone:
+#ifdef ADIAR_STATS
+      stats_replace.monotonic_reduces += 1u;
+#endif
       return __replace__monotonic_reduce<Policy>(ep, std::move(__dd), m);
 
     case replace_type::Identity:
+#ifdef ADIAR_STATS
+      stats_replace.identity_reduces += 1u;
+#endif
       return typename Policy::dd_type(std::move(__dd));
     }
     adiar_unreachable();
