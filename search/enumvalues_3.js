@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['nested_725',['Nested',['../classadiar_1_1exec__policy_1_1quantify.html#abee6d64d26c9ebc46e6c47a718e22197a44d2c93a61deb96d9309e5a35501fb83',1,'adiar::exec_policy::quantify']]]
+  ['identity_749',['Identity',['../namespaceadiar.html#a4679f9678ef99959f046aea209221af0ac9c5c65fb4af9cf90eb99b3b84424189',1,'adiar']]],
+  ['internal_750',['Internal',['../classadiar_1_1exec__policy.html#a24984bb43a1a8929b858011949155b18aafbf0897a5a83fdd873dfb032ec695d3',1,'adiar::exec_policy']]]
 ];

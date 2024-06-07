@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['singleton_728',['Singleton',['../classadiar_1_1exec__policy_1_1quantify.html#abee6d64d26c9ebc46e6c47a718e22197acf233267597644b4c91a99f8f17cbe69',1,'adiar::exec_policy::quantify']]]
+  ['priority_5fqueue_755',['Priority_Queue',['../classadiar_1_1exec__policy.html#a34534681bd89bb97b4cfc8bcbe3c19bbadfef4a1c7f44eb64de65c26b0fcaaae6',1,'adiar::exec_policy']]]
 ];

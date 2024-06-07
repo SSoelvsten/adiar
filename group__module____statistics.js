@@ -163,6 +163,14 @@ var group__module____statistics =
         [ "sum_node_arcs", "structadiar_1_1statistics_1_1reduce__t.html#a2519ee24c18aafb9177078b92d6c338d", null ],
         [ "sum_terminal_arcs", "structadiar_1_1statistics_1_1reduce__t.html#a624cd625bf7ff160e3625ddf65cca558", null ]
       ] ],
+      [ "replace_t", "structadiar_1_1statistics_1_1replace__t.html", [
+        [ "identity_reduces", "structadiar_1_1statistics_1_1replace__t.html#a13f299ab622357fab0d8dc674de72246", null ],
+        [ "identity_returns", "structadiar_1_1statistics_1_1replace__t.html#a70c8dddb8ddfa03d0171f1e3400704b1", null ],
+        [ "monotonic_reduces", "structadiar_1_1statistics_1_1replace__t.html#a607faa9215476566eb69dbfb179dc031", null ],
+        [ "monotonic_scans", "structadiar_1_1statistics_1_1replace__t.html#ae3036b9c2a4c058e36c9817a25e14641", null ],
+        [ "nested_sweeps", "structadiar_1_1statistics_1_1replace__t.html#ad5e4c0171fc95515c27fd65ee4916177", null ],
+        [ "terminal_returns", "structadiar_1_1statistics_1_1replace__t.html#a63f5b487d41f67a87ab5049e58b2f71e", null ]
+      ] ],
       [ "select_t", "structadiar_1_1statistics_1_1select__t.html", [
         [ "lpq", "structadiar_1_1statistics_1_1select__t.html#ab769667ff5ecea10ecd9e2589b7e72bf", null ]
       ] ],
@@ -178,6 +186,7 @@ var group__module____statistics =
       [ "prod3", "structadiar_1_1statistics.html#a9da0cc7f45afe38af5c95b1a1da2ab0e", null ],
       [ "quantify", "structadiar_1_1statistics.html#abf6e8f5938dc377805bfe755d612751b", null ],
       [ "reduce", "structadiar_1_1statistics.html#a769af3893e24816690a22bfc39cf88b2", null ],
+      [ "replace", "structadiar_1_1statistics.html#a9e4226004af75f71c4d9929a531585aa", null ],
       [ "select", "structadiar_1_1statistics.html#a5fef3cc964d00844ce46cc8afa7aff8c", null ]
     ] ],
     [ "statistics_get", "group__module____statistics.html#ga4f0439fa1b9af8e4510e5910fe27cc16", null ],

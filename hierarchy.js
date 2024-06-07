@@ -38,6 +38,7 @@ var hierarchy =
     [ "adiar::statistics::nested_sweeping_t", "structadiar_1_1statistics_1_1nested__sweeping__t.html", null ],
     [ "adiar::statistics::node_file_t", "structadiar_1_1statistics_1_1node__file__t.html", null ],
     [ "adiar::exec_policy::quantify", "classadiar_1_1exec__policy_1_1quantify.html", null ],
+    [ "adiar::statistics::replace_t", "structadiar_1_1statistics_1_1replace__t.html", null ],
     [ "adiar::statistics::nested_sweeping_t::inner_down_t::requests_t", "structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__down__t_1_1requests__t.html", null ],
     [ "adiar::statistics::equality_t::slow_t", "structadiar_1_1statistics_1_1equality__t_1_1slow__t.html", null ],
     [ "adiar::statistics", "structadiar_1_1statistics.html", null ],

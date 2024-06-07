@@ -43,6 +43,11 @@ var namespaceadiar =
       [ "True", "namespaceadiar.html#ae0011ac93212d71c2e4310b76e76d642af827cf462f62848df37c5e1e94a4da74", null ],
       [ "None", "namespaceadiar.html#ae0011ac93212d71c2e4310b76e76d642a6adf97f83acf6453d4a6a4b1070f3754", null ]
     ] ],
+    [ "replace_type", "namespaceadiar.html#a4679f9678ef99959f046aea209221af0", [
+      [ "Non_Monotone", "namespaceadiar.html#a4679f9678ef99959f046aea209221af0a1160d47014d611622714f6b197a4cfad", null ],
+      [ "Monotone", "namespaceadiar.html#a4679f9678ef99959f046aea209221af0a674832a3d744b83d8b6e06bc3f81c93b", null ],
+      [ "Identity", "namespaceadiar.html#a4679f9678ef99959f046aea209221af0ac9c5c65fb4af9cf90eb99b3b84424189", null ]
+    ] ],
     [ "adiar_deinit", "group__module____adiar.html#ga9501bb9e871253964682b7ac1942f911", null ],
     [ "adiar_init", "group__module____adiar.html#ga4f0460393f1bb6651306587b11d64660", null ],
     [ "adiar_initialized", "group__module____adiar.html#ga41ee63e52a125ccc5ad3442b15cad182", null ],
@@ -134,6 +139,10 @@ var namespaceadiar =
     [ "bdd_pathcount", "group__module____bdd.html#gabab939ef9115bd7e328ea610c9decbaa", null ],
     [ "bdd_printdot", "group__module____bdd.html#gaf933e54ccdf9cf9cff52d2ef5f2befbe", null ],
     [ "bdd_printdot", "group__module____bdd.html#ga7f30ce3efbfb8d400c9a481df8f6a46b", null ],
+    [ "bdd_replace", "group__module____bdd.html#gae173355eb4f22e48a776faa4820dffa4", null ],
+    [ "bdd_replace", "group__module____bdd.html#ga432692081d11f215d268cbc104395e27", null ],
+    [ "bdd_replace", "group__module____bdd.html#gaf4f929944c23845a18c307f6a9b9db00", null ],
+    [ "bdd_replace", "group__module____bdd.html#ga471f36eb176b62fbd2f4e41fd1286a29", null ],
     [ "bdd_restrict", "group__module____bdd.html#gafbf9600fb919ec4d16144c8744ee276e", null ],
     [ "bdd_restrict", "group__module____bdd.html#ga88084995736d65b9a5f647b98c44da2e", null ],
     [ "bdd_restrict", "group__module____bdd.html#gad9d59d23af6171a43c52576c2bf19be2", null ],

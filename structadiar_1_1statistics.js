@@ -15,6 +15,7 @@ var structadiar_1_1statistics =
     [ "prod3_t", "structadiar_1_1statistics_1_1prod3__t.html", "structadiar_1_1statistics_1_1prod3__t" ],
     [ "quantify_t", "structadiar_1_1statistics_1_1quantify__t.html", "structadiar_1_1statistics_1_1quantify__t" ],
     [ "reduce_t", "structadiar_1_1statistics_1_1reduce__t.html", "structadiar_1_1statistics_1_1reduce__t" ],
+    [ "replace_t", "structadiar_1_1statistics_1_1replace__t.html", "structadiar_1_1statistics_1_1replace__t" ],
     [ "select_t", "structadiar_1_1statistics_1_1select__t.html", "structadiar_1_1statistics_1_1select__t" ],
     [ "arc_file", "structadiar_1_1statistics.html#a71af2d8c10882a8db51be5d6de3c129e", null ],
     [ "count", "structadiar_1_1statistics.html#aef4c38a2f1741aeaa3ac55f8ef912be7", null ],
@@ -28,5 +29,6 @@ var structadiar_1_1statistics =
     [ "prod3", "structadiar_1_1statistics.html#a9da0cc7f45afe38af5c95b1a1da2ab0e", null ],
     [ "quantify", "structadiar_1_1statistics.html#abf6e8f5938dc377805bfe755d612751b", null ],
     [ "reduce", "structadiar_1_1statistics.html#a769af3893e24816690a22bfc39cf88b2", null ],
+    [ "replace", "structadiar_1_1statistics.html#a9e4226004af75f71c4d9929a531585aa", null ],
     [ "select", "structadiar_1_1statistics.html#a5fef3cc964d00844ce46cc8afa7aff8c", null ]
 ];
