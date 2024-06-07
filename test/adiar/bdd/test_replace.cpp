@@ -73,7 +73,6 @@ go_bandit([]() {
     //      / \
     //      F T
     */
-
     { // Garbage collect early and free write-lock
       const node n3 = node(4, node::max_id, terminal_F, terminal_T);
       const node n2 = node(2, node::max_id, n3.uid(), terminal_T);

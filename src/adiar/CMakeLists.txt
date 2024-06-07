@@ -118,6 +118,7 @@ set(SOURCES
   bdd/optmin.cpp
   bdd/pred.cpp
   bdd/quantify.cpp
+  bdd/relprod.cpp
   bdd/replace.cpp
   bdd/restrict.cpp
 

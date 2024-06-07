@@ -8,6 +8,7 @@ add_test(adiar-bdd-optmin       test_optmin.cpp)
 add_test(adiar-bdd-pred         test_pred.cpp)
 add_test(adiar-bdd-negate       test_negate.cpp)
 add_test(adiar-bdd-quantify     test_quantify.cpp)
+add_test(adiar-bdd-relprod      test_relprod.cpp)
 add_test(adiar-bdd-replace      test_replace.cpp)
 add_test(adiar-bdd-restrict     test_restrict.cpp)
 
