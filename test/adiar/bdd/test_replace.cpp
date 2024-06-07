@@ -1012,7 +1012,7 @@ go_bandit([]() {
       describe("<non-monotonic>", [&]() {
         it("returns the original file for 'F'", [&]() {
           const mapping_type m = [](const int x) { return 4 - x; };
-          const bdd out        = bdd_replace(__bdd(bdd_F), m);
+          const bdd out        = bdd_replace(exec_policy(), __bdd(bdd_F), m);
 
           AssertThat(out.file_ptr(), Is().EqualTo(bdd_F_nf));
           AssertThat(out.is_negated(), Is().False());
@@ -1028,7 +1028,7 @@ go_bandit([]() {
 
         it("reverses 'x0' into 'x4' [bdd_x0]", [&]() {
           const mapping_type m = [](const int x) { return 4 - x; };
-          const bdd out        = bdd_replace(__bdd(bdd_x0_nf), m);
+          const bdd out        = bdd_replace(exec_policy(), __bdd(bdd_x0_nf), m);
 
           // Check it looks all right
           AssertThat(out->sorted, Is().True());
@@ -1634,7 +1634,7 @@ go_bandit([]() {
     describe("bdd_replace(__bdd&&, <...>, replace_type)", [&]() {
       it("returns the original file for 'F'", [&]() {
         const mapping_type m = [](const int x) { return x + 2; };
-        const bdd out        = bdd_replace(__bdd(bdd_F), m, replace_type::Non_Monotone);
+        const bdd out = bdd_replace(exec_policy(), __bdd(bdd_F), m, replace_type::Non_Monotone);
 
         AssertThat(out.file_ptr(), Is().EqualTo(bdd_F_nf));
         AssertThat(out.is_negated(), Is().False());
@@ -1656,7 +1656,7 @@ go_bandit([]() {
         const mapping_type m = [](const int x) { return x + 1; };
 
         AssertThrows(invalid_argument,
-                     bdd_replace(__bdd(bdd_x0_nf), m, replace_type::Non_Monotone));
+                     bdd_replace(exec_policy(), __bdd(bdd_x0_nf), m, replace_type::Non_Monotone));
       });
 
       it("throws exception if 'replace_type' is 'Non_Monotone' [__bdd_x0]", [&]() {
@@ -1711,8 +1711,8 @@ go_bandit([]() {
           m_calls++;
           return 3 * x + 42;
         };
-        const bdd out =
-          bdd_replace(__bdd(__bdd_x0_unreduced, exec_policy()), m, replace_type::Monotone);
+        const bdd out = bdd_replace(
+          exec_policy(), __bdd(__bdd_x0_unreduced, exec_policy()), m, replace_type::Monotone);
 
         // Check is only called for each level once
         AssertThat(m_calls, Is().EqualTo(2));
