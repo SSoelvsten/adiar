@@ -667,7 +667,6 @@ go_bandit([]() {
         it("is false for (flagged) internal node", [&]() {
           binary_op<predicate<bool, bool>> op(adiar::xor_op);
 
-          const ptr_uint64 p(ptr_uint64::max_label, 0);
           AssertThat(op.is_left_negating(ptr_internal__max), Is().False());
           AssertThat(op.is_right_negating(ptr_internal__max), Is().False());
         });
