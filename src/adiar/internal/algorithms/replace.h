@@ -5,6 +5,7 @@
 
 #include <adiar/exception.h>
 #include <adiar/functional.h>
+#include <adiar/type_traits.h>
 #include <adiar/types.h>
 
 #include <adiar/internal/algorithms/reduce.h>
@@ -55,26 +56,40 @@ namespace adiar::internal
   ///
   /// \param ls A stream of `level_info` structs in *descending* order.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename Policy, typename LevelInfoStream>
+  template <typename Policy, typename LevelInfoStream, typename ReplaceFunction>
   replace_type
-  __replace__infer_type(LevelInfoStream& ls, const replace_func<Policy>& m)
+  __replace__infer_type(LevelInfoStream& ls, const ReplaceFunction& m)
   {
-    using signed_label = typename std::make_signed<typename Policy::label_type>::type;
+    using label_type  = typename Policy::label_type;
+    using result_type = typename ReplaceFunction::result_type;
+
+    constexpr bool is_total_map   = is_same<result_type, label_type>;
+    constexpr bool is_partial_map = is_same<result_type, optional<label_type>>;
+
+    static_assert(is_total_map || is_partial_map);
 
     bool identity = true;
     bool monotone = true;
 
-    signed_label prev_before = -1;
-    signed_label prev_after  = -1;
+    label_type prev_before = Policy::max_label + 1;
+    label_type prev_after  = Policy::max_label + 1;
     while (ls.can_pull()) {
-      const signed_label next_before = ls.pull().level();
-      const signed_label next_after  = m(next_before);
+      const label_type next_before = ls.pull().level();
+      const result_type next_after = m(next_before);
+
+      if constexpr (is_partial_map) {
+        if (!next_after.has_value()) { continue; }
+      }
 
       identity &= next_before == next_after;
-      monotone &= prev_before < 0 || prev_after < next_after;
+      monotone &= Policy::max_label < prev_before || prev_after < next_after;
 
       prev_before = next_before;
-      prev_after  = next_after;
+      if constexpr (is_partial_map) {
+        prev_after = *next_after;
+      } else {
+        prev_after = next_after;
+      }
     }
 
     if (identity) { return replace_type::Identity; }

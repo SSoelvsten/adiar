@@ -1131,6 +1131,150 @@ namespace adiar
 
   /// \endcond
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Relational Product of *states* and a *relation*.
+  ///
+  /// \param states
+  ///    A symbolic representation of the *current* (or *next*) set of states.
+  ///
+  /// \param relation
+  ///    A relation between *current* and *next* states.
+  ///
+  /// \param m
+  ///    Predicate whether a variable should be existentially quantified.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  bdd
+  bdd_relprod(const bdd& states, const bdd& relation, const predicate<bdd::label_type>& pred);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Relational Product of *states* and a *relation*.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  bdd
+  bdd_relprod(const exec_policy& ep,
+              const bdd& states,
+              const bdd& relation,
+              const predicate<bdd::label_type>& pred);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Forwards step with the Relational Product, including relabelling.
+  ///
+  /// \param states
+  ///    A symbolic representation of the *current* set of states.
+  ///
+  /// \param relation
+  ///    A relation between *current* and *next* states.
+  ///
+  /// \param m
+  ///    A (partial) variable relabelling from *next* to *current*. Variables for which `m` returns
+  ///    an empty value are existentially quantified, i.e. the previously *current* state variables.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  bdd
+  bdd_relnext(const bdd& states,
+              const bdd& relation,
+              const function<optional<bdd::label_type>(bdd::label_type)>& m);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Forwards step with the Relational Product, including relabelling.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  bdd
+  bdd_relnext(const exec_policy& ep,
+              const bdd& states,
+              const bdd& relation,
+              const function<optional<bdd::label_type>(bdd::label_type)>& m);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Forwards step with the Relational Product, including relabelling.
+  ///
+  /// \param states
+  ///    A symbolic representation of the *current* set of states.
+  ///
+  /// \param relation
+  ///    A relation between *current* and *next* states.
+  ///
+  /// \param m
+  ///    A (partial) variable relabelling from *next* to *current*. Variables for which `m` returns
+  ///    an empty value are existentially quantified, i.e. the previously *current* state variables.
+  ///
+  /// \param m_type
+  ///    Guarantees on the class of variable relabelling, e.g. whether it is monotonic.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  bdd
+  bdd_relnext(const bdd& states,
+              const bdd& relation,
+              const function<optional<bdd::label_type>(bdd::label_type)>& m,
+              replace_type m_type);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Forwards step with the Relational Product, including relabelling.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  bdd
+  bdd_relnext(const exec_policy& ep,
+              const bdd& states,
+              const bdd& relation,
+              const function<optional<bdd::label_type>(bdd::label_type)>& m,
+              replace_type m_type);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Backwards step with the Relational Product, including relabelling.
+  ///
+  /// \param states
+  ///    A symbolic representation of the *current* set of states.
+  ///
+  /// \param relation
+  ///    A relation between *current* and *next* states.
+  ///
+  /// \param m
+  ///    A (partial) variable relabelling from *current* to *next*. Variables for which `m` returns
+  ///    an empty value are existentially quantified, i.e. the *next* state variables (the
+  ///    previously *current* state variables).
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  bdd
+  bdd_relprev(const bdd& states,
+              const bdd& relation,
+              const function<optional<bdd::label_type>(bdd::label_type)>& m);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Forwards step with the Relational Product, including relabelling.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  bdd
+  bdd_relprev(const exec_policy& ep,
+              const bdd& states,
+              const bdd& relation,
+              const function<optional<bdd::label_type>(bdd::label_type)>& m);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Backwards step with the Relational Product, including relabelling.
+  ///
+  /// \param states
+  ///    A symbolic representation of the *current* set of states.
+  ///
+  /// \param relation
+  ///    A relation between *current* and *next* states.
+  ///
+  /// \param m
+  ///    A (partial) variable relabelling from *current* to *next*. Variables for which `m` returns
+  ///    an empty value are existentially quantified, i.e. the *next* state variables (the
+  ///    previously *current* state variables).
+  ///
+  /// \param m_type
+  ///    Guarantees on the class of variable relabelling, e.g. whether it is monotonic.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  bdd
+  bdd_relprev(const bdd& states,
+              const bdd& relation,
+              const function<optional<bdd::label_type>(bdd::label_type)>& m,
+              replace_type m_type);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Forwards step with the Relational Product, including relabelling.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  bdd
+  bdd_relprev(const exec_policy& ep,
+              const bdd& states,
+              const bdd& relation,
+              const function<optional<bdd::label_type>(bdd::label_type)>& m,
+              replace_type m_type);
+
   /// \}
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
