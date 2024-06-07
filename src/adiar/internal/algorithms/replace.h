@@ -9,6 +9,10 @@
 
 #include <adiar/internal/algorithms/reduce.h>
 #include <adiar/internal/assert.h>
+#include <adiar/internal/io/levelized_file_stream.h>
+#include <adiar/internal/io/node_file.h>
+#include <adiar/internal/io/node_stream.h>
+#include <adiar/internal/io/node_writer.h>
 
 namespace adiar::internal
 {
