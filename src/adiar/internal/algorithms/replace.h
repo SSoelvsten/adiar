@@ -208,9 +208,11 @@ namespace adiar::internal
   typename Policy::dd_type
   replace(const exec_policy& ep, const typename Policy::dd_type& dd, const replace_func<Policy>& m)
   {
-    level_info_stream<false> ls(dd);
-    const replace_type m_type = __replace__infer_type<Policy>(ls, m);
-
+    replace_type m_type;
+    {
+      level_info_stream<false> ls(dd);
+      m_type = __replace__infer_type<Policy>(ls, m);
+    }
     return replace<Policy>(ep, dd, m, m_type);
   }
 
@@ -281,9 +283,11 @@ namespace adiar::internal
       return replace<Policy>(ep, dd, m);
     }
 
-    level_info_stream<true> ls(__dd);
-    const replace_type m_type = __replace__infer_type<Policy>(ls, m);
-
+    replace_type m_type;
+    {
+      level_info_stream<true> ls(__dd);
+      m_type = __replace__infer_type<Policy>(ls, m);
+    }
     return replace<Policy, false>(ep, std::move(__dd), m, m_type);
   }
 
