@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['fast_5ft_396',['fast_t',['../structadiar_1_1statistics_1_1equality__t_1_1fast__t.html',1,'adiar::statistics::equality_t']]]
+  ['fast_5ft_399',['fast_t',['../structadiar_1_1statistics_1_1equality__t_1_1fast__t.html',1,'adiar::statistics::equality_t']]]
 ];
