@@ -133,7 +133,7 @@ namespace adiar
     /// \brief Whether this policy may introduce skipping of nodes.
     ///
     /// \detail This variable can be used at compile-time to prune conditional statements.
-    static constexpr bool no_skip = false;
+    static constexpr bool no_skip = true;
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
