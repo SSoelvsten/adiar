@@ -1591,9 +1591,6 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Replace variables in *f* according to the mapping in *m*.
-  ///
-  /// \details Unlike the `bdd_replace(const bdd& f, ...)` variants, this saves *2N/B* I/Os by
-  ///          incorporating the renaming into the Reduce algorithm.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   bdd
   bdd_replace(const exec_policy& ep,
@@ -1603,17 +1600,6 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Replace variables in *f* according to the mapping in *m*.
   ///
-  /// \details Unlike the `bdd_replace(const bdd& f, ...)` variants, this saves *2N/B* I/Os by
-  ///          incorporating the renaming into the Reduce algorithm.
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  bdd
-  bdd_replace(__bdd&& f, const function<bdd::label_type(bdd::label_type)>& m, replace_type m_type);
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// \brief Replace variables in *f* according to the mapping in *m*.
-  ///
-  /// \details Unlike the `bdd_replace(const bdd& f, ...)` variants, this saves *2N/B* I/Os by
-  ///          incorporating the renaming into the Reduce algorithm.
   ///
   /// \param f
   ///    Possibly unreduced BDD to replace variables within
@@ -1625,6 +1611,12 @@ namespace adiar
   ///    Guarantees on the class of variable relabelling, e.g. whether it is monotonic.
   ///
   /// \throws invalid_argument if `m_type` classifies `m` as not monotonic.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  bdd
+  bdd_replace(__bdd&& f, const function<bdd::label_type(bdd::label_type)>& m, replace_type m_type);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Replace variables in *f* according to the mapping in *m*.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   bdd
   bdd_replace(const exec_policy& ep,
