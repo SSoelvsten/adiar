@@ -45,13 +45,13 @@ namespace adiar
     resolve_same_file(const bdd& bdd_1, const bdd& bdd_2) const
     {
       // Compute the results on all children.
-      const bool op_F = this->_op(bdd_1.negate, bdd_2.negate);
-      const bool op_T = this->_op(!bdd_1.negate, !bdd_2.negate);
+      const bool op_F = this->_op(bdd_1.is_negated(), bdd_2.is_negated());
+      const bool op_T = this->_op(!bdd_1.is_negated(), !bdd_2.is_negated());
 
       // Does it collapse to a terminal?
       if (op_F == op_T) { return bdd_terminal(op_F); }
 
-      return op_F == bdd_1.negate ? bdd_1 : ~bdd_1;
+      return op_F == bdd_1.is_negated() ? bdd_1 : ~bdd_1;
     }
 
     /// \brief Hook for either of the two BDDs being a terminal.
