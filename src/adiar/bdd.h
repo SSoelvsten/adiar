@@ -840,7 +840,6 @@ namespace adiar
   {
     return bdd_exists(f, var);
   }
-
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -855,7 +854,6 @@ namespace adiar
   {
     return bdd_exists(ep, f, var);
   }
-
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -875,8 +873,13 @@ namespace adiar
   bdd_exists(const bdd& f, const predicate<bdd::label_type>& vars);
 
   /// \cond
+
+  /// \remark Unlike `bdd_exists(const bdd& f, const predicate<...>& vars)`, this function moves the
+  ///         ownership of `f` into the quantification algorithm. This allows it to garbage collect
+  ///         `f` early.
   __bdd
   bdd_exists(bdd&& f, const predicate<bdd::label_type>& vars);
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -886,8 +889,13 @@ namespace adiar
   bdd_exists(const exec_policy& ep, const bdd& f, const predicate<bdd::label_type>& vars);
 
   /// \cond
+
+  /// \remark Unlike `bdd_exists(const bdd& f, const predicate<...>& vars)`, this function moves the
+  ///         ownership of `f` into the quantification algorithm. This allows it to garbage collect
+  ///         `f` early.
   __bdd
   bdd_exists(const exec_policy& ep, bdd&& f, const predicate<bdd::label_type>& vars);
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -906,8 +914,13 @@ namespace adiar
   bdd_exists(const bdd& f, const generator<bdd::label_type>& vars);
 
   /// \cond
+
+  /// \remark Unlike `bdd_exists(const bdd& f, const generator<...>& vars)`, this function moves the
+  ///         ownership of `f` into the quantification algorithm. This allows it to garbage collect
+  ///         `f` early.
   __bdd
   bdd_exists(bdd&& f, const generator<bdd::label_type>& vars);
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -917,6 +930,10 @@ namespace adiar
   bdd_exists(const exec_policy& ep, const bdd& f, const generator<bdd::label_type>& vars);
 
   /// \cond
+
+  /// \remark Unlike `bdd_exists(const bdd& f, const predicate<...>& vars)`, this function moves the
+  ///         ownership of `f` into the quantification algorithm. This allows it to garbage collect
+  ///         `f` early.
   __bdd
   bdd_exists(const exec_policy& ep, bdd&& f, const generator<bdd::label_type>& vars);
 
@@ -951,7 +968,6 @@ namespace adiar
   {
     return bdd_exists(std::move(f), make_generator(begin, end));
   }
-
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -971,7 +987,6 @@ namespace adiar
   {
     return bdd_exists(ep, std::move(f), make_generator(begin, end));
   }
-
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -997,7 +1012,6 @@ namespace adiar
   {
     return bdd_forall(f, var);
   }
-
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1012,7 +1026,6 @@ namespace adiar
   {
     return bdd_forall(ep, f, var);
   }
-
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1032,8 +1045,13 @@ namespace adiar
   bdd_forall(const bdd& f, const predicate<bdd::label_type>& vars);
 
   /// \cond
+
+  /// \remark Unlike `bdd_forall(const bdd& f, const predicate<...>& vars)`, this function moves the
+  ///         ownership of `f` into the quantification algorithm. This allows it to garbage collect
+  ///         `f` early.
   __bdd
   bdd_forall(bdd&& f, const predicate<bdd::label_type>& vars);
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1043,8 +1061,13 @@ namespace adiar
   bdd_forall(const exec_policy& ep, const bdd& f, const predicate<bdd::label_type>& vars);
 
   /// \cond
+
+  /// \remark Unlike `bdd_forall(const bdd& f, const predicate<...>& vars)`, this function moves the
+  ///         ownership of `f` into the quantification algorithm. This allows it to garbage collect
+  ///         `f` early.
   __bdd
   bdd_forall(const exec_policy& ep, bdd&& f, const predicate<bdd::label_type>& vars);
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1063,8 +1086,13 @@ namespace adiar
   bdd_forall(const bdd& f, const generator<bdd::label_type>& vars);
 
   /// \cond
+
+  /// \remark Unlike `bdd_forall(const bdd& f, const predicate<...>& vars)`, this function moves the
+  ///         ownership of `f` into the quantification algorithm. This allows it to garbage collect
+  ///         `f` early.
   __bdd
   bdd_forall(bdd&& f, const generator<bdd::label_type>& vars);
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1074,6 +1102,10 @@ namespace adiar
   bdd_forall(const exec_policy& ep, const bdd& f, const generator<bdd::label_type>& vars);
 
   /// \cond
+
+  /// \remark Unlike `bdd_forall(const bdd& f, const predicate<...>& vars)`, this function moves the
+  ///         ownership of `f` into the quantification algorithm. This allows it to garbage collect
+  ///         `f` early.
   __bdd
   bdd_forall(const exec_policy& ep, bdd&& f, const generator<bdd::label_type>& vars);
 
@@ -1108,7 +1140,6 @@ namespace adiar
   {
     return bdd_forall(std::move(f), make_generator(begin, end));
   }
-
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1128,7 +1159,6 @@ namespace adiar
   {
     return bdd_forall(ep, std::move(f), make_generator(begin, end));
   }
-
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
