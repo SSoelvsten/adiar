@@ -279,7 +279,7 @@ namespace adiar::internal
   __prod2_ra(const exec_policy& ep,
              const typename Policy::dd_type& in_pq,
              const typename Policy::dd_type& in_ra,
-             const Policy& policy,
+             Policy& policy,
              const size_t pq_memory,
              const size_t max_pq_size)
   {
@@ -311,6 +311,7 @@ namespace adiar::internal
       typename Policy::label_type out_label = prod_pq.current_level();
       typename Policy::id_type out_id       = 0;
 
+      policy.setup_next_level(out_label);
       in_nodes_ra.setup_next_level(out_label);
 
       // Update maximum 1-level cut
@@ -401,7 +402,7 @@ namespace adiar::internal
   __prod2_pq(const exec_policy& ep,
              const typename Policy::dd_type& in_0,
              const typename Policy::dd_type& in_1,
-             const Policy& policy,
+             Policy& policy,
              const size_t pq_1_memory,
              const size_t max_pq_1_size,
              const size_t pq_2_memory,
@@ -435,6 +436,8 @@ namespace adiar::internal
 
       const typename Policy::label_type out_label = prod_pq_1.current_level();
       typename Policy::id_type out_id             = 0;
+
+      policy.setup_next_level(out_label);
 
       // Update max 1-level cut
       out_arcs->max_1level_cut = std::max(out_arcs->max_1level_cut, prod_pq_1.size());

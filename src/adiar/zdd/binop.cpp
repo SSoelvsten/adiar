@@ -82,6 +82,11 @@ namespace adiar
     {}
 
   public:
+    void
+    setup_next_level(const bdd::label_type /*next_level*/) const
+    {}
+
+  public:
     /// \brief Flip internal copy of operator
     void
     flip()

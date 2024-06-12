@@ -276,7 +276,7 @@ go_bandit([]() {
     //             '--'
     */
 
-    // Here, they use a zipped variable ordering 'pre' and 'post'
+    // Here, they use a interleave variable ordering 'pre' and 'post'
     const auto huth_relnext_pred = [](int x) -> bool { return x % 2 == 0; };
 
     const auto huth_relnext_map = [&huth_relnext_pred](int x) -> optional<int> {
@@ -2567,6 +2567,69 @@ go_bandit([]() {
         AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
       });
 
+      it("has no successors for empty set of states [<true>]", [&]() {
+        const bdd out = bdd_relprod(false, true, kalin_relnext_pred);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no successors for empty set of states [<true>] [~]", [&]() {
+        const bdd T = true;
+        const bdd out = bdd_relprod(bdd_not(T), T, kalin_relnext_pred);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
       it("has no successors for empty set of states [K&D Fig. 9]", [&]() {
         const bdd out = bdd_relprod(false, kalin_fig9, kalin_relnext_pred);
 
@@ -2660,7 +2723,70 @@ go_bandit([]() {
         AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
       });
 
-      it("has no successors for empty set of states [K&D Fig. 9]", [&]() {
+      it("has no predecessors for empty set of states [<true>]", [&]() {
+        const bdd out = bdd_relprod(false, true, kalin_relprev_pred);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no predecessors for empty set of states [<true>] [~]", [&]() {
+        const bdd T = true;
+        const bdd out = bdd_relprod(bdd_not(T), T, kalin_relprev_pred);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no predecessors for empty set of states [K&D Fig. 9]", [&]() {
         const bdd out = bdd_relprod(false, kalin_fig9, kalin_relprev_pred);
 
         // Check it looks all right
@@ -2691,7 +2817,7 @@ go_bandit([]() {
         AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
       });
 
-      it("has no successors for empty set of states [H&R Fig. 6.28]", [&]() {
+      it("has no predecessors for empty set of states [H&R Fig. 6.28]", [&]() {
         const bdd out = bdd_relprod(false, huth_fig28, huth_relprev_pred);
 
         // Check it looks all right
@@ -2722,7 +2848,7 @@ go_bandit([]() {
         AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
       });
 
-      it("has no successors for empty set of states [B Fig. 6.28]", [&]() {
+      it("has no predecessors for empty set of states [B Fig. 6.28]", [&]() {
         const bdd out = bdd_relprod(false, bryant_fig18, bryant_relprev_pred);
 
         // Check it looks all right
@@ -2751,6 +2877,254 @@ go_bandit([]() {
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no successors for empty set of edges [K&D Fig. 11 + <false>]", [&]() {
+        const bdd out = bdd_relprod(kalin_fig11, false, kalin_relnext_pred);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no successors for empty set of edges [~<false> + <false>]", [&]() {
+        const bdd F = false;
+        const bdd out = bdd_relprod(bdd_not(F), F, kalin_relnext_pred);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no successors for empty set of nodes and edges [<false>]", [&]() {
+        const bdd F = false;
+        const bdd out = bdd_relprod(F, F, kalin_relnext_pred);
+
+        AssertThat(out.file_ptr(), Is().EqualTo(F.file_ptr()));
+        AssertThat(out.is_negated(), Is().False());
+      });
+
+      it("has no predecessors for empty set of edges [K&D Fig. 11 + <false>]", [&]() {
+        shared_levelized_file<bdd::node_type> shifted_states;
+        /*
+        // Figure 11 of Kalin's & Dahlsen-Jensen's BSc Thesis "Symbolic Algorithms for Computing
+        // Strongly Connected Components"
+        //
+        //                   1      ---- x3 (1')
+        //                  / \
+        //                  F T
+        */
+        { // Garbage collect early and free write-lock
+          node_writer nw(shifted_states);
+          nw << node(3, bdd::max_id, terminal_F, terminal_T);
+        }
+
+        const bdd out = bdd_relprod(shifted_states, false, kalin_relprev_pred);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no predecessors for empty set of edges [~<false> + <false>]", [&]() {
+        const bdd F = false;
+        const bdd out = bdd_relprod(bdd_not(F), F, kalin_relprev_pred);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no predecessors for empty set of nodes and edges [<false>]", [&]() {
+        const bdd F = false;
+        const bdd out = bdd_relprod(F, F, kalin_relprev_pred);
+
+        AssertThat(out.file_ptr(), Is().EqualTo(F.file_ptr()));
+        AssertThat(out.is_negated(), Is().False());
+      });
+
+      it("has all successors for total graph [K&D Fig. 11 + <true>]", [&]() {
+        const bdd out = bdd_relprod(kalin_fig11, true, kalin_relnext_pred);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
+      });
+
+      it("has all successors for all nodes and total graph [<true>]", [&]() {
+        const bdd T = true;
+        const bdd out = bdd_relprod(T, T, kalin_relnext_pred);
+
+        AssertThat(out.file_ptr(), Is().EqualTo(T.file_ptr()));
+        AssertThat(out.is_negated(), Is().False());
+      });
+
+      it("has all predecessors for total graph [K&D Fig. 11 + <true>]", [&]() {
+        shared_levelized_file<bdd::node_type> shifted_states;
+        /*
+        // Figure 11 of Kalin's & Dahlsen-Jensen's BSc Thesis "Symbolic Algorithms for Computing
+        // Strongly Connected Components"
+        //
+        //                   1      ---- x3 (1')
+        //                  / \
+        //                  F T
+        */
+        { // Garbage collect early and free write-lock
+          node_writer nw(shifted_states);
+          nw << node(3, bdd::max_id, terminal_F, terminal_T);
+        }
+
+        const bdd out = bdd_relprod(shifted_states, true, kalin_relprev_pred);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
+      });
+
+      it("has all predecessors for all nodes and total graph [<true>]", [&]() {
+        const bdd T = true;
+        const bdd out = bdd_relprod(T, T, kalin_relprev_pred);
+
+        AssertThat(out.file_ptr(), Is().EqualTo(T.file_ptr()));
+        AssertThat(out.is_negated(), Is().False());
       });
     });
 
@@ -3515,6 +3889,69 @@ go_bandit([]() {
         AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
       });
 
+      it("has no successors for empty set of states [<true>]", [&]() {
+        const bdd out = bdd_relnext(false, true, kalin_relnext_map);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no successors for empty set of states [<true>] [~]", [&]() {
+        const bdd T = true;
+        const bdd out = bdd_relnext(bdd_not(T), T, kalin_relnext_map);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
       it("has no successors for empty set of states [K&D Fig. 9]", [&]() {
         const bdd out = bdd_relnext(false, kalin_fig9, kalin_relnext_map);
 
@@ -3606,6 +4043,116 @@ go_bandit([]() {
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no successors for empty set of edges [K&D Fig. 11 + <false>]", [&]() {
+        const bdd out = bdd_relnext(kalin_fig11, false, kalin_relnext_map);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no successors for empty set of edges [~<false> + <false>]", [&]() {
+        const bdd F = false;
+        const bdd out = bdd_relnext(bdd_not(F), F, kalin_relnext_map);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no successors for empty set of nodes and edges [<false>]", [&]() {
+        const bdd F = false;
+        const bdd out = bdd_relnext(F, F, kalin_relnext_map);
+
+        AssertThat(out.file_ptr(), Is().EqualTo(F.file_ptr()));
+        AssertThat(out.is_negated(), Is().False());
+      });
+
+      it("has all successors for total graph [K&D Fig. 11 + <true>]", [&]() {
+        const bdd out = bdd_relnext(kalin_fig11, true, kalin_relnext_map);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
+      });
+
+      it("has all successors for all nodes and total graph [<true>]", [&]() {
+        const bdd T = true;
+        const bdd out = bdd_relnext(T, T, kalin_relnext_map);
+
+        AssertThat(out.file_ptr(), Is().EqualTo(T.file_ptr()));
+        AssertThat(out.is_negated(), Is().False());
       });
 
       it("throws exception if mapping is not monotone [{10} + K&D Fig. 9]", [&]() {
@@ -4075,6 +4622,69 @@ go_bandit([]() {
         AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
       });
 
+      it("has no successors for empty set of states [<true>]", [&]() {
+        const bdd out = bdd_relnext(false, true, kalin_relnext_map, replace_type::Monotone);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no successors for empty set of states [<true>] [~]", [&]() {
+        const bdd T = true;
+        const bdd out = bdd_relnext(bdd_not(T), T, kalin_relnext_map, replace_type::Monotone);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
       it("has no successors for empty set of states [K&D Fig. 9]", [&]() {
         const bdd out = bdd_relnext(false, kalin_fig9, kalin_relnext_map, replace_type::Monotone);
 
@@ -4167,6 +4777,116 @@ go_bandit([]() {
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no successors for empty set of edges [K&D Fig. 11 + <false>]", [&]() {
+        const bdd out = bdd_relnext(kalin_fig11, false, kalin_relnext_map, replace_type::Monotone);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no successors for empty set of edges [~<false> + <false>]", [&]() {
+        const bdd F = false;
+        const bdd out = bdd_relnext(bdd_not(F), F, kalin_relnext_map, replace_type::Monotone);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no successors for empty set of nodes and edges [<false>]", [&]() {
+        const bdd F = false;
+        const bdd out = bdd_relnext(F, F, kalin_relnext_map, replace_type::Monotone);
+
+        AssertThat(out.file_ptr(), Is().EqualTo(F.file_ptr()));
+        AssertThat(out.is_negated(), Is().False());
+      });
+
+      it("has all successors for total graph [K&D Fig. 11 + <true>]", [&]() {
+        const bdd out = bdd_relnext(kalin_fig11, true, kalin_relnext_map, replace_type::Monotone);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
+      });
+
+      it("has all successors for all nodes and total graph [<true>]", [&]() {
+        const bdd T = true;
+        const bdd out = bdd_relnext(T, T, kalin_relnext_map, replace_type::Monotone);
+
+        AssertThat(out.file_ptr(), Is().EqualTo(T.file_ptr()));
+        AssertThat(out.is_negated(), Is().False());
       });
 
       it("throws exception if mapping is not monotone [{10} + K&D Fig. 9]", [&]() {
@@ -5080,6 +5800,37 @@ go_bandit([]() {
         AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
       });
 
+      it("has no predecessors for empty set of states [<true>]", [&]() {
+        const bdd out = bdd_relprev(false, true, kalin_relprev_map);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
       it("has no predecessors for empty set of states [K&D Fig. 9]", [&]() {
         const bdd out = bdd_relprev(false, kalin_fig9, kalin_relprev_map);
 
@@ -5171,6 +5922,116 @@ go_bandit([]() {
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no predecessors for empty set of edges [K&D Fig. 11 + <false>]", [&]() {
+        const bdd out = bdd_relprev(kalin_fig11, false, kalin_relprev_map);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no predecessors for empty set of edges [~<false> + <false>]", [&]() {
+        const bdd F = false;
+        const bdd out = bdd_relprev(bdd_not(F), F, kalin_relprev_map);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no predecessors for empty set of nodes and edges [<false>]", [&]() {
+        const bdd F = false;
+        const bdd out = bdd_relprev(F, F, kalin_relprev_map);
+
+        AssertThat(out.file_ptr(), Is().EqualTo(F.file_ptr()));
+        AssertThat(out.is_negated(), Is().False());
+      });
+
+      it("has all predecessors for total graph [K&D Fig. 11 + <true>]", [&]() {
+        const bdd out = bdd_relprev(kalin_fig11, true, kalin_relprev_map);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
+      });
+
+      it("has all predecessors for all nodes and total graph [<true>]", [&]() {
+        const bdd T = true;
+        const bdd out = bdd_relprev(T, T, kalin_relprev_map);
+
+        AssertThat(out.file_ptr(), Is().EqualTo(T.file_ptr()));
+        AssertThat(out.is_negated(), Is().False());
       });
 
       it("throws exception if mapping is not monotone [{01} + K&D Fig. 9]", [&]() {
@@ -5763,6 +6624,37 @@ go_bandit([]() {
         AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
       });
 
+      it("has no predecessors for empty set of states [<true>]", [&]() {
+        const bdd out = bdd_relprev(false, true, kalin_relprev_map, replace_type::Monotone);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
       it("has no predecessors for empty set of states [K&D Fig. 9]", [&]() {
         const bdd out = bdd_relprev(false, kalin_fig9, kalin_relprev_map, replace_type::Monotone);
 
@@ -5855,6 +6747,116 @@ go_bandit([]() {
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no predecessors for empty set of edges [K&D Fig. 11 + <false>]", [&]() {
+        const bdd out = bdd_relprev(kalin_fig11, false, kalin_relprev_map, replace_type::Monotone);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no predecessors for empty set of edges [~<false> + <false>]", [&]() {
+        const bdd F = false;
+        const bdd out = bdd_relprev(bdd_not(F), F, kalin_relprev_map, replace_type::Monotone);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no predecessors for empty set of nodes and edges [<false>]", [&]() {
+        const bdd F = false;
+        const bdd out = bdd_relprev(F, F, kalin_relprev_map, replace_type::Monotone);
+
+        AssertThat(out.file_ptr(), Is().EqualTo(F.file_ptr()));
+        AssertThat(out.is_negated(), Is().False());
+      });
+
+      it("has all predecessors for total graph [K&D Fig. 11 + <true>]", [&]() {
+        const bdd out = bdd_relprev(kalin_fig11, true, kalin_relprev_map, replace_type::Monotone);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
+      });
+
+      it("has all predecessors for all nodes and total graph [<true>]", [&]() {
+        const bdd T = true;
+        const bdd out = bdd_relprev(T, T, kalin_relprev_map, replace_type::Monotone);
+
+        AssertThat(out.file_ptr(), Is().EqualTo(T.file_ptr()));
+        AssertThat(out.is_negated(), Is().False());
       });
 
       it("throws exception if mapping is not monotone [{01} + K&D Fig. 9]", [&]() {
