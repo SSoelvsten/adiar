@@ -984,8 +984,13 @@ namespace adiar
   zdd_project(const zdd& A, const predicate<zdd::label_type>& dom);
 
   /// \cond
+
+  /// \remark Unlike `zdd_project(const zdd& A, const predicate<...>& dom)`, this function moves the
+  ///         ownership of `A` into the quantification algorithm. This allows it to garbage collect
+  ///         `A` early.
   __zdd
   zdd_project(zdd&& A, const predicate<zdd::label_type>& dom);
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -996,8 +1001,13 @@ namespace adiar
   zdd_project(const exec_policy& ep, const zdd& A, const predicate<zdd::label_type>& dom);
 
   /// \cond
+
+  /// \remark Unlike `zdd_project(const zdd& A, const predicate<...>& dom)`, this function moves the
+  ///         ownership of `A` into the quantification algorithm. This allows it to garbage collect
+  ///         `A` early.
   __zdd
   zdd_project(const exec_policy& ep, zdd&& A, const predicate<zdd::label_type>& dom);
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1019,8 +1029,13 @@ namespace adiar
   zdd_project(const zdd& A, const generator<zdd::label_type>& dom);
 
   /// \cond
+
+  /// \remark Unlike `zdd_project(const zdd& A, const generator<...>& dom)`, this function moves the
+  ///         ownership of `A` into the quantification algorithm. This allows it to garbage collect
+  ///         `A` early.
   __zdd
   zdd_project(zdd&& A, const generator<zdd::label_type>& dom);
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1031,6 +1046,10 @@ namespace adiar
   zdd_project(const exec_policy& ep, const zdd& A, const generator<zdd::label_type>& dom);
 
   /// \cond
+
+  /// \remark Unlike `zdd_project(const zdd& A, const predicate<...>& dom)`, this function moves the
+  ///         ownership of `A` into the quantification algorithm. This allows it to garbage collect
+  ///         `A` early.
   __zdd
   zdd_project(const exec_policy& ep, zdd&& A, const generator<zdd::label_type>& dom);
 
@@ -1066,9 +1085,8 @@ namespace adiar
   __zdd
   zdd_project(zdd&& A, ForwardIt begin, ForwardIt end)
   {
-    return zdd_project(std::forward<zdd>(A), make_generator(begin, end));
+    return zdd_project(std::move(A), make_generator(begin, end));
   }
-
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1087,9 +1105,8 @@ namespace adiar
   __zdd
   zdd_project(const exec_policy& ep, zdd&& A, ForwardIt begin, ForwardIt end)
   {
-    return zdd_project(ep, std::forward<zdd>(A), make_generator(begin, end));
+    return zdd_project(ep, std::move(A), make_generator(begin, end));
   }
-
   /// \endcond
 
   /// \}
