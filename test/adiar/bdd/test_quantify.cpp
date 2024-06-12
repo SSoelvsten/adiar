@@ -48,6 +48,41 @@ go_bandit([]() {
       nw_1 << n1_2 << n1_1;
     }
 
+    // BDD 1 above, but it is unreduced, i.e. there are duplicate and redundant nodes. The redundant
+    // nodes also adds an additional level, with which we then can see it quantifies the unreduced
+    // input (or not).
+    /*
+    //     1     ---- x0
+    //    / \
+    //    T 2    ---- x1
+    //     / \
+    //     3 T   ---- x2
+    //     ||
+    //     F
+    */
+    shared_levelized_file<arc> bdd_1__unreduced;
+    {
+      arc_writer aw_1(bdd_1__unreduced);
+
+      const bdd::pointer_type n1_3(2, 0);
+      const bdd::pointer_type n1_2(1, 0);
+      const bdd::pointer_type n1_1(0, 0);
+
+      aw_1.push_internal({ n1_1, true, n1_2 });
+      aw_1.push_internal({ n1_2, false, n1_3 });
+
+      aw_1.push_terminal({ n1_1, false, bdd::pointer_type(true) });
+      aw_1.push_terminal({ n1_2, true, bdd::pointer_type(true) });
+      aw_1.push_terminal({ n1_3, false, bdd::pointer_type(false) });
+      aw_1.push_terminal({ n1_3, true, bdd::pointer_type(false) });
+
+      aw_1.push(level_info(0, 1u));
+      aw_1.push(level_info(1, 1u));
+      aw_1.push(level_info(2, 1u));
+
+      bdd_1__unreduced->max_1level_cut = 1;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // BDD 2
     /*
@@ -119,6 +154,59 @@ go_bandit([]() {
     { // Garbage collect writer to free write-lock
       node_writer nw_4(bdd_4);
       nw_4 << n4_5 << n4_4 << n4_3 << n4_2 << n4_1;
+    }
+
+    // BDD 4 above, but it is unreduced, i.e. there are duplicate and redundant nodes. The redundant
+    // nodes also add an additional level, with which we then can see it quantifies the unreduced
+    // input (or not).
+    /*
+    //       _1_       ---- x0
+    //      /   \
+    //      |  _2_     ---- x1
+    //      \ /   \
+    //       3     4   ---- x2
+    //      / \   / \
+    //      F 5   6 T  ---- x3
+    //       / \ / \
+    //       F T F 7   ---- x4
+    //             ||
+    //             T
+    */
+    shared_levelized_file<arc> bdd_4__unreduced;
+    {
+      arc_writer aw_4(bdd_4__unreduced);
+
+      const bdd::pointer_type n4_7(4, 0);
+      const bdd::pointer_type n4_6(3, 1);
+      const bdd::pointer_type n4_5(3, 0);
+      const bdd::pointer_type n4_4(2, 1);
+      const bdd::pointer_type n4_3(2, 0);
+      const bdd::pointer_type n4_2(1, 0);
+      const bdd::pointer_type n4_1(0, 0);
+
+      aw_4.push_internal({ n4_1, true, n4_2 });
+      aw_4.push_internal({ n4_1, false, n4_3 });
+      aw_4.push_internal({ n4_2, false, n4_3 });
+      aw_4.push_internal({ n4_2, true, n4_4 });
+      aw_4.push_internal({ n4_3, true, n4_5 });
+      aw_4.push_internal({ n4_4, false, n4_6 });
+      aw_4.push_internal({ n4_6, true, n4_7 });
+
+      aw_4.push_terminal({ n4_3, false, bdd::pointer_type(false) });
+      aw_4.push_terminal({ n4_4, true, bdd::pointer_type(true) });
+      aw_4.push_terminal({ n4_5, false, bdd::pointer_type(false) });
+      aw_4.push_terminal({ n4_5, true, bdd::pointer_type(true) });
+      aw_4.push_terminal({ n4_6, false, bdd::pointer_type(false) });
+      aw_4.push_terminal({ n4_7, false, bdd::pointer_type(true) });
+      aw_4.push_terminal({ n4_7, true, bdd::pointer_type(true) });
+
+      aw_4.push(level_info(0, 1u));
+      aw_4.push(level_info(1, 1u));
+      aw_4.push(level_info(2, 2u));
+      aw_4.push(level_info(3, 2u));
+      aw_4.push(level_info(4, 1u));
+
+      bdd_4__unreduced->max_1level_cut = 3;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -916,15 +1004,16 @@ go_bandit([]() {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     describe("bdd_exists(const bdd&, bdd::label_type)", [&]() {
-      it("quantifies T terminal-only BDD as itself", [&]() {
-        __bdd out = bdd_exists(terminal_T, 42);
+      it("quantifies T terminal-only BDD as itself [const &]", [&]() {
+        const bdd in = terminal_T;
+        __bdd out    = bdd_exists(in, 42);
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(terminal_T));
         AssertThat(out.negate, Is().False());
       });
 
-      it("quantifies F terminal-only BDD as itself", [&]() {
-        __bdd out = bdd_exists(terminal_F, 21);
+      it("quantifies F terminal-only BDD as itself [&&]", [&]() {
+        __bdd out = bdd_exists(bdd(terminal_F), 21);
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(terminal_F));
         AssertThat(out.negate, Is().False());
@@ -933,15 +1022,16 @@ go_bandit([]() {
       describe("access mode: random access", [&]() {
         const exec_policy ep = exec_policy::access::Random_Access;
 
-        it("shortcuts quantification on non-existent label in input [BDD 1]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_1, 42);
+        it("shortcuts quantification on non-existent label in input [const &]", [&]() {
+          const bdd in = bdd_1;
+          __bdd out    = bdd_exists(ep, in, 42);
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
           AssertThat(out.negate, Is().False());
         });
 
-        it("shortcuts quantification of root into T terminal [BDD 1]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_1, 0);
+        it("shortcuts quantification of root into T terminal [&&]", [&]() {
+          __bdd out = bdd_exists(ep, bdd(bdd_1), 0);
 
           node_test_stream out_nodes(out);
 
@@ -968,8 +1058,8 @@ go_bandit([]() {
                      Is().EqualTo(1u));
         });
 
-        it("shortcuts quantification of root into T terminal [x2]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_x2, 2);
+        it("shortcuts quantification of root into T terminal [&&]", [&]() {
+          __bdd out = bdd_exists(ep, bdd(bdd_x2), 2);
 
           node_test_stream out_nodes(out);
 
@@ -996,8 +1086,8 @@ go_bandit([]() {
                      Is().EqualTo(1u));
         });
 
-        it("quantifies root without terminal arcs [BDD 2]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_2, 0);
+        it("quantifies root without terminal arcs [&&]", [&]() {
+          __bdd out = bdd_exists(ep, bdd(bdd_2), 0);
 
           arc_test_stream arcs(out);
 
@@ -1050,8 +1140,8 @@ go_bandit([]() {
                      Is().EqualTo(3u));
         });
 
-        it("quantifies root with F terminal [BDD 5]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_5F, 0);
+        it("quantifies root with F terminal [&&]", [&]() {
+          __bdd out = bdd_exists(ep, bdd(bdd_5F), 0);
 
           arc_test_stream arcs(out);
 
@@ -1104,8 +1194,8 @@ go_bandit([]() {
                      Is().EqualTo(2u));
         });
 
-        it("quantifies bottom-most nodes [BDD 1]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_1, 1);
+        it("quantifies bottom-most nodes [&&]", [&]() {
+          __bdd out = bdd_exists(ep, bdd(bdd_1), 1);
 
           arc_test_stream arcs(out);
           AssertThat(arcs.can_pull_internal(), Is().False());
@@ -1138,8 +1228,8 @@ go_bandit([]() {
                      Is().EqualTo(2u));
         });
 
-        it("quantifies nodes with terminal or nodes as children [BDD 2]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_2, 1);
+        it("quantifies nodes with terminal or nodes as children [&&]", [&]() {
+          __bdd out = bdd_exists(ep, bdd(bdd_2), 1);
 
           arc_test_stream arcs(out);
 
@@ -1192,8 +1282,8 @@ go_bandit([]() {
                      Is().EqualTo(3u));
         });
 
-        it("outputs terminal arcs in order, despite the order of resolvement [BDD 2]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_2, 2);
+        it("outputs terminal arcs in order, despite the order of resolvement [&&]", [&]() {
+          __bdd out = bdd_exists(ep, bdd(bdd_2), 2);
 
           arc_test_stream arcs(out);
 
@@ -1246,8 +1336,8 @@ go_bandit([]() {
                      Is().EqualTo(3u));
         });
 
-        it("outputs terminal arcs in order, despite the order of resolvement [BDD 3]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_3, 2);
+        it("outputs terminal arcs in order, despite the order of resolvement [&&]", [&]() {
+          __bdd out = bdd_exists(ep, bdd(bdd_3), 2);
 
           arc_test_stream arcs(out);
 
@@ -1294,12 +1384,12 @@ go_bandit([]() {
                      Is().EqualTo(3u));
         });
 
-        it("keeps nodes as is when skipping quantified level [BDD 3]", [&]() {
+        it("keeps nodes as is when skipping quantified level [&&]", [&]() {
           // NOTE: The order of resolvement is different than with a secondary priority queue!
           //
           // NOTE: Node (2,1) := (3,nil)
 
-          __bdd out = bdd_exists(ep, bdd_3, 1);
+          __bdd out = bdd_exists(ep, bdd(bdd_3), 1);
 
           arc_test_stream arcs(out);
 
@@ -1353,10 +1443,10 @@ go_bandit([]() {
                      Is().EqualTo(3u));
         });
 
-        it("resolves terminal-terminal requests in [BDD 5]", [&]() {
+        it("resolves terminal-terminal requests in [&&]", [&]() {
           // NOTE: (2,0) := (3,nil)
 
-          __bdd out = bdd_exists(ep, bdd_5F, 1);
+          __bdd out = bdd_exists(ep, bdd(bdd_5F), 1);
 
           arc_test_stream arcs(out);
 
@@ -1399,9 +1489,9 @@ go_bandit([]() {
                      Is().EqualTo(2u));
         });
 
-        it("collapses tuple requests of the same node back into request on a single node [BDD 8a]",
+        it("collapses tuple requests of the same node back into request on a single node [&&]",
            [&]() {
-             __bdd out = bdd_exists(ep, bdd_8a, 1);
+             __bdd out = bdd_exists(ep, bdd(bdd_8a), 1);
 
              arc_test_stream arcs(out);
 
@@ -1511,83 +1601,83 @@ go_bandit([]() {
                         Is().EqualTo(2u));
            });
 
-        it("resolves nodes in a different order than with a secondary priority queue [BDD 17a]",
-           [&]() {
-             __bdd out = bdd_exists(ep, bdd_17a, 0);
+        it("resolves nodes in a different order than with a secondary priority queue [&&]", [&]() {
+          __bdd out = bdd_exists(ep, bdd(bdd_17a), 0);
 
-             arc_test_stream arcs(out);
+          arc_test_stream arcs(out);
 
-             AssertThat(arcs.can_pull_internal(), Is().True()); // (4,6)
-             AssertThat(arcs.pull_internal(),
-                        Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (4,6)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 0) }));
 
-             AssertThat(arcs.can_pull_internal(), Is().True()); // (5,_)
-             AssertThat(arcs.pull_internal(),
-                        Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 1) }));
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (5,_)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 1) }));
 
-             AssertThat(arcs.can_pull_internal(), Is().True()); // (7,_)
-             AssertThat(arcs.pull_internal(),
-                        Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(3, 0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (7,_)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(3, 0) }));
 
-             AssertThat(arcs.can_pull_internal(), Is().False());
+          AssertThat(arcs.can_pull_internal(), Is().False());
 
-             AssertThat(arcs.can_pull_terminal(), Is().True()); // (4,6)
-             AssertThat(arcs.pull_terminal(),
-                        Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(true) }));
+          AssertThat(arcs.can_pull_terminal(), Is().True()); // (4,6)
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(true) }));
 
-             AssertThat(arcs.can_pull_terminal(), Is().True()); // (5,_)
-             AssertThat(arcs.pull_terminal(),
-                        Is().EqualTo(arc{ ptr_uint64(2, 1), false, ptr_uint64(true) }));
-             AssertThat(arcs.can_pull_terminal(), Is().True());
-             AssertThat(arcs.pull_terminal(),
-                        Is().EqualTo(arc{ ptr_uint64(2, 1), true, ptr_uint64(false) }));
+          AssertThat(arcs.can_pull_terminal(), Is().True()); // (5,_)
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 1), false, ptr_uint64(true) }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 1), true, ptr_uint64(false) }));
 
-             AssertThat(arcs.can_pull_terminal(), Is().True()); // (7,_)
-             AssertThat(arcs.pull_terminal(),
-                        Is().EqualTo(arc{ ptr_uint64(3, 0), false, ptr_uint64(false) }));
-             AssertThat(arcs.can_pull_terminal(), Is().True()); // (7,_)
-             AssertThat(arcs.pull_terminal(),
-                        Is().EqualTo(arc{ ptr_uint64(3, 0), true, ptr_uint64(true) }));
+          AssertThat(arcs.can_pull_terminal(), Is().True()); // (7,_)
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(3, 0), false, ptr_uint64(false) }));
+          AssertThat(arcs.can_pull_terminal(), Is().True()); // (7,_)
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(3, 0), true, ptr_uint64(true) }));
 
-             AssertThat(arcs.can_pull_terminal(), Is().False());
+          AssertThat(arcs.can_pull_terminal(), Is().False());
 
-             level_info_test_stream levels(out);
+          level_info_test_stream levels(out);
 
-             AssertThat(levels.can_pull(), Is().True());
-             AssertThat(levels.pull(), Is().EqualTo(level_info(1u, 1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1u, 1u)));
 
-             AssertThat(levels.can_pull(), Is().True());
-             AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 2u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 2u)));
 
-             AssertThat(levels.can_pull(), Is().True());
-             AssertThat(levels.pull(), Is().EqualTo(level_info(3u, 1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(3u, 1u)));
 
-             AssertThat(levels.can_pull(), Is().False());
+          AssertThat(levels.can_pull(), Is().False());
 
-             AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
-                        Is().GreaterThanOrEqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                     Is().GreaterThanOrEqualTo(2u));
 
-             AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
 
-             AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
-                        Is().EqualTo(2u));
-             AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
-                        Is().EqualTo(3u));
-           });
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(3u));
+        });
       });
 
       describe("access mode: priority queue", [&]() {
         const exec_policy ep = exec_policy::access::Priority_Queue;
 
-        it("shortcuts quantification on non-existent label in input [BDD 1]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_1, 42);
+        it("shortcuts quantification on non-existent label in input [const &]", [&]() {
+          const bdd in = bdd_1;
+          __bdd out    = bdd_exists(ep, in, 42);
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
           AssertThat(out.negate, Is().False());
         });
 
-        it("shortcuts quantification of root into T terminal [BDD 1]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_1, 0);
+        it("shortcuts quantification of root into T terminal [&&]", [&]() {
+          __bdd out = bdd_exists(ep, bdd(bdd_1), 0);
 
           node_test_stream out_nodes(out);
 
@@ -1612,8 +1702,8 @@ go_bandit([]() {
                      Is().EqualTo(1u));
         });
 
-        it("shortcuts quantification of root into T terminal [x2]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_x2, 2);
+        it("shortcuts quantification of root into T terminal [&&]", [&]() {
+          __bdd out = bdd_exists(ep, bdd(bdd_x2), 2);
 
           node_test_stream out_nodes(out);
 
@@ -1640,8 +1730,8 @@ go_bandit([]() {
                      Is().EqualTo(1u));
         });
 
-        it("quantifies root without terminal arcs [BDD 2]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_2, 0);
+        it("quantifies root without terminal arcs [&&]", [&]() {
+          __bdd out = bdd_exists(ep, bdd(bdd_2), 0);
 
           arc_test_stream arcs(out);
 
@@ -1694,8 +1784,8 @@ go_bandit([]() {
                      Is().EqualTo(3u));
         });
 
-        it("quantifies root with F terminal [BDD 5]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_5F, 0);
+        it("quantifies root with F terminal [&&]", [&]() {
+          __bdd out = bdd_exists(ep, bdd(bdd_5F), 0);
 
           arc_test_stream arcs(out);
 
@@ -1748,8 +1838,8 @@ go_bandit([]() {
                      Is().EqualTo(2u));
         });
 
-        it("quantifies bottom-most nodes [BDD 1]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_1, 1);
+        it("quantifies bottom-most nodes [&&]", [&]() {
+          __bdd out = bdd_exists(ep, bdd(bdd_1), 1);
 
           arc_test_stream arcs(out);
           AssertThat(arcs.can_pull_internal(), Is().False());
@@ -1780,8 +1870,8 @@ go_bandit([]() {
                      Is().EqualTo(2u));
         });
 
-        it("quantifies nodes with terminal or nodes as children [BDD 2]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_2, 1);
+        it("quantifies nodes with terminal or nodes as children [&&]", [&]() {
+          __bdd out = bdd_exists(ep, bdd(bdd_2), 1);
 
           arc_test_stream arcs(out);
 
@@ -1834,8 +1924,8 @@ go_bandit([]() {
                      Is().EqualTo(3u));
         });
 
-        it("outputs terminal arcs in order, despite the order of resolvement [BDD 2]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_2, 2);
+        it("outputs terminal arcs in order, despite the order of resolvement [&&]", [&]() {
+          __bdd out = bdd_exists(ep, bdd(bdd_2), 2);
 
           arc_test_stream arcs(out);
 
@@ -1888,8 +1978,8 @@ go_bandit([]() {
                      Is().EqualTo(3u));
         });
 
-        it("outputs terminal arcs in order, despite the order of resolvement [BDD 3]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_3, 2);
+        it("outputs terminal arcs in order, despite the order of resolvement [&&]", [&]() {
+          __bdd out = bdd_exists(ep, bdd(bdd_3), 2);
 
           arc_test_stream arcs(out);
 
@@ -1934,8 +2024,8 @@ go_bandit([]() {
                      Is().EqualTo(3u));
         });
 
-        it("keeps nodes as is when skipping quantified level [BDD 3]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_3, 1);
+        it("keeps nodes as is when skipping quantified level [&&]", [&]() {
+          __bdd out = bdd_exists(ep, bdd(bdd_3), 1);
 
           arc_test_stream arcs(out);
 
@@ -1990,8 +2080,8 @@ go_bandit([]() {
                      Is().EqualTo(3u));
         });
 
-        it("resolves terminal-terminal requests in [BDD 5]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_5F, 1);
+        it("resolves terminal-terminal requests in [&&]", [&]() {
+          __bdd out = bdd_exists(ep, bdd(bdd_5F), 1);
 
           arc_test_stream arcs(out);
 
@@ -2038,7 +2128,7 @@ go_bandit([]() {
                      Is().EqualTo(2u));
         });
 
-        it("can shortcut/prune irrelevant subtrees [OR-chain]", [&]() {
+        it("can shortcut/prune irrelevant subtrees [const &]", [&]() {
           shared_levelized_file<bdd::node_type> bdd_chain;
 
           node n4 = node(3, node::max_id, ptr_uint64(false), ptr_uint64(true));
@@ -2051,7 +2141,9 @@ go_bandit([]() {
             bdd_chain_w << n4 << n3 << n2 << n1;
           }
 
-          __bdd out = bdd_exists(ep, bdd_chain, 2);
+          const bdd in = bdd_chain;
+
+          __bdd out = bdd_exists(ep, in, 2);
 
           arc_test_stream arcs(out);
 
@@ -2095,8 +2187,8 @@ go_bandit([]() {
                      Is().EqualTo(3u));
         });
 
-        it("can forward information across a level [BDD 6]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_6, 1);
+        it("can forward information across a level [&&]", [&]() {
+          __bdd out = bdd_exists(ep, bdd(bdd_6), 1);
 
           arc_test_stream arcs(out);
 
@@ -2165,8 +2257,8 @@ go_bandit([]() {
                      Is().EqualTo(5u));
         });
 
-        it("can forward multiple arcs to the same node across a level [BDD 7]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_7, 1);
+        it("can forward multiple arcs to the same node across a level [&&]", [&]() {
+          __bdd out = bdd_exists(ep, bdd(bdd_7), 1);
 
           arc_test_stream arcs(out);
 
@@ -2209,9 +2301,9 @@ go_bandit([]() {
                      Is().EqualTo(2u));
         });
 
-        it("collapses tuple requests of the same node back into request on a single node [BDD 8a]",
+        it("collapses tuple requests of the same node back into request on a single node [&&]",
            [&]() {
-             __bdd out = bdd_exists(ep, bdd_8a, 1);
+             __bdd out = bdd_exists(ep, bdd(bdd_8a), 1);
 
              arc_test_stream arcs(out);
 
@@ -2265,9 +2357,9 @@ go_bandit([]() {
                         Is().EqualTo(2u));
            });
 
-        it("collapses tuple requests of the same node back into request on a single node [BDD 8b]",
+        it("collapses tuple requests of the same node back into request on a single node [&&]",
            [&]() {
-             __bdd out = bdd_exists(ep, bdd_8b, 1);
+             __bdd out = bdd_exists(ep, bdd(bdd_8b), 1);
 
              arc_test_stream arcs(out);
 
@@ -2321,8 +2413,8 @@ go_bandit([]() {
                         Is().EqualTo(2u));
            });
 
-        it("resolves nodes in a different order than with random access [BDD 17a]", [&]() {
-          __bdd out = bdd_exists(ep, bdd_17a, 0);
+        it("resolves nodes in a different order than with random access [&&]", [&]() {
+          __bdd out = bdd_exists(ep, bdd(bdd_17a), 0);
 
           arc_test_stream arcs(out);
 
@@ -2386,15 +2478,19 @@ go_bandit([]() {
       });
     });
 
+    describe("bdd_exists(__bdd&&, bdd::label_type)", [&]() {
+      // TODO
+    });
+
     describe("bdd_exists(const bdd&, const predicate<bdd::label_type>&)", [&]() {
-      it("returns input on always-false predicate BDD 1 [const &]", [&]() {
+      it("returns original file on always-false predicate BDD 1 [const &]", [&]() {
         bdd in    = bdd_1;
         __bdd out = bdd_exists(in, [](const bdd::label_type) -> bool { return false; });
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
       });
 
-      it("returns input on always-false predicate BDD 1 [&&]", [&]() {
-        __bdd out = bdd_exists(bdd_1, [](const bdd::label_type) -> bool { return false; });
+      it("returns original file on always-false predicate BDD 1 [&&]", [&]() {
+        __bdd out = bdd_exists(bdd(bdd_1), [](const bdd::label_type) -> bool { return false; });
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
       });
 
@@ -2402,7 +2498,8 @@ go_bandit([]() {
         const exec_policy ep = exec_policy::quantify::Singleton;
 
         it("quantifies odd variables in BDD 4 [&&]", [&]() {
-          bdd out = bdd_exists(ep, bdd_4, [](const bdd::label_type x) -> bool { return x % 2; });
+          bdd out =
+            bdd_exists(ep, bdd(bdd_4), [](const bdd::label_type x) -> bool { return x % 2; });
 
           node_test_stream out_nodes(out);
 
@@ -2431,8 +2528,8 @@ go_bandit([]() {
         });
 
         it("quantifies 1, 2 in BDD 4 [&&]", [&]() {
-          bdd out =
-            bdd_exists(ep, bdd_4, [](const bdd::label_type x) -> bool { return x == 1 || x == 2; });
+          bdd out = bdd_exists(
+            ep, bdd(bdd_4), [](const bdd::label_type x) -> bool { return x == 1 || x == 2; });
 
           node_test_stream out_nodes(out);
 
@@ -2492,7 +2589,8 @@ go_bandit([]() {
         });
 
         it("quantifies odd variables in BDD 1 [&&]", [&]() {
-          bdd out = bdd_exists(ep, bdd_1, [](const bdd::label_type x) -> bool { return x % 2; });
+          bdd out =
+            bdd_exists(ep, bdd(bdd_1), [](const bdd::label_type x) -> bool { return x % 2; });
 
           node_test_stream out_nodes(out);
 
@@ -2511,7 +2609,7 @@ go_bandit([]() {
           // TODO: top-down dependant?
           int calls = 0;
 
-          const bdd out = bdd_exists(ep, bdd_1, [&calls](const bdd::label_type) -> bool {
+          const bdd out = bdd_exists(ep, bdd(bdd_1), [&calls](const bdd::label_type) -> bool {
             calls++;
             return true;
           });
@@ -2533,7 +2631,7 @@ go_bandit([]() {
         });
 
         it("quantifies with always-true predicate in BDD 4 [&&]", [&]() {
-          bdd out = bdd_exists(ep, bdd_4, [](const bdd::label_type) -> bool { return true; });
+          bdd out = bdd_exists(ep, bdd(bdd_4), [](const bdd::label_type) -> bool { return true; });
 
           node_test_stream out_nodes(out);
 
@@ -2553,9 +2651,9 @@ go_bandit([]() {
           exec_policy::quantify::Nested & exec_policy::quantify::transposition_max(0);
 
         describe("access mode: random access", [&]() {
-          it("quantifies odd variables in BDD 1", [&]() {
+          it("quantifies odd variables in BDD 1 [&&]", [&]() {
             bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
-                                 bdd_1,
+                                 bdd(bdd_1),
                                  [](const bdd::label_type x) -> bool { return x % 2; });
 
             node_test_stream out_nodes(out);
@@ -2572,11 +2670,11 @@ go_bandit([]() {
             // TODO: meta variables...
           });
 
-          it("leaves unprunable to-be quantified node behind as-is", [&]() {
+          it("leaves unprunable to-be quantified node behind as-is [&&]", [&]() {
             std::vector<bdd::label_type> call_history;
 
             bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
-                                 bdd_4,
+                                 bdd(bdd_4),
                                  [&call_history](const bdd::label_type x) -> bool {
                                    call_history.push_back(x);
                                    return x % 2;
@@ -2631,11 +2729,11 @@ go_bandit([]() {
             AssertThat(call_history.at(10), Is().EqualTo(0u));
           });
 
-          it("prunes to-be quantified nodes with true terminals", [&]() {
+          it("prunes to-be quantified nodes with true terminals [&&]", [&]() {
             std::vector<bdd::label_type> call_history;
 
             bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
-                                 bdd_18T,
+                                 bdd(bdd_18T),
                                  [&call_history](const bdd::label_type x) -> bool {
                                    call_history.push_back(x);
                                    return x % 2 == 1;
@@ -2680,11 +2778,11 @@ go_bandit([]() {
             AssertThat(call_history.at(10), Is().EqualTo(0u));
           });
 
-          it("collapses root with true terminal during pruning transposition", [&]() {
+          it("collapses root with true terminal during pruning transposition [&&]", [&]() {
             std::vector<bdd::label_type> call_history;
 
             bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
-                                 bdd_5T,
+                                 bdd(bdd_5T),
                                  [&call_history](const bdd::label_type x) -> bool {
                                    call_history.push_back(x);
                                    return x % 2 == 0;
@@ -2712,11 +2810,11 @@ go_bandit([]() {
             AssertThat(call_history.at(3), Is().EqualTo(0u));
           });
 
-          it("skips to-be quantified nodes with false terminals", [&]() {
+          it("skips to-be quantified nodes with false terminals [&&]", [&]() {
             std::vector<bdd::label_type> call_history;
 
             bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
-                                 bdd_18F,
+                                 bdd(bdd_18F),
                                  [&call_history](const bdd::label_type x) -> bool {
                                    call_history.push_back(x);
                                    return x % 2 == 1;
@@ -2769,11 +2867,11 @@ go_bandit([]() {
             AssertThat(call_history.at(12), Is().EqualTo(0u));
           });
 
-          it("collapses to terminal during transposition as root with false is pruned", [&]() {
+          it("collapses to terminal during transposition as root with false is pruned [&&]", [&]() {
             std::vector<bdd::label_type> call_history;
 
             bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
-                                 bdd_5F,
+                                 bdd(bdd_5F),
                                  [&call_history](const bdd::label_type x) -> bool {
                                    call_history.push_back(x);
                                    return x % 2 == 0;
@@ -2805,9 +2903,9 @@ go_bandit([]() {
         });
 
         describe("access mode: priority queue", [&]() {
-          it("quantifies odd variables in BDD 1", [&]() {
+          it("quantifies odd variables in BDD 1 [&&]", [&]() {
             bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
-                                 bdd_1,
+                                 bdd(bdd_1),
                                  [](const bdd::label_type x) -> bool { return x % 2; });
 
             node_test_stream out_nodes(out);
@@ -2824,11 +2922,11 @@ go_bandit([]() {
             // TODO: meta variables...
           });
 
-          it("leaves unprunable to-be quantified node behind as-is", [&]() {
+          it("leaves unprunable to-be quantified node behind as-is [&&]", [&]() {
             std::vector<bdd::label_type> call_history;
 
             bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
-                                 bdd_4,
+                                 bdd(bdd_4),
                                  [&call_history](const bdd::label_type x) -> bool {
                                    call_history.push_back(x);
                                    return x % 2;
@@ -2883,11 +2981,11 @@ go_bandit([]() {
             AssertThat(call_history.at(10), Is().EqualTo(0u));
           });
 
-          it("prunes to-be quantified nodes with true terminals", [&]() {
+          it("prunes to-be quantified nodes with true terminals [&&]", [&]() {
             std::vector<bdd::label_type> call_history;
 
             bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
-                                 bdd_18T,
+                                 bdd(bdd_18T),
                                  [&call_history](const bdd::label_type x) -> bool {
                                    call_history.push_back(x);
                                    return x % 2 == 1;
@@ -2932,11 +3030,11 @@ go_bandit([]() {
             AssertThat(call_history.at(10), Is().EqualTo(0u));
           });
 
-          it("collapses root with true terminal during pruning transposition", [&]() {
+          it("collapses root with true terminal during pruning transposition [&&]", [&]() {
             std::vector<bdd::label_type> call_history;
 
             bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
-                                 bdd_5T,
+                                 bdd(bdd_5T),
                                  [&call_history](const bdd::label_type x) -> bool {
                                    call_history.push_back(x);
                                    return x % 2 == 0;
@@ -2964,11 +3062,11 @@ go_bandit([]() {
             AssertThat(call_history.at(3), Is().EqualTo(0u));
           });
 
-          it("skips to-be quantified nodes with false terminals", [&]() {
+          it("skips to-be quantified nodes with false terminals [&&]", [&]() {
             std::vector<bdd::label_type> call_history;
 
             bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
-                                 bdd_18F,
+                                 bdd(bdd_18F),
                                  [&call_history](const bdd::label_type x) -> bool {
                                    call_history.push_back(x);
                                    return x % 2 == 1;
@@ -3021,11 +3119,11 @@ go_bandit([]() {
             AssertThat(call_history.at(12), Is().EqualTo(0u));
           });
 
-          it("collapses to terminal during transposition as root with false is pruned", [&]() {
+          it("collapses to terminal during transposition as root with false is pruned [&&]", [&]() {
             std::vector<bdd::label_type> call_history;
 
             bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
-                                 bdd_5F,
+                                 bdd(bdd_5F),
                                  [&call_history](const bdd::label_type x) -> bool {
                                    call_history.push_back(x);
                                    return x % 2 == 0;
@@ -3057,7 +3155,7 @@ go_bandit([]() {
         });
 
         it("quantifies with always-true predicate in BDD 4 [&&]", [&]() {
-          bdd out = bdd_exists(ep, bdd_4, [](const bdd::label_type) -> bool { return true; });
+          bdd out = bdd_exists(ep, bdd(bdd_4), [](const bdd::label_type) -> bool { return true; });
 
           node_test_stream out_nodes(out);
 
@@ -3071,9 +3169,9 @@ go_bandit([]() {
           // TODO: meta variables...
         });
 
-        it("bails out on a level that only shortcuts", [&]() {
+        it("bails out on a level that only shortcuts [&&]", [&]() {
           bdd out =
-            bdd_exists(ep, bdd_9T, [](const bdd::label_type x) -> bool { return !(x % 2); });
+            bdd_exists(ep, bdd(bdd_9T), [](const bdd::label_type x) -> bool { return !(x % 2); });
 
           node_test_stream out_nodes(out);
 
@@ -3109,9 +3207,9 @@ go_bandit([]() {
           // TODO: meta variables
         });
 
-        it("bails out on a level that only is irrelevant", [&]() {
+        it("bails out on a level that only is irrelevant [&&]", [&]() {
           bdd out =
-            bdd_exists(ep, bdd_9F, [](const bdd::label_type x) -> bool { return !(x % 2); });
+            bdd_exists(ep, bdd(bdd_9F), [](const bdd::label_type x) -> bool { return !(x % 2); });
 
           node_test_stream out_nodes(out);
 
@@ -3139,8 +3237,8 @@ go_bandit([]() {
           // TODO: meta variables
         });
 
-        it("bails out on a level that both shortcuts and is irrelevant", [&]() {
-          bdd out = bdd_exists(ep, bdd_6_x4T, [](const bdd::label_type x) -> bool {
+        it("bails out on a level that both shortcuts and is irrelevant [&&]", [&]() {
+          bdd out = bdd_exists(ep, bdd(bdd_6_x4T), [](const bdd::label_type x) -> bool {
             return x == 4 || x == 2 || x == 1;
           });
 
@@ -3159,9 +3257,9 @@ go_bandit([]() {
           // TODO: meta variables
         });
 
-        it("kills intermediate dead partial solution", [&]() {
+        it("kills intermediate dead partial solution [&&]", [&]() {
           std::vector<bdd::label_type> call_history;
-          bdd out = bdd_exists(ep, bdd_10, [&call_history](const bdd::label_type x) -> bool {
+          bdd out = bdd_exists(ep, bdd(bdd_10), [&call_history](const bdd::label_type x) -> bool {
             call_history.push_back(x);
             return x == 3 || x == 2;
           });
@@ -3211,7 +3309,7 @@ go_bandit([]() {
           AssertThat(call_history.at(14), Is().EqualTo(0u));
         });
 
-        it("kills intermediate dead partial solutions multiple times", [&]() {
+        it("kills intermediate dead partial solutions multiple times [&&]", [&]() {
           /* expected
           //
           //         _1_
@@ -3225,7 +3323,8 @@ go_bandit([]() {
           //        |
           //        T
           */
-          bdd out = bdd_exists(ep, bdd_6, [](const bdd::label_type x) -> bool { return (x % 2); });
+          bdd out =
+            bdd_exists(ep, bdd(bdd_6), [](const bdd::label_type x) -> bool { return (x % 2); });
 
           node_test_stream out_nodes(out);
 
@@ -3241,8 +3340,9 @@ go_bandit([]() {
           // TODO: meta variables
         });
 
-        it("quantifies x0 and x1 in exploding BDD 15", [&]() {
-          bdd out = bdd_exists(ep, bdd_15, [](const bdd::label_type x) -> bool { return x < 2; });
+        it("quantifies x0 and x1 in exploding BDD 15 [&&]", [&]() {
+          bdd out =
+            bdd_exists(ep, bdd(bdd_15), [](const bdd::label_type x) -> bool { return x < 2; });
 
           node_test_stream out_nodes(out);
 
@@ -3504,7 +3604,7 @@ go_bandit([]() {
           //
           //        T
           */
-          bdd out = bdd_exists(ep, bdd_16, [](int x) -> bool { return x != 5; });
+          bdd out = bdd_exists(ep, bdd(bdd_16), [](int x) -> bool { return x != 5; });
 
           node_test_stream out_nodes(out);
 
@@ -3530,7 +3630,7 @@ go_bandit([]() {
           it("collapses during initial transposition of all variables in BDD 4 [&&]", [&]() {
             std::vector<bdd::label_type> call_history;
             bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
-                                 bdd_4,
+                                 bdd(bdd_4),
                                  [&call_history](const bdd::label_type x) -> bool {
                                    call_history.push_back(x);
                                    return true;
@@ -3623,7 +3723,7 @@ go_bandit([]() {
           it("collapses during repeated transposition in BDD 12a [&&]", [&]() {
             std::vector<bdd::label_type> call_history;
             bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
-                                 bdd_12a,
+                                 bdd(bdd_12a),
                                  [&call_history](const bdd::label_type x) -> bool {
                                    call_history.push_back(x);
                                    return 0 < x && x < 3;
@@ -3669,7 +3769,7 @@ go_bandit([]() {
           it("finishes during repeated transposition in BDD 12b [&&]", [&]() {
             std::vector<bdd::label_type> call_history;
             bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
-                                 bdd_12b,
+                                 bdd(bdd_12b),
                                  [&call_history](const bdd::label_type x) -> bool {
                                    call_history.push_back(x);
                                    return 0 < x && x < 3;
@@ -3774,7 +3874,7 @@ go_bandit([]() {
           it("finishes during repeated transposition with variables 1 and 2 in BDD 13 [&&]", [&]() {
             std::vector<bdd::label_type> call_history;
             bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
-                                 bdd_13,
+                                 bdd(bdd_13),
                                  [&call_history](const bdd::label_type x) -> bool {
                                    call_history.push_back(x);
                                    return x < 2;
@@ -3967,7 +4067,7 @@ go_bandit([]() {
           it("finishes early during repeated transposition [&&]", [&]() {
             std::vector<bdd::label_type> call_history;
             bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
-                                 bdd_10,
+                                 bdd(bdd_10),
                                  [&call_history](const bdd::label_type x) -> bool {
                                    call_history.push_back(x);
                                    return 1 < x;
@@ -4015,17 +4115,18 @@ go_bandit([]() {
           });
 
           it(
-            "quantifies x0 and x1 for exploding BDD 15 with unbounded repeated transposition",
+            "quantifies x0 and x1 for exploding BDD 15 with unbounded repeated transposition [&&]",
             [&]() {
               const exec_policy ep = exec_policy::access::Priority_Queue
                 & exec_policy::quantify::Nested & exec_policy::quantify::transposition_growth::max()
                 & exec_policy::quantify::transposition_max::max();
 
               std::vector<bdd::label_type> call_history;
-              bdd out = bdd_exists(ep, bdd_15, [&call_history](const bdd::label_type x) -> bool {
-                call_history.push_back(x);
-                return x < 2;
-              });
+              bdd out =
+                bdd_exists(ep, bdd(bdd_15), [&call_history](const bdd::label_type x) -> bool {
+                  call_history.push_back(x);
+                  return x < 2;
+                });
 
               node_test_stream out_nodes(out);
 
@@ -4343,7 +4444,7 @@ go_bandit([]() {
           it("collapses during initial transposition of all variables in BDD 4 [&&]", [&]() {
             std::vector<bdd::label_type> call_history;
             bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
-                                 bdd_4,
+                                 bdd(bdd_4),
                                  [&call_history](const bdd::label_type x) -> bool {
                                    call_history.push_back(x);
                                    return true;
@@ -4436,7 +4537,7 @@ go_bandit([]() {
           it("collapses during repeated transposition in BDD 12a [&&]", [&]() {
             std::vector<bdd::label_type> call_history;
             bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
-                                 bdd_12a,
+                                 bdd(bdd_12a),
                                  [&call_history](const bdd::label_type x) -> bool {
                                    call_history.push_back(x);
                                    return 0 < x && x < 3;
@@ -4482,7 +4583,7 @@ go_bandit([]() {
           it("finishes during repeated transposition in BDD 12b [&&]", [&]() {
             std::vector<bdd::label_type> call_history;
             bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
-                                 bdd_12b,
+                                 bdd(bdd_12b),
                                  [&call_history](const bdd::label_type x) -> bool {
                                    call_history.push_back(x);
                                    return 0 < x && x < 3;
@@ -4587,7 +4688,7 @@ go_bandit([]() {
           it("finishes during repeated transposition with variables 1 and 2 in BDD 13 [&&]", [&]() {
             std::vector<bdd::label_type> call_history;
             bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
-                                 bdd_13,
+                                 bdd(bdd_13),
                                  [&call_history](const bdd::label_type x) -> bool {
                                    call_history.push_back(x);
                                    return x < 2;
@@ -4780,7 +4881,7 @@ go_bandit([]() {
           it("finishes early during repeated transposition [&&]", [&]() {
             std::vector<bdd::label_type> call_history;
             bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
-                                 bdd_10,
+                                 bdd(bdd_10),
                                  [&call_history](const bdd::label_type x) -> bool {
                                    call_history.push_back(x);
                                    return 1 < x;
@@ -4828,17 +4929,18 @@ go_bandit([]() {
           });
 
           it(
-            "quantifies x0 and x1 for exploding BDD 15 with unbounded repeated transposition",
+            "quantifies x0 and x1 for exploding BDD 15 with unbounded repeated transposition [&&]",
             [&]() {
               const exec_policy ep = exec_policy::access::Priority_Queue
                 & exec_policy::quantify::Nested & exec_policy::quantify::transposition_growth::max()
                 & exec_policy::quantify::transposition_max::max();
 
               std::vector<bdd::label_type> call_history;
-              bdd out = bdd_exists(ep, bdd_15, [&call_history](const bdd::label_type x) -> bool {
-                call_history.push_back(x);
-                return x < 2;
-              });
+              bdd out =
+                bdd_exists(ep, bdd(bdd_15), [&call_history](const bdd::label_type x) -> bool {
+                  call_history.push_back(x);
+                  return x < 2;
+                });
 
               node_test_stream out_nodes(out);
 
@@ -5158,7 +5260,7 @@ go_bandit([]() {
             & exec_policy::quantify::transposition_max::max();
 
           std::vector<bdd::label_type> call_history;
-          bdd out = bdd_exists(ep, bdd_15, [&call_history](const bdd::label_type x) -> bool {
+          bdd out = bdd_exists(ep, bdd(bdd_15), [&call_history](const bdd::label_type x) -> bool {
             call_history.push_back(x);
             return x < 2;
           });
@@ -5477,7 +5579,7 @@ go_bandit([]() {
             & exec_policy::quantify::transposition_max(1);
 
           std::vector<bdd::label_type> call_history;
-          bdd out = bdd_exists(ep, bdd_12b, [&call_history](const bdd::label_type x) -> bool {
+          bdd out = bdd_exists(ep, bdd(bdd_12b), [&call_history](const bdd::label_type x) -> bool {
             call_history.push_back(x);
             return 0 < x && x < 3;
           });
@@ -5560,7 +5662,7 @@ go_bandit([]() {
 
         it("nested sweeping is done after transposing on deepest variable [&&]", [&]() {
           std::vector<bdd::label_type> call_history;
-          bdd out = bdd_exists(ep, bdd_4, [&call_history](const bdd::label_type x) -> bool {
+          bdd out = bdd_exists(ep, bdd(bdd_4), [&call_history](const bdd::label_type x) -> bool {
             call_history.push_back(x);
             return x == 3;
           });
@@ -5628,7 +5730,7 @@ go_bandit([]() {
 
         it("uses nested sweeping if no shallow variables are to-be quantified [&&]", [&]() {
           std::vector<bdd::label_type> call_history;
-          bdd out = bdd_exists(ep, bdd_13, [&call_history](const bdd::label_type x) -> bool {
+          bdd out = bdd_exists(ep, bdd(bdd_13), [&call_history](const bdd::label_type x) -> bool {
             call_history.push_back(x);
             return 5 <= x;
           });
@@ -5738,10 +5840,334 @@ go_bandit([]() {
       });
     });
 
-    describe("bdd_exists(const bdd&, const generator<bdd::label_type>&)", [&]() {
-      it("returns input on 'optional::none' generator BDD 1 [&&]", [&]() {
-        __bdd out = bdd_exists(bdd_1, []() -> optional<bdd::label_type> { return {}; });
+    describe("bdd_exists(__bdd&&, const predicate<bdd::label_type>&)", [&]() {
+      it("returns original file on reduced BDD 1 and always-false predicate [&&]", [&]() {
+        __bdd out = bdd_exists(__bdd(bdd_1), [](const bdd::label_type) -> bool { return false; });
+        AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
+      });
 
+      it("returns original file on reduced BDD 2 and always-false predicate [&&]", [&]() {
+        __bdd out = bdd_exists(__bdd(bdd_2), [](const bdd::label_type) -> bool { return false; });
+        AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_2));
+      });
+
+      describe("algorithm: Singleton", [&]() {
+        const exec_policy ep = exec_policy::quantify::Singleton;
+
+        it("quantifies even variables in unreduced BDD 4 [&&]", [&]() {
+          std::vector<bdd::label_type> call_history;
+
+          const bdd out = bdd_exists(
+            ep, __bdd(bdd_4__unreduced, ep), [&call_history](const bdd::label_type x) -> bool {
+              call_history.push_back(x);
+              return !(x % 2);
+            });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2')
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+          //       that this change makes sense and is as intended.
+          AssertThat(call_history.size(), Is().EqualTo(9u));
+
+          // - Generate predicate profile / First quantification
+          AssertThat(call_history.at(0), Is().EqualTo(0u));
+          AssertThat(call_history.at(1), Is().EqualTo(1u));
+          AssertThat(call_history.at(2), Is().EqualTo(2u));
+          AssertThat(call_history.at(3), Is().EqualTo(3u));
+
+          // - Second quantification
+          AssertThat(call_history.at(4), Is().EqualTo(3u));
+          AssertThat(call_history.at(5), Is().EqualTo(1u));
+          AssertThat(call_history.at(6), Is().EqualTo(0u));
+
+          // - Third quantification
+          AssertThat(call_history.at(7), Is().EqualTo(3u));
+          AssertThat(call_history.at(8), Is().EqualTo(1u));
+        });
+      });
+
+      describe("algorithm: Nested", [&]() {
+        const exec_policy ep = exec_policy::quantify::Nested;
+
+        it("quantifies x0 in unreduced BDD 1 into terminal [&&]", [&]() {
+          std::vector<bdd::label_type> call_history;
+
+          const bdd out = bdd_exists(
+            ep, __bdd(bdd_1__unreduced, ep), [&call_history](const bdd::label_type x) -> bool {
+              call_history.push_back(x);
+              return x == 0;
+            });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+          //       that this change makes sense and is as intended.
+          AssertThat(call_history.size(), Is().EqualTo(3u));
+
+          // - Nested Sweep
+          AssertThat(call_history.at(0), Is().EqualTo(2u));
+          AssertThat(call_history.at(1), Is().EqualTo(1u));
+          AssertThat(call_history.at(2), Is().EqualTo(0u)); // <-- bail out into terminal!
+        });
+
+        it("quantifies even variables in reduced BDD 4 [&&]", [&]() {
+          std::vector<bdd::label_type> call_history;
+
+          const bdd out =
+            bdd_exists(ep, __bdd(bdd_4), [&call_history](const bdd::label_type x) -> bool {
+              call_history.push_back(x);
+              return !(x % 2);
+            });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2')
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+          //       that this change makes sense and is as intended.
+          AssertThat(call_history.size(), Is().EqualTo(11u));
+
+          // - Generate predicate profile
+          AssertThat(call_history.at(0), Is().EqualTo(0u));
+          AssertThat(call_history.at(1), Is().EqualTo(1u));
+          AssertThat(call_history.at(2), Is().EqualTo(2u));
+          AssertThat(call_history.at(3), Is().EqualTo(3u));
+
+          // - Pruning sweep
+          AssertThat(call_history.at(4), Is().EqualTo(0u));
+          AssertThat(call_history.at(5), Is().EqualTo(1u));
+          AssertThat(call_history.at(6), Is().EqualTo(2u)); // <-- pruned!
+          AssertThat(call_history.at(7), Is().EqualTo(3u));
+
+          // - Nested sweep looking for the 'next_inner' bottom-up
+          AssertThat(call_history.at(8), Is().EqualTo(3u));
+          AssertThat(call_history.at(9), Is().EqualTo(1u));
+          AssertThat(call_history.at(10), Is().EqualTo(0u));
+        });
+
+        it("quantifies even variables in unreduced BDD 4 [&&]", [&]() {
+          std::vector<bdd::label_type> call_history;
+
+          const bdd out = bdd_exists(
+            ep, __bdd(bdd_4__unreduced, ep), [&call_history](const bdd::label_type x) -> bool {
+              call_history.push_back(x);
+              return !(x % 2);
+            });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2')
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+          //       that this change makes sense and is as intended.
+          AssertThat(call_history.size(), Is().EqualTo(5u));
+
+          // - Nested Sweep
+          AssertThat(call_history.at(0), Is().EqualTo(4u)); // <-- bail out!
+          AssertThat(call_history.at(1), Is().EqualTo(3u));
+          AssertThat(call_history.at(2), Is().EqualTo(2u)); // <-- bail out!
+          AssertThat(call_history.at(3), Is().EqualTo(1u));
+          AssertThat(call_history.at(4), Is().EqualTo(0u)); // <-- quantification!
+        });
+
+        it("quantifies odd variables in reduced BDD 4 [&&]", [&]() {
+          std::vector<bdd::label_type> call_history;
+
+          const bdd out =
+            bdd_exists(ep, __bdd(bdd_4), [&call_history](const bdd::label_type x) -> bool {
+              call_history.push_back(x);
+              return x % 2;
+            });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (3)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+          //       that this change makes sense and is as intended.
+          AssertThat(call_history.size(), Is().EqualTo(11u));
+
+          // - Generate predicate profile
+          AssertThat(call_history.at(0), Is().EqualTo(0u));
+          AssertThat(call_history.at(1), Is().EqualTo(1u));
+          AssertThat(call_history.at(2), Is().EqualTo(2u));
+          AssertThat(call_history.at(3), Is().EqualTo(3u));
+
+          // - Pruning sweep
+          AssertThat(call_history.at(4), Is().EqualTo(0u));
+          AssertThat(call_history.at(5), Is().EqualTo(1u));
+          AssertThat(call_history.at(6), Is().EqualTo(2u));
+          AssertThat(call_history.at(7), Is().EqualTo(3u)); // <-- pruned!
+
+          // - Nested sweep looking for the 'next_inner' bottom-up
+          AssertThat(call_history.at(8), Is().EqualTo(2u));
+          AssertThat(call_history.at(9), Is().EqualTo(1u)); // <-- bail out!
+          AssertThat(call_history.at(10), Is().EqualTo(0u));
+        });
+
+        it("quantifies odd variables in unreduced BDD 4 [&&]", [&]() {
+          std::vector<bdd::label_type> call_history;
+
+          const bdd out = bdd_exists(
+            ep, __bdd(bdd_4__unreduced, ep), [&call_history](const bdd::label_type x) -> bool {
+              call_history.push_back(x);
+              return x % 2;
+            });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (3)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+          //       that this change makes sense and is as intended.
+          AssertThat(call_history.size(), Is().EqualTo(5u));
+
+          // - Nested Sweep
+          AssertThat(call_history.at(0), Is().EqualTo(4u));
+          AssertThat(call_history.at(1), Is().EqualTo(3u)); // <-- bail out!
+          AssertThat(call_history.at(2), Is().EqualTo(2u));
+          AssertThat(call_history.at(3), Is().EqualTo(1u)); // <-- bail out!
+          AssertThat(call_history.at(4), Is().EqualTo(0u));
+        });
+      });
+
+      // TODO: More tests on arc-based input to independently recreate the more complex tests of the
+      //       nested sweeping framework above.
+    });
+
+    describe("bdd_exists(const bdd&, const generator<bdd::label_type>&)", [&]() {
+      it("returns original file on 'optional::none' generator [&&]", [&]() {
+        __bdd out = bdd_exists(bdd(bdd_1), []() -> optional<bdd::label_type> { return {}; });
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
       });
 
@@ -5749,7 +6175,7 @@ go_bandit([]() {
         const exec_policy ep = exec_policy::quantify::Singleton;
 
         it("quantifies 3, 1 in BDD 4 [&&]", [&]() {
-          bdd out = bdd_exists(ep, bdd_4, [var = 3]() mutable -> optional<bdd::label_type> {
+          bdd out = bdd_exists(ep, bdd(bdd_4), [var = 3]() mutable -> optional<bdd::label_type> {
             if (var == 42) { return {}; }
 
             const bdd::label_type ret = var;
@@ -5817,7 +6243,7 @@ go_bandit([]() {
         });
 
         it("quantifies 1 in BDD 1 [&&]", [&]() {
-          bdd out = bdd_exists(ep, bdd_1, [var = 1]() mutable -> optional<bdd::label_type> {
+          bdd out = bdd_exists(ep, bdd(bdd_1), [var = 1]() mutable -> optional<bdd::label_type> {
             if (var == 0) { return {}; }
             return { var-- };
           });
@@ -5838,7 +6264,7 @@ go_bandit([]() {
           int calls = 0;
 
           const bdd out =
-            bdd_exists(ep, bdd_3, [&calls]() -> bdd::label_type { return 2 - 2 * (calls++); });
+            bdd_exists(ep, bdd(bdd_3), [&calls]() -> bdd::label_type { return 2 - 2 * (calls++); });
 
           // What could be expected is 3 calls: 2, 0 . But, here it terminates early.
           AssertThat(calls, Is().EqualTo(2));
@@ -5862,7 +6288,7 @@ go_bandit([]() {
         describe("access mode: random access", [&]() {
           it("quantifies 3, 1 in BDD 4 [&&]", [&]() {
             bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
-                                 bdd_4,
+                                 bdd(bdd_4),
                                  [var = 3]() mutable -> optional<bdd::label_type> {
                                    if (var == 42) { return {}; }
 
@@ -5897,7 +6323,7 @@ go_bandit([]() {
 
           it("quantifies 1 in BDD 1 [&&]", [&]() {
             bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
-                                 bdd_1,
+                                 bdd(bdd_1),
                                  [var = 1]() mutable -> optional<bdd::label_type> {
                                    if (var == 0) { return {}; }
                                    return { var-- };
@@ -5919,7 +6345,7 @@ go_bandit([]() {
         describe("access mode: priority queue", [&]() {
           it("quantifies 3, 1 in BDD 4 [&&]", [&]() {
             bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
-                                 bdd_4,
+                                 bdd(bdd_4),
                                  [var = 3]() mutable -> optional<bdd::label_type> {
                                    if (var == 42) { return {}; }
 
@@ -5954,7 +6380,7 @@ go_bandit([]() {
 
           it("quantifies 1 in BDD 1 [&&]", [&]() {
             bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
-                                 bdd_1,
+                                 bdd(bdd_1),
                                  [var = 1]() mutable -> optional<bdd::label_type> {
                                    if (var == 0) { return {}; }
                                    return { var-- };
@@ -5973,8 +6399,8 @@ go_bandit([]() {
           });
         });
 
-        it("bails out on a level that only shortcuts", [&]() {
-          bdd out = bdd_exists(ep, bdd_9T, [var = 6]() mutable -> optional<bdd::label_type> {
+        it("bails out on a level that only shortcuts [&&]", [&]() {
+          bdd out = bdd_exists(ep, bdd(bdd_9T), [var = 6]() mutable -> optional<bdd::label_type> {
             if (var == 42) { return {}; }
 
             const bdd::label_type res = var;
@@ -6017,7 +6443,7 @@ go_bandit([]() {
         });
 
         it("bails out on a level that only is irrelevant", [&]() {
-          bdd out = bdd_exists(ep, bdd_9F, [var = 6]() mutable -> optional<bdd::label_type> {
+          bdd out = bdd_exists(ep, bdd(bdd_9F), [var = 6]() mutable -> optional<bdd::label_type> {
             if (var == 42) { return make_optional<bdd::label_type>(); }
 
             const bdd::label_type res = var;
@@ -6051,26 +6477,27 @@ go_bandit([]() {
           // TODO: meta variables
         });
 
-        it("bails out on a level that both shortcuts and is irrelevant", [&]() {
-          bdd out = bdd_exists(ep, bdd_6_x4T, [var = 4]() mutable -> optional<bdd::label_type> {
-            if (var == 42) { return {}; }
-            const bdd::label_type res = var;
-            switch (res) {
-            case 4: {
-              var = 2;
-              break;
-            } // <-- 4: transposing
-            case 2: {
-              var = 1;
-              break;
-            } // <-- 2: shortuctting / irrelevant
-            default: {
-              var = 42;
-              break;
-            } // <-- 1: final sweep
-            }
-            return { res };
-          });
+        it("bails out on a level that both shortcuts and is irrelevant [&&]", [&]() {
+          bdd out =
+            bdd_exists(ep, bdd(bdd_6_x4T), [var = 4]() mutable -> optional<bdd::label_type> {
+              if (var == 42) { return {}; }
+              const bdd::label_type res = var;
+              switch (res) {
+              case 4: {
+                var = 2;
+                break;
+              } // <-- 4: transposing
+              case 2: {
+                var = 1;
+                break;
+              } // <-- 2: shortuctting / irrelevant
+              default: {
+                var = 42;
+                break;
+              } // <-- 1: final sweep
+              }
+              return { res };
+            });
 
           // TODO predict output!
           node_test_stream out_nodes(out);
@@ -6087,19 +6514,20 @@ go_bandit([]() {
           // TODO: meta variables
         });
 
-        it("kills intermediate dead partial solution", [&]() {
-          bdd out = bdd_exists(ep, bdd_10, [var = make_optional<bdd::label_type>(3)]() mutable {
-            if (!var) { return var; }
+        it("kills intermediate dead partial solution [&&]", [&]() {
+          bdd out =
+            bdd_exists(ep, bdd(bdd_10), [var = make_optional<bdd::label_type>(3)]() mutable {
+              if (!var) { return var; }
 
-            const optional<bdd::label_type> res = var;
-            if (2 < var.value()) {
-              var = var.value() - 1;
-            } else {
-              var = {};
-            }
+              const optional<bdd::label_type> res = var;
+              if (2 < var.value()) {
+                var = var.value() - 1;
+              } else {
+                var = {};
+              }
 
-            return res;
-          });
+              return res;
+            });
 
           node_test_stream out_nodes(out);
 
@@ -6119,7 +6547,7 @@ go_bandit([]() {
           // TODO: meta variables
         });
 
-        it("kills intermediate dead partial solutions multiple times", [&]() {
+        it("kills intermediate dead partial solutions multiple times [&&]", [&]() {
           /* expected
           //
           //         _1_
@@ -6133,7 +6561,7 @@ go_bandit([]() {
           //        |
           //        T
           */
-          bdd out = bdd_exists(ep, bdd_6, [var = 7]() mutable -> optional<bdd::label_type> {
+          bdd out = bdd_exists(ep, bdd(bdd_6), [var = 7]() mutable -> optional<bdd::label_type> {
             if (var == 42) { return make_optional<bdd::label_type>(); }
 
             const bdd::label_type ret = var;
@@ -6155,12 +6583,12 @@ go_bandit([]() {
           // TODO: meta variables
         });
 
-        it("accounts for number of root arcs from Outer Sweep [&]", [&]() {
+        it("accounts for number of root arcs from Outer Sweep [&&]", [&]() {
           /* expected
           //
           //        T
           */
-          bdd out = bdd_exists(ep, bdd_16, [var = 6]() mutable -> optional<bdd::label_type> {
+          bdd out = bdd_exists(ep, bdd(bdd_16), [var = 6]() mutable -> optional<bdd::label_type> {
             var -= 1;
 
             if (var < 0) { return {}; }
@@ -6184,24 +6612,238 @@ go_bandit([]() {
       });
     });
 
-    describe("bdd_exists(const bdd&, ForwardIt begin, ForwardIt end)", [&]() {
-      it("returns original file for [].begin() in BDD 1 [&]", [&]() {
+    describe("bdd_exists(__bdd&&, const generator<bdd::label_type>&)", [&]() {
+      it("returns original file on reduced BDD 1 and 'optional::none' generator [&&]", [&]() {
+        __bdd out = bdd_exists(__bdd(bdd_1), []() -> optional<int> { return {}; });
+        AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
+      });
+
+      it("returns original file on reduced BDD 2 and 'optional::none' generator [&&]", [&]() {
+        __bdd out = bdd_exists(__bdd(bdd_2), []() -> optional<int> { return {}; });
+        AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_2));
+      });
+
+      describe("algorithm: Singleton", [&]() {
+        const exec_policy ep = exec_policy::quantify::Singleton;
+
+        it("quantifies even variables in unreduced BDD 4 [&&]", [&]() {
+          const bdd out = bdd_exists(
+            ep, __bdd(bdd_4__unreduced, ep), [var = 4]() mutable -> optional<bdd::label_type> {
+              if (var < 0) { return {}; }
+              return var -= 2;
+            });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2')
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
+      });
+
+      describe("algorithm: Nested", [&]() {
+        const exec_policy ep = exec_policy::quantify::Nested;
+
+        it("quantifies x0 in unreduced BDD 1 into terminal [&&]", [&]() {
+          const bdd out = bdd_exists(
+            ep, __bdd(bdd_1__unreduced, ep), [called = false]() mutable -> optional<int> {
+              if (called) { return {}; }
+              called = true;
+              return { 0 };
+            });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
+
+        it("quantifies even variables in reduced BDD 4 [&&]", [&]() {
+          const bdd out =
+            bdd_exists(ep, __bdd(bdd_4), [var = 4]() mutable -> optional<bdd::label_type> {
+              if (var < 0) { return {}; }
+              return var -= 2;
+            });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2')
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
+
+        it("quantifies even variables in unreduced BDD 4 [&&]", [&]() {
+          const bdd out = bdd_exists(
+            ep, __bdd(bdd_4__unreduced, ep), [var = 4]() mutable -> optional<bdd::label_type> {
+              if (var < 0) { return {}; }
+              return var -= 2;
+            });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2')
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
+
+        it("quantifies odd variables in reduced BDD 4 [&&]", [&]() {
+          const bdd out =
+            bdd_exists(ep, __bdd(bdd_4), [var = 5]() mutable -> optional<bdd::label_type> {
+              if (var < 0) { return {}; }
+              return var -= 2;
+            });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (3)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
+
+        it("quantifies odd variables in unreduced BDD 4 [&&]", [&]() {
+          const bdd out = bdd_exists(
+            ep, __bdd(bdd_4__unreduced, ep), [var = 5]() mutable -> optional<bdd::label_type> {
+              if (var < 0) { return {}; }
+              return var -= 2;
+            });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (3)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
+      });
+
+      // TODO: More tests on arc-based input to independently recreate the more complex tests of the
+      //       nested sweeping framework above.
+    });
+
+    describe("bdd_exists(const bdd&, ForwardIt, ForwardIt)", [&]() {
+      it("returns original file for [].begin() in BDD 1 [const &]", [&]() {
+        const bdd in = bdd_1;
+
         const std::vector<bdd::label_type> vars = {};
-        const bdd out                           = bdd_exists(bdd_1, vars.begin(), vars.end());
+        const bdd out                           = bdd_exists(in, vars.begin(), vars.end());
 
         AssertThat(out.file_ptr(), Is().EqualTo(bdd_1));
       });
 
-      it("returns original file for [3, 5].rbegin() in BDD 11 [&]", [&]() {
+      it("returns original file for [3, 5].rbegin() in BDD 11 [const &]", [&]() {
+        const bdd in = bdd_11;
+
         const std::vector<bdd::label_type> vars = { 3, 5 };
-        const bdd out                           = bdd_exists(bdd_11, vars.rbegin(), vars.rend());
+        const bdd out                           = bdd_exists(in, vars.rbegin(), vars.rend());
 
         AssertThat(out.file_ptr(), Is().EqualTo(bdd_11));
       });
 
-      it("returns original file for [0, 3].rbegin() in BDD 11 [&]", [&]() {
+      it("returns original file for [0, 3].rbegin() in BDD 11 [&&]", [&]() {
         const std::vector<bdd::label_type> vars = { 0, 3 };
-        const bdd out                           = bdd_exists(bdd_11, vars.rbegin(), vars.rend());
+        const bdd out = bdd_exists(bdd(bdd_11), vars.rbegin(), vars.rend());
 
         AssertThat(out.file_ptr(), Is().EqualTo(bdd_11));
       });
@@ -6209,7 +6851,7 @@ go_bandit([]() {
       it("quantifies [1, 3].rbegin() in BDD 4 [&&]", [&]() {
         std::vector<bdd::label_type> vars = { 1, 3 };
 
-        bdd out = bdd_exists(bdd_4, vars.rbegin(), vars.rend());
+        bdd out = bdd_exists(bdd(bdd_4), vars.rbegin(), vars.rend());
 
         node_test_stream out_nodes(out);
 
@@ -6297,19 +6939,214 @@ go_bandit([]() {
       });
     });
 
+    describe("bdd_exists(__bdd&&, ForwardIt, ForwardIt)", [&]() {
+      it("returns original file on reduced BDD 1 and [].begin [&&]", [&]() {
+        const std::vector<int> vars = {};
+        __bdd out = bdd_exists(__bdd(bdd_1), vars.begin(), vars.end());
+        AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
+      });
+
+      it("returns original file on reduced BDD 2 and [].begin [&&]", [&]() {
+        const std::vector<int> vars = {};
+        __bdd out = bdd_exists(__bdd(bdd_2), vars.begin(), vars.end());
+        AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_2));
+      });
+
+      describe("algorithm: Singleton", [&]() {
+        const exec_policy ep = exec_policy::quantify::Singleton;
+
+        it("quantifies [4, 2, 0].begin() in unreduced BDD 4 [&&]", [&]() {
+          const std::vector<int> vars = { 4, 2, 0 };
+          const bdd out = bdd_exists(ep, __bdd(bdd_4__unreduced, ep), vars.begin(), vars.end());
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2')
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
+      });
+
+      describe("algorithm: Nested", [&]() {
+        const exec_policy ep = exec_policy::quantify::Nested;
+
+        it("quantifies [0].begin() in unreduced BDD 1 into terminal [&&]", [&]() {
+          const std::vector<int> vars = { 0 };
+
+          const bdd out = bdd_exists(ep, __bdd(bdd_1__unreduced, ep), vars.begin(), vars.end());
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
+
+        it("quantifies [0, 2, 4].rbegin() in reduced BDD 4 [&&]", [&]() {
+          const std::vector<int> vars = { 0, 2, 4 };
+          const bdd out               = bdd_exists(ep, __bdd(bdd_4), vars.rbegin(), vars.rend());
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2')
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
+
+        it("quantifies [0, 2, 4].rbegin() in unreduced BDD 4 [&&]", [&]() {
+          const std::vector<int> vars = { 0, 2, 4 };
+          const bdd out = bdd_exists(ep, __bdd(bdd_4__unreduced, ep), vars.rbegin(), vars.rend());
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2')
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
+
+        it("quantifies [3, 1].begin() in reduced BDD 4 [&&]", [&]() {
+          const std::vector<int> vars = { 3, 1 };
+          const bdd out               = bdd_exists(ep, __bdd(bdd_4), vars.begin(), vars.end());
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (3)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
+
+        it("quantifies odd variables in unreduced BDD 4 [&&]", [&]() {
+          const std::vector<int> vars = { 3, 1 };
+          const bdd out = bdd_exists(ep, __bdd(bdd_4__unreduced, ep), vars.begin(), vars.end());
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (3)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
+      });
+
+      // TODO: More tests on arc-based input to independently recreate the more complex tests of the
+      //       nested sweeping framework above.
+    });
+
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // We will not test the Forall operator as much, since it is the same
     // underlying algorithm, but just with the AND operator.
     describe("bdd_forall(const bdd&, bdd::label_type)", [&]() {
-      it("quantifies T terminal-only BDD as itself", [&]() {
-        __bdd out = bdd_forall(terminal_T, 42);
+      it("quantifies T terminal-only BDD as itself [const &]", [&]() {
+        const bdd in = terminal_T;
+        __bdd out    = bdd_forall(in, 42);
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(terminal_T));
         AssertThat(out.negate, Is().False());
       });
 
-      it("quantifies F terminal-only BDD as itself", [&]() {
-        __bdd out = bdd_forall(terminal_F, 21);
+      it("quantifies F terminal-only BDD as itself [&&]", [&]() {
+        __bdd out = bdd_forall(bdd(terminal_F), 21);
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(terminal_F));
         AssertThat(out.negate, Is().False());
@@ -6318,8 +7155,9 @@ go_bandit([]() {
       describe("access mode: random access", [&]() {
         const exec_policy ep = exec_policy::access::Random_Access;
 
-        it("quantifies root with non-shortcutting terminal [BDD 1]", [&]() {
-          __bdd out = bdd_forall(ep, bdd_1, 0);
+        it("quantifies root with non-shortcutting terminal [const &]", [&]() {
+          const bdd in = bdd_1;
+          __bdd out    = bdd_forall(ep, in, 0);
 
           arc_test_stream arcs(out);
 
@@ -6351,11 +7189,11 @@ go_bandit([]() {
                      Is().EqualTo(1u));
         });
 
-        it("quantifies root of [BDD 3] (in a different order than with a secondary priority queue)",
+        it("quantifies root (in a different order than with a secondary priority queue) [&&]",
            [&]() {
              // With random access, the order between (3,_) and (3,4) changes; remember that _ is
              // represented by 'nil'.
-             __bdd out = bdd_forall(ep, bdd_3, 0);
+             __bdd out = bdd_forall(ep, bdd(bdd_3), 0);
 
              arc_test_stream arcs(out);
 
@@ -6406,8 +7244,8 @@ go_bandit([]() {
                         Is().EqualTo(1u));
            });
 
-        it("prunes shortcuttable requests [BDD 4]", [&]() {
-          __bdd out = bdd_forall(ep, bdd_4, 2);
+        it("prunes shortcuttable requests [&&]", [&]() {
+          __bdd out = bdd_forall(ep, bdd(bdd_4), 2);
 
           arc_test_stream arcs(out);
 
@@ -6461,76 +7299,76 @@ go_bandit([]() {
                      Is().EqualTo(1u));
         });
 
-        it("resolves nodes in a different order than with a secondary priority queue [BDD 17b]",
-           [&]() {
-             __bdd out = bdd_forall(ep, bdd_17b, 0);
+        it("resolves nodes in a different order than with a secondary priority queue [&&]", [&]() {
+          __bdd out = bdd_forall(ep, bdd(bdd_17b), 0);
 
-             arc_test_stream arcs(out);
+          arc_test_stream arcs(out);
 
-             AssertThat(arcs.can_pull_internal(), Is().True()); // (4,6)
-             AssertThat(arcs.pull_internal(),
-                        Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (4,6)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 0) }));
 
-             AssertThat(arcs.can_pull_internal(), Is().True()); // (5,_)
-             AssertThat(arcs.pull_internal(),
-                        Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 1) }));
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (5,_)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 1) }));
 
-             AssertThat(arcs.can_pull_internal(), Is().True()); // (7,_)
-             AssertThat(arcs.pull_internal(),
-                        Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(3, 0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (7,_)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(3, 0) }));
 
-             AssertThat(arcs.can_pull_internal(), Is().False());
+          AssertThat(arcs.can_pull_internal(), Is().False());
 
-             AssertThat(arcs.can_pull_terminal(), Is().True()); // (4,6)
-             AssertThat(arcs.pull_terminal(),
-                        Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(false) }));
+          AssertThat(arcs.can_pull_terminal(), Is().True()); // (4,6)
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(false) }));
 
-             AssertThat(arcs.can_pull_terminal(), Is().True()); // (5,_)
-             AssertThat(arcs.pull_terminal(),
-                        Is().EqualTo(arc{ ptr_uint64(2, 1), false, ptr_uint64(false) }));
-             AssertThat(arcs.can_pull_terminal(), Is().True());
-             AssertThat(arcs.pull_terminal(),
-                        Is().EqualTo(arc{ ptr_uint64(2, 1), true, ptr_uint64(true) }));
+          AssertThat(arcs.can_pull_terminal(), Is().True()); // (5,_)
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 1), false, ptr_uint64(false) }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 1), true, ptr_uint64(true) }));
 
-             AssertThat(arcs.can_pull_terminal(), Is().True()); // (7,_)
-             AssertThat(arcs.pull_terminal(),
-                        Is().EqualTo(arc{ ptr_uint64(3, 0), false, ptr_uint64(true) }));
-             AssertThat(arcs.can_pull_terminal(), Is().True()); // (7,_)
-             AssertThat(arcs.pull_terminal(),
-                        Is().EqualTo(arc{ ptr_uint64(3, 0), true, ptr_uint64(false) }));
+          AssertThat(arcs.can_pull_terminal(), Is().True()); // (7,_)
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(3, 0), false, ptr_uint64(true) }));
+          AssertThat(arcs.can_pull_terminal(), Is().True()); // (7,_)
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(3, 0), true, ptr_uint64(false) }));
 
-             AssertThat(arcs.can_pull_terminal(), Is().False());
+          AssertThat(arcs.can_pull_terminal(), Is().False());
 
-             level_info_test_stream levels(out);
+          level_info_test_stream levels(out);
 
-             AssertThat(levels.can_pull(), Is().True());
-             AssertThat(levels.pull(), Is().EqualTo(level_info(1u, 1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1u, 1u)));
 
-             AssertThat(levels.can_pull(), Is().True());
-             AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 2u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 2u)));
 
-             AssertThat(levels.can_pull(), Is().True());
-             AssertThat(levels.pull(), Is().EqualTo(level_info(3u, 1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(3u, 1u)));
 
-             AssertThat(levels.can_pull(), Is().False());
+          AssertThat(levels.can_pull(), Is().False());
 
-             AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
-                        Is().GreaterThanOrEqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                     Is().GreaterThanOrEqualTo(2u));
 
-             AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
 
-             AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
-                        Is().EqualTo(3u));
-             AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
-                        Is().EqualTo(2u));
-           });
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(3u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(2u));
+        });
       });
 
       describe("access mode: priority queue", [&]() {
         const exec_policy ep = exec_policy::access::Priority_Queue;
 
-        it("quantifies root with non-shortcutting terminal [BDD 1]", [&]() {
-          __bdd out = bdd_forall(ep, bdd_1, 0);
+        it("quantifies root with non-shortcutting terminal [const &]", [&]() {
+          const bdd in = bdd_1;
+          __bdd out    = bdd_forall(ep, in, 0);
 
           arc_test_stream arcs(out);
 
@@ -6562,8 +7400,8 @@ go_bandit([]() {
                      Is().EqualTo(1u));
         });
 
-        it("quantifies root of [BDD 3] (in a different order than with random access)", [&]() {
-          __bdd out = bdd_forall(ep, bdd_3, 0);
+        it("quantifies root (in a different order than with random access) [&&]", [&]() {
+          __bdd out = bdd_forall(ep, bdd(bdd_3), 0);
 
           arc_test_stream arcs(out);
 
@@ -6614,8 +7452,8 @@ go_bandit([]() {
                      Is().EqualTo(1u));
         });
 
-        it("prunes shortcuttable requests [BDD 4]", [&]() {
-          __bdd out = bdd_forall(ep, bdd_4, 2);
+        it("prunes shortcuttable requests [&&]", [&]() {
+          __bdd out = bdd_forall(ep, bdd(bdd_4), 2);
 
           arc_test_stream arcs(out);
 
@@ -6669,8 +7507,8 @@ go_bandit([]() {
                      Is().EqualTo(1u));
         });
 
-        it("can forward information across a level [BDD 6]", [&]() {
-          __bdd out = bdd_forall(ep, bdd_6, 1);
+        it("can forward information across a level [&&]", [&]() {
+          __bdd out = bdd_forall(ep, bdd(bdd_6), 1);
 
           arc_test_stream arcs(out);
 
@@ -6737,9 +7575,9 @@ go_bandit([]() {
                      Is().EqualTo(1u));
         });
 
-        it("collapses tuple requests of the same node back into request on a single node [BDD 8a]",
+        it("collapses tuple requests of the same node back into request on a single node [&&]",
            [&]() {
-             __bdd out = bdd_forall(ep, bdd_8a, 1);
+             __bdd out = bdd_forall(ep, bdd(bdd_8a), 1);
 
              arc_test_stream arcs(out);
 
@@ -6791,8 +7629,8 @@ go_bandit([]() {
                         Is().EqualTo(1u));
            });
 
-        it("resolves nodes in a different order than with random access [BDD 17b]", [&]() {
-          __bdd out = bdd_forall(ep, bdd_17b, 0);
+        it("resolves nodes in a different order than with random access [&&]", [&]() {
+          __bdd out = bdd_forall(ep, bdd(bdd_17b), 0);
 
           arc_test_stream arcs(out);
 
@@ -6856,15 +7694,19 @@ go_bandit([]() {
       });
     });
 
+    describe("bdd_forall(__bdd&&, bdd::label_type)", [&]() {
+      // TODO
+    });
+
     describe("bdd_forall(const bdd&, const predicate<bdd::label_type>&)", [&]() {
-      it("returns input on always-false predicate BDD 1 [const &]", [&]() {
+      it("returns original file on always-false predicate BDD 1 [const &]", [&]() {
         bdd in    = bdd_1;
         __bdd out = bdd_forall(in, [](const bdd::label_type) -> bool { return false; });
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
       });
 
-      it("returns input on always-false predicate BDD 1 [&&]", [&]() {
-        __bdd out = bdd_forall(bdd_1, [](const bdd::label_type) -> bool { return false; });
+      it("returns original file on always-false predicate BDD 1 [&&]", [&]() {
+        __bdd out = bdd_forall(bdd(bdd_1), [](const bdd::label_type) -> bool { return false; });
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
       });
 
@@ -6896,7 +7738,7 @@ go_bandit([]() {
 
         it("quantifies odd variables in BDD 1 [&&]", [&]() {
           const bdd out =
-            bdd_forall(ep, bdd_1, [](const bdd::label_type x) -> bool { return x % 2; });
+            bdd_forall(ep, bdd(bdd_1), [](const bdd::label_type x) -> bool { return x % 2; });
 
           node_test_stream out_nodes(out);
 
@@ -6918,7 +7760,7 @@ go_bandit([]() {
 
         it("quantifies <= 2 variables in BDD 4 [&&]", [&]() {
           const bdd out =
-            bdd_forall(ep, bdd_4, [](const bdd::label_type x) -> bool { return x <= 2; });
+            bdd_forall(ep, bdd(bdd_4), [](const bdd::label_type x) -> bool { return x <= 2; });
 
           node_test_stream out_nodes(out);
 
@@ -6937,7 +7779,7 @@ go_bandit([]() {
           // TODO: top-down dependant?
           int calls = 0;
 
-          const bdd out = bdd_forall(ep, bdd_5F, [&calls](const bdd::label_type) -> bool {
+          const bdd out = bdd_forall(ep, bdd(bdd_5F), [&calls](const bdd::label_type) -> bool {
             calls++;
             return true;
           });
@@ -6961,9 +7803,9 @@ go_bandit([]() {
       describe("algorithm: Nested", [&]() {
         const exec_policy ep = exec_policy::quantify::Nested;
 
-        it("quantifies even variables in BDD 1", [&]() {
+        it("quantifies even variables in BDD 1 [&&]", [&]() {
           const bdd out =
-            bdd_forall(ep, bdd_1, [](const bdd::label_type x) -> bool { return !(x % 2); });
+            bdd_forall(ep, bdd(bdd_1), [](const bdd::label_type x) -> bool { return !(x % 2); });
 
           node_test_stream out_nodes(out);
 
@@ -6981,9 +7823,9 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
-        it("quantifies odd variables in BDD 1", [&]() {
+        it("quantifies odd variables in BDD 1 [&&]", [&]() {
           const bdd out =
-            bdd_forall(ep, bdd_1, [](const bdd::label_type x) -> bool { return x % 2; });
+            bdd_forall(ep, bdd(bdd_1), [](const bdd::label_type x) -> bool { return x % 2; });
 
           node_test_stream out_nodes(out);
 
@@ -7001,7 +7843,7 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
-        it("bails out on a level that only shortcuts", [&]() {
+        it("bails out on a level that only shortcuts [&&]", [&]() {
           bdd out = bdd_forall(
             ep, bdd_not(bdd_9T), [](const bdd::label_type x) -> bool { return !(x % 2); });
 
@@ -7039,7 +7881,7 @@ go_bandit([]() {
           // TODO: meta variables
         });
 
-        it("bails out on a level that only is irrelevant", [&]() {
+        it("bails out on a level that only is irrelevant [&&]", [&]() {
           bdd out = bdd_forall(
             ep, bdd_not(bdd_9F), [](const bdd::label_type x) -> bool { return !(x % 2); });
 
@@ -7074,7 +7916,7 @@ go_bandit([]() {
           //
           //        F
           */
-          bdd out = bdd_forall(ep, bdd_16, [](int x) -> bool { return x != 5; });
+          bdd out = bdd_forall(ep, bdd(bdd_16), [](int x) -> bool { return x != 5; });
 
           node_test_stream out_nodes(out);
 
@@ -7092,10 +7934,98 @@ go_bandit([]() {
       });
     });
 
-    describe("bdd_forall(const bdd&, const generator<bdd::label_type>&)", [&]() {
-      it("returns input on 'optional::none' generator in BDD 1 [&&]", [&]() {
-        __bdd out = bdd_forall(bdd_1, []() { return make_optional<bdd::label_type>(); });
+    describe("bdd_forall(__bdd&&, const predicate<bdd::label_type>&)", [&]() {
+      it("returns original file on reduced BDD 1 and always-false predicate [&&]", [&]() {
+        __bdd out = bdd_forall(__bdd(bdd_1), [](const bdd::label_type) -> bool { return false; });
+        AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
+      });
 
+      describe("algorithm: Singleton", [&]() {
+        // TODO: test...
+      });
+
+      describe("algorithm: Nested", [&]() {
+        const exec_policy ep = exec_policy::quantify::Nested;
+
+        it("quantifies x0 in unreduced BDD 1 [&&]", [&]() {
+          std::vector<bdd::label_type> call_history;
+          const bdd out =
+            bdd_forall(ep, __bdd(bdd_1__unreduced, ep), [&call_history](bdd::label_type x) -> bool {
+              call_history.push_back(x);
+              return x == 0u;
+            });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+          //       that this change makes sense and is as intended.
+          AssertThat(call_history.size(), Is().EqualTo(3u));
+
+          // - Nested Sweep
+          AssertThat(call_history.at(0), Is().EqualTo(2u));
+          AssertThat(call_history.at(1), Is().EqualTo(1u));
+          AssertThat(call_history.at(2), Is().EqualTo(0u)); // <-- bail out into terminal!
+        });
+
+        it("quantifies x1 in unreduced BDD 1 [&&]", [&]() {
+          std::vector<bdd::label_type> call_history;
+          const bdd out =
+            bdd_forall(ep, __bdd(bdd_1__unreduced, ep), [&call_history](bdd::label_type x) -> bool {
+              call_history.push_back(x);
+              return x == 1u;
+            });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(0, node::max_id, ptr_uint64(true), ptr_uint64(false))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please verify
+          //       that this change makes sense and is as intended.
+          AssertThat(call_history.size(), Is().EqualTo(3u));
+
+          // - Nested Sweep
+          AssertThat(call_history.at(0), Is().EqualTo(2u));
+          AssertThat(call_history.at(1), Is().EqualTo(1u)); // <-- bail out!
+          AssertThat(call_history.at(2), Is().EqualTo(0u));
+        });
+      });
+    });
+
+    describe("bdd_forall(const bdd&, const generator<bdd::label_type>&)", [&]() {
+      it("returns original file on 'optional::none' generator in BDD 1 [&&]", [&]() {
+        __bdd out = bdd_forall(bdd(bdd_1), []() { return make_optional<bdd::label_type>(); });
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
       });
 
@@ -7126,10 +8056,11 @@ go_bandit([]() {
         });
 
         it("quantifies 1 in BDD 1 [&&]", [&]() {
-          const bdd out = bdd_forall(ep, bdd_1, [var = 1]() mutable -> optional<bdd::label_type> {
-            if (var == 0) { return {}; }
-            return { var-- };
-          });
+          const bdd out =
+            bdd_forall(ep, bdd(bdd_1), [var = 1]() mutable -> optional<bdd::label_type> {
+              if (var == 0) { return {}; }
+              return { var-- };
+            });
 
           node_test_stream out_nodes(out);
 
@@ -7150,8 +8081,9 @@ go_bandit([]() {
         it("terminates early when quantifying 2, 0 to a terminal in BDD 3 [&&]", [&]() {
           int calls = 0;
 
-          const bdd out = bdd_forall(
-            ep, bdd_3, [&calls]() -> optional<bdd::label_type> { return { 2 - 2 * (calls++) }; });
+          const bdd out = bdd_forall(ep, bdd(bdd_3), [&calls]() -> optional<bdd::label_type> {
+            return { 2 - 2 * (calls++) };
+          });
 
           // What could be expected is 3 calls: 2, 0, none . But, here it terminates early.
           AssertThat(calls, Is().EqualTo(2));
@@ -7172,11 +8104,12 @@ go_bandit([]() {
       describe("algorithm: Nested", [&]() {
         const exec_policy ep = exec_policy::quantify::Nested;
 
-        it("quantifies 0 in BDD 1", [&]() {
-          const bdd out = bdd_forall(ep, bdd_1, [var = 0]() mutable -> optional<bdd::label_type> {
-            if (var == 1) { return {}; }
-            return { var++ };
-          });
+        it("quantifies 0 in BDD 1 [&&]", [&]() {
+          const bdd out =
+            bdd_forall(ep, bdd(bdd_1), [var = 0]() mutable -> optional<bdd::label_type> {
+              if (var == 1) { return {}; }
+              return { var++ };
+            });
 
           node_test_stream out_nodes(out);
 
@@ -7194,14 +8127,15 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
-        it("quantifies 1 in BDD 1", [&]() {
-          const bdd out = bdd_forall(ep, bdd_1, [var = 1]() mutable -> optional<bdd::label_type> {
-            if (var == 0) { return make_optional<bdd::label_type>(); }
+        it("quantifies 1 in BDD 1 [&&]", [&]() {
+          const bdd out =
+            bdd_forall(ep, bdd(bdd_1), [var = 1]() mutable -> optional<bdd::label_type> {
+              if (var == 0) { return make_optional<bdd::label_type>(); }
 
-            const bdd::label_type ret = var;
-            var--;
-            return ret;
-          });
+              const bdd::label_type ret = var;
+              var--;
+              return ret;
+            });
 
           node_test_stream out_nodes(out);
 
@@ -7219,7 +8153,7 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
         });
 
-        it("bails out on a level that only shortcuts", [&]() {
+        it("bails out on a level that only shortcuts [&&]", [&]() {
           bdd out =
             bdd_forall(ep, bdd_not(bdd_9T), [var = 6]() mutable -> optional<bdd::label_type> {
               if (var == 42) { return {}; }
@@ -7263,7 +8197,7 @@ go_bandit([]() {
           // TODO: meta variables
         });
 
-        it("bails out on a level that only is irrelevant", [&]() {
+        it("bails out on a level that only is irrelevant [&&]", [&]() {
           bdd out =
             bdd_forall(ep, bdd_not(bdd_9F), [var = 6]() mutable -> optional<bdd::label_type> {
               if (var == 42) { return {}; }
@@ -7299,12 +8233,12 @@ go_bandit([]() {
           // TODO: meta variables
         });
 
-        it("accounts for number of root arcs from Outer Sweep [&]", [&]() {
+        it("accounts for number of root arcs from Outer Sweep [&&]", [&]() {
           /* expected
           //
           //        F
           */
-          bdd out = bdd_forall(ep, bdd_16, [var = 6]() mutable -> optional<bdd::label_type> {
+          bdd out = bdd_forall(ep, bdd(bdd_16), [var = 6]() mutable -> optional<bdd::label_type> {
             var -= 1;
             if (var < 0) { return {}; }
             if (var == 5) { var -= 1; }
@@ -7327,7 +8261,74 @@ go_bandit([]() {
       });
     });
 
-    describe("bdd_forall(const bdd&, ForwardIt begin, ForwardIt end)", [&]() {
+    describe("bdd_forall(__bdd&&, const generator<bdd::label_type>&)", [&]() {
+      it("returns original file on reduced BDD 1 and 'optional::none' generator [&&]", [&]() {
+        __bdd out = bdd_forall(__bdd(bdd_1), []() { return make_optional<bdd::label_type>(); });
+        AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
+      });
+
+      describe("algorithm: Singleton", [&]() {
+        // TODO: test...
+      });
+
+      describe("algorithm: Nested", [&]() {
+        const exec_policy ep = exec_policy::quantify::Nested;
+
+        it("quantifies x0 in unreduced BDD 1 [&&]", [&]() {
+          const bdd out = bdd_forall(
+            ep, __bdd(bdd_1__unreduced, ep), [called = false]() mutable -> optional<int> {
+              if (called) { return {}; }
+              called = true;
+              return { 0 };
+            });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
+
+        it("quantifies x1 in unreduced BDD 1 [&&]", [&]() {
+          const bdd out = bdd_forall(
+            ep, __bdd(bdd_1__unreduced, ep), [called = false]() mutable -> optional<int> {
+              if (called) { return {}; }
+              called = true;
+              return { 1 };
+            });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(0, node::max_id, ptr_uint64(true), ptr_uint64(false))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
+      });
+    });
+
+    describe("bdd_forall(const bdd&, ForwardIt, ForwardIt)", [&]() {
       it("quantifies [0].rbegin() in BDD 1 [const &]", [&]() {
         const bdd in                            = bdd_1;
         const std::vector<bdd::label_type> vars = { 0 };
@@ -7354,7 +8355,7 @@ go_bandit([]() {
         const exec_policy ep = exec_policy::quantify::Nested;
 
         const std::vector<bdd::label_type> vars = { 1 };
-        const bdd out                           = bdd_forall(ep, bdd_1, vars.begin(), vars.end());
+        const bdd out = bdd_forall(ep, bdd(bdd_1), vars.begin(), vars.end());
 
         node_test_stream out_nodes(out);
 
@@ -7370,6 +8371,66 @@ go_bandit([]() {
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
+      });
+    });
+
+    describe("bdd_forall(__bdd&&, ForwardIt, ForwardIt)", [&]() {
+      it("returns original file on reduced BDD 1 and [].begin() [&&]", [&]() {
+        const std::vector<int> vars = {};
+        __bdd out = bdd_forall(__bdd(bdd_1), vars.begin(), vars.end());
+        AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
+      });
+
+      describe("algorithm: Singleton", [&]() {
+        // TODO: test...
+      });
+
+      describe("algorithm: Nested", [&]() {
+        const exec_policy ep = exec_policy::quantify::Nested;
+
+        it("quantifies [0].begin() in unreduced BDD 1 [&&]", [&]() {
+          const std::vector<int> vars = { 0 };
+          const bdd out = bdd_forall(ep, __bdd(bdd_1__unreduced, ep), vars.begin(), vars.end());
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
+
+        it("quantifies [1].rbegin() in unreduced BDD 1 [&&]", [&]() {
+          const std::vector<int> vars = { 1 };
+          const bdd out = bdd_forall(ep, __bdd(bdd_1__unreduced, ep), vars.rbegin(), vars.rend());
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(0, node::max_id, ptr_uint64(true), ptr_uint64(false))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
       });
     });
   });

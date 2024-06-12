@@ -91,6 +91,10 @@ namespace adiar
     return bdd_exists(exec_policy(), f, var);
   }
 
+  // TODO bdd_exists(__bdd&& f, bdd::label_type var)
+  //
+  // Use nested sweeping to skip some of the Reduce step!
+
   __bdd
   bdd_exists(const exec_policy& ep, const bdd& f, const predicate<bdd::label_type>& vars)
   {
@@ -111,6 +115,18 @@ namespace adiar
 
   __bdd
   bdd_exists(bdd&& f, const predicate<bdd::label_type>& vars)
+  {
+    return bdd_exists(exec_policy(), std::move(f), vars);
+  }
+
+  __bdd
+  bdd_exists(const exec_policy& ep, __bdd&& f, const predicate<bdd::label_type>& vars)
+  {
+    return internal::quantify<bdd_quantify_policy<true>>(ep, std::move(f), vars);
+  }
+
+  __bdd
+  bdd_exists(__bdd&& f, const predicate<bdd::label_type>& vars)
   {
     return bdd_exists(exec_policy(), std::move(f), vars);
   }
@@ -139,6 +155,18 @@ namespace adiar
     return bdd_exists(exec_policy(), std::move(f), vars);
   }
 
+  __bdd
+  bdd_exists(const exec_policy& ep, __bdd&& f, const generator<bdd::label_type>& vars)
+  {
+    return internal::quantify<bdd_quantify_policy<true>>(ep, std::move(f), vars);
+  }
+
+  __bdd
+  bdd_exists(__bdd&& f, const generator<bdd::label_type>& vars)
+  {
+    return bdd_exists(exec_policy(), std::move(f), vars);
+  }
+
   //////////////////////////////////////////////////////////////////////////////
 
   __bdd
@@ -152,6 +180,10 @@ namespace adiar
   {
     return bdd_forall(exec_policy(), f, var);
   }
+
+  // TODO bdd_forall(__bdd&& f, bdd::label_type var)
+  //
+  // Use nested sweeping to skip some of the Reduce step!
 
   __bdd
   bdd_forall(const exec_policy& ep, const bdd& f, const predicate<bdd::label_type>& vars)
@@ -178,6 +210,18 @@ namespace adiar
   }
 
   __bdd
+  bdd_forall(const exec_policy& ep, __bdd&& f, const predicate<bdd::label_type>& vars)
+  {
+    return internal::quantify<bdd_quantify_policy<false>>(ep, std::move(f), vars);
+  }
+
+  __bdd
+  bdd_forall(__bdd&& f, const predicate<bdd::label_type>& vars)
+  {
+    return bdd_forall(exec_policy(), std::move(f), vars);
+  }
+
+  __bdd
   bdd_forall(const exec_policy& ep, const bdd& f, const generator<bdd::label_type>& vars)
   {
     return internal::quantify<bdd_quantify_policy<false>>(ep, f, vars);
@@ -197,6 +241,18 @@ namespace adiar
 
   __bdd
   bdd_forall(bdd&& f, const generator<bdd::label_type>& vars)
+  {
+    return bdd_forall(exec_policy(), std::move(f), vars);
+  }
+
+  __bdd
+  bdd_forall(const exec_policy& ep, __bdd&& f, const generator<bdd::label_type>& vars)
+  {
+    return internal::quantify<bdd_quantify_policy<false>>(ep, std::move(f), vars);
+  }
+
+  __bdd
+  bdd_forall(__bdd&& f, const generator<bdd::label_type>& vars)
   {
     return bdd_forall(exec_policy(), std::move(f), vars);
   }
