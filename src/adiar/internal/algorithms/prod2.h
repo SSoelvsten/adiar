@@ -132,7 +132,8 @@ namespace adiar::internal
     inline void
     operator()(const Request& req) const
     {
-      if (Policy::no_skip || !req.data.source.is_nil()) {
+      // TODO: Use 'Policy::no_skip'
+      if (!req.data.source.is_nil()) {
         this->_aw.push_internal({ req.data.source, this->_out_uid });
       }
     }
@@ -298,6 +299,7 @@ namespace adiar::internal
     // Set up cross-level priority queue
     PriorityQueue_1 prod_pq({ in_pq, in_ra }, pq_memory, max_pq_size, stats_prod2.lpq);
     prod_pq.push({ { v_pq.uid(), in_nodes_ra.root() }, {}, { ptr_uint64::nil() } });
+    // TODO: Allow using 'Policy::no_skip' when pushing; the ptr_uint64::nil() above breaks this!
 
     out_arcs->max_1level_cut = prod_pq.size();
 
@@ -421,6 +423,7 @@ namespace adiar::internal
     // Set up cross-level priority queue
     PriorityQueue_1 prod_pq_1({ in_0, in_1 }, pq_1_memory, max_pq_1_size, stats_prod2.lpq);
     prod_pq_1.push({ { v0.uid(), v1.uid() }, {}, { ptr_uint64::nil() } });
+    // TODO: Allow using 'Policy::no_skip' when pushing; the ptr_uint64::nil() above breaks this!
 
     // Set up per-level priority queue
     PriorityQueue_2 prod_pq_2(pq_2_memory, max_pq_2_size);
