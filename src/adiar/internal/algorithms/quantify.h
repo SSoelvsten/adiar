@@ -1507,7 +1507,7 @@ namespace adiar::internal
 
     const quantify__pred_profile<Policy> pred_profile = __quantify__pred_profile<Policy>(dd, pred);
 
-    // -----------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
     // Case: Nothing to do
     if (pred_profile.quant_all_vars == 0u) {
 #ifdef ADIAR_STATS
@@ -1516,14 +1516,14 @@ namespace adiar::internal
       return dd;
     }
 
-    // -----------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
     // Case: Only one variable to quantify
     //
     // TODO: pred_profile.quant_all_vars == 1u
 
     switch (ep.template get<exec_policy::quantify::algorithm>()) {
     case exec_policy::quantify::Singleton: {
-      // ---------------------------------------------------------------------
+      // -------------------------------------------------------------------------------------------
       // Case: Repeated single variable quantification
 #ifdef ADIAR_STATS
       stats_quantify.singleton_sweeps += 1u;
@@ -1540,7 +1540,7 @@ namespace adiar::internal
     }
 
     case exec_policy::quantify::Nested: {
-      // ---------------------------------------------------------------------
+      // -------------------------------------------------------------------------------------------
       // Case: Nested Sweeping
 
       // Do Partial Quantification as long as...
@@ -1612,7 +1612,42 @@ namespace adiar::internal
 
       // LCOV_EXCL_START
     default:
-      // ---------------------------------------------------------------------
+      // -------------------------------------------------------------------------------------------
+      adiar_unreachable();
+      // LCOV_EXCL_STOP
+    }
+  }
+
+  template <typename Policy>
+  typename Policy::__dd_type
+  quantify(const exec_policy& ep,
+           typename Policy::__dd_type &&__dd,
+           const predicate<typename Policy::label_type>& pred)
+  {
+    switch (ep.template get<exec_policy::quantify::algorithm>()) {
+    case exec_policy::quantify::Singleton: {
+      // -------------------------------------------------------------------------------------------
+      // Case: Repeated single variable quantification
+      return quantify<Policy>(ep, typename Policy::dd_type(std::move(__dd)), pred);
+    }
+
+    case exec_policy::quantify::Nested: {
+      // -------------------------------------------------------------------------------------------
+      // Case: Nested Sweeping
+      //
+      // TODO: Also go-to 'dd_type()' variant, if heuristic claims it is a good idea to do some
+      //       partial quantification.
+      if (__dd.template has<typename Policy::shared_node_file_type>()) {
+        return quantify<Policy>(ep, typename Policy::dd_type(std::move(__dd)), pred);
+      }
+
+      multi_quantify_policy__pred<Policy> inner_impl(pred);
+      return nested_sweep<>(ep, std::move(__dd), inner_impl);
+    }
+
+      // LCOV_EXCL_START
+    default:
+      // -------------------------------------------------------------------------------------------
       adiar_unreachable();
       // LCOV_EXCL_STOP
     }
@@ -1717,7 +1752,7 @@ namespace adiar::internal
   {
     switch (ep.template get<exec_policy::quantify::algorithm>()) {
     case exec_policy::quantify::Singleton: {
-      // ---------------------------------------------------------------------------------------
+      // -------------------------------------------------------------------------------------------
       // Case: Repeated single variable quantification
       // TODO: correctly handle Policy::quantify_onset
       optional<typename Policy::label_type> on_level = lvls();
@@ -1788,7 +1823,7 @@ namespace adiar::internal
     }
 
     case exec_policy::quantify::Nested: {
-      // -----------------------------------------------------------------------------------------
+      // -------------------------------------------------------------------------------------------
       // Case: Nested Sweeping
       //
       // NOTE: read-once access with 'gen' makes repeated transposition not possible. Yet, despite
@@ -1869,7 +1904,38 @@ namespace adiar::internal
 
       // LCOV_EXCL_START
     default:
-      // -----------------------------------------------------------------------------------------
+      // -------------------------------------------------------------------------------------------
+      adiar_unreachable();
+      // LCOV_EXCL_STOP
+    }
+  }
+
+  template <typename Policy>
+  typename Policy::__dd_type
+  quantify(const exec_policy& ep,
+           typename Policy::__dd_type &&__dd,
+           const typename multi_quantify_policy__generator<Policy>::generator_t& lvls)
+  {
+    switch (ep.template get<exec_policy::quantify::algorithm>()) {
+    case exec_policy::quantify::Singleton: {
+      // -------------------------------------------------------------------------------------------
+      // Case: Repeated single variable quantification
+      return quantify<Policy>(ep, typename Policy::dd_type(std::move(__dd)), lvls);
+    }
+    case exec_policy::quantify::Nested: {
+      // -------------------------------------------------------------------------------------------
+      // Case: Nested Sweeping
+      if (__dd.template has<typename Policy::shared_node_file_type>()) {
+        return quantify<Policy>(ep, typename Policy::dd_type(std::move(__dd)), lvls);
+      }
+
+      multi_quantify_policy__generator<Policy> inner_impl(lvls);
+      return nested_sweep<>(ep, std::move(__dd), inner_impl);
+    }
+
+      // LCOV_EXCL_START
+    default:
+      // -------------------------------------------------------------------------------------------
       adiar_unreachable();
       // LCOV_EXCL_STOP
     }

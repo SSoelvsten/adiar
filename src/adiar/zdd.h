@@ -985,11 +985,26 @@ namespace adiar
 
   /// \cond
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Project family of sets onto a domain, i.e. remove from every set all variables not
+  ///        within the domain.
+  ///
   /// \remark Unlike `zdd_project(const zdd& A, const predicate<...>& dom)`, this function moves the
   ///         ownership of `A` into the quantification algorithm. This allows it to garbage collect
   ///         `A` early.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   __zdd
   zdd_project(zdd&& A, const predicate<zdd::label_type>& dom);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Project family of sets onto a domain, i.e. remove from every set all variables not
+  ///        within the domain.
+  ///
+  /// \remark Unlike `zdd_project(const zdd& A, const predicate<...>& dom)`, this function skips the
+  ///         initial transposition of `A` if possible.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  __zdd
+  zdd_project(__zdd&& A, const predicate<zdd::label_type>& dom);
 
   /// \endcond
 
@@ -1002,11 +1017,26 @@ namespace adiar
 
   /// \cond
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Project family of sets onto a domain, i.e. remove from every set all variables not
+  ///        within the domain.
+  ///
   /// \remark Unlike `zdd_project(const zdd& A, const predicate<...>& dom)`, this function moves the
   ///         ownership of `A` into the quantification algorithm. This allows it to garbage collect
   ///         `A` early.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   __zdd
   zdd_project(const exec_policy& ep, zdd&& A, const predicate<zdd::label_type>& dom);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Project family of sets onto a domain, i.e. remove from every set all variables not
+  ///        within the domain.
+  ///
+  /// \remark Unlike `zdd_project(const zdd& A, const predicate<...>& dom)`, this function skips the
+  ///         initial transposition of `A` if possible.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  __zdd
+  zdd_project(const exec_policy& ep, __zdd&& A, const predicate<zdd::label_type>& dom);
 
   /// \endcond
 
@@ -1030,11 +1060,26 @@ namespace adiar
 
   /// \cond
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Project family of sets onto a domain, i.e. remove from every set all variables not
+  ///        within the domain.
+  ///
   /// \remark Unlike `zdd_project(const zdd& A, const generator<...>& dom)`, this function moves the
   ///         ownership of `A` into the quantification algorithm. This allows it to garbage collect
   ///         `A` early.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   __zdd
   zdd_project(zdd&& A, const generator<zdd::label_type>& dom);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Project family of sets onto a domain, i.e. remove from every set all variables not
+  ///        within the domain.
+  ///
+  /// \remark Unlike `zdd_project(const zdd& A, const generator<...>& dom)`, this function skips the
+  ///         initial transposition of `A` if possible.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  __zdd
+  zdd_project(__zdd&& A, const generator<zdd::label_type>& dom);
 
   /// \endcond
 
@@ -1047,11 +1092,26 @@ namespace adiar
 
   /// \cond
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Project family of sets onto a domain, i.e. remove from every set all variables not
+  ///        within the domain.
+  ///
   /// \remark Unlike `zdd_project(const zdd& A, const predicate<...>& dom)`, this function moves the
   ///         ownership of `A` into the quantification algorithm. This allows it to garbage collect
   ///         `A` early.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   __zdd
   zdd_project(const exec_policy& ep, zdd&& A, const generator<zdd::label_type>& dom);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Project family of sets onto a domain, i.e. remove from every set all variables not
+  ///        within the domain.
+  ///
+  /// \remark Unlike `zdd_project(const zdd& A, const generator<...>& dom)`, this function skips the
+  ///         initial transposition of `A` if possible.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  __zdd
+  zdd_project(const exec_policy& ep, __zdd&& A, const generator<zdd::label_type>& dom);
 
   /// \endcond
 
@@ -1081,12 +1141,36 @@ namespace adiar
   }
 
   /// \cond
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Project family of sets onto a domain, i.e. remove from every set all variables not
+  ///        within the domain.
+  ///
+  /// \remark Unlike `zdd_project(const zdd& A, ForwardIt, ForwardIt)`, this function moves the
+  ///         ownership of `A` into the quantification algorithm. This allows it to garbage collect
+  ///         `A` early.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename ForwardIt>
   __zdd
   zdd_project(zdd&& A, ForwardIt begin, ForwardIt end)
   {
     return zdd_project(std::move(A), make_generator(begin, end));
   }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Project family of sets onto a domain, i.e. remove from every set all variables not
+  ///        within the domain.
+  ///
+  /// \remark Unlike `zdd_project(const zdd& A, ForwardIt, ForwardIt)`, this function skips the
+  ///         initial transposition of `A` if possible.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename ForwardIt>
+  __zdd
+  zdd_project(__zdd&& A, ForwardIt begin, ForwardIt end)
+  {
+    return zdd_project(std::move(A), make_generator(begin, end));
+  }
+
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1101,12 +1185,36 @@ namespace adiar
   }
 
   /// \cond
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Project family of sets onto a domain, i.e. remove from every set all variables not
+  ///        within the domain.
+  ///
+  /// \remark Unlike `zdd_project(const zdd& A, ForwardIt, ForwardIt)`, this function moves the
+  ///         ownership of `A` into the quantification algorithm. This allows it to garbage collect
+  ///         `A` early.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename ForwardIt>
   __zdd
   zdd_project(const exec_policy& ep, zdd&& A, ForwardIt begin, ForwardIt end)
   {
     return zdd_project(ep, std::move(A), make_generator(begin, end));
   }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Project family of sets onto a domain, i.e. remove from every set all variables not
+  ///        within the domain.
+  ///
+  /// \remark Unlike `zdd_project(const zdd& A, ForwardIt, ForwardIt)`, this function skips the
+  ///         initial transposition of `A` if possible.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename ForwardIt>
+  __zdd
+  zdd_project(const exec_policy& ep, __zdd&& A, ForwardIt begin, ForwardIt end)
+  {
+    return zdd_project(ep, std::move(A), make_generator(begin, end));
+  }
+
   /// \endcond
 
   /// \}

@@ -92,6 +92,18 @@ namespace adiar
   }
 
   __zdd
+  zdd_project(const exec_policy& ep, __zdd&& A, const predicate<zdd::label_type>& dom)
+  {
+    return internal::quantify<zdd_project_policy>(ep, std::move(A), dom);
+  }
+
+  __zdd
+  zdd_project(__zdd&& A, const predicate<zdd::label_type>& dom)
+  {
+    return zdd_project(exec_policy(), std::move(A), dom);
+  }
+
+  __zdd
   zdd_project(const exec_policy& ep, const zdd& A, const generator<zdd::label_type>& dom)
   {
     return internal::quantify<zdd_project_policy>(ep, A, dom);
@@ -111,6 +123,18 @@ namespace adiar
 
   __zdd
   zdd_project(zdd&& A, const generator<zdd::label_type>& dom)
+  {
+    return zdd_project(exec_policy(), std::move(A), dom);
+  }
+
+  __zdd
+  zdd_project(const exec_policy& ep, __zdd&& A, const generator<zdd::label_type>& dom)
+  {
+    return internal::quantify<zdd_project_policy>(ep, std::move(A), dom);
+  }
+
+  __zdd
+  zdd_project(__zdd&& A, const generator<zdd::label_type>& dom)
   {
     return zdd_project(exec_policy(), std::move(A), dom);
   }
