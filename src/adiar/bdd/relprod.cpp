@@ -28,13 +28,13 @@ namespace adiar
               const function<optional<bdd::label_type>(bdd::label_type)>& m,
               replace_type m_type)
   {
-    const bdd tmp_1 = bdd_and(ep, states, relation);
+    __bdd tmp_1 = bdd_and(ep, states, relation);
 
     const bdd tmp_2 =
       bdd_exists(ep, std::move(tmp_1), [&m](bdd::label_type x) { return !m(x).has_value(); });
 
-    const bdd tmp_3 =
-      bdd_replace(ep, std::move(tmp_2), [&m](bdd::label_type x) { return m(x).value(); }, m_type);
+    const bdd tmp_3 = bdd_replace(
+      ep, std::move(tmp_2), [&m](bdd::label_type x) { return m(x).value(); }, m_type);
 
     return tmp_3;
   }
@@ -77,10 +77,10 @@ namespace adiar
               const function<optional<bdd::label_type>(bdd::label_type)>& m,
               replace_type m_type)
   {
-    const bdd tmp_1 =
-      bdd_replace(ep, states, [&m](bdd::label_type x) { return m(x).value(); }, m_type);
+    const bdd tmp_1 = bdd_replace(
+      ep, states, [&m](bdd::label_type x) { return m(x).value(); }, m_type);
 
-    const bdd tmp_2 = bdd_and(ep, std::move(tmp_1), relation);
+    __bdd tmp_2 = bdd_and(ep, std::move(tmp_1), relation);
 
     const bdd tmp_3 =
       bdd_exists(ep, std::move(tmp_2), [&m](bdd::label_type x) { return !m(x).has_value(); });
