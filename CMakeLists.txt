@@ -3,7 +3,7 @@ cmake_policy(SET CMP0048 NEW)
 cmake_policy(SET CMP0063 NEW)
 
 set(ADIAR_VERSION_MAJOR 2)
-set(ADIAR_VERSION_MINOR 0)
+set(ADIAR_VERSION_MINOR 1)
 set(ADIAR_VERSION_PATCH 0)
 
 project (adiar
