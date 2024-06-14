@@ -2,7 +2,9 @@
 #include <adiar/bdd/bdd_policy.h>
 #include <adiar/types.h>
 
+#include <adiar/internal/algorithms/nested_sweeping.h>
 #include <adiar/internal/algorithms/prod2.h>
+#include <adiar/internal/algorithms/quantify.h>
 #include <adiar/internal/algorithms/replace.h>
 #include <adiar/internal/bool_op.h>
 
@@ -189,6 +191,106 @@ namespace adiar
     return bdd_relprod(exec_policy(), states, relation, m);
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief   Existential Quantification policy for BDD Relational Product.
+  ///
+  /// \details This is a one-to-one copy of the 'bdd_quantify_policy' in 'adiar/bdd/quantify.cpp'.
+  ///          We ought to reuse it instead!
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  class relnext_quantify_policy
+    : public bdd_policy
+  {
+  public:
+    static inline bdd::pointer_type
+    resolve_root(const bdd::node_type& r)
+    {
+      // TODO: should all but the last case not have a 'suppression taint'?
+
+      // Return shortcutting terminal (including its tainting flag).
+      if (essential(r.low()) == bdd::pointer_type(true)) { return r.low(); }
+      if (essential(r.high()) == bdd::pointer_type(true)) { return r.high(); }
+
+      // Return other child (including its tainting flag) for irrelevant terminals.
+      if (essential(r.low()) == bdd::pointer_type(false)) { return r.high(); }
+      if (essential(r.high()) == bdd::pointer_type(false)) { return r.low(); }
+
+      // Otherwise return 'nothing'
+      return r.uid();
+    }
+
+  public:
+    static inline bool
+    keep_terminal(const bdd::pointer_type& p)
+    {
+      return essential(p) != bdd::pointer_type(false);
+    }
+
+    static inline bool
+    collapse_to_terminal(const bdd::pointer_type& p)
+    {
+      return essential(p) == bdd::pointer_type(true);
+    }
+
+    // LCOV_EXCL_START
+    static inline bdd::pointer_type
+    resolve_terminals(const bdd::pointer_type& /*a*/, const bdd::pointer_type& /*b*/)
+    {
+      // Since only a single terminal terminal survives, this piece of code is never executed.
+      adiar_unreachable();
+    }
+
+    // LCOV_EXCL_STOP
+
+  public:
+    static inline internal::cut
+    cut_with_terminals()
+    {
+      return internal::cut(false, true);
+    }
+
+  public:
+    static constexpr bool quantify_onset = true;
+  };
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief   Existential Quantification and Variable Renaming for the Next-state variant of the
+  ///          BDD Relational Product.
+  ///
+  /// \details To improve performance of the `bdd_relnext`, we can merge the `bdd_exists` and
+  ///          `bdd_replace` operations.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  class relnext_quantify_replace_policy
+    : public internal::multi_quantify_policy<relnext_quantify_policy>
+  {
+  private:
+    const function<optional<bdd::label_type>(bdd::label_type)>& _m;
+
+  public:
+    relnext_quantify_replace_policy(const function<optional<bdd::label_type>(bdd::label_type)>& m)
+      : _m(m)
+    {}
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Variable remapping of.
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    inline bdd::label_type
+    map_level(bdd::label_type x) const
+    {
+      const optional<bdd::label_type> new_x = this->_m(x);
+      return new_x.has_value() ? new_x.value() : bdd::max_label+1;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether the generator wants to sweep on the given level.
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    inline bool
+    has_sweep(const bdd::label_type x) const
+    {
+      return !this->_m(x).has_value();
+    }
+  };
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   bdd
   bdd_relnext(const exec_policy& ep,
               const bdd& states,
@@ -198,13 +300,22 @@ namespace adiar
   {
     __bdd tmp_1 = bdd_relprod__and(ep, states, relation, m);
 
-    const bdd tmp_2 =
-      bdd_exists(ep, std::move(tmp_1), [&m](bdd::label_type x) { return !m(x).has_value(); });
+    switch (m_type) {
+    case replace_type::Non_Monotone:
+#ifdef ADIAR_STATS
+      internal::stats_replace.nested_sweeps += 1u;
+#endif
+      throw invalid_argument("Non-monotonic variable replacement not (yet) supported.");
 
-    const bdd tmp_3 = bdd_replace(
-      ep, std::move(tmp_2), [&m](bdd::label_type x) { return m(x).value(); }, m_type);
-
-    return tmp_3;
+    case replace_type::Monotone:
+    case replace_type::Identity:
+#ifdef ADIAR_STATS
+      internal::stats_replace.monotonic_reduces += 1u;
+#endif
+      relnext_quantify_replace_policy quantify_replace_policy(m);
+      return internal::nested_sweep<>(ep, std::move(tmp_1), quantify_replace_policy);
+    }
+    adiar_unreachable(); // LCOV_EXCL_LINE
   }
 
   bdd
@@ -238,6 +349,7 @@ namespace adiar
     return bdd_relnext(exec_policy(), states, relation, m);
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   bdd
   bdd_relprev(const exec_policy& ep,
               const bdd& states,
