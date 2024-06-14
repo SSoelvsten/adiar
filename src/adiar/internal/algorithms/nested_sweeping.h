@@ -1721,6 +1721,8 @@ namespace adiar::internal
       adiar_assert(next_inner == inner_iter_t::end || next_inner <= outer_level.level(),
                    "next_inner level should (if it exists) be above current level (inclusive).");
 
+      const level_type out_level = policy_impl.map_level(outer_level.level());
+
       // -------------------------------------------------------------------------------------------
       // CASE: Unnested Level with no nested sweep above:
       //   Reduce this level (without decorators).
@@ -1736,6 +1738,7 @@ namespace adiar::internal
 
           nested_sweeping::__reduce_level__fast<nesting_policy>(outer_arcs,
                                                                 outer_level.level(),
+                                                                out_level,
                                                                 outer_pq,
                                                                 outer_writer,
                                                                 nested_sweeping::stats.outer_up);
@@ -1745,6 +1748,7 @@ namespace adiar::internal
           if (unreduced_width <= outer_internal_sorter_can_fit) {
             __reduce_level<nesting_policy, internal_sorter>(outer_arcs,
                                                             outer_level.level(),
+                                                            out_level,
                                                             outer_pq,
                                                             outer_writer,
                                                             outer_sorters_memory,
@@ -1753,6 +1757,7 @@ namespace adiar::internal
           } else {
             __reduce_level<nesting_policy, external_sorter>(outer_arcs,
                                                             outer_level.level(),
+                                                            out_level,
                                                             outer_pq,
                                                             outer_writer,
                                                             outer_sorters_memory,
@@ -1781,6 +1786,7 @@ namespace adiar::internal
 
           nested_sweeping::__reduce_level__fast<nesting_policy>(outer_arcs,
                                                                 outer_level.level(),
+                                                                out_level,
                                                                 outer_pq_decorator,
                                                                 outer_writer,
                                                                 nested_sweeping::stats.outer_up);
@@ -1790,6 +1796,7 @@ namespace adiar::internal
           if (unreduced_width <= outer_internal_sorter_can_fit) {
             __reduce_level<nesting_policy, internal_sorter>(outer_arcs,
                                                             outer_level.level(),
+                                                            out_level,
                                                             outer_pq_decorator,
                                                             outer_writer,
                                                             outer_sorters_memory,
@@ -1798,6 +1805,7 @@ namespace adiar::internal
           } else {
             __reduce_level<nesting_policy, external_sorter>(outer_arcs,
                                                             outer_level.level(),
+                                                            out_level,
                                                             outer_pq_decorator,
                                                             outer_writer,
                                                             outer_sorters_memory,

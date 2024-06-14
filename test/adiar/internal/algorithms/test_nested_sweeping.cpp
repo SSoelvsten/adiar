@@ -254,8 +254,8 @@ public:
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
-  constexpr inline bdd::label_type
-  map_level(bdd::label_type x) const
+  constexpr inline node::label_type
+  map_level(node::label_type x) const
   {
     return x;
   }
@@ -5537,6 +5537,149 @@ go_bandit([]() {
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(1u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(2u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(2u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(3u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(3u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(3u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(3u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
+      });
+
+      it("accumulates multiple nested sweeps on renamed outer sweep", []() {
+        // Repetition of 'accumulates multiple nested sweeps with arcs that span multiple sweeps'
+        // with all output nodes shifted by one.
+        //
+        // By repeating this very test, we also make sure that variables are renamed in the outer
+        // sweep rather than the inner (If so, the deepest nodes would be shifted twice).
+        class test_shifted_not_sweep : public test_not_sweep<>
+        {
+        private:
+          int _shift;
+
+        public:
+          test_shifted_not_sweep(const size_t nm, int shift)
+            : test_not_sweep<>(nm)
+            , _shift(shift)
+          {}
+
+          ////////////////////////////////////////////////////////////////////////////////////////////////
+          constexpr inline bdd::label_type
+          map_level(bdd::label_type x) const
+          {
+            return x + this->_shift;
+          }
+        };
+
+        /* input
+        //           _1_        ---- x1
+        //          /   \
+        //          2    \      ---- x2 (%2)
+        //         / \   |
+        //         | 3   |      ---- x3
+        //         |/ \  /
+        //         4_ F /       ---- x4 (%2)
+        //        /  \ /
+        //        T   5         ---- x5
+        //           / \
+        //           F T
+        */
+
+        const ptr_uint64 terminal_F(false);
+        const ptr_uint64 terminal_T(true);
+
+        const ptr_uint64 n1(1, 0);
+        const ptr_uint64 n2(2, 0);
+        const ptr_uint64 n3(3, 0);
+        const ptr_uint64 n4(4, 0);
+        const ptr_uint64 n5(5, 0);
+
+        shared_levelized_file<arc> in;
+
+        { // Garbage collect writer to free write-lock
+          arc_writer aw(in);
+
+          aw.push_internal({ n1, false, n2 });
+          aw.push_internal({ n2, true, n3 });
+          aw.push_internal({ n2, false, n4 });
+          aw.push_internal({ n3, false, n4 });
+          aw.push_internal({ n1, true, n5 });
+          aw.push_internal({ n4, true, n5 });
+
+          aw.push_terminal({ n3, true, terminal_F });
+          aw.push_terminal({ n4, false, terminal_T });
+          aw.push_terminal({ n5, false, terminal_F });
+          aw.push_terminal({ n5, true, terminal_T });
+
+          aw.push(level_info(1, 1u));
+          aw.push(level_info(2, 1u));
+          aw.push(level_info(3, 1u));
+          aw.push(level_info(4, 1u));
+          aw.push(level_info(5, 1u));
+
+          in->max_1level_cut = 3;
+        }
+
+        test_shifted_not_sweep inner_impl(2, -1);
+
+        /* output
+        //         _1_       ---- x0
+        //        /   \
+        //        |   |
+        //        |   |
+        //        3   |      ---- x2
+        //       / \  /
+        //       \ T /
+        //        \ /
+        //         5         ---- x4
+        //        / \
+        //        F T
+        */
+        const bdd out = nested_sweep<>(exec_policy(), __bdd(in, exec_policy()), inner_impl);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        // n5
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id, terminal_F, terminal_T)));
+
+        // n3
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(2, node::max_id, node::pointer_type(4, node::max_id), terminal_T)));
+
+        // n1
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     node::pointer_type(2, node::max_id),
+                                     node::pointer_type(4, node::max_id))));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(4, 1u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
