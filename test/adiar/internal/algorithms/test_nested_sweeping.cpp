@@ -2086,7 +2086,7 @@ go_bandit([]() {
     });
 
     describe("nested_sweeping::aux algorithms", []() {
-      describe("__reduce_level__fast(...)", []() {
+      describe("__reduce_level__fast(..., label, ...)", []() {
         using pq_t = reduce_priority_queue<1, memory_mode::Internal>;
 
         it("does not suppress an entire level of redundant nodes", []() {
@@ -3232,6 +3232,219 @@ go_bandit([]() {
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+      });
+
+      describe("__reduce_level__fast(..., in_label, out_label, ...)", []() {
+        using pq_t = reduce_priority_queue<1, memory_mode::Internal>;
+
+        it("does not canonically sort output [bottom level]", []() {
+          /*
+          //      _1_     ---- x0
+          //     /   \
+          //     2   3    ---- x1 (being reduced and mapped to x2)
+          //    / \ / \
+          //    F T T F
+          */
+          const arc::pointer_type terminal_F(false);
+          const arc::pointer_type terminal_T(true);
+
+          const arc::pointer_type n1(0, 0);
+          const arc::pointer_type n2(1, 0);
+          const arc::pointer_type n3(1, 1);
+
+          shared_levelized_file<arc> in;
+
+          { // Garbage collect writer to free write-lock
+            arc_writer aw(in);
+
+            aw.push_internal({ n1, false, n2 });
+            aw.push_internal({ n1, true, n3 });
+
+            aw.push_terminal({ n2, false, terminal_F });
+            aw.push_terminal({ n2, true, terminal_T });
+            aw.push_terminal({ n3, false, terminal_T });
+            aw.push_terminal({ n3, true, terminal_F });
+
+            aw.push(level_info(0, 1u));
+            aw.push(level_info(1, 2u));
+          }
+
+          // Outer state
+          shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
+
+          node_writer out_writer(out);
+
+          arc_stream arcs(in);
+
+          pq_t pq({ in }, memory_available(), 16);
+
+          // Reduce level x1 (mapping it to x2)
+          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 1, 2, pq, out_writer);
+
+          // Check meta variables before detach computations
+          AssertThat(out->width, Is().EqualTo(2u));
+
+          AssertThat(out->sorted, Is().False());
+          AssertThat(out->indexable, Is().True());
+          AssertThat(out->is_canonical(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(2u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(2u));
+          AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(4u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+          AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
+
+          // Check node and meta files are correct
+          out_writer.detach();
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id, terminal_T, terminal_F)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(2, node::max_id - 1, terminal_F, terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 2u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("does not canonically sort output [other levels]", []() {
+          /*
+          //          _1_        ---- x0
+          //         /   \
+          //         2   3       ---- x2 (being reduced and mapped to x1)
+          //        / \ / \
+          //        | T | |
+          //         \ /  |
+          //          4   5      ---- x3
+          //         / \ / \
+          //         T F F T
+          */
+          const arc::pointer_type terminal_F(false);
+          const arc::pointer_type terminal_T(true);
+
+          const arc::pointer_type n1(0, 0);
+          const arc::pointer_type n2(2, 0);
+          const arc::pointer_type n3(2, 1);
+          const arc::pointer_type n4(3, 0);
+          const arc::pointer_type n5(3, 1);
+
+          shared_levelized_file<arc> in;
+
+          { // Garbage collect writer to free write-lock
+            arc_writer aw(in);
+
+            aw.push_internal({ n1, false, n2 });
+            aw.push_internal({ n1, true, n3 });
+            aw.push_internal({ n2, false, n4 });
+            aw.push_internal({ n3, false, n4 });
+            aw.push_internal({ n3, true, n5 });
+
+            aw.push_terminal({ n2, true, terminal_T });
+            aw.push_terminal({ n4, false, terminal_T });
+            aw.push_terminal({ n4, true, terminal_F });
+            aw.push_terminal({ n5, false, terminal_F });
+            aw.push_terminal({ n5, true, terminal_T });
+
+            aw.push(level_info(0, 1u));
+            aw.push(level_info(2, 2u));
+            aw.push(level_info(3, 2u));
+          }
+
+          // Outer state
+          shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
+
+          node_writer out_writer(out);
+
+          arc_stream arcs(in);
+
+          pq_t pq({ in }, memory_available(), 16);
+
+          // Simulate reduction of x2
+          arcs.pull_terminal(); // 5 ---> T
+          arcs.pull_terminal(); // 5 - -> F
+          out_writer.unsafe_push(node(3, node::max_id, terminal_F, terminal_T));
+
+          arcs.pull_terminal(); // 4 ---> F
+          arcs.pull_terminal(); // 4 - -> T
+          out_writer.unsafe_push(node(3, node::max_id - 1, terminal_T, terminal_F));
+
+          out_writer.unsafe_push(level_info(3, 2));
+          out_writer.unsafe_max_1level_cut({ 0, 2, 3, 5 });
+
+          // 3 ---> 5
+          pq.push(arc(arcs.pull_internal().source(), node::pointer_type(3, node::max_id)));
+          // 3 - -> 4
+          pq.push(arc(arcs.pull_internal().source(), node::pointer_type(3, node::max_id - 1)));
+          // 2 - -> 4
+          pq.push(arc(arcs.pull_internal().source(), node::pointer_type(3, node::max_id - 1)));
+
+          pq.setup_next_level(1);
+
+          // Reduce level x2 (mapping it to x1)
+          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 2, 1, pq, out_writer);
+
+          // Check meta variables before detach computations
+          AssertThat(out->width, Is().EqualTo(2u));
+
+          AssertThat(out->sorted, Is().False());
+          AssertThat(out->indexable, Is().True());
+          AssertThat(out->is_canonical(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(3u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(3u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(4u));
+          AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(5u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+          AssertThat(out->number_of_terminals[true], Is().EqualTo(3u));
+
+          // Check node and meta files are correct
+          out_writer.detach();
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id, terminal_F, terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3, node::max_id - 1, terminal_T, terminal_F)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(1,
+                                       node::max_id,
+                                       node::pointer_type(3, node::max_id - 1),
+                                       node::pointer_type(3, node::max_id))));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(
+                       1, node::max_id - 1, node::pointer_type(3, node::max_id - 1), terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 2u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 2u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
         });

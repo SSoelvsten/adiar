@@ -44,7 +44,8 @@ namespace adiar::internal
     template <typename dd_policy, typename pq_t, typename arc_stream_t>
     void
     __reduce_level__fast(arc_stream_t& arcs,
-                         const typename dd_policy::label_type label,
+                         const typename dd_policy::label_type in_label,
+                         const typename dd_policy::label_type out_label,
                          pq_t& pq,
                          node_writer& out_writer,
                          [[maybe_unused]] statistics::reduce_t& stats = internal::stats_reduce)
@@ -62,7 +63,7 @@ namespace adiar::internal
       typename dd_policy::id_type out_id = dd_policy::max_id;
 
       while (pq.can_pull()
-             || (arcs.can_pull_terminal() && arcs.peek_terminal().source().label() == label)) {
+             || (arcs.can_pull_terminal() && arcs.peek_terminal().source().label() == in_label)) {
         // TODO (MDD / QMDD):
         //   Use __reduce_get_next node_type::outdegree times to create a node_type::children_type.
         const arc e_high = __reduce_get_next(pq, arcs);
@@ -77,7 +78,7 @@ namespace adiar::internal
         // Output node
         adiar_assert(out_id > 0, "Should still have more ids left");
         const typename dd_policy::node_type out_node(
-          label, out_id--, e_low.target(), e_high.target());
+          out_label, out_id--, e_low.target(), e_high.target());
         out_writer.unsafe_push(out_node);
 
         // Forward resulting node to parents
@@ -103,7 +104,7 @@ namespace adiar::internal
       // very much have been wrong).
       if (out_id != dd_policy::max_id) {
         const size_t width = dd_policy::max_id - out_id;
-        out_writer.unsafe_push(level_info(label, width));
+        out_writer.unsafe_push(level_info(out_label, width));
 
         if (width > 1u) { out_writer.unsafe_set_sorted(false); }
       }
@@ -111,6 +112,17 @@ namespace adiar::internal
       // Set up priority queue for next level
       constexpr bool terminal_value = false; // <-- NOTE: Dummy value
       __reduce_level__epilogue<>(arcs, pq, out_writer, terminal_value);
+    }
+
+    template <typename dd_policy, typename pq_t, typename arc_stream_t>
+    void
+    __reduce_level__fast(arc_stream_t& arcs,
+                         const typename dd_policy::label_type label,
+                         pq_t& pq,
+                         node_writer& out_writer,
+                         statistics::reduce_t& stats = internal::stats_reduce)
+    {
+      return __reduce_level__fast<dd_policy, pq_t, arc_stream_t>(arcs, label, label, pq, out_writer, stats);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
