@@ -1,5 +1,6 @@
 var NAVTREEINDEX4 =
 {
+"page__basic.html#autotoc_md12":[2,0,1,2],
 "page__basic.html#autotoc_md13":[2,0,1,3],
 "page__basic.html#autotoc_md14":[2,0,1,4],
 "page__basic.html#autotoc_md15":[2,0,2],
@@ -203,6 +204,5 @@ var NAVTREEINDEX4 =
 "types_8h_source.html":[7,0,1,0,13],
 "version_8h_source.html":[7,0,0,0,0],
 "zdd_2zdd_8h_source.html":[7,0,1,0,2,0],
-"zdd_8h_source.html":[7,0,1,0,14],
-"":[5,0,0,0]
+"zdd_8h_source.html":[7,0,1,0,14]
 };
