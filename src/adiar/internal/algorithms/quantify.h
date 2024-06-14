@@ -1066,7 +1066,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     static constexpr bool partial_quantification = false;
 
-    // bool has_sweep(typename Policy::label_type) const;
+    // bool has_sweep(const typename Policy::label_type x) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief What the labels should be mapped to (themselves).
@@ -1348,12 +1348,12 @@ namespace adiar::internal
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether the generator wants to sweep on the given level.
+    /// \brief Whether the predicate wants to sweep on the given level.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     bool
-    has_sweep(node::pointer_type::label_type l)
+    has_sweep(const typename Policy::label_type x)
     {
-      return _pred(l) == Policy::quantify_onset;
+      return _pred(x) == Policy::quantify_onset;
     }
   };
 
@@ -1694,9 +1694,9 @@ namespace adiar::internal
     /// \brief Whether the generator wants to do a Nested Sweep on the given level.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     bool
-    has_sweep(const typename Policy::label_type l)
+    has_sweep(const typename Policy::label_type x)
     {
-      return l == next_level(l) ? Policy::quantify_onset : !Policy::quantify_onset;
+      return x == next_level(x) ? Policy::quantify_onset : !Policy::quantify_onset;
     }
 
   private:

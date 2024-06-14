@@ -213,7 +213,7 @@ namespace adiar::internal
 #endif
       return dd;
     }
-    adiar_unreachable();
+    adiar_unreachable(); // LCOV_EXCL_LINE
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
