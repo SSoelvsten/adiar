@@ -438,7 +438,7 @@ go_bandit([]() {
         __bdd out = bdd_restrict(bdd_T, ass.begin(), ass.end());
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_T));
-        AssertThat(out.negate, Is().False());
+        AssertThat(out._negate, Is().False());
       });
 
       it("returns input unchanged when given a F terminal", [&]() {
@@ -449,7 +449,7 @@ go_bandit([]() {
         __bdd out = bdd_restrict(bdd_F, ass.begin(), ass.end());
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_F));
-        AssertThat(out.negate, Is().False());
+        AssertThat(out._negate, Is().False());
       });
 
       it("returns input unchanged when given an empty assignment", [&]() {
@@ -458,7 +458,7 @@ go_bandit([]() {
         __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
-        AssertThat(out.negate, Is().False());
+        AssertThat(out._negate, Is().False());
       });
 
       it("returns input unchanged if assignment is disjoint of its variables", [&]() {
@@ -469,7 +469,7 @@ go_bandit([]() {
         __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
-        AssertThat(out.negate, Is().False());
+        AssertThat(out._negate, Is().False());
       });
 
       it("sorts restricted terminal arc in BDD 4 for (_,F,T,_)", [&]() {
@@ -905,14 +905,14 @@ go_bandit([]() {
         __bdd out = bdd_restrict(bdd_T, 42, true);
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_T));
-        AssertThat(out.negate, Is().False());
+        AssertThat(out._negate, Is().False());
       });
 
       it("returns input unchanged when given a F terminal", [&]() {
         __bdd out = bdd_restrict(bdd_F, 8, false);
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_F));
-        AssertThat(out.negate, Is().False());
+        AssertThat(out._negate, Is().False());
       });
 
       it("returns input unchanged if variable does not exist", [&]() {
@@ -923,7 +923,7 @@ go_bandit([]() {
         __bdd out = bdd_restrict(bdd_1, 4, true);
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
-        AssertThat(out.negate, Is().False());
+        AssertThat(out._negate, Is().False());
       });
 
       it("sorts restricted terminal arcs in BDD 3", [&]() {

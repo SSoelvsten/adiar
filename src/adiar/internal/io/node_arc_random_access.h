@@ -57,7 +57,7 @@ namespace adiar::internal
     /// \pre The unreduced decision diagram is indexable. This is (almost) always the case.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     node_arc_random_access(const __dd& diagram)
-      : node_arc_random_access(diagram.template get<__dd::shared_arc_file_type>(), diagram.negate)
+      : node_arc_random_access(diagram.template get<__dd::shared_arc_file_type>(), diagram._negate)
     {
       // adiar_assert(diagram->indexable);
     }

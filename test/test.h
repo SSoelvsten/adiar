@@ -38,7 +38,7 @@ public:
   {}
 
   node_test_stream(const __bdd& f)
-    : node_stream<true>(f.get<__bdd::shared_node_file_type>(), f.negate)
+    : node_stream<true>(f.get<__bdd::shared_node_file_type>(), f._negate)
   {}
 
   node_test_stream(const zdd& f)
@@ -46,7 +46,7 @@ public:
   {}
 
   node_test_stream(const __zdd& f)
-    : node_stream<true>(f.get<__zdd::shared_node_file_type>(), f.negate)
+    : node_stream<true>(f.get<__zdd::shared_node_file_type>(), f._negate)
   {}
 };
 

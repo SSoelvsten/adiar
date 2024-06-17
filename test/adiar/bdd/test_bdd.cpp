@@ -52,14 +52,14 @@ go_bandit([]() {
         __bdd t1 = bdd(x0_and_x1);
         AssertThat(t1.has<shared_levelized_file<bdd::node_type>>(), Is().True());
         AssertThat(t1.get<__bdd::shared_node_file_type>(), Is().EqualTo(x0_and_x1_nf));
-        AssertThat(t1.negate, Is().False());
+        AssertThat(t1._negate, Is().False());
       });
 
       it("should copy-construct values from negated bdd", [&]() {
         __bdd t2 = bdd(x0_nand_x1);
         AssertThat(t2.has<shared_levelized_file<bdd::node_type>>(), Is().True());
         AssertThat(t2.get<__bdd::shared_node_file_type>(), Is().EqualTo(x0_and_x1_nf));
-        AssertThat(t2.negate, Is().True());
+        AssertThat(t2._negate, Is().True());
       });
 
       it("should copy-construct values from __bdd", [&]() {
@@ -67,14 +67,14 @@ go_bandit([]() {
         __bdd t2 = t1;
         AssertThat(t2.has<shared_levelized_file<bdd::node_type>>(), Is().True());
         AssertThat(t2.get<__bdd::shared_node_file_type>(), Is().EqualTo(x0_and_x1_nf));
-        AssertThat(t2.negate, Is().False());
+        AssertThat(t2._negate, Is().False());
       });
 
       it("should copy-construct values from shared_levelized_file<bdd::node_type>", [&]() {
         __bdd t1 = x0_and_x1;
         AssertThat(t1.has<shared_levelized_file<bdd::node_type>>(), Is().True());
         AssertThat(t1.get<__bdd::shared_node_file_type>(), Is().EqualTo(x0_and_x1_nf));
-        AssertThat(t1.negate, Is().False());
+        AssertThat(t1._negate, Is().False());
       });
 
       shared_levelized_file<arc> af;
@@ -97,7 +97,7 @@ go_bandit([]() {
         __bdd t1(af, exec_policy::memory::Internal);
         AssertThat(t1.has<shared_levelized_file<arc>>(), Is().True());
         AssertThat(t1.get<__bdd::shared_arc_file_type>(), Is().EqualTo(af));
-        AssertThat(t1.negate, Is().False());
+        AssertThat(t1._negate, Is().False());
         AssertThat(t1._policy, Is().EqualTo(exec_policy(exec_policy::memory::Internal)));
       });
 
