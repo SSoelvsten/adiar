@@ -253,7 +253,7 @@ go_bandit([]() {
         __bdd out = bdd_ite(bdd_T, bdd_x0, bdd_x1);
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
-        AssertThat(out.negate, Is().False());
+        AssertThat(out._negate, Is().False());
       });
 
       it("should give back first file with negation flag on if-true (true ? ~x0 : (~x0))", [&]() {
@@ -262,14 +262,14 @@ go_bandit([]() {
         __bdd out = bdd_ite(bdd_T, bdd_not(bdd_x0), bdd_not_x0);
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
-        AssertThat(out.negate, Is().True());
+        AssertThat(out._negate, Is().True());
       });
 
       it("should give back second file on if-false (false ? x0 : x1)", [&]() {
         __bdd out = bdd_ite(bdd_F, bdd_x0, bdd_x1);
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x1));
-        AssertThat(out.negate, Is().False());
+        AssertThat(out._negate, Is().False());
       });
 
       it("should give back second file on if-false (false ? (~x1) : ~x1)", [&]() {
@@ -278,7 +278,7 @@ go_bandit([]() {
         __bdd out = bdd_ite(bdd_F, bdd_not_x1, bdd_not(bdd_x1));
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x1));
-        AssertThat(out.negate, Is().True());
+        AssertThat(out._negate, Is().True());
       });
 
       // Trivial inputs with duplicate file inputs
@@ -286,14 +286,14 @@ go_bandit([]() {
         __bdd out = bdd_ite(bdd_x0, bdd_x1, bdd_x1);
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x1));
-        AssertThat(out.negate, Is().False());
+        AssertThat(out._negate, Is().False());
       });
 
       it("should return 'then' file if 'else' file is the same [2]", [&]() {
         __bdd out = bdd_ite(bdd_x0, bdd_not(bdd_x1), bdd_not(bdd_x1));
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x1));
-        AssertThat(out.negate, Is().True());
+        AssertThat(out._negate, Is().True());
       });
     });
 

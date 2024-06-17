@@ -22,18 +22,17 @@
 
 namespace adiar
 {
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   // Struct to hold statistics
   statistics::prod3_t stats_prod3;
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   // Data structures
   //
-  // To make the merge simpler we will make sure that 'data_1_x' and 'data_2_x'
-  // are ordered based on the order of the BDDs are given, i.e. the elements of
-  // the if-BDD would only every be forwarded in 'data_1_x'. The then-elements
-  // are forwarded only in 'data_2_x' if the if-BDD is also forwarded. Finally,
-  // the placement of the else-BDD on whether any element from the if-BDD or
+  // To make the merge simpler we will make sure that 'data_1_x' and 'data_2_x' are ordered based on
+  // the order of the BDDs are given, i.e. the elements of the if-BDD would only every be forwarded
+  // in 'data_1_x'. The then-elements are forwarded only in 'data_2_x' if the if-BDD is also
+  // forwarded. Finally, the placement of the else-BDD on whether any element from the if-BDD or
   // then-BDD has been forwarded.
 
   template <uint8_t nodes_carried>
@@ -55,14 +54,13 @@ namespace adiar
   using ite_priority_queue_3_t = internal::
     priority_queue<mem_mode, ite_request<2>, internal::request_data_third_lt<ite_request<2>>>;
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   // Helper functions
   internal::shared_levelized_file<bdd::node_type>
   __ite_zip_bdds(const bdd& bdd_if, const bdd& bdd_then, const bdd& bdd_else)
   {
-    // TODO: What is the performance of '<<' rather than 'unsafe_push'? If there
-    // is a major difference, then we may want to "inline" the '<<' with its
-    // _canonical check here.
+    // TODO: What is the performance of '<<' rather than 'unsafe_push'? If there is a major
+    // difference, then we may want to "inline" the '<<' with its _canonical check here.
     internal::node::pointer_type root_then = internal::node::pointer_type::nil();
     internal::node::pointer_type root_else = internal::node::pointer_type::nil();
 
@@ -194,9 +192,8 @@ namespace adiar
             const size_t pq_3_memory,
             const size_t max_pq_3_size)
   {
-    // Now, at this point we will not defer to using the Apply, so we can take
-    // up memory by opening the input streams and evaluating trivial
-    // conditionals.
+    // Now, at this point we will not defer to using the Apply, so we can take up memory by opening
+    // the input streams and evaluating trivial conditionals.
     internal::node_stream<> in_nodes_if(bdd_if);
     internal::node v_if = in_nodes_if.pull();
 
@@ -208,9 +205,8 @@ namespace adiar
     internal::node_stream<> in_nodes_else(bdd_else);
     internal::node v_else = in_nodes_else.pull();
 
-    // If the levels of 'then' and 'else' are disjoint and the 'if' BDD is above
-    // the two others, then we can merely zip the 'then' and 'else' BDDs. This
-    // is only O((N1+N2+N3)/B) I/Os!
+    // If the levels of 'then' and 'else' are disjoint and the 'if' BDD is above the two others,
+    // then we can merely zip the 'then' and 'else' BDDs. This is only O((N1+N2+N3)/B) I/Os!
     if (bdd_maxvar(bdd_if) < v_then.label() && bdd_maxvar(bdd_if) < v_else.label()
         && internal::disjoint_levels(bdd_then, bdd_else)) {
       return __ite_zip_bdds(bdd_if, bdd_then, bdd_else);
@@ -314,9 +310,8 @@ namespace adiar
         if (ite_must_forward(v_if, req.target[0], out_label, t_seek)
             || ite_must_forward(v_then, req.target[1], out_label, t_seek)
             || ite_must_forward(v_else, req.target[2], out_label, t_seek)) {
-          // An element should be forwarded, if it was not already forwarded
-          // (t_seek <= t_x), if it isn't the last one to seek (t_x < t_third), and
-          // if we actually are holding it.
+          // An element should be forwarded, if it was not already forwarded (t_seek <= t_x), if it
+          // isn't the last one to seek (t_x < t_third), and if we actually are holding it.
           const bool forward_if =
             (t_seek <= req.target[0]) && (req.target[0] < t_third) && (v_if.uid() == req.target[0]);
 
@@ -450,10 +445,10 @@ namespace adiar
     return __bdd(out_arcs, ep);
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// Derives an upper bound on the output's maximum i-level cut based on the
-  /// product of the maximum i-level cut of all three inputs.
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// Derives an upper bound on the output's maximum i-level cut based on the product of the maximum
+  /// i-level cut of all three inputs.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename cut, size_t const_size_inc>
   size_t
   __ite_ilevel_upper_bound(const internal::dd& in_if,
@@ -491,9 +486,9 @@ namespace adiar
       + if_cut_trues * then_cut_internal + if_cut_falses * else_cut_internal + const_size_inc);
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// Derives an upper bound on the output's maximum i-level cut given its size.
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   size_t
   __ite_ilevel_upper_bound(const internal::dd& in_if,
                            const internal::dd& in_then,
@@ -503,34 +498,32 @@ namespace adiar
     const internal::safe_size_t then_size = in_then->size();
     const internal::safe_size_t else_size = in_else->size();
 
-    // Compute the number of triples (t_if, t_then, t_else) where t_if is an
-    // internal node and t_then and t_else are nodes or (mismatching) terminals.
-    // Then also count the copies of in_then and in_else for when in_if hits a
-    // terminal early.
+    // Compute the number of triples (t_if, t_then, t_else) where t_if is an internal node and
+    // t_then and t_else are nodes or (mismatching) terminals. Then also count the copies of in_then
+    // and in_else for when in_if hits a terminal early.
     return internal::to_size(if_size * ((then_size + 2u) * (else_size + 2u) - 2u) + then_size
                              + else_size + 1u + 2u);
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   __bdd
   bdd_ite(const exec_policy& ep, const bdd& f, const bdd& g, const bdd& h)
   {
-    // There are multiple cases, where this boils down to an Apply rather than
-    // an If-Then-Else. The bdd_apply uses tuples rather than triples and only
-    // two priority queues, so it will run considerably faster.
+    // There are multiple cases, where this boils down to an Apply rather than an If-Then-Else. The
+    // bdd_apply uses tuples rather than triples and only two priority queues, so it will run
+    // considerably faster.
     //
-    // The translations into Apply can be found in Figure 1 of "Efficient
-    // Implementation of a BDD Package" of Karl S. Brace, Richard L. Rudell, and
-    // Randal E. Bryant.
+    // The translations into Apply can be found in Figure 1 of "Efficient Implementation of a BDD
+    // Package" of Karl S. Brace, Richard L. Rudell, and Randal E. Bryant.
 
     // Resolve being given the same underlying file in both cases
-    if (g.file == h.file) { return g.negate == h.negate ? __bdd(g) : bdd_xnor(f, g); }
+    if (g._file == h._file) { return g._negate == h._negate ? __bdd(g) : bdd_xnor(f, g); }
 
     // Resolve being given the same underlying file for conditional and a case
-    if (f.file == g.file) {
-      return f.negate == g.negate ? bdd_or(f, h) : bdd_and(bdd_not(f), h);
-    } else if (f.file == h.file) {
-      return f.negate == h.negate ? bdd_and(f, g) : bdd_imp(f, g);
+    if (f._file == g._file) {
+      return f._negate == g._negate ? bdd_or(f, h) : bdd_and(bdd_not(f), h);
+    } else if (f._file == h._file) {
+      return f._negate == h._negate ? bdd_and(f, g) : bdd_imp(f, g);
     }
 
     // Resolve being given a terminal in one of the cases
@@ -540,12 +533,11 @@ namespace adiar
       return bdd_apply(f, g, dd_valueof(h) ? imp_op : and_op);
     }
 
-    // Compute amount of memory available for auxiliary data structures after
-    // having opened all streams.
+    // Compute amount of memory available for auxiliary data structures after having opened all
+    // streams.
     //
-    // We then may derive an upper bound on the size of auxiliary data
-    // structures and check whether we can run them with a faster internal
-    // memory variant.
+    // We then may derive an upper bound on the size of auxiliary data structures and check whether
+    // we can run them with a faster internal memory variant.
     const tpie::memory_size_type aux_available_memory = internal::memory_available()
       // Input streams
       - 3 * internal::node_stream<>::memory_usage()

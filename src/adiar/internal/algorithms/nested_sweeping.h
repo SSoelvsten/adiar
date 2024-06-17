@@ -2095,13 +2095,13 @@ namespace adiar::internal
     // Is it a terminal?
     if (input.template has<shared_node_file_type>()
         && input.template get<shared_node_file_type>()->is_terminal()) {
-      return reduced_t(input.template get<shared_node_file_type>(), input.negate);
+      return reduced_t(input.template get<shared_node_file_type>(), input._negate);
     }
 
     // Otherwise obtain the semi-transposed DAG (construct it if necessary)
     const shared_arc_file_type dag = input.template has<shared_arc_file_type>()
       ? input.template get<shared_arc_file_type>()
-      : transpose(reduced_t(input.template get<shared_node_file_type>(), input.negate));
+      : transpose(reduced_t(input.template get<shared_node_file_type>(), input._negate));
 
     // Compute amount of memory available for auxiliary data structures after having opened all
     // streams.

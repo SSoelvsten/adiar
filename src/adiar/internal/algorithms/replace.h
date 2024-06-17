@@ -245,7 +245,7 @@ namespace adiar::internal
     if constexpr (check_reduced) {
       if (__dd.template has<typename Policy::shared_node_file_type>()) {
         const typename Policy::dd_type dd(
-          __dd.template get<typename Policy::shared_node_file_type>(), __dd.negate);
+          __dd.template get<typename Policy::shared_node_file_type>(), __dd._negate);
         return replace<Policy>(ep, dd, m, m_type);
       }
     }
@@ -294,7 +294,7 @@ namespace adiar::internal
     // Is it already reduced?
     if (__dd.template has<typename Policy::shared_node_file_type>()) {
       const typename Policy::dd_type dd(__dd.template get<typename Policy::shared_node_file_type>(),
-                                        __dd.negate);
+                                        __dd._negate);
       return replace<Policy>(ep, dd, m);
     }
 

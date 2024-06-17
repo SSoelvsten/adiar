@@ -46,8 +46,7 @@ namespace adiar
   bool
   zdd_ispoint(const zdd& A)
   {
-    // Assuming the ZDD is fully reduced (which it should be), then it can only
-    // be a point if:
+    // Assuming the ZDD is fully reduced (which it should be), then it can only be a point if:
     //
     // 1. Its width is exactly 1 (but also allow 0 for the terminal cases)
     //
@@ -79,7 +78,7 @@ namespace adiar
     return zdd_unequal(exec_policy(), A, B);
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   template <internal::cut::type ct_1, internal::cut::type ct_2>
   class ignore_levels
   {
@@ -174,9 +173,8 @@ namespace adiar
     static bool
     resolve_request(pq_1_t& pq, const internal::tuple<zdd::pointer_type>& rp)
     {
-      // Are they both a terminal? If so, check whether the left-hand side is true
-      // and not the right, which would contradict being an implication (i.e.
-      // representing a subset).
+      // Are they both a terminal? If so, check whether the left-hand side is true and not the
+      // right, which would contradict being an implication (i.e. representing a subset).
       if (rp[0].is_terminal() && rp[1].is_terminal()) {
         return essential(rp[0]) > essential(rp[1]);
       }
@@ -200,7 +198,7 @@ namespace adiar
   bool
   zdd_subseteq(const exec_policy& ep, const zdd& A, const zdd& B)
   {
-    if (A.file == B.file) { return true; }
+    if (A._file == B._file) { return true; }
 
     return internal::comparison_check<zdd_subseteq_policy>(ep, A, B);
   }
@@ -211,7 +209,7 @@ namespace adiar
     return zdd_subseteq(exec_policy(), A, B);
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   bool
   zdd_subset(const exec_policy& ep, const zdd& A, const zdd& B)
   {
@@ -224,7 +222,7 @@ namespace adiar
     return zdd_subset(exec_policy(), A, B);
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   class zdd_disjoint_policy
     : public zdd_policy
     , public internal::prod2_mixed_level_merger<zdd_policy>
@@ -283,7 +281,7 @@ namespace adiar
   bool
   zdd_disjoint(const exec_policy& ep, const zdd& A, const zdd& B)
   {
-    if (A.file == B.file) { return zdd_isfalse(A); }
+    if (A._file == B._file) { return zdd_isfalse(A); }
 
     return internal::comparison_check<zdd_disjoint_policy>(ep, A, B);
   }

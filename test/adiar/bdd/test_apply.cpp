@@ -404,7 +404,7 @@ go_bandit([]() {
           __bdd out = bdd_and(bdd_x0, bdd_T);
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
-          AssertThat(out.negate, Is().False());
+          AssertThat(out._negate, Is().False());
         });
 
         it("should shortcut F /\\ x0", [&]() {
@@ -465,7 +465,7 @@ go_bandit([]() {
           __bdd out = bdd_and(bdd_1, bdd_1);
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
-          AssertThat(out.negate, Is().False());
+          AssertThat(out._negate, Is().False());
         });
       });
 
@@ -474,14 +474,14 @@ go_bandit([]() {
           __bdd out = bdd_nand(bdd_x0, bdd_T);
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
-          AssertThat(out.negate, Is().True());
+          AssertThat(out._negate, Is().True());
         });
 
         it("should shortcut on negating on x0 and T", [&]() {
           __bdd out = bdd_nand(bdd_T, bdd_x0);
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
-          AssertThat(out.negate, Is().True());
+          AssertThat(out._negate, Is().True());
         });
 
         it("should collapse on the same BDD twice, where one is negated", [&]() {
@@ -576,14 +576,14 @@ go_bandit([]() {
           __bdd out = bdd_or(bdd_x0, bdd_F);
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
-          AssertThat(out.negate, Is().False());
+          AssertThat(out._negate, Is().False());
         });
 
         it("should OR shortcut on irrelevance F \\/ x0", [&]() {
           __bdd out = bdd_or(bdd_F, bdd_x0);
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
-          AssertThat(out.negate, Is().False());
+          AssertThat(out._negate, Is().False());
         });
 
         it("should shortcut [1] \\/ T", [&]() {
@@ -727,14 +727,14 @@ go_bandit([]() {
           __bdd out = bdd_xor(bdd_x0, bdd_T);
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
-          AssertThat(out.negate, Is().True());
+          AssertThat(out._negate, Is().True());
         });
 
         it("should shortcut on negating on T ^ x0", [&]() {
           __bdd out = bdd_xor(bdd_x0, bdd_T);
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
-          AssertThat(out.negate, Is().True());
+          AssertThat(out._negate, Is().True());
         });
 
         it("should collapse on the same BDD twice", [&]() {
@@ -875,7 +875,7 @@ go_bandit([]() {
           __bdd out = bdd_imp(bdd_T, bdd_x0);
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
-          AssertThat(out.negate, Is().False());
+          AssertThat(out._negate, Is().False());
         });
 
         it("should shortcut F -> [1]", [&]() {
@@ -910,7 +910,7 @@ go_bandit([]() {
              __bdd out = bdd_imp(bdd_not(bdd_2), bdd_2);
 
              AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_2));
-             AssertThat(out.negate,
+             AssertThat(out._negate,
                         Is().False()); // negated the already negated input doubly-negating
            });
 
@@ -918,7 +918,7 @@ go_bandit([]() {
           __bdd out = bdd_imp(bdd_2, bdd_not(bdd_2));
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_2));
-          AssertThat(out.negate, Is().True()); // negated the first of the two
+          AssertThat(out._negate, Is().True()); // negated the first of the two
         });
       });
     });

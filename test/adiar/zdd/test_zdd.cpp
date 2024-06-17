@@ -50,7 +50,7 @@ go_bandit([]() {
         __zdd t1 = x0_or_x1;
         AssertThat(t1.has<shared_levelized_file<zdd::node_type>>(), Is().True());
         AssertThat(t1.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(x0_or_x1_nf));
-        AssertThat(t1.negate, Is().False());
+        AssertThat(t1._negate, Is().False());
       });
 
       it("copy-constructs values from __zdd", [&]() {
@@ -58,14 +58,14 @@ go_bandit([]() {
         __zdd t2 = t1;
         AssertThat(t2.has<shared_levelized_file<zdd::node_type>>(), Is().True());
         AssertThat(t2.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(x0_or_x1_nf));
-        AssertThat(t2.negate, Is().False());
+        AssertThat(t2._negate, Is().False());
       });
 
       it("copy-constructs values from shared_levelized_file<zdd::node_type>", [&]() {
         __zdd t1 = x0_or_x1;
         AssertThat(t1.has<shared_levelized_file<zdd::node_type>>(), Is().True());
         AssertThat(t1.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(x0_or_x1_nf));
-        AssertThat(t1.negate, Is().False());
+        AssertThat(t1._negate, Is().False());
       });
 
       __zdd::shared_arc_file_type af;
@@ -88,7 +88,7 @@ go_bandit([]() {
         __zdd t1 = __zdd(af, exec_policy::access::Random_Access);
         AssertThat(t1.has<__zdd::shared_arc_file_type>(), Is().True());
         AssertThat(t1.get<__zdd::shared_arc_file_type>(), Is().EqualTo(af));
-        AssertThat(t1.negate, Is().False());
+        AssertThat(t1._negate, Is().False());
         AssertThat(t1._policy, Is().EqualTo(exec_policy(exec_policy::access::Random_Access)));
       });
 
