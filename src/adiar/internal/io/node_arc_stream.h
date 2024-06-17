@@ -87,7 +87,7 @@ namespace adiar::internal
       : _stream(/*need to sort before attach*/)
     {
       adiar_assert(diagram.template has<__dd::shared_arc_file_type>());
-      attach(diagram.template get<__dd::shared_arc_file_type>(), diagram.negate);
+      attach(diagram.template get<__dd::shared_arc_file_type>(), diagram._negate);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////

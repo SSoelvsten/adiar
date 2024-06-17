@@ -9,14 +9,13 @@ namespace adiar::internal
 {
   statistics::equality_t stats_equality;
 
-  //////////////////////////////////////////////////////////////////////////////
-  // Slow O(sort(N)) I/Os comparison by traversing the product construction and
-  // comparing each related pair of nodes.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  // Slow O(sort(N)) I/Os comparison by traversing the product construction and comparing each
+  // related pair of nodes.
 
-  //////////////////////////////////////////////////////////////////////////////
-  // Check whether more requests were processed on this level than allowed. An
-  // isomorphic DAG would not create more requests than the original number of
-  // nodes.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  // Check whether more requests were processed on this level than allowed. An isomorphic DAG would
+  // not create more requests than the original number of nodes.
   template <bool tv>
   class input_bound_levels
   {
@@ -74,14 +73,14 @@ namespace adiar::internal
     static constexpr bool termination_value = tv;
   };
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Policy for isomorphism checking with `comparison_check`.
   ///
   /// \pre To use this operation, the following should be satisfied.
   ///  - The number of nodes are the same
   ///  - The number of levels are the same
   ///  - The label and size of each level are the same
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   // TODO (Decision Diagrams with other kinds of pointers):
   // template<class dd_policy>
   class isomorphism_policy
@@ -155,26 +154,24 @@ namespace adiar::internal
     static constexpr bool no_early_return_value = true;
   };
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// Fast 2N/B I/Os comparison by comparing the i'th nodes numerically. This
-  /// requires, that the shared_levelized_file<node> is 'canonical' in the
-  /// following sense:
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// Fast 2N/B I/Os comparison by comparing the i'th nodes numerically. This requires, that the
+  /// shared_levelized_file<node> is 'canonical' in the following sense:
   ///
   /// - For each level, the ids are decreasing from max_id in increments of one.
   /// - There are no duplicate nodes.
-  /// - Nodes within each level are sorted by the children (e.g. ordered first on
-  ///   'high', secondly on 'low').
+  /// - Nodes within each level are sorted by the children (e.g. ordered first on 'high', secondly
+  ///   on 'low').
   ///
-  /// \remark See Section 3.3 in 'Efficient Binary Decision Diagram Manipulation
-  ///         in External Memory' on arXiv (v2 or newer) for an induction proof
-  ///         this is a valid comparison.
+  /// \remark See Section 3.3 in 'Efficient Binary Decision Diagram Manipulation in External Memory'
+  ///         on arXiv (v2 or newer) for an induction proof this is a valid comparison.
   ///
   /// \pre The following are satisfied:
   /// (1) The number of nodes are the same (to simplify the 'while' condition)
   /// (2) Both shared_levelized_file<node>s are 'canonical'.
   /// (3) The negation flags given to both shared_levelized_file<node>s agree
   ///     (breaks canonicity)
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   bool
   fast_isomorphism_check(const shared_levelized_file<node>& f0,
                          const shared_levelized_file<node>& f1)
@@ -194,7 +191,7 @@ namespace adiar::internal
     return true;
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   bool
   is_isomorphic(const exec_policy& ep,
                 const shared_levelized_file<node>& f0,
@@ -210,8 +207,7 @@ namespace adiar::internal
       return negate0 == negate1;
     }
 
-    // Are they trivially not the same, since they have different number of
-    // nodes?
+    // Are they trivially not the same, since they have different number of nodes?
     if (f0->size() != f1->size()) {
 #ifdef ADIAR_STATS
       stats_equality.exit_on_nodecount += 1u;
@@ -227,8 +223,7 @@ namespace adiar::internal
       return false;
     }
 
-    // Are they trivially not the same, since they have different number of
-    // terminal arcs?
+    // Are they trivially not the same, since they have different number of terminal arcs?
     if (f0->number_of_terminals[negate0] != f1->number_of_terminals[negate1]
         || f0->number_of_terminals[!negate0] != f1->number_of_terminals[!negate1]) {
 #ifdef ADIAR_STATS
@@ -237,8 +232,7 @@ namespace adiar::internal
       return false;
     }
 
-    // Are they trivially not the same, since they have different number of
-    // levels?
+    // Are they trivially not the same, since they have different number of levels?
     if (f0->levels() != f1->levels()) {
 #ifdef ADIAR_STATS
       stats_equality.exit_on_varcount += 1u;
@@ -246,8 +240,7 @@ namespace adiar::internal
       return false;
     }
 
-    // Are they trivially not the same, since the labels or the size of each
-    // level does not match?
+    // Are they trivially not the same, since the labels or the size of each level does not match?
     { // Create new scope to garbage collect the two meta_streams early
       level_info_stream<> in_meta_0(f0);
       level_info_stream<> in_meta_1(f1);
@@ -263,12 +256,10 @@ namespace adiar::internal
       }
     }
 
-    // TODO: Use 'fast_isomorphism_check' when there is only one node per level.
-    // In this case, we can just ignore the id (and only focus on the label and
-    // terminal values).
+    // TODO: Use 'fast_isomorphism_check' when there is only one node per level. In this case, we
+    // can just ignore the id (and only focus on the label and terminal values).
 
-    // Compare their content to discern whether there exists an isomorphism
-    // between them.
+    // Compare their content to discern whether there exists an isomorphism between them.
     if (f0->is_canonical() && f1->is_canonical() && negate0 == negate1) {
 #ifdef ADIAR_STATS
       stats_equality.fast_check.runs += 1u;
@@ -285,6 +276,6 @@ namespace adiar::internal
   bool
   is_isomorphic(const exec_policy& ep, const dd& a, const dd& b)
   {
-    return is_isomorphic(ep, a.file, b.file, a.negate, b.negate);
+    return is_isomorphic(ep, a._file, b._file, a._negate, b._negate);
   }
 }

@@ -15,24 +15,23 @@
 
 namespace adiar::internal
 {
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// Struct to hold statistics for equality checking
   extern statistics::equality_t stats_equality;
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Compute whether two shared levelized node files (with associated
   ///        negation flags) are isomorphic.
   ///
-  /// \details Checks whether the two files are isomorphic, i.e. whether there
-  ///          is a structure-preserving mapping between `f0` and `f1`. This
-  ///          assumes, that both files are of a unique reduced form.
+  /// \details Checks whether the two files are isomorphic, i.e. whether there is a
+  ///          structure-preserving mapping between `f0` and `f1`. This assumes, that both files are
+  ///          of a unique reduced form.
   ///
   /// \param fi      The two files of nodes to compare.
   /// \param negatei Whether the nodes of fi should be read in negated form
   ///
-  /// \return Whether `f0` and `f1` have isomorphic DAGs when applying the given
-  ///         negation flags.
-  //////////////////////////////////////////////////////////////////////////////
+  /// \return Whether `f0` and `f1` have isomorphic DAGs when applying the given negation flags.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   bool
   is_isomorphic(const exec_policy& ep,
                 const shared_levelized_file<node>& f0,
@@ -40,23 +39,23 @@ namespace adiar::internal
                 const bool negate0 = false,
                 const bool negate1 = false);
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Computes whether two decision diagrams are isomorphic; i.e. whether
-  ///        they are equivalent (under the same deletion-rule).
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Computes whether two decision diagrams are isomorphic; i.e. whether they are equivalent
+  ///        (under the same deletion-rule).
   ///
-  /// \details Checks whether the two files are isomorphic, i.e. whether there
-  ///          is a structure-preserving mapping between `f0` and `f1`. This
-  ///          assumes, that both files are of a unique reduced form.
+  /// \details Checks whether the two files are isomorphic, i.e. whether there is a
+  ///          structure-preserving mapping between `f0` and `f1`. This assumes, that both files are
+  ///          of a unique reduced form.
   ///
   /// \param a   The first decision diagram.
   /// \param b   The second decision diagram.
   ///
-  /// \return    Whether <tt>a</tt> and <tt>b</tt> have isomorphic DAGs.
-  //////////////////////////////////////////////////////////////////////////////
+  /// \return    Whether `a` and `b` have isomorphic DAGs.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   bool
   is_isomorphic(const exec_policy& ep, const dd& a, const dd& b);
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   // Data structures
   template <uint8_t nodes_carried>
   using pred_request = request<2, nodes_carried>;
@@ -183,25 +182,24 @@ namespace adiar::internal
     return comp_policy::no_early_return_value;
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// Behaviour can be changed with the 'comp_policy'.
   ///
   /// - The 'resolve_terminals' function resolves the case of being given two terminals.
   ///
-  /// - The 'resolve_request' function checks for early termination and places
-  ///   new recursion requests in the priority queue if more recursions are needed.
+  /// - The 'resolve_request' function checks for early termination and places new recursion
+  ///   requests in the priority queue if more recursions are needed.
   ///
-  /// - If the constexpr 'request_capped_by_level_size' variable is set to true,
-  ///   then the algorithm is guaranteed to only run in O(sort(N_1)) number of
-  ///   I/Os.
+  /// - If the constexpr 'request_capped_by_level_size' variable is set to true, then the algorithm
+  ///   is guaranteed to only run in O(sort(N_1)) number of I/Os.
   ///
-  /// - The constexpr 'early_return_value' and 'no_early_return_value' change the
-  ///   return value on early returns.
+  /// - The constexpr 'early_return_value' and 'no_early_return_value' change the return value on
+  ///   early returns.
   ///
-  /// This 'comp_policy' also should inherit (or provide) the general policy for
-  /// the decision_diagram used (i.e. bdd_policy in bdd/bdd.h, zdd_policy in
-  /// zdd/zdd.h and so on). This provides the following functions
-  //////////////////////////////////////////////////////////////////////////////
+  /// This 'comp_policy' also should inherit (or provide) the general policy for the
+  /// decision_diagram used (i.e. bdd_policy in bdd/bdd.h, zdd_policy in zdd/zdd.h and so on). This
+  /// provides the following functions
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename comp_policy>
   bool
   comparison_check(const exec_policy& ep,
@@ -210,12 +208,11 @@ namespace adiar::internal
                    const bool negate0,
                    const bool negate1)
   {
-    // Compute amount of memory available for auxiliary data structures after
-    // having opened all streams.
+    // Compute amount of memory available for auxiliary data structures after having opened all
+    // streams.
     //
-    // We then may derive an upper bound on the size of auxiliary data
-    // structures and check whether we can run them with a faster internal
-    // memory variant.
+    // We then may derive an upper bound on the size of auxiliary data structures and check whether
+    // we can run them with a faster internal memory variant.
     const size_t aux_available_memory = memory_available()
       // Input
       - 2 * node_stream<>::memory_usage()
@@ -294,7 +291,7 @@ namespace adiar::internal
   bool
   comparison_check(const exec_policy& ep, const dd& a, const dd& b)
   {
-    return comparison_check<comp_policy>(ep, a.file, b.file, a.negate, b.negate);
+    return comparison_check<comp_policy>(ep, a._file, b._file, a._negate, b._negate);
   }
 }
 

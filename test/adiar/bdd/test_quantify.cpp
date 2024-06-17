@@ -1009,14 +1009,14 @@ go_bandit([]() {
         __bdd out    = bdd_exists(in, 42);
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(terminal_T));
-        AssertThat(out.negate, Is().False());
+        AssertThat(out._negate, Is().False());
       });
 
       it("quantifies F terminal-only BDD as itself [&&]", [&]() {
         __bdd out = bdd_exists(bdd(terminal_F), 21);
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(terminal_F));
-        AssertThat(out.negate, Is().False());
+        AssertThat(out._negate, Is().False());
       });
 
       describe("access mode: random access", [&]() {
@@ -1027,7 +1027,7 @@ go_bandit([]() {
           __bdd out    = bdd_exists(ep, in, 42);
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
-          AssertThat(out.negate, Is().False());
+          AssertThat(out._negate, Is().False());
         });
 
         it("shortcuts quantification of root into T terminal [&&]", [&]() {
@@ -1673,7 +1673,7 @@ go_bandit([]() {
           __bdd out    = bdd_exists(ep, in, 42);
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
-          AssertThat(out.negate, Is().False());
+          AssertThat(out._negate, Is().False());
         });
 
         it("shortcuts quantification of root into T terminal [&&]", [&]() {
@@ -7142,14 +7142,14 @@ go_bandit([]() {
         __bdd out    = bdd_forall(in, 42);
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(terminal_T));
-        AssertThat(out.negate, Is().False());
+        AssertThat(out._negate, Is().False());
       });
 
       it("quantifies F terminal-only BDD as itself [&&]", [&]() {
         __bdd out = bdd_forall(bdd(terminal_F), 21);
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(terminal_F));
-        AssertThat(out.negate, Is().False());
+        AssertThat(out._negate, Is().False());
       });
 
       describe("access mode: random access", [&]() {

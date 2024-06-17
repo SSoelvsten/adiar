@@ -87,8 +87,8 @@ namespace adiar
   zdd&
   zdd::operator=(const zdd& other)
   {
-    this->negate = other.negate;
-    this->file   = other.file;
+    this->_negate = other._negate;
+    this->_file   = other._file;
     return *this;
   }
 

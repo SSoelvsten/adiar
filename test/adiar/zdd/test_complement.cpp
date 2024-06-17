@@ -48,14 +48,14 @@ go_bandit([]() {
         __zdd out = zdd_complement(zdd_F, dom_empty.begin(), dom_empty.end());
 
         AssertThat(out.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(zdd_F));
-        AssertThat(out.negate, Is().False());
+        AssertThat(out._negate, Is().False());
       });
 
       it("produces { Ø } on { Ø } and U = Ø", [&]() {
         __zdd out = zdd_complement(zdd_F, dom_empty.begin(), dom_empty.end());
 
         AssertThat(out.get<shared_levelized_file<zdd::node_type>>(), Is().EqualTo(zdd_F));
-        AssertThat(out.negate, Is().False());
+        AssertThat(out._negate, Is().False());
       });
 
       it("produces pow(U) on F terminal and U = { 0, 1, 2, 3 }", [&]() {

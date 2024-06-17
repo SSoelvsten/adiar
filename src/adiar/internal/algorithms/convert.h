@@ -47,7 +47,7 @@ namespace adiar::internal
     static typename to_policy::dd_type
     on_empty_labels(const typename from_policy::dd_type& dd)
     {
-      return typename to_policy::dd_type(dd.file, dd.negate);
+      return typename to_policy::dd_type(dd._file, dd._negate);
     }
 
     static typename to_policy::dd_type
@@ -80,8 +80,8 @@ namespace adiar::internal
           nw.unsafe_push(next_node);
           nw.unsafe_push(level_info(next_label, 1u));
         } else {
-          // If we kill the resulting node once, then we will also do it for all
-          // the other labels we still are missing.
+          // If we kill the resulting node once, then we will also do it for all the other labels we
+          // still are missing.
           has_output = false;
           break;
         }
