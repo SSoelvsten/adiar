@@ -8,6 +8,7 @@
 #include <adiar/type_traits.h>
 #include <adiar/types.h>
 
+#include <adiar/internal/dd_func.h>
 #include <adiar/internal/algorithms/reduce.h>
 #include <adiar/internal/assert.h>
 #include <adiar/internal/io/levelized_file_stream.h>
@@ -61,6 +62,7 @@ namespace adiar::internal
   __replace__infer_type(LevelInfoStream& ls, const ReplaceFunction& m)
   {
     using label_type  = typename Policy::label_type;
+    using label_diff_type = std::make_signed_t<label_type>;
     using result_type = typename ReplaceFunction::result_type;
 
     constexpr bool is_total_map   = is_same<result_type, label_type>;
@@ -69,36 +71,70 @@ namespace adiar::internal
     static_assert(is_total_map || is_partial_map);
 
     bool identity = true;
+    bool shift = true;
     bool monotone = true;
 
     label_type prev_before = Policy::max_label + 1;
     label_type prev_after  = Policy::max_label + 1;
+
+    label_diff_type prev_diff = 0;
+
     while (ls.can_pull()) {
       const label_type next_before = ls.pull().level();
-      const result_type next_after = m(next_before);
+      const result_type next_after_opt = m(next_before);
 
+      label_type next_after;
       if constexpr (is_partial_map) {
-        if (!next_after.has_value()) { continue; }
+        if (!next_after_opt.has_value()) { continue; }
+        next_after = *next_after_opt;
+      } else {
+        next_after = next_after_opt;
       }
 
       identity &= next_before == next_after;
+
+      if (shift) {
+        const label_diff_type next_diff =
+          static_cast<label_diff_type>(next_before) - static_cast<label_diff_type>(next_after);
+
+        shift &= Policy::max_label < prev_before || prev_diff == next_diff;
+        prev_diff = next_diff;
+      }
+
       monotone &= Policy::max_label < prev_before || prev_after < next_after;
 
       prev_before = next_before;
-      if constexpr (is_partial_map) {
-        prev_after = *next_after;
-      } else {
-        prev_after = next_after;
-      }
+      prev_after = next_after;
     }
 
-    if (identity) { return replace_type::Identity; }
-    if (monotone) { return replace_type::Monotone; }
-    return replace_type::Non_Monotone;
+    adiar_assert(identity <= shift && shift <= monotone);
+
+    if (!monotone) { return replace_type::Non_Monotone; }
+    if (!shift) { return replace_type::Monotone; }
+    if (!identity) { return replace_type::Shift; }
+    return replace_type::Identity;
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // Algorithms
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Replace the level in constant time
+  ///
+  /// \remark This requires that the mapping, `m`, is *monotonic*.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename Policy>
+  inline typename Policy::dd_type
+  __replace__shift_return(const typename Policy::dd_type& dd, const replace_func<Policy>& m)
+  {
+    adiar_assert(!dd->is_terminal());
+
+    const typename Policy::signed_label_type topvar = dd_topvar(dd);
+    const typename Policy::signed_label_type shifted_topvar = m(topvar);
+
+    return typename Policy::dd_type(
+      dd.file_ptr(), dd.is_negated(), dd.shift() + (shifted_topvar - topvar));
+  }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Replace the level of all nodes in a single linear scan.
@@ -140,6 +176,9 @@ namespace adiar::internal
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
+  // TODO: Nested Sweeping for non-monotonic reorderings.
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename Policy>
   class replace_reduce_policy : public Policy
   {
@@ -168,9 +207,6 @@ namespace adiar::internal
     replace_reduce_policy<Policy> policy(m);
     return reduce(ep, policy, std::move(__dd));
   }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // TODO: Nested Sweeping for non-monotonic reorderings.
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // "Public" interface
@@ -206,6 +242,12 @@ namespace adiar::internal
       stats_replace.monotonic_scans += 1u;
 #endif
       return __replace__monotonic_scan<Policy>(dd, m);
+
+    case replace_type::Shift:
+#ifdef ADIAR_STATS
+      stats_replace.shift_returns += 1u;
+#endif
+      return __replace__shift_return<Policy>(dd, m);
 
     case replace_type::Identity:
 #ifdef ADIAR_STATS
@@ -259,6 +301,7 @@ namespace adiar::internal
       throw invalid_argument("Non-monotonic variable replacement not (yet) supported.");
 
     case replace_type::Monotone:
+    case replace_type::Shift:
 #ifdef ADIAR_STATS
       stats_replace.monotonic_reduces += 1u;
 #endif

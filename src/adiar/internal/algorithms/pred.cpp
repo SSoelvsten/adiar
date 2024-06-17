@@ -276,6 +276,6 @@ namespace adiar::internal
   bool
   is_isomorphic(const exec_policy& ep, const dd& a, const dd& b)
   {
-    return is_isomorphic(ep, a._file, b._file, a._negate, b._negate);
+    return is_isomorphic(ep, a.file_ptr(), b.file_ptr(), a.is_negated(), b.is_negated());
   }
 }

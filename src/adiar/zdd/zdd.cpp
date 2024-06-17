@@ -45,8 +45,8 @@ namespace adiar
     : zdd(zdd_terminal(t))
   {}
 
-  zdd::zdd(const shared_node_file_type& A, bool negate)
-    : internal::dd(A, negate)
+  zdd::zdd(const shared_node_file_type& A, bool negate, signed_label_type shift)
+    : internal::dd(A, negate, shift)
   {
     if (negate) { throw invalid_argument("ZDDs cannot be negated"); }
   }

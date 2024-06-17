@@ -959,23 +959,68 @@ go_bandit([]() {
                });
 
       describe("levelized_file() + levelized_file_writer + level_info_stream", []() {
-        it("reads by default level information in reverse", []() {
-          levelized_file<int> lf;
-          levelized_file_writer lfw(lf);
+        levelized_file<int> lf;
+        levelized_file_writer lfw(lf);
 
-          lfw.push<0>(-1);
-          lfw.push<0>(1);
-          lfw.push<1>(-1);
-          lfw.push<0>(2);
-          lfw.push<1>(1);
-          lfw.push(level_info{ 0u, 2u });
-          lfw.push(level_info{ 1u, 3u });
+        lfw.push<0>(-1);
+        lfw.push<0>(1);
+        lfw.push<1>(-1);
+        lfw.push<0>(2);
+        lfw.push<1>(1);
+        lfw.push(level_info{ 1u, 2u });
+        lfw.push(level_info{ 3u, 3u });
 
-          lfw.detach();
+        lfw.detach();
 
+        it("reads by default level information in reverse", [&]() {
           level_info_stream fs(lf);
           AssertThat(fs.can_pull(), Is().True());
-          AssertThat(fs.pull(), Is().EqualTo(level_info{ 1u, 3u }));
+          AssertThat(fs.pull(), Is().EqualTo(level_info{ 3u, 3u }));
+          AssertThat(fs.can_pull(), Is().True());
+          AssertThat(fs.pull(), Is().EqualTo(level_info{ 1u, 2u }));
+          AssertThat(fs.can_pull(), Is().False());
+        });
+
+        it("can read level information forwards", [&]() {
+          level_info_stream<true> fs(lf);
+          AssertThat(fs.can_pull(), Is().True());
+          AssertThat(fs.pull(), Is().EqualTo(level_info{ 1u, 2u }));
+          AssertThat(fs.can_pull(), Is().True());
+          AssertThat(fs.pull(), Is().EqualTo(level_info{ 3u, 3u }));
+          AssertThat(fs.can_pull(), Is().False());
+        });
+
+        it("shifts level information [+0]", [&]() {
+          level_info_stream fs(lf, +0);
+          AssertThat(fs.can_pull(), Is().True());
+          AssertThat(fs.pull(), Is().EqualTo(level_info{ 3u, 3u }));
+          AssertThat(fs.can_pull(), Is().True());
+          AssertThat(fs.pull(), Is().EqualTo(level_info{ 1u, 2u }));
+          AssertThat(fs.can_pull(), Is().False());
+        });
+
+        it("shifts level information [+1]", [&]() {
+          level_info_stream fs(lf, +1);
+          AssertThat(fs.can_pull(), Is().True());
+          AssertThat(fs.pull(), Is().EqualTo(level_info{ 4u, 3u }));
+          AssertThat(fs.can_pull(), Is().True());
+          AssertThat(fs.pull(), Is().EqualTo(level_info{ 2u, 2u }));
+          AssertThat(fs.can_pull(), Is().False());
+        });
+
+        it("shifts level information [+2]", [&]() {
+          level_info_stream fs(lf, +2);
+          AssertThat(fs.can_pull(), Is().True());
+          AssertThat(fs.pull(), Is().EqualTo(level_info{ 5u, 3u }));
+          AssertThat(fs.can_pull(), Is().True());
+          AssertThat(fs.pull(), Is().EqualTo(level_info{ 3u, 2u }));
+          AssertThat(fs.can_pull(), Is().False());
+        });
+
+        it("shifts level information [-1]", [&]() {
+          level_info_stream fs(lf, -1);
+          AssertThat(fs.can_pull(), Is().True());
+          AssertThat(fs.pull(), Is().EqualTo(level_info{ 2u, 3u }));
           AssertThat(fs.can_pull(), Is().True());
           AssertThat(fs.pull(), Is().EqualTo(level_info{ 0u, 2u }));
           AssertThat(fs.can_pull(), Is().False());

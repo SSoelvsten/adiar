@@ -47,7 +47,7 @@ namespace adiar::internal
     static typename to_policy::dd_type
     on_empty_labels(const typename from_policy::dd_type& dd)
     {
-      return typename to_policy::dd_type(dd._file, dd._negate);
+      return typename to_policy::dd_type(dd.file_ptr(), dd.is_negated());
     }
 
     static typename to_policy::dd_type

@@ -37,8 +37,8 @@ namespace adiar
     : bdd(false)
   {}
 
-  bdd::bdd(const shared_node_file_type& f, bool negate)
-    : internal::dd(f, negate)
+  bdd::bdd(const shared_node_file_type& f, bool negate, signed_label_type shift)
+    : internal::dd(f, negate, shift)
   {}
 
   bdd::bdd(const bdd& f)

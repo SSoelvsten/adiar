@@ -171,6 +171,8 @@ namespace adiar
                    const bdd& relation,
                    const LevelPredicate& pred)
   {
+    std::cout << std::endl << "states.shift() = " << states.shift() << std::endl;
+
     relprod_prod2_policy<LevelPredicate> policy(pred);
     return internal::prod2(ep, states, relation, policy);
   }
@@ -308,6 +310,7 @@ namespace adiar
       throw invalid_argument("Non-monotonic variable replacement not (yet) supported.");
 
     case replace_type::Monotone:
+    case replace_type::Shift:
     case replace_type::Identity:
 #ifdef ADIAR_STATS
       internal::stats_replace.monotonic_reduces += 1u;
@@ -358,7 +361,10 @@ namespace adiar
               replace_type m_type)
   {
     const bdd tmp_1 = bdd_replace(
-      ep, states, [&m](bdd::label_type x) { return m(x).value(); }, m_type);
+      ep, states, [&m](bdd::label_type x) {
+        std::cout << x << " -> " << m(x).value() << std::endl;
+        return m(x).value();
+      }, m_type);
 
     __bdd tmp_2 = bdd_relprod__and(ep, std::move(tmp_1), relation, m);
 

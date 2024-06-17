@@ -1,6 +1,8 @@
 #ifndef ADIAR_INTERNAL_IO_NODE_STREAM_H
 #define ADIAR_INTERNAL_IO_NODE_STREAM_H
 
+#include <type_traits>
+
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/dd.h>
 #include <adiar/internal/io/levelized_file.h>
@@ -19,7 +21,10 @@ namespace adiar::internal
   template <bool Reverse = false>
   class node_stream : public levelized_file_stream<node, !Reverse>
   {
-    using parent_t = levelized_file_stream<node, !Reverse>;
+    using parent_type = levelized_file_stream<node, !Reverse>;
+    using shift_type = std::make_signed_t<node::label_type>;
+
+    shift_type _shift = 0;
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -34,22 +39,29 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a node file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_stream(const levelized_file<node>& file, const bool negate = false)
-      : parent_t(file, negate)
+    node_stream(const levelized_file<node>& file,
+                const bool negate = false,
+                const shift_type level_shift = 0)
+      : parent_type(file, negate)
+      , _shift(level_shift)
     {}
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a shared node file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_stream(const shared_ptr<levelized_file<node>>& file, const bool negate = false)
-      : parent_t(file, negate)
+    node_stream(const shared_ptr<levelized_file<node>>& file,
+                const bool negate = false,
+                const shift_type level_shift = 0)
+      : parent_type(file, negate)
+      , _shift(level_shift)
     {}
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a Decision Diagram.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     node_stream(const dd& diagram)
-      : parent_t(diagram._file, diagram._negate)
+      : parent_type(diagram.file_ptr(), diagram.is_negated())
+      , _shift(diagram.shift())
     {}
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -58,7 +70,7 @@ namespace adiar::internal
     bool
     can_pull() const
     {
-      return parent_t::template can_pull<0>();
+      return parent_type::template can_pull<0>();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -69,7 +81,7 @@ namespace adiar::internal
     const node
     pull()
     {
-      return parent_t::template pull<0>();
+      return shift_replace(parent_type::template pull<0>(), this->_shift);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,7 +92,7 @@ namespace adiar::internal
     const node
     peek()
     {
-      return parent_t::template peek<0>();
+      return shift_replace(parent_type::template peek<0>(), this->_shift);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -93,7 +105,7 @@ namespace adiar::internal
     const node
     seek(const node::uid_type& u)
     {
-      return parent_t::_streams[0].seek(u);
+      return parent_type::_streams[0].seek(u);
     }
   };
 }
