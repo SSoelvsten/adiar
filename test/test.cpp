@@ -50,6 +50,7 @@ go_bandit([]() {
 #include "adiar/internal/data_structures/test_levelized_priority_queue.cpp"
 #include "adiar/internal/data_types/test_arc.cpp"
 #include "adiar/internal/data_types/test_convert.cpp"
+#include "adiar/internal/data_types/test_level_info.cpp"
 #include "adiar/internal/data_types/test_node.cpp"
 #include "adiar/internal/data_types/test_ptr.cpp"
 #include "adiar/internal/data_types/test_request.cpp"
