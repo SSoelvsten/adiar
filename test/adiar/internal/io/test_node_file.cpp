@@ -990,6 +990,117 @@ go_bandit([]() {
 
           AssertThat(ns.can_pull(), Is().False());
         });
+
+        it("shifts pulls on-the-fly [+0]", [&]() {
+          node_stream<> ns(nf, false, +0);
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.pull(), Is().EqualTo(n1));
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.pull(), Is().EqualTo(n2));
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.pull(), Is().EqualTo(n3));
+
+          AssertThat(ns.can_pull(), Is().False());
+        });
+
+        it("shifts peeks on-the-fly [+0]", [&]() {
+          node_stream<> ns(nf, false, +0);
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.peek(), Is().EqualTo(n1));
+          ns.pull();
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.peek(), Is().EqualTo(n2));
+          ns.pull();
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.peek(), Is().EqualTo(n3));
+          ns.pull();
+
+          AssertThat(ns.can_pull(), Is().False());
+        });
+
+        it("shifts pulls on-the-fly [+1]", [&]() {
+          node_stream<> ns(nf, false, +1);
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.pull(),
+                     Is().EqualTo(node(1, 0, node::pointer_type(3, 0), node::pointer_type(3, 1))));
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.pull(),
+                     Is().EqualTo(node(3, 0, node::pointer_type(true), node::pointer_type(false))));
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.pull(),
+                     Is().EqualTo(node(3, 1, node::pointer_type(false), node::pointer_type(true))));
+
+          AssertThat(ns.can_pull(), Is().False());
+        });
+
+        it("shifts pulls on-the-fly [+1]", [&]() {
+          node_stream<> ns(nf, false, +1);
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.peek(),
+                     Is().EqualTo(node(1, 0, node::pointer_type(3, 0), node::pointer_type(3, 1))));
+          ns.pull();
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.peek(),
+                     Is().EqualTo(node(3, 0, node::pointer_type(true), node::pointer_type(false))));
+          ns.pull();
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.peek(),
+                     Is().EqualTo(node(3, 1, node::pointer_type(false), node::pointer_type(true))));
+          ns.pull();
+
+          AssertThat(ns.can_pull(), Is().False());
+        });
+
+        it("shifts and negates pulls on-the-fly [+1]", [&]() {
+          node_stream<> ns(nf, true, +1);
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.pull(),
+                     Is().EqualTo(node(1, 0, node::pointer_type(3, 0), node::pointer_type(3, 1))));
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.pull(),
+                     Is().EqualTo(node(3, 0, node::pointer_type(false), node::pointer_type(true))));
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.pull(),
+                     Is().EqualTo(node(3, 1, node::pointer_type(true), node::pointer_type(false))));
+
+          AssertThat(ns.can_pull(), Is().False());
+        });
+
+        it("shifts and negates pulls on-the-fly [+1]", [&]() {
+          node_stream<> ns(nf, true, +1);
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.peek(),
+                     Is().EqualTo(node(1, 0, node::pointer_type(3, 0), node::pointer_type(3, 1))));
+          ns.pull();
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.peek(),
+                     Is().EqualTo(node(3, 0, node::pointer_type(false), node::pointer_type(true))));
+          ns.pull();
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.peek(),
+                     Is().EqualTo(node(3, 1, node::pointer_type(true), node::pointer_type(false))));
+          ns.pull();
+
+          AssertThat(ns.can_pull(), Is().False());
+        });
       });
 
       describe(".seek(const node::uid_type &u)", []() {
@@ -1084,6 +1195,32 @@ go_bandit([]() {
                      Is().EqualTo(node(2, 0, node::pointer_type(false), node::pointer_type(true))));
           AssertThat(ns.seek(node::uid_type(2, 1)),
                      Is().EqualTo(node(2, 1, node::pointer_type(true), node::pointer_type(false))));
+        });
+
+        it("can seek shifted nodes [+2]", [&]() {
+          node_stream<> ns(nf, false, +2);
+
+          AssertThat(ns.seek(node::uid_type(2, 0)),
+                     Is().EqualTo(node(2, 0, node::pointer_type(4, 0), node::pointer_type(4, 1))));
+          AssertThat(ns.seek(node::uid_type(3, 0)),
+                     Is().EqualTo(node(4, 0, node::pointer_type(true), node::pointer_type(false))));
+          AssertThat(ns.seek(node::uid_type(4, 1)),
+                     Is().EqualTo(node(4, 1, node::pointer_type(false), node::pointer_type(true))));
+          AssertThat(ns.seek(node::uid_type(4, 0)),
+                     Is().EqualTo(node(4, 1, node::pointer_type(false), node::pointer_type(true))));
+        });
+
+        it("can seek negated shifted nodes [+2]", [&]() {
+          node_stream<> ns(nf, true, +1);
+
+          AssertThat(ns.seek(node::uid_type(1, 0)),
+                     Is().EqualTo(node(1, 0, node::pointer_type(3, 0), node::pointer_type(3, 1))));
+          AssertThat(ns.seek(node::uid_type(2, 0)),
+                     Is().EqualTo(node(3, 0, node::pointer_type(false), node::pointer_type(true))));
+          AssertThat(ns.seek(node::uid_type(3, 1)),
+                     Is().EqualTo(node(3, 1, node::pointer_type(true), node::pointer_type(false))));
+          AssertThat(ns.seek(node::uid_type(4, 0)),
+                     Is().EqualTo(node(3, 1, node::pointer_type(true), node::pointer_type(false))));
         });
 
         // TODO: reversed

@@ -28,6 +28,11 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     bool _negate = false;
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Number of levels with which an element ought to be shifted.
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    node::signed_label_type _shift = 0;
+
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Create unattached to any file.
@@ -41,17 +46,23 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a node file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_stream(const levelized_file<node>& file, bool negate = false)
+    node_stream(const levelized_file<node>& file,
+                bool negate                   = false,
+                node::signed_label_type shift = 0)
       : parent_type(file)
       , _negate(negate)
+      , _shift(shift)
     {}
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a shared node file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_stream(const shared_ptr<levelized_file<node>>& file, bool negate = false)
+    node_stream(const shared_ptr<levelized_file<node>>& file,
+                bool negate                   = false,
+                node::signed_label_type shift = 0)
       : parent_type(file)
       , _negate(negate)
+      , _shift(shift)
     {}
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -60,6 +71,7 @@ namespace adiar::internal
     node_stream(const dd& diagram)
       : parent_type(diagram.file_ptr())
       , _negate(diagram.is_negated())
+      , _shift(0 /*TODO*/)
     {}
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79,7 +91,7 @@ namespace adiar::internal
     const node
     pull()
     {
-      return cnot(parent_type::template pull<0>(), this->_negate);
+      return shift_replace(cnot(parent_type::template pull<0>(), this->_negate), this->_shift);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,7 +102,7 @@ namespace adiar::internal
     const node
     peek()
     {
-      return cnot(parent_type::template peek<0>(), this->_negate);
+      return shift_replace(cnot(parent_type::template peek<0>(), this->_negate), this->_shift);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -103,7 +115,9 @@ namespace adiar::internal
     const node
     seek(const node::uid_type& u)
     {
-      return cnot(parent_type::_streams[0].seek(u), this->_negate);
+      const node::uid_type u_unshifted = shift_replace(u.as_ptr(), -this->_shift);
+      const node n_raw                 = parent_type::_streams[0].seek(std::move(u_unshifted));
+      return shift_replace(cnot(std::move(n_raw), this->_negate), this->_shift);
     }
   };
 }
