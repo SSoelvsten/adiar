@@ -1621,7 +1621,7 @@ namespace adiar::internal
   template <typename Policy>
   typename Policy::__dd_type
   quantify(const exec_policy& ep,
-           typename Policy::__dd_type &&__dd,
+           typename Policy::__dd_type&& __dd,
            const predicate<typename Policy::label_type>& pred)
   {
     switch (ep.template get<exec_policy::quantify::algorithm>()) {
@@ -1913,7 +1913,7 @@ namespace adiar::internal
   template <typename Policy>
   typename Policy::__dd_type
   quantify(const exec_policy& ep,
-           typename Policy::__dd_type &&__dd,
+           typename Policy::__dd_type&& __dd,
            const typename multi_quantify_policy__generator<Policy>::generator_t& lvls)
   {
     switch (ep.template get<exec_policy::quantify::algorithm>()) {

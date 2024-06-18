@@ -87,7 +87,7 @@ namespace adiar
     __resolve_request(const internal::tuple<bdd::pointer_type>& r) const
     {
       if (internal::and_op::can_left_shortcut(r[0]) || internal::and_op::can_right_shortcut(r[1])) {
-        return {{ bdd::pointer_type(false), bdd::pointer_type(false) }, true};
+        return { { bdd::pointer_type(false), bdd::pointer_type(false) }, true };
       }
       return { r, false };
     }
@@ -197,8 +197,7 @@ namespace adiar
   /// \details This is a one-to-one copy of the 'bdd_quantify_policy' in 'adiar/bdd/quantify.cpp'.
   ///          We ought to reuse it instead!
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  class relnext_quantify_policy
-    : public bdd_policy
+  class relnext_quantify_policy : public bdd_policy
   {
   public:
     static inline bdd::pointer_type
@@ -277,7 +276,7 @@ namespace adiar
     map_level(bdd::label_type x) const
     {
       const optional<bdd::label_type> new_x = this->_m(x);
-      return new_x.has_value() ? new_x.value() : bdd::max_label+1;
+      return new_x.has_value() ? new_x.value() : bdd::max_label + 1;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -357,8 +356,8 @@ namespace adiar
               const function<optional<bdd::label_type>(bdd::label_type)>& m,
               replace_type m_type)
   {
-    const bdd tmp_1 = bdd_replace(
-      ep, states, [&m](bdd::label_type x) { return m(x).value(); }, m_type);
+    const bdd tmp_1 =
+      bdd_replace(ep, states, [&m](bdd::label_type x) { return m(x).value(); }, m_type);
 
     __bdd tmp_2 = bdd_relprod__and(ep, std::move(tmp_1), relation, m);
 

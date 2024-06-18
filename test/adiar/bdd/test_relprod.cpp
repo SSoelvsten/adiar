@@ -2599,7 +2599,7 @@ go_bandit([]() {
       });
 
       it("has no successors for empty set of states [<true>] [~]", [&]() {
-        const bdd T = true;
+        const bdd T   = true;
         const bdd out = bdd_relprod(bdd_not(T), T, kalin_relnext_pred);
 
         // Check it looks all right
@@ -2755,7 +2755,7 @@ go_bandit([]() {
       });
 
       it("has no predecessors for empty set of states [<true>] [~]", [&]() {
-        const bdd T = true;
+        const bdd T   = true;
         const bdd out = bdd_relprod(bdd_not(T), T, kalin_relprev_pred);
 
         // Check it looks all right
@@ -2911,7 +2911,7 @@ go_bandit([]() {
       });
 
       it("has no successors for empty set of edges [~<false> + <false>]", [&]() {
-        const bdd F = false;
+        const bdd F   = false;
         const bdd out = bdd_relprod(bdd_not(F), F, kalin_relnext_pred);
 
         // Check it looks all right
@@ -2943,7 +2943,7 @@ go_bandit([]() {
       });
 
       it("has no successors for empty set of nodes and edges [<false>]", [&]() {
-        const bdd F = false;
+        const bdd F   = false;
         const bdd out = bdd_relprod(F, F, kalin_relnext_pred);
 
         AssertThat(out.file_ptr(), Is().EqualTo(F.file_ptr()));
@@ -2996,7 +2996,7 @@ go_bandit([]() {
       });
 
       it("has no predecessors for empty set of edges [~<false> + <false>]", [&]() {
-        const bdd F = false;
+        const bdd F   = false;
         const bdd out = bdd_relprod(bdd_not(F), F, kalin_relprev_pred);
 
         // Check it looks all right
@@ -3028,7 +3028,7 @@ go_bandit([]() {
       });
 
       it("has no predecessors for empty set of nodes and edges [<false>]", [&]() {
-        const bdd F = false;
+        const bdd F   = false;
         const bdd out = bdd_relprod(F, F, kalin_relprev_pred);
 
         AssertThat(out.file_ptr(), Is().EqualTo(F.file_ptr()));
@@ -3067,7 +3067,7 @@ go_bandit([]() {
       });
 
       it("has all successors for all nodes and total graph [<true>]", [&]() {
-        const bdd T = true;
+        const bdd T   = true;
         const bdd out = bdd_relprod(T, T, kalin_relnext_pred);
 
         AssertThat(out.file_ptr(), Is().EqualTo(T.file_ptr()));
@@ -3120,7 +3120,7 @@ go_bandit([]() {
       });
 
       it("has all predecessors for all nodes and total graph [<true>]", [&]() {
-        const bdd T = true;
+        const bdd T   = true;
         const bdd out = bdd_relprod(T, T, kalin_relprev_pred);
 
         AssertThat(out.file_ptr(), Is().EqualTo(T.file_ptr()));
@@ -3921,7 +3921,7 @@ go_bandit([]() {
       });
 
       it("has no successors for empty set of states [<true>] [~]", [&]() {
-        const bdd T = true;
+        const bdd T   = true;
         const bdd out = bdd_relnext(bdd_not(T), T, kalin_relnext_map);
 
         // Check it looks all right
@@ -4077,7 +4077,7 @@ go_bandit([]() {
       });
 
       it("has no successors for empty set of edges [~<false> + <false>]", [&]() {
-        const bdd F = false;
+        const bdd F   = false;
         const bdd out = bdd_relnext(bdd_not(F), F, kalin_relnext_map);
 
         // Check it looks all right
@@ -4109,7 +4109,7 @@ go_bandit([]() {
       });
 
       it("has no successors for empty set of nodes and edges [<false>]", [&]() {
-        const bdd F = false;
+        const bdd F   = false;
         const bdd out = bdd_relnext(F, F, kalin_relnext_map);
 
         AssertThat(out.file_ptr(), Is().EqualTo(F.file_ptr()));
@@ -4148,7 +4148,7 @@ go_bandit([]() {
       });
 
       it("has all successors for all nodes and total graph [<true>]", [&]() {
-        const bdd T = true;
+        const bdd T   = true;
         const bdd out = bdd_relnext(T, T, kalin_relnext_map);
 
         AssertThat(out.file_ptr(), Is().EqualTo(T.file_ptr()));
@@ -4654,7 +4654,7 @@ go_bandit([]() {
       });
 
       it("has no successors for empty set of states [<true>] [~]", [&]() {
-        const bdd T = true;
+        const bdd T   = true;
         const bdd out = bdd_relnext(bdd_not(T), T, kalin_relnext_map, replace_type::Monotone);
 
         // Check it looks all right
@@ -4811,7 +4811,7 @@ go_bandit([]() {
       });
 
       it("has no successors for empty set of edges [~<false> + <false>]", [&]() {
-        const bdd F = false;
+        const bdd F   = false;
         const bdd out = bdd_relnext(bdd_not(F), F, kalin_relnext_map, replace_type::Monotone);
 
         // Check it looks all right
@@ -4843,7 +4843,7 @@ go_bandit([]() {
       });
 
       it("has no successors for empty set of nodes and edges [<false>]", [&]() {
-        const bdd F = false;
+        const bdd F   = false;
         const bdd out = bdd_relnext(F, F, kalin_relnext_map, replace_type::Monotone);
 
         AssertThat(out.file_ptr(), Is().EqualTo(F.file_ptr()));
@@ -4882,7 +4882,7 @@ go_bandit([]() {
       });
 
       it("has all successors for all nodes and total graph [<true>]", [&]() {
-        const bdd T = true;
+        const bdd T   = true;
         const bdd out = bdd_relnext(T, T, kalin_relnext_map, replace_type::Monotone);
 
         AssertThat(out.file_ptr(), Is().EqualTo(T.file_ptr()));
@@ -5956,7 +5956,7 @@ go_bandit([]() {
       });
 
       it("has no predecessors for empty set of edges [~<false> + <false>]", [&]() {
-        const bdd F = false;
+        const bdd F   = false;
         const bdd out = bdd_relprev(bdd_not(F), F, kalin_relprev_map);
 
         // Check it looks all right
@@ -5988,7 +5988,7 @@ go_bandit([]() {
       });
 
       it("has no predecessors for empty set of nodes and edges [<false>]", [&]() {
-        const bdd F = false;
+        const bdd F   = false;
         const bdd out = bdd_relprev(F, F, kalin_relprev_map);
 
         AssertThat(out.file_ptr(), Is().EqualTo(F.file_ptr()));
@@ -6027,7 +6027,7 @@ go_bandit([]() {
       });
 
       it("has all predecessors for all nodes and total graph [<true>]", [&]() {
-        const bdd T = true;
+        const bdd T   = true;
         const bdd out = bdd_relprev(T, T, kalin_relprev_map);
 
         AssertThat(out.file_ptr(), Is().EqualTo(T.file_ptr()));
@@ -6781,7 +6781,7 @@ go_bandit([]() {
       });
 
       it("has no predecessors for empty set of edges [~<false> + <false>]", [&]() {
-        const bdd F = false;
+        const bdd F   = false;
         const bdd out = bdd_relprev(bdd_not(F), F, kalin_relprev_map, replace_type::Monotone);
 
         // Check it looks all right
@@ -6813,7 +6813,7 @@ go_bandit([]() {
       });
 
       it("has no predecessors for empty set of nodes and edges [<false>]", [&]() {
-        const bdd F = false;
+        const bdd F   = false;
         const bdd out = bdd_relprev(F, F, kalin_relprev_map, replace_type::Monotone);
 
         AssertThat(out.file_ptr(), Is().EqualTo(F.file_ptr()));
@@ -6852,7 +6852,7 @@ go_bandit([]() {
       });
 
       it("has all predecessors for all nodes and total graph [<true>]", [&]() {
-        const bdd T = true;
+        const bdd T   = true;
         const bdd out = bdd_relprev(T, T, kalin_relprev_map, replace_type::Monotone);
 
         AssertThat(out.file_ptr(), Is().EqualTo(T.file_ptr()));

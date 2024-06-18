@@ -122,7 +122,8 @@ namespace adiar::internal
                          node_writer& out_writer,
                          statistics::reduce_t& stats = internal::stats_reduce)
     {
-      return __reduce_level__fast<dd_policy, pq_t, arc_stream_t>(arcs, label, label, pq, out_writer, stats);
+      return __reduce_level__fast<dd_policy, pq_t, arc_stream_t>(
+        arcs, label, label, pq, out_writer, stats);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////

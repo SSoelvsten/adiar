@@ -6942,13 +6942,13 @@ go_bandit([]() {
     describe("bdd_exists(__bdd&&, ForwardIt, ForwardIt)", [&]() {
       it("returns original file on reduced BDD 1 and [].begin [&&]", [&]() {
         const std::vector<int> vars = {};
-        __bdd out = bdd_exists(__bdd(bdd_1), vars.begin(), vars.end());
+        __bdd out                   = bdd_exists(__bdd(bdd_1), vars.begin(), vars.end());
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
       });
 
       it("returns original file on reduced BDD 2 and [].begin [&&]", [&]() {
         const std::vector<int> vars = {};
-        __bdd out = bdd_exists(__bdd(bdd_2), vars.begin(), vars.end());
+        __bdd out                   = bdd_exists(__bdd(bdd_2), vars.begin(), vars.end());
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_2));
       });
 
@@ -8377,7 +8377,7 @@ go_bandit([]() {
     describe("bdd_forall(__bdd&&, ForwardIt, ForwardIt)", [&]() {
       it("returns original file on reduced BDD 1 and [].begin() [&&]", [&]() {
         const std::vector<int> vars = {};
-        __bdd out = bdd_forall(__bdd(bdd_1), vars.begin(), vars.end());
+        __bdd out                   = bdd_forall(__bdd(bdd_1), vars.begin(), vars.end());
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
       });
 
