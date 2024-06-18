@@ -4,8 +4,8 @@
 
 go_bandit([]() {
   describe("adiar/internal/level_merger.h", []() {
-    describe("level_merger<shared_levelized_file<int>, ...>", [&]() {
-      it("can pull from one level_info stream", [&]() {
+    describe("level_merger<shared_levelized_file<int>, ...>", []() {
+      it("can pull from one level_info stream", []() {
         shared_levelized_file<int> f;
         { // Garbage collect the writer
           levelized_file_writer<int> fw(f);
@@ -35,7 +35,7 @@ go_bandit([]() {
         AssertThat(merger.can_pull(), Is().False());
       });
 
-      it("can peek from one level_info streams", [&]() {
+      it("can peek from one level_info streams", []() {
         shared_levelized_file<int> f;
 
         { // Garbage collect the writer
@@ -62,7 +62,7 @@ go_bandit([]() {
         AssertThat(merger.pull(), Is().EqualTo(4u));
       });
 
-      it("can pull from merge of two level_info streams, where one is empty [1]", [&]() {
+      it("can pull from merge of two level_info streams, where one is empty [1]", []() {
         shared_levelized_file<int> f1;
         shared_levelized_file<int> f2;
 
@@ -82,7 +82,7 @@ go_bandit([]() {
         AssertThat(merger.can_pull(), Is().False());
       });
 
-      it("can pull from merge of two level_info streams, where one is empty [2]", [&]() {
+      it("can pull from merge of two level_info streams, where one is empty [2]", []() {
         shared_levelized_file<int> f1;
         shared_levelized_file<int> f2;
 
@@ -106,7 +106,7 @@ go_bandit([]() {
         AssertThat(merger.can_pull(), Is().False());
       });
 
-      it("can pull from merge of two level_info streams [1]", [&]() {
+      it("can pull from merge of two level_info streams [1]", []() {
         shared_levelized_file<int> f1;
         shared_levelized_file<int> f2;
 
@@ -142,7 +142,7 @@ go_bandit([]() {
         AssertThat(merger.can_pull(), Is().False());
       });
 
-      it("can pull from merge of two level_info streams [2] (std::less)", [&]() {
+      it("can pull from merge of two level_info streams [2] (std::less)", []() {
         shared_levelized_file<int> f1;
         shared_levelized_file<int> f2;
 
@@ -169,7 +169,7 @@ go_bandit([]() {
         AssertThat(merger.can_pull(), Is().False());
       });
 
-      it("can pull from merge of two level_info streams [2] (std::greater)", [&]() {
+      it("can pull from merge of two level_info streams [2] (std::greater)", []() {
         shared_levelized_file<int> f1;
         shared_levelized_file<int> f2;
 
@@ -196,7 +196,7 @@ go_bandit([]() {
         AssertThat(merger.can_pull(), Is().False());
       });
 
-      it("can peek merge of two level_info stream", [&]() {
+      it("can peek merge of two level_info stream", []() {
         shared_levelized_file<int> f1;
         shared_levelized_file<int> f2;
 
@@ -227,7 +227,7 @@ go_bandit([]() {
         AssertThat(merger.pull(), Is().EqualTo(4u));
       });
 
-      it("can merge levels in reverse", [&]() {
+      it("can merge levels in reverse", []() {
         shared_levelized_file<int> f1;
         shared_levelized_file<int> f2;
 
@@ -258,7 +258,7 @@ go_bandit([]() {
         AssertThat(merger.pull(), Is().EqualTo(1u));
       });
 
-      it("can pull, even after the original files have been deleted", [&]() {
+      it("can pull, even after the original files have been deleted", []() {
         shared_levelized_file<int> f1 = shared_levelized_file<int>();
         shared_levelized_file<int> f2 = shared_levelized_file<int>();
 
@@ -289,8 +289,8 @@ go_bandit([]() {
       });
     });
 
-    describe("level_merger<shared_file<label_type>, ...>", [&]() {
-      it("can use a single label_file", [&]() {
+    describe("level_merger<shared_file<label_type>, ...>", []() {
+      it("can use a single label_file", []() {
         shared_file<ptr_uint64::label_type> f;
 
         { // Garbage collect the writers
@@ -314,7 +314,7 @@ go_bandit([]() {
         AssertThat(merger.can_pull(), Is().False());
       });
 
-      it("can merge two label_files", [&]() {
+      it("can merge two label_files", []() {
         shared_file<ptr_uint64::label_type> f1;
         shared_file<ptr_uint64::label_type> f2;
 
@@ -341,6 +341,180 @@ go_bandit([]() {
 
         AssertThat(merger.can_pull(), Is().True());
         AssertThat(merger.pull(), Is().EqualTo(3u));
+
+        AssertThat(merger.can_pull(), Is().False());
+      });
+    });
+
+    describe("level_merger<dd, ...>", []() {
+      const ptr_uint64 terminal_F = ptr_uint64(false);
+      const ptr_uint64 terminal_T = ptr_uint64(true);
+
+      shared_levelized_file<dd::node_type> nf_x0;
+      /*
+      //          1      ---- x0
+      //         / \
+      //         F T
+      */
+      {
+        node_writer nw(nf_x0);
+        nw << node(0, node::max_id, terminal_F, terminal_T);
+      }
+
+      shared_levelized_file<dd::node_type> nf_x1;
+      /*
+      //          1      ---- x1
+      //         / \
+      //         F T
+      */
+      {
+        node_writer nw(nf_x1);
+        nw << node(1, node::max_id, terminal_F, terminal_T);
+      }
+
+
+      shared_levelized_file<dd::node_type> nf_x0_or_x2;
+      /*
+      //           1     ---- x0
+      //          / \
+      //          | T
+      //          |
+      //          2      ---- x2
+      //         / \
+      //         F T
+      */
+      {
+        node_writer nw(nf_x0_or_x2);
+        nw << node(2, node::max_id, terminal_F, terminal_T)
+           << node(0, node::max_id, node::pointer_type(2, node::max_id), terminal_T);
+      }
+
+      it("can pull from a single diagram [x0]", [&]() {
+        level_merger<shared_levelized_file<node>, std::less<>, 1> merger;
+        merger.hook({ dd(nf_x0) });
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(0u));
+
+        AssertThat(merger.can_pull(), Is().False());
+      });
+
+      it("can pull from a single diagram [x1]", [&]() {
+        level_merger<shared_levelized_file<node>, std::less<>, 1> merger;
+        merger.hook({ dd(nf_x1) });
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(1u));
+
+        AssertThat(merger.can_pull(), Is().False());
+      });
+
+      it("can pull from a single diagram [x0 | x2]", [&]() {
+        level_merger<shared_levelized_file<node>, std::less<>, 1> merger;
+        merger.hook({ dd(nf_x0_or_x2) });
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(0u));
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(2u));
+
+        AssertThat(merger.can_pull(), Is().False());
+      });
+
+      it("can merge levels of two diagrams [x0, x1] (std::less)", [&]() {
+        level_merger<shared_levelized_file<node>, std::less<>, 2> merger;
+        merger.hook({ dd(nf_x0), dd(nf_x1) });
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(0u));
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(1u));
+
+        AssertThat(merger.can_pull(), Is().False());
+      });
+
+      it("can merge levels of two diagrams [x1, x0] (std::less)", [&]() {
+        level_merger<shared_levelized_file<node>, std::less<>, 2> merger;
+        merger.hook({ dd(nf_x1), dd(nf_x0) });
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(0u));
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(1u));
+
+        AssertThat(merger.can_pull(), Is().False());
+      });
+
+      it("can merge levels of two diagrams [x1, x0] (std::greater)", [&]() {
+        level_merger<shared_levelized_file<node>, std::greater<>, 2> merger;
+        merger.hook({ dd(nf_x1), dd(nf_x0) });
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(1u));
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(0u));
+
+        AssertThat(merger.can_pull(), Is().False());
+      });
+
+      it("can merge levels of two diagrams [x0, x0 | x2] (std::less)", [&]() {
+        level_merger<shared_levelized_file<node>, std::less<>, 2> merger;
+        merger.hook({ dd(nf_x0), dd(nf_x0_or_x2) });
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(0u));
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(2u));
+
+        AssertThat(merger.can_pull(), Is().False());
+      });
+
+      it("can merge levels of two diagrams [x0 | x2, x0] (std::less)", [&]() {
+        level_merger<shared_levelized_file<node>, std::less<>, 2> merger;
+        merger.hook({ dd(nf_x0_or_x2), dd(nf_x0) });
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(0u));
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(2u));
+
+        AssertThat(merger.can_pull(), Is().False());
+      });
+
+      it("can merge levels of two diagrams [x0 | x2, x1] (std::less)", [&]() {
+        level_merger<shared_levelized_file<node>, std::less<>, 2> merger;
+        merger.hook({ dd(nf_x0_or_x2), dd(nf_x1) });
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(0u));
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(1u));
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(2u));
+
+        AssertThat(merger.can_pull(), Is().False());
+      });
+
+      it("can merge levels of two diagrams [x1, x0 | x2] (std::less)", [&]() {
+        level_merger<shared_levelized_file<node>, std::less<>, 2> merger;
+        merger.hook({ dd(nf_x1), dd(nf_x0_or_x2) });
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(0u));
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(1u));
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(2u));
 
         AssertThat(merger.can_pull(), Is().False());
       });
