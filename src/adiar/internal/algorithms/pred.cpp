@@ -27,17 +27,15 @@ namespace adiar::internal
 
   public:
     static size_t
-    pq1_upper_bound(const shared_levelized_file<node>& in_1,
-                    const shared_levelized_file<node>& in_2)
+    pq1_upper_bound(const dd& a, const dd& b)
     {
-      return std::max(in_1->max_2level_cut[cut::Internal], in_2->max_2level_cut[cut::Internal]);
+      return std::max(a->max_2level_cut[cut::Internal], b->max_2level_cut[cut::Internal]);
     }
 
     static size_t
-    pq2_upper_bound(const shared_levelized_file<node>& in_1,
-                    const shared_levelized_file<node>& in_2)
+    pq2_upper_bound(const dd& a, const dd& b)
     {
-      return std::max(in_1->max_1level_cut[cut::Internal], in_2->max_1level_cut[cut::Internal]);
+      return std::max(a->max_1level_cut[cut::Internal], b->max_1level_cut[cut::Internal]);
     }
 
     static constexpr size_t
@@ -47,9 +45,8 @@ namespace adiar::internal
     }
 
   public:
-    input_bound_levels(const shared_levelized_file<node>& f0,
-                       const shared_levelized_file<node>& /*f1*/)
-      : in_meta_1(f0)
+    input_bound_levels(const dd& a, const dd& /*b*/)
+      : in_meta_1(a)
     {}
 
     void
@@ -173,15 +170,14 @@ namespace adiar::internal
   ///     (breaks canonicity)
   //////////////////////////////////////////////////////////////////////////////////////////////////
   bool
-  fast_isomorphism_check(const shared_levelized_file<node>& f0,
-                         const shared_levelized_file<node>& f1)
+  fast_isomorphism_check(const dd& a, const dd& b)
   {
-    node_stream<> in_nodes_1(f0);
-    node_stream<> in_nodes_2(f1);
+    node_stream<> in_nodes_a(a);
+    node_stream<> in_nodes_b(b);
 
-    while (in_nodes_1.can_pull()) {
-      adiar_assert(in_nodes_2.can_pull(), "The number of nodes should coincide");
-      if (in_nodes_1.pull() != in_nodes_2.pull()) {
+    while (in_nodes_a.can_pull()) {
+      adiar_assert(in_nodes_b.can_pull(), "The number of nodes should coincide");
+      if (in_nodes_a.pull() != in_nodes_b.pull()) {
 #ifdef ADIAR_STATS
         stats_equality.fast_check.exit_on_mismatch += 1u;
 #endif
@@ -193,22 +189,21 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   bool
-  is_isomorphic(const exec_policy& ep,
-                const shared_levelized_file<node>& f0,
-                const shared_levelized_file<node>& f1,
-                const bool negate0,
-                const bool negate1)
+  is_isomorphic(const exec_policy& ep, const dd& a, const dd& b)
   {
+    const bool a_negated = a.is_negated();
+    const bool b_negated = b.is_negated();
+
     // Are they literally referring to the same underlying file?
-    if (f0 == f1) {
+    if (a.file_ptr() == b.file_ptr()) {
 #ifdef ADIAR_STATS
       stats_equality.exit_on_same_file += 1u;
 #endif
-      return negate0 == negate1;
+      return a_negated == b_negated;
     }
 
     // Are they trivially not the same, since they have different number of nodes?
-    if (f0->size() != f1->size()) {
+    if (a->size() != b->size()) {
 #ifdef ADIAR_STATS
       stats_equality.exit_on_nodecount += 1u;
 #endif
@@ -216,7 +211,7 @@ namespace adiar::internal
     }
 
     // Are they trivially not the same, since their width is different?
-    if (f0->width != f1->width) {
+    if (a->width != b->width) {
 #ifdef ADIAR_STATS
       stats_equality.exit_on_width += 1u;
 #endif
@@ -224,8 +219,8 @@ namespace adiar::internal
     }
 
     // Are they trivially not the same, since they have different number of terminal arcs?
-    if (f0->number_of_terminals[negate0] != f1->number_of_terminals[negate1]
-        || f0->number_of_terminals[!negate0] != f1->number_of_terminals[!negate1]) {
+    if (a->number_of_terminals[a_negated] != b->number_of_terminals[b_negated]
+        || a->number_of_terminals[!a_negated] != b->number_of_terminals[!b_negated]) {
 #ifdef ADIAR_STATS
       stats_equality.exit_on_terminalcount += 1u;
 #endif
@@ -233,7 +228,7 @@ namespace adiar::internal
     }
 
     // Are they trivially not the same, since they have different number of levels?
-    if (f0->levels() != f1->levels()) {
+    if (a->levels() != b->levels()) {
 #ifdef ADIAR_STATS
       stats_equality.exit_on_varcount += 1u;
 #endif
@@ -242,12 +237,12 @@ namespace adiar::internal
 
     // Are they trivially not the same, since the labels or the size of each level does not match?
     { // Create new scope to garbage collect the two meta_streams early
-      level_info_stream<> in_meta_0(f0);
-      level_info_stream<> in_meta_1(f1);
+      level_info_stream<> in_meta_a(a);
+      level_info_stream<> in_meta_b(b);
 
-      while (in_meta_0.can_pull()) {
-        adiar_assert(in_meta_1.can_pull(), "level_info files are same size");
-        if (in_meta_0.pull() != in_meta_1.pull()) {
+      while (in_meta_a.can_pull()) {
+        adiar_assert(in_meta_b.can_pull(), "level_info files are same size");
+        if (in_meta_a.pull() != in_meta_b.pull()) {
 #ifdef ADIAR_STATS
           stats_equality.exit_on_levels_mismatch += 1u;
 #endif
@@ -260,22 +255,16 @@ namespace adiar::internal
     // can just ignore the id (and only focus on the label and terminal values).
 
     // Compare their content to discern whether there exists an isomorphism between them.
-    if (f0->is_canonical() && f1->is_canonical() && negate0 == negate1) {
+    if (a->is_canonical() && b->is_canonical() && a_negated == b_negated) {
 #ifdef ADIAR_STATS
       stats_equality.fast_check.runs += 1u;
 #endif
-      return fast_isomorphism_check(f0, f1);
+      return fast_isomorphism_check(a, b);
     } else {
 #ifdef ADIAR_STATS
       stats_equality.slow_check.runs += 1u;
 #endif
-      return comparison_check<isomorphism_policy>(ep, f0, f1, negate0, negate1);
+      return comparison_check<isomorphism_policy>(ep, a, b);
     }
-  }
-
-  bool
-  is_isomorphic(const exec_policy& ep, const dd& a, const dd& b)
-  {
-    return is_isomorphic(ep, a.file_ptr(), b.file_ptr(), a.is_negated(), b.is_negated());
   }
 }
