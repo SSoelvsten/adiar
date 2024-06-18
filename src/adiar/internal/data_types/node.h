@@ -62,6 +62,11 @@ namespace adiar::internal
     static constexpr label_type max_label = pointer_type::max_label;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Type for a difference of levels.
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    using signed_label_type = pointer_type::signed_label_type;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Type of this node's level identifier.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     using id_type = pointer_type::id_type;
@@ -481,6 +486,17 @@ namespace adiar::internal
   operator>=(const node::uid_type& u, const node& n)
   {
     return u >= n.uid();
+  }
+
+  /* =========================================== LEVELS ========================================= */
+  inline node
+  shift_replace(const node& n, const node::signed_label_type levels)
+  {
+    const node::uid_type n_uid      = shift_replace(n.uid().as_ptr(), levels);
+    const node::pointer_type n_low  = shift_replace(n.low(), levels);
+    const node::pointer_type n_high = shift_replace(n.high(), levels);
+
+    return { n_uid, n_low, n_high };
   }
 }
 

@@ -2,10 +2,10 @@
 
 go_bandit([]() {
   describe("adiar/internal/data_types/node.h", []() {
-    describe("node", [&]() {
-      const ptr_uint64 terminal_F = ptr_uint64(false);
-      const ptr_uint64 terminal_T = ptr_uint64(true);
+    const ptr_uint64 terminal_F = ptr_uint64(false);
+    const ptr_uint64 terminal_T = ptr_uint64(true);
 
+    describe("node", [&]() {
       it("should be a POD", [&]() { AssertThat(std::is_pod<node>::value, Is().True()); });
 
       it("should take up 24 bytes of memory", [&]() {
@@ -370,6 +370,50 @@ go_bandit([]() {
 
         it("should negate 'true' terminal node",
            [&]() { AssertThat(!node(true), Is().EqualTo(node(false))); });
+      });
+    });
+
+    describe("shift_replace(const node&, ...)", [&]() {
+      it("leaves node as-is [levels = 0]", [&]() {
+        const node in  = node(0, 42, terminal_F, terminal_T);
+        const node out = shift_replace(in, +0);
+        AssertThat(in, Is().EqualTo(out));
+      });
+
+      it("leaves node as-is [levels = 0]", [&]() {
+        const node in  = node(21, 0, node::pointer_type(42, 2), terminal_T);
+        const node out = shift_replace(in, -0);
+        AssertThat(in, Is().EqualTo(out));
+      });
+
+      it("leaves node as-is [F]", [&]() {
+        const node in  = node(false);
+        const node out = shift_replace(in, -3);
+        AssertThat(in, Is().EqualTo(out));
+      });
+
+      it("leaves node as-is [T]", [&]() {
+        const node in  = node(true);
+        const node out = shift_replace(in, -18);
+        AssertThat(in, Is().EqualTo(out));
+      });
+
+      it("shifts uid level", [&]() {
+        const node in  = node(21, 0, terminal_F, terminal_T);
+        const node out = shift_replace(in, -16);
+
+        AssertThat(out.uid(), Is().EqualTo(node::uid_type(21 - 16, 0)));
+        AssertThat(out.low(), Is().EqualTo(terminal_F));
+        AssertThat(out.high(), Is().EqualTo(terminal_T));
+      });
+
+      it("shifts children's level too", [&]() {
+        const node in  = node(4, 4, node::pointer_type(8, 12), node::pointer_type(7, 2));
+        const node out = shift_replace(in, +2);
+
+        AssertThat(out.uid(), Is().EqualTo(node::uid_type(4 + 2, 4)));
+        AssertThat(out.low(), Is().EqualTo(node::uid_type(8 + 2, 12)));
+        AssertThat(out.high(), Is().EqualTo(node::uid_type(7 + 2, 2)));
       });
     });
   });
