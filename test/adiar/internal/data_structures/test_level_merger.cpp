@@ -372,7 +372,6 @@ go_bandit([]() {
         nw << node(1, node::max_id, terminal_F, terminal_T);
       }
 
-
       shared_levelized_file<dd::node_type> nf_x0_or_x2;
       /*
       //           1     ---- x0
@@ -515,6 +514,91 @@ go_bandit([]() {
 
         AssertThat(merger.can_pull(), Is().True());
         AssertThat(merger.pull(), Is().EqualTo(2u));
+
+        AssertThat(merger.can_pull(), Is().False());
+      });
+
+      it("can shift levels of a single diagram [x0 +1]", [&]() {
+        level_merger<shared_levelized_file<node>, std::less<>, 1> merger;
+        merger.hook({ dd(nf_x0, false, +1) });
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(1u));
+
+        AssertThat(merger.can_pull(), Is().False());
+      });
+
+      it("can shift levels of a single diagram [x1 +2]", [&]() {
+        level_merger<shared_levelized_file<node>, std::less<>, 1> merger;
+        merger.hook({ dd(nf_x1, false, +2) });
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(3u));
+
+        AssertThat(merger.can_pull(), Is().False());
+      });
+
+      it("can shift levels of a single diagram [x1 -1]", [&]() {
+        level_merger<shared_levelized_file<node>, std::less<>, 1> merger;
+        merger.hook({ dd(nf_x1, false, -1) });
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(0u));
+
+        AssertThat(merger.can_pull(), Is().False());
+      });
+
+      it("can merge shifted levels of two diagrams [x0 +1, x0 | x2] (std::less)", [&]() {
+        level_merger<shared_levelized_file<node>, std::less<>, 2> merger;
+        merger.hook({ dd(nf_x0, false, +1), dd(nf_x0_or_x2) });
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(0u));
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(1u));
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(2u));
+
+        AssertThat(merger.can_pull(), Is().False());
+      });
+
+      it("can merge shifted levels of two diagrams [x1 +1, x0 | x2] (std::less)", [&]() {
+        level_merger<shared_levelized_file<node>, std::less<>, 2> merger;
+        merger.hook({ dd(nf_x1, false, +1), dd(nf_x0_or_x2) });
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(0u));
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(2u));
+
+        AssertThat(merger.can_pull(), Is().False());
+      });
+
+      it("can merge shifted levels of two diagrams [x1 -1, x0 | x2] (std::less)", [&]() {
+        level_merger<shared_levelized_file<node>, std::less<>, 2> merger;
+        merger.hook({ dd(nf_x1, false, -1), dd(nf_x0_or_x2) });
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(0u));
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(2u));
+
+        AssertThat(merger.can_pull(), Is().False());
+      });
+
+      it("can merge shifted levels of two diagrams [x1 +2, x0 | x2 +1] (std::less)", [&]() {
+        level_merger<shared_levelized_file<node>, std::less<>, 2> merger;
+        merger.hook({ dd(nf_x1, false, +2), dd(nf_x0_or_x2, false, +1) });
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(1u));
+
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(3u));
 
         AssertThat(merger.can_pull(), Is().False());
       });

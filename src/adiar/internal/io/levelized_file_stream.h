@@ -303,7 +303,7 @@ namespace adiar::internal
     attach(const dd& diagram)
     {
       attach<node>(diagram.file_ptr());
-      this->_shift = 0 /* TODO */;
+      this->_shift = diagram.shift();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -317,7 +317,7 @@ namespace adiar::internal
         this->_shift = 0;
       } else if (diagram.has<__dd::shared_node_file_type>()) {
         attach<node>(diagram.get<__dd::shared_node_file_type>());
-        this->_shift = 0 /* TODO */;
+        this->_shift = diagram._shift;
       } else {
         // We should never be in the case of hooking into a 'no_file'. That type should only be used
         // internally within an algorithm and never escape into its output.

@@ -47,82 +47,163 @@ go_bandit([]() {
 
     bdd terminal_F(terminal_F_nf);
 
+    shared_levelized_file<arc> x0_af;
+
+    {
+      arc_writer aw(x0_af);
+      aw.push_internal(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 0) });
+
+      aw.push_terminal(arc{ ptr_uint64(0, 0), false, ptr_uint64(false) });
+      aw.push_terminal(arc{ ptr_uint64(1, 0), false, ptr_uint64(true) });
+      aw.push_terminal(arc{ ptr_uint64(1, 0), true, ptr_uint64(true) });
+
+      aw.push(level_info(0, 1u));
+      aw.push(level_info(1, 1u));
+    }
+
+    x0_af->max_1level_cut = 1;
+
     describe("__bdd", [&]() {
-      it("should copy-construct values from bdd", [&]() {
-        __bdd t1 = bdd(x0_and_x1);
-        AssertThat(t1.has<shared_levelized_file<bdd::node_type>>(), Is().True());
-        AssertThat(t1.get<__bdd::shared_node_file_type>(), Is().EqualTo(x0_and_x1_nf));
-        AssertThat(t1._negate, Is().False());
+      it("conversion-constructs values from bdd", [&]() {
+        __bdd t = bdd(x0_and_x1);
+        AssertThat(t.has<shared_levelized_file<bdd::node_type>>(), Is().True());
+        AssertThat(t.get<__bdd::shared_node_file_type>(), Is().EqualTo(x0_and_x1_nf));
+        AssertThat(t._negate, Is().False());
+        AssertThat(t._shift, Is().EqualTo(0));
       });
 
-      it("should copy-construct values from negated bdd", [&]() {
-        __bdd t2 = bdd(x0_nand_x1);
-        AssertThat(t2.has<shared_levelized_file<bdd::node_type>>(), Is().True());
-        AssertThat(t2.get<__bdd::shared_node_file_type>(), Is().EqualTo(x0_and_x1_nf));
-        AssertThat(t2._negate, Is().True());
+      it("conversion-constructs values from negated bdd", [&]() {
+        __bdd t = bdd(x0_nand_x1);
+        AssertThat(t.has<shared_levelized_file<bdd::node_type>>(), Is().True());
+        AssertThat(t.get<__bdd::shared_node_file_type>(), Is().EqualTo(x0_and_x1_nf));
+        AssertThat(t._negate, Is().True());
+        AssertThat(t._shift, Is().EqualTo(0));
       });
 
-      it("should copy-construct values from __bdd", [&]() {
+      it("conversion-constructs values from shifted bdd", [&]() {
+        __bdd t = bdd(x0_and_x1_nf, false, +2);
+        AssertThat(t.has<shared_levelized_file<bdd::node_type>>(), Is().True());
+        AssertThat(t.get<__bdd::shared_node_file_type>(), Is().EqualTo(x0_and_x1_nf));
+        AssertThat(t._negate, Is().False());
+        AssertThat(t._shift, Is().EqualTo(+2));
+      });
+
+      it("conversion-constructs values from negated and shifted bdd", [&]() {
+        __bdd t = bdd(x0_and_x1_nf, true, +2);
+        AssertThat(t.has<shared_levelized_file<bdd::node_type>>(), Is().True());
+        AssertThat(t.get<__bdd::shared_node_file_type>(), Is().EqualTo(x0_and_x1_nf));
+        AssertThat(t._negate, Is().True());
+        AssertThat(t._shift, Is().EqualTo(+2));
+      });
+
+      it("copy-constructs values from __bdd", [&]() {
         __bdd t1 = x0_and_x1;
         __bdd t2 = t1;
         AssertThat(t2.has<shared_levelized_file<bdd::node_type>>(), Is().True());
         AssertThat(t2.get<__bdd::shared_node_file_type>(), Is().EqualTo(x0_and_x1_nf));
         AssertThat(t2._negate, Is().False());
+        AssertThat(t1._shift, Is().EqualTo(0));
       });
 
-      it("should copy-construct values from shared_levelized_file<bdd::node_type>", [&]() {
-        __bdd t1 = x0_and_x1;
-        AssertThat(t1.has<shared_levelized_file<bdd::node_type>>(), Is().True());
-        AssertThat(t1.get<__bdd::shared_node_file_type>(), Is().EqualTo(x0_and_x1_nf));
-        AssertThat(t1._negate, Is().False());
+      it("copy-constructs values from shifted __bdd", [&]() {
+        __bdd t1 = bdd(x0_and_x1_nf, false, +3);
+        __bdd t2 = t1;
+        AssertThat(t2.has<shared_levelized_file<bdd::node_type>>(), Is().True());
+        AssertThat(t2.get<__bdd::shared_node_file_type>(), Is().EqualTo(x0_and_x1_nf));
+        AssertThat(t2._negate, Is().False());
+        AssertThat(t1._shift, Is().EqualTo(+3));
       });
 
-      shared_levelized_file<arc> af;
+      it("conversion-constructs values from shared_levelized_file<bdd::node_type>", [&]() {
+        __bdd t = x0_and_x1;
+        AssertThat(t.has<shared_levelized_file<bdd::node_type>>(), Is().True());
+        AssertThat(t.get<__bdd::shared_node_file_type>(), Is().EqualTo(x0_and_x1_nf));
+        AssertThat(t._negate, Is().False());
+        AssertThat(t._shift, Is().EqualTo(0));
+      });
 
-      {
-        arc_writer aw(af);
-        aw.push_internal(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 0) });
-
-        aw.push_terminal(arc{ ptr_uint64(0, 0), false, ptr_uint64(false) });
-        aw.push_terminal(arc{ ptr_uint64(1, 0), false, ptr_uint64(true) });
-        aw.push_terminal(arc{ ptr_uint64(1, 0), true, ptr_uint64(true) });
-
-        aw.push(level_info(0, 1u));
-        aw.push(level_info(1, 1u));
-      }
-
-      af->max_1level_cut = 1;
-
-      it("should copy-construct values from shared_levelized_file<arc>", [&]() {
-        __bdd t1(af, exec_policy::memory::Internal);
+      it("conversion-constructs values from shared_levelized_file<arc>", [&]() {
+        __bdd t1(x0_af, exec_policy::memory::Internal);
         AssertThat(t1.has<shared_levelized_file<arc>>(), Is().True());
-        AssertThat(t1.get<__bdd::shared_arc_file_type>(), Is().EqualTo(af));
+        AssertThat(t1.get<__bdd::shared_arc_file_type>(), Is().EqualTo(x0_af));
         AssertThat(t1._negate, Is().False());
+        AssertThat(t1._shift, Is().EqualTo(0));
         AssertThat(t1._policy, Is().EqualTo(exec_policy(exec_policy::memory::Internal)));
       });
+    });
 
-      it("should reduce on copy construct to bdd with shared_levelized_file<arc>", [&]() {
-        bdd out = __bdd(af, exec_policy());
+    describe("bdd", [&]() {
+      it("default constructs to an F terminal", [&]() {
+        const bdd t;
+        AssertThat(t, Is().EqualTo(terminal_F));
+      });
+
+      it("conversion-constructs boolean 'false' value as an F terminal", [&]() {
+        const bdd t(false);
+        AssertThat(t, Is().EqualTo(terminal_F));
+      });
+
+      it("conversion-constructs boolean 'true' value as a T terminal", [&]() {
+        const bdd t(true);
+        AssertThat(t, Is().EqualTo(terminal_T));
+      });
+
+      it("conversion-constructs from node file and auxiliary values", [&]() {
+        const bdd t(x0_and_x1_nf, false, +0);
+        AssertThat(t.file_ptr(), Is().EqualTo(x0_and_x1_nf));
+        AssertThat(t.is_negated(), Is().False());
+        AssertThat(t.shift(), Is().EqualTo(0));
+      });
+
+      it("conversion-constructs from node file and auxiliary values", [&]() {
+        const bdd t(x0_and_x1_nf, true, +2);
+        AssertThat(t.file_ptr(), Is().EqualTo(x0_and_x1_nf));
+        AssertThat(t.is_negated(), Is().True());
+        AssertThat(t.shift(), Is().EqualTo(+2));
+      });
+
+      it("copy-constructs from another BDD", [&]() {
+        const bdd t(bdd(x0_and_x1_nf, false, +0));
+        AssertThat(t.file_ptr(), Is().EqualTo(x0_and_x1_nf));
+        AssertThat(t.is_negated(), Is().False());
+        AssertThat(t.shift(), Is().EqualTo(0));
+      });
+
+      it("copy-constructs from another BDD", [&]() {
+        const bdd t(bdd(x0_and_x1_nf, true, +2));
+        AssertThat(t.file_ptr(), Is().EqualTo(x0_and_x1_nf));
+        AssertThat(t.is_negated(), Is().True());
+        AssertThat(t.shift(), Is().EqualTo(+2));
+      });
+
+      it("reduces during conversion-construction from __bdd with __bdd::shared_arc_file_type",
+         [&]() {
+           const bdd out(__bdd(x0_af, exec_policy()));
+           AssertThat(out, Is().EqualTo(x0));
+         });
+
+      it("copy-assignment from another BDD", [&]() {
+        bdd t(x0_and_x1_nf, true, +2);
+        t = bdd(terminal_T_nf, false, +1);
+        AssertThat(t.file_ptr(), Is().EqualTo(terminal_T_nf));
+        AssertThat(t.is_negated(), Is().False());
+        AssertThat(t.shift(), Is().EqualTo(+1));
+      });
+
+      it("copy-assignment from another BDD", [&]() {
+        bdd t(terminal_T_nf, true, +2);
+        t = bdd(terminal_F_nf, true, +8);
+        AssertThat(t.file_ptr(), Is().EqualTo(terminal_F_nf));
+        AssertThat(t.is_negated(), Is().True());
+        AssertThat(t.shift(), Is().EqualTo(+8));
+      });
+
+      it("reduces during move-assignment from __bdd::shared_arc_file_type", [&]() {
+        __bdd in(x0_af, exec_policy());
+        const bdd out = std::move(in);
         AssertThat(out, Is().EqualTo(x0));
       });
     });
-
-    it("should copy-construct boolean 'true' value as a T terminal", [&]() {
-      bdd t1 = true;
-      AssertThat(t1, Is().EqualTo(terminal_T));
-    });
-
-    it("should copy-construct boolean 'false' value as an F terminal", [&]() {
-      bdd t2 = false;
-      AssertThat(t2, Is().EqualTo(terminal_F));
-    });
-
-    it("should copy-construct shared_levelized_file<bdd::node_type> and negation back to bdd",
-       [&]() {
-         bdd t2 = bdd(__bdd(x0_and_x1));
-         AssertThat(t2.file_ptr(), Is().EqualTo(x0_and_x1_nf));
-         AssertThat(t2.is_negated(), Is().False());
-       });
 
     describe("operator overloading", [&]() {
       describe("==, !=", [&]() {

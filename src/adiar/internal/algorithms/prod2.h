@@ -813,8 +813,8 @@ namespace adiar::internal
         Policy& policy)
   {
     // ---------------------------------------------------------------------------------------------
-    // Case: Same file, i.e. exactly the same DAG.
-    if (in_0.file_ptr() == in_1.file_ptr()) {
+    // Case: Same file with a matching shift, i.e. exactly the same DAG.
+    if (in_0.file_ptr() == in_1.file_ptr() && in_0.shift() == in_1.shift()) {
 #ifdef ADIAR_STATS
       stats_prod2.trivial_file += 1u;
 #endif

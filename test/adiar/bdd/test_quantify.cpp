@@ -214,7 +214,7 @@ go_bandit([]() {
     /*
     //    1      ---- x0
     //   / \
-    //   F 2     ---- x1
+    //   ? 2     ---- x1
     //    / \
     //   3   4   ---- x2
     //  / \ / \
@@ -1194,6 +1194,61 @@ go_bandit([]() {
                      Is().EqualTo(2u));
         });
 
+        it("quantifies root with F terminal in a shifted diagram [&&]", [&]() {
+          // If the shifted level is not quantified, then the result changes.
+          __bdd out = bdd_exists(ep, bdd(bdd_5F, false, +1), 1);
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(3, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(3, 1) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), // true due to 4.low()
+                     Is().EqualTo(arc{ ptr_uint64(3, 0), false, ptr_uint64(true) }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), // false due to 4.high()
+                     Is().EqualTo(arc{ ptr_uint64(3, 0), true, ptr_uint64(false) }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), // false due to 5.low()
+                     Is().EqualTo(arc{ ptr_uint64(3, 1), false, ptr_uint64(false) }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), // false due to 5.high()
+                     Is().EqualTo(arc{ ptr_uint64(3, 1), true, ptr_uint64(true) }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(3u, 2u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                     Is().GreaterThanOrEqualTo(2u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(2u));
+        });
+
         it("quantifies bottom-most nodes [&&]", [&]() {
           __bdd out = bdd_exists(ep, bdd(bdd_1), 1);
 
@@ -1824,6 +1879,61 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 2u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                     Is().GreaterThanOrEqualTo(2u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(2u));
+        });
+
+        it("quantifies root with F terminal in a shifted diagram [&&]", [&]() {
+          // If the shifted level is not quantified, then the result changes.
+          __bdd out = bdd_exists(ep, bdd(bdd_5F, false, +1), 1);
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(3, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(3, 1) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), // true due to 4.low()
+                     Is().EqualTo(arc{ ptr_uint64(3, 0), false, ptr_uint64(true) }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), // false due to 4.high()
+                     Is().EqualTo(arc{ ptr_uint64(3, 0), true, ptr_uint64(false) }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), // false due to 5.low()
+                     Is().EqualTo(arc{ ptr_uint64(3, 1), false, ptr_uint64(false) }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), // false due to 5.high()
+                     Is().EqualTo(arc{ ptr_uint64(3, 1), true, ptr_uint64(true) }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(3u, 2u)));
 
           AssertThat(levels.can_pull(), Is().False());
 
@@ -2644,6 +2754,45 @@ go_bandit([]() {
 
           // TODO: meta variables...
         });
+
+        it("quantifies single variable in a shifted diagram [&&]", [&]() {
+          // Same as 'quantifies root with F terminal' shifted by one.
+          __bdd out =
+            bdd_exists(ep, bdd(bdd_5F, false, +1), [](const bdd::label_type x) { return x == 1; });
+
+          node_test_stream nodes(out);
+
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(
+            nodes.pull(),
+            Is().EqualTo(node(3, bdd::max_id, bdd::pointer_type(false), bdd::pointer_type(true))));
+
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(nodes.pull(),
+                     Is().EqualTo(node(
+                       3, bdd::max_id - 1, bdd::pointer_type(true), bdd::pointer_type(false))));
+
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(nodes.pull(),
+                     Is().EqualTo(node(2,
+                                       bdd::max_id,
+                                       bdd::pointer_type(3, bdd::max_id - 1),
+                                       bdd::pointer_type(3, bdd::max_id))));
+
+          AssertThat(nodes.can_pull(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(3u, 2u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
       });
 
       describe("algorithm: Nested, max: 0", [&]() {
@@ -2729,7 +2878,7 @@ go_bandit([]() {
             AssertThat(call_history.at(10), Is().EqualTo(0u));
           });
 
-          it("prunes to-be quantified nodes with true terminals [&&]", [&]() {
+          it("prunes to-be quantified nodes with T terminals [&&]", [&]() {
             std::vector<bdd::label_type> call_history;
 
             bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
@@ -2778,7 +2927,7 @@ go_bandit([]() {
             AssertThat(call_history.at(10), Is().EqualTo(0u));
           });
 
-          it("collapses root with true terminal during pruning transposition [&&]", [&]() {
+          it("collapses root with T terminal during pruning transposition [&&]", [&]() {
             std::vector<bdd::label_type> call_history;
 
             bdd out = bdd_exists(ep & exec_policy::access::Random_Access,
@@ -2981,7 +3130,7 @@ go_bandit([]() {
             AssertThat(call_history.at(10), Is().EqualTo(0u));
           });
 
-          it("prunes to-be quantified nodes with true terminals [&&]", [&]() {
+          it("prunes to-be quantified nodes with T terminals [&&]", [&]() {
             std::vector<bdd::label_type> call_history;
 
             bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
@@ -3030,7 +3179,7 @@ go_bandit([]() {
             AssertThat(call_history.at(10), Is().EqualTo(0u));
           });
 
-          it("collapses root with true terminal during pruning transposition [&&]", [&]() {
+          it("collapses root with T terminal during pruning transposition [&&]", [&]() {
             std::vector<bdd::label_type> call_history;
 
             bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
@@ -3618,6 +3767,105 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
 
           // TODO: meta variables
+        });
+
+        it("prunes root during transposition of a shifted diagram [&&]", [&]() {
+          // Same as 'quantifies root with F terminal' shifted by one.
+          __bdd out =
+            bdd_exists(ep, bdd(bdd_5F, false, +1), [](const bdd::label_type x) { return x == 1; });
+
+          node_test_stream nodes(out);
+
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(
+            nodes.pull(),
+            Is().EqualTo(node(3, bdd::max_id, bdd::pointer_type(false), bdd::pointer_type(true))));
+
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(nodes.pull(),
+                     Is().EqualTo(node(
+                       3, bdd::max_id - 1, bdd::pointer_type(true), bdd::pointer_type(false))));
+
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(nodes.pull(),
+                     Is().EqualTo(node(2,
+                                       bdd::max_id,
+                                       bdd::pointer_type(3, bdd::max_id - 1),
+                                       bdd::pointer_type(3, bdd::max_id))));
+
+          AssertThat(nodes.can_pull(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(3u, 2u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
+
+        it("quantifies even variables in shifted BDD 4(+1) [&&]", [&]() {
+          // Similar to 'unprunable to-be quantified node behind as-is'
+          std::vector<bdd::label_type> call_history;
+
+          bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
+                               bdd(bdd_4, false, +1),
+                               [&call_history](const bdd::label_type x) -> bool {
+                                 call_history.push_back(x);
+                                 return (x + 1) % 2;
+                               });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (3)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
+          //       verify that this change makes sense and is as intended.
+          AssertThat(call_history.size(), Is().EqualTo(11u));
+
+          // - Generate predicate profile
+          AssertThat(call_history.at(0), Is().EqualTo(1u));
+          AssertThat(call_history.at(1), Is().EqualTo(2u));
+          AssertThat(call_history.at(2), Is().EqualTo(3u));
+          AssertThat(call_history.at(3), Is().EqualTo(4u));
+
+          // - Pruning sweep
+          AssertThat(call_history.at(4), Is().EqualTo(1u));
+          AssertThat(call_history.at(5), Is().EqualTo(2u));
+          AssertThat(call_history.at(6), Is().EqualTo(3u));
+          AssertThat(call_history.at(7), Is().EqualTo(4u));
+
+          // - Nested sweep looking for the 'next_inner' bottom-up
+          AssertThat(call_history.at(8), Is().EqualTo(3u));
+          AssertThat(call_history.at(9), Is().EqualTo(2u));
+          AssertThat(call_history.at(10), Is().EqualTo(1u));
         });
       });
 
@@ -4438,6 +4686,62 @@ go_bandit([]() {
               AssertThat(call_history.at(39), Is().EqualTo(12u));
               AssertThat(call_history.at(40), Is().EqualTo(13u));
             });
+
+          it("quantifies root during transposition of a shifted diagram [&&]", [&]() {
+            // Same as 'quantifies root with F terminal' shifted by one.
+            __bdd out = bdd_exists(
+              ep, bdd(bdd_5F, false, +1), [](const bdd::label_type x) { return x == 1; });
+
+            arc_test_stream arcs(out);
+
+            AssertThat(arcs.can_pull_internal(), Is().True());
+            AssertThat(arcs.pull_internal(),
+                       Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(3, 0) }));
+
+            AssertThat(arcs.can_pull_internal(), Is().True());
+            AssertThat(arcs.pull_internal(),
+                       Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(3, 1) }));
+
+            AssertThat(arcs.can_pull_internal(), Is().False());
+
+            AssertThat(arcs.can_pull_terminal(), Is().True());
+            AssertThat(arcs.pull_terminal(), // true due to 4.low()
+                       Is().EqualTo(arc{ ptr_uint64(3, 0), false, ptr_uint64(true) }));
+
+            AssertThat(arcs.can_pull_terminal(), Is().True());
+            AssertThat(arcs.pull_terminal(), // false due to 4.high()
+                       Is().EqualTo(arc{ ptr_uint64(3, 0), true, ptr_uint64(false) }));
+
+            AssertThat(arcs.can_pull_terminal(), Is().True());
+            AssertThat(arcs.pull_terminal(), // false due to 5.low()
+                       Is().EqualTo(arc{ ptr_uint64(3, 1), false, ptr_uint64(false) }));
+
+            AssertThat(arcs.can_pull_terminal(), Is().True());
+            AssertThat(arcs.pull_terminal(), // false due to 5.high()
+                       Is().EqualTo(arc{ ptr_uint64(3, 1), true, ptr_uint64(true) }));
+
+            AssertThat(arcs.can_pull_terminal(), Is().False());
+
+            level_info_test_stream levels(out);
+
+            AssertThat(levels.can_pull(), Is().True());
+            AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 1u)));
+
+            AssertThat(levels.can_pull(), Is().True());
+            AssertThat(levels.pull(), Is().EqualTo(level_info(3u, 2u)));
+
+            AssertThat(levels.can_pull(), Is().False());
+
+            AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+
+            AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                       Is().GreaterThanOrEqualTo(2u));
+
+            AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                       Is().EqualTo(2u));
+            AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                       Is().EqualTo(2u));
+          });
         });
 
         describe("access mode: priority queue", [&]() {
@@ -5252,6 +5556,62 @@ go_bandit([]() {
               AssertThat(call_history.at(39), Is().EqualTo(12u));
               AssertThat(call_history.at(40), Is().EqualTo(13u));
             });
+
+          it("quantifies root during transposition in a shifted diagram [&&]", [&]() {
+            // Same as 'quantifies root with F terminal' shifted by one.
+            __bdd out = bdd_exists(
+              ep, bdd(bdd_5F, false, +1), [](const bdd::label_type x) { return x == 1; });
+
+            arc_test_stream arcs(out);
+
+            AssertThat(arcs.can_pull_internal(), Is().True());
+            AssertThat(arcs.pull_internal(),
+                       Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(3, 0) }));
+
+            AssertThat(arcs.can_pull_internal(), Is().True());
+            AssertThat(arcs.pull_internal(),
+                       Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(3, 1) }));
+
+            AssertThat(arcs.can_pull_internal(), Is().False());
+
+            AssertThat(arcs.can_pull_terminal(), Is().True());
+            AssertThat(arcs.pull_terminal(), // true due to 4.low()
+                       Is().EqualTo(arc{ ptr_uint64(3, 0), false, ptr_uint64(true) }));
+
+            AssertThat(arcs.can_pull_terminal(), Is().True());
+            AssertThat(arcs.pull_terminal(), // false due to 4.high()
+                       Is().EqualTo(arc{ ptr_uint64(3, 0), true, ptr_uint64(false) }));
+
+            AssertThat(arcs.can_pull_terminal(), Is().True());
+            AssertThat(arcs.pull_terminal(), // false due to 5.low()
+                       Is().EqualTo(arc{ ptr_uint64(3, 1), false, ptr_uint64(false) }));
+
+            AssertThat(arcs.can_pull_terminal(), Is().True());
+            AssertThat(arcs.pull_terminal(), // false due to 5.high()
+                       Is().EqualTo(arc{ ptr_uint64(3, 1), true, ptr_uint64(true) }));
+
+            AssertThat(arcs.can_pull_terminal(), Is().False());
+
+            level_info_test_stream levels(out);
+
+            AssertThat(levels.can_pull(), Is().True());
+            AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 1u)));
+
+            AssertThat(levels.can_pull(), Is().True());
+            AssertThat(levels.pull(), Is().EqualTo(level_info(3u, 2u)));
+
+            AssertThat(levels.can_pull(), Is().False());
+
+            AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+
+            AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                       Is().GreaterThanOrEqualTo(2u));
+
+            AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                       Is().EqualTo(2u));
+            AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                       Is().EqualTo(2u));
+          });
         });
 
         it("switches to nested sweeping when the transposition explodes with BDD 15 [&&]", [&]() {
@@ -5716,7 +6076,7 @@ go_bandit([]() {
           AssertThat(call_history.at(2), Is().EqualTo(2u));
           AssertThat(call_history.at(3), Is().EqualTo(3u));
 
-          // - Pruning sweep
+          // - First top-down sweep
           AssertThat(call_history.at(4), Is().EqualTo(0u));
           AssertThat(call_history.at(5), Is().EqualTo(1u));
           AssertThat(call_history.at(6), Is().EqualTo(2u));
@@ -5820,7 +6180,7 @@ go_bandit([]() {
           AssertThat(call_history.at(6), Is().EqualTo(6u));
           AssertThat(call_history.at(7), Is().EqualTo(7u));
 
-          // - Pruning sweep
+          // - First top-down sweep
           AssertThat(call_history.at(8), Is().EqualTo(0u));
           AssertThat(call_history.at(9), Is().EqualTo(1u));
           AssertThat(call_history.at(10), Is().EqualTo(2u));
@@ -5836,6 +6196,61 @@ go_bandit([]() {
           AssertThat(call_history.at(18), Is().EqualTo(2u));
           AssertThat(call_history.at(19), Is().EqualTo(1u));
           AssertThat(call_history.at(20), Is().EqualTo(0u));
+        });
+
+        it("quantifies even variables in shifted BDD 4(+1) [&&]", [&]() {
+          // Similar to 'unprunable to-be quantified node behind as-is'
+          std::vector<bdd::label_type> call_history;
+
+          bdd out = bdd_exists(ep & exec_policy::access::Priority_Queue,
+                               bdd(bdd_4, false, +1),
+                               [&call_history](const bdd::label_type x) -> bool {
+                                 call_history.push_back(x);
+                                 return (x + 1) % 2;
+                               });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (3)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+
+          // Check call history
+          //
+          // NOTE: Test failure does NOT indicate a bug, but only indicates a change. Please
+          //       verify that this change makes sense and is as intended.
+          AssertThat(call_history.size(), Is().EqualTo(8u));
+
+          // - Generate predicate profile
+          AssertThat(call_history.at(0), Is().EqualTo(1u));
+          AssertThat(call_history.at(1), Is().EqualTo(2u));
+          AssertThat(call_history.at(2), Is().EqualTo(3u));
+          AssertThat(call_history.at(3), Is().EqualTo(4u));
+
+          // - First top-down sweep (with nothing left to do)
+          AssertThat(call_history.at(4), Is().EqualTo(1u));
+          AssertThat(call_history.at(5), Is().EqualTo(2u));
+          AssertThat(call_history.at(6), Is().EqualTo(3u));
+          AssertThat(call_history.at(7), Is().EqualTo(4u));
         });
       });
     });
@@ -7361,6 +7776,60 @@ go_bandit([]() {
           AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(2u));
         });
+
+        it("quantifies a shifted diagram [&&]", [&]() {
+          __bdd out = bdd_forall(ep, bdd(bdd_5T, false, +1), 1);
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, ptr_uint64(3, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(3, 1) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), // true due to 4.low()
+                     Is().EqualTo(arc{ ptr_uint64(3, 0), false, ptr_uint64(true) }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), // false due to 4.high()
+                     Is().EqualTo(arc{ ptr_uint64(3, 0), true, ptr_uint64(false) }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), // false due to 5.low()
+                     Is().EqualTo(arc{ ptr_uint64(3, 1), false, ptr_uint64(false) }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), // false due to 5.high()
+                     Is().EqualTo(arc{ ptr_uint64(3, 1), true, ptr_uint64(true) }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(3u, 2u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                     Is().GreaterThanOrEqualTo(2u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(2u));
+        });
       });
 
       describe("access mode: priority queue", [&]() {
@@ -7798,6 +8267,44 @@ go_bandit([]() {
 
           // TODO: meta variables...
         });
+
+        it("quantifies single variable in a shifted diagram [&&]", [&]() {
+          __bdd out =
+            bdd_forall(ep, bdd(bdd_5T, false, +1), [](const bdd::label_type x) { return x == 1; });
+
+          node_test_stream nodes(out);
+
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(
+            nodes.pull(),
+            Is().EqualTo(node(3, bdd::max_id, bdd::pointer_type(false), bdd::pointer_type(true))));
+
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(nodes.pull(),
+                     Is().EqualTo(node(
+                       3, bdd::max_id - 1, bdd::pointer_type(true), bdd::pointer_type(false))));
+
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(nodes.pull(),
+                     Is().EqualTo(node(2,
+                                       bdd::max_id,
+                                       bdd::pointer_type(3, bdd::max_id - 1),
+                                       bdd::pointer_type(3, bdd::max_id))));
+
+          AssertThat(nodes.can_pull(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(3u, 2u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
       });
 
       describe("algorithm: Nested", [&]() {
@@ -7928,6 +8435,44 @@ go_bandit([]() {
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
+
+        it("prunes root during transposition of a shifted diagram [&&]", [&]() {
+          __bdd out =
+            bdd_forall(ep, bdd(bdd_5T, false, +1), [](const bdd::label_type x) { return x == 1; });
+
+          node_test_stream nodes(out);
+
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(
+            nodes.pull(),
+            Is().EqualTo(node(3, bdd::max_id, bdd::pointer_type(false), bdd::pointer_type(true))));
+
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(nodes.pull(),
+                     Is().EqualTo(node(
+                       3, bdd::max_id - 1, bdd::pointer_type(true), bdd::pointer_type(false))));
+
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(nodes.pull(),
+                     Is().EqualTo(node(2,
+                                       bdd::max_id,
+                                       bdd::pointer_type(3, bdd::max_id - 1),
+                                       bdd::pointer_type(3, bdd::max_id))));
+
+          AssertThat(nodes.can_pull(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(3u, 2u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
 
           // TODO: meta variables
         });

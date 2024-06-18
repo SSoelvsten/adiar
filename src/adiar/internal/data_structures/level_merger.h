@@ -65,7 +65,8 @@ namespace adiar::internal
     hook(const dd (&dds)[FileCount])
     {
       for (size_t idx = 0u; idx < FileCount; idx++) {
-        _level_streams[idx] = adiar::make_unique<stream_type>(dds[idx].file_ptr());
+        _level_streams[idx] =
+          adiar::make_unique<stream_type>(dds[idx].file_ptr(), dds[idx].shift());
       }
     }
 
@@ -76,7 +77,7 @@ namespace adiar::internal
     hook(const __dd (&dds)[FileCount])
     {
       for (size_t idx = 0u; idx < FileCount; idx++) {
-        _level_streams[idx] = adiar::make_unique<stream_type>(dds[idx]);
+        _level_streams[idx] = adiar::make_unique<stream_type>(dds[idx] /*, dds[idx]._shift*/);
       }
     }
 

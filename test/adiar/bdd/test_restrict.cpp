@@ -27,13 +27,13 @@ go_bandit([]() {
 
     shared_levelized_file<bdd::node_type> bdd_1;
     /*
-    //             1         ---- x0
+    //             1               ---- x0
     //            / \
-    //            | 2        ---- x1
+    //            | 2              ---- x1
     //            |/ \
-    //            3   4      ---- x2
+    //            3   4            ---- x2
     //           / \ / \
-    //           F T T 5     ---- x3
+    //           F T T 5           ---- x3
     //                / \
     //                F T
     */
@@ -51,9 +51,9 @@ go_bandit([]() {
 
     shared_levelized_file<bdd::node_type> bdd_2_high_F;
     /*
-    //                 1       ---- x1
+    //                 1             ---- x1
     //                / \
-    //                2 F      ---- x2
+    //                2 F            ---- x2
     //               / \
     //               F T
     */
@@ -68,11 +68,11 @@ go_bandit([]() {
 
     shared_levelized_file<bdd::node_type> bdd_2_low_T;
     /*
-    //                 1       ---- x0
+    //                 1              ---- x0
     //                / \
-    //                T |      ---- x1
+    //                T |             ---- x1
     //                  |
-    //                  2      ---- x2
+    //                  2             ---- x2
     //                 / \
     //                 F T
     */
@@ -89,9 +89,9 @@ go_bandit([]() {
     /*
     //                    1            ---- x0
     //                   / \
-    //                  2   3         ---- x1
+    //                  2   3          ---- x1
     //                 / \ / \
-    //                 4 F 5 F        ---- x2
+    //                 4 F 5 F         ---- x2
     //                / \ / \
     //                T F F T
     */
@@ -108,11 +108,11 @@ go_bandit([]() {
 
     shared_levelized_file<bdd::node_type> bdd_4;
     /*
-    //                    1
+    //                    1             ---- x0
     //                   / \
-    //                  2   3
+    //                  2   3           ---- x1
     //                 / \ / \
-    //                 4 F T F
+    //                 4 F T F          ---- x2
     //                / \
     //                T F
     */
@@ -127,15 +127,15 @@ go_bandit([]() {
     }
 
     /*
-    //                        1           ---- x0
-    //                      /   \
-    //                     2     3        ---- x1
-    //                    / \   / \
-    //                   4  5   6  7      ---- x2
-    //                  / \/ \ / \/ \
-    //                  T F  8 F  9 T     ---- x3
-    //                      / \  / \
-    //                      F T  T F
+    //                   _1_              ---- x0
+    //                  /   \
+    //                 2     3            ---- x1
+    //                / \   / \
+    //               4  5   6  7          ---- x2
+    //              / \/ \ / \/ \
+    //              T F  8 F  9 T         ---- x3
+    //                  / \  / \
+    //                  F T  T F
     //
     //                 Here, node 4 and 6 are going to be dead, when x1 -> T.
     */
@@ -259,6 +259,69 @@ go_bandit([]() {
 
         AssertThat(meta_arcs.can_pull(), Is().True());
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2, 2u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(2u));
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(2u));
+      });
+
+      it("removes root of shifted BDD 1(+1) for (T,_,_,F)", [&]() {
+        /*
+        //                  2     ---- x1
+        //                 / \
+        //                /   \
+        //                3   4   ---- x2
+        //               / \ / \
+        //               F T T F
+        */
+
+        std::vector<adiar::pair<bdd::label_type, bool>> ass = { { 1, true }, { 4, false } };
+
+        __bdd out = bdd_restrict(bdd(bdd_1, false, +1), ass.begin(), ass.end());
+
+        arc_test_stream arcs(out);
+
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(2, 0), false, bdd::pointer_type(3, 0) }));
+
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(2, 0), true, bdd::pointer_type(3, 1) }));
+
+        AssertThat(arcs.can_pull_internal(), Is().False());
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(3, 0), false, terminal_F }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(3, 0), true, terminal_T }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(3, 1), false, terminal_T }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(3, 1), true, terminal_F }));
+
+        level_info_test_stream meta_arcs(out);
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2, 1u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(3, 2u)));
 
         AssertThat(meta_arcs.can_pull(), Is().False());
 
@@ -713,6 +776,60 @@ go_bandit([]() {
                    Is().EqualTo(1u));
       });
 
+      it("bridges over levels in shifted BDD 1(+1) for x2 = F", [&]() {
+        /*
+        //                 1      ---- x1
+        //                / \
+        //                | |
+        //                \ /
+        //                 3      ---- x3
+        //                / \
+        //                F T
+        */
+
+        __bdd out = bdd_restrict(bdd(bdd_1, false, +1), 2, false);
+
+        arc_test_stream arcs(out);
+
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(1, 0), false, bdd::pointer_type(3, 0) }));
+
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(1, 0), true, bdd::pointer_type(3, 0) }));
+
+        AssertThat(arcs.can_pull_internal(), Is().False());
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(3, 0), false, terminal_F }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(3, 0), true, terminal_T }));
+
+        level_info_test_stream meta_arcs(out);
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(1, 1u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(3, 1u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(2u));
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(1u));
+      });
+
       it("bridges over levels in BDD 1 for x1 = T", [&]() {
         /*
         //                  1         ---- x0
@@ -833,6 +950,81 @@ go_bandit([]() {
 
         AssertThat(meta_arcs.can_pull(), Is().True());
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(3, 1u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(2u));
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(3u));
+      });
+
+      it("removes root of shifted BDD 1(+1) for x1 = T", [&]() {
+        /*
+        //              2        ---- x2
+        //             / \
+        //            3   4      ---- x3
+        //           / \ / \
+        //           F T T 5     ---- x4
+        //                / \
+        //                F T
+        */
+
+        __bdd out = bdd_restrict(bdd(bdd_1, false, +1), 1, true);
+
+        arc_test_stream arcs(out);
+
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(2, 0), false, bdd::pointer_type(3, 0) }));
+
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(2, 0), true, bdd::pointer_type(3, 1) }));
+
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(3, 1), true, bdd::pointer_type(4, 0) }));
+
+        AssertThat(arcs.can_pull_internal(), Is().False());
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(3, 0), false, terminal_F }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(3, 0), true, terminal_T }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(3, 1), false, terminal_T }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(4, 0), false, terminal_F }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(4, 0), true, terminal_T }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().False());
+
+        level_info_test_stream meta_arcs(out);
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2, 1u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(3, 2u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(4, 1u)));
 
         AssertThat(meta_arcs.can_pull(), Is().False());
 
@@ -1143,8 +1335,74 @@ go_bandit([]() {
                    Is().EqualTo(1u));
       });
 
+      it("constructs low subtree of shifted BDD 1(+2)", [&]() {
+        /*
+        //            3
+        //           / \
+        //           F T
+        */
+
+        __bdd out = bdd_low(bdd(bdd_1, false, +2));
+
+        arc_test_stream arcs(out);
+
+        AssertThat(arcs.can_pull_internal(), Is().False());
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(4, 0), false, terminal_F }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(4, 0), true, terminal_T }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().False());
+
+        level_info_test_stream meta_arcs(out);
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(4, 1u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(0u));
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(1u));
+      });
+
       it("returns terminal in BDD 2", [&]() {
         __bdd out = bdd_low(bdd_2_low_T);
+
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream meta_arcs(out);
+        AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
+                   Is().EqualTo(0u));
+        AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
+                   Is().EqualTo(0u));
+        AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
+                   Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
+                   Is().EqualTo(1u));
+
+        AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(0u));
+        AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(1u));
+      });
+
+      it("returns terminal in shifted BDD 2(+1)", [&]() {
+        __bdd out = bdd_low(bdd(bdd_2_low_T, false, +1));
 
         node_test_stream out_nodes(out);
 
@@ -1245,8 +1503,110 @@ go_bandit([]() {
                    Is().EqualTo(3u));
       });
 
+      it("constructs high subtree of shifted BDD 1(+2)", [&]() {
+        /*
+        //              2        ---- x1
+        //             / \
+        //            3   4      ---- x2
+        //           / \ / \
+        //           F T T 5     ---- x3
+        //                / \
+        //                F T
+        */
+
+        __bdd out = bdd_high(bdd(bdd_1, false, +2));
+
+        arc_test_stream arcs(out);
+
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(3, 0), false, bdd::pointer_type(4, 0) }));
+
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(3, 0), true, bdd::pointer_type(4, 1) }));
+
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(4, 1), true, bdd::pointer_type(5, 0) }));
+
+        AssertThat(arcs.can_pull_internal(), Is().False());
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(4, 0), false, terminal_F }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(4, 0), true, terminal_T }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(4, 1), false, terminal_T }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(5, 0), false, terminal_F }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(),
+                   Is().EqualTo(arc{ bdd::pointer_type(5, 0), true, terminal_T }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().False());
+
+        level_info_test_stream meta_arcs(out);
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(3, 1u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(4, 2u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(5, 1u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(2u));
+
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(3u));
+      });
+
       it("returns terminal in BDD 2", [&]() {
         __bdd out = bdd_high(bdd_2_high_F);
+
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream meta_arcs(out);
+        AssertThat(meta_arcs.can_pull(), Is().False());
+
+        AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
+                   Is().EqualTo(0u));
+        AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
+                   Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
+                   Is().EqualTo(0u));
+        AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
+                   Is().EqualTo(1u));
+
+        AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(0u));
+      });
+
+      it("returns terminal in shifted BDD 2(+1)", [&]() {
+        __bdd out = bdd_high(bdd(bdd_2_high_F, false, +1));
 
         node_test_stream out_nodes(out);
 

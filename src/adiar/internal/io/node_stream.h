@@ -71,7 +71,7 @@ namespace adiar::internal
     node_stream(const dd& diagram)
       : parent_type(diagram.file_ptr())
       , _negate(diagram.is_negated())
-      , _shift(0 /*TODO*/)
+      , _shift(diagram.shift())
     {}
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
