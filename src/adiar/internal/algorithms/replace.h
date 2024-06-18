@@ -74,27 +74,31 @@ namespace adiar::internal
     label_type prev_before = Policy::max_label + 1;
     label_type prev_after  = Policy::max_label + 1;
     while (ls.can_pull()) {
-      const label_type next_before = ls.pull().level();
-      const result_type next_after = m(next_before);
+      const label_type next_before     = ls.pull().level();
+      const result_type next_after_opt = m(next_before);
 
       if constexpr (is_partial_map) {
-        if (!next_after.has_value()) { continue; }
+        if (!next_after_opt.has_value()) { continue; }
+      }
+
+      label_type next_after;
+      if constexpr (is_partial_map) {
+        if (!next_after_opt.has_value()) { continue; }
+        next_after = *next_after_opt;
+      } else {
+        next_after = next_after_opt;
       }
 
       identity &= next_before == next_after;
       monotone &= Policy::max_label < prev_before || prev_after < next_after;
 
       prev_before = next_before;
-      if constexpr (is_partial_map) {
-        prev_after = *next_after;
-      } else {
-        prev_after = next_after;
-      }
+      prev_after  = next_after;
     }
 
-    if (identity) { return replace_type::Identity; }
-    if (monotone) { return replace_type::Monotone; }
-    return replace_type::Non_Monotone;
+    if (!monotone) { return replace_type::Non_Monotone; }
+    if (!identity) { return replace_type::Monotone; }
+    return replace_type::Identity;
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
