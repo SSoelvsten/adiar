@@ -187,6 +187,8 @@ namespace adiar::internal
   {
     using parent_type = file_stream<level_info, !Reverse>;
 
+    level_info::signed_level_type _shift = 0;
+
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct unattached to a levelized file.
@@ -199,16 +201,25 @@ namespace adiar::internal
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a file<level_info>.
+    ///
+    /// \param shift_levels
+    ///    Number of variable labels (and levels) to shift by.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    level_info_stream(const file<level_info>& f)
+    level_info_stream(const file<level_info>& f, level_info::signed_level_type shift = 0)
+      : _shift(shift)
     {
       parent_type::attach(f);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a file<level_info>.
+    ///
+    /// \param shift_levels
+    ///    Number of variable labels (and levels) to shift by.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    level_info_stream(const adiar::shared_ptr<file<level_info>>& f)
+    level_info_stream(const adiar::shared_ptr<file<level_info>>& f,
+                      level_info::signed_level_type shift = 0)
+      : _shift(shift)
     {
       parent_type::attach(f);
     }
@@ -217,18 +228,20 @@ namespace adiar::internal
     /// \brief Construct attached to a levelized file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     template <typename value_type>
-    level_info_stream(const levelized_file<value_type, false>& lf)
+    level_info_stream(const levelized_file<value_type, false>& lf,
+                      level_info::signed_level_type shift = 0)
     {
-      attach(lf);
+      attach(lf, shift);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a shared levelized file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     template <typename value_type>
-    level_info_stream(const adiar::shared_ptr<levelized_file<value_type, false>>& lf)
+    level_info_stream(const adiar::shared_ptr<levelized_file<value_type, false>>& lf,
+                      level_info::signed_level_type shift = 0)
     {
-      attach(lf);
+      attach(lf, shift);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -258,10 +271,11 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     template <typename value_type>
     void
-    attach(const levelized_file<value_type, false>& lf)
+    attach(const levelized_file<value_type, false>& lf, level_info::signed_level_type shift = 0)
     {
       if (!lf.exists()) lf.__touch();
       parent_type::attach(lf._level_info_file, nullptr);
+      this->_shift = shift;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -269,10 +283,12 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     template <typename value_type>
     void
-    attach(const adiar::shared_ptr<levelized_file<value_type, false>>& lf)
+    attach(const adiar::shared_ptr<levelized_file<value_type, false>>& lf,
+           level_info::signed_level_type shift = 0)
     {
       if (!lf->exists()) lf->touch();
       parent_type::attach(lf->_level_info_file, lf);
+      this->_shift = shift;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -282,6 +298,7 @@ namespace adiar::internal
     attach(const dd& diagram)
     {
       attach<node>(diagram.file_ptr());
+      this->_shift = 0 /* TODO */;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -292,13 +309,37 @@ namespace adiar::internal
     {
       if (diagram.has<__dd::shared_arc_file_type>()) {
         attach<arc>(diagram.get<__dd::shared_arc_file_type>());
+        this->_shift = 0;
       } else if (diagram.has<__dd::shared_node_file_type>()) {
         attach<node>(diagram.get<__dd::shared_node_file_type>());
+        this->_shift = 0 /* TODO */;
       } else {
         // We should never be in the case of hooking into a 'no_file'. That type should only be used
         // internally within an algorithm and never escape into its output.
         adiar_unreachable(); // LCOV_EXCL_LINE
       }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain next element (and move the read head).
+    ///
+    /// \pre `can_pull() == true`.
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    const level_info
+    pull()
+    {
+      return shift_replace(parent_type::pull(), this->_shift);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain next element (without moving the read head).
+    ///
+    /// \pre `can_pull() == true`.
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    const level_info
+    peek()
+    {
+      return shift_replace(parent_type::peek(), this->_shift);
     }
   };
 }

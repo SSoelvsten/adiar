@@ -1025,6 +1025,62 @@ go_bandit([]() {
 
           AssertThat(fs.can_pull(), Is().False());
         });
+
+        it("shifts level information [+0]", [&]() {
+          level_info_stream fs(lf, +0);
+
+          AssertThat(fs.can_pull(), Is().True());
+          AssertThat(fs.peek(), Is().EqualTo(level_info{ 3u, 3u }));
+          AssertThat(fs.pull(), Is().EqualTo(level_info{ 3u, 3u }));
+
+          AssertThat(fs.can_pull(), Is().True());
+          AssertThat(fs.peek(), Is().EqualTo(level_info{ 1u, 2u }));
+          AssertThat(fs.pull(), Is().EqualTo(level_info{ 1u, 2u }));
+
+          AssertThat(fs.can_pull(), Is().False());
+        });
+
+        it("shifts level information [+1]", [&]() {
+          level_info_stream fs(lf, +1);
+
+          AssertThat(fs.can_pull(), Is().True());
+          AssertThat(fs.peek(), Is().EqualTo(level_info{ 4u, 3u }));
+          AssertThat(fs.pull(), Is().EqualTo(level_info{ 4u, 3u }));
+
+          AssertThat(fs.can_pull(), Is().True());
+          AssertThat(fs.peek(), Is().EqualTo(level_info{ 2u, 2u }));
+          AssertThat(fs.pull(), Is().EqualTo(level_info{ 2u, 2u }));
+
+          AssertThat(fs.can_pull(), Is().False());
+        });
+
+        it("shifts level information [+2]", [&]() {
+          level_info_stream fs(lf, +2);
+
+          AssertThat(fs.can_pull(), Is().True());
+          AssertThat(fs.peek(), Is().EqualTo(level_info{ 5u, 3u }));
+          AssertThat(fs.pull(), Is().EqualTo(level_info{ 5u, 3u }));
+
+          AssertThat(fs.can_pull(), Is().True());
+          AssertThat(fs.peek(), Is().EqualTo(level_info{ 3u, 2u }));
+          AssertThat(fs.pull(), Is().EqualTo(level_info{ 3u, 2u }));
+
+          AssertThat(fs.can_pull(), Is().False());
+        });
+
+        it("shifts level information [-1]", [&]() {
+          level_info_stream fs(lf, -1);
+
+          AssertThat(fs.can_pull(), Is().True());
+          AssertThat(fs.peek(), Is().EqualTo(level_info{ 2u, 3u }));
+          AssertThat(fs.pull(), Is().EqualTo(level_info{ 2u, 3u }));
+
+          AssertThat(fs.can_pull(), Is().True());
+          AssertThat(fs.peek(), Is().EqualTo(level_info{ 0u, 2u }));
+          AssertThat(fs.pull(), Is().EqualTo(level_info{ 0u, 2u }));
+
+          AssertThat(fs.can_pull(), Is().False());
+        });
       });
 
       describe("levelized_file(path_prefix)", [&tmp_path, &curr_path]() {
