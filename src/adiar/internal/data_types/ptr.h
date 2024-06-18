@@ -190,6 +190,11 @@ namespace adiar::internal
     //   smallest type that can fit all the requested number of bits.
     using level_type = uint32_t;
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Type able for a relative difference of levels.
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    using signed_level_type = int32_t;
+
   protected:
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief The maximal possible value for a level.
@@ -332,6 +337,9 @@ namespace adiar::internal
 
     friend ptr_uint64
     essential_replace(const ptr_uint64& p, const level_type new_level);
+
+    friend ptr_uint64
+    shift_replace(const ptr_uint64& p, const signed_level_type levels);
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -354,6 +362,11 @@ namespace adiar::internal
     /// \brief Type able to hold the label of a variable.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     using label_type = level_type;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Type able to hold the label of a variable.
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    using signed_label_type = signed_level_type;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Type of a level identifier.
@@ -543,9 +556,8 @@ namespace adiar::internal
     static constexpr raw_type min_terminal = static_cast<raw_type>(terminal_level) << level_shift;
 
     // TODO (32-bit ADD):
-    //   Add `max_terminal` at compile-time. Note, we are interested in the raw
-    //   unsigned encoding (probably by bit-wise oring the minimum and the
-    //   maximum).
+    //   Add `max_terminal` at compile-time. Note, we are interested in the raw unsigned encoding
+    //   (probably by bit-wise oring the minimum and the maximum).
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -834,6 +846,29 @@ namespace adiar::internal
       ? ((p._raw & id_mask)
          | (static_cast<ptr_uint64::raw_type>(new_level) << ptr_uint64::level_shift))
       : (p._raw & ~ptr_uint64::flag_bit);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Shift the level by given amount.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  inline ptr_uint64
+  shift_replace(const ptr_uint64& p, const ptr_uint64::signed_level_type levels)
+  {
+    // TODO (optimisation): Make this a branch-less computation!
+    if (levels == 0 || !p.is_node()) { return p; }
+
+    // TODO (optimisation): Replace static_cast<...> with dynamic_cast<...> if always safe.
+    const bool subtract = levels < 0;
+    const ptr_uint64::level_type abs_levels =
+      static_cast<ptr_uint64::level_type>(subtract ? -levels : levels);
+
+    adiar_assert(subtract ? (abs_levels <= p.label())
+                          : (p.label() + abs_levels <= ptr_uint64::max_label));
+
+    const ptr_uint64::raw_type shifted_abs_levels = static_cast<ptr_uint64::raw_type>(abs_levels)
+      << ptr_uint64::level_shift;
+
+    return subtract ? (p._raw - shifted_abs_levels) : (p._raw + shifted_abs_levels);
   }
 
   /* ======================================== CONVERSION ======================================== */
