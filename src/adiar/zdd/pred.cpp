@@ -79,26 +79,24 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <internal::cut::type ct_1, internal::cut::type ct_2>
+  template <internal::cut::type ct_A, internal::cut::type ct_B>
   class ignore_levels
   {
   public:
     static size_t
-    pq1_upper_bound(const internal::shared_levelized_file<zdd::node_type>& in_1,
-                    const internal::shared_levelized_file<zdd::node_type>& in_2)
+    pq1_upper_bound(const zdd& A, const zdd& B)
     {
-      const internal::safe_size_t max_2level_cut_1 = in_1->max_2level_cut[ct_1];
-      const internal::safe_size_t max_2level_cut_2 = in_2->max_2level_cut[ct_2];
+      const internal::safe_size_t max_2level_cut_1 = A->max_2level_cut[ct_A];
+      const internal::safe_size_t max_2level_cut_2 = B->max_2level_cut[ct_B];
 
       return internal::to_size(max_2level_cut_1 * max_2level_cut_2);
     }
 
     static size_t
-    pq2_upper_bound(const internal::shared_levelized_file<zdd::node_type>& in_1,
-                    const internal::shared_levelized_file<zdd::node_type>& in_2)
+    pq2_upper_bound(const zdd& A, const zdd& B)
     {
-      const internal::safe_size_t max_1level_cut_1 = in_1->max_1level_cut[ct_1];
-      const internal::safe_size_t max_1level_cut_2 = in_2->max_1level_cut[ct_2];
+      const internal::safe_size_t max_1level_cut_1 = A->max_1level_cut[ct_A];
+      const internal::safe_size_t max_1level_cut_2 = B->max_1level_cut[ct_B];
 
       return internal::to_size(max_1level_cut_1 * max_1level_cut_2);
     }
@@ -110,8 +108,7 @@ namespace adiar
     }
 
   public:
-    ignore_levels(const internal::shared_levelized_file<zdd::node_type>& /*f1*/,
-                  const internal::shared_levelized_file<zdd::node_type>& /*f2*/)
+    ignore_levels(const zdd& /*A*/, const zdd& /*B*/)
     { /* do nothing */
     }
 
