@@ -77,8 +77,8 @@ namespace adiar::internal
   dd_topvar(const DD& dd)
   {
     // TODO: Move into 'dd' class...
-    if (dd_isterminal(dd)) { throw invalid_argument("Cannot obtain top variable of root"); }
-    return dd->first_level();
+    if (dd_isterminal(dd)) { throw invalid_argument("Cannot obtain top variable of terminal"); }
+    return dd->first_level() + dd.shift();
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -105,10 +105,10 @@ namespace adiar::internal
   dd_maxvar(const DD& dd)
   {
     // TODO: Move into 'dd' class...
-    if (dd_isterminal(dd)) { throw invalid_argument("Cannot obtain maximal variable of root"); }
+    if (dd_isterminal(dd)) { throw invalid_argument("Cannot obtain maximal variable of terminal"); }
 
     // TODO: Use an O(L) scan when variable order is not default ascending.
-    return dd->last_level();
+    return dd->last_level() + dd.shift();
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////

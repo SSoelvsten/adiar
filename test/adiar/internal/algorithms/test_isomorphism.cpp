@@ -64,6 +64,39 @@ go_bandit([]() {
           AssertThat(is_isomorphic(exec_policy(), dd(x42, false), dd(x42, true)), Is().False());
           AssertThat(is_isomorphic(exec_policy(), dd(x42, true), dd(x42, false)), Is().False());
         });
+
+        it("accepts x42 when shift of +0 matches", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, false, +0), dd(x42, false, +0)),
+                     Is().True());
+        });
+
+        it("accepts x42 when shift of +1 matches", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, false, +1), dd(x42, false, +1)),
+                     Is().True());
+        });
+
+        it("accepts x42 when shift of -21 matches", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, false, -21), dd(x42, false, -21)),
+                     Is().True());
+        });
+
+        it("rejects x42 when shift mismatches", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, false, +0), dd(x42, false, +1)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, false, +1), dd(x42, false, +0)),
+                     Is().False());
+        });
+
+        it("rejects x42 when shift and negation flags mismatches", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, false, +0), dd(x42, true, +1)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, false, +1), dd(x42, true, +0)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, true, +1), dd(x42, false, +2)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, true, +2), dd(x42, false, +1)),
+                     Is().False());
+        });
       });
 
       shared_levelized_file<dd::node_type> x21;
@@ -535,6 +568,27 @@ go_bandit([]() {
           AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x22, true), dd(x21_and_x42, false)),
                      Is().False());
           AssertThat(is_isomorphic(exec_policy(), dd(x21_and_x22, true), dd(x21_and_x42, true)),
+                     Is().False());
+        });
+
+        it("rejects shifted x42 on the label", [&]() {
+          const auto a = x42;
+          const auto b = shared_levelized_file<node>::copy(x42);
+
+          AssertThat(is_isomorphic(exec_policy(), dd(a, false, +1), dd(b, false, +0)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(a, false, +0), dd(b, false, +1)),
+                     Is().False());
+        });
+
+        it("rejects shifted x21 vs x42 on the label", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(x21, false, +10), dd(x42, false, -10)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21, false, +10), dd(x42, true, -10)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, true, -10), dd(x21, false, +10)),
+                     Is().False());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, true, -10), dd(x21, true, +10)),
                      Is().False());
         });
 
@@ -1049,6 +1103,12 @@ go_bandit([]() {
           AssertThat(is_isomorphic(exec_policy(), dd(a, true), dd(b, true)), Is().True());
         });
 
+        it("accepts x42 and x21 [+21 shift]", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, false), dd(x21, false, +21)),
+                     Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(x42, true), dd(x21, true, +21)), Is().True());
+        });
+
         it("accepts ~x42", [&]() {
           const auto a = not_x42;
           const auto b = shared_levelized_file<node>::copy(not_x42);
@@ -1093,6 +1153,37 @@ go_bandit([]() {
 
           AssertThat(is_isomorphic(exec_policy(), dd(a, false), dd(b, false)), Is().True());
           AssertThat(is_isomorphic(exec_policy(), dd(a, true), dd(b, true)), Is().True());
+        });
+
+        it("accepts shifted [1]", [&]() {
+          shared_levelized_file<node> dd_1_shift;
+          /*
+          //      _1_     ---- x1
+          //     /   \
+          //     2   3    ---- x2
+          //    / \ / \
+          //    T  4  F   ---- x3
+          //      / \
+          //      F T
+          */
+          {
+            const node n4(3, node::max_id, node::pointer_type(false), node::pointer_type(true));
+            const node n3(2, node::max_id, n4.uid(), node::pointer_type(false));
+            const node n2(2, node::max_id - 1, node::pointer_type(true), n4.uid());
+            const node n1(1, node::max_id, n2.uid(), n3.uid());
+
+            node_writer w(dd_1_shift);
+            w << n4 << n3 << n2 << n1;
+          }
+
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1, false, +1), dd(dd_1_shift, false)),
+                     Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1_shift, false), dd(dd_1, false, +1)),
+                     Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1, true, +1), dd(dd_1_shift, true)),
+                     Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1_shift, true), dd(dd_1, true, +1)),
+                     Is().True());
         });
 
         it("rejects on low child mismatch [terminal value]", [&]() {
@@ -1265,9 +1356,51 @@ go_bandit([]() {
           AssertThat(is_isomorphic(exec_policy(), dd(x42, true), dd(not_x42, false)), Is().True());
         });
 
+        it("accepts negated ~x42 and shifted x21", [&]() {
+          AssertThat(is_isomorphic(exec_policy(), dd(x21, false, +21), dd(not_x42, true)),
+                     Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(not_x42, true), dd(x21, false, +21)),
+                     Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(x21, true, +21), dd(not_x42, false)),
+                     Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(not_x42, false), dd(x21, true, +21)),
+                     Is().True());
+        });
+
         it("accepts [1] and negated [~1]", [&]() {
           AssertThat(is_isomorphic(exec_policy(), dd(dd_1, false), dd(dd_1n, true)), Is().True());
           AssertThat(is_isomorphic(exec_policy(), dd(dd_1, true), dd(dd_1n, false)), Is().True());
+        });
+
+        it("accepts [1] and shifted negated [~1]", [&]() {
+          shared_levelized_file<node> dd_1n_shift;
+          /*
+          //      _1_     ---- x1
+          //     /   \
+          //     2   3    ---- x2
+          //    / \ / \
+          //    F  4  T   ---- x3
+          //      / \
+          //      T F
+          */
+          {
+            const node n4(3, node::max_id, node::pointer_type(true), node::pointer_type(false));
+            const node n3(2, node::max_id, n4.uid(), node::pointer_type(true));
+            const node n2(2, node::max_id - 1, node::pointer_type(false), n4.uid());
+            const node n1(1, node::max_id, n2.uid(), n3.uid());
+
+            node_writer w(dd_1n_shift);
+            w << n4 << n3 << n2 << n1;
+          }
+
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1, false, +1), dd(dd_1n_shift, true)),
+                     Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1n_shift, false), dd(dd_1, true, +1)),
+                     Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1, true, +1), dd(dd_1n_shift, false)),
+                     Is().True());
+          AssertThat(is_isomorphic(exec_policy(), dd(dd_1n_shift, true), dd(dd_1, false, +1)),
+                     Is().True());
         });
 
         it("rejects on low child mismatch [terminal value]", [&]() {

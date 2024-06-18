@@ -63,7 +63,7 @@ namespace adiar::internal
     /// \pre The given decision diagram is indexable.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     node_random_access(const dd& diagram)
-      : node_random_access(diagram.file_ptr(), diagram.is_negated())
+      : node_random_access(diagram.file_ptr(), diagram.is_negated(), diagram.shift())
     {
       adiar_assert(diagram->indexable);
     }

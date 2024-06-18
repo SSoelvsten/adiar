@@ -65,7 +65,7 @@ namespace adiar
     friend size_t
     bdd_nodecount(const bdd&);
 
-    friend typename bdd::label_type
+    friend label_type
     bdd_varcount(const bdd&);
 
     friend __bdd
@@ -95,18 +95,18 @@ namespace adiar
     bdd();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Implicit conversion from a terminal value to construct the
-    ///        `false` and `true` terminals.
+    /// \brief Implicit conversion from a terminal value to construct the `false` and `true`
+    ///        terminals.
     ///
     /// \see bdd_terminal, bdd_false, bdd_true
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    bdd(bdd::terminal_type t);
+    bdd(terminal_type t);
 
     /// \cond
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor to wrap the node-based result of an algorithm.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    bdd(const bdd::shared_node_file_type& f, bool negate = false);
+    bdd(const shared_node_file_type& f, bool negate = false, signed_label_type shift = 0);
     /// \endcond
 
     ////////////////////////////////////////////////////////////////////////////////////////////////

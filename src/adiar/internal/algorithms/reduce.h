@@ -625,8 +625,8 @@ namespace adiar::internal
 
     // Is it already reduced?
     if (input.template has<typename Policy::shared_node_file_type>()) {
-      return typename Policy::dd_type(input.template get<typename Policy::shared_node_file_type>(),
-                                      input._negate);
+      return typename Policy::dd_type(
+        input.template get<typename Policy::shared_node_file_type>(), input._negate, input._shift);
     }
 
     // Get unreduced input

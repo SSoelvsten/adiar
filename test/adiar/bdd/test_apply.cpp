@@ -405,6 +405,7 @@ go_bandit([]() {
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
           AssertThat(out._negate, Is().False());
+          AssertThat(out._shift, Is().EqualTo(0));
         });
 
         it("shortcuts F /\\ x0", [&]() {
@@ -466,10 +467,11 @@ go_bandit([]() {
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
           AssertThat(out._negate, Is().False());
+          AssertThat(out._shift, Is().EqualTo(0));
         });
 
         it("collapses on the same BDD twice, where one is negated [left]", [&]() {
-          __bdd out = bdd_and(bdd_not(bdd_1), bdd_1);
+          __bdd out = bdd_and(bdd(bdd_1, true), bdd(bdd_1, false));
 
           node_test_stream out_nodes(out);
 
@@ -496,7 +498,7 @@ go_bandit([]() {
         });
 
         it("collapses on the same BDD twice, where one is negated [right]", [&]() {
-          __bdd out = bdd_and(bdd_1, bdd_not(bdd_1));
+          __bdd out = bdd_and(bdd(bdd_1, false), bdd(bdd_1, true));
 
           node_test_stream out_nodes(out);
 
@@ -520,6 +522,14 @@ go_bandit([]() {
                      Is().EqualTo(1u));
           AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
                      Is().EqualTo(0u));
+        });
+
+        it("returns shifted input on being given the same shifted BDD twice", [&]() {
+          __bdd out = bdd_and(bdd(bdd_1, false, +1), bdd(bdd_1, false, +1));
+
+          AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
+          AssertThat(out._negate, Is().False());
+          AssertThat(out._shift, Is().EqualTo(1));
         });
       });
 
@@ -529,6 +539,7 @@ go_bandit([]() {
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
           AssertThat(out._negate, Is().True());
+          AssertThat(out._shift, Is().EqualTo(0));
         });
 
         it("shortcuts on negating on x0 and T", [&]() {
@@ -536,6 +547,7 @@ go_bandit([]() {
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
           AssertThat(out._negate, Is().True());
+          AssertThat(out._shift, Is().EqualTo(0));
         });
 
         it("returns input on being given the same BDD twice", [&]() {
@@ -543,10 +555,11 @@ go_bandit([]() {
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
           AssertThat(out._negate, Is().True());
+          AssertThat(out._shift, Is().EqualTo(0));
         });
 
         it("collapses on the same BDD twice, where one is negated [left]", [&]() {
-          __bdd out = bdd_nand(bdd_not(bdd_2), bdd_2);
+          __bdd out = bdd_nand(bdd(bdd_2, true), bdd(bdd_2, false));
 
           node_test_stream out_nodes(out);
 
@@ -573,7 +586,7 @@ go_bandit([]() {
         });
 
         it("collapses on the same BDD twice, where one is negated [right]", [&]() {
-          __bdd out = bdd_nand(bdd_2, bdd_not(bdd_2));
+          __bdd out = bdd_nand(bdd(bdd_2, false), bdd(bdd_2, true));
 
           node_test_stream out_nodes(out);
 
@@ -597,6 +610,14 @@ go_bandit([]() {
                      Is().EqualTo(0u));
           AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
                      Is().EqualTo(1u));
+        });
+
+        it("returns shifted input on being given the same shifted BDD twice", [&]() {
+          __bdd out = bdd_nand(bdd(bdd_1, false, +1), bdd(bdd_1, false, +1));
+
+          AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
+          AssertThat(out._negate, Is().True());
+          AssertThat(out._shift, Is().EqualTo(1));
         });
       });
 
@@ -665,6 +686,7 @@ go_bandit([]() {
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
           AssertThat(out._negate, Is().False());
+          AssertThat(out._shift, Is().EqualTo(0));
         });
 
         it("shortcuts on irrelevance F \\/ x0", [&]() {
@@ -672,6 +694,7 @@ go_bandit([]() {
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
           AssertThat(out._negate, Is().False());
+          AssertThat(out._shift, Is().EqualTo(0));
         });
 
         it("shortcuts [1] \\/ T", [&]() {
@@ -733,10 +756,11 @@ go_bandit([]() {
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
           AssertThat(out._negate, Is().False());
+          AssertThat(out._shift, Is().EqualTo(0));
         });
 
         it("collapses on the same BDD twice, where one is negated [left]", [&]() {
-          __bdd out = bdd_or(bdd_not(bdd_1), bdd_1);
+          __bdd out = bdd_or(bdd(bdd_1, true), bdd(bdd_1, false));
 
           node_test_stream out_nodes(out);
 
@@ -763,7 +787,7 @@ go_bandit([]() {
         });
 
         it("collapses on the same BDD twice, where one is negated [right]", [&]() {
-          __bdd out = bdd_or(bdd_1, bdd_not(bdd_1));
+          __bdd out = bdd_or(bdd(bdd_1, false), bdd(bdd_1, true));
 
           node_test_stream out_nodes(out);
 
@@ -790,10 +814,19 @@ go_bandit([]() {
         });
 
         it("returns input on being given the same BDD twice, when both are negated", [&]() {
-          __bdd out = bdd_or(bdd_not(bdd_1), bdd_not(bdd_1));
+          __bdd out = bdd_or(bdd(bdd_1, true), bdd(bdd_1, true));
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
           AssertThat(out._negate, Is().True());
+          AssertThat(out._shift, Is().EqualTo(0));
+        });
+
+        it("returns shifted input on being given the same shifted BDD twice", [&]() {
+          __bdd out = bdd_or(bdd(bdd_1, false, +1), bdd(bdd_1, false, +1));
+
+          AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
+          AssertThat(out._negate, Is().False());
+          AssertThat(out._shift, Is().EqualTo(1));
         });
       });
 
@@ -806,7 +839,7 @@ go_bandit([]() {
         });
 
         it("collapses on the same BDD twice, where one is negated [left]", [&]() {
-          __bdd out = bdd_nor(bdd_not(bdd_3), bdd_3);
+          __bdd out = bdd_nor(bdd(bdd_3, true), bdd(bdd_3, false));
 
           node_test_stream out_nodes(out);
 
@@ -833,7 +866,7 @@ go_bandit([]() {
         });
 
         it("collapses on the same BDD twice, where one is negated [right]", [&]() {
-          __bdd out = bdd_nor(bdd_3, bdd_not(bdd_3));
+          __bdd out = bdd_nor(bdd(bdd_3, false), bdd(bdd_3, true));
 
           node_test_stream out_nodes(out);
 
@@ -857,6 +890,14 @@ go_bandit([]() {
                      Is().EqualTo(1u));
           AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
                      Is().EqualTo(0u));
+        });
+
+        it("returns shifted input on being given the same shifted BDD twice", [&]() {
+          __bdd out = bdd_nor(bdd(bdd_1, false, +1), bdd(bdd_1, false, +1));
+
+          AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
+          AssertThat(out._negate, Is().True());
+          AssertThat(out._shift, Is().EqualTo(1));
         });
       });
 
@@ -918,6 +959,7 @@ go_bandit([]() {
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
           AssertThat(out._negate, Is().True());
+          AssertThat(out._shift, Is().EqualTo(0));
         });
 
         it("shortcuts on negating on T ^ x0", [&]() {
@@ -925,6 +967,7 @@ go_bandit([]() {
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
           AssertThat(out._negate, Is().True());
+          AssertThat(out._shift, Is().EqualTo(0));
         });
 
         it("collapses on the same BDD twice", [&]() {
@@ -955,7 +998,7 @@ go_bandit([]() {
         });
 
         it("collapses on the same BDD twice, where one is negated [left]", [&]() {
-          __bdd out = bdd_xor(bdd_not(bdd_1), bdd_1);
+          __bdd out = bdd_xor(bdd(bdd_1, true), bdd(bdd_1, false));
 
           node_test_stream out_nodes(out);
 
@@ -982,7 +1025,7 @@ go_bandit([]() {
         });
 
         it("collapses on the same BDD twice, where one is negated [right]", [&]() {
-          __bdd out = bdd_xor(bdd_2, bdd_not(bdd_2));
+          __bdd out = bdd_xor(bdd(bdd_2, false), bdd(bdd_2, true));
 
           node_test_stream out_nodes(out);
 
@@ -1009,7 +1052,7 @@ go_bandit([]() {
         });
 
         it("collapses on the same BDD twice, when both are negated", [&]() {
-          __bdd out = bdd_xor(bdd_not(bdd_1), bdd_not(bdd_1));
+          __bdd out = bdd_xor(bdd(bdd_1, true), bdd(bdd_1, true));
 
           node_test_stream out_nodes(out);
 
@@ -1120,6 +1163,7 @@ go_bandit([]() {
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
           AssertThat(out._negate, Is().False());
+          AssertThat(out._shift, Is().EqualTo(0));
         });
 
         it("shortcuts F -> [1]", [&]() {
@@ -1177,22 +1221,43 @@ go_bandit([]() {
         });
 
         it("returns input when given the same BDD twice, where one is negated [left]", [&]() {
-          __bdd out = bdd_imp(bdd_not(bdd_2), bdd_2);
+          __bdd out = bdd_imp(bdd(bdd_2, true), bdd(bdd_2, false));
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_2));
-          AssertThat(out._negate,
-                     Is().False()); // negated the already negated input doubly-negating
+          AssertThat(out._negate, Is().False()); // negated the already negated input
+          AssertThat(out._shift, Is().EqualTo(0));
         });
 
         it("returns input when given the same BDD twice, where one is negated [right]", [&]() {
-          __bdd out = bdd_imp(bdd_2, bdd_not(bdd_2));
+          __bdd out = bdd_imp(bdd(bdd_2, false), bdd(bdd_2, true));
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_2));
           AssertThat(out._negate, Is().True()); // negated the first of the two
+          AssertThat(out._shift, Is().EqualTo(0));
         });
 
+        it("returns shifted input when given the same shifted BDD twice, where one is negated "
+           "[left]",
+           [&]() {
+             __bdd out = bdd_imp(bdd(bdd_2, true, +3), bdd(bdd_2, false, +3));
+
+             AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_2));
+             AssertThat(out._negate, Is().False()); // negated the already negated input
+             AssertThat(out._shift, Is().EqualTo(3));
+           });
+
+        it("returns shifted input when given the same shifted BDD twice, where one is negated "
+           "[right]",
+           [&]() {
+             __bdd out = bdd_imp(bdd(bdd_2, false, +2), bdd(bdd_2, true, +2));
+
+             AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_2));
+             AssertThat(out._negate, Is().True()); // negated the first of the two
+             AssertThat(out._shift, Is().EqualTo(2));
+           });
+
         it("collapses when given the same BDD twice, when both are negated", [&]() {
-          __bdd out = bdd_imp(bdd_not(bdd_1), bdd_not(bdd_1));
+          __bdd out = bdd_imp(bdd(bdd_1, true), bdd(bdd_1, true));
 
           node_test_stream out_nodes(out);
 
@@ -1289,7 +1354,107 @@ go_bandit([]() {
                      Is().EqualTo(0u));
         });
 
-        it("computes (and shortcut) BBD 1 /\\ [2]", [&]() {
+        it("computes x0 /\\ x2", [&]() {
+          /*
+          //           1     ---- x0
+          //          / \
+          //          F 2    ---- x2
+          //           / \
+          //           F T
+          */
+
+          __bdd out = bdd_and(ep, bdd_x0, bdd_x2);
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(2, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(1u));
+        });
+
+        it("computes x0 /\\ x0(+1)", [&]() {
+          /*
+          //           1     ---- x0
+          //          / \
+          //          F 2    ---- x1
+          //           / \
+          //           F T
+          */
+
+          __bdd out = bdd_and(ep, bdd(bdd_x0, false, +0), bdd(bdd_x0, false, +1));
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(1u));
+        });
+
+        it("computes (and shortcut) [1] /\\ [2]", [&]() {
           /*
           //                    1                        ---- x0
           //                    X
@@ -1392,6 +1557,94 @@ go_bandit([]() {
                      Is().EqualTo(4u));
           AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(4u));
+        });
+
+        it("computes [1] /\\ [2](-1)", [&]() {
+          /*
+          //        _(1,1)_         ---- x0
+          //       /       \
+          //       |     (2,T)      ---- x1
+          //       |     /   \
+          //     (3,2)   3   4      ---- x2
+          //      / \   / \ / \
+          //      F F   F T T 5     ---- x3
+          //                 / \
+          //                 F T
+          */
+
+          __bdd out = bdd_and(ep, bdd(bdd_1, false, +0), bdd(bdd_2, false, -1));
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 0) }));
+
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(2, 0) }));
+
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 1) }));
+
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 2) }));
+
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 2), true, ptr_uint64(3, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 1), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 1), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 2), false, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(3, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(3, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2, 3u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(3, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(3u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(3u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(4u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(3u));
         });
 
         it("groups all recursion requests together", [&]() {
@@ -1512,6 +1765,43 @@ go_bandit([]() {
 
       describe("bdd_or(f,g)", [&]() {
         // TODO: this one too?
+        it("computes x0(+2) \\/ x2", [&]() {
+          /*
+          //           1     ---- x2
+          //          / \
+          //          F T
+          */
+
+          __bdd out = bdd_or(ep, bdd(bdd_x0, false, +2), bdd_x2);
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(1u));
+        });
+
         it("shortcuts on x0 \\/ x2", [&]() {
           /*
           //           1     ---- x0
@@ -1559,6 +1849,104 @@ go_bandit([]() {
 
           AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(1u));
 
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(2u));
+        });
+
+        it("shortcuts on x2 \\/ x1", [&]() {
+          /*
+          //           1     ---- x1
+          //          / \
+          //          2 T    ---- x2
+          //         / \
+          //         F T
+          */
+
+          __bdd out = bdd_or(ep, bdd_x2, bdd_x1);
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(2u));
+        });
+
+        it("shortcuts on x0(+2) \\/ x1", [&]() {
+          /*
+          //           1     ---- x1
+          //          / \
+          //          2 T    ---- x2
+          //         / \
+          //         F T
+          */
+
+          __bdd out = bdd_or(ep, bdd(bdd_x0, false, +2), bdd(bdd_x1, false, +0));
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(1u));
           AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
                      Is().EqualTo(1u));
           AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
@@ -1649,6 +2037,59 @@ go_bandit([]() {
           AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
                      Is().EqualTo(4u));
         });
+
+        it("computes (and shortcuts) [1] \\/ [2](-1)", [&]() {
+          /*
+          //        _(1,1)_       ---- x0
+          //       /       \
+          //       |       T      ---- x1
+          //       |
+          //     (3,2)            ---- x2
+          //      / \
+          //      T T
+          */
+          __bdd out = bdd_or(ep, bdd(bdd_1, false, +0), bdd(bdd_2, false, -1));
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(2, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(0, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(1u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(3u));
+        });
       });
 
       describe("bdd_nor(f,g)", [&]() {
@@ -1656,9 +2097,48 @@ go_bandit([]() {
       });
 
       describe("bdd_xor(f,g)", [&]() {
+        it("computes x0(+1) ^ x1", [&]() {
+          /*
+          //           1     ---- x1
+          //          / \
+          //          F F
+          */
+
+          __bdd out = bdd_xor(ep, bdd(bdd_x0, false, +1), bdd_x1);
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 0), true, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(0u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(0u));
+        });
+
         it("computes x0 ^ x1", [&]() {
           /* The order on the leaves are due to the sorting of terminal requests
-          //   after evaluating x0
+          // after evaluating x0.
           //
           //           1     ---- x0
           //          / \
@@ -1704,6 +2184,126 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(1, 2u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(2u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(2u));
+        });
+
+        it("computes x0(+2) ^ x1", [&]() {
+          /* The order on the leaves are due to the sorting of terminal requests
+          //   after evaluating x0
+          //
+          //           1     ---- x1
+          //          / \
+          //         2   3   ---- x2
+          //        / \ / \
+          //        F T T F
+          */
+
+          __bdd out = bdd_xor(ep, bdd(bdd_x0, false, +2), bdd_x1);
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 1) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 1), false, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 1), true, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2, 2u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(2u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(2u));
+        });
+
+        it("computes x0 ^ x0(+2)", [&]() {
+          /*
+          //          _1_    ---- x0
+          //         /   \
+          //         2   3   ---- x2
+          //        / \ / \
+          //        F T T F
+          */
+
+          __bdd out = bdd_xor(ep, bdd_x0, bdd(bdd_x0, false, +2));
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(2, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(2, 1) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 1), false, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 1), true, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2, 2u)));
 
           AssertThat(levels.can_pull(), Is().False());
 
@@ -2250,6 +2850,145 @@ go_bandit([]() {
       // Non-Canonical: bdd_1, bdd_3
 
       describe("bdd_and(f,g)", [&]() {
+        it("computes x0 and !x0", [&]() {
+          /*
+          //           1     ---- x0
+          //          / \
+          //          F F
+          */
+
+          __bdd out = bdd_and(ep, bdd_x0, bdd_not_x0);
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(0, 0), true, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(0u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(0u));
+        });
+
+        it("computes x0 /\\ x2", [&]() {
+          /*
+          //           1     ---- x0
+          //          / \
+          //          F 2    ---- x2
+          //           / \
+          //           F T
+          */
+
+          __bdd out = bdd_and(ep, bdd_x0, bdd_x2);
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(2, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(1u));
+        });
+
+        it("computes x0 /\\ x0(+1)", [&]() {
+          /*
+          //           1     ---- x0
+          //          / \
+          //          F 2    ---- x1
+          //           / \
+          //           F T
+          */
+
+          __bdd out = bdd_and(ep, bdd(bdd_x0, false, +0), bdd(bdd_x0, false, +1));
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(1u));
+        });
+
         it("computes (and shortcut) [1] /\\ [2]", [&]() {
           /*
           //                    1                        ---- x0
@@ -2356,12 +3095,255 @@ go_bandit([]() {
         });
       });
 
+      describe("bdd_or(f,g)", [&]() {
+        it("computes x0(+2) \\/ x2", [&]() {
+          /*
+          //           1     ---- x2
+          //          / \
+          //          F T
+          */
+
+          __bdd out = bdd_or(ep, bdd(bdd_x0, false, +2), bdd_x2);
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(1u));
+        });
+
+        it("shortcuts on x0 \\/ x2", [&]() {
+          /*
+          //           1     ---- x0
+          //          / \
+          //          | T
+          //          |
+          //          2      ---- x2
+          //         / \
+          //         F T
+          */
+
+          __bdd out = bdd_or(ep, bdd_x0, bdd_x2);
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(2, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(0, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(1u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(2u));
+        });
+
+        it("shortcuts on x2 \\/ x1", [&]() {
+          /*
+          //           1     ---- x1
+          //          / \
+          //          2 T    ---- x2
+          //         / \
+          //         F T
+          */
+
+          __bdd out = bdd_or(ep, bdd_x2, bdd_x1);
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(2u));
+        });
+
+        it("shortcuts on x0(+2) \\/ x1", [&]() {
+          /*
+          //           1     ---- x1
+          //          / \
+          //          2 T    ---- x2
+          //         / \
+          //         F T
+          */
+
+          __bdd out = bdd_or(ep, bdd(bdd_x0, false, +2), bdd(bdd_x1, false, +0));
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(2u));
+        });
+
+        it("computes (and shortcuts) [1] \\/ [2](-1)", [&]() {
+          /*
+          //        _(1,1)_       ---- x0
+          //       /       \
+          //       |       T      ---- x1
+          //       |
+          //     (3,2)            ---- x2
+          //      / \
+          //      T T
+          */
+          __bdd out = bdd_or(ep, bdd(bdd_1, false, +0), bdd(bdd_2, false, -1));
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(2, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(0, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(1u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(3u));
+        });
+      });
+
       describe("bdd_xor(f,g)", [&]() {
         it("computes x0 ^ !x0 (same level)", [&]() {
           /*
           //           1     ---- x0
           //          / \
-          //         T   T
+          //          T T
           */
 
           __bdd out = bdd_xor(ep, bdd_x0, bdd_not_x0);
@@ -2394,9 +3376,47 @@ go_bandit([]() {
                      Is().EqualTo(2u));
         });
 
+        it("computes x0(+1) ^ x1 (same level)", [&]() {
+          /*
+          //           1     ---- x1
+          //          / \
+          //          F F
+          */
+
+          __bdd out = bdd_xor(ep, bdd(bdd_x0, false, +1), bdd_x1);
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 0), true, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(0u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(0u));
+        });
+
         it("computes x0 ^ x1 (different levels, random access for first level)", [&]() {
-          /* The order on the leaves are due to the sorting of terminal requests
-          //   after evaluating x0
+          /* The order on the leaves are due to the sorting of terminal requests after evaluating x0
           //
           //           1     ---- x0
           //          / \
@@ -2442,6 +3462,66 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(1, 2u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(2u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(2u));
+        });
+
+        it("computes x0(+2) ^ x1 (different levels, random access for first level)", [&]() {
+          /* The order on the leaves are due to the sorting of terminal requests after evaluating x1
+          //
+          //           1     ---- x1
+          //          / \
+          //         2   3   ---- x2
+          //        / \ / \
+          //        F T T F
+          */
+
+          __bdd out = bdd_xor(ep, bdd_x1, bdd(bdd_x0, false, +2));
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 1) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 1), false, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 1), true, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2, 2u)));
 
           AssertThat(levels.can_pull(), Is().False());
 
@@ -2503,6 +3583,185 @@ go_bandit([]() {
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(1, 2u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(2u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(2u));
+        });
+
+        it("computes x2 ^ x1 (different levels, random access for second level)", [&]() {
+          /* The order on the leaves are due to the sorting of terminal requests after evaluating x1
+          //
+          //           1     ---- x1
+          //          / \
+          //         2   3   ---- x2
+          //        / \ / \
+          //        F T T F
+          */
+
+          __bdd out = bdd_xor(ep, bdd_x2, bdd_x1);
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 1) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 1), false, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 1), true, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2, 2u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(2u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(2u));
+        });
+
+        it("computes x0(+2) ^ x1 (different levels, random access for second level)", [&]() {
+          /* The order on the leaves are due to the sorting of terminal requests after evaluating x1
+          //
+          //           1     ---- x1
+          //          / \
+          //         2   3   ---- x2
+          //        / \ / \
+          //        F T T F
+          */
+
+          __bdd out = bdd_xor(ep, bdd(bdd_x0, false, +2), bdd_x1);
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 1) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 1), false, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 1), true, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2, 2u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(2u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(2u));
+
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(2u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(2u));
+        });
+
+        it("computes x0 ^ x0(+2)", [&]() {
+          /*
+          //          _1_    ---- x0
+          //         /   \
+          //         2   3   ---- x2
+          //        / \ / \
+          //        F T T F
+          */
+
+          __bdd out = bdd_xor(ep, bdd_x0, bdd(bdd_x0, false, +2));
+
+          arc_test_stream arcs(out);
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(2, 0) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().True());
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(2, 1) }));
+
+          AssertThat(arcs.can_pull_internal(), Is().False());
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 1), false, terminal_T }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 1), true, terminal_F }));
+
+          AssertThat(arcs.can_pull_terminal(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2, 2u)));
 
           AssertThat(levels.can_pull(), Is().False());
 
@@ -2978,121 +4237,115 @@ go_bandit([]() {
                      Is().EqualTo(6u));
         });
 
-        it("uses random access on non-canonical but indexable ([canonical] ^ [indexable])",
-           [&]() {
-             __bdd out = bdd_xor(ep, bdd_canon, bdd_indexable);
+        it("uses random access on non-canonical but indexable ([canonical] ^ [indexable])", [&]() {
+          __bdd out = bdd_xor(ep, bdd_canon, bdd_indexable);
 
-             arc_test_stream arcs(out);
+          arc_test_stream arcs(out);
 
-             AssertThat(arcs.can_pull_internal(), Is().True()); // (2,2)
-             AssertThat(arcs.pull_internal(),
-                        Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(1, 0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (2,2)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(1, 0) }));
 
-             AssertThat(arcs.can_pull_internal(), Is().True()); // (3,3)
-             AssertThat(arcs.pull_internal(),
-                        Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 1) }));
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (3,3)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 1) }));
 
-             AssertThat(arcs.can_pull_internal(), Is().True()); // (4,4)
-             AssertThat(arcs.pull_internal(),
-                        Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (4,4)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 0) }));
 
-             AssertThat(arcs.can_pull_internal(), Is().True()); // (5,6)
-             AssertThat(arcs.pull_internal(),
-                        Is().EqualTo(arc{ ptr_uint64(1, 1), false, ptr_uint64(2, 1) }));
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (5,6)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 1), false, ptr_uint64(2, 1) }));
 
-             AssertThat(arcs.can_pull_internal(), Is().True()); // (6,5)
-             AssertThat(arcs.pull_internal(),
-                        Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 2) }));
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (6,5)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 0), true, ptr_uint64(2, 2) }));
 
-             AssertThat(arcs.can_pull_internal(), Is().True()); // (7,4)
-             AssertThat(arcs.pull_internal(),
-                        Is().EqualTo(arc{ ptr_uint64(1, 1), true, ptr_uint64(2, 3) }));
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (7,4)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(1, 1), true, ptr_uint64(2, 3) }));
 
-             AssertThat(arcs.can_pull_internal(), Is().True()); // (8,F)
-             AssertThat(arcs.pull_internal(),
-                        Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(3, 0) }));
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (8,F)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), true, ptr_uint64(3, 0) }));
 
-             AssertThat(arcs.can_pull_internal(), Is().True()); // (9,T)
-             AssertThat(arcs.pull_internal(),
-                        Is().EqualTo(arc{ ptr_uint64(2, 1), true, ptr_uint64(3, 1) }));
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (9,T)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 1), true, ptr_uint64(3, 1) }));
 
-             AssertThat(arcs.can_pull_internal(), Is().True()); // (T,7)
-             AssertThat(arcs.pull_internal(),
-                        Is().EqualTo(arc{ ptr_uint64(2, 2), false, ptr_uint64(3, 2) }));
+          AssertThat(arcs.can_pull_internal(), Is().True()); // (T,7)
+          AssertThat(arcs.pull_internal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 2), false, ptr_uint64(3, 2) }));
 
-             AssertThat(arcs.can_pull_internal(), Is().False());
+          AssertThat(arcs.can_pull_internal(), Is().False());
 
-             AssertThat(arcs.can_pull_terminal(), Is().True());
-             AssertThat(arcs.pull_terminal(),
-                        Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_T }));
 
-             AssertThat(arcs.can_pull_terminal(), Is().True());
-             AssertThat(arcs.pull_terminal(),
-                        Is().EqualTo(arc{ ptr_uint64(2, 1), false, terminal_F }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 1), false, terminal_F }));
 
-             AssertThat(arcs.can_pull_terminal(), Is().True());
-             AssertThat(arcs.pull_terminal(),
-                        Is().EqualTo(arc{ ptr_uint64(2, 2), true, terminal_F }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 2), true, terminal_F }));
 
-             AssertThat(arcs.can_pull_terminal(), Is().True());
-             AssertThat(arcs.pull_terminal(),
-                        Is().EqualTo(arc{ ptr_uint64(2, 3), false, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(2, 3), false, terminal_T }));
 
-             AssertThat(arcs.can_pull_terminal(), Is().True());
-             AssertThat(arcs.pull_terminal(),
-                        Is().EqualTo(arc{ ptr_uint64(2, 3), true, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 3), true, terminal_T }));
 
-             AssertThat(arcs.can_pull_terminal(), Is().True());
-             AssertThat(arcs.pull_terminal(),
-                        Is().EqualTo(arc{ ptr_uint64(3, 0), false, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(3, 0), false, terminal_T }));
 
-             AssertThat(arcs.can_pull_terminal(), Is().True());
-             AssertThat(arcs.pull_terminal(),
-                        Is().EqualTo(arc{ ptr_uint64(3, 0), true, terminal_F }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(3, 0), true, terminal_F }));
 
-             AssertThat(arcs.can_pull_terminal(), Is().True());
-             AssertThat(arcs.pull_terminal(),
-                        Is().EqualTo(arc{ ptr_uint64(3, 1), false, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(3, 1), false, terminal_T }));
 
-             AssertThat(arcs.can_pull_terminal(), Is().True());
-             AssertThat(arcs.pull_terminal(),
-                        Is().EqualTo(arc{ ptr_uint64(3, 1), true, terminal_F }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(3, 1), true, terminal_F }));
 
-             AssertThat(arcs.can_pull_terminal(), Is().True());
-             AssertThat(arcs.pull_terminal(),
-                        Is().EqualTo(arc{ ptr_uint64(3, 2), false, terminal_F }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(),
+                     Is().EqualTo(arc{ ptr_uint64(3, 2), false, terminal_F }));
 
-             AssertThat(arcs.can_pull_terminal(), Is().True());
-             AssertThat(arcs.pull_terminal(),
-                        Is().EqualTo(arc{ ptr_uint64(3, 2), true, terminal_T }));
+          AssertThat(arcs.can_pull_terminal(), Is().True());
+          AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(3, 2), true, terminal_T }));
 
-             AssertThat(arcs.can_pull_terminal(), Is().False());
+          AssertThat(arcs.can_pull_terminal(), Is().False());
 
-             level_info_test_stream levels(out);
+          level_info_test_stream levels(out);
 
-             AssertThat(levels.can_pull(), Is().True());
-             AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
 
-             AssertThat(levels.can_pull(), Is().True());
-             AssertThat(levels.pull(), Is().EqualTo(level_info(1, 2u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1, 2u)));
 
-             AssertThat(levels.can_pull(), Is().True());
-             AssertThat(levels.pull(), Is().EqualTo(level_info(2, 4u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2, 4u)));
 
-             AssertThat(levels.can_pull(), Is().True());
-             AssertThat(levels.pull(), Is().EqualTo(level_info(3, 3u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(3, 3u)));
 
-             AssertThat(levels.can_pull(), Is().False());
+          AssertThat(levels.can_pull(), Is().False());
 
-             AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(4u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->width, Is().EqualTo(4u));
 
-             AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(4u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->max_1level_cut, Is().EqualTo(4u));
 
-             AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
-                        Is().EqualTo(5u));
-             AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
-                        Is().EqualTo(6u));
-           });
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(5u));
+          AssertThat(out.get<__bdd::shared_arc_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(6u));
+        });
 
         it("uses random access non-canonical but indexable ([indexable] ^ [canonical])", [&]() {
           __bdd out = bdd_xor(ep, bdd_indexable, bdd_canon);

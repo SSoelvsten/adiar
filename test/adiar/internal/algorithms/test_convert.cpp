@@ -71,17 +71,44 @@ go_bandit([]() {
     }
     zdd zdd_x2_null(nf_x2_null);
 
-    // Fig. 5 from Minato: "Zero-suppressed BDDs and their applications". This
-    // is the ZDD version of Fig. 3 in the same paper.
-    shared_levelized_file<dd::node_type> nf_minato_fig5;
+    // Fig. 5 from Minato: "Zero-suppressed BDDs and their applications". This is the ZDD version of
+    // Fig. 3 in the same paper.
+    shared_levelized_file<zdd::node_type> nf_minato_fig5;
     {
-      const node n2 = node(1, node::max_id, terminal_F, terminal_T);
-      const node n1 = node(0, node::max_id, n2.uid(), terminal_T);
+      const node n2 = node(1, zdd::max_id, terminal_F, terminal_T);
+      const node n1 = node(0, zdd::max_id, n2.uid(), terminal_T);
 
       node_writer nw(nf_minato_fig5);
       nw << n2 << n1;
     }
     zdd zdd_minato_fig5(nf_minato_fig5);
+
+    // Fig. 3 (left) from Minato: "Zero-suppressed BDDs and their applications". This is the ZDD
+    // version of Fig. 5 in the same paper.
+    shared_levelized_file<bdd::node_type> nf_minato_fig3_a;
+    {
+      const node n4 = node(2, bdd::max_id, terminal_T, terminal_F);
+      const node n3 = node(1, bdd::max_id, n4.uid(), terminal_F);
+      const node n2 = node(1, bdd::max_id - 1, terminal_F, n4.uid());
+      const node n1 = node(0, bdd::max_id, n2.uid(), n3.uid());
+
+      node_writer nw(nf_minato_fig3_a);
+      nw << n4 << n3 << n2 << n1;
+    }
+    bdd bdd_minato_fig3_a(nf_minato_fig3_a);
+
+    shared_levelized_file<bdd::node_type> nf_minato_fig3_b;
+    {
+      const node n5 = node(3, bdd::max_id, terminal_T, terminal_F);
+      const node n4 = node(2, bdd::max_id, n5.uid(), terminal_F);
+      const node n3 = node(1, bdd::max_id, n4.uid(), terminal_F);
+      const node n2 = node(1, bdd::max_id - 1, terminal_F, n4.uid());
+      const node n1 = node(0, bdd::max_id, n2.uid(), n3.uid());
+
+      node_writer nw(nf_minato_fig3_b);
+      nw << n5 << n4 << n3 << n2 << n1;
+    }
+    bdd bdd_minato_fig3_b(nf_minato_fig3_b);
 
     bdd bdd_F(nf_F);
     bdd bdd_T(nf_T);
@@ -99,6 +126,7 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(zdd_F.file_ptr()));
         AssertThat(out._negate, Is().False());
+        AssertThat(out._shift, Is().EqualTo(0));
       });
 
       it("returns same file for T terminal on { Ø } with dom = Ø", [&]() {
@@ -106,6 +134,7 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(zdd_T.file_ptr()));
         AssertThat(out._negate, Is().False());
+        AssertThat(out._shift, Is().EqualTo(0));
       });
 
       it("returns F terminal on Ø with dom = { 0,1,2 }", [&]() {
@@ -1149,6 +1178,7 @@ go_bandit([]() {
 
         AssertThat(out.get<__zdd::shared_node_file_type>(), Is().EqualTo(bdd_F.file_ptr()));
         AssertThat(out._negate, Is().False());
+        AssertThat(out._shift, Is().EqualTo(0));
       });
 
       it("returns { Ø } on T terminal with dom = Ø", [&]() {
@@ -1156,6 +1186,23 @@ go_bandit([]() {
 
         AssertThat(out.get<__zdd::shared_node_file_type>(), Is().EqualTo(bdd_T.file_ptr()));
         AssertThat(out._negate, Is().False());
+        AssertThat(out._shift, Is().EqualTo(0));
+      });
+
+      it("returns Ø on shifted F terminal with dom = Ø", [&]() {
+        __zdd out = zdd_from(bdd(nf_F, false, +2), dom_empty.begin(), dom_empty.end());
+
+        AssertThat(out.get<__zdd::shared_node_file_type>(), Is().EqualTo(nf_F));
+        AssertThat(out._negate, Is().False());
+        AssertThat(out._shift, Is().EqualTo(0));
+      });
+
+      it("returns { Ø } on shifted T terminal with dom = Ø", [&]() {
+        __zdd out = zdd_from(bdd(nf_T, false, +42), dom_empty.begin(), dom_empty.end());
+
+        AssertThat(out.get<__zdd::shared_node_file_type>(), Is().EqualTo(nf_T));
+        AssertThat(out._negate, Is().False());
+        AssertThat(out._shift, Is().EqualTo(0));
       });
 
       it("returns Ø on negated F terminal with dom = Ø", [&]() {
@@ -1163,6 +1210,7 @@ go_bandit([]() {
 
         AssertThat(out.get<__zdd::shared_node_file_type>(), Is().EqualTo(bdd_F.file_ptr()));
         AssertThat(out._negate, Is().True());
+        AssertThat(out._shift, Is().EqualTo(0));
 
         node_test_stream out_nodes(out);
 
@@ -1180,6 +1228,7 @@ go_bandit([]() {
 
         AssertThat(out.get<__zdd::shared_node_file_type>(), Is().EqualTo(bdd_T.file_ptr()));
         AssertThat(out._negate, Is().True());
+        AssertThat(out._shift, Is().EqualTo(0));
 
         node_test_stream out_nodes(out);
 
@@ -1449,19 +1498,7 @@ go_bandit([]() {
 
       // Minato examples
       it("converts [Minato] Fig. 3 into Fig. 5 with dom = { 0,1,2 } ", [&]() {
-        shared_levelized_file<bdd::node_type> nf;
-        {
-          const node n4 = node(2, node::max_id, terminal_T, terminal_F);
-          const node n3 = node(1, node::max_id, n4.uid(), terminal_F);
-          const node n2 = node(1, node::max_id - 1, terminal_F, n4.uid());
-          const node n1 = node(0, node::max_id, n2.uid(), n3.uid());
-
-          node_writer nw(nf);
-          nw << n4 << n3 << n2 << n1;
-        }
-        bdd in(nf);
-
-        __zdd out = zdd_from(in, dom_012.begin(), dom_012.end());
+        __zdd out = zdd_from(bdd_minato_fig3_a, dom_012.begin(), dom_012.end());
 
         arc_test_stream arcs(out);
 
@@ -1504,20 +1541,7 @@ go_bandit([]() {
       });
 
       it("converts [Minato] Fig. 3 into Fig. 5 with dom = { 0,1,2,3 } ", [&]() {
-        shared_levelized_file<bdd::node_type> nf;
-        {
-          const node n5 = node(3, node::max_id, terminal_T, terminal_F);
-          const node n4 = node(2, node::max_id, n5.uid(), terminal_F);
-          const node n3 = node(1, node::max_id, n4.uid(), terminal_F);
-          const node n2 = node(1, node::max_id - 1, terminal_F, n4.uid());
-          const node n1 = node(0, node::max_id, n2.uid(), n3.uid());
-
-          node_writer nw(nf);
-          nw << n5 << n4 << n3 << n2 << n1;
-        }
-        bdd in(nf);
-
-        __zdd out = zdd_from(in, dom_0123.begin(), dom_0123.end());
+        __zdd out = zdd_from(bdd_minato_fig3_b, dom_0123.begin(), dom_0123.end());
 
         arc_test_stream arcs(out);
 
@@ -1551,6 +1575,60 @@ go_bandit([]() {
 
         AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
                    Is().GreaterThanOrEqualTo(1u));
+
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
+                   Is().EqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[true],
+                   Is().EqualTo(2u));
+      });
+
+      it("converts [Minato] shifted Fig. 3 with dom = { 0,1,2 } + { 3 } ", [&]() {
+        __zdd out = zdd_from(bdd(nf_minato_fig3_a, false, +1), dom_0123.begin(), dom_0123.end());
+
+        arc_test_stream arcs(out);
+
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), false, ptr_uint64(1, 0) }));
+
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 0) }));
+
+        AssertThat(arcs.can_pull_internal(), Is().True());
+        AssertThat(arcs.pull_internal(),
+                   Is().EqualTo(arc{ ptr_uint64(1, 0), false, ptr_uint64(2, 0) }));
+
+        AssertThat(arcs.can_pull_internal(), Is().False());
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(1, 0), true, terminal_T }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), false, terminal_F }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().True());
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ ptr_uint64(2, 0), true, terminal_T }));
+
+        AssertThat(arcs.can_pull_terminal(), Is().False());
+
+        level_info_test_stream levels(out);
+
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
+
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
+
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
+
+        AssertThat(levels.can_pull(), Is().False());
+
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->width, Is().EqualTo(1u));
+
+        AssertThat(out.get<__zdd::shared_arc_file_type>()->max_1level_cut,
+                   Is().GreaterThanOrEqualTo(2u));
 
         AssertThat(out.get<__zdd::shared_arc_file_type>()->number_of_terminals[false],
                    Is().EqualTo(1u));

@@ -199,7 +199,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
       stats_equality.exit_on_same_file += 1u;
 #endif
-      return a_negated == b_negated;
+      return a_negated == b_negated && a.shift() == b.shift();
     }
 
     // Are they trivially not the same, since they have different number of nodes?

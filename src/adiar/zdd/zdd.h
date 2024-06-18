@@ -68,7 +68,7 @@ namespace adiar
     // |- functions
     friend size_t
     zdd_nodecount(const zdd&);
-    friend zdd::label_type
+    friend label_type
     zdd_varcount(const zdd&);
 
     friend bool
@@ -105,13 +105,13 @@ namespace adiar
     ///
     /// \see zdd_terminal, zdd_empty, zdd_null
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    zdd(zdd::terminal_type t);
+    zdd(terminal_type t);
 
     /// \cond
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor to wrap the node-based result of an algorithm.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    zdd(const zdd::shared_node_file_type& A, bool negate = false);
+    zdd(const shared_node_file_type& A, bool negate = false, signed_label_type shift = 0);
     /// \endcond
 
     ////////////////////////////////////////////////////////////////////////////////////////////////

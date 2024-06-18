@@ -31,6 +31,7 @@ go_bandit([]() {
 
       AssertThat(out.file_ptr(), Is().EqualTo(x0x1_node_file));
       AssertThat(out.is_negated(), Is().False());
+      AssertThat(out.shift(), Is().EqualTo(0));
     });
 
     it("preserves negation flag on reduced input [2]", [&]() {
@@ -47,6 +48,24 @@ go_bandit([]() {
 
       AssertThat(out.file_ptr(), Is().EqualTo(x0x1_node_file));
       AssertThat(out.is_negated(), Is().True());
+      AssertThat(out.shift(), Is().EqualTo(0));
+    });
+
+    it("preserves shift on reduced input [1]", [&]() {
+      /*
+      //         1                  1      ---- x0
+      //        / \                / \
+      //        F 2        =>      F 2     ---- x1
+      //         / \                / \
+      //         F T                F T
+      */
+
+      // Use a __bdd that stores the node file from a bdd.
+      bdd out(__bdd(bdd(x0x1_node_file, false, +1)));
+
+      AssertThat(out.file_ptr(), Is().EqualTo(x0x1_node_file));
+      AssertThat(out.is_negated(), Is().False());
+      AssertThat(out.shift(), Is().EqualTo(+1));
     });
 
     describe("Reduction Rule 2", [&]() {

@@ -1,5 +1,7 @@
 #include "../../test.h"
 
+#include <adiar/internal/dd_func.h>
+
 go_bandit([]() {
   describe("adiar/internal/dd_func.h", []() {
     const ptr_uint64 false_ptr = ptr_uint64(false);
@@ -354,6 +356,21 @@ go_bandit([]() {
         AssertThrows(invalid_argument, zdd_topvar(terminal_T));
         AssertThrows(invalid_argument, zdd_minvar(terminal_T));
       });
+
+      it("returns shifted root variable for larger BDD [+1]", [&]() {
+        AssertThat(bdd_topvar(bdd(bdd_file, false, +1)), Is().EqualTo(2u));
+        AssertThat(bdd_minvar(bdd(bdd_file, false, +1)), Is().EqualTo(2u));
+      });
+
+      it("returns shifted root variable for larger BDD [+2]", [&]() {
+        AssertThat(bdd_topvar(bdd(bdd_file, false, +2)), Is().EqualTo(3u));
+        AssertThat(bdd_minvar(bdd(bdd_file, false, +2)), Is().EqualTo(3u));
+      });
+
+      it("returns shifted root variable for larger BDD [-1]", [&]() {
+        AssertThat(bdd_topvar(bdd(bdd_file, false, -1)), Is().EqualTo(0u));
+        AssertThat(bdd_minvar(bdd(bdd_file, false, -1)), Is().EqualTo(0u));
+      });
     });
 
     describe("bdd_maxvar / zdd_maxvar", [&]() {
@@ -382,6 +399,15 @@ go_bandit([]() {
 
       it("throws an exception for T terminal [ZDD]",
          [&]() { AssertThrows(invalid_argument, zdd_maxvar(terminal_T)); });
+
+      it("returns shifted root variable for larger BDD [+1]",
+         [&]() { AssertThat(bdd_maxvar(bdd(bdd_file, false, +1)), Is().EqualTo(5u)); });
+
+      it("returns shifted root variable for larger BDD [+2]",
+         [&]() { AssertThat(bdd_maxvar(bdd(bdd_file, false, +2)), Is().EqualTo(6u)); });
+
+      it("returns shifted root variable for larger BDD [-1]",
+         [&]() { AssertThat(bdd_maxvar(bdd(bdd_file, false, -1)), Is().EqualTo(3u)); });
     });
   });
 });

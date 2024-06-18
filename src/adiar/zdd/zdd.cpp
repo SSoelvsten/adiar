@@ -45,9 +45,12 @@ namespace adiar
     : zdd(zdd_terminal(t))
   {}
 
-  zdd::zdd(const shared_node_file_type& A, bool negate)
-    : internal::dd(A, negate)
-  {}
+  zdd::zdd(const shared_node_file_type& A, bool negate, signed_label_type shift)
+    : internal::dd(A, negate, shift)
+  {
+    adiar_assert(A->is_terminal() || shift == 0,
+                 "TODO: Support for shifted ZDD inputs in operations");
+  }
 
   zdd::zdd(const zdd& A)
     : internal::dd(A)
@@ -87,6 +90,7 @@ namespace adiar
   {
     this->_negate = other._negate;
     this->_file   = other._file;
+    this->_shift  = other._shift;
     return *this;
   }
 
