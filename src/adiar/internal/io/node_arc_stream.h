@@ -11,14 +11,14 @@
 
 namespace adiar::internal
 {
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Stream nodes from an arc file (skipping any of Reduce algorithm).
   ///
-  /// \param Reverse Whether the reading direction should be reversed
-  ///                (relatively to the ordering of nodes within the file).
+  /// \param Reverse Whether the reading direction should be reversed (relatively to the ordering of
+  ///                nodes within the file).
   ///
   /// \see shared_levelized_file<arc>
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   template <bool Reverse = false>
   class node_arc_stream : protected arc_stream<!Reverse>
   {

@@ -465,45 +465,7 @@ namespace adiar::internal
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // Friends
-    // |- streaming classes
     friend class __dd;
-
-    template <bool REVERSE>
-    friend class level_info_stream;
-
-    template <bool REVERSE>
-    friend class node_stream;
-
-    template <typename file_t, typename comp_t, size_t FILES, bool reverse>
-    friend class level_merger;
-
-    // |- algorithm functions and classes
-    friend bool
-    is_isomorphic(const exec_policy&, const dd&, const dd&);
-
-    template <typename comp_policy>
-    friend bool
-    comparison_check(const exec_policy&, const dd&, const dd&);
-
-    template <typename to_policy, typename from_policy>
-    friend class convert_dd_policy;
-
-    // |- public API
-    template <typename dd_t>
-    friend bool
-    dd_isterminal(const dd_t& dd);
-
-    template <typename dd_t>
-    friend bool
-    dd_valueof(const dd_t& dd);
-
-    template <typename dd_t>
-    friend label_type
-    dd_minvar(const dd_t& dd);
-
-    template <typename dd_t>
-    friend label_type
-    dd_maxvar(const dd_t& dd);
   };
 
   inline __dd::__dd(const dd& dd)

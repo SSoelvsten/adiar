@@ -291,7 +291,8 @@ namespace adiar::internal
   bool
   comparison_check(const exec_policy& ep, const dd& a, const dd& b)
   {
-    return comparison_check<comp_policy>(ep, a._file, b._file, a._negate, b._negate);
+    return comparison_check<comp_policy>(
+      ep, a.file_ptr(), b.file_ptr(), a.is_negated(), b.is_negated());
   }
 }
 
