@@ -156,6 +156,9 @@ test/adiar/internal/data_types/arc:
 test/adiar/internal/data_types/convert:
 	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_types TEST_NAME=convert
 
+test/adiar/internal/data_types/level_info:
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_types TEST_NAME=level_info
+
 test/adiar/internal/data_types/node:
 	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_types TEST_NAME=node
 
