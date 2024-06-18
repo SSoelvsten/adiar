@@ -30,13 +30,13 @@ namespace adiar::internal
   {
     static_assert(0 < FileCount, "At least one file should be merged");
 
-    using stream_t = typename level_stream_t<File>::template stream_t<Reverse>;
+    using stream_type = typename level_stream_t<File>::template stream_t<Reverse>;
 
   public:
     static size_t
     memory_usage()
     {
-      return FileCount * stream_t::memory_usage();
+      return FileCount * stream_type::memory_usage();
     }
 
     using level_type = ptr_uint64::label_type;
@@ -44,7 +44,7 @@ namespace adiar::internal
   private:
     Comp _comparator = Comp();
 
-    unique_ptr<stream_t> _level_streams[FileCount];
+    unique_ptr<stream_type> _level_streams[FileCount];
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,7 +54,7 @@ namespace adiar::internal
     hook(const File (&fs)[FileCount])
     {
       for (size_t idx = 0u; idx < FileCount; idx++) {
-        _level_streams[idx] = adiar::make_unique<stream_t>(fs[idx]);
+        _level_streams[idx] = adiar::make_unique<stream_type>(fs[idx]);
       }
     }
 
@@ -65,7 +65,7 @@ namespace adiar::internal
     hook(const dd (&dds)[FileCount])
     {
       for (size_t idx = 0u; idx < FileCount; idx++) {
-        _level_streams[idx] = adiar::make_unique<stream_t>(dds[idx].file_ptr());
+        _level_streams[idx] = adiar::make_unique<stream_type>(dds[idx].file_ptr());
       }
     }
 
@@ -76,7 +76,7 @@ namespace adiar::internal
     hook(const __dd (&dds)[FileCount])
     {
       for (size_t idx = 0u; idx < FileCount; idx++) {
-        _level_streams[idx] = adiar::make_unique<stream_t>(dds[idx]);
+        _level_streams[idx] = adiar::make_unique<stream_type>(dds[idx]);
       }
     }
 
@@ -128,7 +128,7 @@ namespace adiar::internal
       level_type min_level = peek();
 
       // pull from all with min_level
-      for (const unique_ptr<stream_t>& level_info_stream : _level_streams) {
+      for (const unique_ptr<stream_type>& level_info_stream : _level_streams) {
         if (level_info_stream->can_pull() && level_of(level_info_stream->peek()) == min_level) {
           level_info_stream->pull();
         }
