@@ -877,8 +877,121 @@ go_bandit([]() {
     });
 
     describe("node_writer + node_stream", []() {
-      // TODO: stream: reads backwards by default
-      // TODO: stream: reads forwards if desired
+      describe(".can_pull(), .pull(), .peek()", []() {
+        const node n3(2, 1, node::pointer_type(false), node::pointer_type(true));
+        const node n2(2, 0, node::pointer_type(true), node::pointer_type(false));
+        const node n1(0, 0, node::uid_type(2, 0), node::uid_type(2, 1));
+
+        levelized_file<node> nf;
+        {
+          node_writer nw(nf);
+          nw << n3 << n2 << n1;
+        }
+
+        it("pulls top-down (backwards) by default", [&]() {
+          node_stream<> ns(nf);
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.pull(), Is().EqualTo(n1));
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.pull(), Is().EqualTo(n2));
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.pull(), Is().EqualTo(n3));
+
+          AssertThat(ns.can_pull(), Is().False());
+        });
+
+        it("pulls and peeks top-down (backwards) by default", [&]() {
+          node_stream<> ns(nf);
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.peek(), Is().EqualTo(n1));
+          AssertThat(ns.pull(), Is().EqualTo(n1));
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.peek(), Is().EqualTo(n2));
+          AssertThat(ns.peek(), Is().EqualTo(n2));
+          AssertThat(ns.pull(), Is().EqualTo(n2));
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.peek(), Is().EqualTo(n3));
+          AssertThat(ns.pull(), Is().EqualTo(n3));
+
+          AssertThat(ns.can_pull(), Is().False());
+        });
+
+        it("pulls bottom-up (forwards) if requested", [&]() {
+          node_stream<true> ns(nf);
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.pull(), Is().EqualTo(n3));
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.pull(), Is().EqualTo(n2));
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.pull(), Is().EqualTo(n1));
+
+          AssertThat(ns.can_pull(), Is().False());
+        });
+
+        it("pulls and peeks bottom-up (forwards) if requested", [&]() {
+          node_stream<true> ns(nf);
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.peek(), Is().EqualTo(n3));
+          AssertThat(ns.peek(), Is().EqualTo(n3));
+          AssertThat(ns.pull(), Is().EqualTo(n3));
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.pull(), Is().EqualTo(n2));
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.peek(), Is().EqualTo(n1));
+          AssertThat(ns.pull(), Is().EqualTo(n1));
+
+          AssertThat(ns.can_pull(), Is().False());
+        });
+
+        it("negates pulls on-the-fly", [&]() {
+          node_stream<> ns(nf, true);
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.pull(), Is().EqualTo(n1));
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.pull(),
+                     Is().EqualTo(node(2, 0, node::pointer_type(false), node::pointer_type(true))));
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.pull(),
+                     Is().EqualTo(node(2, 1, node::pointer_type(true), node::pointer_type(false))));
+
+          AssertThat(ns.can_pull(), Is().False());
+        });
+
+        it("negates peeks on-the-fly", [&]() {
+          node_stream<> ns(nf, true);
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.peek(), Is().EqualTo(n1));
+          ns.pull();
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.peek(),
+                     Is().EqualTo(node(2, 0, node::pointer_type(false), node::pointer_type(true))));
+          ns.pull();
+
+          AssertThat(ns.can_pull(), Is().True());
+          AssertThat(ns.peek(),
+                     Is().EqualTo(node(2, 1, node::pointer_type(true), node::pointer_type(false))));
+          ns.pull();
+
+          AssertThat(ns.can_pull(), Is().False());
+        });
+      });
 
       describe(".seek(const node::uid_type &u)", []() {
         it("can seek in False sink", [&]() {
@@ -913,36 +1026,28 @@ go_bandit([]() {
                      Is().EqualTo(node(true)));
         });
 
-        it("can seek existing elements", [&]() {
-          levelized_file<node> nf;
-          {
-            node_writer nw(nf);
-            nw << node(1, 1, node::pointer_type(false), node::pointer_type(true))
-               << node(1, 0, node::pointer_type(true), node::pointer_type(false))
-               << node(0, 0, node::uid_type(1, 0), node::uid_type(1, 1));
-          }
+        levelized_file<node> nf;
+        {
+          node_writer nw(nf);
+          nw << node(2, 1, node::pointer_type(false), node::pointer_type(true))
+             << node(2, 0, node::pointer_type(true), node::pointer_type(false))
+             << node(0, 0, node::pointer_type(2, 0), node::pointer_type(2, 1));
+        }
 
+        it("can seek existing elements", [&]() {
           node_stream<> ns(nf);
 
           AssertThat(ns.seek(node::uid_type(0, 0)),
-                     Is().EqualTo(node(0, 0, node::uid_type(1, 0), node::uid_type(1, 1))));
-          AssertThat(ns.seek(node::uid_type(1, 1)),
-                     Is().EqualTo(node(1, 1, node::pointer_type(false), node::pointer_type(true))));
+                     Is().EqualTo(node(0, 0, node::uid_type(2, 0), node::uid_type(2, 1))));
+          AssertThat(ns.seek(node::uid_type(2, 1)),
+                     Is().EqualTo(node(2, 1, node::pointer_type(false), node::pointer_type(true))));
         });
 
         it("can seek non-existing element in the middle ", [&]() {
-          levelized_file<node> nf;
-          {
-            node_writer nw(nf);
-            nw << node(2, 1, node::pointer_type(false), node::pointer_type(true))
-               << node(2, 0, node::pointer_type(true), node::pointer_type(false))
-               << node(0, 0, node::pointer_type(1, 0), node::pointer_type(1, 1));
-          }
-
           node_stream<> ns(nf);
 
           AssertThat(ns.seek(node::uid_type(0, 0)),
-                     Is().EqualTo(node(0, 0, node::pointer_type(1, 0), node::pointer_type(1, 1))));
+                     Is().EqualTo(node(0, 0, node::pointer_type(2, 0), node::pointer_type(2, 1))));
           AssertThat(ns.seek(node::uid_type(1, 1)),
                      Is().EqualTo(node(2, 0, node::pointer_type(true), node::pointer_type(false))));
           AssertThat(ns.seek(node::uid_type(1, 2)),
@@ -954,456 +1059,449 @@ go_bandit([]() {
         });
 
         it("can seek past end [1]", [&]() {
-          levelized_file<node> nf;
-          {
-            node_writer nw(nf);
-            nw << node(1, 1, node::pointer_type(false), node::pointer_type(true))
-               << node(1, 0, node::pointer_type(true), node::pointer_type(false))
-               << node(0, 0, node::pointer_type(1, 0), node::pointer_type(1, 1));
-          }
-
           node_stream<> ns(nf);
 
           AssertThat(ns.seek(node::uid_type(node::max_label, node::max_id)),
-                     Is().EqualTo(node(1, 1, node::pointer_type(false), node::pointer_type(true))));
+                     Is().EqualTo(node(2, 1, node::pointer_type(false), node::pointer_type(true))));
         });
 
         it("can seek past end [2]", [&]() {
-          levelized_file<node> nf;
-          {
-            node_writer nw(nf);
-            nw << node(1, 1, node::pointer_type(false), node::pointer_type(true))
-               << node(1, 0, node::pointer_type(true), node::pointer_type(false))
-               << node(0, 0, node::pointer_type(1, 0), node::pointer_type(1, 1));
-          }
-
           node_stream<> ns(nf);
 
           AssertThat(ns.seek(node::uid_type(0, 0)),
-                     Is().EqualTo(node(0, 0, node::pointer_type(1, 0), node::pointer_type(1, 1))));
-          AssertThat(ns.seek(node::uid_type(1, 1)),
-                     Is().EqualTo(node(1, 1, node::pointer_type(false), node::pointer_type(true))));
+                     Is().EqualTo(node(0, 0, node::pointer_type(2, 0), node::pointer_type(2, 1))));
+          AssertThat(ns.seek(node::uid_type(2, 1)),
+                     Is().EqualTo(node(2, 1, node::pointer_type(false), node::pointer_type(true))));
           AssertThat(ns.seek(node::uid_type(2, 0)),
-                     Is().EqualTo(node(1, 1, node::pointer_type(false), node::pointer_type(true))));
+                     Is().EqualTo(node(2, 1, node::pointer_type(false), node::pointer_type(true))));
+        });
+
+        it("negates seek result", [&]() {
+          node_stream<> ns(nf, true);
+
+          AssertThat(ns.seek(node::uid_type(0, 0)),
+                     Is().EqualTo(node(0, 0, node::pointer_type(2, 0), node::pointer_type(2, 1))));
+          AssertThat(ns.seek(node::uid_type(1, 0)),
+                     Is().EqualTo(node(2, 0, node::pointer_type(false), node::pointer_type(true))));
+          AssertThat(ns.seek(node::uid_type(2, 1)),
+                     Is().EqualTo(node(2, 1, node::pointer_type(true), node::pointer_type(false))));
         });
 
         // TODO: reversed
       });
+    });
 
-      describe("node_writer + node_random_access", []() {
-        /*
-        //              1      ---- A
-        //             / \
-        //             F T
-        */
-        const node A_n1 =
-          node(1, node::max_id, node::pointer_type(false), node::pointer_type(true));
+    describe("node_writer + node_random_access", []() {
+      /*
+      //              1      ---- A
+      //             / \
+      //             F T
+      */
+      const node A_n1 = node(1, node::max_id, node::pointer_type(false), node::pointer_type(true));
 
-        levelized_file<node> nf_A;
-        {
-          node_writer nw(nf_A);
-          nw << A_n1;
-        }
+      levelized_file<node> nf_A;
+      {
+        node_writer nw(nf_A);
+        nw << A_n1;
+      }
 
-        /*
-        //        _1_            ---- x0
-        //       /   \
-        //      _2_   \          ---- x1
-        //     /   \   \
-        //     3   4   5         ---- x2
-        //    / \ / \ / \
-        //    F  6   7  T        ---- x4
-        //      / \ / \
-        //      T F F T
-         */
-        const node B_n7 =
-          node(4, node::max_id, node::pointer_type(false), node::pointer_type(true));
-        const node B_n6 =
-          node(4, node::max_id - 1, node::pointer_type(true), node::pointer_type(false));
-        const node B_n5 = node(2, node::max_id, B_n7.uid(), node::pointer_type(true));
-        const node B_n4 = node(2, node::max_id - 1, B_n6.uid(), B_n7.uid());
-        const node B_n3 = node(2, node::max_id - 2, node::pointer_type(false), B_n6.uid());
-        const node B_n2 = node(1, node::max_id, B_n3.uid(), B_n4.uid());
-        const node B_n1 = node(0, node::max_id, B_n2.uid(), B_n5.uid());
+      /*
+      //        _1_            ---- x0
+      //       /   \
+      //      _2_   \          ---- x1
+      //     /   \   \
+      //     3   4   5         ---- x2
+      //    / \ / \ / \
+      //    F  6   7  T        ---- x4
+      //      / \ / \
+      //      T F F T
+      */
+      const node B_n7 = node(4, node::max_id, node::pointer_type(false), node::pointer_type(true));
+      const node B_n6 =
+        node(4, node::max_id - 1, node::pointer_type(true), node::pointer_type(false));
+      const node B_n5 = node(2, node::max_id, B_n7.uid(), node::pointer_type(true));
+      const node B_n4 = node(2, node::max_id - 1, B_n6.uid(), B_n7.uid());
+      const node B_n3 = node(2, node::max_id - 2, node::pointer_type(false), B_n6.uid());
+      const node B_n2 = node(1, node::max_id, B_n3.uid(), B_n4.uid());
+      const node B_n1 = node(0, node::max_id, B_n2.uid(), B_n5.uid());
 
-        levelized_file<node> nf_B;
-        {
-          node_writer nw(nf_B);
-          nw << B_n7 << B_n6 << B_n5 << B_n4 << B_n3 << B_n2 << B_n1;
-        }
+      levelized_file<node> nf_B;
+      {
+        node_writer nw(nf_B);
+        nw << B_n7 << B_n6 << B_n5 << B_n4 << B_n3 << B_n2 << B_n1;
+      }
 
-        describe(".setup_next_level(...) + .[has_]current_level() + ", [&]() {
-          it("has no levels for 'F' terminal", []() {
-            levelized_file<node> nf;
-            {
-              node_writer nw(nf);
-              nw << node(false);
-            }
+      describe(".setup_next_level(...) + .[has_]current_level() + ", [&]() {
+        it("has no levels for 'F' terminal", []() {
+          levelized_file<node> nf;
+          {
+            node_writer nw(nf);
+            nw << node(false);
+          }
 
-            node_random_access nra(nf);
+          node_random_access nra(nf);
 
-            AssertThat(nra.has_current_level(), Is().False());
-            AssertThat(nra.has_next_level(), Is().False());
+          AssertThat(nra.has_current_level(), Is().False());
+          AssertThat(nra.has_next_level(), Is().False());
 
-            nra.setup_next_level(0u);
-            AssertThat(nra.has_current_level(), Is().True());
-            AssertThat(nra.current_level(), Is().EqualTo(0u));
-            AssertThat(nra.has_next_level(), Is().False());
+          nra.setup_next_level(0u);
+          AssertThat(nra.has_current_level(), Is().True());
+          AssertThat(nra.current_level(), Is().EqualTo(0u));
+          AssertThat(nra.has_next_level(), Is().False());
 
-            nra.setup_next_level(2u);
-            AssertThat(nra.has_current_level(), Is().True());
-            AssertThat(nra.current_level(), Is().EqualTo(2u));
-            AssertThat(nra.has_next_level(), Is().False());
-          });
-
-          it("has no levels for 'T' terminal", []() {
-            levelized_file<node> nf;
-            {
-              node_writer nw(nf);
-              nw << node(true);
-            }
-
-            node_random_access nra(nf);
-
-            AssertThat(nra.has_current_level(), Is().False());
-            AssertThat(nra.has_next_level(), Is().False());
-
-            nra.setup_next_level(0u);
-            AssertThat(nra.has_current_level(), Is().True());
-            AssertThat(nra.current_level(), Is().EqualTo(0u));
-            AssertThat(nra.has_next_level(), Is().False());
-
-            nra.setup_next_level(1u);
-            AssertThat(nra.has_current_level(), Is().True());
-            AssertThat(nra.current_level(), Is().EqualTo(1u));
-            AssertThat(nra.has_next_level(), Is().False());
-          });
-
-          it("has empty levels before root of 'x1'", [&]() {
-            node_random_access nra(nf_A);
-
-            AssertThat(nra.has_current_level(), Is().False());
-
-            AssertThat(nra.has_next_level(), Is().True());
-            AssertThat(nra.next_level(), Is().EqualTo(1u));
-
-            nra.setup_next_level(0u);
-
-            AssertThat(nra.has_current_level(), Is().True());
-            AssertThat(nra.current_level(), Is().EqualTo(0u));
-
-            AssertThat(nra.empty_level(), Is().True());
-
-            AssertThat(nra.has_next_level(), Is().True());
-            AssertThat(nra.next_level(), Is().EqualTo(1u));
-          });
-
-          it("has empty levels after having skipped content of 'x1'", [&]() {
-            node_random_access nra(nf_A);
-
-            AssertThat(nra.has_current_level(), Is().False());
-
-            AssertThat(nra.empty_level(), Is().True());
-
-            AssertThat(nra.has_next_level(), Is().True());
-            AssertThat(nra.next_level(), Is().EqualTo(1u));
-
-            nra.setup_next_level(2u);
-
-            AssertThat(nra.has_current_level(), Is().True());
-            AssertThat(nra.current_level(), Is().EqualTo(2u));
-
-            AssertThat(nra.empty_level(), Is().True());
-
-            AssertThat(nra.has_next_level(), Is().False());
-          });
-
-          it("sets up the first default 'next' level to be the root", [&]() {
-            node_random_access nra(nf_B);
-
-            AssertThat(nra.has_current_level(), Is().False());
-
-            AssertThat(nra.has_next_level(), Is().True());
-            AssertThat(nra.next_level(), Is().EqualTo(0u));
-
-            nra.setup_next_level();
-            AssertThat(nra.has_current_level(), Is().True());
-            AssertThat(nra.current_level(), Is().EqualTo(0u));
-
-            AssertThat(nra.empty_level(), Is().False());
-            AssertThat(nra.current_width(), Is().EqualTo(1u));
-          });
-
-          it("sets up consecutive default 'next' level to be the non-empty levels", [&]() {
-            node_random_access nra(nf_B);
-
-            AssertThat(nra.has_current_level(), Is().False());
-
-            AssertThat(nra.has_next_level(), Is().True());
-            AssertThat(nra.next_level(), Is().EqualTo(0u));
-
-            nra.setup_next_level();
-
-            AssertThat(nra.has_current_level(), Is().True());
-            AssertThat(nra.current_level(), Is().EqualTo(0u));
-
-            AssertThat(nra.empty_level(), Is().False());
-            AssertThat(nra.current_width(), Is().EqualTo(1u));
-
-            AssertThat(nra.has_next_level(), Is().True());
-            AssertThat(nra.next_level(), Is().EqualTo(1u));
-
-            nra.setup_next_level();
-
-            AssertThat(nra.has_current_level(), Is().True());
-            AssertThat(nra.current_level(), Is().EqualTo(1u));
-
-            AssertThat(nra.empty_level(), Is().False());
-            AssertThat(nra.current_width(), Is().EqualTo(1u));
-
-            AssertThat(nra.has_next_level(), Is().True());
-            AssertThat(nra.next_level(), Is().EqualTo(2u));
-
-            nra.setup_next_level();
-
-            AssertThat(nra.has_current_level(), Is().True());
-            AssertThat(nra.current_level(), Is().EqualTo(2u));
-
-            AssertThat(nra.empty_level(), Is().False());
-            AssertThat(nra.current_width(), Is().EqualTo(3u));
-
-            AssertThat(nra.has_next_level(), Is().True());
-            AssertThat(nra.next_level(), Is().EqualTo(4u));
-
-            nra.setup_next_level();
-
-            AssertThat(nra.has_current_level(), Is().True());
-            AssertThat(nra.current_level(), Is().EqualTo(4u));
-
-            AssertThat(nra.empty_level(), Is().False());
-            AssertThat(nra.current_width(), Is().EqualTo(2u));
-
-            AssertThat(nra.has_next_level(), Is().False());
-          });
-
-          it("can go to empty level in-between non-empty ones", [&]() {
-            node_random_access nra(nf_B);
-            nra.setup_next_level(3u);
-
-            AssertThat(nra.has_current_level(), Is().True());
-            AssertThat(nra.current_level(), Is().EqualTo(3u));
-
-            AssertThat(nra.empty_level(), Is().True());
-
-            AssertThat(nra.has_next_level(), Is().True());
-            AssertThat(nra.next_level(), Is().EqualTo(4u));
-          });
-
-          it("can go from empty level to the next non-empty one", [&]() {
-            node_random_access nra(nf_B);
-            nra.setup_next_level(3u);
-
-            AssertThat(nra.has_next_level(), Is().True());
-            AssertThat(nra.next_level(), Is().EqualTo(4u));
-
-            nra.setup_next_level();
-
-            AssertThat(nra.has_current_level(), Is().True());
-            AssertThat(nra.current_level(), Is().EqualTo(4u));
-
-            AssertThat(nra.empty_level(), Is().False());
-          });
+          nra.setup_next_level(2u);
+          AssertThat(nra.has_current_level(), Is().True());
+          AssertThat(nra.current_level(), Is().EqualTo(2u));
+          AssertThat(nra.has_next_level(), Is().False());
         });
 
-        describe(".at(...)", [&]() {
-          it("provides random access to root level of 'x1'", [&]() {
-            node_random_access nra(nf_A);
+        it("has no levels for 'T' terminal", []() {
+          levelized_file<node> nf;
+          {
+            node_writer nw(nf);
+            nw << node(true);
+          }
 
-            AssertThat(nra.has_current_level(), Is().False());
+          node_random_access nra(nf);
 
-            AssertThat(nra.has_next_level(), Is().True());
-            AssertThat(nra.next_level(), Is().EqualTo(1u));
+          AssertThat(nra.has_current_level(), Is().False());
+          AssertThat(nra.has_next_level(), Is().False());
 
-            nra.setup_next_level(1u);
-            AssertThat(nra.has_current_level(), Is().True());
-            AssertThat(nra.current_level(), Is().EqualTo(1u));
+          nra.setup_next_level(0u);
+          AssertThat(nra.has_current_level(), Is().True());
+          AssertThat(nra.current_level(), Is().EqualTo(0u));
+          AssertThat(nra.has_next_level(), Is().False());
 
-            AssertThat(nra.empty_level(), Is().False());
-            AssertThat(nra.current_width(), Is().EqualTo(1u));
-
-            AssertThat(nra.at(0u), Is().EqualTo(A_n1));
-            AssertThat(nra.at(A_n1.uid()), Is().EqualTo(A_n1));
-
-            AssertThat(nra.has_next_level(), Is().False());
-          });
-
-          it("provides random access to root [idx]", [&]() {
-            node_random_access nra(nf_B);
-            nra.setup_next_level(0u);
-
-            AssertThat(nra.at(0u), Is().EqualTo(B_n1));
-          });
-
-          it("provides random access to root [uid]", [&]() {
-            node_random_access nra(nf_B);
-            nra.setup_next_level(0u);
-
-            AssertThat(nra.at(B_n1.uid()), Is().EqualTo(B_n1));
-          });
-
-          it("provides random access to non-root single-node level [idx]", [&]() {
-            node_random_access nra(nf_B);
-            nra.setup_next_level(1u);
-
-            AssertThat(nra.at(0u), Is().EqualTo(B_n2));
-          });
-
-          it("provides random access to non-root single-node level [uid]", [&]() {
-            node_random_access nra(nf_B);
-            nra.setup_next_level(1u);
-
-            AssertThat(nra.at(B_n2.uid()), Is().EqualTo(B_n2));
-          });
-
-          it("provides in-order access to multi-node level [idx]", [&]() {
-            node_random_access nra(nf_B);
-            nra.setup_next_level(2u);
-
-            AssertThat(nra.at(0u), Is().EqualTo(B_n3));
-            AssertThat(nra.at(1u), Is().EqualTo(B_n4));
-            AssertThat(nra.at(2u), Is().EqualTo(B_n5));
-          });
-
-          it("provides in-order access to multi-node level [uid]", [&]() {
-            node_random_access nra(nf_B);
-            nra.setup_next_level(2u);
-
-            AssertThat(nra.at(B_n5.uid()), Is().EqualTo(B_n5));
-            AssertThat(nra.at(B_n4.uid()), Is().EqualTo(B_n4));
-            AssertThat(nra.at(B_n3.uid()), Is().EqualTo(B_n3));
-          });
-
-          it("allows skipping over nodes on multi-node level [idx]", [&]() {
-            node_random_access nra(nf_B);
-            nra.setup_next_level(2u);
-
-            AssertThat(nra.at(1u), Is().EqualTo(B_n4));
-          });
-
-          it("provides in-order random access to multi-node level [uid]", [&]() {
-            node_random_access nra(nf_B);
-            nra.setup_next_level(2u);
-
-            AssertThat(nra.at(B_n4.uid()), Is().EqualTo(B_n4));
-          });
-
-          it("provides out-of-order random access to multi-node level [idx]", [&]() {
-            node_random_access nra(nf_B);
-            nra.setup_next_level(2u);
-
-            AssertThat(nra.at(2u), Is().EqualTo(B_n5));
-            AssertThat(nra.at(0u), Is().EqualTo(B_n3));
-            AssertThat(nra.at(1u), Is().EqualTo(B_n4));
-          });
-
-          it("provides out-of-order random access to multi-node level [uid]", [&]() {
-            node_random_access nra(nf_B);
-            nra.setup_next_level(2u);
-
-            AssertThat(nra.at(B_n3.uid()), Is().EqualTo(B_n3));
-            AssertThat(nra.at(B_n5.uid()), Is().EqualTo(B_n5));
-            AssertThat(nra.at(B_n4.uid()), Is().EqualTo(B_n4));
-          });
-
-          it("provides recurring out-of-order random access to multi-node level [idx]", [&]() {
-            node_random_access nra(nf_B);
-            nra.setup_next_level(2u);
-
-            AssertThat(nra.at(0u), Is().EqualTo(B_n3));
-            AssertThat(nra.at(2u), Is().EqualTo(B_n5));
-            AssertThat(nra.at(1u), Is().EqualTo(B_n4));
-            AssertThat(nra.at(0u), Is().EqualTo(B_n3));
-            AssertThat(nra.at(2u), Is().EqualTo(B_n5));
-            AssertThat(nra.at(0u), Is().EqualTo(B_n3));
-            AssertThat(nra.at(1u), Is().EqualTo(B_n4));
-          });
-
-          it("provides recurring out-of-order random access to multi-node level [uid]", [&]() {
-            node_random_access nra(nf_B);
-            nra.setup_next_level(2u);
-
-            AssertThat(nra.at(B_n3.uid()), Is().EqualTo(B_n3));
-            AssertThat(nra.at(B_n5.uid()), Is().EqualTo(B_n5));
-            AssertThat(nra.at(B_n4.uid()), Is().EqualTo(B_n4));
-            AssertThat(nra.at(B_n3.uid()), Is().EqualTo(B_n3));
-            AssertThat(nra.at(B_n5.uid()), Is().EqualTo(B_n5));
-            AssertThat(nra.at(B_n3.uid()), Is().EqualTo(B_n3));
-            AssertThat(nra.at(B_n4.uid()), Is().EqualTo(B_n4));
-          });
-
-          it("provides access after having gone by default from an empty level", [&]() {
-            node_random_access nra(nf_B);
-            nra.setup_next_level(3u);
-
-            AssertThat(nra.has_next_level(), Is().True());
-            AssertThat(nra.next_level(), Is().EqualTo(4u));
-
-            nra.setup_next_level();
-
-            AssertThat(nra.has_current_level(), Is().True());
-            AssertThat(nra.current_level(), Is().EqualTo(4u));
-
-            AssertThat(nra.empty_level(), Is().False());
-
-            AssertThat(nra.at(B_n7.uid()), Is().EqualTo(B_n7));
-            AssertThat(nra.at(B_n6.uid()), Is().EqualTo(B_n6));
-            AssertThat(nra.at(B_n6.uid()), Is().EqualTo(B_n6));
-            AssertThat(nra.at(B_n7.uid()), Is().EqualTo(B_n7));
-          });
+          nra.setup_next_level(1u);
+          AssertThat(nra.has_current_level(), Is().True());
+          AssertThat(nra.current_level(), Is().EqualTo(1u));
+          AssertThat(nra.has_next_level(), Is().False());
         });
 
-        describe(".root()", [&]() {
-          it("provides root for 'F' terminal", []() {
-            levelized_file<node> nf;
-            {
-              node_writer nw(nf);
-              nw << node(false);
-            }
+        it("has empty levels before root of 'x1'", [&]() {
+          node_random_access nra(nf_A);
 
-            node_random_access nra(nf);
+          AssertThat(nra.has_current_level(), Is().False());
 
-            AssertThat(nra.root(), Is().EqualTo(node::pointer_type(false)));
-          });
+          AssertThat(nra.has_next_level(), Is().True());
+          AssertThat(nra.next_level(), Is().EqualTo(1u));
 
-          it("provides root for 'T' terminal", []() {
-            levelized_file<node> nf;
-            {
-              node_writer nw(nf);
-              nw << node(true);
-            }
+          nra.setup_next_level(0u);
 
-            node_random_access nra(nf);
+          AssertThat(nra.has_current_level(), Is().True());
+          AssertThat(nra.current_level(), Is().EqualTo(0u));
 
-            AssertThat(nra.root(), Is().EqualTo(node::pointer_type(true)));
-          });
+          AssertThat(nra.empty_level(), Is().True());
 
-          it("provides root before accessing anything", [&]() {
-            node_random_access nra(nf_B);
-
-            AssertThat(nra.root(), Is().EqualTo(B_n1.uid()));
-          });
-
-          it("provides root after accessing node below it", [&]() {
-            node_random_access nra(nf_B);
-            nra.setup_next_level(2u);
-            AssertThat(nra.at(B_n3.uid()), Is().EqualTo(B_n3));
-
-            AssertThat(nra.root(), Is().EqualTo(B_n1.uid()));
-          });
+          AssertThat(nra.has_next_level(), Is().True());
+          AssertThat(nra.next_level(), Is().EqualTo(1u));
         });
 
-        // TODO: reverse
+        it("has empty levels after having skipped content of 'x1'", [&]() {
+          node_random_access nra(nf_A);
+
+          AssertThat(nra.has_current_level(), Is().False());
+
+          AssertThat(nra.empty_level(), Is().True());
+
+          AssertThat(nra.has_next_level(), Is().True());
+          AssertThat(nra.next_level(), Is().EqualTo(1u));
+
+          nra.setup_next_level(2u);
+
+          AssertThat(nra.has_current_level(), Is().True());
+          AssertThat(nra.current_level(), Is().EqualTo(2u));
+
+          AssertThat(nra.empty_level(), Is().True());
+
+          AssertThat(nra.has_next_level(), Is().False());
+        });
+
+        it("sets up the first default 'next' level to be the root", [&]() {
+          node_random_access nra(nf_B);
+
+          AssertThat(nra.has_current_level(), Is().False());
+
+          AssertThat(nra.has_next_level(), Is().True());
+          AssertThat(nra.next_level(), Is().EqualTo(0u));
+
+          nra.setup_next_level();
+          AssertThat(nra.has_current_level(), Is().True());
+          AssertThat(nra.current_level(), Is().EqualTo(0u));
+
+          AssertThat(nra.empty_level(), Is().False());
+          AssertThat(nra.current_width(), Is().EqualTo(1u));
+        });
+
+        it("sets up consecutive default 'next' level to be the non-empty levels", [&]() {
+          node_random_access nra(nf_B);
+
+          AssertThat(nra.has_current_level(), Is().False());
+
+          AssertThat(nra.has_next_level(), Is().True());
+          AssertThat(nra.next_level(), Is().EqualTo(0u));
+
+          nra.setup_next_level();
+
+          AssertThat(nra.has_current_level(), Is().True());
+          AssertThat(nra.current_level(), Is().EqualTo(0u));
+
+          AssertThat(nra.empty_level(), Is().False());
+          AssertThat(nra.current_width(), Is().EqualTo(1u));
+
+          AssertThat(nra.has_next_level(), Is().True());
+          AssertThat(nra.next_level(), Is().EqualTo(1u));
+
+          nra.setup_next_level();
+
+          AssertThat(nra.has_current_level(), Is().True());
+          AssertThat(nra.current_level(), Is().EqualTo(1u));
+
+          AssertThat(nra.empty_level(), Is().False());
+          AssertThat(nra.current_width(), Is().EqualTo(1u));
+
+          AssertThat(nra.has_next_level(), Is().True());
+          AssertThat(nra.next_level(), Is().EqualTo(2u));
+
+          nra.setup_next_level();
+
+          AssertThat(nra.has_current_level(), Is().True());
+          AssertThat(nra.current_level(), Is().EqualTo(2u));
+
+          AssertThat(nra.empty_level(), Is().False());
+          AssertThat(nra.current_width(), Is().EqualTo(3u));
+
+          AssertThat(nra.has_next_level(), Is().True());
+          AssertThat(nra.next_level(), Is().EqualTo(4u));
+
+          nra.setup_next_level();
+
+          AssertThat(nra.has_current_level(), Is().True());
+          AssertThat(nra.current_level(), Is().EqualTo(4u));
+
+          AssertThat(nra.empty_level(), Is().False());
+          AssertThat(nra.current_width(), Is().EqualTo(2u));
+
+          AssertThat(nra.has_next_level(), Is().False());
+        });
+
+        it("can go to empty level in-between non-empty ones", [&]() {
+          node_random_access nra(nf_B);
+          nra.setup_next_level(3u);
+
+          AssertThat(nra.has_current_level(), Is().True());
+          AssertThat(nra.current_level(), Is().EqualTo(3u));
+
+          AssertThat(nra.empty_level(), Is().True());
+
+          AssertThat(nra.has_next_level(), Is().True());
+          AssertThat(nra.next_level(), Is().EqualTo(4u));
+        });
+
+        it("can go from empty level to the next non-empty one", [&]() {
+          node_random_access nra(nf_B);
+          nra.setup_next_level(3u);
+
+          AssertThat(nra.has_next_level(), Is().True());
+          AssertThat(nra.next_level(), Is().EqualTo(4u));
+
+          nra.setup_next_level();
+
+          AssertThat(nra.has_current_level(), Is().True());
+          AssertThat(nra.current_level(), Is().EqualTo(4u));
+
+          AssertThat(nra.empty_level(), Is().False());
+        });
       });
+
+      describe(".at(...)", [&]() {
+        it("provides random access to root level of 'x1'", [&]() {
+          node_random_access nra(nf_A);
+
+          AssertThat(nra.has_current_level(), Is().False());
+
+          AssertThat(nra.has_next_level(), Is().True());
+          AssertThat(nra.next_level(), Is().EqualTo(1u));
+
+          nra.setup_next_level(1u);
+          AssertThat(nra.has_current_level(), Is().True());
+          AssertThat(nra.current_level(), Is().EqualTo(1u));
+
+          AssertThat(nra.empty_level(), Is().False());
+          AssertThat(nra.current_width(), Is().EqualTo(1u));
+
+          AssertThat(nra.at(0u), Is().EqualTo(A_n1));
+          AssertThat(nra.at(A_n1.uid()), Is().EqualTo(A_n1));
+
+          AssertThat(nra.has_next_level(), Is().False());
+        });
+
+        it("provides random access to root [idx]", [&]() {
+          node_random_access nra(nf_B);
+          nra.setup_next_level(0u);
+
+          AssertThat(nra.at(0u), Is().EqualTo(B_n1));
+        });
+
+        it("provides random access to root [uid]", [&]() {
+          node_random_access nra(nf_B);
+          nra.setup_next_level(0u);
+
+          AssertThat(nra.at(B_n1.uid()), Is().EqualTo(B_n1));
+        });
+
+        it("provides random access to non-root single-node level [idx]", [&]() {
+          node_random_access nra(nf_B);
+          nra.setup_next_level(1u);
+
+          AssertThat(nra.at(0u), Is().EqualTo(B_n2));
+        });
+
+        it("provides random access to non-root single-node level [uid]", [&]() {
+          node_random_access nra(nf_B);
+          nra.setup_next_level(1u);
+
+          AssertThat(nra.at(B_n2.uid()), Is().EqualTo(B_n2));
+        });
+
+        it("provides in-order access to multi-node level [idx]", [&]() {
+          node_random_access nra(nf_B);
+          nra.setup_next_level(2u);
+
+          AssertThat(nra.at(0u), Is().EqualTo(B_n3));
+          AssertThat(nra.at(1u), Is().EqualTo(B_n4));
+          AssertThat(nra.at(2u), Is().EqualTo(B_n5));
+        });
+
+        it("provides in-order access to multi-node level [uid]", [&]() {
+          node_random_access nra(nf_B);
+          nra.setup_next_level(2u);
+
+          AssertThat(nra.at(B_n5.uid()), Is().EqualTo(B_n5));
+          AssertThat(nra.at(B_n4.uid()), Is().EqualTo(B_n4));
+          AssertThat(nra.at(B_n3.uid()), Is().EqualTo(B_n3));
+        });
+
+        it("allows skipping over nodes on multi-node level [idx]", [&]() {
+          node_random_access nra(nf_B);
+          nra.setup_next_level(2u);
+
+          AssertThat(nra.at(1u), Is().EqualTo(B_n4));
+        });
+
+        it("provides in-order random access to multi-node level [uid]", [&]() {
+          node_random_access nra(nf_B);
+          nra.setup_next_level(2u);
+
+          AssertThat(nra.at(B_n4.uid()), Is().EqualTo(B_n4));
+        });
+
+        it("provides out-of-order random access to multi-node level [idx]", [&]() {
+          node_random_access nra(nf_B);
+          nra.setup_next_level(2u);
+
+          AssertThat(nra.at(2u), Is().EqualTo(B_n5));
+          AssertThat(nra.at(0u), Is().EqualTo(B_n3));
+          AssertThat(nra.at(1u), Is().EqualTo(B_n4));
+        });
+
+        it("provides out-of-order random access to multi-node level [uid]", [&]() {
+          node_random_access nra(nf_B);
+          nra.setup_next_level(2u);
+
+          AssertThat(nra.at(B_n3.uid()), Is().EqualTo(B_n3));
+          AssertThat(nra.at(B_n5.uid()), Is().EqualTo(B_n5));
+          AssertThat(nra.at(B_n4.uid()), Is().EqualTo(B_n4));
+        });
+
+        it("provides recurring out-of-order random access to multi-node level [idx]", [&]() {
+          node_random_access nra(nf_B);
+          nra.setup_next_level(2u);
+
+          AssertThat(nra.at(0u), Is().EqualTo(B_n3));
+          AssertThat(nra.at(2u), Is().EqualTo(B_n5));
+          AssertThat(nra.at(1u), Is().EqualTo(B_n4));
+          AssertThat(nra.at(0u), Is().EqualTo(B_n3));
+          AssertThat(nra.at(2u), Is().EqualTo(B_n5));
+          AssertThat(nra.at(0u), Is().EqualTo(B_n3));
+          AssertThat(nra.at(1u), Is().EqualTo(B_n4));
+        });
+
+        it("provides recurring out-of-order random access to multi-node level [uid]", [&]() {
+          node_random_access nra(nf_B);
+          nra.setup_next_level(2u);
+
+          AssertThat(nra.at(B_n3.uid()), Is().EqualTo(B_n3));
+          AssertThat(nra.at(B_n5.uid()), Is().EqualTo(B_n5));
+          AssertThat(nra.at(B_n4.uid()), Is().EqualTo(B_n4));
+          AssertThat(nra.at(B_n3.uid()), Is().EqualTo(B_n3));
+          AssertThat(nra.at(B_n5.uid()), Is().EqualTo(B_n5));
+          AssertThat(nra.at(B_n3.uid()), Is().EqualTo(B_n3));
+          AssertThat(nra.at(B_n4.uid()), Is().EqualTo(B_n4));
+        });
+
+        it("provides access after having gone by default from an empty level", [&]() {
+          node_random_access nra(nf_B);
+          nra.setup_next_level(3u);
+
+          AssertThat(nra.has_next_level(), Is().True());
+          AssertThat(nra.next_level(), Is().EqualTo(4u));
+
+          nra.setup_next_level();
+
+          AssertThat(nra.has_current_level(), Is().True());
+          AssertThat(nra.current_level(), Is().EqualTo(4u));
+
+          AssertThat(nra.empty_level(), Is().False());
+
+          AssertThat(nra.at(B_n7.uid()), Is().EqualTo(B_n7));
+          AssertThat(nra.at(B_n6.uid()), Is().EqualTo(B_n6));
+          AssertThat(nra.at(B_n6.uid()), Is().EqualTo(B_n6));
+          AssertThat(nra.at(B_n7.uid()), Is().EqualTo(B_n7));
+        });
+      });
+
+      describe(".root()", [&]() {
+        it("provides root for 'F' terminal", []() {
+          levelized_file<node> nf;
+          {
+            node_writer nw(nf);
+            nw << node(false);
+          }
+
+          node_random_access nra(nf);
+
+          AssertThat(nra.root(), Is().EqualTo(node::pointer_type(false)));
+        });
+
+        it("provides root for 'T' terminal", []() {
+          levelized_file<node> nf;
+          {
+            node_writer nw(nf);
+            nw << node(true);
+          }
+
+          node_random_access nra(nf);
+
+          AssertThat(nra.root(), Is().EqualTo(node::pointer_type(true)));
+        });
+
+        it("provides root before accessing anything", [&]() {
+          node_random_access nra(nf_B);
+
+          AssertThat(nra.root(), Is().EqualTo(B_n1.uid()));
+        });
+
+        it("provides root after accessing node below it", [&]() {
+          node_random_access nra(nf_B);
+          nra.setup_next_level(2u);
+          AssertThat(nra.at(B_n3.uid()), Is().EqualTo(B_n3));
+
+          AssertThat(nra.root(), Is().EqualTo(B_n1.uid()));
+        });
+      });
+
+      // TODO: reverse
     });
   });
 });
