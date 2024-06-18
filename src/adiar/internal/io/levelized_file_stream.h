@@ -187,6 +187,11 @@ namespace adiar::internal
   {
     using parent_type = file_stream<level_info, !Reverse>;
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Number of levels with which an element ought to be shifted.
+    //
+    // TODO: Specialize `level_info_stream` for node files?
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     level_info::signed_level_type _shift = 0;
 
   public:
