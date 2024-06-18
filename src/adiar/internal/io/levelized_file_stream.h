@@ -282,7 +282,7 @@ namespace adiar::internal
     void
     attach(const dd& diagram)
     {
-      attach<node>(diagram._file);
+      attach<node>(diagram.file_ptr());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////

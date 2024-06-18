@@ -517,13 +517,15 @@ namespace adiar
     // Package" of Karl S. Brace, Richard L. Rudell, and Randal E. Bryant.
 
     // Resolve being given the same underlying file in both cases
-    if (g._file == h._file) { return g._negate == h._negate ? __bdd(g) : bdd_xnor(f, g); }
+    if (g.file_ptr() == h.file_ptr()) {
+      return g.is_negated() == h.is_negated() ? __bdd(g) : bdd_xnor(f, g);
+    }
 
     // Resolve being given the same underlying file for conditional and a case
-    if (f._file == g._file) {
-      return f._negate == g._negate ? bdd_or(f, h) : bdd_and(bdd_not(f), h);
-    } else if (f._file == h._file) {
-      return f._negate == h._negate ? bdd_and(f, g) : bdd_imp(f, g);
+    if (f.file_ptr() == g.file_ptr()) {
+      return f.is_negated() == g.is_negated() ? bdd_or(f, h) : bdd_and(bdd_not(f), h);
+    } else if (f.file_ptr() == h.file_ptr()) {
+      return f.is_negated() == h.is_negated() ? bdd_and(f, g) : bdd_imp(f, g);
     }
 
     // Resolve being given a terminal in one of the cases

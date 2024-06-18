@@ -42,7 +42,7 @@ namespace adiar::internal
   dd_valueof(const DD& dd)
   {
     // TODO: Move into 'dd' class...
-    return dd._negate ^ dd->value();
+    return dd.is_negated() ^ dd->value();
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
