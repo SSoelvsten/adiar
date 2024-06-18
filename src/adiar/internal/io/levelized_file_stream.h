@@ -186,7 +186,7 @@ namespace adiar::internal
   template <bool REVERSE = false>
   class level_info_stream : public file_stream<level_info, !REVERSE>
   {
-    using parent_t = file_stream<level_info, !REVERSE>;
+    using parent_type = file_stream<level_info, !REVERSE>;
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -203,7 +203,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     level_info_stream(const file<level_info>& f)
     {
-      parent_t::attach(f);
+      parent_type::attach(f);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -211,7 +211,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     level_info_stream(const adiar::shared_ptr<file<level_info>>& f)
     {
-      parent_t::attach(f);
+      parent_type::attach(f);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -262,7 +262,7 @@ namespace adiar::internal
     attach(const levelized_file<value_type, false>& lf)
     {
       if (!lf.exists()) lf.__touch();
-      parent_t::attach(lf._level_info_file, nullptr, false);
+      parent_type::attach(lf._level_info_file, nullptr, false);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -273,7 +273,7 @@ namespace adiar::internal
     attach(const adiar::shared_ptr<levelized_file<value_type, false>>& lf)
     {
       if (!lf->exists()) lf->touch();
-      parent_t::attach(lf->_level_info_file, lf, false);
+      parent_type::attach(lf->_level_info_file, lf, false);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
