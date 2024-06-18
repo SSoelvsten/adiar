@@ -34,14 +34,14 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a node file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_stream(const levelized_file<node>& file, const bool negate = false)
+    node_stream(const levelized_file<node>& file, bool negate = false)
       : parent_type(file, negate)
     {}
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a shared node file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_stream(const shared_ptr<levelized_file<node>>& file, const bool negate = false)
+    node_stream(const shared_ptr<levelized_file<node>>& file, bool negate = false)
       : parent_type(file, negate)
     {}
 
