@@ -183,10 +183,10 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Stream to access per-level meta information.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <bool REVERSE = false>
-  class level_info_stream : public file_stream<level_info, !REVERSE>
+  template <bool Reverse = false>
+  class level_info_stream : public file_stream<level_info, !Reverse>
   {
-    using parent_type = file_stream<level_info, !REVERSE>;
+    using parent_type = file_stream<level_info, !Reverse>;
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -195,8 +195,8 @@ namespace adiar::internal
     level_info_stream() = default;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    level_info_stream(const level_info_stream<REVERSE>&) = delete;
-    level_info_stream(level_info_stream<REVERSE>&&)      = delete;
+    level_info_stream(const level_info_stream<Reverse>&) = delete;
+    level_info_stream(level_info_stream<Reverse>&&)      = delete;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a file<level_info>.
