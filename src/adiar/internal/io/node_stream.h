@@ -15,6 +15,8 @@ namespace adiar::internal
   ///                nodes within the file).
   ///
   /// \see shared_levelized_file<node>
+  //
+  // TODO: Move '!' negation out of 'file_stream', 'levelized_file_stream', and instead in here!
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <bool Reverse = false>
   class node_stream : public levelized_file_stream<node, !Reverse>
