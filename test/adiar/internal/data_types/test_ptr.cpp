@@ -859,6 +859,92 @@ go_bandit([]() {
             AssertThat(out, Is().EqualTo(ptr_uint64(42, 8)));
           });
         });
+
+        describe("shift_replace(...)", [&]() {
+          it("leaves pointer as-is [x0 + 0]", [&]() {
+            const ptr_uint64 in(0, 0);
+            const ptr_uint64 out = shift_replace(in, +0);
+            AssertThat(out, Is().EqualTo(ptr_uint64(0, 0)));
+          });
+
+          it("leaves pointer as-is [x42 + 0]", [&]() {
+            const ptr_uint64 in(42, 0);
+            const ptr_uint64 out = shift_replace(in, +0);
+            AssertThat(out, Is().EqualTo(ptr_uint64(42, 0)));
+          });
+
+          it("leaves pointer as-is [false + 42]", [&]() {
+            const ptr_uint64 in(false);
+            const ptr_uint64 out = shift_replace(in, +42);
+            AssertThat(out, Is().EqualTo(ptr_uint64(false)));
+          });
+
+          it("leaves pointer as-is [true - 42]", [&]() {
+            const ptr_uint64 in(true);
+            const ptr_uint64 out = shift_replace(in, -42);
+            AssertThat(out, Is().EqualTo(ptr_uint64(true)));
+          });
+
+          it("leaves pointer as-is [nil - 3]", [&]() {
+            const ptr_uint64 in  = ptr_uint64::nil();
+            const ptr_uint64 out = shift_replace(in, -3);
+            AssertThat(out, Is().EqualTo(ptr_uint64::nil()));
+          });
+
+          it("shifts [x0 + 1]", [&]() {
+            const ptr_uint64 in(0, 0);
+            const ptr_uint64 out = shift_replace(in, +1);
+            AssertThat(out, Is().EqualTo(ptr_uint64(1, 0)));
+          });
+
+          it("shifts [x1 - 1]", [&]() {
+            const ptr_uint64 in(1, 0);
+            const ptr_uint64 out = shift_replace(in, -1);
+            AssertThat(out, Is().EqualTo(ptr_uint64(0, 0)));
+          });
+
+          it("shifts [x2 + 2]", [&]() {
+            const ptr_uint64 in(2, 0);
+            const ptr_uint64 out = shift_replace(in, 4);
+            AssertThat(out, Is().EqualTo(ptr_uint64(6, 0)));
+          });
+
+          it("shifts [x0 + max]", [&]() {
+            const ptr_uint64 in(0, 0);
+            const ptr_uint64 out = shift_replace(in, ptr_uint64::max_label);
+            AssertThat(out, Is().EqualTo(ptr_uint64(ptr_uint64::max_label, 0)));
+          });
+
+          it("shifts [xmax - max]", [&]() {
+            const ptr_uint64 in(ptr_uint64::max_label, 0);
+            const ptr_uint64 out = shift_replace(in, -static_cast<int>(ptr_uint64::max_label));
+            AssertThat(out, Is().EqualTo(ptr_uint64(0, 0)));
+          });
+
+          it("preserves 'id' when replacing variable [x2 + 2]", [&]() {
+            const ptr_uint64 in(2, 21);
+            const ptr_uint64 out = shift_replace(in, 2);
+            AssertThat(out, Is().EqualTo(ptr_uint64(4, 21)));
+          });
+
+          it("preserves 'id' when replacing variable [xmax - max]", [&]() {
+            const ptr_uint64 in(ptr_uint64::max_label, ptr_uint64::max_id);
+            const ptr_uint64 out = shift_replace(in, -static_cast<int>(ptr_uint64::max_label));
+            AssertThat(out, Is().EqualTo(ptr_uint64(0, ptr_uint64::max_id)));
+          });
+
+          it("preserves 'out_idx' when replacing variable", [&]() {
+            const ptr_uint64 in(42, 0, true);
+            const ptr_uint64 out = shift_replace(in, -21);
+            AssertThat(out, Is().EqualTo(ptr_uint64(21, 0, true)));
+          });
+
+          it("preserves 'flag' when replacing variable", [&]() {
+            const ptr_uint64 in  = flag(ptr_uint64(21, 0));
+            const ptr_uint64 out = shift_replace(in, +21);
+            AssertThat(out, Is().EqualTo(flag(ptr_uint64(42, 0))));
+          });
+        });
       });
 
       describe("ordering ( < )", [&]() {
