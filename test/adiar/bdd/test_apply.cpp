@@ -342,7 +342,7 @@ go_bandit([]() {
       // complicated algorithm
 
       describe("bdd_and(f,g)", [&]() {
-        it("should resolve F /\\ T terminal-only BDDs", [&]() {
+        it("resolves F /\\ T terminal-only BDDs", [&]() {
           __bdd out = bdd_and(bdd_F, bdd_T);
           node_test_stream out_nodes(out);
 
@@ -368,7 +368,7 @@ go_bandit([]() {
                      Is().EqualTo(0u));
         });
 
-        it("should resolve T /\\ T terminal-only BDDs", [&]() {
+        it("resolves T /\\ T terminal-only BDDs", [&]() {
           shared_levelized_file<bdd::node_type> bdd_T2;
           {
             node_writer w(bdd_T2);
@@ -400,14 +400,14 @@ go_bandit([]() {
                      Is().EqualTo(1u));
         });
 
-        it("should shortcut on irrelevance on x0 /\\ T", [&]() {
+        it("shortcuts on irrelevance on x0 /\\ T", [&]() {
           __bdd out = bdd_and(bdd_x0, bdd_T);
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
           AssertThat(out._negate, Is().False());
         });
 
-        it("should shortcut F /\\ x0", [&]() {
+        it("shortcuts F /\\ x0", [&]() {
           __bdd out = bdd_and(bdd_F, bdd_x0);
 
           node_test_stream out_nodes(out);
@@ -434,7 +434,7 @@ go_bandit([]() {
                      Is().EqualTo(0u));
         });
 
-        it("should shortcut F /\\ [2]", [&]() {
+        it("shortcuts F /\\ [2]", [&]() {
           __bdd out = bdd_and(bdd_F, bdd_2);
 
           node_test_stream out_nodes(out);
@@ -461,30 +461,118 @@ go_bandit([]() {
                      Is().EqualTo(0u));
         });
 
-        it("should return input on being given the same BDD twice", [&]() {
+        it("returns input on being given the same BDD twice", [&]() {
           __bdd out = bdd_and(bdd_1, bdd_1);
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
           AssertThat(out._negate, Is().False());
         });
+
+        it("collapses on the same BDD twice, where one is negated [left]", [&]() {
+          __bdd out = bdd_and(bdd_not(bdd_1), bdd_1);
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
+                     Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
+                     Is().EqualTo(1u));
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(0u));
+        });
+
+        it("collapses on the same BDD twice, where one is negated [right]", [&]() {
+          __bdd out = bdd_and(bdd_1, bdd_not(bdd_1));
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
+                     Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
+                     Is().EqualTo(1u));
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(0u));
+        });
       });
 
       describe("bdd_nand(f,g)", [&]() {
-        it("should shortcut on negating on T and x0", [&]() {
+        it("shortcuts on negating on T and x0", [&]() {
           __bdd out = bdd_nand(bdd_x0, bdd_T);
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
           AssertThat(out._negate, Is().True());
         });
 
-        it("should shortcut on negating on x0 and T", [&]() {
+        it("shortcuts on negating on x0 and T", [&]() {
           __bdd out = bdd_nand(bdd_T, bdd_x0);
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
           AssertThat(out._negate, Is().True());
         });
 
-        it("should collapse on the same BDD twice, where one is negated", [&]() {
+        it("returns input on being given the same BDD twice", [&]() {
+          __bdd out = bdd_nand(bdd_1, bdd_1);
+
+          AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
+          AssertThat(out._negate, Is().True());
+        });
+
+        it("collapses on the same BDD twice, where one is negated [left]", [&]() {
+          __bdd out = bdd_nand(bdd_not(bdd_2), bdd_2);
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
+                     Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
+                     Is().EqualTo(1u));
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(1u));
+        });
+
+        it("collapses on the same BDD twice, where one is negated [right]", [&]() {
           __bdd out = bdd_nand(bdd_2, bdd_not(bdd_2));
 
           node_test_stream out_nodes(out);
@@ -513,7 +601,7 @@ go_bandit([]() {
       });
 
       describe("bdd_or(f,g)", [&]() {
-        it("should resolve T \\/ F terminal-only BDDs", [&]() {
+        it("resolves T \\/ F terminal-only BDDs", [&]() {
           __bdd out = bdd_or(bdd_T, bdd_F);
           node_test_stream out_nodes(out);
 
@@ -539,7 +627,7 @@ go_bandit([]() {
                      Is().EqualTo(1u));
         });
 
-        it("should resolve F \\/ F terminal-only BDDs", [&]() {
+        it("resolves F \\/ F terminal-only BDDs", [&]() {
           shared_levelized_file<bdd::node_type> bdd_F2;
 
           {
@@ -572,21 +660,21 @@ go_bandit([]() {
                      Is().EqualTo(0u));
         });
 
-        it("should shortcut on irrelevance on x0 \\/ F", [&]() {
+        it("shortcuts on irrelevance on x0 \\/ F", [&]() {
           __bdd out = bdd_or(bdd_x0, bdd_F);
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
           AssertThat(out._negate, Is().False());
         });
 
-        it("should OR shortcut on irrelevance F \\/ x0", [&]() {
+        it("shortcuts on irrelevance F \\/ x0", [&]() {
           __bdd out = bdd_or(bdd_F, bdd_x0);
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
           AssertThat(out._negate, Is().False());
         });
 
-        it("should shortcut [1] \\/ T", [&]() {
+        it("shortcuts [1] \\/ T", [&]() {
           __bdd out = bdd_or(bdd_1, bdd_T);
 
           node_test_stream out_nodes(out);
@@ -613,7 +701,7 @@ go_bandit([]() {
                      Is().EqualTo(1u));
         });
 
-        it("should compute (and shortcut) [2] \\/ T", [&]() {
+        it("shortcuts [2] \\/ T", [&]() {
           __bdd out = bdd_or(bdd_2, bdd_T);
 
           node_test_stream out_nodes(out);
@@ -639,11 +727,113 @@ go_bandit([]() {
           AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
                      Is().EqualTo(1u));
         });
+
+        it("returns input on being given the same BDD twice", [&]() {
+          __bdd out = bdd_or(bdd_1, bdd_1);
+
+          AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
+          AssertThat(out._negate, Is().False());
+        });
+
+        it("collapses on the same BDD twice, where one is negated [left]", [&]() {
+          __bdd out = bdd_or(bdd_not(bdd_1), bdd_1);
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
+                     Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
+                     Is().EqualTo(1u));
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(1u));
+        });
+
+        it("collapses on the same BDD twice, where one is negated [right]", [&]() {
+          __bdd out = bdd_or(bdd_1, bdd_not(bdd_1));
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
+                     Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
+                     Is().EqualTo(1u));
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(1u));
+        });
+
+        it("returns input on being given the same BDD twice, when both are negated", [&]() {
+          __bdd out = bdd_or(bdd_not(bdd_1), bdd_not(bdd_1));
+
+          AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
+          AssertThat(out._negate, Is().True());
+        });
       });
 
       describe("bdd_nor(f,g)", [&]() {
-        it("should collapse on the same BDD twice to a terminal, where one is negated [2]", [&]() {
+        it("returns input on being given the same BDD twice", [&]() {
+          __bdd out = bdd_nor(bdd_1, bdd_1);
+
+          AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_1));
+          AssertThat(out._negate, Is().True());
+        });
+
+        it("collapses on the same BDD twice, where one is negated [left]", [&]() {
           __bdd out = bdd_nor(bdd_not(bdd_3), bdd_3);
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
+                     Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
+                     Is().EqualTo(1u));
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(0u));
+        });
+
+        it("collapses on the same BDD twice, where one is negated [right]", [&]() {
+          __bdd out = bdd_nor(bdd_3, bdd_not(bdd_3));
 
           node_test_stream out_nodes(out);
 
@@ -671,7 +861,7 @@ go_bandit([]() {
       });
 
       describe("bdd_xor(f,g)", [&]() {
-        it("should resolve F ^ T terminal-only BDDs", [&]() {
+        it("resolves F ^ T terminal-only BDDs", [&]() {
           __bdd out = bdd_xor(bdd_F, bdd_T);
           node_test_stream out_nodes(out);
 
@@ -697,7 +887,7 @@ go_bandit([]() {
                      Is().EqualTo(1u));
         });
 
-        it("should resolve T ^ T terminal-only BDDs", [&]() {
+        it("resolves T ^ T terminal-only BDDs", [&]() {
           __bdd out = bdd_xor(bdd_T, bdd_T);
           node_test_stream out_nodes(out);
 
@@ -723,21 +913,21 @@ go_bandit([]() {
                      Is().EqualTo(0u));
         });
 
-        it("should shortcut on negating on x0 ^ T", [&]() {
+        it("shortcuts on negating on x0 ^ T", [&]() {
           __bdd out = bdd_xor(bdd_x0, bdd_T);
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
           AssertThat(out._negate, Is().True());
         });
 
-        it("should shortcut on negating on T ^ x0", [&]() {
+        it("shortcuts on negating on T ^ x0", [&]() {
           __bdd out = bdd_xor(bdd_x0, bdd_T);
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
           AssertThat(out._negate, Is().True());
         });
 
-        it("should collapse on the same BDD twice", [&]() {
+        it("collapses on the same BDD twice", [&]() {
           __bdd out = bdd_xor(bdd_1, bdd_1);
 
           node_test_stream out_nodes(out);
@@ -764,7 +954,61 @@ go_bandit([]() {
                      Is().EqualTo(0u));
         });
 
-        it("should collapse on the same BDD twice to a terminal, when both are negated", [&]() {
+        it("collapses on the same BDD twice, where one is negated [left]", [&]() {
+          __bdd out = bdd_xor(bdd_not(bdd_1), bdd_1);
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
+                     Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
+                     Is().EqualTo(1u));
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(1u));
+        });
+
+        it("collapses on the same BDD twice, where one is negated [right]", [&]() {
+          __bdd out = bdd_xor(bdd_2, bdd_not(bdd_2));
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
+                     Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
+                     Is().EqualTo(1u));
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(1u));
+        });
+
+        it("collapses on the same BDD twice, when both are negated", [&]() {
           __bdd out = bdd_xor(bdd_not(bdd_1), bdd_not(bdd_1));
 
           node_test_stream out_nodes(out);
@@ -793,7 +1037,7 @@ go_bandit([]() {
       });
 
       describe("bdd_imp(f,g)", [&]() {
-        it("should resolve F -> T terminal-only BDDs", [&]() {
+        it("resolves F -> T terminal-only BDDs", [&]() {
           __bdd out = bdd_imp(bdd_F, bdd_T);
           node_test_stream out_nodes(out);
 
@@ -819,7 +1063,7 @@ go_bandit([]() {
                      Is().EqualTo(1u));
         });
 
-        it("should resolve T -> F terminal-only BDDs", [&]() {
+        it("resolves T -> F terminal-only BDDs", [&]() {
           __bdd out = bdd_imp(bdd_T, bdd_F);
           node_test_stream out_nodes(out);
 
@@ -845,7 +1089,7 @@ go_bandit([]() {
                      Is().EqualTo(0u));
         });
 
-        it("should resolve T -> T terminal-only BDDs", [&]() {
+        it("resolves T -> T terminal-only BDDs", [&]() {
           __bdd out = bdd_imp(bdd_T, bdd_T);
           node_test_stream out_nodes(out);
 
@@ -871,14 +1115,14 @@ go_bandit([]() {
                      Is().EqualTo(1u));
         });
 
-        it("should shortcut on irrelevance on T -> x0", [&]() {
+        it("shortcuts on irrelevance on T -> x0", [&]() {
           __bdd out = bdd_imp(bdd_T, bdd_x0);
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
           AssertThat(out._negate, Is().False());
         });
 
-        it("should shortcut F -> [1]", [&]() {
+        it("shortcuts F -> [1]", [&]() {
           __bdd out = bdd_imp(bdd_F, bdd_1);
 
           node_test_stream out_nodes(out);
@@ -905,20 +1149,73 @@ go_bandit([]() {
                      Is().EqualTo(1u));
         });
 
-        it("should return the input when given the same BDD twice, where one is negated [1]",
-           [&]() {
-             __bdd out = bdd_imp(bdd_not(bdd_2), bdd_2);
+        it("collapses when given the same BDD twice", [&]() {
+          __bdd out = bdd_imp(bdd_1, bdd_1);
 
-             AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_2));
-             AssertThat(out._negate,
-                        Is().False()); // negated the already negated input doubly-negating
-           });
+          node_test_stream out_nodes(out);
 
-        it("should return input when given the same BDD twice, where one is negated [2]", [&]() {
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
+                     Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
+                     Is().EqualTo(1u));
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(1u));
+        });
+
+        it("returns input when given the same BDD twice, where one is negated [left]", [&]() {
+          __bdd out = bdd_imp(bdd_not(bdd_2), bdd_2);
+
+          AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_2));
+          AssertThat(out._negate,
+                     Is().False()); // negated the already negated input doubly-negating
+        });
+
+        it("returns input when given the same BDD twice, where one is negated [right]", [&]() {
           __bdd out = bdd_imp(bdd_2, bdd_not(bdd_2));
 
           AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_2));
           AssertThat(out._negate, Is().True()); // negated the first of the two
+        });
+
+        it("collapses when given the same BDD twice, when both are negated", [&]() {
+          __bdd out = bdd_imp(bdd_not(bdd_1), bdd_not(bdd_1));
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->levels(), Is().EqualTo(0u));
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_False],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal_True],
+                     Is().EqualTo(1u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::All],
+                     Is().EqualTo(1u));
+
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[false],
+                     Is().EqualTo(0u));
+          AssertThat(out.get<__bdd::shared_node_file_type>()->number_of_terminals[true],
+                     Is().EqualTo(1u));
         });
       });
     });
@@ -953,7 +1250,7 @@ go_bandit([]() {
       */
 
       describe("bdd_and(f,g)", [&]() {
-        it("should x0 and !x0", [&]() {
+        it("computes x0 and !x0", [&]() {
           /*
           //           1     ---- x0
           //          / \
@@ -992,7 +1289,7 @@ go_bandit([]() {
                      Is().EqualTo(0u));
         });
 
-        it("should compute (and shortcut) BBD 1 /\\ [2]", [&]() {
+        it("computes (and shortcut) BBD 1 /\\ [2]", [&]() {
           /*
           //                    1                        ---- x0
           //                    X
@@ -1097,7 +1394,7 @@ go_bandit([]() {
                      Is().EqualTo(4u));
         });
 
-        it("should group all recursion requests together", [&]() {
+        it("groups all recursion requests together", [&]() {
           // This is a counter-example to the prior "break ties on first() with
           // second()" approach. Here we will have three requests to the level of
           // x2, but in the following order:
@@ -1215,7 +1512,7 @@ go_bandit([]() {
 
       describe("bdd_or(f,g)", [&]() {
         // TODO: this one too?
-        it("should shortcut on x0 \\/ x2", [&]() {
+        it("shortcuts on x0 \\/ x2", [&]() {
           /*
           //           1     ---- x0
           //          / \
@@ -1268,7 +1565,7 @@ go_bandit([]() {
                      Is().EqualTo(2u));
         });
 
-        it("should compute (and shortcut) [1] \\/ [2]", [&]() {
+        it("computes (and shortcut) [1] \\/ [2]", [&]() {
           /*
           //                   1       ---- x0
           //                  / \
@@ -1359,7 +1656,7 @@ go_bandit([]() {
       });
 
       describe("bdd_xor(f,g)", [&]() {
-        it("should compute x0 ^ x1", [&]() {
+        it("computes x0 ^ x1", [&]() {
           /* The order on the leaves are due to the sorting of terminal requests
           //   after evaluating x0
           //
@@ -1420,7 +1717,7 @@ go_bandit([]() {
                      Is().EqualTo(2u));
         });
 
-        it("should compute [2] ^ x2", [&]() {
+        it("computes [2] ^ x2", [&]() {
           /*
           //                                 ---- x0
           //
@@ -1501,7 +1798,7 @@ go_bandit([]() {
                      Is().EqualTo(3u));
         });
 
-        it("should compute [1] ^ [2]", [&]() {
+        it("computes [1] ^ [2]", [&]() {
           /* There is no shortcutting possible on an XOR, so see the product
              construction above. */
 
@@ -1607,7 +1904,7 @@ go_bandit([]() {
                      Is().EqualTo(4u));
         });
 
-        it("should compute [3] ^ [1]", [&]() {
+        it("computes [3] ^ [1]", [&]() {
           /* The queue pq_2 is used to forward data across the level. When
           // [1] and 3 are combined, this is needed
           //
@@ -1736,7 +2033,7 @@ go_bandit([]() {
                      Is().EqualTo(5u));
         });
 
-        it("should compute in different order than random access", [&]() {
+        it("computes in different order than random access", [&]() {
           /*
           // Result of [canon] ^ [indexable]
           //
@@ -1872,7 +2169,7 @@ go_bandit([]() {
       });
 
       describe("bdd_imp(f,g)", [&]() {
-        it("should shortcut on x0 -> x1", [&]() {
+        it("shortcuts on x0 -> x1", [&]() {
           /* The order on the leaves are due to the sorting of terminal requests
           // after evaluating x0
           //
@@ -1953,7 +2250,7 @@ go_bandit([]() {
       // Non-Canonical: bdd_1, bdd_3
 
       describe("bdd_and(f,g)", [&]() {
-        it("should compute (and shortcut) [1] /\\ [2]", [&]() {
+        it("computes (and shortcut) [1] /\\ [2]", [&]() {
           /*
           //                    1                        ---- x0
           //                    X
@@ -2060,7 +2357,7 @@ go_bandit([]() {
       });
 
       describe("bdd_xor(f,g)", [&]() {
-        it("should compute x0 ^ !x0 (same level)", [&]() {
+        it("computes x0 ^ !x0 (same level)", [&]() {
           /*
           //           1     ---- x0
           //          / \
@@ -2097,7 +2394,7 @@ go_bandit([]() {
                      Is().EqualTo(2u));
         });
 
-        it("should compute x0 ^ x1 (different levels, random access for first level)", [&]() {
+        it("computes x0 ^ x1 (different levels, random access for first level)", [&]() {
           /* The order on the leaves are due to the sorting of terminal requests
           //   after evaluating x0
           //
@@ -2158,7 +2455,7 @@ go_bandit([]() {
                      Is().EqualTo(2u));
         });
 
-        it("should compute x1 ^ x0 (different levels, random access for second level)", [&]() {
+        it("computes x1 ^ x0 (different levels, random access for second level)", [&]() {
           /* The order on the leaves are due to the sorting of terminal requests
           //   after evaluating x0
           //
@@ -2327,7 +2624,7 @@ go_bandit([]() {
                      Is().EqualTo(2u));
         });
 
-        it("should sort requests first by scanning index then by random acces index", [&]() {
+        it("sorts requests first by scanning index then by random acces index", [&]() {
           shared_levelized_file<bdd::node_type> bdd_wide2;
           /*
           //           1          ---- x0
@@ -2479,7 +2776,7 @@ go_bandit([]() {
                      Is().EqualTo(3u));
         });
 
-        it("should random access on the thinnest ([thin] ^ [wide])", [&]() {
+        it("uses random access on the thinnest ([thin] ^ [wide])", [&]() {
           /* Result of [thin] ^ [wide]
           //
           //                      (1,1)                   ---- x0
@@ -2581,7 +2878,7 @@ go_bandit([]() {
                      Is().EqualTo(6u));
         });
 
-        it("should random access on the thinnest ([wide] ^ [thin])", [&]() {
+        it("uses random access on the thinnest ([wide] ^ [thin])", [&]() {
           /* Result of [wide] ^ [thin]
           //
           //                      (1,1)                   ---- x0
@@ -2681,7 +2978,7 @@ go_bandit([]() {
                      Is().EqualTo(6u));
         });
 
-        it("should random access on non-canonical but indexable ([canonical] ^ [indexable])",
+        it("uses random access on non-canonical but indexable ([canonical] ^ [indexable])",
            [&]() {
              __bdd out = bdd_xor(ep, bdd_canon, bdd_indexable);
 
@@ -2797,7 +3094,7 @@ go_bandit([]() {
                         Is().EqualTo(6u));
            });
 
-        it("should random access non-canonical but indexable ([indexable] ^ [canonical])", [&]() {
+        it("uses random access non-canonical but indexable ([indexable] ^ [canonical])", [&]() {
           __bdd out = bdd_xor(ep, bdd_indexable, bdd_canon);
 
           arc_test_stream arcs(out);
@@ -2907,7 +3204,7 @@ go_bandit([]() {
                      Is().EqualTo(6u));
         });
 
-        it("should random access on indexable ([canonical] ^ [non-indexable])", [&]() {
+        it("uses random access on indexable ([canonical] ^ [non-indexable])", [&]() {
           __bdd out = bdd_xor(ep, bdd_canon, bdd_unindexable);
 
           arc_test_stream arcs(out);
@@ -3017,7 +3314,7 @@ go_bandit([]() {
                      Is().EqualTo(6u));
         });
 
-        it("should random access on indexable ([non-indexable] ^ [canonical])", [&]() {
+        it("uses random access on indexable ([non-indexable] ^ [canonical])", [&]() {
           __bdd out = bdd_xor(ep, bdd_unindexable, bdd_canon);
 
           arc_test_stream arcs(out);
