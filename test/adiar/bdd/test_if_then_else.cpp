@@ -247,16 +247,16 @@ go_bandit([]() {
         ;
     }
 
-    describe("Trivial evaluations", [&]() {
+    describe("O(1) cases", [&]() {
       // Trivial evaluations by given a terminal
-      it("should give back first file on if-true (true ? x0 : x1)", [&]() {
+      it("returns first file on if-true (true ? x0 : x1)", [&]() {
         __bdd out = bdd_ite(bdd_T, bdd_x0, bdd_x1);
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x0));
         AssertThat(out._negate, Is().False());
       });
 
-      it("should give back first file with negation flag on if-true (true ? ~x0 : (~x0))", [&]() {
+      it("returns first file with negation flag on if-true (true ? ~x0 : (~x0))", [&]() {
         // Notice, they are equivalent then-and-else cases, but in two
         // different files.
         __bdd out = bdd_ite(bdd_T, bdd_not(bdd_x0), bdd_not_x0);
@@ -265,14 +265,14 @@ go_bandit([]() {
         AssertThat(out._negate, Is().True());
       });
 
-      it("should give back second file on if-false (false ? x0 : x1)", [&]() {
+      it("returns second file on if-false (false ? x0 : x1)", [&]() {
         __bdd out = bdd_ite(bdd_F, bdd_x0, bdd_x1);
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x1));
         AssertThat(out._negate, Is().False());
       });
 
-      it("should give back second file on if-false (false ? (~x1) : ~x1)", [&]() {
+      it("returns second file on if-false (false ? (~x1) : ~x1)", [&]() {
         // Notice, they are equivalent then-and-else cases, but in two
         // different files.
         __bdd out = bdd_ite(bdd_F, bdd_not_x1, bdd_not(bdd_x1));
@@ -282,14 +282,14 @@ go_bandit([]() {
       });
 
       // Trivial inputs with duplicate file inputs
-      it("should return 'then' file if 'else' file is the same [1]", [&]() {
+      it("returns 'then' file if 'else' file is the same [1]", [&]() {
         __bdd out = bdd_ite(bdd_x0, bdd_x1, bdd_x1);
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x1));
         AssertThat(out._negate, Is().False());
       });
 
-      it("should return 'then' file if 'else' file is the same [2]", [&]() {
+      it("returns 'then' file if 'else' file is the same [2]", [&]() {
         __bdd out = bdd_ite(bdd_x0, bdd_not(bdd_x1), bdd_not(bdd_x1));
 
         AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(bdd_x1));
@@ -297,8 +297,8 @@ go_bandit([]() {
       });
     });
 
-    describe("Inputs boiling down to an apply", [&]() {
-      it("should create XNOR of x0 and x1 (x0 ? x1 : ~x1) due to same file", [&]() {
+    describe("'bdd_apply(...)' cases", [&]() {
+      it("creates XNOR of x0 and x1 (x0 ? x1 : ~x1) due to same file", [&]() {
         __bdd out = bdd_ite(bdd_x0, bdd_x1, bdd_not(bdd_x1));
 
         arc_test_stream arcs(out);
@@ -347,7 +347,7 @@ go_bandit([]() {
                    Is().EqualTo(2u));
       });
 
-      it("should create XNOR of x0 and ~x1 (x0 ? ~x1 : x1) due to same file", [&]() {
+      it("creates XNOR of x0 and ~x1 (x0 ? ~x1 : x1) due to same file", [&]() {
         __bdd out = bdd_ite(bdd_x0, bdd_not(bdd_x1), bdd_x1);
 
         arc_test_stream arcs(out);
@@ -396,7 +396,7 @@ go_bandit([]() {
                    Is().EqualTo(2u));
       });
 
-      it("should create OR of x0 and x1 (x0 ? x0 : x1) due to same file", [&]() {
+      it("creates OR of x0 and x1 (x0 ? x0 : x1) due to same file", [&]() {
         __bdd out = bdd_ite(bdd_x0, bdd_x0, bdd_x1);
 
         arc_test_stream arcs(out);
@@ -438,7 +438,7 @@ go_bandit([]() {
                    Is().EqualTo(2u));
       });
 
-      it("should create AND of x0 (negated) and x1 (x0 ? ~x0 : x1) due to same file", [&]() {
+      it("creates LESS of x0 (negated) and x1 (x0 ? ~x0 : x1) due to same file", [&]() {
         __bdd out = bdd_ite(bdd_x0, bdd_not(bdd_x0), bdd_x1);
 
         arc_test_stream arcs(out);
@@ -480,7 +480,7 @@ go_bandit([]() {
                    Is().EqualTo(1u));
       });
 
-      it("should create AND of x0 and x1 (x0 ? x1 : x0) due to same file", [&]() {
+      it("creates AND of x0 and x1 (x0 ? x1 : x0) due to same file", [&]() {
         __bdd out = bdd_ite(bdd_x0, bdd_x1, bdd_x0);
 
         arc_test_stream arcs(out);
@@ -522,7 +522,7 @@ go_bandit([]() {
                    Is().EqualTo(1u));
       });
 
-      it("should create IMPLIES of x0 and x1 (x0 ? x1 : ~x0) due to same file", [&]() {
+      it("creates IMPLIES of x0 and x1 (x0 ? x1 : ~x0) due to same file", [&]() {
         __bdd out = bdd_ite(bdd_x0, bdd_x1, bdd_not(bdd_x0));
 
         arc_test_stream arcs(out);
@@ -564,7 +564,7 @@ go_bandit([]() {
                    Is().EqualTo(2u));
       });
 
-      it("should create OR of x0 and x1 (x0 ? T : x1)", [&]() {
+      it("creates OR of x0 and x1 (x0 ? T : x1)", [&]() {
         __bdd out = bdd_ite(bdd_x0, bdd_T, bdd_x1);
 
         arc_test_stream arcs(out);
@@ -606,7 +606,7 @@ go_bandit([]() {
                    Is().EqualTo(2u));
       });
 
-      it("should create AND of x0 (negated) and x1 (x0 ? F : x1)", [&]() {
+      it("creates AND of x0 (negated) and x1 (x0 ? F : x1)", [&]() {
         __bdd out = bdd_ite(bdd_x0, bdd_F, bdd_x1);
 
         arc_test_stream arcs(out);
@@ -648,7 +648,7 @@ go_bandit([]() {
                    Is().EqualTo(1u));
       });
 
-      it("should create IMPLIES of x0 and x1 (x0 ? x1 : T)", [&]() {
+      it("creates IMPLIES of x0 and x1 (x0 ? x1 : T)", [&]() {
         __bdd out = bdd_ite(bdd_x0, bdd_x1, bdd_T);
 
         arc_test_stream arcs(out);
@@ -688,7 +688,7 @@ go_bandit([]() {
                    Is().EqualTo(2u));
       });
 
-      it("should create AND of x0 and x1 (x0 ? x1 : F)", [&]() {
+      it("creates AND of x0 and x1 (x0 ? x1 : F)", [&]() {
         __bdd out = bdd_ite(bdd_x0, bdd_x1, bdd_F);
 
         arc_test_stream arcs(out);
@@ -731,8 +731,8 @@ go_bandit([]() {
       });
     });
 
-    describe("Inputs that require the cross-product of all three BDDs", [&]() {
-      it("should compute x0 ? ~x1 : x1", [&]() {
+    describe("'prod3(...)' cases", [&]() {
+      it("computes x0 ? ~x1 : x1", [&]() {
         /*
         //               (x0, ~x1, x1)             ---- x0
         //                /         \
@@ -791,7 +791,7 @@ go_bandit([]() {
                    Is().EqualTo(2u));
       });
 
-      it("should compute x1 ? ~x0 : x0", [&]() {
+      it("computes x1 ? ~x0 : x0", [&]() {
         /*
         //              (x1, ~x0, x0)          ---- x0
         //               /         \
@@ -849,7 +849,7 @@ go_bandit([]() {
                    Is().EqualTo(2u));
       });
 
-      it("should compute x1 ? x0 : ~x0", [&]() {
+      it("computes x1 ? x0 : ~x0", [&]() {
         /*
         //               (x1, x0, ~x0)         ---- x0
         //                /         \
@@ -993,7 +993,7 @@ go_bandit([]() {
                    Is().EqualTo(2u));
       });
 
-      it("should compute x3 ? (x1 & x2) : bdd_1", [&]() {
+      it("computes x3 ? (x1 & x2) : bdd_1", [&]() {
         shared_levelized_file<bdd::node_type> bdd_x3;
         /*
         //               1     ---- x3
@@ -1150,7 +1150,7 @@ go_bandit([]() {
                    Is().EqualTo(3u));
       });
 
-      it("should compute bdd_3 ? bdd_4 : bdd_5", [&]() {
+      it("computes bdd_3 ? bdd_4 : bdd_5", [&]() {
         /*
         //                              (1,1,1)               ---- x0
         //                          ______/ \______
@@ -1259,7 +1259,7 @@ go_bandit([]() {
                    Is().EqualTo(4u));
       });
 
-      it("should compute bdd_6 ? x0^x2 : bdd_not_6", [&]() {
+      it("computes bdd_6 ? x0^x2 : bdd_not_6", [&]() {
         /*                      bdd_x0_xor_x2
         //              _1_       ---- x1
         //             /   \
@@ -1338,7 +1338,7 @@ go_bandit([]() {
                    Is().EqualTo(4u));
       });
 
-      it("should compute bdd_not_6 ? bdd_6 : x0^x2", [&]() {
+      it("computes bdd_not_6 ? bdd_6 : x0^x2", [&]() {
         /*                      bdd_x0_xor_x2
         //              _1_       ---- x1
         //              /   \
@@ -1417,7 +1417,7 @@ go_bandit([]() {
                    Is().EqualTo(1u));
       });
 
-      it("should compute ~(x0^x2) ? ~x2 : bdd_1", [&]() {
+      it("computes ~(x0^x2) ? ~x2 : bdd_1", [&]() {
         shared_levelized_file<bdd::node_type> bdd_x0_xnor_x2;
         /*
         //                          _1_
@@ -1543,7 +1543,7 @@ go_bandit([]() {
                    Is().EqualTo(5u));
       });
 
-      it("should compute (x1^x2) ? bdd_1 : bdd_2", [&]() {
+      it("computes (x1^x2) ? bdd_1 : bdd_2", [&]() {
         shared_levelized_file<bdd::node_type> bdd_x1_xor_x2_2;
         /*
         //                      _1_      ---- x1
@@ -1673,7 +1673,7 @@ go_bandit([]() {
                    Is().EqualTo(6u));
       });
 
-      it("should compute (~x0 & ~x1 & x2) ? bdd_2 : bdd_4", [&]() {
+      it("computes (~x0 & ~x1 & x2) ? bdd_2 : bdd_4", [&]() {
         shared_levelized_file<bdd::node_type> bdd_if;
         /*
         //                      1       ---- x0
@@ -1793,7 +1793,7 @@ go_bandit([]() {
                    Is().EqualTo(4u));
       });
 
-      it("should compute (x0 | (x1 & x2)) ? bdd_8 : bdd_7", [&]() {
+      it("computes (x0 | (x1 & x2)) ? bdd_8 : bdd_7", [&]() {
         shared_levelized_file<bdd::node_type> bdd_if;
         /*
         //                        1        ---- x0
@@ -1898,7 +1898,7 @@ go_bandit([]() {
                    Is().EqualTo(2u));
       });
 
-      it("should compute bdd_6 ? bdd_4 : bdd_2", [&]() {
+      it("computes bdd_6 ? bdd_4 : bdd_2", [&]() {
         /*
         //                                (1,1,1)                           ---- x0
         //                       __________/   \___________
@@ -2003,8 +2003,8 @@ go_bandit([]() {
       });
     });
 
-    describe("Zipping", [&]() {
-      it("should merely zip disjunct levels if possible [1]", [&]() {
+    describe("O(N/B) zipping cases", [&]() {
+      it("merely zips disjunct levels if possible [1]", [&]() {
         shared_levelized_file<bdd::node_type> bdd_x1_and_x3;
         /*
         //                   1      ---- x1
@@ -2081,7 +2081,7 @@ go_bandit([]() {
                    Is().EqualTo(2u));
       });
 
-      it("should merely zip disjunct levels if possible [2]", [&]() {
+      it("merely zips disjunct levels if possible [2]", [&]() {
         shared_levelized_file<bdd::node_type> bdd_then;
         /*
         //                   _1_      ---- x2
@@ -2344,7 +2344,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(out_3), Is().True());
       });
 
-      it("should not zip if bdd_then is not beyond max_var of bdd_if", [&]() {
+      it("does not zip if bdd_then is not beyond max_var of bdd_if", [&]() {
         __bdd out = bdd_ite(bdd_x1, bdd_x0, bdd_x2);
 
         arc_test_stream arcs(out);
@@ -2403,7 +2403,7 @@ go_bandit([]() {
                    Is().EqualTo(2u));
       });
 
-      it("should not zip if bdd_else is not beyond max_var of bdd_if", [&]() {
+      it("does not zip if bdd_else is not beyond max_var of bdd_if", [&]() {
         __bdd out = bdd_ite(bdd_x1, bdd_x2, bdd_x0);
 
         arc_test_stream arcs(out);
