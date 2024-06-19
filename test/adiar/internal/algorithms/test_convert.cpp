@@ -89,7 +89,7 @@ go_bandit([]() {
     bdd bdd_x0(nf_x0);
     bdd bdd_x2(nf_x2);
 
-    describe("bdd_from(const zdd&, const generator_func&)", [&]() {
+    describe("bdd_from(const zdd&, const generator<...>&)", [&]() {
       // TODO
     });
 
@@ -1139,7 +1139,7 @@ go_bandit([]() {
       });
     });
 
-    describe("zdd_from(const bdd&, const generator_func&)", [&]() {
+    describe("zdd_from(const bdd&, const generator<...>&)", [&]() {
       // TODO
     });
 
