@@ -94,32 +94,18 @@ go_bandit([]() {
     });
 
     describe("bdd_from(const zdd&, ForwardIt, ForwardIt)", [&]() {
-      it("returns F terminal on Ø with dom = Ø", [&]() {
+      it("returns same file for F terminal on Ø with dom = Ø", [&]() {
         __bdd out = bdd_from(zdd_F, dom_empty.begin(), dom_empty.end());
 
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
-
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream ms(out);
-        AssertThat(ms.can_pull(), Is().False());
+        AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(zdd_F.file_ptr()));
+        AssertThat(out._negate, Is().False());
       });
 
-      it("returns T terminal on { Ø } with dom = Ø", [&]() {
+      it("returns same file for T terminal on { Ø } with dom = Ø", [&]() {
         __bdd out = bdd_from(zdd_T, dom_empty.begin(), dom_empty.end());
 
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
-
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream ms(out);
-        AssertThat(ms.can_pull(), Is().False());
+        AssertThat(out.get<__bdd::shared_node_file_type>(), Is().EqualTo(zdd_T.file_ptr()));
+        AssertThat(out._negate, Is().False());
       });
 
       it("returns F terminal on Ø with dom = { 0,1,2 }", [&]() {
@@ -1161,10 +1147,27 @@ go_bandit([]() {
       it("returns Ø on F terminal with dom = Ø", [&]() {
         __zdd out = zdd_from(bdd_F, dom_empty.begin(), dom_empty.end());
 
+        AssertThat(out.get<__zdd::shared_node_file_type>(), Is().EqualTo(bdd_F.file_ptr()));
+        AssertThat(out._negate, Is().False());
+      });
+
+      it("returns { Ø } on T terminal with dom = Ø", [&]() {
+        __zdd out = zdd_from(bdd_T, dom_empty.begin(), dom_empty.end());
+
+        AssertThat(out.get<__zdd::shared_node_file_type>(), Is().EqualTo(bdd_T.file_ptr()));
+        AssertThat(out._negate, Is().False());
+      });
+
+      it("returns Ø on negated F terminal with dom = Ø", [&]() {
+        __zdd out = zdd_from(bdd_not(bdd_F), dom_empty.begin(), dom_empty.end());
+
+        AssertThat(out.get<__zdd::shared_node_file_type>(), Is().EqualTo(bdd_F.file_ptr()));
+        AssertThat(out._negate, Is().True());
+
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1172,13 +1175,16 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().False());
       });
 
-      it("returns { Ø } on T terminal with dom = Ø", [&]() {
-        __zdd out = zdd_from(bdd_T, dom_empty.begin(), dom_empty.end());
+      it("returns { Ø } on negated T terminal with dom = Ø", [&]() {
+        __zdd out = zdd_from(bdd_not(bdd_T), dom_empty.begin(), dom_empty.end());
+
+        AssertThat(out.get<__zdd::shared_node_file_type>(), Is().EqualTo(bdd_T.file_ptr()));
+        AssertThat(out._negate, Is().True());
 
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
