@@ -307,6 +307,7 @@ namespace adiar
       throw invalid_argument("Non-monotonic variable replacement not (yet) supported.");
 
     case replace_type::Monotone:
+    case replace_type::Shift:
     case replace_type::Identity:
 #ifdef ADIAR_STATS
       internal::stats_replace.monotonic_reduces += 1u;

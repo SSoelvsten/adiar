@@ -159,15 +159,16 @@ go_bandit([]() {
           AssertThat(out.is_negated(), Is().True());
         });
 
-        it("returns 'x(4-0)' when given 'x0'", [&]() {
+        it("identifies 'x(4-0)' as a mere shift on 'x0'", [&]() {
           const mapping_type m = [](const int x) { return 4 - x; };
           const bdd out        = bdd_replace(bdd_x0, m);
 
-          // Check it looks all right
-          AssertThat(out->sorted, Is().True());
-          AssertThat(out->indexable, Is().True());
-          AssertThat(bdd_iscanonical(out), Is().True());
+          // Check it returns the same file but shifted
+          AssertThat(out.file_ptr(), Is().EqualTo(bdd_x0_nf));
+          AssertThat(out.is_negated(), Is().False());
+          AssertThat(out.shift(), Is().EqualTo(4));
 
+          // Check it is read correctly
           node_test_stream out_nodes(out);
 
           // n1
@@ -182,29 +183,6 @@ go_bandit([]() {
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(4, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
-
-          AssertThat(out->width, Is().EqualTo(bdd_x0->width));
-
-          AssertThat(out->max_1level_cut[cut::Internal],
-                     Is().EqualTo(bdd_x0->max_1level_cut[cut::Internal]));
-          AssertThat(out->max_1level_cut[cut::Internal_False],
-                     Is().EqualTo(bdd_x0->max_1level_cut[cut::Internal_False]));
-          AssertThat(out->max_1level_cut[cut::Internal_True],
-                     Is().EqualTo(bdd_x0->max_1level_cut[cut::Internal_True]));
-          AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(bdd_x0->max_1level_cut[cut::All]));
-
-          AssertThat(out->max_2level_cut[cut::Internal],
-                     Is().EqualTo(bdd_x0->max_2level_cut[cut::Internal]));
-          AssertThat(out->max_2level_cut[cut::Internal_False],
-                     Is().EqualTo(bdd_x0->max_2level_cut[cut::Internal_False]));
-          AssertThat(out->max_2level_cut[cut::Internal_True],
-                     Is().EqualTo(bdd_x0->max_2level_cut[cut::Internal_True]));
-          AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(bdd_x0->max_2level_cut[cut::All]));
-
-          AssertThat(out->number_of_terminals[false],
-                     Is().EqualTo(bdd_x0->number_of_terminals[false]));
-          AssertThat(out->number_of_terminals[true],
-                     Is().EqualTo(bdd_x0->number_of_terminals[true]));
         });
 
         it("throws exception if levels have to be swapped [bdd_1]", [&]() {
@@ -416,14 +394,16 @@ go_bandit([]() {
           AssertThat(out.is_negated(), Is().True());
         });
 
-        it("shifts 'x0' into 'x1'", [&]() {
+        it("identifies 'x(2x+1)' as a mere shift for 'x0'", [&]() {
           const mapping_type m = [](const int x) { return 2 * x + 1; };
           const bdd out        = bdd_replace(bdd_x0, m);
 
-          // Check it looks all right
-          AssertThat(out->sorted, Is().EqualTo(bdd_x0->sorted));
-          AssertThat(out->indexable, Is().EqualTo(bdd_x0->indexable));
+          // Check it returns the same file but shifted
+          AssertThat(out.file_ptr(), Is().EqualTo(bdd_x0_nf));
+          AssertThat(out.is_negated(), Is().False());
+          AssertThat(out.shift(), Is().EqualTo(1));
 
+          // Check it is read correctly
           node_test_stream out_nodes(out);
 
           // n1
@@ -438,96 +418,6 @@ go_bandit([]() {
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
-
-          AssertThat(out->width, Is().EqualTo(bdd_x0->width));
-
-          AssertThat(out->max_1level_cut[cut::Internal],
-                     Is().EqualTo(bdd_x0->max_1level_cut[cut::Internal]));
-          AssertThat(out->max_1level_cut[cut::Internal_False],
-                     Is().EqualTo(bdd_x0->max_1level_cut[cut::Internal_True]));
-          AssertThat(out->max_1level_cut[cut::Internal_True],
-                     Is().EqualTo(bdd_x0->max_1level_cut[cut::Internal_False]));
-          AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(bdd_x0->max_1level_cut[cut::All]));
-
-          AssertThat(out->max_2level_cut[cut::Internal],
-                     Is().EqualTo(bdd_x0->max_2level_cut[cut::Internal]));
-          AssertThat(out->max_2level_cut[cut::Internal_False],
-                     Is().EqualTo(bdd_x0->max_2level_cut[cut::Internal_True]));
-          AssertThat(out->max_2level_cut[cut::Internal_True],
-                     Is().EqualTo(bdd_x0->max_2level_cut[cut::Internal_False]));
-          AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(bdd_x0->max_2level_cut[cut::All]));
-
-          AssertThat(out->number_of_terminals[false],
-                     Is().EqualTo(bdd_x0->number_of_terminals[true]));
-          AssertThat(out->number_of_terminals[true],
-                     Is().EqualTo(bdd_x0->number_of_terminals[false]));
-        });
-
-        it("shifts variables in 'BDD 1'", [&]() {
-          const mapping_type m = [](const int x) { return x + 1; };
-          const bdd out        = bdd_replace(bdd_1, m);
-
-          // Check it looks all right
-          AssertThat(out->sorted, Is().EqualTo(bdd_1->sorted));
-          AssertThat(out->indexable, Is().EqualTo(bdd_1->indexable));
-
-          node_test_stream out_nodes(out);
-
-          // n3
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, bdd::max_id, terminal_F, terminal_T)));
-
-          // n2
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(
-            out_nodes.pull(),
-            Is().EqualTo(node(3, bdd::max_id, bdd::pointer_type(5, bdd::max_id), terminal_T)));
-
-          // n1
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(node(1,
-                                       bdd::max_id,
-                                       bdd::pointer_type(5, bdd::max_id),
-                                       bdd::pointer_type(3, bdd::max_id))));
-
-          AssertThat(out_nodes.can_pull(), Is().False());
-
-          level_info_test_stream out_meta(out);
-
-          AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5, 1u)));
-
-          AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
-
-          AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
-
-          AssertThat(out_meta.can_pull(), Is().False());
-
-          AssertThat(out->width, Is().EqualTo(bdd_1->width));
-
-          AssertThat(out->max_1level_cut[cut::Internal],
-                     Is().EqualTo(bdd_1->max_1level_cut[cut::Internal]));
-          AssertThat(out->max_1level_cut[cut::Internal_False],
-                     Is().EqualTo(bdd_1->max_1level_cut[cut::Internal_False]));
-          AssertThat(out->max_1level_cut[cut::Internal_True],
-                     Is().EqualTo(bdd_1->max_1level_cut[cut::Internal_True]));
-          AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(bdd_1->max_1level_cut[cut::All]));
-
-          AssertThat(out->max_2level_cut[cut::Internal],
-                     Is().EqualTo(bdd_1->max_2level_cut[cut::Internal]));
-          AssertThat(out->max_2level_cut[cut::Internal_False],
-                     Is().EqualTo(bdd_1->max_2level_cut[cut::Internal_False]));
-          AssertThat(out->max_2level_cut[cut::Internal_True],
-                     Is().EqualTo(bdd_1->max_2level_cut[cut::Internal_True]));
-          AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(bdd_1->max_2level_cut[cut::All]));
-
-          AssertThat(out->number_of_terminals[false],
-                     Is().EqualTo(bdd_1->number_of_terminals[false]));
-          AssertThat(out->number_of_terminals[true],
-                     Is().EqualTo(bdd_1->number_of_terminals[true]));
         });
 
         it("doubles variables in 'BDD 2'", [&]() {
@@ -592,6 +482,196 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true],
                      Is().EqualTo(bdd_2->number_of_terminals[true]));
         });
+      });
+
+      describe("<constant>", [&]() {
+        it("shifts variables in 'BDD 1'", [&]() {
+          const mapping_type m = [](const int x) { return x + 1; };
+          const bdd out        = bdd_replace(bdd_1, m);
+
+          // Check it returns the same file but shifted
+          AssertThat(out.file_ptr(), Is().EqualTo(bdd_1_nf));
+          AssertThat(out.is_negated(), Is().False());
+          AssertThat(out.shift(), Is().EqualTo(1));
+
+          // Check it is read correctly
+          node_test_stream out_nodes(out);
+
+          // n3
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, bdd::max_id, terminal_F, terminal_T)));
+
+          // n2
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(3, bdd::max_id, bdd::pointer_type(5, bdd::max_id), terminal_T)));
+
+          // n1
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(1,
+                                       bdd::max_id,
+                                       bdd::pointer_type(5, bdd::max_id),
+                                       bdd::pointer_type(3, bdd::max_id))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("shifts variables in 'BDD 2'", [&]() {
+          const mapping_type m = [](const int x) { return x + 4; };
+          const bdd out        = bdd_replace(bdd_2, m);
+
+          // Check it returns the same file but shifted
+          AssertThat(out.file_ptr(), Is().EqualTo(bdd_2_nf));
+          AssertThat(out.is_negated(), Is().False());
+          AssertThat(out.shift(), Is().EqualTo(4));
+
+          // Check it is read correctly
+          node_test_stream out_nodes(out);
+
+          // n3
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, bdd::max_id, terminal_T, terminal_F)));
+
+          // n2
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(5, bdd::max_id - 2, terminal_F, terminal_T)));
+
+          // n1
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(4,
+                                       bdd::max_id,
+                                       bdd::pointer_type(5, bdd::max_id - 2),
+                                       bdd::pointer_type(5, bdd::max_id))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5, 2u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("shifts variables in 'BDD 3' multiple times [+3, +3]", [&]() {
+          const mapping_type m = [](const int x) { return x + 3; };
+          const bdd out        = bdd_replace(bdd_replace(bdd_3, m), m);
+
+          // Check it returns the same file but shifted
+          AssertThat(out.file_ptr(), Is().EqualTo(bdd_3_nf));
+          AssertThat(out.is_negated(), Is().False());
+          AssertThat(out.shift(), Is().EqualTo(6));
+
+          // Check it is read correctly
+          node_test_stream out_nodes(out);
+
+          // n4
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(8, bdd::max_id, terminal_T, terminal_F)));
+
+          // n3
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(7, bdd::max_id, terminal_F, bdd::pointer_type(8, bdd::max_id))));
+
+          // n2
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(7, bdd::max_id - 1, bdd::pointer_type(8, bdd::max_id), terminal_F)));
+
+          // n1
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(6,
+                                       bdd::max_id,
+                                       bdd::pointer_type(7, bdd::max_id - 1),
+                                       bdd::pointer_type(7, bdd::max_id))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(8, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(7, 2u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(6, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("shifts variables in 'BDD 1' multiple times [+2, -1]", [&]() {
+          const bdd out = bdd_replace(bdd_replace(bdd_1, [](const int x) { return x + 2; }),
+                                      [](const int x) { return x - 1; });
+
+          // Check it returns the same file but shifted
+          AssertThat(out.file_ptr(), Is().EqualTo(bdd_1_nf));
+          AssertThat(out.is_negated(), Is().False());
+          AssertThat(out.shift(), Is().EqualTo(1));
+
+          // Check it is read correctly
+          node_test_stream out_nodes(out);
+
+          // n3
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, bdd::max_id, terminal_F, terminal_T)));
+
+          // n2
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(3, bdd::max_id, bdd::pointer_type(5, bdd::max_id), terminal_T)));
+
+          // n1
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(1,
+                                       bdd::max_id,
+                                       bdd::pointer_type(5, bdd::max_id),
+                                       bdd::pointer_type(3, bdd::max_id))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        // TODO: Accumulation of shifts
       });
 
       describe("<identity>", [&]() {
@@ -794,6 +874,74 @@ go_bandit([]() {
         AssertThat(out->number_of_terminals[false],
                    Is().EqualTo(bdd_2->number_of_terminals[false]));
         AssertThat(out->number_of_terminals[true], Is().EqualTo(bdd_2->number_of_terminals[true]));
+      });
+
+      it("shifts variables in 'BDD 1' if 'replace_type' is 'Shift'", [&]() {
+        // NOTE: This function is in fact *not* a shift!
+        const mapping_type m = [](const int x) { return 2 * x + 1; };
+        const bdd out        = bdd_replace(bdd_1, m, replace_type::Shift);
+
+        // Check it returns the same file but shifted
+        AssertThat(out.file_ptr(), Is().EqualTo(bdd_1.file_ptr()));
+        AssertThat(out.is_negated(), Is().False());
+        AssertThat(out.shift(), Is().EqualTo(+1));
+
+        // Check it is read correctly
+        node_test_stream out_nodes(out);
+
+        // n3
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(5, bdd::max_id, terminal_F, terminal_T)));
+
+        // n2
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(3, bdd::max_id, bdd::pointer_type(5, bdd::max_id), terminal_T)));
+
+        // n1
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(
+            1, bdd::max_id, bdd::pointer_type(5, bdd::max_id), bdd::pointer_type(3, bdd::max_id))));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(5, 1u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(bdd_1->width));
+
+        AssertThat(out->max_1level_cut[cut::Internal],
+                   Is().EqualTo(bdd_1->max_1level_cut[cut::Internal]));
+        AssertThat(out->max_1level_cut[cut::Internal_False],
+                   Is().EqualTo(bdd_1->max_1level_cut[cut::Internal_False]));
+        AssertThat(out->max_1level_cut[cut::Internal_True],
+                   Is().EqualTo(bdd_1->max_1level_cut[cut::Internal_True]));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(bdd_1->max_1level_cut[cut::All]));
+
+        AssertThat(out->max_2level_cut[cut::Internal],
+                   Is().EqualTo(bdd_1->max_2level_cut[cut::Internal]));
+        AssertThat(out->max_2level_cut[cut::Internal_False],
+                   Is().EqualTo(bdd_1->max_2level_cut[cut::Internal_False]));
+        AssertThat(out->max_2level_cut[cut::Internal_True],
+                   Is().EqualTo(bdd_1->max_2level_cut[cut::Internal_True]));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(bdd_1->max_2level_cut[cut::All]));
+
+        AssertThat(out->number_of_terminals[false],
+                   Is().EqualTo(bdd_1->number_of_terminals[false]));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(bdd_1->number_of_terminals[true]));
       });
 
       it("returns the original file if 'replace_type is 'Identity'", [&]() {
@@ -1025,14 +1173,16 @@ go_bandit([]() {
           AssertThat(out.is_negated(), Is().False());
         });
 
-        it("reverses 'x0' into 'x4' [bdd_x0]", [&]() {
+        it("identifies 'x(4-0)' as a mere shift on reduced 'x0' [bdd_x0]", [&]() {
           const mapping_type m = [](const int x) { return 4 - x; };
           const bdd out        = bdd_replace(exec_policy(), __bdd(bdd_x0_nf), m);
 
-          // Check it looks all right
-          AssertThat(out->sorted, Is().True());
-          AssertThat(out->indexable, Is().True());
+          // Check it returns the same file but shifted
+          AssertThat(out.file_ptr(), Is().EqualTo(bdd_x0_nf));
+          AssertThat(out.is_negated(), Is().False());
+          AssertThat(out.shift(), Is().EqualTo(4));
 
+          // Check it looks all right
           node_test_stream out_nodes(out);
 
           // n1
@@ -1064,9 +1214,14 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
         });
 
-        it("preserves negation flag when reversing 'x0' into 'x4' [bdd_x0]", [&]() {
+        it("preserves negation flag when identiftying 'x(4-0)' is a mere shift [bdd_x0]", [&]() {
           const mapping_type m = [](const int x) { return 4 - x; };
           const bdd out        = bdd_replace(__bdd(bdd(bdd_x0_nf, true)), m);
+
+          // Check it returns the same file but shifted
+          AssertThat(out.file_ptr(), Is().EqualTo(bdd_x0_nf));
+          AssertThat(out.is_negated(), Is().True());
+          AssertThat(out.shift(), Is().EqualTo(4));
 
           // Check it looks all right
           AssertThat(out->sorted, Is().True());
@@ -1086,21 +1241,6 @@ go_bandit([]() {
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(4, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
-
-          AssertThat(out->width, Is().EqualTo(1u));
-
-          AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(1u));
-          AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
-          AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
-          AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(2u));
-
-          AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(1u));
-          AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
-          AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
-          AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(2u));
-
-          AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
-          AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
         });
 
         it("reverses 'x0' into 'x4' [__bdd_x0]", [&]() {
@@ -1170,7 +1310,7 @@ go_bandit([]() {
         });
       });
 
-      describe("<monotonic> / <affine>", [&]() {
+      describe("<monotonic> / <affine> / <constant>", [&]() {
         it("returns the original file for 'F'", [&]() {
           const mapping_type m = [](const int x) { return 2 * x + 1; };
           const bdd out        = bdd_replace(__bdd(bdd_F), m);
@@ -1250,6 +1390,84 @@ go_bandit([]() {
                      Is().EqualTo(bdd_2->number_of_terminals[true]));
         });
 
+        it("returns shifted original file [bdd_x0]", [&]() {
+          int m_calls          = 0;
+          const mapping_type m = [&m_calls](const int x) {
+            m_calls++;
+            return x + 1;
+          };
+          const bdd out = bdd_replace(__bdd(bdd_x0), m);
+
+          // Check only called once to determine type of mapping and then once to obtain the amount
+          // to shift
+          AssertThat(m_calls, Is().EqualTo(1 + 1));
+
+          // Check it returns the same file but shifted
+          AssertThat(out.file_ptr(), Is().EqualTo(bdd_x0_nf));
+          AssertThat(out.is_negated(), Is().False());
+          AssertThat(out.shift(), Is().EqualTo(1));
+
+          // Check it looks all right
+          node_test_stream out_nodes(out);
+
+          // n1
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::max_id, terminal_F, terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("reduces and shifts variables [__bdd_x0]", [&]() {
+          int m_calls          = 0;
+          const mapping_type m = [&m_calls](const int x) {
+            m_calls++;
+            return x + 1;
+          };
+          const bdd out = bdd_replace(__bdd(__bdd_x0, exec_policy()), m);
+
+          // Check only called once to determine type of mapping and then once to obtain the amount
+          // to shift
+          AssertThat(m_calls, Is().EqualTo(1 + 1));
+
+          // Check it looks all right
+          node_test_stream out_nodes(out);
+
+          // n1
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::max_id, terminal_F, terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          AssertThat(out->width, Is().EqualTo(1u));
+
+          AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(2u));
+
+          AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(2u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+          AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
+        });
+
         it("reduces and shifts variables at once [__bdd_x0_unreduced]", [&]() {
           int m_calls          = 0;
           const mapping_type m = [&m_calls](const int x) {
@@ -1259,7 +1477,7 @@ go_bandit([]() {
           const bdd out = bdd_replace(__bdd(__bdd_x0_unreduced, exec_policy()), m);
 
           // Check only called once to determine type of mapping and then for each level
-          AssertThat(m_calls, Is().EqualTo(2 * 2));
+          AssertThat(m_calls, Is().EqualTo(2 + 2));
 
           // Check it looks all right
           AssertThat(out->sorted, Is().True());
@@ -1296,7 +1514,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
         });
 
-        it("reduces and doubles variables at once [__bdd_2]", [&]() {
+        it("doubles variables [__bdd_2]", [&]() {
           int m_calls          = 0;
           const mapping_type m = [&m_calls](const int x) {
             m_calls++;
@@ -1305,7 +1523,7 @@ go_bandit([]() {
           const bdd out = bdd_replace(__bdd(__bdd_2, exec_policy()), m);
 
           // Check only called once to determine type of mapping and then for each level
-          AssertThat(m_calls, Is().EqualTo(2 * 2));
+          AssertThat(m_calls, Is().EqualTo(2 + 2));
 
           // Check it looks all right
           AssertThat(out->sorted, Is().True());
@@ -1367,7 +1585,7 @@ go_bandit([]() {
           const bdd out = bdd_replace(__bdd(__bdd_3_unreduced, exec_policy()), m);
 
           // Check only called once to determine type of mapping and then for each level
-          AssertThat(m_calls, Is().EqualTo(2 * 3));
+          AssertThat(m_calls, Is().EqualTo(3 + 3));
 
           // Check it looks all right
           AssertThat(out->sorted, Is().True());
@@ -1704,7 +1922,7 @@ go_bandit([]() {
           bdd_replace(__bdd(__bdd_3_unreduced, exec_policy()), m, replace_type::Non_Monotone));
       });
 
-      it("reduces and shifts 'x0' if 'replace_type' is 'Monotone'", [&]() {
+      it("reduces and affinely maps 'x0' if 'replace_type' is 'Monotone'", [&]() {
         int m_calls          = 0;
         const mapping_type m = [&m_calls](const int x) {
           m_calls++;
@@ -1829,6 +2047,132 @@ go_bandit([]() {
            AssertThat(out->number_of_terminals[false], Is().EqualTo(3u));
            AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
          });
+
+      it("reduces and maps shifted of variables in 'BDD 2' if 'replace_type' is 'Monotone' "
+         "[__bdd_2]",
+         [&]() {
+           int m_calls          = 0;
+           const mapping_type m = [&m_calls](const int x) {
+             m_calls++;
+             return x + 1;
+           };
+           const bdd out = bdd_replace(__bdd(__bdd_2, exec_policy()), m, replace_type::Monotone);
+
+           // Check only called once per level
+           AssertThat(m_calls, Is().EqualTo(2));
+
+           // Check it looks all right
+           AssertThat(out->sorted, Is().True());
+           AssertThat(out->indexable, Is().True());
+
+           node_test_stream out_nodes(out);
+
+           // n2
+           AssertThat(out_nodes.can_pull(), Is().True());
+           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id, terminal_F, terminal_T)));
+
+           // n3
+           AssertThat(out_nodes.can_pull(), Is().True());
+           AssertThat(out_nodes.pull(),
+                      Is().EqualTo(node(2, bdd::max_id - 1, terminal_T, terminal_F)));
+
+           // n1
+           AssertThat(out_nodes.can_pull(), Is().True());
+           AssertThat(out_nodes.pull(),
+                      Is().EqualTo(node(1,
+                                        bdd::max_id,
+                                        bdd::pointer_type(2, bdd::max_id),
+                                        bdd::pointer_type(2, bdd::max_id - 1))));
+
+           AssertThat(out_nodes.can_pull(), Is().False());
+
+           level_info_test_stream out_meta(out);
+
+           AssertThat(out_meta.can_pull(), Is().True());
+           AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 2u)));
+
+           AssertThat(out_meta.can_pull(), Is().True());
+           AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
+
+           AssertThat(out_meta.can_pull(), Is().False());
+
+           AssertThat(out->width, Is().EqualTo(2u));
+
+           AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(2u));
+           AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(2u));
+           AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(2u));
+           AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(4u));
+
+           AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(2u));
+           AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(3u));
+           AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(3u));
+           AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(4u));
+
+           AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+           AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
+         });
+
+      it("reduces and shifts variables in 'BDD 2' if 'replace_type' is 'Shift' [__bdd_2]", [&]() {
+        int m_calls          = 0;
+        const mapping_type m = [&m_calls](const int x) {
+          m_calls++;
+          return x + 1;
+        };
+        const bdd out = bdd_replace(__bdd(__bdd_2, exec_policy()), m, replace_type::Shift);
+
+        // Check is still called once per level
+        AssertThat(m_calls, Is().EqualTo(2));
+
+        // Check it looks all right
+        AssertThat(out->sorted, Is().True());
+        AssertThat(out->indexable, Is().True());
+
+        node_test_stream out_nodes(out);
+
+        // n2
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id, terminal_F, terminal_T)));
+
+        // n3
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(2, bdd::max_id - 1, terminal_T, terminal_F)));
+
+        // n1
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(1,
+                                     bdd::max_id,
+                                     bdd::pointer_type(2, bdd::max_id),
+                                     bdd::pointer_type(2, bdd::max_id - 1))));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 2u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(2u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(2u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(2u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(2u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(4u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(3u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(3u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(4u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
+      });
 
       it("returns the original file of 'x0' if 'replace_type' is 'Identity' with no calls", [&]() {
         // NOTE: This function is in fact *not* the identity!

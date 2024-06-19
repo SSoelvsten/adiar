@@ -36,12 +36,11 @@ namespace adiar
     /** For any `x < y` then the mapped values preserve that order, i.e. `m(x) < m(y)`. */
     Monotone = 2,
 
-    /* TODO (constant time variable replacement): `m(x)` is of the form `ax + b` for a positive
-                                                  fraction `a` and integer `b`. */
-    // Affine      = 1,
+    /* TODO (faster version of 'Monotone'): `m(x) = ax + b` for some integers `a` and `b`. */
+    // Affine = 1,
 
-    /* TODO (faster version of 'Affine'): `m(x)` is of the form `x + b` for an integer `b`. */
-    // Shift       = 0,
+    /** (faster version of 'Monotone'): `m(x) = x + b` for an integer `b`. */
+    Shift = 0,
 
     /** Nothing needs to be done, as `m(x) = x`. */
     Identity = -1
