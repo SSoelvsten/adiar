@@ -70,10 +70,12 @@ namespace adiar::internal
     /// \brief Create attached to an arc file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     node_arc_stream(levelized_file<arc>& file,
-                    [[maybe_unused]] const bool negate = false)
+                    [[maybe_unused]] const bool negate                         = false,
+                    [[maybe_unused]] const node::signed_label_type level_shift = 0)
       : _stream(/*need to sort before attach*/)
     {
       adiar_assert(negate == false);
+      adiar_assert(level_shift == 0);
       attach(file);
     }
 
@@ -81,10 +83,12 @@ namespace adiar::internal
     /// \brief Create attached to a shared arc file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     node_arc_stream(const shared_ptr<levelized_file<arc>>& file,
-                    [[maybe_unused]] const bool negate = false)
+                    [[maybe_unused]] const bool negate                         = false,
+                    [[maybe_unused]] const node::signed_label_type level_shift = 0)
       : _stream(/*need to sort before attach*/)
     {
       adiar_assert(negate == false);
+      adiar_assert(level_shift == 0);
       attach(file);
     }
 

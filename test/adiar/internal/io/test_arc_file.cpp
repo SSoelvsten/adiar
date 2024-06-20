@@ -858,17 +858,17 @@ go_bandit([]() {
           AssertThat(nara.has_current_level(), Is().False());
 
           AssertThat(nara.has_next_level(), Is().True());
-          AssertThat(nara.next_level(), Is().EqualTo(1u));
+          AssertThat(nara.next_level(), Is().EqualTo(1));
 
           nara.setup_next_level(0u);
 
           AssertThat(nara.has_current_level(), Is().True());
-          AssertThat(nara.current_level(), Is().EqualTo(0u));
+          AssertThat(nara.current_level(), Is().EqualTo(0));
 
           AssertThat(nara.empty_level(), Is().True());
 
           AssertThat(nara.has_next_level(), Is().True());
-          AssertThat(nara.next_level(), Is().EqualTo(1u));
+          AssertThat(nara.next_level(), Is().EqualTo(1));
         });
 
         it("has empty levels after having skipped content [A]", [&]() {
@@ -880,12 +880,12 @@ go_bandit([]() {
           AssertThat(nara.empty_level(), Is().True());
 
           AssertThat(nara.has_next_level(), Is().True());
-          AssertThat(nara.next_level(), Is().EqualTo(1u));
+          AssertThat(nara.next_level(), Is().EqualTo(1));
 
           nara.setup_next_level(2u);
 
           AssertThat(nara.has_current_level(), Is().True());
-          AssertThat(nara.current_level(), Is().EqualTo(2u));
+          AssertThat(nara.current_level(), Is().EqualTo(2));
 
           AssertThat(nara.empty_level(), Is().True());
 
@@ -899,11 +899,11 @@ go_bandit([]() {
           AssertThat(nara.has_current_level(), Is().False());
 
           AssertThat(nara.has_next_level(), Is().True());
-          AssertThat(nara.next_level(), Is().EqualTo(1u));
+          AssertThat(nara.next_level(), Is().EqualTo(1));
 
           nara.setup_next_level();
           AssertThat(nara.has_current_level(), Is().True());
-          AssertThat(nara.current_level(), Is().EqualTo(1u));
+          AssertThat(nara.current_level(), Is().EqualTo(1));
 
           AssertThat(nara.empty_level(), Is().False());
           AssertThat(nara.current_width(), Is().EqualTo(1u));
@@ -916,45 +916,45 @@ go_bandit([]() {
           AssertThat(nara.has_current_level(), Is().False());
 
           AssertThat(nara.has_next_level(), Is().True());
-          AssertThat(nara.next_level(), Is().EqualTo(0u));
+          AssertThat(nara.next_level(), Is().EqualTo(0));
 
           nara.setup_next_level();
 
           AssertThat(nara.has_current_level(), Is().True());
-          AssertThat(nara.current_level(), Is().EqualTo(0u));
+          AssertThat(nara.current_level(), Is().EqualTo(0));
 
           AssertThat(nara.empty_level(), Is().False());
           AssertThat(nara.current_width(), Is().EqualTo(1u));
 
           AssertThat(nara.has_next_level(), Is().True());
-          AssertThat(nara.next_level(), Is().EqualTo(1u));
+          AssertThat(nara.next_level(), Is().EqualTo(1));
 
           nara.setup_next_level();
 
           AssertThat(nara.has_current_level(), Is().True());
-          AssertThat(nara.current_level(), Is().EqualTo(1u));
+          AssertThat(nara.current_level(), Is().EqualTo(1));
 
           AssertThat(nara.empty_level(), Is().False());
           AssertThat(nara.current_width(), Is().EqualTo(1u));
 
           AssertThat(nara.has_next_level(), Is().True());
-          AssertThat(nara.next_level(), Is().EqualTo(2u));
+          AssertThat(nara.next_level(), Is().EqualTo(2));
 
           nara.setup_next_level();
 
           AssertThat(nara.has_current_level(), Is().True());
-          AssertThat(nara.current_level(), Is().EqualTo(2u));
+          AssertThat(nara.current_level(), Is().EqualTo(2));
 
           AssertThat(nara.empty_level(), Is().False());
           AssertThat(nara.current_width(), Is().EqualTo(3u));
 
           AssertThat(nara.has_next_level(), Is().True());
-          AssertThat(nara.next_level(), Is().EqualTo(4u));
+          AssertThat(nara.next_level(), Is().EqualTo(4));
 
           nara.setup_next_level();
 
           AssertThat(nara.has_current_level(), Is().True());
-          AssertThat(nara.current_level(), Is().EqualTo(4u));
+          AssertThat(nara.current_level(), Is().EqualTo(4));
 
           AssertThat(nara.empty_level(), Is().False());
           AssertThat(nara.current_width(), Is().EqualTo(2u));
@@ -968,12 +968,12 @@ go_bandit([]() {
           nra.setup_next_level(3u);
 
           AssertThat(nra.has_current_level(), Is().True());
-          AssertThat(nra.current_level(), Is().EqualTo(3u));
+          AssertThat(nra.current_level(), Is().EqualTo(3));
 
           AssertThat(nra.empty_level(), Is().True());
 
           AssertThat(nra.has_next_level(), Is().True());
-          AssertThat(nra.next_level(), Is().EqualTo(4u));
+          AssertThat(nra.next_level(), Is().EqualTo(4));
         });
 
         it("can go from empty level to the next non-empty one [B]", [&]() {
@@ -982,12 +982,12 @@ go_bandit([]() {
           nra.setup_next_level(3u);
 
           AssertThat(nra.has_next_level(), Is().True());
-          AssertThat(nra.next_level(), Is().EqualTo(4u));
+          AssertThat(nra.next_level(), Is().EqualTo(4));
 
           nra.setup_next_level();
 
           AssertThat(nra.has_current_level(), Is().True());
-          AssertThat(nra.current_level(), Is().EqualTo(4u));
+          AssertThat(nra.current_level(), Is().EqualTo(4));
 
           AssertThat(nra.empty_level(), Is().False());
         });
@@ -1134,12 +1134,12 @@ go_bandit([]() {
           nara.setup_next_level(3u);
 
           AssertThat(nara.has_next_level(), Is().True());
-          AssertThat(nara.next_level(), Is().EqualTo(4u));
+          AssertThat(nara.next_level(), Is().EqualTo(4));
 
           nara.setup_next_level();
 
           AssertThat(nara.has_current_level(), Is().True());
-          AssertThat(nara.current_level(), Is().EqualTo(4u));
+          AssertThat(nara.current_level(), Is().EqualTo(4));
 
           AssertThat(nara.empty_level(), Is().False());
 
