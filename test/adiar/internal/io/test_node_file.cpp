@@ -12,9 +12,8 @@ go_bandit([]() {
     });
 
     describe("node_writer [ << ] + node_file::stats", []() {
-      // -------------------------------------------------------------------
-      // Canonical node files where the max 1-level cut and max 2-level cuts
-      // are the same.
+      // -------------------------------------------------------------------------------------------
+      // Canonical node files where the max 1-level cut and max 2-level cuts are the same.
       /*
                     F
       */
@@ -145,8 +144,8 @@ go_bandit([]() {
            << node(42, node::max_id - 1, node::pointer_type(true), node::pointer_type(false))
            << node(21,
                    node::max_id,
-                   node::pointer_type(42, node::pointer_type::max_id),
-                   node::pointer_type(42, node::pointer_type::max_id - 1));
+                   node::pointer_type(42, node::max_id),
+                   node::pointer_type(42, node::max_id - 1));
       }
 
       /*
@@ -1458,6 +1457,24 @@ go_bandit([]() {
           AssertThat(nra.at(B_n6.uid()), Is().EqualTo(B_n6));
           AssertThat(nra.at(B_n6.uid()), Is().EqualTo(B_n6));
           AssertThat(nra.at(B_n7.uid()), Is().EqualTo(B_n7));
+        });
+
+        it("negates nodes on-the-fly [idx]", [&]() {
+          node_random_access nra(nf_B, true);
+          nra.setup_next_level(2u);
+
+          AssertThat(nra.at(0u), Is().EqualTo(!B_n3));
+          AssertThat(nra.at(1u), Is().EqualTo(!B_n4));
+          AssertThat(nra.at(2u), Is().EqualTo(!B_n5));
+        });
+
+        it("negates nodes on-the-fly [uid]", [&]() {
+          node_random_access nra(nf_B, true);
+          nra.setup_next_level(2u);
+
+          AssertThat(nra.at(B_n3.uid()), Is().EqualTo(!B_n3));
+          AssertThat(nra.at(B_n4.uid()), Is().EqualTo(!B_n4));
+          AssertThat(nra.at(B_n5.uid()), Is().EqualTo(!B_n5));
         });
       });
 
