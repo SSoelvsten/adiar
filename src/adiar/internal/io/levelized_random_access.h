@@ -12,12 +12,12 @@ namespace adiar::internal
   /// \brief Random-access to the contents of a levelized file.
   ///
   /// \tparam StreamType Stream to wrap with a *levelized random access* buffer.
-  //////////////////////////////////////////////////////////////////////////////////////////////////
   //
   // TODO: Generalize parts of 'node_random_access' to reuse it with levelized files with other
   //       types of content. Yet, what use-case do we have for this?
   //
   // TODO: Support 'StreamType<Reverse>'
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename StreamType>
   class levelized_random_access
   {
@@ -27,9 +27,9 @@ namespace adiar::internal
   public:
     using value_type = typename stream_type::value_type;
 
-    using uid_type   = typename value_type::uid_type;
-    using label_type = typename value_type::label_type;
-    using idx_type   = typename value_type::id_type;
+    using uid_type          = typename value_type::uid_type;
+    using signed_label_type = typename value_type::signed_label_type;
+    using idx_type          = typename value_type::id_type;
 
   public:
     static size_t
@@ -37,14 +37,6 @@ namespace adiar::internal
     {
       return stream_type::memory_usage() + tpie::array<value_type>::memory_usage(max_width);
     }
-
-  public:
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Value to mark there is no current level.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    static constexpr label_type no_level = -1;
-
-    static_assert(uid_type::max_label < no_level, "'no_level' should be an invalid label value");
 
   private:
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -66,8 +58,12 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Buffer with all elements of the current level.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    // TODO: Turn into 'signed int'.
-    label_type _curr_level = no_level;
+    bool _has_curr_level = false;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Buffer with all elements of the current level.
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    signed_label_type _curr_level = 0;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Width of the current level.
@@ -90,8 +86,10 @@ namespace adiar::internal
     /// \brief Construct attached to a mutable levelized file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     template <typename T>
-    levelized_random_access(levelized_file<T>& f, const bool negate = false)
-      : _stream(f, negate)
+    levelized_random_access(levelized_file<T>& f,
+                            const bool negate                          = false,
+                            const typename T::signed_label_type& shift = 0)
+      : _stream(f, negate, shift)
       , _max_width(f.width)
       , _level_buffer(f.width)
       , _root(_stream.peek().uid())
@@ -103,8 +101,10 @@ namespace adiar::internal
     /// \brief Construct attached to an immutable levelized file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     template <typename T>
-    levelized_random_access(const levelized_file<T>& f, const bool negate = false)
-      : _stream(f, negate)
+    levelized_random_access(const levelized_file<T>& f,
+                            const bool negate                         = false,
+                            const typename T::signed_label_type shift = 0)
+      : _stream(f, negate, shift)
       , _max_width(f.width)
       , _level_buffer(f.width)
       , _root(_stream.peek().uid())
@@ -116,8 +116,10 @@ namespace adiar::internal
     /// \brief Construct attached to an immutable shared levelized file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     template <typename T>
-    levelized_random_access(const shared_ptr<levelized_file<T>>& f, const bool negate = false)
-      : _stream(f, negate)
+    levelized_random_access(const shared_ptr<levelized_file<T>>& f,
+                            const bool negate                         = false,
+                            const typename T::signed_label_type shift = 0)
+      : _stream(f, negate, shift)
       , _max_width(f->width)
       , _level_buffer(f->width)
       , _root(_stream.peek().uid())
@@ -160,7 +162,7 @@ namespace adiar::internal
     ///
     /// \pre `has_next_level() == true`
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    label_type
+    signed_label_type
     next_level()
     {
       return _stream.peek().uid().label();
@@ -175,22 +177,27 @@ namespace adiar::internal
     /// \pre `has_current_level() == false` or `current_level() < level`
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    setup_next_level(const label_type level)
+    setup_next_level(const signed_label_type level)
     {
       adiar_assert(!has_current_level() || current_level() < level);
 
       // Set to new level and mark the entire buffer's content garbage.
-      _curr_level = level;
-      _curr_width = 0;
+      _has_curr_level = true;
+      _curr_level     = level;
+      _curr_width     = 0;
 
       // Stop early when going "beyond" the available levels
       if (!has_next_level()) { return; }
 
       // Skip all levels not of interest
-      while (_stream.can_pull() && _stream.peek().uid().label() < level) { _stream.pull(); }
+      while (_stream.can_pull()
+             && static_cast<signed_label_type>(_stream.peek().uid().label()) < level) {
+        _stream.pull();
+      }
 
       // Copy over all elements from the requested level
-      while (_stream.can_pull() && _stream.peek().uid().label() == level) {
+      while (_stream.can_pull()
+             && static_cast<signed_label_type>(_stream.peek().uid().label()) == level) {
         _level_buffer[_curr_width++] = _stream.pull();
       }
     }
@@ -211,13 +218,13 @@ namespace adiar::internal
     bool
     has_current_level() const
     {
-      return _curr_level != no_level;
+      return _has_curr_level;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief The label of the current level.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    label_type
+    signed_label_type
     current_level() const
     {
       return _curr_level;
@@ -226,7 +233,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief The width of the current level, i.e. the number of elements one can access to.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    label_type
+    size_t
     current_width() const
     {
       return _curr_width;

@@ -36,8 +36,10 @@ namespace adiar::internal
     ///
     /// \pre The given levelized file is *indexable*.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_random_access(const levelized_file<value_type>& f, const bool negate = false)
-      : parent_type(f, negate)
+    node_random_access(const levelized_file<value_type>& f,
+                       const bool negate                         = false,
+                       const node::signed_label_type level_shift = 0)
+      : parent_type(f, negate, level_shift)
     {
       adiar_assert(f.indexable);
     }
@@ -47,8 +49,10 @@ namespace adiar::internal
     ///
     /// \pre The given shared levelized file is *indexable*.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_random_access(const shared_ptr<levelized_file<value_type>>& f, const bool negate = false)
-      : parent_type(f, negate)
+    node_random_access(const shared_ptr<levelized_file<value_type>>& f,
+                       const bool negate                         = false,
+                       const node::signed_label_type level_shift = 0)
+      : parent_type(f, negate, level_shift)
     {
       adiar_assert(f->indexable);
     }
@@ -81,9 +85,9 @@ namespace adiar::internal
     const value_type&
     at(uid_type u) const
     {
-      adiar_assert(u.label() == current_level());
+      adiar_assert(static_cast<signed_label_type>(u.label()) == this->current_level());
 
-      const idx_type idx = current_width() - ((uid_type::max_id + 1u) - u.id());
+      const idx_type idx = this->current_width() - ((uid_type::max_id + 1u) - u.id());
       return parent_type::at(idx);
     }
   };

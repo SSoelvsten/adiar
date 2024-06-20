@@ -1229,7 +1229,7 @@ go_bandit([]() {
 
     describe("node_writer + node_random_access", []() {
       /*
-      //              1      ---- A
+      //              1      ---- x1
       //             / \
       //             F T
       */
@@ -1282,12 +1282,12 @@ go_bandit([]() {
 
           nra.setup_next_level(0u);
           AssertThat(nra.has_current_level(), Is().True());
-          AssertThat(nra.current_level(), Is().EqualTo(0u));
+          AssertThat(nra.current_level(), Is().EqualTo(0));
           AssertThat(nra.has_next_level(), Is().False());
 
           nra.setup_next_level(2u);
           AssertThat(nra.has_current_level(), Is().True());
-          AssertThat(nra.current_level(), Is().EqualTo(2u));
+          AssertThat(nra.current_level(), Is().EqualTo(2));
           AssertThat(nra.has_next_level(), Is().False());
         });
 
@@ -1305,12 +1305,12 @@ go_bandit([]() {
 
           nra.setup_next_level(0u);
           AssertThat(nra.has_current_level(), Is().True());
-          AssertThat(nra.current_level(), Is().EqualTo(0u));
+          AssertThat(nra.current_level(), Is().EqualTo(0));
           AssertThat(nra.has_next_level(), Is().False());
 
           nra.setup_next_level(1u);
           AssertThat(nra.has_current_level(), Is().True());
-          AssertThat(nra.current_level(), Is().EqualTo(1u));
+          AssertThat(nra.current_level(), Is().EqualTo(1));
           AssertThat(nra.has_next_level(), Is().False());
         });
 
@@ -1320,17 +1320,17 @@ go_bandit([]() {
           AssertThat(nra.has_current_level(), Is().False());
 
           AssertThat(nra.has_next_level(), Is().True());
-          AssertThat(nra.next_level(), Is().EqualTo(1u));
+          AssertThat(nra.next_level(), Is().EqualTo(1));
 
           nra.setup_next_level(0u);
 
           AssertThat(nra.has_current_level(), Is().True());
-          AssertThat(nra.current_level(), Is().EqualTo(0u));
+          AssertThat(nra.current_level(), Is().EqualTo(0));
 
           AssertThat(nra.empty_level(), Is().True());
 
           AssertThat(nra.has_next_level(), Is().True());
-          AssertThat(nra.next_level(), Is().EqualTo(1u));
+          AssertThat(nra.next_level(), Is().EqualTo(1));
         });
 
         it("has empty levels after having skipped content of 'x1'", [&]() {
@@ -1341,12 +1341,12 @@ go_bandit([]() {
           AssertThat(nra.empty_level(), Is().True());
 
           AssertThat(nra.has_next_level(), Is().True());
-          AssertThat(nra.next_level(), Is().EqualTo(1u));
+          AssertThat(nra.next_level(), Is().EqualTo(1));
 
           nra.setup_next_level(2u);
 
           AssertThat(nra.has_current_level(), Is().True());
-          AssertThat(nra.current_level(), Is().EqualTo(2u));
+          AssertThat(nra.current_level(), Is().EqualTo(2));
 
           AssertThat(nra.empty_level(), Is().True());
 
@@ -1359,11 +1359,11 @@ go_bandit([]() {
           AssertThat(nra.has_current_level(), Is().False());
 
           AssertThat(nra.has_next_level(), Is().True());
-          AssertThat(nra.next_level(), Is().EqualTo(0u));
+          AssertThat(nra.next_level(), Is().EqualTo(0));
 
           nra.setup_next_level();
           AssertThat(nra.has_current_level(), Is().True());
-          AssertThat(nra.current_level(), Is().EqualTo(0u));
+          AssertThat(nra.current_level(), Is().EqualTo(0));
 
           AssertThat(nra.empty_level(), Is().False());
           AssertThat(nra.current_width(), Is().EqualTo(1u));
@@ -1375,45 +1375,45 @@ go_bandit([]() {
           AssertThat(nra.has_current_level(), Is().False());
 
           AssertThat(nra.has_next_level(), Is().True());
-          AssertThat(nra.next_level(), Is().EqualTo(0u));
+          AssertThat(nra.next_level(), Is().EqualTo(0));
 
           nra.setup_next_level();
 
           AssertThat(nra.has_current_level(), Is().True());
-          AssertThat(nra.current_level(), Is().EqualTo(0u));
+          AssertThat(nra.current_level(), Is().EqualTo(0));
 
           AssertThat(nra.empty_level(), Is().False());
           AssertThat(nra.current_width(), Is().EqualTo(1u));
 
           AssertThat(nra.has_next_level(), Is().True());
-          AssertThat(nra.next_level(), Is().EqualTo(1u));
+          AssertThat(nra.next_level(), Is().EqualTo(1));
 
           nra.setup_next_level();
 
           AssertThat(nra.has_current_level(), Is().True());
-          AssertThat(nra.current_level(), Is().EqualTo(1u));
+          AssertThat(nra.current_level(), Is().EqualTo(1));
 
           AssertThat(nra.empty_level(), Is().False());
           AssertThat(nra.current_width(), Is().EqualTo(1u));
 
           AssertThat(nra.has_next_level(), Is().True());
-          AssertThat(nra.next_level(), Is().EqualTo(2u));
+          AssertThat(nra.next_level(), Is().EqualTo(2));
 
           nra.setup_next_level();
 
           AssertThat(nra.has_current_level(), Is().True());
-          AssertThat(nra.current_level(), Is().EqualTo(2u));
+          AssertThat(nra.current_level(), Is().EqualTo(2));
 
           AssertThat(nra.empty_level(), Is().False());
           AssertThat(nra.current_width(), Is().EqualTo(3u));
 
           AssertThat(nra.has_next_level(), Is().True());
-          AssertThat(nra.next_level(), Is().EqualTo(4u));
+          AssertThat(nra.next_level(), Is().EqualTo(4));
 
           nra.setup_next_level();
 
           AssertThat(nra.has_current_level(), Is().True());
-          AssertThat(nra.current_level(), Is().EqualTo(4u));
+          AssertThat(nra.current_level(), Is().EqualTo(4));
 
           AssertThat(nra.empty_level(), Is().False());
           AssertThat(nra.current_width(), Is().EqualTo(2u));
@@ -1426,12 +1426,12 @@ go_bandit([]() {
           nra.setup_next_level(3u);
 
           AssertThat(nra.has_current_level(), Is().True());
-          AssertThat(nra.current_level(), Is().EqualTo(3u));
+          AssertThat(nra.current_level(), Is().EqualTo(3));
 
           AssertThat(nra.empty_level(), Is().True());
 
           AssertThat(nra.has_next_level(), Is().True());
-          AssertThat(nra.next_level(), Is().EqualTo(4u));
+          AssertThat(nra.next_level(), Is().EqualTo(4));
         });
 
         it("can go from empty level to the next non-empty one", [&]() {
@@ -1439,14 +1439,117 @@ go_bandit([]() {
           nra.setup_next_level(3u);
 
           AssertThat(nra.has_next_level(), Is().True());
-          AssertThat(nra.next_level(), Is().EqualTo(4u));
+          AssertThat(nra.next_level(), Is().EqualTo(4));
 
           nra.setup_next_level();
 
           AssertThat(nra.has_current_level(), Is().True());
-          AssertThat(nra.current_level(), Is().EqualTo(4u));
+          AssertThat(nra.current_level(), Is().EqualTo(4));
 
           AssertThat(nra.empty_level(), Is().False());
+        });
+
+        it("shifts levels on-the-fly (-1)", [&]() {
+          node_random_access nra(nf_A, false, -1);
+
+          AssertThat(nra.has_current_level(), Is().False());
+
+          AssertThat(nra.has_next_level(), Is().True());
+          AssertThat(nra.next_level(), Is().EqualTo(0));
+
+          nra.setup_next_level();
+
+          AssertThat(nra.has_current_level(), Is().True());
+          AssertThat(nra.current_level(), Is().EqualTo(0));
+
+          AssertThat(nra.empty_level(), Is().False());
+          AssertThat(nra.current_width(), Is().EqualTo(1u));
+
+          AssertThat(nra.has_next_level(), Is().False());
+        });
+
+        it("shifts levels on-the-fly (+2)", [&]() {
+          node_random_access nra(nf_B, false, +2);
+
+          AssertThat(nra.has_current_level(), Is().False());
+
+          AssertThat(nra.has_next_level(), Is().True());
+          AssertThat(nra.next_level(), Is().EqualTo(2));
+
+          nra.setup_next_level();
+
+          AssertThat(nra.has_current_level(), Is().True());
+          AssertThat(nra.current_level(), Is().EqualTo(2));
+
+          AssertThat(nra.empty_level(), Is().False());
+          AssertThat(nra.current_width(), Is().EqualTo(1u));
+
+          AssertThat(nra.has_next_level(), Is().True());
+          AssertThat(nra.next_level(), Is().EqualTo(3));
+
+          nra.setup_next_level();
+
+          AssertThat(nra.has_current_level(), Is().True());
+          AssertThat(nra.current_level(), Is().EqualTo(3));
+
+          AssertThat(nra.empty_level(), Is().False());
+          AssertThat(nra.current_width(), Is().EqualTo(1u));
+
+          AssertThat(nra.has_next_level(), Is().True());
+          AssertThat(nra.next_level(), Is().EqualTo(4));
+
+          nra.setup_next_level();
+
+          AssertThat(nra.has_current_level(), Is().True());
+          AssertThat(nra.current_level(), Is().EqualTo(4));
+
+          AssertThat(nra.empty_level(), Is().False());
+          AssertThat(nra.current_width(), Is().EqualTo(3u));
+
+          AssertThat(nra.has_next_level(), Is().True());
+          AssertThat(nra.next_level(), Is().EqualTo(6));
+
+          nra.setup_next_level();
+
+          AssertThat(nra.has_current_level(), Is().True());
+          AssertThat(nra.current_level(), Is().EqualTo(6));
+
+          AssertThat(nra.empty_level(), Is().False());
+          AssertThat(nra.current_width(), Is().EqualTo(2u));
+
+          AssertThat(nra.has_next_level(), Is().False());
+        });
+
+        it("can access levels shifted below 0", [&]() {
+          // x1(+3) with access to level 0 results in trying to access level -3 which if kept
+          // unsigned is far beyond x1(+3).
+          node_random_access nra(nf_A, false, +3);
+
+          AssertThat(nra.has_current_level(), Is().False());
+
+          AssertThat(nra.has_next_level(), Is().True());
+          AssertThat(nra.next_level(), Is().EqualTo(4));
+
+          nra.setup_next_level(0);
+
+          AssertThat(nra.has_current_level(), Is().True());
+          AssertThat(nra.current_level(), Is().EqualTo(0));
+
+          AssertThat(nra.empty_level(), Is().True());
+          AssertThat(nra.current_width(), Is().EqualTo(0u));
+
+          AssertThat(nra.has_next_level(), Is().True());
+          AssertThat(nra.next_level(), Is().EqualTo(4));
+
+          nra.setup_next_level(4);
+
+          AssertThat(nra.has_current_level(), Is().True());
+          AssertThat(nra.current_level(), Is().EqualTo(4));
+
+          AssertThat(nra.empty_level(), Is().False());
+          AssertThat(nra.current_width(), Is().EqualTo(1u));
+
+          AssertThat(nra.has_next_level(), Is().False());
         });
       });
 
@@ -1457,11 +1560,11 @@ go_bandit([]() {
           AssertThat(nra.has_current_level(), Is().False());
 
           AssertThat(nra.has_next_level(), Is().True());
-          AssertThat(nra.next_level(), Is().EqualTo(1u));
+          AssertThat(nra.next_level(), Is().EqualTo(1));
 
           nra.setup_next_level(1u);
           AssertThat(nra.has_current_level(), Is().True());
-          AssertThat(nra.current_level(), Is().EqualTo(1u));
+          AssertThat(nra.current_level(), Is().EqualTo(1));
 
           AssertThat(nra.empty_level(), Is().False());
           AssertThat(nra.current_width(), Is().EqualTo(1u));
@@ -1581,12 +1684,12 @@ go_bandit([]() {
           nra.setup_next_level(3u);
 
           AssertThat(nra.has_next_level(), Is().True());
-          AssertThat(nra.next_level(), Is().EqualTo(4u));
+          AssertThat(nra.next_level(), Is().EqualTo(4));
 
           nra.setup_next_level();
 
           AssertThat(nra.has_current_level(), Is().True());
-          AssertThat(nra.current_level(), Is().EqualTo(4u));
+          AssertThat(nra.current_level(), Is().EqualTo(4));
 
           AssertThat(nra.empty_level(), Is().False());
 
@@ -1612,6 +1715,42 @@ go_bandit([]() {
           AssertThat(nra.at(B_n3.uid()), Is().EqualTo(!B_n3));
           AssertThat(nra.at(B_n4.uid()), Is().EqualTo(!B_n4));
           AssertThat(nra.at(B_n5.uid()), Is().EqualTo(!B_n5));
+        });
+
+        it("shifts nodes on-the-fly (-1) [idx]", [&]() {
+          node_random_access nra(nf_A, false, -1);
+          nra.setup_next_level();
+
+          AssertThat(nra.at(0u),
+                     Is().EqualTo(
+                       node(0, node::max_id, node::pointer_type(false), node::pointer_type(true))));
+        });
+
+        it("shifts nodes on-the-fly (+3) [idx]", [&]() {
+          node_random_access nra(nf_B, false, +3);
+          nra.setup_next_level(5u);
+
+          AssertThat(nra.at(0u), Is().EqualTo(shift_replace(B_n3, +3)));
+          AssertThat(nra.at(1u), Is().EqualTo(shift_replace(B_n4, +3)));
+          AssertThat(nra.at(2u), Is().EqualTo(shift_replace(B_n5, +3)));
+        });
+
+        it("shifts nodes on-the-fly (+2) [uid]", [&]() {
+          node_random_access nra(nf_B, false, +2);
+          nra.setup_next_level(4u);
+
+          AssertThat(nra.at(shift_replace(B_n5.uid(), +2)), Is().EqualTo(shift_replace(B_n5, +2)));
+          AssertThat(nra.at(shift_replace(B_n4.uid(), +2)), Is().EqualTo(shift_replace(B_n4, +2)));
+          AssertThat(nra.at(shift_replace(B_n3.uid(), +2)), Is().EqualTo(shift_replace(B_n3, +2)));
+        });
+
+        it("shifts and negates nodes on-the-fly (-1) [idx]", [&]() {
+          node_random_access nra(nf_A, true, -1);
+          nra.setup_next_level();
+
+          AssertThat(nra.at(0u),
+                     Is().EqualTo(
+                       node(0, node::max_id, node::pointer_type(true), node::pointer_type(false))));
         });
       });
 
@@ -1652,6 +1791,18 @@ go_bandit([]() {
           AssertThat(nra.at(B_n3.uid()), Is().EqualTo(B_n3));
 
           AssertThat(nra.root(), Is().EqualTo(B_n1.uid()));
+        });
+
+        it("shifts root (+1) before accessing anything", [&]() {
+          node_random_access nra(nf_B, false, +1);
+
+          AssertThat(nra.root(), Is().EqualTo(shift_replace(B_n1.uid(), +1)));
+        });
+
+        it("shifts root (+2) before accessing anything", [&]() {
+          node_random_access nra(nf_B, false, +2);
+
+          AssertThat(nra.root(), Is().EqualTo(shift_replace(B_n1.uid(), +2)));
         });
       });
 
