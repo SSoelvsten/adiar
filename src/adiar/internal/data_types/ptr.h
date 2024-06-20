@@ -11,8 +11,8 @@ namespace adiar::internal
 
   // TODO (ADD (32-bit)):
   //   Template 'ptr_uint64' with 'terminal_t' of how to interpret the bits of a terminal. To this
-  //   end, one wants to use 'std::bit_cast' in the internal logic. Use 'static_assert' to ensure
-  //   the desired type indeed fits into 62 bits of memory.
+  //   end, one wants to use 'std::bit_cast' (C++20) in the internal logic. Use 'static_assert' to
+  //   ensure the desired type indeed fits into 62 bits of memory.
 
   // TODO (ADD (64-bit)):
   // TODO (10+ TiB Decision Diagrams):
@@ -854,21 +854,25 @@ namespace adiar::internal
   inline ptr_uint64
   shift_replace(const ptr_uint64& p, const ptr_uint64::signed_level_type levels)
   {
-    // TODO (optimisation): Make this a branch-less computation!
-    if (levels == 0 || !p.is_node()) { return p; }
+    // Evil type hacks (Thanks, Quake III)
+    const ptr_uint64::level_type p_level__unsigned = p.level();
+    const ptr_uint64::signed_level_type p_level__signed =
+      (*reinterpret_cast<const ptr_uint64::signed_level_type *>(&p_level__unsigned));
 
-    // TODO (optimisation): Replace static_cast<...> with dynamic_cast<...> if always safe.
-    const bool subtract = levels < 0;
-    const ptr_uint64::level_type abs_levels =
-      static_cast<ptr_uint64::level_type>(subtract ? -levels : levels);
+    const ptr_uint64::signed_level_type p_new_level__signed = p_level__signed + levels;
+    const ptr_uint64::level_type p_new_level__unsigned =
+      (*reinterpret_cast<const ptr_uint64::level_type *>(&p_new_level__signed));
 
-    adiar_assert(subtract ? (abs_levels <= p.label())
-                          : (p.label() + abs_levels <= ptr_uint64::max_label));
+    // Shift levels back and combine with other bits
+    const ptr_uint64::raw_type level_bits =
+      static_cast<ptr_uint64::raw_type>(p_new_level__unsigned) << ptr_uint64::level_shift;
 
-    const ptr_uint64::raw_type shifted_abs_levels = static_cast<ptr_uint64::raw_type>(abs_levels)
-      << ptr_uint64::level_shift;
+    constexpr ptr_uint64::raw_type non_levels_mask =
+      ~(static_cast<ptr_uint64::raw_type>(ptr_uint64::max_level) << ptr_uint64::level_shift);
+    const ptr_uint64::raw_type other_bits = p._raw & non_levels_mask;
 
-    return subtract ? (p._raw - shifted_abs_levels) : (p._raw + shifted_abs_levels);
+    // Use above computation (cmove), if it is a node.
+    return p.is_node() ? (level_bits | other_bits) : p._raw;
   }
 
   /* ======================================== CONVERSION ======================================== */
