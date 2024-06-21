@@ -239,6 +239,7 @@ go_bandit([]() {
         AssertThat(as.can_pull_terminal(), Is().False());
       });
 
+      /*
       it("merges terminal arcs on 'pull' [negated]", [&af]() {
         arc_stream<> as(af, true);
 
@@ -259,6 +260,7 @@ go_bandit([]() {
                    Is().EqualTo(arc(arc::pointer_type(1, 0), true, arc::pointer_type(false))));
         AssertThat(as.can_pull_terminal(), Is().False());
       });
+      */
 
       it("reads internal arcs as given [non-default: forwards]", [&af]() {
         arc_stream<> as(af);
@@ -318,6 +320,7 @@ go_bandit([]() {
         AssertThat(as.unread_terminals(true), Is().EqualTo(0u));
       });
 
+      /*
       it("provides number of unread terminals [negate=true]", [&af]() {
         arc_stream<> as(af, true);
 
@@ -360,6 +363,7 @@ go_bandit([]() {
         AssertThat(as.unread_terminals(false), Is().EqualTo(0u));
         AssertThat(as.unread_terminals(true), Is().EqualTo(0u));
       });
+      */
     });
 
     describe("arc_writer + node_arc_stream", []() {
@@ -460,6 +464,7 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().True());
       });
 
+      /*
       it("can read single-node BDD [negated]", [&]() {
         node_arc_stream ns(x0_ordered, true);
 
@@ -469,6 +474,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
       });
+      */
 
       it("can pull after peek of single-node BDD", [&]() {
         node_arc_stream ns(x0_ordered);
@@ -746,6 +752,7 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().False());
       });
 
+      /*
       it("can pull larger BDD [negated + reverse]", [&]() {
         AssertThat(large_untransposed2.semi_transposed, Is().False());
 
@@ -773,6 +780,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
       });
+      */
     });
 
     describe("arc_writer + node_arc_random_access", []() {

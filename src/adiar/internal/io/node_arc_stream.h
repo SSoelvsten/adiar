@@ -26,13 +26,19 @@ namespace adiar::internal
     using value_type = node;
 
   private:
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Arc-based input to-be converted into nodes on-the-fly.
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     arc_stream<!Reverse> _stream;
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Whether a converted node has been buffered.
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     bool _has_peeked = false;
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Latest converted node.
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     node _peeked;
 
   public:
@@ -63,19 +69,23 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to an arc file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_arc_stream(levelized_file<arc>& file, const bool negate = false)
+    node_arc_stream(levelized_file<arc>& file,
+                    [[maybe_unused]] const bool negate = false)
       : _stream(/*need to sort before attach*/)
     {
-      attach(file, negate);
+      adiar_assert(negate == false);
+      attach(file);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a shared arc file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_arc_stream(const shared_ptr<levelized_file<arc>>& file, const bool negate = false)
+    node_arc_stream(const shared_ptr<levelized_file<arc>>& file,
+                    [[maybe_unused]] const bool negate = false)
       : _stream(/*need to sort before attach*/)
     {
-      attach(file, negate);
+      adiar_assert(negate == false);
+      attach(file);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -87,7 +97,8 @@ namespace adiar::internal
       : _stream(/*need to sort before attach*/)
     {
       adiar_assert(diagram.template has<__dd::shared_arc_file_type>());
-      attach(diagram.template get<__dd::shared_arc_file_type>(), diagram._negate);
+      adiar_assert(diagram._negate == false);
+      attach(diagram.template get<__dd::shared_arc_file_type>());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -96,13 +107,13 @@ namespace adiar::internal
     /// \remark This sorts the internal arcs of the file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    attach(levelized_file<arc>& file, const bool negate = false)
+    attach(levelized_file<arc>& file)
     {
       if (file.semi_transposed) {
         file.sort<arc_source_lt>(idx__internal);
         file.semi_transposed = false;
       }
-      _stream.attach(file, negate);
+      _stream.attach(file);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -111,13 +122,13 @@ namespace adiar::internal
     /// \remark This sorts the internal arcs of the file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    attach(const shared_ptr<levelized_file<arc>>& file, const bool negate = false)
+    attach(const shared_ptr<levelized_file<arc>>& file)
     {
       if (file->semi_transposed) {
         file->sort<arc_source_lt>(idx__internal);
         file->semi_transposed = false;
       }
-      _stream.attach(file, negate);
+      _stream.attach(file);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////

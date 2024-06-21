@@ -47,11 +47,6 @@ namespace adiar::internal
     mutable bool _has_peeked = false;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether elements should be \em negated on-the-fly.
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    bool _negate = false;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief TPIE's file stream object to read the file with.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     mutable typename tpie::file_stream<value_type> _stream;
@@ -76,17 +71,17 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a given shared `file<value_type>`.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    file_stream(const file<value_type>& f, bool negate = false)
+    file_stream(const file<value_type>& f)
     {
-      attach(f, negate);
+      attach(f);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a given shared `file<value_type>`.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    file_stream(const adiar::shared_ptr<file<value_type>>& f, bool negate = false)
+    file_stream(const adiar::shared_ptr<file<value_type>>& f)
     {
-      attach(f, negate);
+      attach(f);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -100,7 +95,7 @@ namespace adiar::internal
   protected:
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    attach(const file<value_type>& f, const adiar::shared_ptr<void>& shared_ptr, bool negate)
+    attach(const file<value_type>& f, const adiar::shared_ptr<void>& shared_ptr)
     {
       // Detach from prior file, if any.
       if (attached()) { detach(); }
@@ -115,9 +110,6 @@ namespace adiar::internal
       // Open the stream to the file
       _stream.open(f._tpie_file, file<value_type>::read_access);
       reset();
-
-      // Store negation flag.
-      _negate = negate;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -132,9 +124,9 @@ namespace adiar::internal
     /// \pre No `file_writer` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    attach(const file<value_type>& f, bool negate = false)
+    attach(const file<value_type>& f)
     {
-      attach(f, nullptr, negate);
+      attach(f, nullptr);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -143,9 +135,9 @@ namespace adiar::internal
     /// \pre No `file_writer` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    attach(const adiar::shared_ptr<file<value_type>>& f, bool negate = false)
+    attach(const adiar::shared_ptr<file<value_type>>& f)
     {
-      attach(*f, f, negate);
+      attach(*f, f);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -207,13 +199,11 @@ namespace adiar::internal
     const value_type
     __read()
     {
-      value_type v;
       if constexpr (Reverse) {
-        v = _stream.read_back();
+        return _stream.read_back();
       } else {
-        v = _stream.read();
+        return _stream.read();
       }
-      return _negate ? !v : v;
     }
 
   public:

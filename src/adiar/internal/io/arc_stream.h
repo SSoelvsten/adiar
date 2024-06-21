@@ -52,17 +52,17 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct a stream attached to an arc file.
     ////////////////////////////////////////////////////////////////////////////
-    arc_stream(const levelized_file<arc>& file, bool negate = false)
+    arc_stream(const levelized_file<arc>& file)
     {
-      attach(file, negate);
+      attach(file);
     }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct a stream unattached to a shared arc file.
     ////////////////////////////////////////////////////////////////////////////
-    arc_stream(const shared_ptr<levelized_file<arc>>& file, bool negate = false)
+    arc_stream(const shared_ptr<levelized_file<arc>>& file)
     {
-      attach(file, negate);
+      attach(file);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -77,12 +77,12 @@ namespace adiar::internal
     /// \pre No `levelized_file_writer` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
     void
-    attach(const levelized_file<arc>& f, const bool negate = false)
+    attach(const levelized_file<arc>& f)
     {
       // adiar_assert(f.semi_transposed);
-      parent_t::attach(f, negate);
-      _unread_terminals[negate ^ false] = f.number_of_terminals[false];
-      _unread_terminals[negate ^ true]  = f.number_of_terminals[true];
+      parent_t::attach(f);
+      _unread_terminals[false] = f.number_of_terminals[false];
+      _unread_terminals[true]  = f.number_of_terminals[true];
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -91,12 +91,12 @@ namespace adiar::internal
     /// \pre No `levelized_file_writer` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
     void
-    attach(const shared_ptr<levelized_file<arc>>& f, const bool negate = false)
+    attach(const shared_ptr<levelized_file<arc>>& f)
     {
       // adiar_assert(f->semi_transposed);
-      parent_t::attach(f, negate);
-      _unread_terminals[negate ^ false] = f->number_of_terminals[false];
-      _unread_terminals[negate ^ true]  = f->number_of_terminals[true];
+      parent_t::attach(f);
+      _unread_terminals[false] = f->number_of_terminals[false];
+      _unread_terminals[true]  = f->number_of_terminals[true];
     }
 
   public:
