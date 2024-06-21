@@ -407,6 +407,36 @@ go_bandit([]() {
             AssertThat(essential(flag(p)), Is().EqualTo(p));
           });
         });
+
+        describe("cnot(...)", []() {
+          it("leaves 'false' terminal as-is if flag is not set", [&]() {
+            const ptr_uint64 p = ptr_uint64(false);
+
+            AssertThat(cnot(p, false), Is().EqualTo(p));
+            AssertThat(cnot(flag(p), false), Is().EqualTo(flag(p)));
+          });
+
+          it("leaves 'true' terminal as-is if flag is not set", [&]() {
+            const ptr_uint64 p = ptr_uint64(true);
+
+            AssertThat(cnot(p, false), Is().EqualTo(p));
+            AssertThat(cnot(flag(p), false), Is().EqualTo(flag(p)));
+          });
+
+          it("negates 'false' terminal if flag is set", [&]() {
+            const ptr_uint64 p = ptr_uint64(false);
+
+            AssertThat(cnot(p, true), Is().EqualTo(ptr_uint64(true)));
+            AssertThat(cnot(flag(p), true), Is().EqualTo(flag(ptr_uint64(true))));
+          });
+
+          it("negates 'true' terminal if flag is set", [&]() {
+            const ptr_uint64 p = ptr_uint64(true);
+
+            AssertThat(cnot(p, true), Is().EqualTo(ptr_uint64(false)));
+            AssertThat(cnot(flag(p), true), Is().EqualTo(flag(ptr_uint64(false))));
+          });
+        });
       });
 
       describe("internal nodes", [&]() {

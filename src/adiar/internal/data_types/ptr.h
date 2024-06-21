@@ -512,6 +512,12 @@ namespace adiar::internal
 
     /* ======================================== TERMINALS ======================================= */
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    // befriend terminal modifying functions that need access to protected values.
+    friend ptr_uint64
+    cnot(const ptr_uint64& p, const bool negate);
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// When the terminal flag is set, then we interpret the middle bits as the value of the
@@ -802,6 +808,20 @@ namespace adiar::internal
     // instructions similar to 'std::min<>'.
     return p.is_node() ? (p._raw & ~(out_idx_mask | ptr_uint64::flag_bit))
                        : (p._raw & ~ptr_uint64::flag_bit);
+  }
+
+  /* ========================================= TERMINAL ========================================= */
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Negates the content of `p` if it is a terminal and the `negate` flag is set to true.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  inline ptr_uint64
+  cnot(const ptr_uint64& p, const bool negate)
+  {
+    const ptr_uint64::raw_type shifted_negate =
+      static_cast<ptr_uint64::raw_type>(negate) << ptr_uint64::data_shift;
+
+    return p.is_terminal() ? p._raw ^ shifted_negate : p._raw;
   }
 
   /* =========================================== LEVEL ========================================== */
