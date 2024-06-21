@@ -488,6 +488,17 @@ namespace adiar::internal
     return u >= n.uid();
   }
 
+  /* ========================================== TERMINAL ======================================== */
+  inline node
+  cnot(const node& n, const bool negate)
+  {
+    const node::uid_type n_uid      = cnot(n.uid().as_ptr(), negate);
+    const node::pointer_type n_low  = cnot(n.low(), negate);
+    const node::pointer_type n_high = cnot(n.high(), negate);
+
+    return { n_uid, n_low, n_high };
+  }
+
   /* =========================================== LEVELS ========================================= */
   inline node
   shift_replace(const node& n, const node::signed_label_type levels)

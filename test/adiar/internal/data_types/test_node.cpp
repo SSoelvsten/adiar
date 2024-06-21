@@ -371,6 +371,56 @@ go_bandit([]() {
         it("negates 'true' terminal node",
            [&]() { AssertThat(!node(true), Is().EqualTo(node(false))); });
       });
+
+      describe("cnot(const node&, bool)", [&]() {
+        it("leaves node_ptr children as-is if flag is not set", [&]() {
+          const node n = node(2u, 2u, ptr_uint64(42, 3), ptr_uint64(8, 2));
+
+          AssertThat(cnot(n, false), Is().EqualTo(n));
+        });
+
+        it("leaves terminal_ptr child as-is if flag is not set", [&]() {
+          const node n = node(2u, 2u, terminal_F, ptr_uint64(8, 2));
+
+          AssertThat(cnot(n, false), Is().EqualTo(node(2, 2, terminal_F, ptr_uint64(8, 2))));
+        });
+
+        it("leaves terminal_ptr children as-is if flag is not set", [&]() {
+          const node n = node(2u, 2u, terminal_F, flag(terminal_T));
+
+          AssertThat(cnot(n, false), Is().EqualTo(node(2, 2, terminal_F, flag(terminal_T))));
+        });
+
+        it("leaves 'false' terminal node as-is if flag is not set",
+           [&]() { AssertThat(cnot(node(false), false), Is().EqualTo(node(false))); });
+
+        it("negates 'true' terminal node as-is if flag is not set",
+           [&]() { AssertThat(cnot(node(true), false), Is().EqualTo(node(true))); });
+
+        it("leaves node_ptr children unchanged if flag is set", [&]() {
+          const node n = node(2u, 2u, ptr_uint64(42, 3), ptr_uint64(8, 2));
+
+          AssertThat(cnot(n, true), Is().EqualTo(n));
+        });
+
+        it("negates terminal_ptr child if flag is set", [&]() {
+          const node n = node(2u, 2u, terminal_F, ptr_uint64(8, 2));
+
+          AssertThat(cnot(n, true), Is().EqualTo(node(2, 2, terminal_T, ptr_uint64(8, 2))));
+        });
+
+        it("negates terminal_ptr children while preserving flags if flag is set", [&]() {
+          const node n = node(2u, 2u, terminal_F, flag(terminal_T));
+
+          AssertThat(cnot(n, true), Is().EqualTo(node(2, 2, terminal_T, flag(terminal_F))));
+        });
+
+        it("negates 'false' terminal node if flag is set",
+           [&]() { AssertThat(cnot(node(false), true), Is().EqualTo(node(true))); });
+
+        it("negates 'true' terminal node if flag is set",
+           [&]() { AssertThat(cnot(node(true), true), Is().EqualTo(node(false))); });
+      });
     });
 
     describe("shift_replace(const node&, ...)", [&]() {
