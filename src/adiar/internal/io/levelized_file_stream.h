@@ -59,18 +59,17 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a levelized file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    levelized_file_stream(const levelized_file<value_type>& lf, const bool negate = false)
+    levelized_file_stream(const levelized_file<value_type>& lf)
     {
-      attach(lf, negate);
+      attach(lf);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a shared levelized file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    levelized_file_stream(const shared_ptr<levelized_file<value_type>>& lf,
-                          const bool negate = false)
+    levelized_file_stream(const shared_ptr<levelized_file<value_type>>& lf)
     {
-      attach(lf, negate);
+      attach(lf);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85,12 +84,12 @@ namespace adiar::internal
     /// \pre No `levelized_file_writer` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    attach(const levelized_file<value_type>& f, const bool negate = false)
+    attach(const levelized_file<value_type>& f)
     {
       if (!f.exists()) f.__touch();
 
       for (size_t s_idx = 0; s_idx < streams; s_idx++)
-        _streams[s_idx].attach(f._files[s_idx], nullptr, negate);
+        _streams[s_idx].attach(f._files[s_idx], nullptr);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -99,12 +98,12 @@ namespace adiar::internal
     /// \pre No `levelized_file_writer` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    attach(const shared_ptr<levelized_file<value_type>>& f, const bool negate = false)
+    attach(const shared_ptr<levelized_file<value_type>>& f)
     {
       if (!f->exists()) f->touch();
 
       for (size_t s_idx = 0; s_idx < streams; s_idx++)
-        _streams[s_idx].attach(f->_files[s_idx], f, negate);
+        _streams[s_idx].attach(f->_files[s_idx], f);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -262,7 +261,7 @@ namespace adiar::internal
     attach(const levelized_file<value_type, false>& lf)
     {
       if (!lf.exists()) lf.__touch();
-      parent_type::attach(lf._level_info_file, nullptr, false);
+      parent_type::attach(lf._level_info_file, nullptr);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -273,7 +272,7 @@ namespace adiar::internal
     attach(const adiar::shared_ptr<levelized_file<value_type, false>>& lf)
     {
       if (!lf->exists()) lf->touch();
-      parent_type::attach(lf->_level_info_file, lf, false);
+      parent_type::attach(lf->_level_info_file, lf);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////

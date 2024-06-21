@@ -38,6 +38,7 @@ namespace adiar::internal
       : parent_type(f, negate)
     {
       // adiar_assert(f.indexable);
+      adiar_assert(negate == false);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -49,6 +50,7 @@ namespace adiar::internal
       : parent_type(f, negate)
     {
       // adiar_assert(f->indexable);
+      adiar_assert(negate == false);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -58,9 +60,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     node_arc_random_access(const __dd& diagram)
       : node_arc_random_access(diagram.template get<__dd::shared_arc_file_type>(), diagram._negate)
-    {
-      // adiar_assert(diagram->indexable);
-    }
+    {}
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////

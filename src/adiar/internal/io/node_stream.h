@@ -23,6 +23,11 @@ namespace adiar::internal
   {
     using parent_type = levelized_file_stream<node, !Reverse>;
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether nodes should be \em negated on-the-fly.
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    bool _negate = false;
+
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Create unattached to any file.
@@ -37,21 +42,24 @@ namespace adiar::internal
     /// \brief Create attached to a node file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     node_stream(const levelized_file<node>& file, bool negate = false)
-      : parent_type(file, negate)
+      : parent_type(file)
+      , _negate(negate)
     {}
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a shared node file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     node_stream(const shared_ptr<levelized_file<node>>& file, bool negate = false)
-      : parent_type(file, negate)
+      : parent_type(file)
+      , _negate(negate)
     {}
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a Decision Diagram.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     node_stream(const dd& diagram)
-      : parent_type(diagram.file_ptr(), diagram.is_negated())
+      : parent_type(diagram.file_ptr())
+      , _negate(diagram.is_negated())
     {}
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -71,7 +79,7 @@ namespace adiar::internal
     const node
     pull()
     {
-      return parent_type::template pull<0>();
+      return cnot(parent_type::template pull<0>(), this->_negate);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82,7 +90,7 @@ namespace adiar::internal
     const node
     peek()
     {
-      return parent_type::template peek<0>();
+      return cnot(parent_type::template peek<0>(), this->_negate);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -95,7 +103,7 @@ namespace adiar::internal
     const node
     seek(const node::uid_type& u)
     {
-      return parent_type::_streams[0].seek(u);
+      return cnot(parent_type::_streams[0].seek(u), this->_negate);
     }
   };
 }
