@@ -17,9 +17,9 @@ var group__module____zdd =
       [ "number_of_terminals", "classadiar_1_1____zdd.html#a9269b183c9faf9a654aae8d0aef7e651", null ],
       [ "number_of_terminals", "classadiar_1_1____zdd.html#afbef57f343dbd466d9300bd282640058", null ],
       [ "size", "classadiar_1_1____zdd.html#ab249b578d368d029ea66e732d9fd1849", null ],
+      [ "_negate", "classadiar_1_1____zdd.html#a9ce1ecfcae05eb3b446a95437ea76722", null ],
       [ "_policy", "classadiar_1_1____zdd.html#a014842c4dde92f899b34a1e4be85fcbc", null ],
-      [ "_union", "classadiar_1_1____zdd.html#a7b2fb8e6fab74bdaa6a691345737c765", null ],
-      [ "negate", "classadiar_1_1____zdd.html#a44bc260b06baa04550c2828c1ce05e17", null ]
+      [ "_union", "classadiar_1_1____zdd.html#a7b2fb8e6fab74bdaa6a691345737c765", null ]
     ] ],
     [ "zdd", "classadiar_1_1zdd.html", [
       [ "id_type", "classadiar_1_1zdd.html#acaf2cbc09c051a0502cd88d26107d877", null ],
@@ -53,8 +53,8 @@ var group__module____zdd =
       [ "zdd_nodecount", "classadiar_1_1zdd.html#a28e09b085cb2a73dee336defc2019ab7", null ],
       [ "zdd_subseteq", "classadiar_1_1zdd.html#a68f0031807f08383fff89fd111ace451", null ],
       [ "zdd_varcount", "classadiar_1_1zdd.html#ac64e9802948af09a529042c4b25acaee", null ],
-      [ "file", "classadiar_1_1zdd.html#a8de1d3d1e39f7e61b1fd1e2be4dfd336", null ],
-      [ "negate", "classadiar_1_1zdd.html#a2552dde28e5e045c0b1b9271e9db8807", null ]
+      [ "_file", "classadiar_1_1zdd.html#aa61007519f8ddea47ab611ef6c791cf1", null ],
+      [ "_negate", "classadiar_1_1zdd.html#a30d13433c619f5a43529f7ab9604a689", null ]
     ] ],
     [ "operator!=", "group__module____zdd.html#ga2f369c9b2555d1f42ebe90272d8a4719", null ],
     [ "operator&", "group__module____zdd.html#ga5ae416661999e847907a8d382f853269", null ],

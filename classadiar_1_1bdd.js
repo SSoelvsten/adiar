@@ -33,6 +33,6 @@ var classadiar_1_1bdd =
     [ "bdd_not", "classadiar_1_1bdd.html#ad40e6cf627d17cace6ed2f8f4122169e", null ],
     [ "bdd_not", "classadiar_1_1bdd.html#afef586ff33a4179291f3b9040648f1b0", null ],
     [ "bdd_varcount", "classadiar_1_1bdd.html#ab3c12e6a74d184ffbcce622e979a89f8", null ],
-    [ "file", "classadiar_1_1bdd.html#a8de1d3d1e39f7e61b1fd1e2be4dfd336", null ],
-    [ "negate", "classadiar_1_1bdd.html#a2552dde28e5e045c0b1b9271e9db8807", null ]
+    [ "_file", "classadiar_1_1bdd.html#aa61007519f8ddea47ab611ef6c791cf1", null ],
+    [ "_negate", "classadiar_1_1bdd.html#a30d13433c619f5a43529f7ab9604a689", null ]
 ];

@@ -16,7 +16,7 @@ var classadiar_1_1____zdd =
     [ "number_of_terminals", "classadiar_1_1____zdd.html#a9269b183c9faf9a654aae8d0aef7e651", null ],
     [ "number_of_terminals", "classadiar_1_1____zdd.html#afbef57f343dbd466d9300bd282640058", null ],
     [ "size", "classadiar_1_1____zdd.html#ab249b578d368d029ea66e732d9fd1849", null ],
+    [ "_negate", "classadiar_1_1____zdd.html#a9ce1ecfcae05eb3b446a95437ea76722", null ],
     [ "_policy", "classadiar_1_1____zdd.html#a014842c4dde92f899b34a1e4be85fcbc", null ],
-    [ "_union", "classadiar_1_1____zdd.html#a7b2fb8e6fab74bdaa6a691345737c765", null ],
-    [ "negate", "classadiar_1_1____zdd.html#a44bc260b06baa04550c2828c1ce05e17", null ]
+    [ "_union", "classadiar_1_1____zdd.html#a7b2fb8e6fab74bdaa6a691345737c765", null ]
 ];

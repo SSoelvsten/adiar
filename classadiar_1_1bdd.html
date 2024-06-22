@@ -190,10 +190,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a738b16f1537ea259763ce60c056164de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a302e813f65e152fc209f4c3986aa42fd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1bdd.html#a302e813f65e152fc209f4c3986aa42fd">operator*=</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;other)</td></tr>
 <tr class="separator:a302e813f65e152fc209f4c3986aa42fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a355887367038d19632c86fb9c2717630"><td class="memItemLeft" align="right" valign="top"><a id="a355887367038d19632c86fb9c2717630"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1dd.html#a355887367038d19632c86fb9c2717630">is_negated</a> () const</td></tr>
-<tr class="memdesc:a355887367038d19632c86fb9c2717630"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read-only access to the negation flag. <br /></td></tr>
-<tr class="separator:a355887367038d19632c86fb9c2717630"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a55fb5c181a44b622f5fc43e6030121aa"><td class="memItemLeft" align="right" valign="top"><a id="a55fb5c181a44b622f5fc43e6030121aa"></a>
 const <a class="el" href="classadiar_1_1internal_1_1dd.html#a6e3a8ba34a8e4c6ffa86612923293b0f">shared_node_file_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1dd.html#a55fb5c181a44b622f5fc43e6030121aa">file_ptr</a> () const</td></tr>
 <tr class="memdesc:a55fb5c181a44b622f5fc43e6030121aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read-only access to the raw files and meta information. <br /></td></tr>
@@ -202,6 +198,10 @@ const <a class="el" href="classadiar_1_1internal_1_1dd.html#a6e3a8ba34a8e4c6ffa8
 const <a class="el" href="classadiar_1_1internal_1_1dd.html#a0cdac2e628e7e850c765f934b54bd6c6">node_file_type</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1dd.html#a088788c99e9b13c426b387cf7d89d01b">operator-&gt;</a> () const</td></tr>
 <tr class="memdesc:a088788c99e9b13c426b387cf7d89d01b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read-only access to the members of the raw files and meta information, i.e. this is similar to writing <code>.<a class="el" href="classadiar_1_1internal_1_1dd.html#a55fb5c181a44b622f5fc43e6030121aa" title="Read-only access to the raw files and meta information.">file_ptr()</a>-&gt;</code>. <br /></td></tr>
 <tr class="separator:a088788c99e9b13c426b387cf7d89d01b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a355887367038d19632c86fb9c2717630"><td class="memItemLeft" align="right" valign="top"><a id="a355887367038d19632c86fb9c2717630"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1dd.html#a355887367038d19632c86fb9c2717630">is_negated</a> () const</td></tr>
+<tr class="memdesc:a355887367038d19632c86fb9c2717630"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read-only access to the negation flag. <br /></td></tr>
+<tr class="separator:a355887367038d19632c86fb9c2717630"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc08e814ccd31b2c213cae02421a7856"><td class="memItemLeft" align="right" valign="top"><a id="adc08e814ccd31b2c213cae02421a7856"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1dd.html#adc08e814ccd31b2c213cae02421a7856">size</a> () const</td></tr>
 <tr class="memdesc:adc08e814ccd31b2c213cae02421a7856"><td class="mdescLeft">&#160;</td><td class="mdescRight">The number of elements in the node file. <br /></td></tr>
@@ -239,14 +239,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:a8de1d3d1e39f7e61b1fd1e2be4dfd336"><td class="memItemLeft" align="right" valign="top"><a id="a8de1d3d1e39f7e61b1fd1e2be4dfd336"></a>
-<a class="el" href="classadiar_1_1internal_1_1dd.html#a6e3a8ba34a8e4c6ffa86612923293b0f">shared_node_file_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1dd.html#a8de1d3d1e39f7e61b1fd1e2be4dfd336">file</a></td></tr>
-<tr class="memdesc:a8de1d3d1e39f7e61b1fd1e2be4dfd336"><td class="mdescLeft">&#160;</td><td class="mdescRight">The file describing the actual DAG of the decision diagram. <br /></td></tr>
-<tr class="separator:a8de1d3d1e39f7e61b1fd1e2be4dfd336"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2552dde28e5e045c0b1b9271e9db8807"><td class="memItemLeft" align="right" valign="top"><a id="a2552dde28e5e045c0b1b9271e9db8807"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1dd.html#a2552dde28e5e045c0b1b9271e9db8807">negate</a> = false</td></tr>
-<tr class="memdesc:a2552dde28e5e045c0b1b9271e9db8807"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether to negate the leaves when reading nodes from the file. <br /></td></tr>
-<tr class="separator:a2552dde28e5e045c0b1b9271e9db8807"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa61007519f8ddea47ab611ef6c791cf1"><td class="memItemLeft" align="right" valign="top"><a id="aa61007519f8ddea47ab611ef6c791cf1"></a>
+<a class="el" href="classadiar_1_1internal_1_1dd.html#a6e3a8ba34a8e4c6ffa86612923293b0f">shared_node_file_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1dd.html#aa61007519f8ddea47ab611ef6c791cf1">_file</a></td></tr>
+<tr class="memdesc:aa61007519f8ddea47ab611ef6c791cf1"><td class="mdescLeft">&#160;</td><td class="mdescRight">The file describing the actual DAG of the decision diagram. <br /></td></tr>
+<tr class="separator:aa61007519f8ddea47ab611ef6c791cf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30d13433c619f5a43529f7ab9604a689"><td class="memItemLeft" align="right" valign="top"><a id="a30d13433c619f5a43529f7ab9604a689"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1dd.html#a30d13433c619f5a43529f7ab9604a689">_negate</a> = false</td></tr>
+<tr class="memdesc:a30d13433c619f5a43529f7ab9604a689"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether to negate the leaves when reading nodes from the file. <br /></td></tr>
+<tr class="separator:a30d13433c619f5a43529f7ab9604a689"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A reduced Binary Decision Diagram. </p>

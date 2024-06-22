@@ -19,16 +19,6 @@ var classadiar_1_1internal_1_1dd =
     [ "size", "classadiar_1_1internal_1_1dd.html#adc08e814ccd31b2c213cae02421a7856", null ],
     [ "width", "classadiar_1_1internal_1_1dd.html#ae50a9dc1b8fcd0a6a907e4b1e3f22ac3", null ],
     [ "__dd", "classadiar_1_1internal_1_1dd.html#a73a1f3919e8a94357fba089164fcdbdf", null ],
-    [ "comparison_check", "classadiar_1_1internal_1_1dd.html#af533cf25e5656fe4773d179b09d5fa2f", null ],
-    [ "convert_dd_policy", "classadiar_1_1internal_1_1dd.html#ac603297de2949a5029075382d9be33d4", null ],
-    [ "dd_isterminal", "classadiar_1_1internal_1_1dd.html#a4cc83ffe7197342b10088fb1eab1d71a", null ],
-    [ "dd_maxvar", "classadiar_1_1internal_1_1dd.html#afa63cea6b7a994833ebf09fdbb32a231", null ],
-    [ "dd_minvar", "classadiar_1_1internal_1_1dd.html#af5228013c72c932afb84a0ef6f9e31f5", null ],
-    [ "dd_valueof", "classadiar_1_1internal_1_1dd.html#a095f2be12cfa6fa58d1afe2195224015", null ],
-    [ "is_isomorphic", "classadiar_1_1internal_1_1dd.html#aff88b2a159f5776cc34685c237340f55", null ],
-    [ "level_info_stream", "classadiar_1_1internal_1_1dd.html#a3c8a273a06f765c1d58fd9f72326ded0", null ],
-    [ "level_merger", "classadiar_1_1internal_1_1dd.html#a2476eff5fdf812bc5cb2a632f6b896a9", null ],
-    [ "node_stream", "classadiar_1_1internal_1_1dd.html#adf42e3c9081e09f27b9256994895b9f2", null ],
-    [ "file", "classadiar_1_1internal_1_1dd.html#a8de1d3d1e39f7e61b1fd1e2be4dfd336", null ],
-    [ "negate", "classadiar_1_1internal_1_1dd.html#a2552dde28e5e045c0b1b9271e9db8807", null ]
+    [ "_file", "classadiar_1_1internal_1_1dd.html#aa61007519f8ddea47ab611ef6c791cf1", null ],
+    [ "_negate", "classadiar_1_1internal_1_1dd.html#a30d13433c619f5a43529f7ab9604a689", null ]
 ];

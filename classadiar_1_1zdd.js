@@ -31,6 +31,6 @@ var classadiar_1_1zdd =
     [ "zdd_nodecount", "classadiar_1_1zdd.html#a28e09b085cb2a73dee336defc2019ab7", null ],
     [ "zdd_subseteq", "classadiar_1_1zdd.html#a68f0031807f08383fff89fd111ace451", null ],
     [ "zdd_varcount", "classadiar_1_1zdd.html#ac64e9802948af09a529042c4b25acaee", null ],
-    [ "file", "classadiar_1_1zdd.html#a8de1d3d1e39f7e61b1fd1e2be4dfd336", null ],
-    [ "negate", "classadiar_1_1zdd.html#a2552dde28e5e045c0b1b9271e9db8807", null ]
+    [ "_file", "classadiar_1_1zdd.html#aa61007519f8ddea47ab611ef6c791cf1", null ],
+    [ "_negate", "classadiar_1_1zdd.html#a30d13433c619f5a43529f7ab9604a689", null ]
 ];

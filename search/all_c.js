@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['nand_5fop_191',['nand_op',['../namespaceadiar.html#ad7cfa6a6a4566938e74764b4d0b58668',1,'adiar']]],
-  ['negate_192',['negate',['../classadiar_1_1internal_1_1____dd.html#a44bc260b06baa04550c2828c1ce05e17',1,'adiar::internal::__dd::negate()'],['../classadiar_1_1internal_1_1dd.html#a2552dde28e5e045c0b1b9271e9db8807',1,'adiar::internal::dd::negate()']]],
+  ['nand_5fop_192',['nand_op',['../namespaceadiar.html#ad7cfa6a6a4566938e74764b4d0b58668',1,'adiar']]],
   ['nested_193',['Nested',['../classadiar_1_1exec__policy_1_1quantify.html#abee6d64d26c9ebc46e6c47a718e22197a44d2c93a61deb96d9309e5a35501fb83',1,'adiar::exec_policy::quantify']]],
   ['nested_5flevels_194',['nested_levels',['../structadiar_1_1statistics_1_1nested__sweeping__t_1_1outer__up__t.html#a7b05971e3b90ec3c2c0c168c8ace9e92',1,'adiar::statistics::nested_sweeping_t::outer_up_t']]],
   ['nested_5fpolicy_5ft_195',['nested_policy_t',['../structadiar_1_1statistics_1_1quantify__t_1_1nested__policy__t.html',1,'adiar::statistics::quantify_t']]],
@@ -11,7 +10,7 @@ var searchData=
   ['node_5ffile_199',['node_file',['../structadiar_1_1statistics.html#abd960bddf01859439b3bae5a72b6fc82',1,'adiar::statistics']]],
   ['node_5ffile_5ft_200',['node_file_t',['../structadiar_1_1statistics_1_1node__file__t.html',1,'adiar::statistics']]],
   ['node_5ffile_5ftype_201',['node_file_type',['../classadiar_1_1internal_1_1dd.html#a0cdac2e628e7e850c765f934b54bd6c6',1,'adiar::internal::dd']]],
-  ['node_5ftype_202',['node_type',['../classadiar_1_1internal_1_1dd.html#ae61644f31c4f02c71977814fa92c2435',1,'adiar::internal::dd::node_type()'],['../classadiar_1_1internal_1_1____dd.html#aa1eafa94e60449e285536ba37968bd83',1,'adiar::internal::__dd::node_type()']]],
+  ['node_5ftype_202',['node_type',['../classadiar_1_1internal_1_1____dd.html#aa1eafa94e60449e285536ba37968bd83',1,'adiar::internal::__dd::node_type()'],['../classadiar_1_1internal_1_1dd.html#ae61644f31c4f02c71977814fa92c2435',1,'adiar::internal::dd::node_type()']]],
   ['non_5fmonotone_203',['Non_Monotone',['../namespaceadiar.html#a4679f9678ef99959f046aea209221af0a1160d47014d611622714f6b197a4cfad',1,'adiar']]],
   ['none_204',['None',['../namespaceadiar.html#ae0011ac93212d71c2e4310b76e76d642a6adf97f83acf6453d4a6a4b1070f3754',1,'adiar']]],
   ['nor_5fop_205',['nor_op',['../namespaceadiar.html#ab7377b5180e5350007f09a2932f1cc1a',1,'adiar']]],
