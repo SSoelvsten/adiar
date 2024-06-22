@@ -1418,7 +1418,7 @@ namespace adiar::internal
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// \brief Obtain the deepest level that satisfies (or not) the requested level.
+  /// \brief Obtain statistics on the variables in a Decision Diagram satisfying the predicate.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename Policy>
   inline quantify__pred_profile<Policy>
@@ -1557,7 +1557,7 @@ namespace adiar::internal
 
       unreduced_t transposed;
 
-      // If transposition__max_iterations is 0, then only quantify the lowest level (with pruning).
+      // If transposition__max_iterations is 0, then only prune quantified levels.
       if (transposition__max_iterations == 0) {
         // Singleton Quantification of bottom-most level
 #ifdef ADIAR_STATS
