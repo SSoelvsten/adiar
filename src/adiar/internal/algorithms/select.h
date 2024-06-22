@@ -21,12 +21,12 @@
 
 namespace adiar::internal
 {
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   //  Select Algorithm
   // ==================
   //
-  // Given a Decision Diagram, a subset of the levels are removed and bridged
-  // over in either the 'high' or the 'low' direction.
+  // Given a Decision Diagram, a subset of the levels are removed and bridged over in either the
+  // 'high' or the 'low' direction.
   /*
   //          _( )_     ---- xi                _( )_        ---- xi
   //         /     \                          /     \
@@ -36,18 +36,17 @@ namespace adiar::internal
   */
   // Examples of uses are `bdd_restrict` and `zdd_onset` / `zdd_offset`
   //
-  // As such, this is merely a niche-case of the Intercut algorithm, where the
-  // *onset* levels are removed and bridged over in a uniform direction (and the
-  // edges crossing said level only have suppressed nodes added). Yet compared
-  // to the Intercut algorithm, this implementation is optimised both in terms
-  // of time and space.
-  //////////////////////////////////////////////////////////////////////////////
+  // As such, this is merely a niche-case of the Intercut algorithm, where the *onset* levels are
+  // removed and bridged over in a uniform direction (and the edges crossing said level only have
+  // suppressed nodes added). Yet compared to the Intercut algorithm, this implementation is
+  // optimised both in terms of time and space.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// Struct to hold statistics
   extern statistics::select_t stats_select;
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   // Data Structures
   using select_request = request_data<1, with_parent>;
 
@@ -60,11 +59,10 @@ namespace adiar::internal
                                   1u,
                                   0u>;
 
-  /// Return a desired `node` to be output or a `node::pointer_type` to skip to
-  /// one of its children.
+  /// Return a desired `node` to be output or a `node::pointer_type` to skip to one of its children.
   using select_rec = std::variant<node, node::pointer_type>;
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   // Helper functions
   template <typename PriorityQueue>
   inline void
@@ -80,7 +78,7 @@ namespace adiar::internal
     }
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename Policy, typename PriorityQueue>
   typename Policy::__dd_type
   __select(const exec_policy& ep,
@@ -192,12 +190,11 @@ namespace adiar::internal
   typename Policy::__dd_type
   select(const exec_policy& ep, const typename Policy::dd_type& dd, Policy& policy)
   {
-    // Compute amount of memory available for auxiliary data structures after
-    // having opened all streams.
+    // Compute amount of memory available for auxiliary data structures after having opened all
+    // streams.
     //
-    // We then may derive an upper bound on the size of auxiliary data
-    // structures and check whether we can run them with a faster internal
-    // memory variant.
+    // We then may derive an upper bound on the size of auxiliary data structures and check whether
+    // we can run them with a faster internal memory variant.
     const tpie::memory_size_type aux_available_memory =
       memory_available() - node_stream<>::memory_usage() - arc_writer::memory_usage();
 
