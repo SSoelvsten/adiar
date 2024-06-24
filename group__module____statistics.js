@@ -169,6 +169,7 @@ var group__module____statistics =
         [ "monotonic_reduces", "structadiar_1_1statistics_1_1replace__t.html#a607faa9215476566eb69dbfb179dc031", null ],
         [ "monotonic_scans", "structadiar_1_1statistics_1_1replace__t.html#ae3036b9c2a4c058e36c9817a25e14641", null ],
         [ "nested_sweeps", "structadiar_1_1statistics_1_1replace__t.html#ad5e4c0171fc95515c27fd65ee4916177", null ],
+        [ "shift_returns", "structadiar_1_1statistics_1_1replace__t.html#a78dfb9ef02471071328d028c67be9942", null ],
         [ "terminal_returns", "structadiar_1_1statistics_1_1replace__t.html#a63f5b487d41f67a87ab5049e58b2f71e", null ]
       ] ],
       [ "select_t", "structadiar_1_1statistics_1_1select__t.html", [

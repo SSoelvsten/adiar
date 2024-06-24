@@ -128,6 +128,10 @@ using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cla
 using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1dd.html#a89544dd479c73f3704c989d54e72b10b">label_type</a> = node_type::label_type</td></tr>
 <tr class="memdesc:a89544dd479c73f3704c989d54e72b10b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of this node's variable label. <br /></td></tr>
 <tr class="separator:a89544dd479c73f3704c989d54e72b10b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88c9ef967294674d6a63ef5917e4d6eb"><td class="memItemLeft" align="right" valign="top"><a id="a88c9ef967294674d6a63ef5917e4d6eb"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1dd.html#a88c9ef967294674d6a63ef5917e4d6eb">signed_label_type</a> = node_type::signed_label_type</td></tr>
+<tr class="memdesc:a88c9ef967294674d6a63ef5917e4d6eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type for difference between variable labels. <br /></td></tr>
+<tr class="separator:a88c9ef967294674d6a63ef5917e4d6eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acaf2cbc09c051a0502cd88d26107d877"><td class="memItemLeft" align="right" valign="top"><a id="acaf2cbc09c051a0502cd88d26107d877"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1dd.html#acaf2cbc09c051a0502cd88d26107d877">id_type</a> = node_type::id_type</td></tr>
 <tr class="memdesc:acaf2cbc09c051a0502cd88d26107d877"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of this node's level identifier. <br /></td></tr>
@@ -147,18 +151,18 @@ using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cla
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a4fbe93e5d66385009dba8169e311e047"><td class="memItemLeft" align="right" valign="top"><a id="a4fbe93e5d66385009dba8169e311e047"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1dd.html#a4fbe93e5d66385009dba8169e311e047">dd</a> (const <a class="el" href="classadiar_1_1internal_1_1dd.html#a6e3a8ba34a8e4c6ffa86612923293b0f">shared_node_file_type</a> &amp;f, bool negate=false)</td></tr>
-<tr class="memdesc:a4fbe93e5d66385009dba8169e311e047"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor to wrap the node-based result of an algorithm. <br /></td></tr>
-<tr class="separator:a4fbe93e5d66385009dba8169e311e047"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac5732900b9a358bbd20a51abc31a76bd"><td class="memItemLeft" align="right" valign="top"><a id="ac5732900b9a358bbd20a51abc31a76bd"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1dd.html#ac5732900b9a358bbd20a51abc31a76bd">dd</a> (const <a class="el" href="classadiar_1_1internal_1_1dd.html">dd</a> &amp;<a class="el" href="classadiar_1_1internal_1_1dd.html">dd</a>)</td></tr>
-<tr class="memdesc:ac5732900b9a358bbd20a51abc31a76bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy construction, incrementing the reference count on the file underneath. <br /></td></tr>
-<tr class="separator:ac5732900b9a358bbd20a51abc31a76bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aed427f783611d6d0522672644a3d34ab"><td class="memItemLeft" align="right" valign="top"><a id="aed427f783611d6d0522672644a3d34ab"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1dd.html#aed427f783611d6d0522672644a3d34ab">dd</a> (<a class="el" href="classadiar_1_1internal_1_1dd.html">dd</a> &amp;&amp;<a class="el" href="classadiar_1_1internal_1_1dd.html">dd</a>)</td></tr>
-<tr class="memdesc:aed427f783611d6d0522672644a3d34ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move construction, taking over ownership of the files underneath. <br /></td></tr>
-<tr class="separator:aed427f783611d6d0522672644a3d34ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d0c62e8d4040705f5aa430eb6472793"><td class="memItemLeft" align="right" valign="top"><a id="a6d0c62e8d4040705f5aa430eb6472793"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1dd.html#a6d0c62e8d4040705f5aa430eb6472793">dd</a> (const <a class="el" href="classadiar_1_1internal_1_1dd.html#a6e3a8ba34a8e4c6ffa86612923293b0f">shared_node_file_type</a> &amp;f, bool negate=false, <a class="el" href="classadiar_1_1internal_1_1dd.html#a88c9ef967294674d6a63ef5917e4d6eb">signed_label_type</a> <a class="el" href="classadiar_1_1internal_1_1dd.html#a9f72e51b81c9752618d97cae443d5ea0">shift</a>=0)</td></tr>
+<tr class="memdesc:a6d0c62e8d4040705f5aa430eb6472793"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor to wrap the node-based result of an algorithm. <br /></td></tr>
+<tr class="separator:a6d0c62e8d4040705f5aa430eb6472793"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addd32aeeaeda69734c9e18bc69a02fee"><td class="memItemLeft" align="right" valign="top"><a id="addd32aeeaeda69734c9e18bc69a02fee"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1dd.html#addd32aeeaeda69734c9e18bc69a02fee">dd</a> (const <a class="el" href="classadiar_1_1internal_1_1dd.html">dd</a> &amp;<a class="el" href="classadiar_1_1internal_1_1dd.html">dd</a>)=default</td></tr>
+<tr class="memdesc:addd32aeeaeda69734c9e18bc69a02fee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy construction, incrementing the reference count on the file underneath. <br /></td></tr>
+<tr class="separator:addd32aeeaeda69734c9e18bc69a02fee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa352a9bcc4ddf44930e5dd7b9c587b4a"><td class="memItemLeft" align="right" valign="top"><a id="aa352a9bcc4ddf44930e5dd7b9c587b4a"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1dd.html#aa352a9bcc4ddf44930e5dd7b9c587b4a">dd</a> (<a class="el" href="classadiar_1_1internal_1_1dd.html">dd</a> &amp;&amp;<a class="el" href="classadiar_1_1internal_1_1dd.html">dd</a>)=default</td></tr>
+<tr class="memdesc:aa352a9bcc4ddf44930e5dd7b9c587b4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move construction, taking over ownership of the files underneath. <br /></td></tr>
+<tr class="separator:aa352a9bcc4ddf44930e5dd7b9c587b4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a55fb5c181a44b622f5fc43e6030121aa"><td class="memItemLeft" align="right" valign="top"><a id="a55fb5c181a44b622f5fc43e6030121aa"></a>
 const <a class="el" href="classadiar_1_1internal_1_1dd.html#a6e3a8ba34a8e4c6ffa86612923293b0f">shared_node_file_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1dd.html#a55fb5c181a44b622f5fc43e6030121aa">file_ptr</a> () const</td></tr>
 <tr class="memdesc:a55fb5c181a44b622f5fc43e6030121aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read-only access to the raw files and meta information. <br /></td></tr>
@@ -171,6 +175,10 @@ const <a class="el" href="classadiar_1_1internal_1_1dd.html#a0cdac2e628e7e850c76
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1dd.html#a355887367038d19632c86fb9c2717630">is_negated</a> () const</td></tr>
 <tr class="memdesc:a355887367038d19632c86fb9c2717630"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read-only access to the negation flag. <br /></td></tr>
 <tr class="separator:a355887367038d19632c86fb9c2717630"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f72e51b81c9752618d97cae443d5ea0"><td class="memItemLeft" align="right" valign="top"><a id="a9f72e51b81c9752618d97cae443d5ea0"></a>
+<a class="el" href="classadiar_1_1internal_1_1dd.html#a88c9ef967294674d6a63ef5917e4d6eb">signed_label_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1dd.html#a9f72e51b81c9752618d97cae443d5ea0">shift</a> () const</td></tr>
+<tr class="memdesc:a9f72e51b81c9752618d97cae443d5ea0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read-only access to the number of levels to shift. <br /></td></tr>
+<tr class="separator:a9f72e51b81c9752618d97cae443d5ea0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc08e814ccd31b2c213cae02421a7856"><td class="memItemLeft" align="right" valign="top"><a id="adc08e814ccd31b2c213cae02421a7856"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1dd.html#adc08e814ccd31b2c213cae02421a7856">size</a> () const</td></tr>
 <tr class="memdesc:adc08e814ccd31b2c213cae02421a7856"><td class="mdescLeft">&#160;</td><td class="mdescRight">The number of elements in the node file. <br /></td></tr>
@@ -216,6 +224,10 @@ Protected Attributes</h2></td></tr>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1dd.html#a30d13433c619f5a43529f7ab9604a689">_negate</a> = false</td></tr>
 <tr class="memdesc:a30d13433c619f5a43529f7ab9604a689"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether to negate the leaves when reading nodes from the file. <br /></td></tr>
 <tr class="separator:a30d13433c619f5a43529f7ab9604a689"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d3e2de2a807039e7e1cac4d6d402fe9"><td class="memItemLeft" align="right" valign="top"><a id="a3d3e2de2a807039e7e1cac4d6d402fe9"></a>
+<a class="el" href="classadiar_1_1internal_1_1dd.html#a88c9ef967294674d6a63ef5917e4d6eb">signed_label_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1dd.html#a3d3e2de2a807039e7e1cac4d6d402fe9">_shift</a> = 0</td></tr>
+<tr class="memdesc:a3d3e2de2a807039e7e1cac4d6d402fe9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of levels to shift by. <br /></td></tr>
+<tr class="separator:a3d3e2de2a807039e7e1cac4d6d402fe9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Container for the files that represent a Decision Diagram. </p>

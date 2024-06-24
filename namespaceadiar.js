@@ -46,6 +46,7 @@ var namespaceadiar =
     [ "replace_type", "namespaceadiar.html#a4679f9678ef99959f046aea209221af0", [
       [ "Non_Monotone", "namespaceadiar.html#a4679f9678ef99959f046aea209221af0a1160d47014d611622714f6b197a4cfad", null ],
       [ "Monotone", "namespaceadiar.html#a4679f9678ef99959f046aea209221af0a674832a3d744b83d8b6e06bc3f81c93b", null ],
+      [ "Shift", "namespaceadiar.html#a4679f9678ef99959f046aea209221af0a825a3d98017bab11815ad2817201324c", null ],
       [ "Identity", "namespaceadiar.html#a4679f9678ef99959f046aea209221af0ac9c5c65fb4af9cf90eb99b3b84424189", null ]
     ] ],
     [ "adiar_deinit", "group__module____adiar.html#ga9501bb9e871253964682b7ac1942f911", null ],

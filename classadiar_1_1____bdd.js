@@ -1,9 +1,12 @@
 var classadiar_1_1____bdd =
 [
     [ "arc_type", "classadiar_1_1____bdd.html#a527247761bb12a0b07a17a65062c356a", null ],
+    [ "label_type", "classadiar_1_1____bdd.html#ae0cf2e3c87dd7d2ea7c63b5e6b316c6e", null ],
     [ "node_type", "classadiar_1_1____bdd.html#aa1eafa94e60449e285536ba37968bd83", null ],
+    [ "pointer_type", "classadiar_1_1____bdd.html#ab221d0872bfb0409a7c58262fa7ea761", null ],
     [ "shared_arc_file_type", "classadiar_1_1____bdd.html#a073bd9314a5213108cdb99e4175dc5ae", null ],
     [ "shared_node_file_type", "classadiar_1_1____bdd.html#a0e3ab4aa5b10f26683c9d7b7bfb577b1", null ],
+    [ "signed_label_type", "classadiar_1_1____bdd.html#a17d8487d9260569855a29780e975b8d3", null ],
     [ "__bdd", "classadiar_1_1____bdd.html#a9f1476c5655847d33650231b299b1643", null ],
     [ "__bdd", "classadiar_1_1____bdd.html#a2129d0462907d8826290b6965a79be39", null ],
     [ "__bdd", "classadiar_1_1____bdd.html#aafb049a2192c2fe7a50bca5d64968c72", null ],
@@ -18,5 +21,6 @@ var classadiar_1_1____bdd =
     [ "size", "classadiar_1_1____bdd.html#ab249b578d368d029ea66e732d9fd1849", null ],
     [ "_negate", "classadiar_1_1____bdd.html#a9ce1ecfcae05eb3b446a95437ea76722", null ],
     [ "_policy", "classadiar_1_1____bdd.html#a014842c4dde92f899b34a1e4be85fcbc", null ],
+    [ "_shift", "classadiar_1_1____bdd.html#ae46feed43156fed22a5f887983b7bc5b", null ],
     [ "_union", "classadiar_1_1____bdd.html#a7b2fb8e6fab74bdaa6a691345737c765", null ]
 ];

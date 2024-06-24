@@ -2,9 +2,12 @@ var group__module____bdd =
 [
     [ "__bdd", "classadiar_1_1____bdd.html", [
       [ "arc_type", "classadiar_1_1____bdd.html#a527247761bb12a0b07a17a65062c356a", null ],
+      [ "label_type", "classadiar_1_1____bdd.html#ae0cf2e3c87dd7d2ea7c63b5e6b316c6e", null ],
       [ "node_type", "classadiar_1_1____bdd.html#aa1eafa94e60449e285536ba37968bd83", null ],
+      [ "pointer_type", "classadiar_1_1____bdd.html#ab221d0872bfb0409a7c58262fa7ea761", null ],
       [ "shared_arc_file_type", "classadiar_1_1____bdd.html#a073bd9314a5213108cdb99e4175dc5ae", null ],
       [ "shared_node_file_type", "classadiar_1_1____bdd.html#a0e3ab4aa5b10f26683c9d7b7bfb577b1", null ],
+      [ "signed_label_type", "classadiar_1_1____bdd.html#a17d8487d9260569855a29780e975b8d3", null ],
       [ "__bdd", "classadiar_1_1____bdd.html#a9f1476c5655847d33650231b299b1643", null ],
       [ "__bdd", "classadiar_1_1____bdd.html#a2129d0462907d8826290b6965a79be39", null ],
       [ "__bdd", "classadiar_1_1____bdd.html#aafb049a2192c2fe7a50bca5d64968c72", null ],
@@ -19,6 +22,7 @@ var group__module____bdd =
       [ "size", "classadiar_1_1____bdd.html#ab249b578d368d029ea66e732d9fd1849", null ],
       [ "_negate", "classadiar_1_1____bdd.html#a9ce1ecfcae05eb3b446a95437ea76722", null ],
       [ "_policy", "classadiar_1_1____bdd.html#a014842c4dde92f899b34a1e4be85fcbc", null ],
+      [ "_shift", "classadiar_1_1____bdd.html#ae46feed43156fed22a5f887983b7bc5b", null ],
       [ "_union", "classadiar_1_1____bdd.html#a7b2fb8e6fab74bdaa6a691345737c765", null ]
     ] ],
     [ "bdd", "classadiar_1_1bdd.html", [
@@ -28,9 +32,10 @@ var group__module____bdd =
       [ "node_type", "classadiar_1_1bdd.html#ae61644f31c4f02c71977814fa92c2435", null ],
       [ "pointer_type", "classadiar_1_1bdd.html#a93ec5aaf584e43c89246788c577067ea", null ],
       [ "shared_node_file_type", "classadiar_1_1bdd.html#a6e3a8ba34a8e4c6ffa86612923293b0f", null ],
+      [ "signed_label_type", "classadiar_1_1bdd.html#a88c9ef967294674d6a63ef5917e4d6eb", null ],
       [ "terminal_type", "classadiar_1_1bdd.html#ab27dcf883d83c04d944288f0b3507cd8", null ],
       [ "bdd", "classadiar_1_1bdd.html#a050e7842a11d52a4190e215ca4b55f8f", null ],
-      [ "bdd", "classadiar_1_1bdd.html#a32d97c46fa78dff0c85f5afbcd201466", null ],
+      [ "bdd", "classadiar_1_1bdd.html#ab85ae638dfda8b6cceee0f2b891e3620", null ],
       [ "bdd", "classadiar_1_1bdd.html#a2861d0db43c503b9342ff9bfff7ed6a4", null ],
       [ "bdd", "classadiar_1_1bdd.html#aef780417a744bc61299ec7e690570f00", null ],
       [ "bdd", "classadiar_1_1bdd.html#aae5faaa190306c52cfa88a2458971869", null ],
@@ -48,15 +53,17 @@ var group__module____bdd =
       [ "operator=", "classadiar_1_1bdd.html#a7b4eda40a4faa1caea332b18c28a06be", null ],
       [ "operator^=", "classadiar_1_1bdd.html#a1ccd22bde3c2541e5000a8fd100cf99a", null ],
       [ "operator|=", "classadiar_1_1bdd.html#a09927a3b6d7acedc355f5a4ce8698a1f", null ],
+      [ "shift", "classadiar_1_1bdd.html#a9f72e51b81c9752618d97cae443d5ea0", null ],
       [ "size", "classadiar_1_1bdd.html#adc08e814ccd31b2c213cae02421a7856", null ],
       [ "width", "classadiar_1_1bdd.html#ae50a9dc1b8fcd0a6a907e4b1e3f22ac3", null ],
       [ "bdd_ite", "classadiar_1_1bdd.html#a27912dac242552a6c0b6cc13a52b3f8c", null ],
       [ "bdd_nodecount", "classadiar_1_1bdd.html#a467df9b676300170cb751965d4d9556a", null ],
       [ "bdd_not", "classadiar_1_1bdd.html#ad40e6cf627d17cace6ed2f8f4122169e", null ],
       [ "bdd_not", "classadiar_1_1bdd.html#afef586ff33a4179291f3b9040648f1b0", null ],
-      [ "bdd_varcount", "classadiar_1_1bdd.html#ab3c12e6a74d184ffbcce622e979a89f8", null ],
+      [ "bdd_varcount", "classadiar_1_1bdd.html#adfd62966af1ea3f7edc6ba81f698e178", null ],
       [ "_file", "classadiar_1_1bdd.html#aa61007519f8ddea47ab611ef6c791cf1", null ],
-      [ "_negate", "classadiar_1_1bdd.html#a30d13433c619f5a43529f7ab9604a689", null ]
+      [ "_negate", "classadiar_1_1bdd.html#a30d13433c619f5a43529f7ab9604a689", null ],
+      [ "_shift", "classadiar_1_1bdd.html#a3d3e2de2a807039e7e1cac4d6d402fe9", null ]
     ] ],
     [ "bdd_and", "group__module____bdd.html#ga4939a4318a163955b52eb004cf9ea1c1", null ],
     [ "bdd_and", "group__module____bdd.html#ga0ab26b436834fd399b3da74a2dafb304", null ],

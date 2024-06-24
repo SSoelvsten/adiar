@@ -6,9 +6,10 @@ var classadiar_1_1zdd =
     [ "node_type", "classadiar_1_1zdd.html#ae61644f31c4f02c71977814fa92c2435", null ],
     [ "pointer_type", "classadiar_1_1zdd.html#a93ec5aaf584e43c89246788c577067ea", null ],
     [ "shared_node_file_type", "classadiar_1_1zdd.html#a6e3a8ba34a8e4c6ffa86612923293b0f", null ],
+    [ "signed_label_type", "classadiar_1_1zdd.html#a88c9ef967294674d6a63ef5917e4d6eb", null ],
     [ "terminal_type", "classadiar_1_1zdd.html#ab27dcf883d83c04d944288f0b3507cd8", null ],
     [ "zdd", "classadiar_1_1zdd.html#afa961c0e0bb4ddccd438aa02822f599b", null ],
-    [ "zdd", "classadiar_1_1zdd.html#a957a3adc778b408f58fe019dbf67b314", null ],
+    [ "zdd", "classadiar_1_1zdd.html#a3c1e152d844a2f72c93c4cfb92acb4c7", null ],
     [ "zdd", "classadiar_1_1zdd.html#ae7c9de64df28a25d181d77e1dbe13f84", null ],
     [ "zdd", "classadiar_1_1zdd.html#ac0c2fe2a7a2d912bada835af1fd6625b", null ],
     [ "zdd", "classadiar_1_1zdd.html#aadf949017b5699fadee6313010172c1d", null ],
@@ -25,12 +26,14 @@ var classadiar_1_1zdd =
     [ "operator=", "classadiar_1_1zdd.html#ac2877bd6be4cf583d9a9160230da1724", null ],
     [ "operator=", "classadiar_1_1zdd.html#ae8cfa4b2465ee05d94a88ee7a22051ee", null ],
     [ "operator|=", "classadiar_1_1zdd.html#afd2bff4462b212467f2245b3479cbd16", null ],
+    [ "shift", "classadiar_1_1zdd.html#a9f72e51b81c9752618d97cae443d5ea0", null ],
     [ "size", "classadiar_1_1zdd.html#adc08e814ccd31b2c213cae02421a7856", null ],
     [ "width", "classadiar_1_1zdd.html#ae50a9dc1b8fcd0a6a907e4b1e3f22ac3", null ],
     [ "zdd_disjoint", "classadiar_1_1zdd.html#a9f6acca46c09c144a77d5c6ef22baa7e", null ],
     [ "zdd_nodecount", "classadiar_1_1zdd.html#a28e09b085cb2a73dee336defc2019ab7", null ],
     [ "zdd_subseteq", "classadiar_1_1zdd.html#a68f0031807f08383fff89fd111ace451", null ],
-    [ "zdd_varcount", "classadiar_1_1zdd.html#ac64e9802948af09a529042c4b25acaee", null ],
+    [ "zdd_varcount", "classadiar_1_1zdd.html#a6dbeab4e8293bdc222ac748d8eca0e62", null ],
     [ "_file", "classadiar_1_1zdd.html#aa61007519f8ddea47ab611ef6c791cf1", null ],
-    [ "_negate", "classadiar_1_1zdd.html#a30d13433c619f5a43529f7ab9604a689", null ]
+    [ "_negate", "classadiar_1_1zdd.html#a30d13433c619f5a43529f7ab9604a689", null ],
+    [ "_shift", "classadiar_1_1zdd.html#a3d3e2de2a807039e7e1cac4d6d402fe9", null ]
 ];

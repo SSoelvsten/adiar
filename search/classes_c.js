@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['quantify_412',['quantify',['../classadiar_1_1exec__policy_1_1quantify.html',1,'adiar::exec_policy']]],
-  ['quantify_5ft_413',['quantify_t',['../structadiar_1_1statistics_1_1quantify__t.html',1,'adiar::statistics']]]
+  ['quantify_417',['quantify',['../classadiar_1_1exec__policy_1_1quantify.html',1,'adiar::exec_policy']]],
+  ['quantify_5ft_418',['quantify_t',['../structadiar_1_1statistics_1_1quantify__t.html',1,'adiar::statistics']]]
 ];

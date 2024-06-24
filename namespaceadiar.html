@@ -204,6 +204,7 @@ Enumerations</h2></td></tr>
 <tr class="separator:ae0011ac93212d71c2e4310b76e76d642"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4679f9678ef99959f046aea209221af0"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#a4679f9678ef99959f046aea209221af0">replace_type</a> : signed char { <a class="el" href="namespaceadiar.html#a4679f9678ef99959f046aea209221af0a1160d47014d611622714f6b197a4cfad">Non_Monotone</a> = 3
 , <a class="el" href="namespaceadiar.html#a4679f9678ef99959f046aea209221af0a674832a3d744b83d8b6e06bc3f81c93b">Monotone</a> = 2
+, <a class="el" href="namespaceadiar.html#a4679f9678ef99959f046aea209221af0a825a3d98017bab11815ad2817201324c">Shift</a> = 0
 , <a class="el" href="namespaceadiar.html#a4679f9678ef99959f046aea209221af0ac9c5c65fb4af9cf90eb99b3b84424189">Identity</a> = -1
  }</td></tr>
 <tr class="memdesc:a4679f9678ef99959f046aea209221af0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Possible guarantees of a variable permutation/remapping <code>m</code> of type <code>int -&gt; int</code>.  <a href="namespaceadiar.html#a4679f9678ef99959f046aea209221af0">More...</a><br /></td></tr>
@@ -1497,6 +1498,8 @@ template&lt;typename T &gt; </div>
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a4679f9678ef99959f046aea209221af0a1160d47014d611622714f6b197a4cfad"></a>Non_Monotone&#160;</td><td class="fielddoc"><p>Any variable remapping without any guarantees on <code>m</code>. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a4679f9678ef99959f046aea209221af0a674832a3d744b83d8b6e06bc3f81c93b"></a>Monotone&#160;</td><td class="fielddoc"><p>For any <code>x &lt; y</code> then the mapped values preserve that order, i.e. <code>m(x) &lt; m(y)</code>. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a4679f9678ef99959f046aea209221af0a825a3d98017bab11815ad2817201324c"></a>Shift&#160;</td><td class="fielddoc"><p>(faster version of 'Monotone'): <code>m(x) = x + b</code> for an integer <code>b</code>. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a4679f9678ef99959f046aea209221af0ac9c5c65fb4af9cf90eb99b3b84424189"></a>Identity&#160;</td><td class="fielddoc"><p>Nothing needs to be done, as <code>m(x) = x</code>. </p>
 </td></tr>

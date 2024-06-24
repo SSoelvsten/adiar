@@ -1,13 +1,13 @@
 var searchData=
 [
-  ['terminal_5freturns_311',['terminal_returns',['../structadiar_1_1statistics_1_1replace__t.html#a63f5b487d41f67a87ab5049e58b2f71e',1,'adiar::statistics::replace_t']]],
-  ['terminal_5ftype_312',['terminal_type',['../classadiar_1_1internal_1_1dd.html#ab27dcf883d83c04d944288f0b3507cd8',1,'adiar::internal::dd']]],
-  ['terminals_313',['terminals',['../structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__down__t_1_1requests__t.html#a507a20c2de135a2b50f9daad8f8c879c',1,'adiar::statistics::nested_sweeping_t::inner_down_t::requests_t']]],
-  ['total_314',['total',['../structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html#a5528e809829233a8f28065318e4c06ae',1,'adiar::statistics::__alg_base::__lpq_t']]],
-  ['transposition_5fgrowth_315',['transposition_growth',['../classadiar_1_1exec__policy_1_1quantify_1_1transposition__growth.html',1,'adiar::exec_policy::quantify::transposition_growth'],['../classadiar_1_1exec__policy_1_1quantify_1_1transposition__growth.html#a012577b3cd4bb110c9617a593d7e547f',1,'adiar::exec_policy::quantify::transposition_growth::transposition_growth()']]],
-  ['transposition_5fmax_316',['transposition_max',['../classadiar_1_1exec__policy_1_1quantify_1_1transposition__max.html',1,'adiar::exec_policy::quantify::transposition_max'],['../classadiar_1_1exec__policy_1_1quantify_1_1transposition__max.html#a107dd5343dfa86276e3d62c4b7833462',1,'adiar::exec_policy::quantify::transposition_max::transposition_max()'],['../classadiar_1_1exec__policy_1_1quantify_1_1transposition__max.html#a26f38be819d10ee9bb917edc5f7cd6a4',1,'adiar::exec_policy::quantify::transposition_max::transposition_max(unsigned char value)']]],
-  ['trivial_5ffile_317',['trivial_file',['../structadiar_1_1statistics_1_1prod2__t.html#a3fb3fbf6dce52ee96fac9d9f183fb5fb',1,'adiar::statistics::prod2_t']]],
-  ['trivial_5fterminal_318',['trivial_terminal',['../structadiar_1_1statistics_1_1prod2__t.html#a6d3f4d0066639dda6b702f51d3bdff09',1,'adiar::statistics::prod2_t']]],
-  ['true_319',['True',['../namespaceadiar.html#ae0011ac93212d71c2e4310b76e76d642af827cf462f62848df37c5e1e94a4da74',1,'adiar']]],
-  ['tutorial_320',['Tutorial',['../page__tutorial.html',1,'']]]
+  ['terminal_5freturns_316',['terminal_returns',['../structadiar_1_1statistics_1_1replace__t.html#a63f5b487d41f67a87ab5049e58b2f71e',1,'adiar::statistics::replace_t']]],
+  ['terminal_5ftype_317',['terminal_type',['../classadiar_1_1internal_1_1dd.html#ab27dcf883d83c04d944288f0b3507cd8',1,'adiar::internal::dd']]],
+  ['terminals_318',['terminals',['../structadiar_1_1statistics_1_1nested__sweeping__t_1_1inner__down__t_1_1requests__t.html#a507a20c2de135a2b50f9daad8f8c879c',1,'adiar::statistics::nested_sweeping_t::inner_down_t::requests_t']]],
+  ['total_319',['total',['../structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html#a5528e809829233a8f28065318e4c06ae',1,'adiar::statistics::__alg_base::__lpq_t']]],
+  ['transposition_5fgrowth_320',['transposition_growth',['../classadiar_1_1exec__policy_1_1quantify_1_1transposition__growth.html',1,'adiar::exec_policy::quantify::transposition_growth'],['../classadiar_1_1exec__policy_1_1quantify_1_1transposition__growth.html#a012577b3cd4bb110c9617a593d7e547f',1,'adiar::exec_policy::quantify::transposition_growth::transposition_growth()']]],
+  ['transposition_5fmax_321',['transposition_max',['../classadiar_1_1exec__policy_1_1quantify_1_1transposition__max.html',1,'adiar::exec_policy::quantify::transposition_max'],['../classadiar_1_1exec__policy_1_1quantify_1_1transposition__max.html#a107dd5343dfa86276e3d62c4b7833462',1,'adiar::exec_policy::quantify::transposition_max::transposition_max()'],['../classadiar_1_1exec__policy_1_1quantify_1_1transposition__max.html#a26f38be819d10ee9bb917edc5f7cd6a4',1,'adiar::exec_policy::quantify::transposition_max::transposition_max(unsigned char value)']]],
+  ['trivial_5ffile_322',['trivial_file',['../structadiar_1_1statistics_1_1prod2__t.html#a3fb3fbf6dce52ee96fac9d9f183fb5fb',1,'adiar::statistics::prod2_t']]],
+  ['trivial_5fterminal_323',['trivial_terminal',['../structadiar_1_1statistics_1_1prod2__t.html#a6d3f4d0066639dda6b702f51d3bdff09',1,'adiar::statistics::prod2_t']]],
+  ['true_324',['True',['../namespaceadiar.html#ae0011ac93212d71c2e4310b76e76d642af827cf462f62848df37c5e1e94a4da74',1,'adiar']]],
+  ['tutorial_325',['Tutorial',['../page__tutorial.html',1,'']]]
 ];
