@@ -818,8 +818,8 @@ namespace adiar::internal
   inline ptr_uint64
   cnot(const ptr_uint64& p, const bool negate)
   {
-    const ptr_uint64::raw_type shifted_negate =
-      static_cast<ptr_uint64::raw_type>(negate) << ptr_uint64::data_shift;
+    const ptr_uint64::raw_type shifted_negate = static_cast<ptr_uint64::raw_type>(negate)
+      << ptr_uint64::data_shift;
 
     return p.is_terminal() ? p._raw ^ shifted_negate : p._raw;
   }
@@ -870,18 +870,19 @@ namespace adiar::internal
   inline ptr_uint64
   shift_replace(const ptr_uint64& p, const ptr_uint64::signed_level_type levels)
   {
-    // Evil type hacks (Thanks, Quake III)
+    // Evil type hack to obtain `p.level()` as a signed integer (Thanks, Quake III)
     const ptr_uint64::level_type p_level__unsigned = p.level();
     const ptr_uint64::signed_level_type p_level__signed =
-      (*reinterpret_cast<const ptr_uint64::signed_level_type *>(&p_level__unsigned));
+      (*reinterpret_cast<const ptr_uint64::signed_level_type*>(&p_level__unsigned));
 
+    // Evil type hack to obtain `p.level() + levels` as an unsigned integer (Thanks, Quake III)
     const ptr_uint64::signed_level_type p_new_level__signed = p_level__signed + levels;
     const ptr_uint64::level_type p_new_level__unsigned =
-      (*reinterpret_cast<const ptr_uint64::level_type *>(&p_new_level__signed));
+      (*reinterpret_cast<const ptr_uint64::level_type*>(&p_new_level__signed));
 
     // Shift levels back and combine with other bits
-    const ptr_uint64::raw_type level_bits =
-      static_cast<ptr_uint64::raw_type>(p_new_level__unsigned) << ptr_uint64::level_shift;
+    const ptr_uint64::raw_type level_bits = static_cast<ptr_uint64::raw_type>(p_new_level__unsigned)
+      << ptr_uint64::level_shift;
 
     constexpr ptr_uint64::raw_type non_levels_mask =
       ~(static_cast<ptr_uint64::raw_type>(ptr_uint64::max_level) << ptr_uint64::level_shift);
