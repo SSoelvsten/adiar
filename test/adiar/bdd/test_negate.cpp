@@ -73,55 +73,8 @@ go_bandit([]() {
 
     bdd bdd_2(bdd_2_nf);
 
-    it("should doube-negate a T terminal-only BDD back into a T terminal-only BDD", [&]() {
-      bdd out = bdd_not(bdd_not(terminal_T));
-
-      // Check if it is correct
-      node_test_stream ns(out);
-
-      AssertThat(ns.can_pull(), Is().True());
-      AssertThat(ns.pull(), Is().EqualTo(node(true)));
-      AssertThat(ns.can_pull(), Is().False());
-    });
-
-    it("should doube-negate an F terminal-only BDD back into an F terminal-only BDD", [&]() {
-      bdd out = bdd_not(bdd_not(terminal_T));
-
-      // Check if it is correct
-      node_test_stream ns(out);
-
-      AssertThat(ns.can_pull(), Is().True());
-      AssertThat(ns.pull(), Is().EqualTo(node(true)));
-      AssertThat(ns.can_pull(), Is().False());
-    });
-
-    it("should double-negate terminal-children in BDD 1 back to the original", [&]() {
-      // Checkmate, constructivists...
-
-      bdd out = bdd_not(bdd_not(bdd_1));
-
-      // Check if it is correct
-      node_test_stream ns(out);
-
-      AssertThat(ns.can_pull(), Is().True());
-      AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id, terminal_F_ptr, terminal_T_ptr)));
-
-      AssertThat(ns.can_pull(), Is().True());
-      AssertThat(
-        ns.pull(),
-        Is().EqualTo(node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), terminal_T_ptr)));
-
-      AssertThat(ns.can_pull(), Is().True());
-      AssertThat(
-        ns.pull(),
-        Is().EqualTo(node(
-          0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(1, ptr_uint64::max_id))));
-
-      AssertThat(ns.can_pull(), Is().False());
-    });
-
-    describe("bdd_not(const &)", [&]() {
-      it("should negate a T terminal-only BDD into an F terminal-only BDD", [&]() {
+    describe("bdd_not(const bdd&)", [&]() {
+      it("negates a T terminal BDD into an F terminal BDD", [&]() {
         bdd out = bdd_not(terminal_T);
 
         // Check if it is correct
@@ -132,42 +85,7 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().False());
       });
 
-      it("should negate a F terminal-only BDD into an T terminal-only BDD", [&]() {
-        bdd out = bdd_not(terminal_F);
-
-        // Check if it is correct
-        node_test_stream ns(out);
-
-        AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(true)));
-        AssertThat(ns.can_pull(), Is().False());
-      });
-
-      it("should negate terminal-children in BDD 1", [&]() {
-        bdd out = bdd_not(bdd_1);
-
-        // Check if it is correct
-        node_test_stream ns(out);
-
-        AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id, terminal_T_ptr, terminal_F_ptr)));
-
-        AssertThat(ns.can_pull(), Is().True());
-        AssertThat(
-          ns.pull(),
-          Is().EqualTo(node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), terminal_F_ptr)));
-
-        AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(),
-                   Is().EqualTo(node(0,
-                                     node::max_id,
-                                     ptr_uint64(2, ptr_uint64::max_id),
-                                     ptr_uint64(1, ptr_uint64::max_id))));
-
-        AssertThat(ns.can_pull(), Is().False());
-      });
-
-      it("should double-negate terminal-children in BDD 1 back to the original", [&]() {
+      it("double-negates T terminal BDD back into T terminal", [&]() {
         bdd temp = bdd_not(bdd_1);
         bdd out  = bdd_not(temp);
 
@@ -192,7 +110,105 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().False());
       });
 
-      it("should negate terminal-children in BDD 2", [&]() {
+      it("negates a F terminal BDD into an T terminal BDD", [&]() {
+        bdd out = bdd_not(terminal_F);
+
+        // Check if it is correct
+        node_test_stream ns(out);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(true)));
+        AssertThat(ns.can_pull(), Is().False());
+      });
+
+      it("double-negates F terminal BDD back into F terminal", [&]() {
+        bdd temp = bdd_not(terminal_F);
+        bdd out  = bdd_not(temp);
+
+        // Check if it is correct
+        node_test_stream ns(out);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(ns.can_pull(), Is().False());
+      });
+
+      it("negates terminal-children in BDD 1", [&]() {
+        bdd out = bdd_not(bdd_1);
+
+        // Check if it is correct
+        node_test_stream ns(out);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id, terminal_T_ptr, terminal_F_ptr)));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), terminal_F_ptr)));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     ptr_uint64(2, ptr_uint64::max_id),
+                                     ptr_uint64(1, ptr_uint64::max_id))));
+
+        AssertThat(ns.can_pull(), Is().False());
+      });
+
+      it("unnegates terminal-children in negated BDD 1", [&]() {
+        bdd temp(bdd_1_nf, true);
+        bdd out = bdd_not(temp);
+
+        // Check if it is correct
+        node_test_stream ns(out);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id, terminal_F_ptr, terminal_T_ptr)));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), terminal_T_ptr)));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     ptr_uint64(2, ptr_uint64::max_id),
+                                     ptr_uint64(1, ptr_uint64::max_id))));
+
+        AssertThat(ns.can_pull(), Is().False());
+      });
+
+      it("double-negates terminal-children in BDD 1 back to the original", [&]() {
+        bdd temp = bdd_not(bdd_1);
+        bdd out  = bdd_not(temp);
+
+        // Check if it is correct
+        node_test_stream ns(out);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id, terminal_F_ptr, terminal_T_ptr)));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), terminal_T_ptr)));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     ptr_uint64(2, ptr_uint64::max_id),
+                                     ptr_uint64(1, ptr_uint64::max_id))));
+
+        AssertThat(ns.can_pull(), Is().False());
+      });
+
+      it("negates terminal-children in BDD 2", [&]() {
         bdd out = bdd_not(bdd_2_nf);
 
         node_test_stream ns(out);
@@ -221,8 +237,8 @@ go_bandit([]() {
       });
     });
 
-    describe("bdd_not(&&)", [&]() {
-      it("should negate a T terminal-only BDD into an F terminal-only BDD", [&]() {
+    describe("bdd_not(bdd&&)", [&]() {
+      it("negates a T terminal into an F terminal", [&]() {
         bdd out = bdd_not(terminal_T_nf);
 
         // Check if it is correct
@@ -233,7 +249,18 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().False());
       });
 
-      it("should negate a F terminal-only BDD into an T terminal-only BDD", [&]() {
+      it("double-negates a T terminal back into a T terminal", [&]() {
+        bdd out = bdd_not(bdd_not(terminal_T));
+
+        // Check if it is correct
+        node_test_stream ns(out);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(true)));
+        AssertThat(ns.can_pull(), Is().False());
+      });
+
+      it("negates a F terminal into an T terminal", [&]() {
         bdd out = bdd_not(terminal_F);
 
         // Check if it is correct
@@ -244,7 +271,18 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().False());
       });
 
-      it("should negate terminal-children in BDD 1", [&]() {
+      it("double-negates an F terminal back into an F terminal", [&]() {
+        bdd out = bdd_not(bdd_not(terminal_F));
+
+        // Check if it is correct
+        node_test_stream ns(out);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(false)));
+        AssertThat(ns.can_pull(), Is().False());
+      });
+
+      it("negates terminal-children in BDD 1", [&]() {
         bdd out = bdd_not(bdd_1_nf);
 
         // Check if it is correct
@@ -268,7 +306,33 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().False());
       });
 
-      it("should negate terminal-children in BDD 2", [&]() {
+      it("double-negates terminal-children in BDD 1 back to the original", [&]() {
+        // Checkmate, constructivists...
+
+        bdd out = bdd_not(bdd_not(bdd_1));
+
+        // Check if it is correct
+        node_test_stream ns(out);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id, terminal_F_ptr, terminal_T_ptr)));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(
+          ns.pull(),
+          Is().EqualTo(node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), terminal_T_ptr)));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(),
+                   Is().EqualTo(node(0,
+                                     node::max_id,
+                                     ptr_uint64(2, ptr_uint64::max_id),
+                                     ptr_uint64(1, ptr_uint64::max_id))));
+
+        AssertThat(ns.can_pull(), Is().False());
+      });
+
+      it("negates terminal-children in BDD 2", [&]() {
         bdd out = bdd_not(bdd_2_nf);
 
         node_test_stream ns(out);
