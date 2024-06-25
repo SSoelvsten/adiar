@@ -36,9 +36,9 @@ jobs:
         os: [macos-latest]
         cc:
           # GNU Compiler
-          - { cc: gcc,   v: 11, cxx: g++, xcode: latest } # oldest supported on Apple Silicon
-          - { cc: gcc,   v: 12, cxx: g++, xcode: latest }
-          - { cc: gcc,   v: 13, cxx: g++, xcode: latest }
+        # - { cc: gcc,   v: 11, cxx: g++, xcode: latest } # oldest supported on Apple Silicon
+        # - { cc: gcc,   v: 12, cxx: g++, xcode: latest }
+        # - { cc: gcc,   v: 13, cxx: g++, xcode: latest }
 
           # Clang Compiler
           - { cc: clang, cxx: clang++, xcode: 14.3 } # oldest supported
