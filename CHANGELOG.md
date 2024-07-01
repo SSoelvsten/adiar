@@ -1,3 +1,107 @@
+# v2.1.0
+
+**Date: N/A**
+
+## New Features
+
+### Binary Decision Diagrams
+
+- Added `f + g` operator overload as an alias for `bdd_or(f,g)`.
+
+- Added `f - g` operator overload as an alias for `bdd_diff(f,g)`.
+
+- Added `f * g` operator overload as an alias for `bdd_and(f,g)`.
+
+- Overload `bdd_satmin(f)` and `bdd_satmax(f)` to explicitly state the
+  variables that (at least) should be included in the result.
+
+  - `bdd_satmin(f, gen, size)`: find the lexicographically smallest assignment
+    with the *size* number of variables provided by the generator, *gen*.
+
+  - `bdd_satmin(f, cbegin, cend)`: find the lexicographically smallest
+    assignment of *f* where the variables between *cbegin* and *cend* should be
+    included. Notice, that *cbegin* and *cend* are read-only; if the writeable
+    *begin* and *end* are used, then the previous behaviour of an output range
+    is used.
+
+  - `bdd_satmin(f, c)`: find the lexicographically smallest assignment of *f*
+    with the variables in the BDD cube *c*.
+
+- Added `bdd_replace(f, m)` for variable renaming: Here, *m* is a function that
+  maps variables in *m*.
+
+  > **NOTE**:
+  >
+  > If *m* does not map the variables of *f* monotonically, then an exception
+  > is thrown; doing so requires a new algorithm which is planned for *v2.2*.
+
+- Added `bdd_relprod(s, r, pred)` to compute the relational product of states,
+  *s*, and relation, *r*, while quantifying the variables for which the given
+  predicate evaluates to true.
+
+- Added `bdd_relnext(s, r, m)` to compute a step forwards from states *s*
+  according to relation *r*. The (partial) variable mapping *m* maps variables
+  back from primed to unprimed states; variables not mapped by *m* are
+  existentially quantified.
+
+- Added `bdd_relprev(s, r, m)` to compute a step backwards from states *s*
+  according to relation *r*. The (partial) variable mapping *m* maps variables
+  back from unprimed to primed states; variables not mapped by *m* are
+  existentially quantified.
+
+### Zero-suppressed Decision Diagrams
+
+- Added `f + g` operator overload as an alias for `zdd_union(f,g)`.
+
+- Added `f * g` operator overload as an alias for `zdd_intsec(f,g)`.
+
+## Optimisations
+
+- Moved the logic for on-the-fly BDD negation from the generic file stream class
+  into the one specifically for BDD nodes. This removes (unused) branches within
+  the other streams. Furthermore, the logic to negate each BDD node has been
+  optimised to remove another branch statement. This improves performance
+  somewhere between 0% and 2%.
+
+- The newly added `bdd_replace(f, m)` optimises CPU and space usage depending on
+  *f* and how *m* maps the variables of *f*.
+  - If *f* is an unreduced rvalue, then variable renaming is incorporated into
+    the Reduce algorithm (only calling *m* once per variable in *f*).
+  - If *m(x) = x* is the identity function (on the support of *f*) then *f* is
+    returned using no additional space.
+  - If *m(x) = x+c* for some constant c then BDD nodes in *f* are (similar to
+    negation) remapped on-the-fly. This also uses no additional space and adds
+    an insignificant overhead.
+  - Otherwise, all BDD nodes of *f* are mapped using linear time, I/Os, and
+    space.
+
+- The newly added `bdd_replace(f, m)`, `bdd_relnext(s, r, m)`, and
+  `bdd_relprev(s, r, m)` are overloaded with an optional additional argument
+  that is the type of *m*. This immediately identifies which case above can be
+  applied (instead of spending time inferring it).
+
+- The `bdd_exists(f, ...)` and `bdd_forall(f, ...)` functions now skip the
+  initial transposition of *f* if it is an unreduced rvalue.
+
+## Bug Fixes
+
+- Fixed compilation error on ARM64 Linux due to missing signedness.
+
+- Fixed overflow error when a single BDD's width outgrows 32 bits (96 GiB).
+
+- Fixed "Not enough phase 1 memory for 128 KB items and an open stream!" error
+  messages when running `bdd_exists(f, ...)` and `bdd_forall(f, ...)` with
+  exclusively external memory data structures.
+
+## Other Changes
+
+- The maximum number of BDD variables has been decreased to *2097149* (21 bytes
+  for the label). This is done to guarantee that a single integer of each level
+  can easily fit into memory.
+
+  This has the added benefit, that the maximum supported BDD size is increased
+  to the absurd size of 96 TiB .
+
 # v2.0.0
 
 **Date: 5th of April, 2024**
@@ -239,7 +343,7 @@ Doxygen is intalled) with the `docs` Makefile target.
 ## Bug Fixes
 
 - `adiar_printstats()`
-  now prints levelized priority queue statistics even if only the unbucketed
+  now prints levelised priority queue statistics even if only the unbucketed
   priority queue has been used.
 
 ## Deprecations
@@ -455,7 +559,7 @@ Compile Adiar with `ADIAR_STATS` or `ADIAR_STATS_EXTRA` to gather statistics
 about the execution of the internal algorithms. With `ADIAR_STATS`, Adiar will
 record all statistics that only introduce a small constant time overhead to
 every operation. `ADIAR_STATS_EXTRA` also gathers much more detailed
-information, such as the bucket-hits of the levelized priority queue, which does
+information, such as the bucket-hits of the levelised priority queue, which does
 introduce a linear-time overhead to every operation.
 
 - `stats_t adiar_stats()` to obtain a copy of the raw data values.
