@@ -172,7 +172,7 @@ namespace adiar::internal
     using level_type        = level_info::level_type;
     using signed_level_type = level_info::signed_level_type;
 
-    adiar_assert(levels < 0 ? (std::abs(levels) <= li.level())
+    adiar_assert(levels < 0 ? (static_cast<level_type>(std::abs(levels)) <= li.level())
                             : (li.level() + levels <= ptr_uint64::max_label));
 
     // TODO: Use dynamic casts instead?
