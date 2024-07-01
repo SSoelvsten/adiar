@@ -264,7 +264,7 @@ namespace adiar::internal
       const tpie::memory_size_type maximum_phase1 = (memory_bytes >> 4) / (number_of_sorters - 1);
 
       const tpie::memory_size_type phase1 =
-        std::max(minimum_phase1, std::min(maximum_phase1, no_elements_memory));
+        std::max(minimum_phase1, maximum_phase1);
 
       // -----------------------------------------------------------------------
       // Phase 3 : Top-most and final merging of partial lists.
