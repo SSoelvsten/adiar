@@ -197,6 +197,10 @@ namespace adiar::internal
     sorter(size_t memory_bytes, size_t no_elements, size_t number_of_sorters, Comp comp = Comp())
       : _sorter(comp)
     {
+      // Quickfix: Issue https://github.com/thomasmoelhave/tpie/issues/250
+      constexpr tpie::memory_size_type minimum_phase1 =
+        sizeof(value_type) * 128 * 1024 + 5 * 1024 * 1024;
+
       // ===========================================================================================
       // Case 0: No sorters - why are we then instantiating one?
       adiar_assert(number_of_sorters > 0, "Number of sorters should be positive");
@@ -210,7 +214,8 @@ namespace adiar::internal
       // ===========================================================================================
       // Case 1: A single sorter.
       if (number_of_sorters == 1u) {
-        const size_t sorter_memory = std::min(no_elements_memory, memory_bytes);
+        const size_t sorter_memory =
+          std::min(std::max(no_elements_memory, 2 * minimum_phase1), memory_bytes);
 
         adiar_assert(sorter_memory <= memory_bytes,
                      "Memory of a single sorter does not exceed given amount.");
@@ -224,11 +229,6 @@ namespace adiar::internal
 
       // ==========================================================================================
       // Case: 2+: Distribute a common area of memory between all sorters.
-      //
-      // Quickfix: Issue https://github.com/thomasmoelhave/tpie/issues/250
-      constexpr tpie::memory_size_type minimum_phase1 =
-        sizeof(value_type) * 128 * 1024 + 5 * 1024 * 1024;
-
       adiar_assert(number_of_sorters > 1, "Edge case for a single sorter taken care of above");
 
       // -------------------------------------------------------------------------------------------
