@@ -6144,11 +6144,11 @@ go_bandit([]() {
           arc_writer aw(in);
 
           aw.push_internal({ n1, false, n2 });
-          aw.push_internal({ n1, true,  n3 });
+          aw.push_internal({ n1, true, n3 });
           aw.push_internal({ n2, false, n4 });
-          aw.push_internal({ n2, true,  n5 });
+          aw.push_internal({ n2, true, n5 });
           aw.push_internal({ n3, false, n5 });
-          aw.push_internal({ n3, true,  n6 });
+          aw.push_internal({ n3, true, n6 });
           aw.push_internal({ n4, false, n7 });
           aw.push_internal({ n5, false, n7 });
           aw.push_internal({ n4, true, n8 });
@@ -6192,15 +6192,17 @@ go_bandit([]() {
 
         // n3'
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id,
-                                                       node::pointer_type(4, node::max_id),
-                                                       terminal_T)));
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(2, node::max_id, node::pointer_type(4, node::max_id), terminal_T)));
 
         // n1'
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id,
-                                                       node::pointer_type(4, node::max_id),
-                                                       node::pointer_type(2, node::max_id))));
+        AssertThat(out_nodes.pull(),
+                   Is().EqualTo(node(1,
+                                     node::max_id,
+                                     node::pointer_type(4, node::max_id),
+                                     node::pointer_type(2, node::max_id))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
