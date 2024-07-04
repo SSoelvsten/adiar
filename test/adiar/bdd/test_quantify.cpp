@@ -7263,94 +7263,190 @@ go_bandit([]() {
         AssertThat(out.file_ptr(), Is().EqualTo(bdd_11));
       });
 
-      it("quantifies [1, 3].rbegin() in BDD 4 [&&]", [&]() {
-        std::vector<bdd::label_type> vars = { 1, 3 };
+      describe("algorithm: Singleton", [&]() {
+        const exec_policy ep = exec_policy::quantify::Singleton;
 
-        bdd out = bdd_exists(bdd(bdd_4), vars.rbegin(), vars.rend());
+        it("quantifies [1, 3].rbegin() in BDD 4 [&&]", [&]() {
+          std::vector<bdd::label_type> vars = { 1, 3 };
 
-        node_test_stream out_nodes(out);
+          bdd out = bdd_exists(ep, bdd(bdd_4), vars.rbegin(), vars.rend());
 
-        AssertThat(out_nodes.can_pull(), Is().True()); // (3)
-        AssertThat(out_nodes.pull(),
-                   Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+          node_test_stream out_nodes(out);
 
-        AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-        AssertThat(
-          out_nodes.pull(),
-          Is().EqualTo(node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
+          AssertThat(out_nodes.can_pull(), Is().True()); // (3)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
-        AssertThat(out_nodes.can_pull(), Is().False());
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+          AssertThat(
+                     out_nodes.pull(),
+                     Is().EqualTo(node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
 
-        level_info_test_stream out_meta(out);
+          AssertThat(out_nodes.can_pull(), Is().False());
 
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
+          level_info_test_stream out_meta(out);
 
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
 
-        AssertThat(out_meta.can_pull(), Is().False());
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("quantifies [2, 0].begin() in BDD 4 [const &]", [&]() {
+          const bdd in                            = bdd_4;
+          const std::vector<bdd::label_type> vars = { 2, 0 };
+
+          bdd out = bdd_exists(ep, in, vars.begin(), vars.end());
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2')
+          AssertThat(
+                     out_nodes.pull(),
+                     Is().EqualTo(node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("quantifies [4, 2, 0].begin() in BDD 4 [const &]", [&]() {
+          const bdd in                            = bdd_4;
+          const std::vector<bdd::label_type> vars = { 4, 2, 0 };
+
+          bdd out = bdd_exists(ep, in, vars.begin(), vars.end());
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2')
+          AssertThat(
+                     out_nodes.pull(),
+                     Is().EqualTo(node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
       });
 
-      it("quantifies [2, 0].begin() in BDD 4 [const &]", [&]() {
-        const bdd in                            = bdd_4;
-        const std::vector<bdd::label_type> vars = { 2, 0 };
+      describe("algorithm: Nested", [&]() {
+        const exec_policy ep = exec_policy::quantify::Nested;
 
-        bdd out = bdd_exists(in, vars.begin(), vars.end());
+        it("quantifies [1, 3].rbegin() in BDD 4 [&&]", [&]() {
+          std::vector<bdd::label_type> vars = { 1, 3 };
 
-        node_test_stream out_nodes(out);
+          bdd out = bdd_exists(ep, bdd(bdd_4), vars.rbegin(), vars.rend());
 
-        AssertThat(out_nodes.can_pull(), Is().True()); // (5)
-        AssertThat(out_nodes.pull(),
-                   Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+          node_test_stream out_nodes(out);
 
-        AssertThat(out_nodes.can_pull(), Is().True()); // (2')
-        AssertThat(
-          out_nodes.pull(),
-          Is().EqualTo(node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
+          AssertThat(out_nodes.can_pull(), Is().True()); // (3)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
-        AssertThat(out_nodes.can_pull(), Is().False());
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+          AssertThat(
+                     out_nodes.pull(),
+                     Is().EqualTo(node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
 
-        level_info_test_stream out_meta(out);
+          AssertThat(out_nodes.can_pull(), Is().False());
 
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
+          level_info_test_stream out_meta(out);
 
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
 
-        AssertThat(out_meta.can_pull(), Is().False());
-      });
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
 
-      it("quantifies [4, 2, 0].begin() in BDD 4 [const &]", [&]() {
-        const exec_policy ep;
-        const bdd in                            = bdd_4;
-        const std::vector<bdd::label_type> vars = { 4, 2, 0 };
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
 
-        bdd out = bdd_exists(ep, in, vars.begin(), vars.end());
+        it("quantifies [2, 0].begin() in BDD 4 [const &]", [&]() {
+          const bdd in                            = bdd_4;
+          const std::vector<bdd::label_type> vars = { 2, 0 };
 
-        node_test_stream out_nodes(out);
+          bdd out = bdd_exists(ep, in, vars.begin(), vars.end());
 
-        AssertThat(out_nodes.can_pull(), Is().True()); // (5)
-        AssertThat(out_nodes.pull(),
-                   Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+          node_test_stream out_nodes(out);
 
-        AssertThat(out_nodes.can_pull(), Is().True()); // (2')
-        AssertThat(
-          out_nodes.pull(),
-          Is().EqualTo(node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
-        AssertThat(out_nodes.can_pull(), Is().False());
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2')
+          AssertThat(
+                     out_nodes.pull(),
+                     Is().EqualTo(node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
 
-        level_info_test_stream out_meta(out);
+          AssertThat(out_nodes.can_pull(), Is().False());
 
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
+          level_info_test_stream out_meta(out);
 
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
 
-        AssertThat(out_meta.can_pull(), Is().False());
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("quantifies [4, 2, 0].begin() in BDD 4 [const &]", [&]() {
+          const bdd in                            = bdd_4;
+          const std::vector<bdd::label_type> vars = { 4, 2, 0 };
+
+          bdd out = bdd_exists(ep, in, vars.begin(), vars.end());
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2')
+          AssertThat(
+                     out_nodes.pull(),
+                     Is().EqualTo(node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
       });
     });
 
@@ -7370,7 +7466,56 @@ go_bandit([]() {
       describe("algorithm: Singleton", [&]() {
         const exec_policy ep = exec_policy::quantify::Singleton;
 
-        it("quantifies [4, 2, 0].begin() in unreduced BDD 4 [&&]", [&]() {
+        it("quantifies 'x0' in unreduced BDD 1 into terminal [&&]", [&]() {
+          const std::vector<int> vars = { 0 };
+
+          const bdd out = bdd_exists(ep, __bdd(bdd_1__unreduced, ep), vars.begin(), vars.end());
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
+
+        it("quantifies even variables in reduced BDD 4 [&&]", [&]() {
+          const std::vector<int> vars = { 0, 2, 4 };
+          const bdd out               = bdd_exists(ep, __bdd(bdd_4), vars.rbegin(), vars.rend());
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2')
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
+
+        it("quantifies even variables in unreduced BDD 4 [&&]", [&]() {
           const std::vector<int> vars = { 4, 2, 0 };
           const bdd out = bdd_exists(ep, __bdd(bdd_4__unreduced, ep), vars.begin(), vars.end());
 
@@ -7394,6 +7539,36 @@ go_bandit([]() {
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
+
+        it("quantifies odd variables in unreduced BDD 4 [&&]", [&]() {
+          const std::vector<int> vars = { 3, 1 };
+          const bdd out = bdd_exists(ep, __bdd(bdd_4__unreduced, ep), vars.begin(), vars.end());
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (3)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -7453,7 +7628,7 @@ go_bandit([]() {
           // TODO: meta variables...
         });
 
-        it("quantifies [0, 2, 4].rbegin() in unreduced BDD 4 [&&]", [&]() {
+        it("quantifies even variables in unreduced BDD 4 [&&]", [&]() {
           const std::vector<int> vars = { 0, 2, 4 };
           const bdd out = bdd_exists(ep, __bdd(bdd_4__unreduced, ep), vars.rbegin(), vars.rend());
 
@@ -7483,7 +7658,7 @@ go_bandit([]() {
           // TODO: meta variables...
         });
 
-        it("quantifies [3, 1].begin() in reduced BDD 4 [&&]", [&]() {
+        it("quantifies odd variables in reduced BDD 4 [&&]", [&]() {
           const std::vector<int> vars = { 3, 1 };
           const bdd out               = bdd_exists(ep, __bdd(bdd_4), vars.begin(), vars.end());
 
@@ -8486,7 +8661,31 @@ go_bandit([]() {
       });
 
       describe("algorithm: Singleton", [&]() {
-        // TODO: test...
+        const exec_policy ep = exec_policy::quantify::Singleton;
+
+        it("quantifies x0 in unreduced BDD 1 [&&]", [&]() {
+          const bdd out =
+            bdd_forall(ep, __bdd(bdd_1__unreduced, ep), [](bdd::label_type x) -> bool {
+              return x == 0u;
+            });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
       });
 
       describe("algorithm: Nested", [&]() {
@@ -8813,7 +9012,59 @@ go_bandit([]() {
       });
 
       describe("algorithm: Singleton", [&]() {
-        // TODO: test...
+        const exec_policy ep = exec_policy::quantify::Singleton;
+
+        it("quantifies x0 in unreduced BDD 1 [&&]", [&]() {
+          const bdd out = bdd_forall(
+            ep, __bdd(bdd_1__unreduced, ep), [called = false]() mutable -> optional<int> {
+              if (called) { return {}; }
+              called = true;
+              return { 0 };
+            });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
+
+        it("quantifies x1 in unreduced BDD 1 [&&]", [&]() {
+          const bdd out = bdd_forall(
+            ep, __bdd(bdd_1__unreduced, ep), [called = false]() mutable -> optional<int> {
+              if (called) { return {}; }
+              called = true;
+              return { 1 };
+            });
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(0, node::max_id, ptr_uint64(true), ptr_uint64(false))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
       });
 
       describe("algorithm: Nested", [&]() {
@@ -8874,48 +9125,97 @@ go_bandit([]() {
     });
 
     describe("bdd_forall(const bdd&, ForwardIt, ForwardIt)", [&]() {
-      it("quantifies [0].rbegin() in BDD 1 [const &]", [&]() {
-        const bdd in                            = bdd_1;
-        const std::vector<bdd::label_type> vars = { 0 };
 
-        const bdd out = bdd_forall(in, vars.rbegin(), vars.rend());
+      describe("algorithm: Singleton", [&]() {
+        const exec_policy ep = exec_policy::quantify::Singleton;
 
-        node_test_stream out_nodes(out);
+        it("quantifies 'x0' in BDD 1 [const &]", [&]() {
+          const bdd in                            = bdd_1;
+          const std::vector<bdd::label_type> vars = { 0 };
 
-        AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-        AssertThat(out_nodes.pull(),
-                   Is().EqualTo(node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+          const bdd out = bdd_forall(in, vars.rbegin(), vars.rend());
 
-        AssertThat(out_nodes.can_pull(), Is().False());
+          node_test_stream out_nodes(out);
 
-        level_info_test_stream out_meta(out);
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1')
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
+          AssertThat(out_nodes.can_pull(), Is().False());
 
-        AssertThat(out_meta.can_pull(), Is().False());
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("quantifies 'x1' in BDD 1 [&&]", [&]() {
+          const std::vector<bdd::label_type> vars = { 1 };
+          const bdd out = bdd_forall(ep, bdd(bdd_1), vars.begin(), vars.end());
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1')
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(0, node::max_id, ptr_uint64(true), ptr_uint64(false))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
       });
 
-      it("quantifies [1].begin() in BDD 1 [&&]", [&]() {
+      describe("algorithm: Nested", [&]() {
         const exec_policy ep = exec_policy::quantify::Nested;
 
-        const std::vector<bdd::label_type> vars = { 1 };
-        const bdd out = bdd_forall(ep, bdd(bdd_1), vars.begin(), vars.end());
+        it("quantifies 'x0' in BDD 1 [const &]", [&]() {
+          const bdd in                            = bdd_1;
+          const std::vector<bdd::label_type> vars = { 0 };
 
-        node_test_stream out_nodes(out);
+          const bdd out = bdd_forall(in, vars.rbegin(), vars.rend());
 
-        AssertThat(out_nodes.can_pull(), Is().True()); // (1')
-        AssertThat(out_nodes.pull(),
-                   Is().EqualTo(node(0, node::max_id, ptr_uint64(true), ptr_uint64(false))));
+          node_test_stream out_nodes(out);
 
-        AssertThat(out_nodes.can_pull(), Is().False());
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1')
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
-        level_info_test_stream out_meta(out);
+          AssertThat(out_nodes.can_pull(), Is().False());
 
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
+          level_info_test_stream out_meta(out);
 
-        AssertThat(out_meta.can_pull(), Is().False());
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("quantifies 'x1' in BDD 1 [&&]", [&]() {
+          const std::vector<bdd::label_type> vars = { 1 };
+          const bdd out = bdd_forall(ep, bdd(bdd_1), vars.begin(), vars.end());
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (1')
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(0, node::max_id, ptr_uint64(true), ptr_uint64(false))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
       });
     });
 
@@ -8927,13 +9227,9 @@ go_bandit([]() {
       });
 
       describe("algorithm: Singleton", [&]() {
-        // TODO: test...
-      });
+        const exec_policy ep = exec_policy::quantify::Singleton;
 
-      describe("algorithm: Nested", [&]() {
-        const exec_policy ep = exec_policy::quantify::Nested;
-
-        it("quantifies [0].begin() in unreduced BDD 1 [&&]", [&]() {
+        it("quantifies 'x0' in unreduced BDD 1 [&&]", [&]() {
           const std::vector<int> vars = { 0 };
           const bdd out = bdd_forall(ep, __bdd(bdd_1__unreduced, ep), vars.begin(), vars.end());
 
@@ -8955,7 +9251,55 @@ go_bandit([]() {
           // TODO: meta variables...
         });
 
-        it("quantifies [1].rbegin() in unreduced BDD 1 [&&]", [&]() {
+        it("quantifies 'x1' in unreduced BDD 1 [&&]", [&]() {
+          const std::vector<int> vars = { 1 };
+          const bdd out = bdd_forall(ep, __bdd(bdd_1__unreduced, ep), vars.rbegin(), vars.rend());
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(0, node::max_id, ptr_uint64(true), ptr_uint64(false))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
+      });
+
+      describe("algorithm: Nested", [&]() {
+        const exec_policy ep = exec_policy::quantify::Nested;
+
+        it("quantifies 'x0' in unreduced BDD 1 [&&]", [&]() {
+          const std::vector<int> vars = { 0 };
+          const bdd out = bdd_forall(ep, __bdd(bdd_1__unreduced, ep), vars.begin(), vars.end());
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (2)
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables...
+        });
+
+        it("quantifies 'x1' in unreduced BDD 1 [&&]", [&]() {
           const std::vector<int> vars = { 1 };
           const bdd out = bdd_forall(ep, __bdd(bdd_1__unreduced, ep), vars.rbegin(), vars.rend());
 
