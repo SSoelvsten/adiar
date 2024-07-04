@@ -717,12 +717,14 @@ go_bandit([]() {
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(
             out_nodes.pull(),
-            Is().EqualTo(node(2, zdd::max_id, zdd::pointer_type(4, zdd::pointer_type::max_id), terminal_T)));
+            Is().EqualTo(
+              node(2, zdd::max_id, zdd::pointer_type(4, zdd::pointer_type::max_id), terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(
             out_nodes.pull(),
-            Is().EqualTo(node(0, zdd::max_id, zdd::pointer_type(2, zdd::pointer_type::max_id), terminal_T)));
+            Is().EqualTo(
+              node(0, zdd::max_id, zdd::pointer_type(2, zdd::pointer_type::max_id), terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -809,12 +811,15 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(),
-                     Is().EqualTo(node(
-                       1, zdd::max_id, zdd::pointer_type(3, zdd::max_id), zdd::pointer_type(3, zdd::max_id))));
+                     Is().EqualTo(node(1,
+                                       zdd::max_id,
+                                       zdd::pointer_type(3, zdd::max_id),
+                                       zdd::pointer_type(3, zdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(node(0, zdd::max_id, zdd::pointer_type(1, zdd::max_id), terminal_T)));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(0, zdd::max_id, zdd::pointer_type(1, zdd::max_id), terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -947,8 +952,9 @@ go_bandit([]() {
           AssertThat(out_nodes.pull(), Is().EqualTo(node(3, zdd::max_id, terminal_T, terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(node(0, zdd::max_id, terminal_T, zdd::pointer_type(3, zdd::max_id))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(0, zdd::max_id, terminal_T, zdd::pointer_type(3, zdd::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1182,7 +1188,8 @@ go_bandit([]() {
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(
             out_nodes.pull(),
-            Is().EqualTo(node(3, zdd::max_id, terminal_T, zdd::pointer_type(4, zdd::pointer_type::max_id))));
+            Is().EqualTo(
+              node(3, zdd::max_id, terminal_T, zdd::pointer_type(4, zdd::pointer_type::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(),
@@ -1374,9 +1381,9 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (o) / (n,o)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(
-                       node(13, zdd::max_id, zdd::pointer_type(true), zdd::pointer_type(true))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(13, zdd::max_id, zdd::pointer_type(true), zdd::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (n)
           AssertThat(out_nodes.pull(),
@@ -1384,9 +1391,9 @@ go_bandit([]() {
                        13, zdd::max_id - 1, zdd::pointer_type(false), zdd::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (17)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(
-                       node(12, zdd::max_id, zdd::pointer_type(true), zdd::pointer_type(true))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(12, zdd::max_id, zdd::pointer_type(true), zdd::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (16)
           AssertThat(out_nodes.pull(),
@@ -1394,11 +1401,10 @@ go_bandit([]() {
                        12, zdd::max_id - 1, zdd::pointer_type(false), zdd::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (16,o) / (16,o,n)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(node(12,
-                                       zdd::max_id - 2,
-                                       zdd::pointer_type(13, zdd::max_id),
-                                       zdd::pointer_type(true))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(
+              12, zdd::max_id - 2, zdd::pointer_type(13, zdd::max_id), zdd::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (16,n)
           AssertThat(out_nodes.pull(),
@@ -1641,8 +1647,8 @@ go_bandit([]() {
           AssertThat(out_nodes.can_pull(), Is().True()); // (c)
           AssertThat(
             out_nodes.pull(),
-            Is().EqualTo(node(
-              5, zdd::max_id, zdd::pointer_type(6, zdd::max_id), zdd::pointer_type(true))));
+            Is().EqualTo(
+              node(5, zdd::max_id, zdd::pointer_type(6, zdd::max_id), zdd::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (b,5,d)
           AssertThat(out_nodes.pull(),
@@ -1797,9 +1803,9 @@ go_bandit([]() {
           node_test_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (o) / (n,o)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(
-                       node(13, zdd::max_id, zdd::pointer_type(true), zdd::pointer_type(true))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(13, zdd::max_id, zdd::pointer_type(true), zdd::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (n)
           AssertThat(out_nodes.pull(),
@@ -1807,9 +1813,9 @@ go_bandit([]() {
                        13, zdd::max_id - 1, zdd::pointer_type(false), zdd::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (17)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(
-                       node(12, zdd::max_id, zdd::pointer_type(true), zdd::pointer_type(true))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(12, zdd::max_id, zdd::pointer_type(true), zdd::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (16)
           AssertThat(out_nodes.pull(),
@@ -1817,11 +1823,10 @@ go_bandit([]() {
                        12, zdd::max_id - 1, zdd::pointer_type(false), zdd::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (16,o) / (16,o,n)
-          AssertThat(out_nodes.pull(),
-                     Is().EqualTo(node(12,
-                                       zdd::max_id - 2,
-                                       zdd::pointer_type(13, zdd::max_id),
-                                       zdd::pointer_type(true))));
+          AssertThat(
+            out_nodes.pull(),
+            Is().EqualTo(node(
+              12, zdd::max_id - 2, zdd::pointer_type(13, zdd::max_id), zdd::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (16,n)
           AssertThat(out_nodes.pull(),
@@ -2064,8 +2069,8 @@ go_bandit([]() {
           AssertThat(out_nodes.can_pull(), Is().True()); // (c)
           AssertThat(
             out_nodes.pull(),
-            Is().EqualTo(node(
-              5, zdd::max_id, zdd::pointer_type(6, zdd::max_id), zdd::pointer_type(true))));
+            Is().EqualTo(
+              node(5, zdd::max_id, zdd::pointer_type(6, zdd::max_id), zdd::pointer_type(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (b,5,d)
           AssertThat(out_nodes.pull(),
@@ -2822,33 +2827,39 @@ go_bandit([]() {
         });
 
         it("handles 2-level cut in Outer Sweep [&&]", [&]() {
-          __zdd out = zdd_project(ep, __zdd(zdd_8__unreduced, ep), [](const zdd::label_type x) { return x != 3; });
+          __zdd out = zdd_project(
+            ep, __zdd(zdd_8__unreduced, ep), [](const zdd::label_type x) { return x != 3; });
 
           node_test_stream nodes(out);
 
           // (8)
           AssertThat(nodes.can_pull(), Is().True());
           AssertThat(
-                     nodes.pull(),
-                     Is().EqualTo(node(4, zdd::max_id, zdd::pointer_type(true), zdd::pointer_type(true))));
+            nodes.pull(),
+            Is().EqualTo(node(4, zdd::max_id, zdd::pointer_type(true), zdd::pointer_type(true))));
 
           // (3)
           AssertThat(nodes.can_pull(), Is().True());
           AssertThat(
-                     nodes.pull(),
-                     Is().EqualTo(node(2, zdd::max_id, zdd::pointer_type(4, zdd::max_id), zdd::pointer_type(true))));
+            nodes.pull(),
+            Is().EqualTo(
+              node(2, zdd::max_id, zdd::pointer_type(4, zdd::max_id), zdd::pointer_type(true))));
 
           // (2)
           AssertThat(nodes.can_pull(), Is().True());
-          AssertThat(
-                     nodes.pull(),
-                     Is().EqualTo(node(2, zdd::max_id - 1, zdd::pointer_type(4, zdd::max_id), zdd::pointer_type(4, zdd::max_id))));
+          AssertThat(nodes.pull(),
+                     Is().EqualTo(node(2,
+                                       zdd::max_id - 1,
+                                       zdd::pointer_type(4, zdd::max_id),
+                                       zdd::pointer_type(4, zdd::max_id))));
 
           // (1)
           AssertThat(nodes.can_pull(), Is().True());
-          AssertThat(
-                     nodes.pull(),
-                     Is().EqualTo(node(1, zdd::max_id, zdd::pointer_type(2, zdd::max_id - 1), zdd::pointer_type(2, zdd::max_id))));
+          AssertThat(nodes.pull(),
+                     Is().EqualTo(node(1,
+                                       zdd::max_id,
+                                       zdd::pointer_type(2, zdd::max_id - 1),
+                                       zdd::pointer_type(2, zdd::max_id))));
 
           AssertThat(nodes.can_pull(), Is().False());
 
@@ -3138,12 +3149,14 @@ go_bandit([]() {
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(
             out_nodes.pull(),
-            Is().EqualTo(node(3, zdd::max_id, terminal_T, zdd::pointer_type(4, zdd::pointer_type::max_id))));
+            Is().EqualTo(
+              node(3, zdd::max_id, terminal_T, zdd::pointer_type(4, zdd::pointer_type::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(
             out_nodes.pull(),
-            Is().EqualTo(node(2, zdd::max_id, zdd::pointer_type(3, zdd::pointer_type::max_id), terminal_T)));
+            Is().EqualTo(
+              node(2, zdd::max_id, zdd::pointer_type(3, zdd::pointer_type::max_id), terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -3618,12 +3631,14 @@ go_bandit([]() {
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(
             out_nodes.pull(),
-            Is().EqualTo(node(3, zdd::max_id, terminal_T, zdd::pointer_type(4, zdd::pointer_type::max_id))));
+            Is().EqualTo(
+              node(3, zdd::max_id, terminal_T, zdd::pointer_type(4, zdd::pointer_type::max_id))));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(
             out_nodes.pull(),
-            Is().EqualTo(node(2, zdd::max_id, zdd::pointer_type(3, zdd::pointer_type::max_id), terminal_T)));
+            Is().EqualTo(
+              node(2, zdd::max_id, zdd::pointer_type(3, zdd::pointer_type::max_id), terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -3899,12 +3914,14 @@ go_bandit([]() {
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(
             out_nodes.pull(),
-            Is().EqualTo(node(2, zdd::max_id, zdd::pointer_type(4, zdd::pointer_type::max_id), terminal_T)));
+            Is().EqualTo(
+              node(2, zdd::max_id, zdd::pointer_type(4, zdd::pointer_type::max_id), terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(
             out_nodes.pull(),
-            Is().EqualTo(node(0, zdd::max_id, zdd::pointer_type(2, zdd::pointer_type::max_id), terminal_T)));
+            Is().EqualTo(
+              node(0, zdd::max_id, zdd::pointer_type(2, zdd::pointer_type::max_id), terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -4385,7 +4402,8 @@ go_bandit([]() {
         });
 
         it("handles 2-level cut in Outer Sweep [&&]", [&]() {
-          __zdd out = zdd_project(ep, __zdd(zdd_8__unreduced, ep), [x = 5]() mutable -> optional<int> {
+          __zdd out =
+            zdd_project(ep, __zdd(zdd_8__unreduced, ep), [x = 5]() mutable -> optional<int> {
               x--;
               if (x == 3) { x--; }
               if (x < 0) { return {}; }
@@ -4397,26 +4415,31 @@ go_bandit([]() {
           // (8)
           AssertThat(nodes.can_pull(), Is().True());
           AssertThat(
-                     nodes.pull(),
-                     Is().EqualTo(node(4, zdd::max_id, zdd::pointer_type(true), zdd::pointer_type(true))));
+            nodes.pull(),
+            Is().EqualTo(node(4, zdd::max_id, zdd::pointer_type(true), zdd::pointer_type(true))));
 
           // (3)
           AssertThat(nodes.can_pull(), Is().True());
           AssertThat(
-                     nodes.pull(),
-                     Is().EqualTo(node(2, zdd::max_id, zdd::pointer_type(4, zdd::max_id), zdd::pointer_type(true))));
+            nodes.pull(),
+            Is().EqualTo(
+              node(2, zdd::max_id, zdd::pointer_type(4, zdd::max_id), zdd::pointer_type(true))));
 
           // (2)
           AssertThat(nodes.can_pull(), Is().True());
-          AssertThat(
-                     nodes.pull(),
-                     Is().EqualTo(node(2, zdd::max_id - 1, zdd::pointer_type(4, zdd::max_id), zdd::pointer_type(4, zdd::max_id))));
+          AssertThat(nodes.pull(),
+                     Is().EqualTo(node(2,
+                                       zdd::max_id - 1,
+                                       zdd::pointer_type(4, zdd::max_id),
+                                       zdd::pointer_type(4, zdd::max_id))));
 
           // (1)
           AssertThat(nodes.can_pull(), Is().True());
-          AssertThat(
-                     nodes.pull(),
-                     Is().EqualTo(node(1, zdd::max_id, zdd::pointer_type(2, zdd::max_id - 1), zdd::pointer_type(2, zdd::max_id))));
+          AssertThat(nodes.pull(),
+                     Is().EqualTo(node(1,
+                                       zdd::max_id,
+                                       zdd::pointer_type(2, zdd::max_id - 1),
+                                       zdd::pointer_type(2, zdd::max_id))));
 
           AssertThat(nodes.can_pull(), Is().False());
 
@@ -5000,26 +5023,31 @@ go_bandit([]() {
           // (8)
           AssertThat(nodes.can_pull(), Is().True());
           AssertThat(
-                     nodes.pull(),
-                     Is().EqualTo(node(4, zdd::max_id, zdd::pointer_type(true), zdd::pointer_type(true))));
+            nodes.pull(),
+            Is().EqualTo(node(4, zdd::max_id, zdd::pointer_type(true), zdd::pointer_type(true))));
 
           // (3)
           AssertThat(nodes.can_pull(), Is().True());
           AssertThat(
-                     nodes.pull(),
-                     Is().EqualTo(node(2, zdd::max_id, zdd::pointer_type(4, zdd::max_id), zdd::pointer_type(true))));
+            nodes.pull(),
+            Is().EqualTo(
+              node(2, zdd::max_id, zdd::pointer_type(4, zdd::max_id), zdd::pointer_type(true))));
 
           // (2)
           AssertThat(nodes.can_pull(), Is().True());
-          AssertThat(
-                     nodes.pull(),
-                     Is().EqualTo(node(2, zdd::max_id - 1, zdd::pointer_type(4, zdd::max_id), zdd::pointer_type(4, zdd::max_id))));
+          AssertThat(nodes.pull(),
+                     Is().EqualTo(node(2,
+                                       zdd::max_id - 1,
+                                       zdd::pointer_type(4, zdd::max_id),
+                                       zdd::pointer_type(4, zdd::max_id))));
 
           // (1)
           AssertThat(nodes.can_pull(), Is().True());
-          AssertThat(
-                     nodes.pull(),
-                     Is().EqualTo(node(1, zdd::max_id, zdd::pointer_type(2, zdd::max_id - 1), zdd::pointer_type(2, zdd::max_id))));
+          AssertThat(nodes.pull(),
+                     Is().EqualTo(node(1,
+                                       zdd::max_id,
+                                       zdd::pointer_type(2, zdd::max_id - 1),
+                                       zdd::pointer_type(2, zdd::max_id))));
 
           AssertThat(nodes.can_pull(), Is().False());
 

@@ -1056,7 +1056,8 @@ go_bandit([]() {
       const node n1(0, node::max_id, bdd::pointer_type(false), n2.uid());
 
       node_writer nw(bdd_19);
-      nw << n15 << n14 << n13 << n12 << n11 << n10 << n9 << n8 << n7 << n6 << n5 << n4 << n3 << n2 << n1;
+      nw << n15 << n14 << n13 << n12 << n11 << n10 << n9 << n8 << n7 << n6 << n5 << n4 << n3 << n2
+         << n1;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3885,7 +3886,8 @@ go_bandit([]() {
         });
 
         it("handles 2-level cut in Outer Sweep [&&]", [&]() {
-          __bdd out = bdd_exists(ep, bdd(bdd_19), [](const bdd::label_type x) { return x == 4 || x == 6; });
+          __bdd out =
+            bdd_exists(ep, bdd(bdd_19), [](const bdd::label_type x) { return x == 4 || x == 6; });
 
           node_test_stream nodes(out);
 
@@ -6713,8 +6715,8 @@ go_bandit([]() {
         });
 
         it("handles 2-level cut in Outer Sweep [&&]", [&]() {
-          __bdd out = bdd_exists(ep, __bdd(bdd_20__unreduced, ep),
-                                 [](const bdd::label_type x) { return x == 3; });
+          __bdd out = bdd_exists(
+            ep, __bdd(bdd_20__unreduced, ep), [](const bdd::label_type x) { return x == 3; });
 
           node_test_stream nodes(out);
 
@@ -7182,17 +7184,17 @@ go_bandit([]() {
 
         it("handles 2-level cut in Outer Sweep [&&]", [&]() {
           __bdd out = bdd_exists(ep, bdd(bdd_19), [var = 6]() mutable -> optional<bdd::label_type> {
-              var -= 2;
-              if (var < 4) { return {}; }
-              return { var };
-            });
+            var -= 2;
+            if (var < 4) { return {}; }
+            return { var };
+          });
 
           node_test_stream nodes(out);
 
           AssertThat(nodes.can_pull(), Is().True());
           AssertThat(
-                     nodes.pull(),
-                     Is().EqualTo(node(0, bdd::max_id, bdd::pointer_type(false), bdd::pointer_type(true))));
+            nodes.pull(),
+            Is().EqualTo(node(0, bdd::max_id, bdd::pointer_type(false), bdd::pointer_type(true))));
 
           AssertThat(nodes.can_pull(), Is().False());
 
@@ -7414,7 +7416,8 @@ go_bandit([]() {
         });
 
         it("handles 2-level cut in Outer Sweep [&&]", [&]() {
-          __bdd out = bdd_exists(ep, __bdd(bdd_20__unreduced, ep),
+          __bdd out = bdd_exists(ep,
+                                 __bdd(bdd_20__unreduced, ep),
                                  [called = false]() mutable -> optional<bdd::label_type> {
                                    if (called) { return {}; }
                                    called = true;
@@ -7481,9 +7484,9 @@ go_bandit([]() {
                      Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(
-                     out_nodes.pull(),
-                     Is().EqualTo(node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -7511,9 +7514,9 @@ go_bandit([]() {
                      Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (2')
-          AssertThat(
-                     out_nodes.pull(),
-                     Is().EqualTo(node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -7541,9 +7544,9 @@ go_bandit([]() {
                      Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (2')
-          AssertThat(
-                     out_nodes.pull(),
-                     Is().EqualTo(node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -7574,9 +7577,9 @@ go_bandit([]() {
                      Is().EqualTo(node(2, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (1)
-          AssertThat(
-                     out_nodes.pull(),
-                     Is().EqualTo(node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(0, node::max_id, ptr_uint64(2, ptr_uint64::max_id), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -7604,9 +7607,9 @@ go_bandit([]() {
                      Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (2')
-          AssertThat(
-                     out_nodes.pull(),
-                     Is().EqualTo(node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -7634,9 +7637,9 @@ go_bandit([]() {
                      Is().EqualTo(node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (2')
-          AssertThat(
-                     out_nodes.pull(),
-                     Is().EqualTo(node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
+          AssertThat(out_nodes.pull(),
+                     Is().EqualTo(
+                       node(1, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -7659,8 +7662,8 @@ go_bandit([]() {
 
           AssertThat(nodes.can_pull(), Is().True());
           AssertThat(
-                     nodes.pull(),
-                     Is().EqualTo(node(0, bdd::max_id, bdd::pointer_type(false), bdd::pointer_type(true))));
+            nodes.pull(),
+            Is().EqualTo(node(0, bdd::max_id, bdd::pointer_type(false), bdd::pointer_type(true))));
 
           AssertThat(nodes.can_pull(), Is().False());
 
@@ -8859,15 +8862,15 @@ go_bandit([]() {
         });
 
         it("handles 2-level cut in Outer Sweep [&&]", [&]() {
-          __bdd out = bdd_forall(ep, bdd(bdd_19, true),
-                                 [](const bdd::label_type x) { return x == 4 || x == 6; });
+          __bdd out = bdd_forall(
+            ep, bdd(bdd_19, true), [](const bdd::label_type x) { return x == 4 || x == 6; });
 
           node_test_stream nodes(out);
 
           AssertThat(nodes.can_pull(), Is().True());
           AssertThat(
-                     nodes.pull(),
-                     Is().EqualTo(node(0, bdd::max_id, bdd::pointer_type(true), bdd::pointer_type(false))));
+            nodes.pull(),
+            Is().EqualTo(node(0, bdd::max_id, bdd::pointer_type(true), bdd::pointer_type(false))));
 
           AssertThat(nodes.can_pull(), Is().False());
 
@@ -8931,10 +8934,8 @@ go_bandit([]() {
         const exec_policy ep = exec_policy::quantify::Singleton;
 
         it("quantifies x0 in unreduced BDD 1 [&&]", [&]() {
-          const bdd out =
-            bdd_forall(ep, __bdd(bdd_1__unreduced, ep), [](bdd::label_type x) -> bool {
-              return x == 0u;
-            });
+          const bdd out = bdd_forall(
+            ep, __bdd(bdd_1__unreduced, ep), [](bdd::label_type x) -> bool { return x == 0u; });
 
           node_test_stream out_nodes(out);
 
@@ -9033,8 +9034,8 @@ go_bandit([]() {
         });
 
         it("handles 2-level cut in Outer Sweep [&&]", [&]() {
-          __bdd out = bdd_forall(ep, __bdd(bdd_20__unreduced, ep),
-                                 [](const bdd::label_type x) { return x == 3; });
+          __bdd out = bdd_forall(
+            ep, __bdd(bdd_20__unreduced, ep), [](const bdd::label_type x) { return x == 3; });
 
           node_test_stream nodes(out);
 
@@ -9289,7 +9290,8 @@ go_bandit([]() {
         });
 
         it("handles 2-level cut in Outer Sweep [&&]", [&]() {
-          __bdd out = bdd_forall(ep, __bdd(bdd_20__unreduced, ep),
+          __bdd out = bdd_forall(ep,
+                                 __bdd(bdd_20__unreduced, ep),
                                  [called = false]() mutable -> optional<bdd::label_type> {
                                    if (called) { return {}; }
                                    called = true;
@@ -9430,7 +9432,8 @@ go_bandit([]() {
         });
 
         it("handles 2-level cut in Outer Sweep [&&]", [&]() {
-          __bdd out = bdd_forall(ep, __bdd(bdd_20__unreduced, ep),
+          __bdd out = bdd_forall(ep,
+                                 __bdd(bdd_20__unreduced, ep),
                                  [called = false]() mutable -> optional<bdd::label_type> {
                                    if (called) { return {}; }
                                    called = true;
@@ -9454,7 +9457,6 @@ go_bandit([]() {
     });
 
     describe("bdd_forall(const bdd&, ForwardIt, ForwardIt)", [&]() {
-
       describe("algorithm: Singleton", [&]() {
         const exec_policy ep = exec_policy::quantify::Singleton;
 
