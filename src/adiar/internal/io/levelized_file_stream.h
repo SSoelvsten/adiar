@@ -102,8 +102,7 @@ namespace adiar::internal
     {
       if (!f->exists()) f->touch();
 
-      for (size_t s_idx = 0; s_idx < streams; s_idx++)
-        _streams[s_idx].attach(f->_files[s_idx], f);
+      for (size_t s_idx = 0; s_idx < streams; s_idx++) _streams[s_idx].attach(f->_files[s_idx], f);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
