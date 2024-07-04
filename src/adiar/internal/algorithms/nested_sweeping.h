@@ -2126,11 +2126,7 @@ namespace adiar::internal
     const tpie::memory_size_type outer_roots_memory_fits =
       internal_roots_sorter_t::memory_fits(outer_pq_memory);
 
-    size_t pq_roots_bound = dag->max_1level_cut;
-    if constexpr (nesting_policy::fast_reduce) {
-      // If 'fast_reduce' will be used, then the priority queue is a 2-level cut
-      pq_roots_bound = (pq_roots_bound * 3u) / 2u;
-    }
+    const size_t pq_roots_bound = (dag->max_1level_cut * 3u) / 2u;
 
     const size_t outer_pq_roots_max =
       ep.template get<exec_policy::memory>() == exec_policy::memory::Internal
