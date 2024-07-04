@@ -404,6 +404,72 @@ go_bandit([]() {
       nw << n3 << n2 << n1;
     }
 
+    // { ... }
+    //
+    // See BDD 20 in test/adiar/bdd/test_quantify.cpp for more details.
+    /* input
+    //       1_           ---- x1
+    //      /  \
+    //      2  3          ---- x2
+    //     / \/ \                  <-- (max) 1-level cut: 4
+    //     4 5  6         ---- x3  <--  max  2-level cut: 5
+    //     |X| / \                 <-- (max) 1-level cut: 4
+    //     7 8 F T        ---- x4
+    //    /| |\
+    //    TF TT
+    */
+    // Projecting to x1, x2, and x4, we expect it to collapse to
+    // { {1}, {1,2}, {1,4}, {2}, {2,4}, {4}, Ø }
+    /*
+    //          _1_       ---- x1
+    //         /   \
+    //         2   3      ---- x2
+    //        / \ / \
+    //        | //  T
+    //        \//
+    //         8          ---- x4
+    //        / \
+    //        T T
+    */
+    shared_levelized_file<arc> zdd_8__unreduced;
+    {
+      arc_writer aw(zdd_8__unreduced);
+
+      const bdd::pointer_type n8(4, 1);
+      const bdd::pointer_type n7(4, 0);
+      const bdd::pointer_type n6(3, 2);
+      const bdd::pointer_type n5(3, 1);
+      const bdd::pointer_type n4(3, 0);
+      const bdd::pointer_type n3(2, 1);
+      const bdd::pointer_type n2(2, 0);
+      const bdd::pointer_type n1(1, 0);
+
+      aw.push_internal({ n1, false, n2 });
+      aw.push_internal({ n1, true, n3 });
+      aw.push_internal({ n2, false, n4 });
+      aw.push_internal({ n2, true, n5 });
+      aw.push_internal({ n3, false, n5 });
+      aw.push_internal({ n3, true, n6 });
+      aw.push_internal({ n4, false, n7 });
+      aw.push_internal({ n5, false, n7 });
+      aw.push_internal({ n4, true, n8 });
+      aw.push_internal({ n5, true, n8 });
+
+      aw.push_terminal({ n6, false, bdd::pointer_type(false) });
+      aw.push_terminal({ n6, true, bdd::pointer_type(true) });
+      aw.push_terminal({ n7, false, bdd::pointer_type(false) });
+      aw.push_terminal({ n7, true, bdd::pointer_type(true) });
+      aw.push_terminal({ n8, false, bdd::pointer_type(true) });
+      aw.push_terminal({ n8, true, bdd::pointer_type(true) });
+
+      aw.push(level_info(1, 1u));
+      aw.push(level_info(2, 2u));
+      aw.push(level_info(3, 3u));
+      aw.push(level_info(4, 2u));
+
+      zdd_8__unreduced->max_1level_cut = 4;
+    }
+
     // TODO: Turn 'GreaterThanOrEqualTo' in max 1-level cuts below into an
     // 'EqualTo'.
 
@@ -2754,6 +2820,51 @@ go_bandit([]() {
           AssertThat(call_history.at(2), Is().EqualTo(1u));
           AssertThat(call_history.at(3), Is().EqualTo(0u));
         });
+
+        it("handles 2-level cut in Outer Sweep [&&]", [&]() {
+          __zdd out = zdd_project(ep, __zdd(zdd_8__unreduced, ep), [](const zdd::label_type x) { return x != 3; });
+
+          node_test_stream nodes(out);
+
+          // (8)
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(
+                     nodes.pull(),
+                     Is().EqualTo(node(4, zdd::max_id, zdd::pointer_type(true), zdd::pointer_type(true))));
+
+          // (3)
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(
+                     nodes.pull(),
+                     Is().EqualTo(node(2, zdd::max_id, zdd::pointer_type(4, zdd::max_id), zdd::pointer_type(true))));
+
+          // (2)
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(
+                     nodes.pull(),
+                     Is().EqualTo(node(2, zdd::max_id - 1, zdd::pointer_type(4, zdd::max_id), zdd::pointer_type(4, zdd::max_id))));
+
+          // (1)
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(
+                     nodes.pull(),
+                     Is().EqualTo(node(1, zdd::max_id, zdd::pointer_type(2, zdd::max_id - 1), zdd::pointer_type(2, zdd::max_id))));
+
+          AssertThat(nodes.can_pull(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(4u, 1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 2u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1u, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
       });
     });
 
@@ -4272,6 +4383,56 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
           AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
         });
+
+        it("handles 2-level cut in Outer Sweep [&&]", [&]() {
+          __zdd out = zdd_project(ep, __zdd(zdd_8__unreduced, ep), [x = 5]() mutable -> optional<int> {
+              x--;
+              if (x == 3) { x--; }
+              if (x < 0) { return {}; }
+              return { x };
+            });
+
+          node_test_stream nodes(out);
+
+          // (8)
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(
+                     nodes.pull(),
+                     Is().EqualTo(node(4, zdd::max_id, zdd::pointer_type(true), zdd::pointer_type(true))));
+
+          // (3)
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(
+                     nodes.pull(),
+                     Is().EqualTo(node(2, zdd::max_id, zdd::pointer_type(4, zdd::max_id), zdd::pointer_type(true))));
+
+          // (2)
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(
+                     nodes.pull(),
+                     Is().EqualTo(node(2, zdd::max_id - 1, zdd::pointer_type(4, zdd::max_id), zdd::pointer_type(4, zdd::max_id))));
+
+          // (1)
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(
+                     nodes.pull(),
+                     Is().EqualTo(node(1, zdd::max_id, zdd::pointer_type(2, zdd::max_id - 1), zdd::pointer_type(2, zdd::max_id))));
+
+          AssertThat(nodes.can_pull(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(4u, 1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 2u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1u, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
       });
     });
 
@@ -4828,6 +4989,52 @@ go_bandit([]() {
 
           AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
           AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
+        });
+
+        it("handles 2-level cut in Outer Sweep [&&]", [&]() {
+          std::vector<int> dom = { 5, 4, 2, 1, 0 };
+          __zdd out = zdd_project(ep, __zdd(zdd_8__unreduced, ep), dom.begin(), dom.end());
+
+          node_test_stream nodes(out);
+
+          // (8)
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(
+                     nodes.pull(),
+                     Is().EqualTo(node(4, zdd::max_id, zdd::pointer_type(true), zdd::pointer_type(true))));
+
+          // (3)
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(
+                     nodes.pull(),
+                     Is().EqualTo(node(2, zdd::max_id, zdd::pointer_type(4, zdd::max_id), zdd::pointer_type(true))));
+
+          // (2)
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(
+                     nodes.pull(),
+                     Is().EqualTo(node(2, zdd::max_id - 1, zdd::pointer_type(4, zdd::max_id), zdd::pointer_type(4, zdd::max_id))));
+
+          // (1)
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(
+                     nodes.pull(),
+                     Is().EqualTo(node(1, zdd::max_id, zdd::pointer_type(2, zdd::max_id - 1), zdd::pointer_type(2, zdd::max_id))));
+
+          AssertThat(nodes.can_pull(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(4u, 1u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(2u, 2u)));
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(1u, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          // TODO: meta variables
         });
       });
     });

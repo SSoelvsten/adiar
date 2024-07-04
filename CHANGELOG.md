@@ -89,6 +89,9 @@
 
 - Fixed overflow error when a single BDD's width outgrows 32 bits (96 GiB).
 
+- Fixed Outer Reduce in Nested Sweeping framework crashes due to assuming its priority queues are
+  (like the regular Reduce) only inducing a 1-level cut on the input.
+
 - Fixed "Not enough phase 1 memory for 128 KB items and an open stream!" error
   messages when running `bdd_exists(f, ...)` and `bdd_forall(f, ...)` with
   exclusively external memory data structures.
