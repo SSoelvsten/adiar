@@ -1003,6 +1003,121 @@ go_bandit([]() {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
+    // BDD 19
+    //
+    // When quantifying x4 and x6, Nested Sweeping's outer Reduce sweep runs into a 2-level cut as
+    // it combines the requests for node (9).
+    //
+    // This counter-example only works for 'simple transposition', 'pruning transposition', and
+    // 'deepest quantification' but NOT for 'partial quantification'. Level x5 is here to force the
+    // terminal arcs from (14) and (15) into the priority queue.
+    /*
+    //         _1_              ---- x0 (to not fully collapse to the true terminal)
+    //        /   \
+    //        F  _2_            ---- x1
+    //          /   \
+    //          3   4           ---- x2
+    //         / \ / \
+    //        _5 | | 6          ---- x3
+    //       /  \\ // \                  <-- (max) 1-level cut: 6
+    //       7_   9   _8        ---- x4  <--  max  2-level cut: 8
+    //      /  \ / \ /  \                <-- (max) 1-level cut: 6
+    //     12   10 13   11      ---- x5
+    //    / |  / | | \  | \
+    //    | T  T | | T  T /
+    //    \____  / \  ___/
+    //         14   15          ---- x6
+    //        /  \ /  \
+    //        T  F F  T
+    */
+    // In this case, it is expected to collapse to 'x0'
+    /*
+    //           1              ---- x0
+    //          / \
+    //          F T
+    */
+    shared_levelized_file<bdd::node_type> bdd_19;
+
+    {
+      const node n15(6, node::max_id, bdd::pointer_type(false), bdd::pointer_type(true));
+      const node n14(6, node::max_id - 1, bdd::pointer_type(true), bdd::pointer_type(false));
+      const node n13(5, node::max_id, n15.uid(), bdd::pointer_type(true));
+      const node n12(5, node::max_id - 1, n14.uid(), bdd::pointer_type(true));
+      const node n11(5, node::max_id - 2, bdd::pointer_type(true), n15.uid());
+      const node n10(5, node::max_id - 3, bdd::pointer_type(true), n14.uid());
+      const node n9(4, node::max_id, n10.uid(), n13.uid());
+      const node n8(4, node::max_id - 1, n13.uid(), n11.uid());
+      const node n7(4, node::max_id - 2, n12.uid(), n10.uid());
+      const node n6(3, node::max_id, n9.uid(), n8.uid());
+      const node n5(3, node::max_id - 1, n7.uid(), n9.uid());
+      const node n4(2, node::max_id, n9.uid(), n6.uid());
+      const node n3(2, node::max_id - 1, n5.uid(), n9.uid());
+      const node n2(1, node::max_id, n3.uid(), n4.uid());
+      const node n1(0, node::max_id, bdd::pointer_type(false), n2.uid());
+
+      node_writer nw(bdd_19);
+      nw << n15 << n14 << n13 << n12 << n11 << n10 << n9 << n8 << n7 << n6 << n5 << n4 << n3 << n2 << n1;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    // BDD 20
+    //
+    // Similar to BDD 19, this induces a 2-level cut during the outer Reduce. Yet, as it is already
+    // semi-transposed we skip the transposition algorithms and so can design have a much smaller
+    // and simpler counter-example.
+    //
+    /* input
+    //       1_       ---- x1
+    //      /  \
+    //      2  3      ---- x2
+    //     / \/ \              <-- (max) 1-level cut: 4
+    //     4 5  6     ---- x3  <--  max  2-level cut: 5
+    //     |X| / \             <-- (max) 1-level cut: 4
+    //     7 8 F T    ---- x4
+    //    /| |\
+    //    TF FT
+    */
+
+    shared_levelized_file<arc> bdd_20__unreduced;
+    {
+      arc_writer aw(bdd_20__unreduced);
+
+      const bdd::pointer_type n8(4, 1);
+      const bdd::pointer_type n7(4, 0);
+      const bdd::pointer_type n6(3, 2);
+      const bdd::pointer_type n5(3, 1);
+      const bdd::pointer_type n4(3, 0);
+      const bdd::pointer_type n3(2, 1);
+      const bdd::pointer_type n2(2, 0);
+      const bdd::pointer_type n1(1, 0);
+
+      aw.push_internal({ n1, false, n2 });
+      aw.push_internal({ n1, true, n3 });
+      aw.push_internal({ n2, false, n4 });
+      aw.push_internal({ n2, true, n5 });
+      aw.push_internal({ n3, false, n5 });
+      aw.push_internal({ n3, true, n6 });
+      aw.push_internal({ n4, false, n7 });
+      aw.push_internal({ n5, false, n7 });
+      aw.push_internal({ n4, true, n8 });
+      aw.push_internal({ n5, true, n8 });
+
+      aw.push_terminal({ n6, false, bdd::pointer_type(false) });
+      aw.push_terminal({ n6, true, bdd::pointer_type(true) });
+      aw.push_terminal({ n7, false, bdd::pointer_type(false) });
+      aw.push_terminal({ n7, true, bdd::pointer_type(true) });
+      aw.push_terminal({ n8, false, bdd::pointer_type(true) });
+      aw.push_terminal({ n8, true, bdd::pointer_type(false) });
+
+      aw.push(level_info(1, 1u));
+      aw.push(level_info(2, 2u));
+      aw.push(level_info(3, 3u));
+      aw.push(level_info(4, 2u));
+
+      bdd_20__unreduced->max_1level_cut = 4;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     describe("bdd_exists(const bdd&, bdd::label_type)", [&]() {
       it("quantifies T terminal-only BDD as itself [const &]", [&]() {
         const bdd in = terminal_T;
@@ -3765,6 +3880,28 @@ go_bandit([]() {
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
+
+        it("handles 2-level cut in Outer Sweep [&&]", [&]() {
+          __bdd out = bdd_exists(ep, bdd(bdd_19), [](const bdd::label_type x) { return x == 4 || x == 6; });
+
+          node_test_stream nodes(out);
+
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(
+            nodes.pull(),
+            Is().EqualTo(node(0, bdd::max_id, bdd::pointer_type(false), bdd::pointer_type(true))));
+
+          AssertThat(nodes.can_pull(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0u, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
 
           // TODO: meta variables
         });
@@ -6574,6 +6711,24 @@ go_bandit([]() {
           AssertThat(call_history.at(3), Is().EqualTo(1u)); // <-- bail out!
           AssertThat(call_history.at(4), Is().EqualTo(0u));
         });
+
+        it("handles 2-level cut in Outer Sweep [&&]", [&]() {
+          __bdd out = bdd_exists(ep, __bdd(bdd_20__unreduced, ep),
+                                 [](const bdd::label_type x) { return x == 3; });
+
+          node_test_stream nodes(out);
+
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(nodes.can_pull(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
       });
 
       // TODO: More tests on arc-based input to independently recreate the more complex tests of the
@@ -7024,6 +7179,32 @@ go_bandit([]() {
 
           // TODO: meta variables
         });
+
+        it("handles 2-level cut in Outer Sweep [&&]", [&]() {
+          __bdd out = bdd_exists(ep, bdd(bdd_19), [var = 6]() mutable -> optional<bdd::label_type> {
+              var -= 2;
+              if (var < 4) { return {}; }
+              return { var };
+            });
+
+          node_test_stream nodes(out);
+
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(
+                     nodes.pull(),
+                     Is().EqualTo(node(0, bdd::max_id, bdd::pointer_type(false), bdd::pointer_type(true))));
+
+          AssertThat(nodes.can_pull(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0u, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
       });
     });
 
@@ -7230,6 +7411,28 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
 
           // TODO: meta variables...
+        });
+
+        it("handles 2-level cut in Outer Sweep [&&]", [&]() {
+          __bdd out = bdd_exists(ep, __bdd(bdd_20__unreduced, ep),
+                                 [called = false]() mutable -> optional<bdd::label_type> {
+                                   if (called) { return {}; }
+                                   called = true;
+                                   return { 3 };
+                                 });
+
+          node_test_stream nodes(out);
+
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(nodes.can_pull(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          // TODO: meta variables
         });
       });
 
@@ -7446,6 +7649,29 @@ go_bandit([]() {
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u, 1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("handles 2-level cut in Outer Sweep [&&]", [&]() {
+          const std::vector<bdd::label_type> vars = { 6, 4 };
+          __bdd out = bdd_exists(ep, bdd(bdd_19), vars.begin(), vars.end());
+
+          node_test_stream nodes(out);
+
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(
+                     nodes.pull(),
+                     Is().EqualTo(node(0, bdd::max_id, bdd::pointer_type(false), bdd::pointer_type(true))));
+
+          AssertThat(nodes.can_pull(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0u, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          // TODO: meta variables
         });
       });
     });
@@ -7716,6 +7942,24 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
 
           // TODO: meta variables...
+        });
+
+        it("handles 2-level cut in Outer Sweep [&&]", [&]() {
+          std::vector<int> vars = { 3 };
+          __bdd out = bdd_exists(ep, __bdd(bdd_20__unreduced, ep), vars.begin(), vars.end());
+
+          node_test_stream nodes(out);
+
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(nodes.pull(), Is().EqualTo(node(true)));
+
+          AssertThat(nodes.can_pull(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          // TODO: meta variables
         });
       });
 
@@ -8614,6 +8858,29 @@ go_bandit([]() {
           // TODO: meta variables
         });
 
+        it("handles 2-level cut in Outer Sweep [&&]", [&]() {
+          __bdd out = bdd_forall(ep, bdd(bdd_19, true),
+                                 [](const bdd::label_type x) { return x == 4 || x == 6; });
+
+          node_test_stream nodes(out);
+
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(
+                     nodes.pull(),
+                     Is().EqualTo(node(0, bdd::max_id, bdd::pointer_type(true), bdd::pointer_type(false))));
+
+          AssertThat(nodes.can_pull(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().True());
+          AssertThat(levels.pull(), Is().EqualTo(level_info(0u, 1u)));
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
+
         it("prunes root during transposition of a shifted diagram [&&]", [&]() {
           __bdd out =
             bdd_forall(ep, bdd(bdd_5T, false, +1), [](const bdd::label_type x) { return x == 1; });
@@ -8763,6 +9030,24 @@ go_bandit([]() {
           AssertThat(call_history.at(0), Is().EqualTo(2u));
           AssertThat(call_history.at(1), Is().EqualTo(1u)); // <-- bail out!
           AssertThat(call_history.at(2), Is().EqualTo(0u));
+        });
+
+        it("handles 2-level cut in Outer Sweep [&&]", [&]() {
+          __bdd out = bdd_forall(ep, __bdd(bdd_20__unreduced, ep),
+                                 [](const bdd::label_type x) { return x == 3; });
+
+          node_test_stream nodes(out);
+
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(nodes.pull(), Is().EqualTo(node(false)));
+
+          AssertThat(nodes.can_pull(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          // TODO: meta variables
         });
       });
     });
@@ -9002,6 +9287,28 @@ go_bandit([]() {
 
           // TODO: meta variables
         });
+
+        it("handles 2-level cut in Outer Sweep [&&]", [&]() {
+          __bdd out = bdd_forall(ep, __bdd(bdd_20__unreduced, ep),
+                                 [called = false]() mutable -> optional<bdd::label_type> {
+                                   if (called) { return {}; }
+                                   called = true;
+                                   return { 3 };
+                                 });
+
+          node_test_stream nodes(out);
+
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(nodes.pull(), Is().EqualTo(node(false)));
+
+          AssertThat(nodes.can_pull(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          // TODO: meta variables
+        });
       });
     });
 
@@ -9120,6 +9427,28 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
 
           // TODO: meta variables...
+        });
+
+        it("handles 2-level cut in Outer Sweep [&&]", [&]() {
+          __bdd out = bdd_forall(ep, __bdd(bdd_20__unreduced, ep),
+                                 [called = false]() mutable -> optional<bdd::label_type> {
+                                   if (called) { return {}; }
+                                   called = true;
+                                   return { 3 };
+                                 });
+
+          node_test_stream nodes(out);
+
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(nodes.pull(), Is().EqualTo(node(false)));
+
+          AssertThat(nodes.can_pull(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          // TODO: meta variables
         });
       });
     });
@@ -9319,6 +9648,24 @@ go_bandit([]() {
           AssertThat(out_meta.can_pull(), Is().False());
 
           // TODO: meta variables...
+        });
+
+        it("handles 2-level cut in Outer Sweep [&&]", [&]() {
+          std::vector<int> vars = { 3 };
+          __bdd out = bdd_forall(ep, __bdd(bdd_20__unreduced, ep), vars.rbegin(), vars.rend());
+
+          node_test_stream nodes(out);
+
+          AssertThat(nodes.can_pull(), Is().True());
+          AssertThat(nodes.pull(), Is().EqualTo(node(false)));
+
+          AssertThat(nodes.can_pull(), Is().False());
+
+          level_info_test_stream levels(out);
+
+          AssertThat(levels.can_pull(), Is().False());
+
+          // TODO: meta variables
         });
       });
     });
