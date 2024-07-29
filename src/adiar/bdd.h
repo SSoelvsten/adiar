@@ -1457,6 +1457,31 @@ namespace adiar
               replace_type m_type);
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Forwards step with the Relational Product for *disjoint* variable orderings,
+  ///        including relabelling.
+  ///
+  /// \param states
+  ///    A symbolic representation of the *current* set of states. These are all encoded with the
+  ///    variables `0`, `1`, ... `varcount - 1`.
+  ///
+  /// \param relation
+  ///    A relation between *current* and *next* state variables. The *next* state is encoded with
+  ///    variables `varcount`, `varcount+1`, ... `2*varcount - 1`.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  bdd
+  bdd_relnext(const bdd& states, const bdd& relation, const bdd::label_type varcount);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Forwards step with the Relational Product for *disjoint* variable orderings,
+  ///        including relabelling.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  bdd
+  bdd_relnext(const exec_policy& ep,
+              const bdd& states,
+              const bdd& relation,
+              const bdd::label_type varcount);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Forwards step with the Relational Product for *interleaved* variable orderings,
   ///        including relabelling.
   ///
@@ -1537,6 +1562,31 @@ namespace adiar
               const bdd& relation,
               const function<optional<bdd::label_type>(bdd::label_type)>& m,
               replace_type m_type);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Backwards step with the Relational Product for *disjoint* variable orderings,
+  ///        including relabelling.
+  ///
+  /// \param states
+  ///    A symbolic representation of the *current* set of states. These are all encoded with the
+  ///    variables `0`, `1`, ... `varcount - 1`.
+  ///
+  /// \param relation
+  ///    A relation between *current* and *next* state variables. The *next* state is encoded with
+  ///    variables `varcount`, `varcount+1`, ... `2*varcount - 1`.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  bdd
+  bdd_relprev(const bdd& states, const bdd& relation, const bdd::label_type varcount);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Backwards step with the Relational Product for *disjoint* variable orderings,
+  ///        including relabelling.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  bdd
+  bdd_relprev(const exec_policy& ep,
+              const bdd& states,
+              const bdd& relation,
+              const bdd::label_type varcount);
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Backwards step with the Relational Product for *interleaved* variable orderings,

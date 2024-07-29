@@ -350,6 +350,24 @@ namespace adiar
   }
 
   bdd
+  bdd_relnext(const exec_policy& ep,
+              const bdd& states,
+              const bdd& relation,
+              const bdd::label_type varcount)
+  {
+    const auto map = [=](const bdd::label_type x) -> adiar::optional<int> {
+      return x < varcount ? adiar::make_optional<int>() : adiar::make_optional<int>(x - varcount);
+    };
+    return bdd_relnext(ep, states, relation, map, replace_type::Shift);
+  }
+
+  bdd
+  bdd_relnext(const bdd& states, const bdd& relation, const bdd::label_type varcount)
+  {
+    return bdd_relnext(exec_policy(), states, relation, varcount);
+  }
+
+  bdd
   bdd_relnext(const exec_policy& ep, const bdd& states, const bdd& relation)
   {
     const auto map = [](const bdd::label_type x) -> adiar::optional<int> {
@@ -413,6 +431,24 @@ namespace adiar
               const function<optional<bdd::label_type>(bdd::label_type)>& m)
   {
     return bdd_relprev(exec_policy(), states, relation, m);
+  }
+
+  bdd
+  bdd_relprev(const exec_policy& ep,
+              const bdd& states,
+              const bdd& relation,
+              const bdd::label_type varcount)
+  {
+    const auto map = [=](const bdd::label_type x) -> adiar::optional<int> {
+      return varcount <= x ? adiar::make_optional<int>() : adiar::make_optional<int>(x + varcount);
+    };
+    return bdd_relprev(ep, states, relation, map, replace_type::Shift);
+  }
+
+  bdd
+  bdd_relprev(const bdd& states, const bdd& relation, const bdd::label_type varcount)
+  {
+    return bdd_relprev(exec_policy(), states, relation, varcount);
   }
 
   bdd
