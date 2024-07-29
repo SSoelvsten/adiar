@@ -1476,7 +1476,7 @@ namespace adiar
               const function<optional<bdd::label_type>(bdd::label_type)>& m);
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// \brief Forwards step with the Relational Product, including relabelling.
+  /// \brief Backwards step with the Relational Product, including relabelling.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   bdd
   bdd_relprev(const exec_policy& ep,
@@ -1508,7 +1508,7 @@ namespace adiar
               replace_type m_type);
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// \brief Forwards step with the Relational Product, including relabelling.
+  /// \brief Backwards step with the Relational Product, including relabelling.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   bdd
   bdd_relprev(const exec_policy& ep,
