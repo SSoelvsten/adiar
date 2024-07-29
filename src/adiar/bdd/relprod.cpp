@@ -349,6 +349,21 @@ namespace adiar
     return bdd_relnext(exec_policy(), states, relation, m);
   }
 
+  bdd
+  bdd_relnext(const exec_policy& ep, const bdd& states, const bdd& relation)
+  {
+    const auto map = [](const bdd::label_type x) -> adiar::optional<int> {
+      return (x % 2) == 0 ? adiar::make_optional<int>() : adiar::make_optional<int>(x - 1);
+    };
+    return bdd_relnext(ep, states, relation, map, replace_type::Shift);
+  }
+
+  bdd
+  bdd_relnext(const bdd& states, const bdd& relation)
+  {
+    return bdd_relnext(exec_policy(), states, relation);
+  }
+
   //////////////////////////////////////////////////////////////////////////////////////////////////
   bdd
   bdd_relprev(const exec_policy& ep,
@@ -398,5 +413,20 @@ namespace adiar
               const function<optional<bdd::label_type>(bdd::label_type)>& m)
   {
     return bdd_relprev(exec_policy(), states, relation, m);
+  }
+
+  bdd
+  bdd_relprev(const exec_policy& ep, const bdd& states, const bdd& relation)
+  {
+    const auto map = [](const bdd::label_type x) -> adiar::optional<int> {
+      return (x % 2) == 1 ? adiar::make_optional<int>() : adiar::make_optional<int>(x + 1);
+    };
+    return bdd_relprev(ep, states, relation, map, replace_type::Shift);
+  }
+
+  bdd
+  bdd_relprev(const bdd& states, const bdd& relation)
+  {
+    return bdd_relprev(exec_policy(), states, relation);
   }
 }

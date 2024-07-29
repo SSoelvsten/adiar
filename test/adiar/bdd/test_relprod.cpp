@@ -6171,6 +6171,395 @@ go_bandit([]() {
         });
       });
 
+    describe("bdd_relnext(const bdd&, const bdd&)", [&]() {
+      it("has single successor [{10} + H&R Fig. 6.28]", [&]() {
+        const bdd out = bdd_relnext(huth_10, huth_fig28);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id, terminal_F, terminal_T)));
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(0, bdd::max_id, bdd::pointer_type(2, bdd::max_id), terminal_F)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(1u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(2u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(3u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(3u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
+      });
+
+      it("has single successor [{01} + H&R Fig. 6.28]", [&]() {
+        const bdd out = bdd_relnext(huth_01, huth_fig28);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id, terminal_T, terminal_F)));
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(0, bdd::max_id, bdd::pointer_type(2, bdd::max_id), terminal_F)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(1u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(2u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(3u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(3u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
+      });
+
+      it("has multiple successors [{00} + H&R Fig. 6.28]", [&]() {
+        const bdd out = bdd_relnext(huth_00, huth_fig28);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id, terminal_T, terminal_F)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(1u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
+      });
+
+      it("has successors of all current states [H&R Fig. 6.26(a) + H&R Fig. 6.28]", [&]() {
+        const bdd out = bdd_relnext(huth_fig26_a, huth_fig28);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::max_id, terminal_T, terminal_F)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(1u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
+      });
+
+      it("has no successors for empty set of states [H&R Fig. 6.28]", [&]() {
+        const bdd out = bdd_relnext(false, huth_fig28, huth_relnext_map);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no successors for empty set of states [<true>]", [&]() {
+        const bdd out = bdd_relnext(false, true);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no successors for empty set of states [<true>] [~]", [&]() {
+        const bdd T   = true;
+        const bdd out = bdd_relnext(bdd_not(T), T);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no successors for empty set of states [H&R Fig. 28]", [&]() {
+        const bdd out = bdd_relnext(false, huth_fig28);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no successors for empty set of edges [H&R Fig. 26(b) + <false>]", [&]() {
+        const bdd out = bdd_relnext(huth_fig26_b, false);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no successors for empty set of edges [~<false> + <false>]", [&]() {
+        const bdd F   = false;
+        const bdd out = bdd_relnext(bdd_not(F), F);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no successors for empty set of nodes and edges [<false>]", [&]() {
+        const bdd F   = false;
+        const bdd out = bdd_relnext(F, F);
+
+        AssertThat(out.file_ptr(), Is().EqualTo(F.file_ptr()));
+        AssertThat(out.is_negated(), Is().False());
+      });
+
+      it("has all successors for total graph [H&R Fig. 26(b) + <true>]", [&]() {
+        const bdd out = bdd_relnext(huth_fig26_b, true);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
+      });
+
+      it("has all successors for all nodes and total graph [<true>]", [&]() {
+        const bdd T   = true;
+        const bdd out = bdd_relnext(T, T);
+
+        AssertThat(out.file_ptr(), Is().EqualTo(T.file_ptr()));
+        AssertThat(out.is_negated(), Is().False());
+      });
+    });
+
     describe("bdd_relprev(const bdd&, const bdd&, <exists + replace>)", [&]() {
       it("has single predecessor [{01} + K&D Fig. 7(a)]", [&]() {
         const bdd out = bdd_relprev(kalin_01, kalin_fig7_a, kalin_relprev_map);
@@ -8955,6 +9344,450 @@ go_bandit([]() {
       it("has all predecessors for all nodes and total graph [<true>]", [&]() {
         const bdd T   = true;
         const bdd out = bdd_relprev(T, T, kalin_relprev_map, replace_type::Shift);
+
+        AssertThat(out.file_ptr(), Is().EqualTo(T.file_ptr()));
+        AssertThat(out.is_negated(), Is().False());
+      });
+    });
+
+    describe("bdd_relprev(const bdd&, const bdd&)", [&]() {
+      it("has single predecessor [{01} + H&R Fig. 6.28]", [&]() {
+        const bdd out = bdd_relprev(huth_01, huth_fig28);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::max_id, terminal_F, terminal_T)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(1u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(2u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
+      });
+
+      it("has single predecessor [{10} + H&R Fig. 6.28]", [&]() {
+        const bdd out = bdd_relprev(huth_10, huth_fig28);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id, terminal_T, terminal_F)));
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(0, bdd::max_id, bdd::pointer_type(2, bdd::max_id), terminal_F)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(1u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().LessThanOrEqualTo(3u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(3u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().LessThanOrEqualTo(3u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(3u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
+      });
+
+      it("has multiple predecessors [{00} + H&R Fig. 6.28]", [&]() {
+        const bdd out = bdd_relprev(huth_00, huth_fig28);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id, terminal_F, terminal_T)));
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(0, bdd::max_id, terminal_T, bdd::pointer_type(2, bdd::max_id))));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(1u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(2u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(3u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(3u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
+      });
+
+      it("has predecessors of all current states [H&R Fig.6.26(a) + H&R Fig. 6.28]", [&]() {
+        const bdd out = bdd_relprev(huth_fig26_a, huth_fig28);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id, terminal_T, terminal_F)));
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(0, bdd::max_id, bdd::pointer_type(2, bdd::max_id), terminal_T)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(1u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().LessThanOrEqualTo(3u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(3u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().LessThanOrEqualTo(3u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(3u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
+      });
+
+      it("has predecessors of all current states [H&R Fig.6.26(b) + H&R Fig. 6.28]", [&]() {
+        const bdd out = bdd_relprev(huth_fig26_b, huth_fig28);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id, terminal_T, terminal_F)));
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(
+          out_nodes.pull(),
+          Is().EqualTo(node(0, bdd::max_id, bdd::pointer_type(2, bdd::max_id), terminal_T)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(1u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().LessThanOrEqualTo(3u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(3u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().LessThanOrEqualTo(3u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(3u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
+      });
+
+      it("has predecessors of all current states [{00,01} + H&R Fig. 6.28]", [&]() {
+        const bdd out = bdd_relprev(huth_00_01, huth_fig28);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
+      });
+
+      it("has no deadlocks [{__} + H&R Fig. 6.28]", [&]() {
+        const bdd out = bdd_relprev(true, huth_fig28);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
+      });
+
+      it("has no predecessors for empty set of states [<true>]", [&]() {
+        const bdd out = bdd_relprev(false, true);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no predecessors for empty set of states [H&R Fig. 6.28]", [&]() {
+        const bdd out = bdd_relprev(false, huth_fig28);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no predecessors for empty set of edges [H&R Fig. 26(b) + <false>]", [&]() {
+        const bdd out = bdd_relprev(huth_fig26_b, false);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no predecessors for empty set of edges [~<false> + <false>]", [&]() {
+        const bdd F   = false;
+        const bdd out = bdd_relprev(bdd_not(F), F);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
+      });
+
+      it("has no predecessors for empty set of nodes and edges [<false>]", [&]() {
+        const bdd F   = false;
+        const bdd out = bdd_relprev(F, F);
+
+        AssertThat(out.file_ptr(), Is().EqualTo(F.file_ptr()));
+        AssertThat(out.is_negated(), Is().False());
+      });
+
+      it("has all predecessors for total graph [H&R Fig. 26 (b) + <true>]", [&]() {
+        const bdd out = bdd_relprev(huth_fig26_b, true);
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->width, Is().EqualTo(0u));
+
+        AssertThat(out->max_1level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut::Internal], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_False], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut::Internal_True], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut::All], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
+      });
+
+      it("has all predecessors for all nodes and total graph [<true>]", [&]() {
+        const bdd T   = true;
+        const bdd out = bdd_relprev(T, T);
 
         AssertThat(out.file_ptr(), Is().EqualTo(T.file_ptr()));
         AssertThat(out.is_negated(), Is().False());
