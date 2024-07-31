@@ -13,7 +13,7 @@ contributing to Adiar.
         - [Commits and Messages](#commits-and-messages)
         - [Linear History](#linear-history)
         - [Branch Names](#branch-names)
-    - [Code Formatting Guidelines](#code-formatting-guidelines)
+    - [Code Formatting](#code-formatting)
     - [Design Principles](#design-principles)
         - [§1 Functional-First](#1-functional-first)
             - [§1.1 Public API is Functional](#11-public-api-is-functional)
@@ -206,7 +206,7 @@ In general, we try to follow the following casing rules.
 - Template parameters use `CamelCase`.
 - We cannot use *snake_case* or *SNAKE_CASE* for enum values since that may
   clash with keywords or preprocessing variables. Hence, we have settled on
-  `Snake_Case**.
+  `Snake_Case`.
 
 Yet, we run into problems with Adiar's public API. What we really want is to
 have the `bdd` and `zdd` "class" prefix all functions as a namespace, e.g. we
@@ -242,7 +242,7 @@ the compiler derive the type. Yet, we want to **not** for multiple reasons:
 2. Since we only use C++17 and do not have *concepts* available, making the type
    explicit allows IDE tools such as Visual Studio Code to provide hints during
    development.
-3. This also convey the programmer's intent to the reader and the compiler. If
+3. This also conveys the programmer's intent to the reader and the compiler. If
    there is a type error, the problem may not be in the type but probably in the
    way it is derived.
 4. We provide the information necessary to debug the code while reading it.
