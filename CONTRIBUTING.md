@@ -7,24 +7,22 @@ contributing to Adiar.
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
-- [Adiar Contribution Guidelines](#adiar-contribution-guidelines)
+- [Contribution Guidelines](#contribution-guidelines)
     - [Getting Started](#getting-started)
-    - [Git Flow](#git-flow)
+        - [Visual Studio Code](#visual-studio-code)
+    - [Git Practices](#git-practices)
         - [Commits and Messages](#commits-and-messages)
         - [Linear History](#linear-history)
-        - [Branch Names](#branch-names)
+        - [Branching](#branching)
     - [Code Formatting](#code-formatting)
     - [Design Principles](#design-principles)
         - [§1 Functional-First](#1-functional-first)
-            - [§1.1 Public API is Functional](#11-public-api-is-functional)
-            - [§1.2 Data Types are Immutable](#12-data-types-are-immutable)
-            - [§1.3 Imperative Exceptions](#13-imperative-exceptions)
-        - [§2 Run-time over Compilation-time](#2-run-time-over-compilation-time)
-            - [§2.1 Do Not Expose Templates](#21-do-not-expose-templates)
-        - [§3 Naming Scheme](#3-naming-scheme)
-        - [§4 No Almost Always Auto!](#4-no-almost-always-auto)
-        - [§5 Documentation Comments Everywhere](#5-documentation-comments-everywhere)
-        - [§6 Test Everything Thoroughly](#6-test-everything-thoroughly)
+        - [§2 Interoperability with user's data structures](#2-interoperability-with-users-data-structures)
+        - [§3 Run-time over Compilation-time](#3-run-time-over-compilation-time)
+        - [§4 Naming Scheme](#4-naming-scheme)
+        - [§5 No Almost Always Auto!](#5-no-almost-always-auto)
+        - [§6 Documentation Comments Everywhere](#6-documentation-comments-everywhere)
+        - [§7 Test Everything Thoroughly](#7-test-everything-thoroughly)
 
 <!-- markdown-toc end -->
 
@@ -167,7 +165,33 @@ For the sake of performance, the only exception to this principle is the
 interaction with (1) files, (2) data structures, e.g. the priority queues and the
 input streams, and (3) the call stack.
 
-### §2 Run-time over Compilation-time
+### §2 Interoperability with user's data structures
+
+As a library, Adiar should not enforce the type of any data structure provided
+by the user. For example, the `bdd_replace` function of BuDDy breaks this
+goal by requiring the user to use a (C-style) vector of `bddPair`s.
+```cpp
+bdd
+bdd_replace(const bdd&, bddPair*);
+```
+
+Instead, all information should be passed through a general interface by use of
+functions (e.g. `adiar::predicate` and `adiar::generator`.), streams
+(e.g. `std::ostream`), and templated iterators. For example, Adiar's version of
+the same function should be
+```cpp
+bdd
+bdd_replace(const bdd&, const function<bdd::label_type(bdd::label_type)>&);
+
+bdd
+bdd_replace(const bdd&, const generator<pair<bdd::label_type, bdd::label_type>>&);
+
+template <typename ForwardIt>
+bdd
+bdd_replace(const bdd&, ForwardIt begin, ForwardIt end);
+```
+
+### §3 Run-time over Compilation-time
 
 A primary goal of Adiar is high-performance computing. Hence, we want to
 sacrifice the compilation time in favour of improving the running time, e.g.
@@ -178,17 +202,17 @@ responsibilities and without any code duplication. Hence, the code base ought to
 be modularised with a [policy-based
 design](https://en.wikipedia.org/wiki/Modern_C%2B%2B_Design#Policy-based_design).
 
-#### §2.1 Do Not Expose Templates
+#### §3.1 Do Not Expose Templates
 
 The above leads to the creation of templates only intended for use within Adiar.
 None of these should (if possible) be exposed in a header file to the end user,
 but instead be compiled into a non-templated function within a relevant CPP
 source file.
 
-### §3 Naming Scheme
+### §4 Naming Scheme
 
 The codebase uses [snake case](https://en.wikipedia.org/wiki/Snake_case) as much
-as possible. This nicely aligns Adiar's codebase with the *std* (and the *tpie**)
+as possible. This nicely aligns Adiar's codebase with the *std* (and the *tpie*)
 namespaces that are interspersed with Adiar's own code.
 
 > **NOTE:** The entire public API, i.e. everything in the *adiar* namespace,
@@ -202,11 +226,10 @@ namespaces that are interspersed with Adiar's own code.
 In general, we try to follow the following casing rules.
 
 - *Namespaces*, *classes*, *variables*, and *functions* use `snake_case`.
-- Preprocessing variables (and only these) use *SNAKE_CASE*.
+- Preprocessing variables (and only these) use `SNAKE_CASE`.
 - Template parameters use `CamelCase`.
-- We cannot use *snake_case* or *SNAKE_CASE* for enum values since that may
-  clash with keywords or preprocessing variables. Hence, we have settled on
-  `Snake_Case`.
+- Enum values cannot use *snake_case* or *SNAKE_CASE* since that may clash with
+  keywords or preprocessing variables. Hence, we have settled on `Snake_Case`.
 
 Yet, we run into problems with Adiar's public API. What we really want is to
 have the `bdd` and `zdd` "class" prefix all functions as a namespace, e.g. we
@@ -233,10 +256,11 @@ clash too much with the use of *snake_case*:
 - Private class member variables are prefixed with a single `_`; non-static
   public ones may also be prefixed as such.
 
-### §4 No Almost Always Auto!
+### §5 No Almost Always Auto!
 
 Some C++ developers prefer to use the `auto` keyword as much as possible to let
-the compiler derive the type. Yet, we want to **not** for multiple reasons:
+the compiler derive the type. Yet, we want to **not** do so for multiple
+reasons:
 
 1. This way, we can be sure the derived type is as intended
 2. Since we only use C++17 and do not have *concepts* available, making the type
@@ -247,7 +271,7 @@ the compiler derive the type. Yet, we want to **not** for multiple reasons:
    way it is derived.
 4. We provide the information necessary to debug the code while reading it.
 
-### §5 Documentation Comments Everywhere
+### §6 Documentation Comments Everywhere
 
 As Adiar grows larger and more complex, one submodule is the foundation on which
 others are built. Hence, **all** functions, data structures, classes, and
@@ -255,7 +279,7 @@ variables - even the ones in *adiar::internal* that are not part of the public
 API - should be well documented for both the *end users* and especially also the
 *developers*.
 
-### §6 Test Everything Thoroughly
+### §7 Test Everything Thoroughly
 
 Adiar's Decision Diagrams are to be used in the context of verification of
 critical software. At the same time, Adiar's algorithms are much more complex
@@ -264,5 +288,5 @@ could originate. Hence, it is vital we can ensure correctness of Adiar by having
 as thorough unit testing as possible.
 
 This also applies to everything within *adiar::internal* that is not part of the
-public API. Similar to *§5*, this also helps us pin down the origin of a bug
+public API. Similar to *§6*, this also helps us pin down the origin of a bug
 since each level of the code-hierarchy is covered.
