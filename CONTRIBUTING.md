@@ -17,7 +17,7 @@ contributing to Adiar.
     - [Code Formatting](#code-formatting)
     - [Design Principles](#design-principles)
         - [§1 Functional-First](#1-functional-first)
-        - [§2 Interoperability with user's data structures](#2-interoperability-with-users-data-structures)
+        - [§2 Interoperability with Users' Data Structures](#2-interoperability-with-users-data-structures)
         - [§3 Run-time over Compilation-time](#3-run-time-over-compilation-time)
         - [§4 Naming Scheme](#4-naming-scheme)
         - [§5 No Almost Always Auto!](#5-no-almost-always-auto)
@@ -165,7 +165,7 @@ For the sake of performance, the only exception to this principle is the
 interaction with (1) files, (2) data structures, e.g. the priority queues and the
 input streams, and (3) the call stack.
 
-### §2 Interoperability with user's data structures
+### §2 Interoperability with Users' Data Structures
 
 As a library, Adiar should not enforce the type of any data structure provided
 by the user. For example, the `bdd_replace` function of BuDDy breaks this
