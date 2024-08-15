@@ -105,6 +105,11 @@
   This has the added benefit, that the maximum supported BDD size is increased
   to the absurd size of 96 TiB .
 
+- Disabled TPIE from outputting its *debug* log to a disk on the file if Adiar
+  is compiled for production. This drastically saves on disk space (some
+  benchmarks ran out of disk not due to large BDDs but due to several TiB of
+  debug logging).
+
 # v2.0.0
 
 **Date: 5th of April, 2024**
