@@ -12,8 +12,45 @@
 
 namespace adiar
 {
+  /// \brief Whether Adiar is initialized.
   bool _adiar_initialized = false;
-  bool _tpie_initialized  = false;
+
+  /// \brief Whether TPIE is initialized.
+  bool _tpie_initialized = false;
+
+  /// \brief Subsystems of TPIE to be enabled
+  const tpie::flags<tpie::subsystem> _tpie_subsystems =
+    // Enable subsystems we use directly from Adiar
+    tpie::MEMORY_MANAGER | tpie::STREAMS | tpie::TEMPFILE
+    | tpie::FILE_MANAGER
+    // Enable subsystems hiding inside 'tpie::sort' and 'tpie::merge_sorter'
+    | tpie::PROGRESS
+    | tpie::JOB_MANAGER
+#ifndef NDEBUG
+    // Enable default logging to 'tmp/*/TPIE_log*.txt' while in Debug
+    | tpie::DEFAULT_LOGGING
+#endif
+    ;
+
+#ifdef NDEBUG
+  /// \brief Empty implementation of TPIE's logging system while in Production.
+  struct dev_null : tpie::log_target
+  {
+    void
+    log(tpie::log_level, const char*, size_t) override
+    {}
+
+    void
+    begin_group(const std::string&) override
+    {}
+
+    void
+    end_group() override
+    {}
+  };
+
+  dev_null _devnull;
+#endif
 
   void
   adiar_init(size_t memory_limit_bytes, std::string temp_dir)
@@ -34,7 +71,13 @@ namespace adiar
 
     try {
       // Initialise TPIE
-      tpie::tpie_init(tpie::ALL);
+      tpie::tpie_init(_tpie_subsystems);
+
+#ifdef NDEBUG
+      // - add 'dev/null' output for TPIE logging in Production. Otherwise, TPIE will print
+      //   everything to 'std::cerr'.
+      tpie::add_log_target(&_devnull);
+#endif
 
       // - file names
       tpie::tempname::set_default_base_name("ADIAR");
@@ -62,7 +105,7 @@ namespace adiar
       _tpie_initialized  = true;
 
       // Try to gracefully close down TPIE.
-      tpie::tpie_finish(tpie::ALL);
+      tpie::tpie_finish(_tpie_subsystems);
 
       // Tell the user what happened.
       throw e;
@@ -83,7 +126,7 @@ namespace adiar
 
     domain_unset();
 
-    tpie::tpie_finish(tpie::ALL);
+    tpie::tpie_finish(_tpie_subsystems);
     _adiar_initialized = false;
 
     // TPIE does seem to work after having called 'tpie::tpie_finish' the first
