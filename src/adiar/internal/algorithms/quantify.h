@@ -968,6 +968,10 @@ namespace adiar::internal
            const typename Policy::dd_type& in,
            const typename Policy::label_type label)
   {
+#ifdef ADIAR_STATS
+    stats_quantify.runs += 1u;
+#endif
+
     // -------------------------------------------------------------------------
     // Case: Terminal / Disjunct Levels
     if (dd_isterminal(in) || !has_level(in, label)) {
@@ -1502,6 +1506,10 @@ namespace adiar::internal
            typename Policy::dd_type dd,
            const predicate<typename Policy::label_type>& pred)
   {
+#ifdef ADIAR_STATS
+    stats_quantify.runs += 1u;
+#endif
+
     using unreduced_t = typename Policy::__dd_type;
     // TODO: check for missing std::move(...)
 
@@ -1525,13 +1533,14 @@ namespace adiar::internal
     case exec_policy::quantify::Singleton: {
       // -------------------------------------------------------------------------------------------
       // Case: Repeated single variable quantification
-#ifdef ADIAR_STATS
-      stats_quantify.singleton_sweeps += 1u;
-#endif
       typename Policy::label_type label = pred_profile.deepest_var.level;
 
       while (label <= Policy::max_label) {
         dd = quantify<Policy>(ep, dd, label);
+#ifdef ADIAR_STATS
+        // HACK: Undo the += 1 in the nested call
+        stats_quantify.runs -= 1u;
+#endif
         if (dd_isterminal(dd)) { return dd; }
 
         label = __quantify__get_deepest<Policy>(dd, pred);
@@ -1561,21 +1570,21 @@ namespace adiar::internal
       if (transposition__max_iterations == 0) {
         // Singleton Quantification of bottom-most level
 #ifdef ADIAR_STATS
-        stats_quantify.singleton_sweeps += 1u;
+        stats_quantify.nested_transposition.pruning += 1u;
 #endif
         pruning_quantify_policy<Policy> pruning_impl(pred);
         transposed = select(ep, std::move(dd), pruning_impl);
       } else {
         // Partial Quantification
 #ifdef ADIAR_STATS
-        stats_quantify.partial_sweeps += 1u;
+        stats_quantify.nested_transposition.partial += 1u;
 #endif
         partial_quantify_policy<Policy> partial_impl(pred);
         transposed = __quantify(ep, std::move(dd), partial_impl);
 
         if (partial_impl.remaining_nodes == 0) {
 #ifdef ADIAR_STATS
-          stats_quantify.partial_termination += 1u;
+          stats_quantify.nested_transposition.partial_terminations += 1u;
 #endif
           return transposed;
         }
@@ -1587,15 +1596,14 @@ namespace adiar::internal
           partial_impl.reset();
 
 #ifdef ADIAR_STATS
-          stats_quantify.partial_sweeps += 1u;
-          stats_quantify.partial_repetitions += 1u;
+          stats_quantify.nested_transposition.partial_repetitions += 1u;
 #endif
           transposed = __quantify(ep, transposed, partial_impl);
 
           // Reduce result, if no work is left to be done.
           if (partial_impl.remaining_nodes == 0) {
 #ifdef ADIAR_STATS
-            stats_quantify.partial_termination += 1u;
+            stats_quantify.nested_transposition.partial_terminations += 1u;
 #endif
             return transposed;
           }
@@ -1641,6 +1649,11 @@ namespace adiar::internal
         return quantify<Policy>(ep, typename Policy::dd_type(std::move(__dd)), pred);
       }
 
+#ifdef ADIAR_STATS
+      stats_quantify.runs += 1u;
+      stats_quantify.nested_transposition.none += 1u;
+      stats_quantify.nested_sweeps += 1u;
+#endif
       multi_quantify_policy__pred<Policy> inner_impl(pred);
       return nested_sweep<>(ep, std::move(__dd), inner_impl);
     }
@@ -1750,6 +1763,10 @@ namespace adiar::internal
            typename Policy::dd_type dd,
            const typename multi_quantify_policy__generator<Policy>::generator_t& lvls)
   {
+#ifdef ADIAR_STATS
+    stats_quantify.runs += 1u;
+#endif
+
     switch (ep.template get<exec_policy::quantify::algorithm>()) {
     case exec_policy::quantify::Singleton: {
       // -------------------------------------------------------------------------------------------
@@ -1769,16 +1786,22 @@ namespace adiar::internal
         // 'next_on_level' to see whether it is the last one.
         optional<typename Policy::label_type> next_on_level = lvls();
         while (next_on_level) {
-#ifdef ADIAR_STATS
-          stats_quantify.singleton_sweeps += 1u;
-#endif
           dd = quantify<Policy>(ep, dd, on_level.value());
+#ifdef ADIAR_STATS
+          // HACK: Undo the += 1 in the nested call
+          stats_quantify.runs -= 1u;
+#endif
           if (dd_isterminal(dd)) { return dd; }
 
           on_level      = next_on_level;
           next_on_level = lvls();
         }
-        return quantify<Policy>(ep, dd, on_level.value());
+        const typename Policy::__dd_type out = quantify<Policy>(ep, dd, on_level.value());
+#ifdef ADIAR_STATS
+        // HACK: Undo the += 1 in the nested call
+        stats_quantify.runs -= 1u;
+#endif
+        return std::move(out);
       } else { // !Policy::quantify_onset
         // TODO: only designed for 'OR' at this point in time
         if (!on_level) { return typename Policy::dd_type(dd->number_of_terminals[true] > 0); }
@@ -1790,10 +1813,11 @@ namespace adiar::internal
 
           if (Policy::max_label < off_level) { break; }
 
-#ifdef ADIAR_STATS
-          stats_quantify.singleton_sweeps += 1u;
-#endif
           dd = quantify<Policy>(ep, dd, off_level);
+#ifdef ADIAR_STATS
+          // HACK: Undo the += 1 in the nested call
+          stats_quantify.runs -= 1u;
+#endif
           if (dd_isterminal(dd)) { return dd; }
         }
 
@@ -1808,10 +1832,11 @@ namespace adiar::internal
 
             if (Policy::max_label < off_level) { break; }
 
-#ifdef ADIAR_STATS
-            stats_quantify.singleton_sweeps += 1u;
-#endif
             dd = quantify<Policy>(ep, dd, off_level);
+#ifdef ADIAR_STATS
+            // HACK: Undo the += 1 in the nested call
+            stats_quantify.runs -= 1u;
+#endif
             if (dd_isterminal(dd)) { return dd; }
           }
 
@@ -1882,19 +1907,21 @@ namespace adiar::internal
         adiar_assert(transposition_level.has_value());
 
         // Quantify the 'transposition_level' as part of the initial transposition step
-#ifdef ADIAR_STATS
-        stats_quantify.singleton_sweeps += 1u;
-#endif
         typename Policy::__dd_type transposed =
           quantify<Policy>(ep, dd, transposition_level.value());
 
 #ifdef ADIAR_STATS
+        stats_quantify.nested_transposition.singleton += 1u;
         stats_quantify.nested_sweeps += 1u;
+        // HACK: Undo the two += 1 in the nested call
+        stats_quantify.runs -= 1u;
+        stats_quantify.singleton_sweeps -= 1u;
 #endif
         multi_quantify_policy__generator<Policy> inner_impl(lvls);
         return nested_sweep<>(ep, std::move(transposed), inner_impl);
       } else { // !Policy::quantify_onset
 #ifdef ADIAR_STATS
+        stats_quantify.nested_transposition.simple += 1u;
         stats_quantify.nested_sweeps += 1u;
 #endif
         multi_quantify_policy__generator<Policy> inner_impl(lvls);
@@ -1929,6 +1956,11 @@ namespace adiar::internal
         return quantify<Policy>(ep, typename Policy::dd_type(std::move(__dd)), lvls);
       }
 
+#ifdef ADIAR_STATS
+      stats_quantify.runs += 1u;
+      stats_quantify.nested_transposition.none += 1u;
+      stats_quantify.nested_sweeps += 1u;
+#endif
       multi_quantify_policy__generator<Policy> inner_impl(lvls);
       return nested_sweep<>(ep, std::move(__dd), inner_impl);
     }

@@ -492,9 +492,7 @@ namespace adiar
   void
   __printstat_quantify(std::ostream& o)
   {
-    const uintwide total_runs = internal::stats_quantify.skipped
-      + internal::stats_quantify.singleton_sweeps
-      + (internal::stats_quantify.partial_sweeps - internal::stats_quantify.partial_repetitions);
+    const uintwide total_runs = internal::stats_quantify.runs;
 
     o << indent << bold_on << label << "Quantification" << bold_off << total_runs << endl;
 
@@ -521,33 +519,52 @@ namespace adiar
     {
       o << indent << endl;
 
-      o << indent << bold_on << label << "case [partial sweep]" << bold_off
-        << internal::stats_quantify.partial_sweeps << endl;
-
-      indent_level++;
-
-      o << indent << label << "repeated transpositions"
-        << internal::stats_quantify.partial_repetitions << " = "
-        << internal::percent_frac(internal::stats_quantify.partial_repetitions,
-                                  internal::stats_quantify.partial_sweeps)
-        << percent << endl;
-      o << indent << label << "termination" << internal::stats_quantify.partial_termination << " = "
-        << internal::percent_frac(internal::stats_quantify.partial_termination,
-                                  internal::stats_quantify.partial_sweeps)
-        << percent << endl;
-
-      indent_level--;
-    }
-
-    {
-      o << indent << endl;
-
       o << indent << bold_on << label << "case [nested sweep]" << bold_off
         << internal::stats_quantify.nested_sweeps << " = "
         << internal::percent_frac(internal::stats_quantify.nested_sweeps, total_runs) << percent
         << endl;
 
       indent_level++;
+
+      {
+        o << indent << bold_on << label << "transposition" << bold_off << endl;
+
+        indent_level++;
+        o << indent << label << "none" << internal::stats_quantify.nested_transposition.none
+          << endl;
+
+        o << indent << label << "simple" << internal::stats_quantify.nested_transposition.simple
+          << endl;
+
+        o << indent << label << "singleton quantification"
+          << internal::stats_quantify.nested_transposition.singleton << endl;
+
+        o << indent << label << "pruning" << internal::stats_quantify.nested_transposition.pruning
+          << endl;
+
+        o << indent << label << "partial quantification" << bold_off
+          << internal::stats_quantify.nested_transposition.partial << endl;
+
+        indent_level++;
+
+        o << indent << label << "repetitions"
+          << internal::stats_quantify.nested_transposition.partial_repetitions << " = "
+          << internal::percent_frac(
+               internal::stats_quantify.nested_transposition.partial_repetitions,
+               internal::stats_quantify.nested_transposition.partial)
+          << percent << endl;
+        o << indent << label << "terminations"
+          << internal::stats_quantify.nested_transposition.partial_terminations << " = "
+          << internal::percent_frac(
+               internal::stats_quantify.nested_transposition.partial_terminations,
+               internal::stats_quantify.nested_transposition.partial)
+          << percent << endl;
+
+        indent_level--;
+
+        indent_level--;
+      }
+      o << indent << endl;
 
       const uintwide total_roots = internal::stats_quantify.nested_policy.shortcut_terminal
         + internal::stats_quantify.nested_policy.shortcut_node

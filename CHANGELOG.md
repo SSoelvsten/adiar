@@ -96,6 +96,9 @@
   messages when running `bdd_exists(f, ...)` and `bdd_forall(f, ...)` with
   exclusively external memory data structures.
 
+- Fixed statistics for quantification algorithms are incorrect/misleading. To
+  do so, the `adiar::statistics` struct has been changed (in a breaking way).
+
 ## Other Changes
 
 - The maximum number of BDD variables has been decreased to *2097149* (21 bytes
