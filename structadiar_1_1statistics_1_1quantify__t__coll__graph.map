@@ -1,9 +1,10 @@
 <map id="adiar::statistics::quantify_t" name="adiar::statistics::quantify_t">
-<area shape="rect" id="node1" title="Quantification algorithm statistics." alt="" coords="811,104,941,145"/>
-<area shape="rect" id="node2" href="$structadiar_1_1statistics_1_1____alg__base.html" title="Common statistics for all algorithms." alt="" coords="504,5,635,47"/>
+<area shape="rect" id="node1" title="Quantification algorithm statistics." alt="" coords="903,136,1033,177"/>
+<area shape="rect" id="node2" href="$structadiar_1_1statistics_1_1____alg__base.html" title="Common statistics for all algorithms." alt="" coords="527,5,657,47"/>
 <area shape="rect" id="node3" href="$structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html" title="Type and usage of this algorithm&#39;s levelized priority queue." alt="" coords="249,5,397,47"/>
 <area shape="rect" id="node4" href="$structadiar_1_1statistics_1_1levelized__priority__queue__t.html" title="Levelized Priority Queue statistics." alt="" coords="5,5,200,47"/>
-<area shape="rect" id="node5" href="$structadiar_1_1statistics_1_1____random__access__base.html" title="Common statistics for algorithms using random access." alt="" coords="482,71,657,112"/>
-<area shape="rect" id="node6" href="$structadiar_1_1statistics_1_1____pq2__base.html" title="Common statistics for algorithms using a second priority queue." alt="" coords="504,136,635,177"/>
-<area shape="rect" id="node7" href="$structadiar_1_1statistics_1_1quantify__t_1_1nested__policy__t.html" title="Nested multi&#45;variable sweeping." alt="" coords="471,201,668,243"/>
+<area shape="rect" id="node5" href="$structadiar_1_1statistics_1_1quantify__t_1_1nested__transposition__t.html" title="Transposition algorithms prior to nested multi&#45;variable sweeping." alt="" coords="471,71,713,112"/>
+<area shape="rect" id="node6" href="$structadiar_1_1statistics_1_1____random__access__base.html" title="Common statistics for algorithms using random access." alt="" coords="505,136,679,177"/>
+<area shape="rect" id="node7" href="$structadiar_1_1statistics_1_1____pq2__base.html" title="Common statistics for algorithms using a second priority queue." alt="" coords="527,201,657,243"/>
+<area shape="rect" id="node8" href="$structadiar_1_1statistics_1_1quantify__t_1_1nested__policy__t.html" title="Nested multi&#45;variable sweeping." alt="" coords="493,267,691,308"/>
 </map>

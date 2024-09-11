@@ -113,7 +113,7 @@ Inheritance diagram for adiar::statistics::quantify_t:</div>
 <div class="dynheader">
 Collaboration diagram for adiar::statistics::quantify_t:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="structadiar_1_1statistics_1_1quantify__t__coll__graph.svg" width="947" height="248"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="structadiar_1_1statistics_1_1quantify__t__coll__graph.svg" width="1039" height="314"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -122,9 +122,16 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structadiar_1_1statistics_1_1quantify__t_1_1nested__policy__t.html">nested_policy_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nested multi-variable sweeping.  <a href="structadiar_1_1statistics_1_1quantify__t_1_1nested__policy__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structadiar_1_1statistics_1_1quantify__t_1_1nested__transposition__t.html">nested_transposition_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transposition algorithms prior to nested multi-variable sweeping.  <a href="structadiar_1_1statistics_1_1quantify__t_1_1nested__transposition__t.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
+<tr class="memitem:a8a2c3390e878510161e4e555cbd171f0"><td class="memItemLeft" align="right" valign="top"><a id="a8a2c3390e878510161e4e555cbd171f0"></a>
+uintwide&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structadiar_1_1statistics_1_1quantify__t.html#a8a2c3390e878510161e4e555cbd171f0">runs</a> = 0</td></tr>
+<tr class="memdesc:a8a2c3390e878510161e4e555cbd171f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of calls to quantification operation. <br /></td></tr>
+<tr class="separator:a8a2c3390e878510161e4e555cbd171f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aed21498989035cea7b934901862fa37f"><td class="memItemLeft" align="right" valign="top"><a id="aed21498989035cea7b934901862fa37f"></a>
 uintwide&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structadiar_1_1statistics_1_1quantify__t.html#aed21498989035cea7b934901862fa37f">skipped</a> = 0</td></tr>
 <tr class="memdesc:aed21498989035cea7b934901862fa37f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of bailed-out quantifications for non-existent labels. <br /></td></tr>
@@ -133,22 +140,13 @@ uintwide&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 uintwide&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structadiar_1_1statistics_1_1quantify__t.html#af6fc70be36a5f085a3a3d5c2bf25d6cc">singleton_sweeps</a> = 0</td></tr>
 <tr class="memdesc:af6fc70be36a5f085a3a3d5c2bf25d6cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of single-variable sweeps. <br /></td></tr>
 <tr class="separator:af6fc70be36a5f085a3a3d5c2bf25d6cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a149ccd7f6bb303a9ee09d8b5d9305155"><td class="memItemLeft" align="right" valign="top"><a id="a149ccd7f6bb303a9ee09d8b5d9305155"></a>
-uintwide&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structadiar_1_1statistics_1_1quantify__t.html#a149ccd7f6bb303a9ee09d8b5d9305155">partial_sweeps</a> = 0</td></tr>
-<tr class="memdesc:a149ccd7f6bb303a9ee09d8b5d9305155"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of <em>partial</em> multi-variable sweeps. <br /></td></tr>
-<tr class="separator:a149ccd7f6bb303a9ee09d8b5d9305155"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac620fd365bbf468b69ffea4ca07d8069"><td class="memItemLeft" align="right" valign="top"><a id="ac620fd365bbf468b69ffea4ca07d8069"></a>
-uintwide&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structadiar_1_1statistics_1_1quantify__t.html#ac620fd365bbf468b69ffea4ca07d8069">partial_termination</a> = 0</td></tr>
-<tr class="memdesc:ac620fd365bbf468b69ffea4ca07d8069"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of early-termination during <em>partial</em> sweeps. <br /></td></tr>
-<tr class="separator:ac620fd365bbf468b69ffea4ca07d8069"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4960538e39718d9972719f41eada748"><td class="memItemLeft" align="right" valign="top"><a id="ae4960538e39718d9972719f41eada748"></a>
-uintwide&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structadiar_1_1statistics_1_1quantify__t.html#ae4960538e39718d9972719f41eada748">partial_repetitions</a> = 0</td></tr>
-<tr class="memdesc:ae4960538e39718d9972719f41eada748"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of <em>partial</em> multi-variable sweeps that are repeated partial transposition. <br /></td></tr>
-<tr class="separator:ae4960538e39718d9972719f41eada748"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1db4cee9d4faed5901af5aa9f357661f"><td class="memItemLeft" align="right" valign="top"><a id="a1db4cee9d4faed5901af5aa9f357661f"></a>
 uintwide&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structadiar_1_1statistics_1_1quantify__t.html#a1db4cee9d4faed5901af5aa9f357661f">nested_sweeps</a> = 0</td></tr>
 <tr class="memdesc:a1db4cee9d4faed5901af5aa9f357661f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of <em>nested</em> multi-variable sweeps. <br /></td></tr>
 <tr class="separator:a1db4cee9d4faed5901af5aa9f357661f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ceaa8c16f2c30570e7042e4e9039565"><td class="memItemLeft" align="right" valign="top"><a id="a3ceaa8c16f2c30570e7042e4e9039565"></a>
+struct <a class="el" href="structadiar_1_1statistics_1_1quantify__t_1_1nested__transposition__t.html">adiar::statistics::quantify_t::nested_transposition_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>nested_transposition</b></td></tr>
+<tr class="separator:a3ceaa8c16f2c30570e7042e4e9039565"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acdab6396310009ce02b8140f83c7897a"><td class="memItemLeft" align="right" valign="top"><a id="acdab6396310009ce02b8140f83c7897a"></a>
 struct <a class="el" href="structadiar_1_1statistics_1_1quantify__t_1_1nested__policy__t.html">adiar::statistics::quantify_t::nested_policy_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>nested_policy</b></td></tr>
 <tr class="separator:acdab6396310009ce02b8140f83c7897a"><td class="memSeparator" colspan="2">&#160;</td></tr>
