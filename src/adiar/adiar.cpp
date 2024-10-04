@@ -70,6 +70,17 @@ namespace adiar
     }
 
     try {
+      // Set the temporary directory for TPIE before calling
+      // `tpie::tpie_init()`. This avoids a directory named `TPIE_<date>_<...>`
+      // at the default tmp path.
+
+      // - file names
+      tpie::tempname::set_default_base_name("ADIAR");
+      tpie::tempname::set_default_extension("adiar");
+
+      // - tmp directory
+      if (temp_dir != "") { tpie::tempname::set_default_path(temp_dir); }
+
       // Initialise TPIE
       tpie::tpie_init(_tpie_subsystems);
 
@@ -78,13 +89,6 @@ namespace adiar
       //   everything to 'std::cerr'.
       tpie::add_log_target(&_devnull);
 #endif
-
-      // - file names
-      tpie::tempname::set_default_base_name("ADIAR");
-      tpie::tempname::set_default_extension("adiar");
-
-      // - tmp directory
-      if (temp_dir != "") { tpie::tempname::set_default_path(temp_dir); }
 
       // - memory limit and block size
       tpie::get_memory_manager().set_limit(memory_limit_bytes);
