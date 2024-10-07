@@ -311,6 +311,9 @@ namespace adiar
     case replace_type::Identity:
 #ifdef ADIAR_STATS
       internal::stats_replace.monotonic_reduces += 1u;
+      internal::stats_quantify.runs += 1u;
+      internal::stats_quantify.nested_sweeps += 1u;
+      internal::stats_quantify.nested_transposition.none += 1;
 #endif
       relnext_quantify_replace_policy quantify_replace_policy(m);
       return internal::nested_sweep<>(ep, std::move(tmp_1), quantify_replace_policy);
