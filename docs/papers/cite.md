@@ -187,3 +187,56 @@ slower than other implementations.
     url           = {https://arxiv.org/abs/2307.04488},
   }
   ```
+
+
+v2.0
+------------------------
+With [v2.0](https://github.com/SSoelvsten/adiar/releases/tag/v2.0.0), we
+introduce the *Nested Sweeping* framework as a way to more closely recreate the
+more complex BDD operations within the *time-forward processing* algorithmic
+paradigm in Adiar. This allows us, among other things, to implement
+*multi-variable quantification* more akin to the one in other BDD packages.
+
+- Steffan Christ Sølvsten, Jaco van de Pol.
+  “[*Multi-variable Quantification of BDDs in External Memory using Nested Sweeping (Extended Paper)*](https://arxiv.org/abs/2408.14216)”.
+  In: *arXiv preprint*. (2024)
+  ```bibtex
+  @Misc{soelvsten2024:arXiv,
+    title         = {Multi-variable Quantification of {BDD}s in External Memory using Nested Sweeping (Extended Paper)},
+    author        = {S{\o}lvsten, Steffan Christ
+                 and van de Pol, Jaco},
+    year          = {2024},
+    archivePrefix = {arXiv},
+    eprint        = {2408.14216},
+    primaryClass  = {cs.DS},
+    numPages      = {26},
+    howPublished  = {arXiv},
+    url           = {https://arxiv.org/abs/2408.14216},
+  }
+  ```
+
+Furthermore, this version also introduces *levelized random access* to BDDs to
+further improve performance of the product construction algorithms.
+
+- Steffan Christ Sølvsten, Casper Moldup Rysgaard, Jaco van de Pol.
+  “[*Random Access on Narrow Decision Diagrams in External Memory*](https://link.springer.com/chapter/10.1007/978-3-031-66149-5_7)”.
+  In: *Model Checking Software* (SPIN). (2024)
+  ```bibtex
+  @InProceedings{soelvsten2024:SPIN,
+    title     = {Random Access on Narrow Decision Diagrams in External Memory},
+    author    = {S{\o}lvsten, Steffan Christ
+             and Rysgaard, Casper Moldrup
+             and van de Pol, Jaco},
+    booktitle = {Model Checking Software},
+    year      = {2023},
+    editor    = {Neele, Thomas
+             and Wijs, Anton},
+    pages     = {137--145},
+    numPages  = {9},
+    publisher = {Springer},
+    series    = {Lecture Notes in Computer Science},
+    volume    = {14624},
+    isbn      = {978-3-031-66148-8},
+    doi       = {10.1007/978-3-031-66149-5\_7}
+  }
+  ```
