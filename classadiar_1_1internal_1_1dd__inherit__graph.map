@@ -1,5 +1,7 @@
 <map id="adiar::internal::dd" name="adiar::internal::dd">
-<area shape="rect" id="node1" title="Container for the files that represent a Decision Diagram." alt="" coords="35,5,172,32"/>
-<area shape="rect" id="node2" href="$classadiar_1_1bdd.html" title="A reduced Binary Decision Diagram." alt="" coords="5,80,92,107"/>
-<area shape="rect" id="node3" href="$classadiar_1_1zdd.html" title="Reduced Ordered Zero&#45;suppressed Decision Diagram." alt="" coords="116,80,203,107"/>
+<area shape="rect" id="Node000001" title="Container for the files that represent a Decision Diagram." alt="" coords="35,5,172,31"/>
+<area shape="rect" id="Node000002" href="$classadiar_1_1bdd.html" title="A reduced Binary Decision Diagram." alt="" coords="5,79,92,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="88,43,60,80,55,77,84,40"/>
+<area shape="rect" id="Node000003" href="$classadiar_1_1zdd.html" title="Reduced Ordered Zero&#45;suppressed Decision Diagram." alt="" coords="116,79,203,104"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="123,40,152,77,148,80,119,43"/>
 </map>

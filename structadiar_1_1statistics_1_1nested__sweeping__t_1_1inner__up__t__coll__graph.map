@@ -1,7 +1,11 @@
 <map id="adiar::statistics::nested_sweeping_t::inner_up_t" name="adiar::statistics::nested_sweeping_t::inner_up_t">
-<area shape="rect" id="node1" title="Inner Up Sweep(s)" alt="" coords="5,381,228,423"/>
-<area shape="rect" id="node2" href="$structadiar_1_1statistics_1_1reduce__t.html" title="Reduce algorithm statistics." alt="" coords="51,291,182,332"/>
-<area shape="rect" id="node3" href="$structadiar_1_1statistics_1_1____alg__base.html" title="Common statistics for all algorithms." alt="" coords="51,200,182,241"/>
-<area shape="rect" id="node4" href="$structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html" title="Type and usage of this algorithm&#39;s levelized priority queue." alt="" coords="43,96,191,137"/>
-<area shape="rect" id="node5" href="$structadiar_1_1statistics_1_1levelized__priority__queue__t.html" title="Levelized Priority Queue statistics." alt="" coords="19,5,214,47"/>
+<area shape="rect" id="Node000001" title="Inner Up Sweep(s)" alt="" coords="5,376,228,416"/>
+<area shape="rect" id="Node000002" href="$structadiar_1_1statistics_1_1reduce__t.html" title="Reduce algorithm statistics." alt="" coords="51,287,182,327"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="119,341,119,376,114,376,114,341"/>
+<area shape="rect" id="Node000003" href="$structadiar_1_1statistics_1_1____alg__base.html" title="Common statistics for all algorithms." alt="" coords="51,197,182,237"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="119,251,119,287,114,287,114,251"/>
+<area shape="rect" id="Node000004" href="$structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html" title="Type and usage of this algorithm&#39;s levelized priority queue." alt="" coords="43,95,191,135"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="119,149,119,197,114,197,114,149"/>
+<area shape="rect" id="Node000005" href="$structadiar_1_1statistics_1_1levelized__priority__queue__t.html" title="Levelized Priority Queue statistics." alt="" coords="19,5,214,45"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="119,59,119,95,114,95,114,59"/>
 </map>

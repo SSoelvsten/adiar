@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['papers_807',['Papers',['../page__papers.html',1,'']]]
+  ['objects_0',['Function Objects',['../page__functional.html',1,'page__tutorial']]]
 ];

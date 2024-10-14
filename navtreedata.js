@@ -25,19 +25,66 @@
 var NAVTREE =
 [
   [ "Adiar", "index.html", [
-    [ "Main Page", "index.html", [
-      [ "Quick Access", "index.html#autotoc_md0", null ],
-      [ "About the Project", "index.html#autotoc_md1", null ],
-      [ "License", "index.html#autotoc_md2", null ]
-    ] ],
+    [ "Main Page", "index.html", "index" ],
     [ "Getting Started", "page__getting_started.html", [
       [ "Dependencies", "page__getting_started.html#autotoc_md3", null ],
       [ "Building with CMake", "page__getting_started.html#autotoc_md4", null ],
       [ "Usage", "page__getting_started.html#autotoc_md5", null ]
     ] ],
-    [ "Tutorial", "page__tutorial.html", "page__tutorial" ],
-    [ "Papers", "page__papers.html", "page__papers" ],
-    [ "Modules", "modules.html", "modules" ],
+    [ "Tutorial", "page__tutorial.html", [
+      [ "Basic Usage", "page__basic.html", [
+        [ "Creating BDDs", "page__basic.html#autotoc_md6", [
+          [ "Constants", "page__basic.html#autotoc_md7", null ],
+          [ "Variables", "page__basic.html#autotoc_md8", null ]
+        ] ],
+        [ "Combining BDDs", "page__basic.html#autotoc_md9", [
+          [ "Negation", "page__basic.html#autotoc_md10", null ],
+          [ "Binary Operators", "page__basic.html#autotoc_md11", null ],
+          [ "If-Then-Else Operator", "page__basic.html#autotoc_md12", null ],
+          [ "Restricting Variables", "page__basic.html#autotoc_md13", null ],
+          [ "Quantification", "page__basic.html#autotoc_md14", null ]
+        ] ],
+        [ "Satisfying Assignments", "page__basic.html#autotoc_md15", null ],
+        [ "Predicates", "page__basic.html#autotoc_md16", [
+          [ "Boolean Constants", "page__basic.html#autotoc_md17", null ],
+          [ "Single Variables", "page__basic.html#autotoc_md18", null ],
+          [ "Cubes", "page__basic.html#autotoc_md19", null ],
+          [ "Equality", "page__basic.html#autotoc_md20", null ]
+        ] ],
+        [ "BDD Information", "page__basic.html#autotoc_md21", [
+          [ "Counting Operations", "page__basic.html#autotoc_md22", null ],
+          [ "Support", "page__basic.html#autotoc_md23", null ],
+          [ "Graphical Output", "page__basic.html#autotoc_md24", null ]
+        ] ]
+      ] ],
+      [ "Function Objects", "page__functional.html", [
+        [ "Predicates", "page__functional.html#autotoc_md25", null ],
+        [ "Iterators", "page__functional.html#autotoc_md26", null ],
+        [ "Generators and Consumers", "page__functional.html#autotoc_md27", [
+          [ "Generators", "page__functional.html#autotoc_md28", null ],
+          [ "Consumers", "page__functional.html#autotoc_md29", null ]
+        ] ]
+      ] ],
+      [ "Manual Construction", "page__builder.html", null ]
+    ] ],
+    [ "Papers", "page__papers.html", [
+      [ "Citing this Project", "page__cite.html", [
+        [ "Lars Arge", "page__cite.html#autotoc_md33", null ],
+        [ "Adiar", "page__cite.html#autotoc_md34", [
+          [ "v1.0", "page__cite.html#autotoc_md35", null ],
+          [ "v1.1", "page__cite.html#autotoc_md36", null ],
+          [ "v1.2", "page__cite.html#autotoc_md37", null ],
+          [ "v2.0", "page__cite.html#autotoc_md38", null ]
+        ] ]
+      ] ],
+      [ "Amendments", "page__amend.html", [
+        [ "64-bit Encoding of Pointers", "page__amend.html#autotoc_md30", [
+          [ "v1.2", "page__amend.html#autotoc_md31", null ],
+          [ "v2.0", "page__amend.html#autotoc_md32", null ]
+        ] ]
+      ] ]
+    ] ],
+    [ "Topics", "topics.html", "topics" ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [
@@ -59,7 +106,7 @@ var NAVTREE =
         [ "Typedefs", "functions_type.html", null ],
         [ "Enumerations", "functions_enum.html", null ],
         [ "Enumerator", "functions_eval.html", null ],
-        [ "Related Functions", "functions_rela.html", null ]
+        [ "Related Symbols", "functions_rela.html", null ]
       ] ]
     ] ],
     [ "Files", "files.html", [
@@ -70,11 +117,10 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"",
-"dir_68267d1309a1af8e8297ef4c3efbcdba.html",
-"group__module____bdd.html#gaa0f1e0cf0c0a23f9e2dfd84da5b03521",
-"group__module____zdd.html#ga3781cba035e9141bd381f3726fe87e22",
-"namespacemembers_func_e.html"
+"adiar_8h_source.html",
+"functions.html",
+"group__module____zdd.html#ga1ccc9a267c99017a82566ff4fc091f62",
+"structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html#a704d98578648ed0b0daf834b92b21fe7"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
