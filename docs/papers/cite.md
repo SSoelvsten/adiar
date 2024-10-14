@@ -16,7 +16,7 @@ Adiar is based on the theoretical work of Lars Arge back in the 90s.
   In: *International Symposium on Algorithms and Computation* (ISAAC). (1995)
   ```bibtex
   @InProceedings{arge1995:ISAAC,
-    title     = {The {I/O}-complexity of {O}rdered {B}inary-{D}ecision {D}iagram manipulation},
+    title     = {The {I/O}-complexity of Ordered Binary-Decision Diagram manipulation},
     author    = {Arge, Lars},
     editor    = {Staples, John
              and Eades, Peter
@@ -40,7 +40,7 @@ Adiar is based on the theoretical work of Lars Arge back in the 90s.
   ```bibtex
   @InProceedings{arge1996:BRICS,
     author    = {Arge, Lars},
-    title     = {The {I/O}-{C}omplexity of {O}rdered {B}inary-{D}ecision {D}iagram manipulation},
+    title     = {The {I/O}-Complexity of Ordered Binary-Decision Diagram manipulation},
     booktitle = {BRICS RS preprint series},
     volume    = {29},
     year      = {1996},
@@ -71,7 +71,7 @@ in practice.
   In: *Tools and Algorithms for the Construction and Analysis of Systems* (TACAS). (2022)
   ```bibtex
   @InProceedings{soelvsten2022:TACAS,
-    title         = {{A}diar: {B}inary {D}ecision {D}iagrams in {E}xternal {M}emory},
+    title         = {{Adiar}: Binary Decision Diagrams in External Memory},
     author        = {S{\o}lvsten, Steffan Christ
                  and van de Pol, Jaco
                  and Jakobsen, Anna Blume
@@ -95,7 +95,7 @@ in practice.
   In: *arXiv preprint*. (2021)
   ```bibtex
   @Misc{soelvsten2021:arXiv,
-    title         = {{E}fficient {B}inary {D}ecision {D}iagram {M}anipulation in {E}xternal {M}emory},
+    title         = {Efficient Binary Decision Diagram Manipulation in External Memory},
     author        = {S{\o}lvsten, Steffan Christ
                  and van de Pol, Jaco
                  and Jakobsen, Anna Blume
@@ -153,7 +153,7 @@ slower than other implementations.
   In: *Automated Technology for Verification and Analysis* (ATVA). (2023)
   ```bibtex
   @InProceedings{soelvsten2023:ATVA,
-    title     = {{P}redicting {M}emory {D}emands of {BDD} {O}perations {U}sing {M}aximum {G}raph {C}uts},
+    title     = {Predicting Memory Demands of {BDD} Operations Using Maximum Graph Cuts},
     author    = {S{\o}lvsten, Steffan Christ
              and van de Pol, Jaco},
     booktitle = {Automated Technology for Verification and Analysis},
@@ -175,7 +175,7 @@ slower than other implementations.
   In: *arXiv preprint*. (2023)
   ```bibtex
   @Misc{soelvsten2023:arXiv,
-    title         = {{P}redicting {M}emory {D}emands of {BDD} {O}perations using {M}aximum {G}raph {C}uts (Extended Paper)},
+    title         = {Predicting Memory Demands of {BDD} Operations using Maximum Graph Cuts (Extended Paper)},
     author        = {S{\o}lvsten, Steffan Christ
                  and van de Pol, Jaco},
     year          = {2023},
