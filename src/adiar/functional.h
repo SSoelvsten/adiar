@@ -62,9 +62,9 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief  Wrap an iterator into a consumer function.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename ValueType, typename ForwardIt>
+  template <typename ValueType, typename OutputIt>
   inline consumer<ValueType>
-  make_consumer(ForwardIt& iter)
+  make_consumer(OutputIt& iter)
   {
     return [&iter](const ValueType& x) {
       *(iter++) = x;
@@ -74,9 +74,9 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief  Wrap an iterator into a consumer function.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename ValueType, typename ForwardIt>
+  template <typename ValueType, typename OutputIt>
   inline consumer<ValueType>
-  make_consumer(ForwardIt&& iter)
+  make_consumer(OutputIt&& iter)
   {
     return [_iter = std::move(iter)](const ValueType& x) mutable {
       *(_iter++) = x;
@@ -86,11 +86,11 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief  Wrap an iterator into a consumer function.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename ForwardIt>
-  inline consumer<typename ForwardIt::container_type::value_type>
-  make_consumer(ForwardIt& iter)
+  template <typename OutputIt>
+  inline consumer<typename OutputIt::container_type::value_type>
+  make_consumer(OutputIt& iter)
   {
-    using value_type = typename ForwardIt::container_type::value_type;
+    using value_type = typename OutputIt::container_type::value_type;
 
     return [&iter](const value_type& x) {
       *(iter++) = x;
@@ -100,11 +100,11 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief  Wrap an iterator into a consumer function.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename ForwardIt>
-  inline consumer<typename ForwardIt::container_type::value_type>
-  make_consumer(ForwardIt&& iter)
+  template <typename OutputIt>
+  inline consumer<typename OutputIt::container_type::value_type>
+  make_consumer(OutputIt&& iter)
   {
-    using value_type = typename ForwardIt::container_type::value_type;
+    using value_type = typename OutputIt::container_type::value_type;
 
     return [_iter = std::move(iter)](const value_type& x) mutable {
       *(_iter++) = x;
