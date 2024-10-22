@@ -1,7 +1,292 @@
 #include "../test.h"
 
+#include<iterator>
+#include<set>
+#include<vector>
+
 go_bandit([]() {
   describe("adiar/functional.h", []() {
+    describe("make_consumer<int>(ForwardIt&)", []() {
+      it("consumes values 0, 1 into std::vector<int>", []() {
+        std::vector<int> xs;
+        auto i = std::back_inserter(xs);
+
+        consumer<int> c = make_consumer<int>(i);
+
+        AssertThat(xs.size(), Is().EqualTo(0u));
+
+        c(0);
+
+        AssertThat(xs.size(), Is().EqualTo(1u));
+        AssertThat(xs.at(0), Is().EqualTo(0));
+
+        c(1);
+
+        AssertThat(xs.size(), Is().EqualTo(2u));
+        AssertThat(xs.at(0), Is().EqualTo(0));
+        AssertThat(xs.at(1), Is().EqualTo(1));
+      });
+
+      it("consumes values 1, 0 into std::vector<int>", []() {
+        std::vector<int> xs;
+        auto i = std::back_inserter(xs);
+
+        consumer<int> c = make_consumer<int>(i);
+
+        AssertThat(xs.size(), Is().EqualTo(0u));
+
+        c(1);
+
+        AssertThat(xs.size(), Is().EqualTo(1u));
+        AssertThat(xs.at(0), Is().EqualTo(1));
+
+        c(0);
+
+        AssertThat(xs.size(), Is().EqualTo(2u));
+        AssertThat(xs.at(0), Is().EqualTo(1));
+        AssertThat(xs.at(1), Is().EqualTo(0));
+      });
+
+      it("consumes values 0, 1 into std::set<int>", []() {
+        std::set<int> xs;
+        auto i = std::inserter(xs, xs.end());
+
+        consumer<int> c = make_consumer<int>(i);
+
+        AssertThat(xs.size(), Is().EqualTo(0u));
+        AssertThat(xs.find(0), Is().EqualTo(xs.end()));
+        AssertThat(xs.find(1), Is().EqualTo(xs.end()));
+
+        c(0);
+
+        AssertThat(xs.size(), Is().EqualTo(1u));
+        AssertThat(xs.find(0), Is().EqualTo(xs.begin()));
+        AssertThat(xs.find(1), Is().EqualTo(xs.end()));
+
+        c(1);
+
+        AssertThat(xs.size(), Is().EqualTo(2u));
+        AssertThat(xs.find(0), Is().Not().EqualTo(xs.end()));
+        AssertThat(xs.find(1), Is().Not().EqualTo(xs.end()));
+      });
+
+      it("consumes value -1 into std::vector<uint>", []() {
+        std::vector<unsigned int> xs;
+        auto i = std::back_inserter(xs);
+
+        consumer<int> c = make_consumer<int>(i);
+
+        AssertThat(xs.size(), Is().EqualTo(0u));
+
+        c(-1);
+
+        AssertThat(xs.size(), Is().EqualTo(1u));
+        AssertThat(xs.at(0), Is().EqualTo(static_cast<unsigned int>(-1)));
+      });
+    });
+
+    describe("make_consumer<int>(ForwardIt&&)", []() {
+      it("consumes values 0, 1 into std::vector<int>", []() {
+        std::vector<int> xs;
+
+        consumer<int> c = make_consumer<int>(std::back_inserter(xs));
+
+        AssertThat(xs.size(), Is().EqualTo(0u));
+
+        c(0);
+
+        AssertThat(xs.size(), Is().EqualTo(1u));
+        AssertThat(xs.at(0), Is().EqualTo(0));
+
+        c(1);
+
+        AssertThat(xs.size(), Is().EqualTo(2u));
+        AssertThat(xs.at(0), Is().EqualTo(0));
+        AssertThat(xs.at(1), Is().EqualTo(1));
+      });
+
+      it("consumes values 1, 0 into std::vector<int>", []() {
+        std::vector<int> xs;
+
+        consumer<int> c = make_consumer<int>(std::back_inserter(xs));
+
+        AssertThat(xs.size(), Is().EqualTo(0u));
+
+        c(1);
+
+        AssertThat(xs.size(), Is().EqualTo(1u));
+        AssertThat(xs.at(0), Is().EqualTo(1));
+
+        c(0);
+
+        AssertThat(xs.size(), Is().EqualTo(2u));
+        AssertThat(xs.at(0), Is().EqualTo(1));
+        AssertThat(xs.at(1), Is().EqualTo(0));
+      });
+
+      it("consumes values 0, 1 into std::set<int>", []() {
+        std::set<int> xs;
+
+        consumer<int> c = make_consumer<int>(std::inserter(xs, xs.end()));
+
+        AssertThat(xs.size(), Is().EqualTo(0u));
+        AssertThat(xs.find(0), Is().EqualTo(xs.end()));
+        AssertThat(xs.find(1), Is().EqualTo(xs.end()));
+
+        c(0);
+
+        AssertThat(xs.size(), Is().EqualTo(1u));
+        AssertThat(xs.find(0), Is().EqualTo(xs.begin()));
+        AssertThat(xs.find(1), Is().EqualTo(xs.end()));
+
+        c(1);
+
+        AssertThat(xs.size(), Is().EqualTo(2u));
+        AssertThat(xs.find(0), Is().Not().EqualTo(xs.end()));
+        AssertThat(xs.find(1), Is().Not().EqualTo(xs.end()));
+      });
+
+      it("consumes value -1 into std::vector<uint>", []() {
+        std::vector<unsigned int> xs;
+
+        consumer<int> c = make_consumer<int>(std::back_inserter(xs));
+
+        AssertThat(xs.size(), Is().EqualTo(0u));
+
+        c(-1);
+
+        AssertThat(xs.size(), Is().EqualTo(1u));
+        AssertThat(xs.at(0), Is().EqualTo(static_cast<unsigned int>(-1)));
+      });
+    });
+
+    describe("make_consumer< _ >(ForwardIt&)", []() {
+      it("consumes values 0, 1 into std::vector<int>", []() {
+        std::vector<int> xs;
+        auto i = std::back_inserter(xs);
+
+        consumer<int> c = make_consumer(i);
+
+        AssertThat(xs.size(), Is().EqualTo(0u));
+
+        c(0);
+
+        AssertThat(xs.size(), Is().EqualTo(1u));
+        AssertThat(xs.at(0), Is().EqualTo(0));
+
+        c(1);
+
+        AssertThat(xs.size(), Is().EqualTo(2u));
+        AssertThat(xs.at(0), Is().EqualTo(0));
+        AssertThat(xs.at(1), Is().EqualTo(1));
+      });
+
+      it("consumes values 1, 0 into std::vector<int>", []() {
+        std::vector<int> xs;
+        auto i = std::back_inserter(xs);
+
+        consumer<int> c = make_consumer(i);
+
+        AssertThat(xs.size(), Is().EqualTo(0u));
+
+        c(1);
+
+        AssertThat(xs.size(), Is().EqualTo(1u));
+        AssertThat(xs.at(0), Is().EqualTo(1));
+
+        c(0);
+
+        AssertThat(xs.size(), Is().EqualTo(2u));
+        AssertThat(xs.at(0), Is().EqualTo(1));
+        AssertThat(xs.at(1), Is().EqualTo(0));
+      });
+
+      it("consumes values 0, 1 into std::set<int>", []() {
+        std::set<int> xs;
+        auto i = std::inserter(xs, xs.end());
+
+        consumer<int> c = make_consumer(i);
+
+        AssertThat(xs.size(), Is().EqualTo(0u));
+        AssertThat(xs.find(0), Is().EqualTo(xs.end()));
+        AssertThat(xs.find(1), Is().EqualTo(xs.end()));
+
+        c(0);
+
+        AssertThat(xs.size(), Is().EqualTo(1u));
+        AssertThat(xs.find(0), Is().EqualTo(xs.begin()));
+        AssertThat(xs.find(1), Is().EqualTo(xs.end()));
+
+        c(1);
+
+        AssertThat(xs.size(), Is().EqualTo(2u));
+        AssertThat(xs.find(0), Is().Not().EqualTo(xs.end()));
+        AssertThat(xs.find(1), Is().Not().EqualTo(xs.end()));
+      });
+    });
+
+    describe("make_consumer< _ >(ForwardIt&&)", []() {
+      it("consumes values 0, 1 into std::vector<int>", []() {
+        std::vector<int> xs;
+
+        consumer<int> c = make_consumer(std::back_inserter(xs));
+
+        AssertThat(xs.size(), Is().EqualTo(0u));
+
+        c(0);
+
+        AssertThat(xs.size(), Is().EqualTo(1u));
+        AssertThat(xs.at(0), Is().EqualTo(0));
+
+        c(1);
+
+        AssertThat(xs.size(), Is().EqualTo(2u));
+        AssertThat(xs.at(0), Is().EqualTo(0));
+        AssertThat(xs.at(1), Is().EqualTo(1));
+      });
+
+      it("consumes values 1, 0 into std::vector<int>", []() {
+        std::vector<int> xs;
+
+        consumer<int> c = make_consumer(std::back_inserter(xs));
+
+        AssertThat(xs.size(), Is().EqualTo(0u));
+
+        c(1);
+
+        AssertThat(xs.size(), Is().EqualTo(1u));
+        AssertThat(xs.at(0), Is().EqualTo(1));
+
+        c(0);
+
+        AssertThat(xs.size(), Is().EqualTo(2u));
+        AssertThat(xs.at(0), Is().EqualTo(1));
+        AssertThat(xs.at(1), Is().EqualTo(0));
+      });
+
+      it("consumes values 0, 1 into std::set<int>", []() {
+        std::set<int> xs;
+
+        consumer<int> c = make_consumer(std::inserter(xs, xs.end()));
+
+        AssertThat(xs.size(), Is().EqualTo(0u));
+        AssertThat(xs.find(0), Is().EqualTo(xs.end()));
+        AssertThat(xs.find(1), Is().EqualTo(xs.end()));
+
+        c(0);
+
+        AssertThat(xs.size(), Is().EqualTo(1u));
+        AssertThat(xs.find(0), Is().EqualTo(xs.begin()));
+        AssertThat(xs.find(1), Is().EqualTo(xs.end()));
+
+        c(1);
+
+        AssertThat(xs.size(), Is().EqualTo(2u));
+        AssertThat(xs.find(0), Is().Not().EqualTo(xs.end()));
+        AssertThat(xs.find(1), Is().Not().EqualTo(xs.end()));
+      });
+    });
+
     describe("make_consumer(ForwardIt&, ForwardIt&)", []() {
       it("consumes values 0, 1, 42 into std::vector<int>", []() {
         std::vector<int> xs = { -1, -1, -1 };
@@ -293,28 +578,28 @@ go_bandit([]() {
     });
 
     describe("make_generator(const RetType&)", []() {
-      it("Can create -1 generator", []() {
+      it("can create -1 generator", []() {
         generator<int> g = make_generator(-1);
 
         AssertThat(g(), Is().EqualTo(make_optional<int>(-1)));
         AssertThat(g(), Is().EqualTo(make_optional<int>()));
       });
 
-      it("Can create 0 generator", []() {
+      it("can create 0 generator", []() {
         generator<int> g = make_generator(0);
 
         AssertThat(g(), Is().EqualTo(make_optional<int>(0)));
         AssertThat(g(), Is().EqualTo(make_optional<int>()));
       });
 
-      it("Can create 1 generator", []() {
+      it("can create 1 generator", []() {
         generator<int> g = make_generator(1);
 
         AssertThat(g(), Is().EqualTo(make_optional<int>(1)));
         AssertThat(g(), Is().EqualTo(make_optional<int>()));
       });
 
-      it("Can create 42 generator", []() {
+      it("can create 42 generator", []() {
         generator<int> g = make_generator(42);
 
         AssertThat(g(), Is().EqualTo(make_optional<int>(42)));
