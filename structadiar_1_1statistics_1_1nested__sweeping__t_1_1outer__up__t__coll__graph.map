@@ -1,11 +1,7 @@
 <map id="adiar::statistics::nested_sweeping_t::outer_up_t" name="adiar::statistics::nested_sweeping_t::outer_up_t">
-<area shape="rect" id="Node000001" title="Outer Reduce Sweep." alt="" coords="5,376,229,416"/>
-<area shape="rect" id="Node000002" href="$structadiar_1_1statistics_1_1reduce__t.html" title="Reduce algorithm statistics." alt="" coords="52,287,183,327"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="120,341,120,376,115,376,115,341"/>
-<area shape="rect" id="Node000003" href="$structadiar_1_1statistics_1_1____alg__base.html" title="Common statistics for all algorithms." alt="" coords="52,197,183,237"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="120,251,120,287,115,287,115,251"/>
-<area shape="rect" id="Node000004" href="$structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html" title="Type and usage of this algorithm&#39;s levelized priority queue." alt="" coords="43,95,191,135"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="120,149,120,197,115,197,115,149"/>
-<area shape="rect" id="Node000005" href="$structadiar_1_1statistics_1_1levelized__priority__queue__t.html" title="Levelized Priority Queue statistics." alt="" coords="20,5,215,45"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="120,59,120,95,115,95,115,59"/>
+<area shape="rect" id="node1" title="Outer Reduce Sweep." alt="" coords="5,381,229,423"/>
+<area shape="rect" id="node2" href="$structadiar_1_1statistics_1_1reduce__t.html" title="Reduce algorithm statistics." alt="" coords="52,291,183,332"/>
+<area shape="rect" id="node3" href="$structadiar_1_1statistics_1_1____alg__base.html" title="Common statistics for all algorithms." alt="" coords="52,200,183,241"/>
+<area shape="rect" id="node4" href="$structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html" title="Type and usage of this algorithm&#39;s levelized priority queue." alt="" coords="43,96,191,137"/>
+<area shape="rect" id="node5" href="$structadiar_1_1statistics_1_1levelized__priority__queue__t.html" title="Levelized Priority Queue statistics." alt="" coords="20,5,215,47"/>
 </map>

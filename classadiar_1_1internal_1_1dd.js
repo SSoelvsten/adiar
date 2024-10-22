@@ -16,10 +16,11 @@ var classadiar_1_1internal_1_1dd =
     [ "is_negated", "classadiar_1_1internal_1_1dd.html#a355887367038d19632c86fb9c2717630", null ],
     [ "number_of_terminals", "classadiar_1_1internal_1_1dd.html#aef2f8cbd3631a1e42e6554eac2d7e132", null ],
     [ "number_of_terminals", "classadiar_1_1internal_1_1dd.html#aa97722d01a0549b7ee27d9e9a1798e55", null ],
-    [ "operator->", "classadiar_1_1internal_1_1dd.html#aadb95f61405420b090c777f9367366ba", null ],
+    [ "operator->", "classadiar_1_1internal_1_1dd.html#a088788c99e9b13c426b387cf7d89d01b", null ],
     [ "shift", "classadiar_1_1internal_1_1dd.html#a9f72e51b81c9752618d97cae443d5ea0", null ],
     [ "size", "classadiar_1_1internal_1_1dd.html#adc08e814ccd31b2c213cae02421a7856", null ],
     [ "width", "classadiar_1_1internal_1_1dd.html#ae50a9dc1b8fcd0a6a907e4b1e3f22ac3", null ],
+    [ "__dd", "classadiar_1_1internal_1_1dd.html#a73a1f3919e8a94357fba089164fcdbdf", null ],
     [ "_file", "classadiar_1_1internal_1_1dd.html#aa61007519f8ddea47ab611ef6c791cf1", null ],
     [ "_negate", "classadiar_1_1internal_1_1dd.html#a30d13433c619f5a43529f7ab9604a689", null ],
     [ "_shift", "classadiar_1_1internal_1_1dd.html#a3d3e2de2a807039e7e1cac4d6d402fe9", null ]

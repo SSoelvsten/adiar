@@ -1,7 +1,5 @@
 <map id="adiar::__bdd" name="adiar::__bdd">
-<area shape="rect" id="Node000001" title="A (possibly) unreduced Binary Decision Diagram." alt="" coords="30,168,131,193"/>
-<area shape="rect" id="Node000002" href="$classadiar_1_1internal_1_1____dd.html" title=" " alt="" coords="5,93,156,119"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="83,133,83,168,78,168,78,133"/>
-<area shape="rect" id="Node000003" href="$classadiar_1_1exec__policy.html" title="Settings to dictate the execution of Adiar&#39;s algorithms." alt="" coords="11,5,150,31"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="83,45,83,93,78,93,78,45"/>
+<area shape="rect" id="node1" title="A (possibly) unreduced Binary Decision Diagram." alt="" coords="30,171,131,197"/>
+<area shape="rect" id="node2" href="$classadiar_1_1internal_1_1____dd.html" title=" " alt="" coords="5,95,156,121"/>
+<area shape="rect" id="node3" href="$classadiar_1_1exec__policy.html" title="Settings to dictate the execution of Adiar&#39;s algorithms." alt="" coords="11,5,150,32"/>
 </map>

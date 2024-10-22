@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['function_20objects_0',['Function Objects',['../group__module____functional.html',1,'']]]
+  ['statistics_797',['Statistics',['../group__module____statistics.html',1,'']]]
 ];

@@ -1,9 +1,6 @@
 <map id="adiar::statistics::reduce_t" name="adiar::statistics::reduce_t">
-<area shape="rect" id="Node000001" title="Reduce algorithm statistics." alt="" coords="37,287,168,327"/>
-<area shape="rect" id="Node000002" href="$structadiar_1_1statistics_1_1____alg__base.html" title="Common statistics for all algorithms." alt="" coords="37,197,168,237"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="105,251,105,287,100,287,100,251"/>
-<area shape="rect" id="Node000003" href="$structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html" title="Type and usage of this algorithm&#39;s levelized priority queue." alt="" coords="29,95,177,135"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="105,149,105,197,100,197,100,149"/>
-<area shape="rect" id="Node000004" href="$structadiar_1_1statistics_1_1levelized__priority__queue__t.html" title="Levelized Priority Queue statistics." alt="" coords="5,5,200,45"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="105,59,105,95,100,95,100,59"/>
+<area shape="rect" id="node1" title="Reduce algorithm statistics." alt="" coords="37,291,168,332"/>
+<area shape="rect" id="node2" href="$structadiar_1_1statistics_1_1____alg__base.html" title="Common statistics for all algorithms." alt="" coords="37,200,168,241"/>
+<area shape="rect" id="node3" href="$structadiar_1_1statistics_1_1____alg__base_1_1____lpq__t.html" title="Type and usage of this algorithm&#39;s levelized priority queue." alt="" coords="29,96,177,137"/>
+<area shape="rect" id="node4" href="$structadiar_1_1statistics_1_1levelized__priority__queue__t.html" title="Levelized Priority Queue statistics." alt="" coords="5,5,200,47"/>
 </map>

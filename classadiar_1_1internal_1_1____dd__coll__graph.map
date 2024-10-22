@@ -1,5 +1,4 @@
 <map id="adiar::internal::__dd" name="adiar::internal::__dd">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,93,156,119"/>
-<area shape="rect" id="Node000002" href="$classadiar_1_1exec__policy.html" title="Settings to dictate the execution of Adiar&#39;s algorithms." alt="" coords="11,5,150,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="83,45,83,93,78,93,78,45"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,95,156,121"/>
+<area shape="rect" id="node2" href="$classadiar_1_1exec__policy.html" title="Settings to dictate the execution of Adiar&#39;s algorithms." alt="" coords="11,5,150,32"/>
 </map>
