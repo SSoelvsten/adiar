@@ -60,6 +60,58 @@ namespace adiar
   using consumer = function<void(Arg)>;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief  Wrap an iterator into a consumer function.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename ValueType, typename ForwardIt>
+  inline consumer<ValueType>
+  make_consumer(ForwardIt& iter)
+  {
+    return [&iter](const ValueType& x) {
+      *(iter++) = x;
+    };
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief  Wrap an iterator into a consumer function.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename ValueType, typename ForwardIt>
+  inline consumer<ValueType>
+  make_consumer(ForwardIt&& iter)
+  {
+    return [_iter = std::move(iter)](const ValueType& x) mutable {
+      *(_iter++) = x;
+    };
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief  Wrap an iterator into a consumer function.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename ForwardIt>
+  inline consumer<typename ForwardIt::container_type::value_type>
+  make_consumer(ForwardIt& iter)
+  {
+    using value_type = typename ForwardIt::container_type::value_type;
+
+    return [&iter](const value_type& x) {
+      *(iter++) = x;
+    };
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief  Wrap an iterator into a consumer function.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename ForwardIt>
+  inline consumer<typename ForwardIt::container_type::value_type>
+  make_consumer(ForwardIt&& iter)
+  {
+    using value_type = typename ForwardIt::container_type::value_type;
+
+    return [_iter = std::move(iter)](const value_type& x) mutable {
+      *(_iter++) = x;
+    };
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief  Wrap a `begin` and `end` iterator pair into a consumer function.
   ///
   /// \remark The resulting *consumer* function will throw an `out_of_range` if `end` is reached but
