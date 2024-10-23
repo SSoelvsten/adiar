@@ -1,5 +1,4 @@
 #include "../test.h"
-
 #include <iterator>
 #include <set>
 #include <vector>

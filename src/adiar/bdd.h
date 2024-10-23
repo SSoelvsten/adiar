@@ -2077,7 +2077,8 @@ namespace adiar
   /// \returns The output iterator at its final state.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename OutputIt,
-            typename = enable_if<!is_convertible<OutputIt, consumer<pair<bdd::label_type, bool>>> && !is_convertible<OutputIt, bdd>>>
+            typename = enable_if<!is_convertible<OutputIt, consumer<pair<bdd::label_type, bool>>>
+                                 && !is_convertible<OutputIt, bdd>>>
   OutputIt
   bdd_satmin(const bdd& f, OutputIt iter)
   {
@@ -2174,7 +2175,8 @@ namespace adiar
   /// \returns The output iterator at its final state.
   //////////////////////////////////////////////////////////////////////////////
   template <typename OutputIt,
-            typename = enable_if<!is_convertible<OutputIt, consumer<pair<bdd::label_type, bool>>> && !is_convertible<OutputIt, bdd>>>
+            typename = enable_if<!is_convertible<OutputIt, consumer<pair<bdd::label_type, bool>>>
+                                 && !is_convertible<OutputIt, bdd>>>
   OutputIt
   bdd_satmax(const bdd& f, OutputIt iter)
   {

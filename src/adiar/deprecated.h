@@ -22,7 +22,8 @@ namespace adiar
   /// \brief The lexicographically smallest x such that f(x) is true.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename ForwardIt, typename = enable_if<is_mutable<typename ForwardIt::reference>>>
-  [[deprecated("Use an output iterator (Did you mean to provide values? Use a constant iterator, for now)")]]
+  [[deprecated(
+    "Use an output iterator (Did you mean to provide values? Use a constant iterator, for now)")]]
   ForwardIt
   bdd_satmin(const bdd& f, ForwardIt begin, ForwardIt end)
   {
@@ -34,7 +35,8 @@ namespace adiar
   /// \brief The lexicographically largest x such that f(x) is true.
   //////////////////////////////////////////////////////////////////////////////
   template <typename ForwardIt, typename = enable_if<is_mutable<typename ForwardIt::reference>>>
-  [[deprecated("Use an output iterator (Did you mean to provide values? Use a constant iterator, for now)")]]
+  [[deprecated(
+    "Use an output iterator (Did you mean to provide values? Use a constant iterator, for now)")]]
   ForwardIt
   bdd_satmax(const bdd& f, ForwardIt begin, ForwardIt end)
   {

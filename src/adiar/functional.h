@@ -66,9 +66,7 @@ namespace adiar
   inline consumer<ValueType>
   make_consumer(OutputIt& iter)
   {
-    return [&iter](const ValueType& x) {
-      *(iter++) = x;
-    };
+    return [&iter](const ValueType& x) { *(iter++) = x; };
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,9 +76,7 @@ namespace adiar
   inline consumer<ValueType>
   make_consumer(OutputIt&& iter)
   {
-    return [_iter = std::move(iter)](const ValueType& x) mutable {
-      *(_iter++) = x;
-    };
+    return [_iter = std::move(iter)](const ValueType& x) mutable { *(_iter++) = x; };
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -92,9 +88,7 @@ namespace adiar
   {
     using value_type = typename OutputIt::container_type::value_type;
 
-    return [&iter](const value_type& x) {
-      *(iter++) = x;
-    };
+    return [&iter](const value_type& x) { *(iter++) = x; };
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -106,9 +100,7 @@ namespace adiar
   {
     using value_type = typename OutputIt::container_type::value_type;
 
-    return [_iter = std::move(iter)](const value_type& x) mutable {
-      *(_iter++) = x;
-    };
+    return [_iter = std::move(iter)](const value_type& x) mutable { *(_iter++) = x; };
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
