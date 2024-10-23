@@ -117,6 +117,13 @@
   benchmarks ran out of disk not due to large BDDs but due to several TiB of
   debug logging).
 
+
+## Deprecation
+
+- Iterator-based outputs have had their *begin* and *end* iterator pairs replaced
+  with a single output iterator. This affects the `bdd_support`, `bdd_satmin`,
+  `bdd_satmax`, `zdd_support`, `zdd_minelem`, and `zdd_maxelem` functions.
+
 # v2.0.0
 
 **Date: 5th of April, 2024**
