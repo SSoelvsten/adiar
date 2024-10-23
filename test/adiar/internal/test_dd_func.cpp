@@ -2,6 +2,8 @@
 
 #include <adiar/internal/dd_func.h>
 
+#include <iterator>
+
 go_bandit([]() {
   describe("adiar/internal/dd_func.h", []() {
     const ptr_uint64 false_ptr = ptr_uint64(false);
@@ -51,100 +53,122 @@ go_bandit([]() {
     }
 
     describe("dd_support(f, cb)", [&]() {
-      // TODO
+      it("returns [1,3,4] for a BDD with multiple nodes", [&]() {
+        std::vector<int> out;
+
+        bdd_support(bdd_file, [&out](auto x) { out.push_back(x); });
+
+        // Check state of 'out'
+        AssertThat(out.size(), Is().EqualTo(3u));
+        AssertThat(out.at(0), Is().EqualTo(1));
+        AssertThat(out.at(1), Is().EqualTo(3));
+        AssertThat(out.at(2), Is().EqualTo(4));
+      });
+
+      it("returns [0,1,2] for a ZDD with multiple nodes", [&]() {
+        std::vector<int> out;
+
+        zdd_support(zdd_file, [&out](auto x) { out.push_back(x); });
+
+        // Check state of 'out'
+        AssertThat(out.size(), Is().EqualTo(3u));
+        AssertThat(out.at(0), Is().EqualTo(0));
+        AssertThat(out.at(1), Is().EqualTo(1));
+        AssertThat(out.at(2), Is().EqualTo(2));
+      });
     });
 
     describe("dd_support(f, begin, end)", [&]() {
       it("does not write anything for BDD false terminal", [&]() {
-        std::vector<int> out(42, -1);
+        std::vector<int> out;
 
-        auto it_b = out.begin();
-        auto it_e = out.end();
+        auto iter = bdd_support(terminal_F, std::back_inserter(out));
 
-        const auto out_it = bdd_support(terminal_F, it_b, it_e);
+        // Check state of 'out'
+        AssertThat(out.size(), Is().EqualTo(0u));
 
-        AssertThat(out_it, Is().EqualTo(it_b));
-        AssertThat(*it_b, Is().EqualTo(-1));
+        // Check state of 'iter'
+        iter = 42;
+        AssertThat(out.size(), Is().EqualTo(1u));
+        AssertThat(out.at(0), Is().EqualTo(42));
       });
 
-      it("returns empty file for a ZDD true terminal", [&]() {
-        std::vector<int> out(42, -1);
+      it("does not write anything for ZDD true terminal", [&]() {
+        std::vector<int> out;
 
-        auto it_b = out.begin();
-        auto it_e = out.end();
+        auto iter = zdd_support(terminal_T, std::back_inserter(out));
 
-        const auto out_it = zdd_support(terminal_T, it_b, it_e);
+        // Check state of 'out'
+        AssertThat(out.size(), Is().EqualTo(0u));
 
-        AssertThat(out_it, Is().EqualTo(it_b));
-        AssertThat(*it_b, Is().EqualTo(-1));
+        // Check state of 'iter'
+        iter = 8;
+        AssertThat(out.size(), Is().EqualTo(1u));
+        AssertThat(out.at(0), Is().EqualTo(8));
       });
 
       it("returns [0] for a ZDD with one node (label 0)", [&]() {
-        std::vector<int> out(42, -1);
+        std::vector<int> out;
 
-        auto it_b = out.begin();
-        auto it_e = out.end();
+        auto iter = zdd_support(x0, std::back_inserter(out));
 
-        const auto out_it = zdd_support(x0, it_b, it_e);
+        // Check state of 'out'
+        AssertThat(out.size(), Is().EqualTo(1u));
+        AssertThat(out.at(0), Is().EqualTo(0));
 
-        AssertThat(out_it, Is().EqualTo(it_b + 1));
-        AssertThat(*it_b, Is().EqualTo(0));
-        AssertThat(*out_it, Is().EqualTo(-1));
+        // Check state of 'iter'
+        iter = 8;
+        AssertThat(out.size(), Is().EqualTo(2u));
+        AssertThat(out.at(1), Is().EqualTo(8));
       });
 
       it("returns [42] for a ZDD with one node (label 42)", [&]() {
-        std::vector<int> out(42, -1);
+        std::vector<int> out;
 
-        auto it_b = out.begin();
-        auto it_e = out.end();
+        auto iter = zdd_support(x42, std::back_inserter(out));
 
-        const auto out_it = zdd_support(x42, it_b, it_e);
+        // Check state of 'out'
+        AssertThat(out.size(), Is().EqualTo(1u));
+        AssertThat(out.at(0), Is().EqualTo(42));
 
-        AssertThat(out_it, Is().EqualTo(it_b + 1));
-        AssertThat(*it_b, Is().EqualTo(42));
-        AssertThat(*out_it, Is().EqualTo(-1));
+        // Check state of 'iter'
+        iter = 8;
+        AssertThat(out.size(), Is().EqualTo(2u));
+        AssertThat(out.at(1), Is().EqualTo(8));
       });
 
       it("returns [1,3,4] for a BDD with multiple nodes", [&]() {
-        std::vector<int> out(42, -1);
+        std::vector<int> out;
 
-        auto it_b = out.begin();
-        auto it_e = out.end();
+        auto iter = bdd_support(bdd_file, std::back_inserter(out));
 
-        const auto out_it = bdd_support(bdd_file, it_b, it_e);
+        // Check state of 'out'
+        AssertThat(out.size(), Is().EqualTo(3u));
+        AssertThat(out.at(0), Is().EqualTo(1));
+        AssertThat(out.at(1), Is().EqualTo(3));
+        AssertThat(out.at(2), Is().EqualTo(4));
 
-        AssertThat(*(it_b + 0), Is().EqualTo(1));
-        AssertThat(*(it_b + 1), Is().EqualTo(3));
-        AssertThat(*(it_b + 2), Is().EqualTo(4));
-
-        AssertThat(out_it, Is().EqualTo(it_b + 3));
-        AssertThat(*out_it, Is().EqualTo(-1));
+        // Check state of 'iter'
+        iter = 8;
+        AssertThat(out.size(), Is().EqualTo(4u));
+        AssertThat(out.at(3), Is().EqualTo(8));
       });
 
       it("returns [0,1,2] for a ZDD with multiple nodes", [&]() {
-        std::vector<int> out(42, -1);
+        std::vector<int> out;
 
-        auto it_b = out.begin();
-        auto it_e = out.end();
+        auto iter = zdd_support(zdd_file, std::back_inserter(out));
 
-        const auto out_it = zdd_support(zdd_file, it_b, it_e);
+        // Check state of 'out'
+        AssertThat(out.size(), Is().EqualTo(3u));
+        AssertThat(out.at(0), Is().EqualTo(0));
+        AssertThat(out.at(1), Is().EqualTo(1));
+        AssertThat(out.at(2), Is().EqualTo(2));
 
-        AssertThat(*(it_b + 0), Is().EqualTo(0));
-        AssertThat(*(it_b + 1), Is().EqualTo(1));
-        AssertThat(*(it_b + 2), Is().EqualTo(2));
-
-        AssertThat(out_it, Is().EqualTo(it_b + 3));
-        AssertThat(*out_it, Is().EqualTo(-1));
-      });
-
-      it("throws if range is too small for BDD", [&]() {
-        std::vector<int> out(1, -1);
-        AssertThrows(out_of_range, bdd_support(bdd_file, out.begin(), out.end()));
-      });
-
-      it("throws if range is too small for ZDD", [&]() {
-        std::vector<int> out(1, -1);
-        AssertThrows(out_of_range, zdd_support(zdd_file, out.begin(), out.end()));
+        // Check state of 'iter'
+        iter = 8;
+        AssertThat(out.size(), Is().EqualTo(4u));
+        AssertThat(out.at(3), Is().EqualTo(8));
       });
     });
 

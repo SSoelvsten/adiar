@@ -43,19 +43,15 @@ adiar::bdd _ = adiar::bdd_exists(f, xs.begin(), xs.end());
 ```
 
 Reversely, one can also parse information from Adiar's algorithms back into
-one's own data structures with a pair of iterators. For example, the variables
+one's own data structures with an output iterator. For example, the variables
 within a BDD can be copied (in *ascending* order) into a `std::vector` with the
 `adiar::bdd_support` function as follows.
 
 ```cpp
-std::vector<int> xs(adiar::bdd_varcount(f));
+std::vector<int> xs;
 
-adiar::bdd_support(f, xs.begin(), xs.end());
+adiar::bdd_support(f, std::back_inserter(xs));
 ```
-
-Here, we initialise the vector with `adiar::bdd_varcount` many
-default-initialized values to be sure that the range `xs.begin()` to `xs.end()`
-is big enough to fit the entire result.
 
 Generators and Consumers
 ==================================

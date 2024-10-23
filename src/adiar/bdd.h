@@ -1950,24 +1950,18 @@ namespace adiar
   /// \param f
   ///    BDD of interest.
   ///
-  /// \param begin
-  ///    Single-pass forward iterator for where to place the output.
+  /// \param iter
+  ///    Single-pass output iterator for where to place the output.
   ///
-  /// \param end
-  ///    Marks the end for `begin`.
-  ///
-  /// \returns An iterator to the first entry that still is left empty.
-  ///
-  /// \throws out_of_range
-  ///    If the distance between `begin` and `end` is not big enough to contain all variables in
-  ///    `f`.
+  /// \returns The output iterator at its final state.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename ForwardIt>
-  ForwardIt
-  bdd_support(const bdd& f, ForwardIt begin, ForwardIt end)
+  template <typename OutputIt,
+            typename = enable_if<!is_convertible<OutputIt, consumer<bdd::label_type>>>>
+  OutputIt
+  bdd_support(const bdd& f, OutputIt iter)
   {
-    bdd_support(f, make_consumer(begin, end));
-    return begin;
+    bdd_support(f, make_consumer<bdd::label_type>(iter));
+    return iter;
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2078,23 +2072,17 @@ namespace adiar
   ///    BDD of interest.
   ///
   /// \param begin
-  ///    Single-pass forward *mutable* iterator for where to place the output.
+  ///    Single-pass output iterator for where to place the output.
   ///
-  /// \param end
-  ///    Marks the end for `begin`.
-  ///
-  /// \returns An iterator to the first entry that still is left empty.
-  ///
-  /// \throws out_of_range
-  ///    If the distance between `begin` and `end` is not big enough to contain all variables in
-  ///    `f`.
+  /// \returns The output iterator at its final state.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename ForwardIt, typename = enable_if<is_mutable<typename ForwardIt::reference>>>
-  ForwardIt
-  bdd_satmin(const bdd& f, ForwardIt begin, ForwardIt end)
+  template <typename OutputIt,
+            typename = enable_if<!is_convertible<OutputIt, consumer<pair<bdd::label_type, bool>>> && !is_convertible<OutputIt, bdd>>>
+  OutputIt
+  bdd_satmin(const bdd& f, OutputIt iter)
   {
-    bdd_satmin(f, make_consumer(begin, end));
-    return begin;
+    bdd_satmin(f, make_consumer<pair<bdd::label_type, bool>>(iter));
+    return iter;
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2181,23 +2169,17 @@ namespace adiar
   ///    BDD of interest.
   ///
   /// \param begin
-  ///    Single-pass forward *mutable* iterator for where to place the output.
+  ///    Single-pass output iterator for where to place the output.
   ///
-  /// \param end
-  ///    Marks the end for `begin`.
-  ///
-  /// \returns An iterator to the first entry that still is left empty.
-  ///
-  /// \throws out_of_range
-  ///    If the distance between `begin` and `end` is not big enough to contain all variables in
-  ///    `f`.
+  /// \returns The output iterator at its final state.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename ForwardIt, typename = enable_if<is_mutable<typename ForwardIt::reference>>>
-  ForwardIt
-  bdd_satmax(const bdd& f, ForwardIt begin, ForwardIt end)
+  template <typename OutputIt,
+            typename = enable_if<!is_convertible<OutputIt, consumer<pair<bdd::label_type, bool>>> && !is_convertible<OutputIt, bdd>>>
+  OutputIt
+  bdd_satmax(const bdd& f, OutputIt iter)
   {
-    bdd_satmax(f, make_consumer(begin, end));
-    return begin;
+    bdd_satmax(f, make_consumer<pair<bdd::label_type, bool>>(iter));
+    return iter;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
