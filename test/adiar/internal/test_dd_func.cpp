@@ -1,8 +1,7 @@
 #include "../../test.h"
+#include <iterator>
 
 #include <adiar/internal/dd_func.h>
-
-#include <iterator>
 
 go_bandit([]() {
   describe("adiar/internal/dd_func.h", []() {

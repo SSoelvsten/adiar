@@ -1,5 +1,4 @@
 #include "../../test.h"
-
 #include <iterator>
 
 go_bandit([]() {
@@ -2023,7 +2022,7 @@ go_bandit([]() {
       });
 
       describe("bdd_satmin(const bdd&, OutputIter)", [&]() {
-        using pair_type = pair<bdd::label_type, bool>;
+        using pair_type     = pair<bdd::label_type, bool>;
         using output_vector = std::vector<pair_type>;
 
         it("outputs [] for false terminal", [&]() {
@@ -2034,9 +2033,9 @@ go_bandit([]() {
           AssertThat(out.size(), Is().EqualTo(0u));
 
           // Check state of 'iter'
-          iter = {21, true};
+          iter = { 21, true };
           AssertThat(out.size(), Is().EqualTo(1u));
-          AssertThat(out.at(0), Is().EqualTo(pair_type{21, true}));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{ 21, true }));
         });
 
         it("outputs [] for true terminal", [&]() {
@@ -2047,9 +2046,9 @@ go_bandit([]() {
           AssertThat(out.size(), Is().EqualTo(0u));
 
           // Check state of 'iter'
-          iter = {42, false};
+          iter = { 42, false };
           AssertThat(out.size(), Is().EqualTo(1u));
-          AssertThat(out.at(0), Is().EqualTo(pair_type{42, false}));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{ 42, false }));
         });
 
         it("outputs [{x0, true}] for [0]", [&]() {
@@ -2058,13 +2057,13 @@ go_bandit([]() {
 
           // Check state of 'out'
           AssertThat(out.size(), Is().EqualTo(1u));
-          AssertThat(out.at(0), Is().EqualTo(pair_type{0, true}));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{ 0, true }));
 
           // Check state of 'iter'
-          iter = {42, false};
+          iter = { 42, false };
           AssertThat(out.size(), Is().EqualTo(2u));
-          AssertThat(out.at(0), Is().EqualTo(pair_type{0, true}));
-          AssertThat(out.at(1), Is().EqualTo(pair_type{42, false}));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{ 0, true }));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{ 42, false }));
         });
 
         it("outputs [{x0, false}] for [~0]", [&]() {
@@ -2073,13 +2072,13 @@ go_bandit([]() {
 
           // Check state of 'out'
           AssertThat(out.size(), Is().EqualTo(1u));
-          AssertThat(out.at(0), Is().EqualTo(pair_type{0, false}));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{ 0, false }));
 
           // Check state of 'iter'
-          iter = {21, true};
+          iter = { 21, true };
           AssertThat(out.size(), Is().EqualTo(2u));
-          AssertThat(out.at(0), Is().EqualTo(pair_type{0, false}));
-          AssertThat(out.at(1), Is().EqualTo(pair_type{21, true}));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{ 0, false }));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{ 21, true }));
         });
 
         it("outputs [{0, false}, {1, false}, {2, true}, {3, true}] for [1]", [&]() {
@@ -2088,16 +2087,16 @@ go_bandit([]() {
 
           // Check state of 'out'
           AssertThat(out.size(), Is().EqualTo(4u));
-          AssertThat(out.at(0), Is().EqualTo(pair_type{0, false}));
-          AssertThat(out.at(1), Is().EqualTo(pair_type{1, false}));
-          AssertThat(out.at(2), Is().EqualTo(pair_type{2, true}));
-          AssertThat(out.at(3), Is().EqualTo(pair_type{3, true}));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{ 0, false }));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{ 1, false }));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{ 2, true }));
+          AssertThat(out.at(3), Is().EqualTo(pair_type{ 3, true }));
 
           // Check state of 'iter'
-          iter = {42, true};
+          iter = { 42, true };
           AssertThat(out.size(), Is().EqualTo(5u));
-          AssertThat(out.at(3), Is().EqualTo(pair_type{3, true}));
-          AssertThat(out.at(4), Is().EqualTo(pair_type{42, true}));
+          AssertThat(out.at(3), Is().EqualTo(pair_type{ 3, true }));
+          AssertThat(out.at(4), Is().EqualTo(pair_type{ 42, true }));
         });
 
         it("outputs [{0, false}, {1, false}, {2, false}] for [~1]", [&]() {
@@ -2106,15 +2105,15 @@ go_bandit([]() {
 
           // Check state of 'out'
           AssertThat(out.size(), Is().EqualTo(3u));
-          AssertThat(out.at(0), Is().EqualTo(pair_type{0, false}));
-          AssertThat(out.at(1), Is().EqualTo(pair_type{1, false}));
-          AssertThat(out.at(2), Is().EqualTo(pair_type{2, false}));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{ 0, false }));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{ 1, false }));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{ 2, false }));
 
           // Check state of 'iter'
-          iter = {21, false};
+          iter = { 21, false };
           AssertThat(out.size(), Is().EqualTo(4u));
-          AssertThat(out.at(2), Is().EqualTo(pair_type{2, false}));
-          AssertThat(out.at(3), Is().EqualTo(pair_type{21, false}));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{ 2, false }));
+          AssertThat(out.at(3), Is().EqualTo(pair_type{ 21, false }));
         });
 
         it("outputs [{0, false}, {2, false}] for [4]", [&]() {
@@ -2123,14 +2122,14 @@ go_bandit([]() {
 
           // Check state of 'out'
           AssertThat(out.size(), Is().EqualTo(2u));
-          AssertThat(out.at(0), Is().EqualTo(pair_type{0, false}));
-          AssertThat(out.at(1), Is().EqualTo(pair_type{2, false}));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{ 0, false }));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{ 2, false }));
 
           // Check state of 'iter'
-          iter = {8, false};
+          iter = { 8, false };
           AssertThat(out.size(), Is().EqualTo(3u));
-          AssertThat(out.at(1), Is().EqualTo(pair_type{2, false}));
-          AssertThat(out.at(2), Is().EqualTo(pair_type{8, false}));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{ 2, false }));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{ 8, false }));
         });
 
         it("outputs [{0, false}, {2, true}, {3, true}] for [~4]", [&]() {
@@ -2139,15 +2138,15 @@ go_bandit([]() {
 
           // Check state of 'out'
           AssertThat(out.size(), Is().EqualTo(3u));
-          AssertThat(out.at(0), Is().EqualTo(pair_type{0, false}));
-          AssertThat(out.at(1), Is().EqualTo(pair_type{2, true}));
-          AssertThat(out.at(2), Is().EqualTo(pair_type{3, true}));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{ 0, false }));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{ 2, true }));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{ 3, true }));
 
           // Check state of 'iter'
-          iter = {4, false};
+          iter = { 4, false };
           AssertThat(out.size(), Is().EqualTo(4u));
-          AssertThat(out.at(2), Is().EqualTo(pair_type{3, true}));
-          AssertThat(out.at(3), Is().EqualTo(pair_type{4, false}));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{ 3, true }));
+          AssertThat(out.at(3), Is().EqualTo(pair_type{ 4, false }));
         });
 
         it("outputs [{1, false}, {3, false}] for [4(+1)]", [&]() {
@@ -2156,14 +2155,14 @@ go_bandit([]() {
 
           // Check state of 'out'
           AssertThat(out.size(), Is().EqualTo(2u));
-          AssertThat(out.at(0), Is().EqualTo(pair_type{1, false}));
-          AssertThat(out.at(1), Is().EqualTo(pair_type{3, false}));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{ 1, false }));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{ 3, false }));
 
           // Check state of 'iter'
-          iter = {5, false};
+          iter = { 5, false };
           AssertThat(out.size(), Is().EqualTo(3u));
-          AssertThat(out.at(1), Is().EqualTo(pair_type{3, false}));
-          AssertThat(out.at(2), Is().EqualTo(pair_type{5, false}));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{ 3, false }));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{ 5, false }));
         });
       });
 
@@ -3682,7 +3681,7 @@ go_bandit([]() {
       });
 
       describe("bdd_satmax(const bdd&, OutputIter)", [&]() {
-        using pair_type = pair<bdd::label_type, bool>;
+        using pair_type     = pair<bdd::label_type, bool>;
         using output_vector = std::vector<pair_type>;
 
         it("outputs nothing in buffer for false terminal", [&]() {
@@ -3693,9 +3692,9 @@ go_bandit([]() {
           AssertThat(out.size(), Is().EqualTo(0u));
 
           // Check state of 'iter'
-          iter = {21, true};
+          iter = { 21, true };
           AssertThat(out.size(), Is().EqualTo(1u));
-          AssertThat(out.at(0), Is().EqualTo(pair_type{21, true}));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{ 21, true }));
         });
 
         it("outputs nothing in buffer for true terminal", [&]() {
@@ -3706,9 +3705,9 @@ go_bandit([]() {
           AssertThat(out.size(), Is().EqualTo(0u));
 
           // Check state of 'iter'
-          iter = {42, true};
+          iter = { 42, true };
           AssertThat(out.size(), Is().EqualTo(1u));
-          AssertThat(out.at(0), Is().EqualTo(pair_type{42, true}));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{ 42, true }));
         });
 
         it("outputs {x0, true} for [0]", [&]() {
@@ -3717,13 +3716,13 @@ go_bandit([]() {
 
           // Check state of 'out'
           AssertThat(out.size(), Is().EqualTo(1u));
-          AssertThat(out.at(0), Is().EqualTo(pair_type{0, true}));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{ 0, true }));
 
           // Check state of 'iter'
-          iter = {42, true};
+          iter = { 42, true };
           AssertThat(out.size(), Is().EqualTo(2u));
-          AssertThat(out.at(0), Is().EqualTo(pair_type{0, true}));
-          AssertThat(out.at(1), Is().EqualTo(pair_type{42, true}));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{ 0, true }));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{ 42, true }));
         });
 
         it("outputs {x0, false} for [~0]", [&]() {
@@ -3732,13 +3731,13 @@ go_bandit([]() {
 
           // Check state of 'out'
           AssertThat(out.size(), Is().EqualTo(1u));
-          AssertThat(out.at(0), Is().EqualTo(pair_type{0, false}));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{ 0, false }));
 
           // Check state of 'iter'
-          iter = {8, false};
+          iter = { 8, false };
           AssertThat(out.size(), Is().EqualTo(2u));
-          AssertThat(out.at(0), Is().EqualTo(pair_type{0, false}));
-          AssertThat(out.at(1), Is().EqualTo(pair_type{8, false}));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{ 0, false }));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{ 8, false }));
         });
 
         it("outputs expected values into buffer for [2]", [&]() {
@@ -3747,14 +3746,14 @@ go_bandit([]() {
 
           // Check state of 'out'
           AssertThat(out.size(), Is().EqualTo(2u));
-          AssertThat(out.at(0), Is().EqualTo(pair_type{0, true}));
-          AssertThat(out.at(1), Is().EqualTo(pair_type{2, true}));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{ 0, true }));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{ 2, true }));
 
           // Check state of 'iter'
-          iter = {4, false};
+          iter = { 4, false };
           AssertThat(out.size(), Is().EqualTo(3u));
-          AssertThat(out.at(1), Is().EqualTo(pair_type{2, true}));
-          AssertThat(out.at(2), Is().EqualTo(pair_type{4, false}));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{ 2, true }));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{ 4, false }));
         });
 
         it("outputs expected values into buffer for [~2]", [&]() {
@@ -3763,15 +3762,15 @@ go_bandit([]() {
 
           // Check state of 'out'
           AssertThat(out.size(), Is().EqualTo(3u));
-          AssertThat(out.at(0), Is().EqualTo(pair_type{0, true}));
-          AssertThat(out.at(1), Is().EqualTo(pair_type{2, false}));
-          AssertThat(out.at(2), Is().EqualTo(pair_type{3, true}));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{ 0, true }));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{ 2, false }));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{ 3, true }));
 
           // Check state of 'iter'
-          iter = {4, false};
+          iter = { 4, false };
           AssertThat(out.size(), Is().EqualTo(4u));
-          AssertThat(out.at(2), Is().EqualTo(pair_type{3, true}));
-          AssertThat(out.at(3), Is().EqualTo(pair_type{4, false}));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{ 3, true }));
+          AssertThat(out.at(3), Is().EqualTo(pair_type{ 4, false }));
         });
 
         it("outputs expected values into buffer for [4]", [&]() {
@@ -3780,15 +3779,15 @@ go_bandit([]() {
 
           // Check state of 'out'
           AssertThat(out.size(), Is().EqualTo(3u));
-          AssertThat(out.at(0), Is().EqualTo(pair_type{0, true}));
-          AssertThat(out.at(1), Is().EqualTo(pair_type{1, true}));
-          AssertThat(out.at(2), Is().EqualTo(pair_type{2, true}));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{ 0, true }));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{ 1, true }));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{ 2, true }));
 
           // Check state of 'iter'
-          iter = {3, false};
+          iter = { 3, false };
           AssertThat(out.size(), Is().EqualTo(4u));
-          AssertThat(out.at(2), Is().EqualTo(pair_type{2, true}));
-          AssertThat(out.at(3), Is().EqualTo(pair_type{3, false}));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{ 2, true }));
+          AssertThat(out.at(3), Is().EqualTo(pair_type{ 3, false }));
         });
 
         it("outputs expected values into buffer for [~4]", [&]() {
@@ -3797,16 +3796,16 @@ go_bandit([]() {
 
           // Check state of 'out'
           AssertThat(out.size(), Is().EqualTo(4u));
-          AssertThat(out.at(0), Is().EqualTo(pair_type{0, true}));
-          AssertThat(out.at(1), Is().EqualTo(pair_type{1, true}));
-          AssertThat(out.at(2), Is().EqualTo(pair_type{2, false}));
-          AssertThat(out.at(3), Is().EqualTo(pair_type{3, true}));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{ 0, true }));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{ 1, true }));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{ 2, false }));
+          AssertThat(out.at(3), Is().EqualTo(pair_type{ 3, true }));
 
           // Check state of 'iter'
-          iter = {4, false};
+          iter = { 4, false };
           AssertThat(out.size(), Is().EqualTo(5u));
-          AssertThat(out.at(3), Is().EqualTo(pair_type{3, true}));
-          AssertThat(out.at(4), Is().EqualTo(pair_type{4, false}));
+          AssertThat(out.at(3), Is().EqualTo(pair_type{ 3, true }));
+          AssertThat(out.at(4), Is().EqualTo(pair_type{ 4, false }));
         });
 
         it("outputs expected values into buffer for [4(+2)]", [&]() {
@@ -3815,15 +3814,15 @@ go_bandit([]() {
 
           // Check state of 'out'
           AssertThat(out.size(), Is().EqualTo(3u));
-          AssertThat(out.at(0), Is().EqualTo(pair_type{2, true}));
-          AssertThat(out.at(1), Is().EqualTo(pair_type{3, true}));
-          AssertThat(out.at(2), Is().EqualTo(pair_type{4, true}));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{ 2, true }));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{ 3, true }));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{ 4, true }));
 
           // Check state of 'iter'
-          iter = {5, true};
+          iter = { 5, true };
           AssertThat(out.size(), Is().EqualTo(4u));
-          AssertThat(out.at(2), Is().EqualTo(pair_type{4, true}));
-          AssertThat(out.at(3), Is().EqualTo(pair_type{5, true}));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{ 4, true }));
+          AssertThat(out.at(3), Is().EqualTo(pair_type{ 5, true }));
         });
       });
     } // bdd_satmin, bdd_satmax
