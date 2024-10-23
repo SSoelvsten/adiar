@@ -1,5 +1,7 @@
 #include "../../test.h"
 
+#include <iterator>
+
 go_bandit([]() {
   describe("adiar/zdd/elem.cpp", [&]() {
     shared_levelized_file<zdd::node_type> zdd_F;
@@ -348,94 +350,79 @@ go_bandit([]() {
       });
     });
 
-    describe("zdd_minelem(A, begin, end)", [&]() {
-      using buffer_type = std::vector<zdd::label_type>;
+    describe("zdd_minelem(A, iter)", [&]() {
+      using output_type = std::vector<zdd::label_type>;
 
-      const buffer_type::value_type buffer_default(zdd::max_label + 1);
-      const size_t buffer_size = 4;
+      it("outputs {} for { Ø }", [&]() {
+        output_type out;
+        auto iter = zdd_minelem(zdd_T, std::back_inserter(out));
 
-      it("outputs { } in buffer for { Ø }", [&]() {
-        buffer_type buffer(buffer_size, buffer_default);
+        // Check state of 'out'
+        AssertThat(out.size(), Is().EqualTo(0u));
 
-        auto ret = zdd_minelem(zdd_T, buffer.begin(), buffer.end());
-
-        AssertThat(ret, Is().EqualTo(buffer.begin() + 0));
-
-        buffer_type expected(buffer_size, buffer_default);
-
-        for (size_t i = 0; i < buffer_size; ++i) {
-          AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-        }
+        // Check state of 'iter'
+        iter = 21;
+        AssertThat(out.size(), Is().EqualTo(1u));
+        AssertThat(out.at(0), Is().EqualTo(21u));
       });
 
-      it("outputs { 1 } in buffer for [1]", [&]() {
-        buffer_type buffer(buffer_size, buffer_default);
+      it("outputs {1} in buffer for [1]", [&]() {
+        output_type out;
+        auto iter = zdd_minelem(zdd_1, std::back_inserter(out));
 
-        auto ret = zdd_minelem(zdd_1, buffer.begin(), buffer.end());
+        // Check state of 'out'
+        AssertThat(out.size(), Is().EqualTo(1u));
+        AssertThat(out.at(0), Is().EqualTo(1u));
 
-        AssertThat(ret, Is().EqualTo(buffer.begin() + 1));
-
-        buffer_type expected(buffer_size, buffer_default);
-        expected.at(0) = 1;
-
-        for (size_t i = 0; i < buffer_size; ++i) {
-          AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-        }
-      });
-
-      it("throws 'out_of_range' if buffer is too small [1]", [&]() {
-        buffer_type buffer(0, buffer_default);
-        AssertThrows(out_of_range, zdd_minelem(zdd_1, buffer.begin(), buffer.end()));
+        // Check state of 'iter'
+        iter = 2;
+        AssertThat(out.size(), Is().EqualTo(2u));
+        AssertThat(out.at(0), Is().EqualTo(1u));
+        AssertThat(out.at(1), Is().EqualTo(2u));
       });
 
       it("outputs { } in buffer for [2]", [&]() {
-        buffer_type buffer(buffer_size, buffer_default);
+        output_type out;
+        auto iter = zdd_minelem(zdd_2, std::back_inserter(out));
 
-        auto ret = zdd_minelem(zdd_2, buffer.begin(), buffer.end());
+        // Check state of 'out'
+        AssertThat(out.size(), Is().EqualTo(0u));
 
-        AssertThat(ret, Is().EqualTo(buffer.begin() + 0));
-
-        buffer_type expected(buffer_size, buffer_default);
-
-        for (size_t i = 0; i < buffer_size; ++i) {
-          AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-        }
+        // Check state of 'iter'
+        iter = 4;
+        AssertThat(out.size(), Is().EqualTo(1u));
+        AssertThat(out.at(0), Is().EqualTo(4u));
       });
 
       it("outputs { 2,4 } in buffer for [3]", [&]() {
-        buffer_type buffer(buffer_size, buffer_default);
+        output_type out;
+        auto iter = zdd_minelem(zdd_3, std::back_inserter(out));
 
-        auto ret = zdd_minelem(zdd_3, buffer.begin(), buffer.end());
+        // Check state of 'out'
+        AssertThat(out.size(), Is().EqualTo(2u));
+        AssertThat(out.at(0), Is().EqualTo(2u));
+        AssertThat(out.at(1), Is().EqualTo(4u));
 
-        AssertThat(ret, Is().EqualTo(buffer.begin() + 2));
-
-        buffer_type expected(buffer_size, buffer_default);
-        expected.at(0) = 2;
-        expected.at(1) = 4;
-
-        for (size_t i = 0; i < buffer_size; ++i) {
-          AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-        }
-      });
-
-      it("throws 'out_of_range' if buffer is too small [3]", [&]() {
-        buffer_type buffer(1, buffer_default);
-        AssertThrows(out_of_range, zdd_minelem(zdd_3, buffer.begin(), buffer.end()));
+        // Check state of 'iter'
+        iter = 6;
+        AssertThat(out.size(), Is().EqualTo(3u));
+        AssertThat(out.at(1), Is().EqualTo(4u));
+        AssertThat(out.at(2), Is().EqualTo(6u));
       });
 
       it("outputs { 1 } in buffer for [4]", [&]() {
-        buffer_type buffer(buffer_size, buffer_default);
+        output_type out;
+        auto iter = zdd_minelem(zdd_4, std::back_inserter(out));
 
-        auto ret = zdd_minelem(zdd_4, buffer.begin(), buffer.end());
+        // Check state of 'out'
+        AssertThat(out.size(), Is().EqualTo(1u));
+        AssertThat(out.at(0), Is().EqualTo(1u));
 
-        AssertThat(ret, Is().EqualTo(buffer.begin() + 1));
-
-        buffer_type expected(buffer_size, buffer_default);
-        expected.at(0) = 1;
-
-        for (size_t i = 0; i < buffer_size; ++i) {
-          AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-        }
+        // Check state of 'iter'
+        iter = 2;
+        AssertThat(out.size(), Is().EqualTo(2u));
+        AssertThat(out.at(0), Is().EqualTo(1u));
+        AssertThat(out.at(1), Is().EqualTo(2u));
       });
     });
 
@@ -663,86 +650,67 @@ go_bandit([]() {
       });
     });
 
-    describe("zdd_maxelem(A, begin, end)", [&]() {
-      using buffer_type = std::vector<zdd::label_type>;
-
-      const buffer_type::value_type buffer_default(zdd::max_label + 1);
-      const size_t buffer_size = 4;
+    describe("zdd_maxelem(A, iter)", [&]() {
+      using output_type = std::vector<zdd::label_type>;
 
       it("outputs { } in buffer for { Ø }", [&]() {
-        buffer_type buffer(buffer_size, buffer_default);
+        output_type out;
+        auto iter = zdd_maxelem(zdd_T, std::back_inserter(out));
 
-        auto ret = zdd_maxelem(zdd_T, buffer.begin(), buffer.end());
+        // Check state of 'out'
+        AssertThat(out.size(), Is().EqualTo(0u));
 
-        AssertThat(ret, Is().EqualTo(buffer.begin() + 0));
-
-        buffer_type expected(buffer_size, buffer_default);
-
-        for (size_t i = 0; i < buffer_size; ++i) {
-          AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-        }
+        // Check state of 'iter'
+        iter = 2;
+        AssertThat(out.size(), Is().EqualTo(1u));
+        AssertThat(out.at(0), Is().EqualTo(2u));
       });
 
       it("outputs { 0,2 } in buffer for [1]", [&]() {
-        buffer_type buffer(buffer_size, buffer_default);
+        output_type out;
+        auto iter = zdd_maxelem(zdd_1, std::back_inserter(out));
 
-        auto ret = zdd_maxelem(zdd_1, buffer.begin(), buffer.end());
+        // Check state of 'out'
+        AssertThat(out.size(), Is().EqualTo(2u));
+        AssertThat(out.at(0), Is().EqualTo(0u));
+        AssertThat(out.at(1), Is().EqualTo(2u));
 
-        AssertThat(ret, Is().EqualTo(buffer.begin() + 2));
-
-        buffer_type expected(buffer_size, buffer_default);
-        expected.at(0) = 0;
-        expected.at(1) = 2;
-
-        for (size_t i = 0; i < buffer_size; ++i) {
-          AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-        }
-      });
-
-      it("throws 'out_of_range' if buffer is too small [1]", [&]() {
-        buffer_type buffer(1, buffer_default);
-        AssertThrows(out_of_range, zdd_maxelem(zdd_1, buffer.begin(), buffer.end()));
+        // Check state of 'iter'
+        iter = 4;
+        AssertThat(out.size(), Is().EqualTo(3u));
+        AssertThat(out.at(1), Is().EqualTo(2u));
+        AssertThat(out.at(2), Is().EqualTo(4u));
       });
 
       it("outputs { 1 } in buffer for [2]", [&]() {
-        buffer_type buffer(buffer_size, buffer_default);
+        output_type out;
+        auto iter = zdd_maxelem(zdd_2, std::back_inserter(out));
 
-        auto ret = zdd_maxelem(zdd_2, buffer.begin(), buffer.end());
+        // Check state of 'out'
+        AssertThat(out.size(), Is().EqualTo(1u));
+        AssertThat(out.at(0), Is().EqualTo(1u));
 
-        AssertThat(ret, Is().EqualTo(buffer.begin() + 1));
-
-        buffer_type expected(buffer_size, buffer_default);
-        expected.at(0) = 1;
-
-        for (size_t i = 0; i < buffer_size; ++i) {
-          AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-        }
-      });
-
-      it("throws 'out_of_range' if buffer is too small [2]", [&]() {
-        buffer_type buffer(0, buffer_default);
-        AssertThrows(out_of_range, zdd_maxelem(zdd_2, buffer.begin(), buffer.end()));
+        // Check state of 'iter'
+        iter = 42;
+        AssertThat(out.size(), Is().EqualTo(2u));
+        AssertThat(out.at(0), Is().EqualTo(1u));
+        AssertThat(out.at(1), Is().EqualTo(42u));
       });
 
       it("outputs { 0,1 } in buffer for [4]", [&]() {
-        buffer_type buffer(buffer_size, buffer_default);
+        output_type out;
+        auto iter = zdd_maxelem(zdd_4, std::back_inserter(out));
 
-        auto ret = zdd_maxelem(zdd_4, buffer.begin(), buffer.end());
+        // Check state of 'out'
+        AssertThat(out.size(), Is().EqualTo(2u));
+        AssertThat(out.at(0), Is().EqualTo(0u));
+        AssertThat(out.at(1), Is().EqualTo(1u));
 
-        AssertThat(ret, Is().EqualTo(buffer.begin() + 2));
-
-        buffer_type expected(buffer_size, buffer_default);
-        expected.at(0) = 0;
-        expected.at(1) = 1;
-
-        for (size_t i = 0; i < buffer_size; ++i) {
-          AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-        }
-      });
-
-      it("throws 'out_of_range' if buffer is too small [4]", [&]() {
-        buffer_type buffer(1, buffer_default);
-        AssertThrows(out_of_range, zdd_maxelem(zdd_4, buffer.begin(), buffer.end()));
+        // Check state of 'iter'
+        iter = 2;
+        AssertThat(out.size(), Is().EqualTo(3u));
+        AssertThat(out.at(1), Is().EqualTo(1u));
+        AssertThat(out.at(2), Is().EqualTo(2u));
       });
     });
   });

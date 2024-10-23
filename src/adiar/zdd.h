@@ -1480,23 +1480,17 @@ namespace adiar
   ///    ZDD of interest.
   ///
   /// \param begin
-  ///    Single-pass forward iterator for where to place the output.
+  ///    Single-pass output iterator for where to place the output.
   ///
-  /// \param end
-  ///    Marks the end for `begin`.
-  ///
-  /// \returns An iterator to the first entry that still is left empty.
-  ///
-  /// \throws out_of_range
-  ///    If the distance between `begin` and `end` is not big enough to contain all variables in
-  ///    `A`.
+  /// \returns The output iterator at its final state.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename ForwardIt>
-  ForwardIt
-  zdd_support(const zdd& A, ForwardIt begin, ForwardIt end)
+  template <typename OutputIt,
+            typename = enable_if<!is_convertible<OutputIt, consumer<zdd::label_type>>>>
+  OutputIt
+  zdd_support(const zdd& A, OutputIt iter)
   {
-    zdd_support(A, make_consumer(begin, end));
-    return begin;
+    zdd_support(A, make_consumer<zdd::label_type>(iter));
+    return iter;
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1597,21 +1591,15 @@ namespace adiar
   /// \param begin
   ///    Single-pass forward iterator for where to place the output.
   ///
-  /// \param end
-  ///    Marks the end for `begin`.
-  ///
-  /// \returns An iterator to the first entry that still is left empty.
-  ///
-  /// \throws out_of_range
-  ///    If the distance between `begin` and `end` is not big enough to contain all variables in
-  ///    `A`.
-  //////////////////////////////////////////////////////////////////////////////
-  template <typename ForwardIt>
-  ForwardIt
-  zdd_minelem(const zdd& A, ForwardIt begin, ForwardIt end)
+  /// \returns The output iterator at its final state.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename OutputIt,
+            typename = enable_if<!is_convertible<OutputIt, consumer<zdd::label_type>>>>
+  OutputIt
+  zdd_minelem(const zdd& A, OutputIt iter)
   {
-    zdd_minelem(A, make_consumer(begin, end));
-    return begin;
+    zdd_minelem(A, make_consumer<zdd::label_type>(iter));
+    return iter;
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1649,23 +1637,17 @@ namespace adiar
   ///    Set of sets of interest.
   ///
   /// \param begin
-  ///    Single-pass forward iterator for where to place the output.
+  ///    Single-pass output iterator for where to place the output.
   ///
-  /// \param end
-  ///    Marks the end for `begin`.
-  ///
-  /// \returns An iterator to the first entry that still is left empty.
-  ///
-  /// \throws out_of_range
-  ///    If the distance between `begin` and `end` is not big enough to contain all variables in
-  ///    `A`.
+  /// \returns The output iterator at its final state.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename ForwardIt>
-  ForwardIt
-  zdd_maxelem(const zdd& A, ForwardIt begin, ForwardIt end)
+  template <typename OutputIt,
+            typename = enable_if<!is_convertible<OutputIt, consumer<zdd::label_type>>>>
+  OutputIt
+  zdd_maxelem(const zdd& A, OutputIt iter)
   {
-    zdd_maxelem(A, make_consumer(begin, end));
-    return begin;
+    zdd_maxelem(A, make_consumer<zdd::label_type>(iter));
+    return iter;
   }
 
   /// \}

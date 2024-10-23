@@ -1,5 +1,7 @@
 #include "../../test.h"
 
+#include <iterator>
+
 go_bandit([]() {
   describe("adiar/bdd/evaluate.cpp", []() {
     { // bdd_eval
@@ -2020,167 +2022,148 @@ go_bandit([]() {
         });
       });
 
-      describe("bdd_satmin(const bdd&, MutIter, MutIter)", [&]() {
-        using buffer_type = std::vector<pair<bdd::label_type, bool>>;
+      describe("bdd_satmin(const bdd&, OutputIter)", [&]() {
+        using pair_type = pair<bdd::label_type, bool>;
+        using output_vector = std::vector<pair_type>;
 
-        const buffer_type::value_type buffer_default(bdd::max_label + 1, false);
-        const size_t buffer_size = 4;
+        it("outputs [] for false terminal", [&]() {
+          output_vector out;
+          auto iter = bdd_satmin(bdd_F, std::back_inserter(out));
 
-        it("outputs nothing in buffer for false terminal", [&]() {
-          buffer_type buffer(buffer_size, buffer_default);
+          // Check state of 'out'
+          AssertThat(out.size(), Is().EqualTo(0u));
 
-          auto ret = bdd_satmin(bdd_F, buffer.begin(), buffer.end());
-
-          AssertThat(ret, Is().EqualTo(buffer.begin() + 0));
-
-          buffer_type expected(buffer_size, buffer_default);
-
-          for (size_t i = 0; i < buffer_size; ++i) {
-            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-          }
+          // Check state of 'iter'
+          iter = {21, true};
+          AssertThat(out.size(), Is().EqualTo(1u));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{21, true}));
         });
 
-        it("outputs nothing in buffer for true terminal", [&]() {
-          buffer_type buffer(buffer_size, buffer_default);
+        it("outputs [] for true terminal", [&]() {
+          output_vector out;
+          auto iter = bdd_satmin(bdd_T, std::back_inserter(out));
 
-          auto ret = bdd_satmin(bdd_T, buffer.begin(), buffer.end());
+          // Check state of 'out'
+          AssertThat(out.size(), Is().EqualTo(0u));
 
-          AssertThat(ret, Is().EqualTo(buffer.begin() + 0));
-
-          buffer_type expected(buffer_size, buffer_default);
-
-          for (size_t i = 0; i < buffer_size; ++i) {
-            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-          }
+          // Check state of 'iter'
+          iter = {42, false};
+          AssertThat(out.size(), Is().EqualTo(1u));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{42, false}));
         });
 
-        it("outputs {x0, true} for [0]", [&]() {
-          buffer_type buffer(buffer_size, buffer_default);
+        it("outputs [{x0, true}] for [0]", [&]() {
+          output_vector out;
+          auto iter = bdd_satmin(bdd_0, std::back_inserter(out));
 
-          auto ret = bdd_satmin(bdd_0, buffer.begin(), buffer.end());
+          // Check state of 'out'
+          AssertThat(out.size(), Is().EqualTo(1u));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{0, true}));
 
-          AssertThat(ret, Is().EqualTo(buffer.begin() + 1));
-
-          buffer_type expected(buffer_size, buffer_default);
-          expected.at(0) = { 0, true };
-
-          for (size_t i = 0; i < buffer_size; ++i) {
-            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-          }
+          // Check state of 'iter'
+          iter = {42, false};
+          AssertThat(out.size(), Is().EqualTo(2u));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{0, true}));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{42, false}));
         });
 
-        it("outputs {x0, false} for [~0]", [&]() {
-          buffer_type buffer(buffer_size, buffer_default);
+        it("outputs [{x0, false}] for [~0]", [&]() {
+          output_vector out;
+          auto iter = bdd_satmin(bdd(bdd_0, true), std::back_inserter(out));
 
-          auto ret = bdd_satmin(bdd(bdd_0, true), buffer.begin(), buffer.end());
+          // Check state of 'out'
+          AssertThat(out.size(), Is().EqualTo(1u));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{0, false}));
 
-          AssertThat(ret, Is().EqualTo(buffer.begin() + 1));
-
-          buffer_type expected(buffer_size, buffer_default);
-          expected.at(0) = { 0, false };
-
-          for (size_t i = 0; i < buffer_size; ++i) {
-            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-          }
+          // Check state of 'iter'
+          iter = {21, true};
+          AssertThat(out.size(), Is().EqualTo(2u));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{0, false}));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{21, true}));
         });
 
-        it("throws 'out_of_range' if buffer is too small [0]", [&]() {
-          buffer_type buffer(0, buffer_default);
-          AssertThrows(out_of_range, bdd_satmin(bdd_0, buffer.begin(), buffer.end()));
+        it("outputs [{0, false}, {1, false}, {2, true}, {3, true}] for [1]", [&]() {
+          output_vector out;
+          auto iter = bdd_satmin(bdd_1, std::back_inserter(out));
+
+          // Check state of 'out'
+          AssertThat(out.size(), Is().EqualTo(4u));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{0, false}));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{1, false}));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{2, true}));
+          AssertThat(out.at(3), Is().EqualTo(pair_type{3, true}));
+
+          // Check state of 'iter'
+          iter = {42, true};
+          AssertThat(out.size(), Is().EqualTo(5u));
+          AssertThat(out.at(3), Is().EqualTo(pair_type{3, true}));
+          AssertThat(out.at(4), Is().EqualTo(pair_type{42, true}));
         });
 
-        it("outputs expected values into buffer for [1]", [&]() {
-          buffer_type buffer(buffer_size, buffer_default);
+        it("outputs [{0, false}, {1, false}, {2, false}] for [~1]", [&]() {
+          output_vector out;
+          auto iter = bdd_satmin(bdd(bdd_1, true), std::back_inserter(out));
 
-          auto ret = bdd_satmin(bdd_1, buffer.begin(), buffer.end());
+          // Check state of 'out'
+          AssertThat(out.size(), Is().EqualTo(3u));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{0, false}));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{1, false}));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{2, false}));
 
-          AssertThat(ret, Is().EqualTo(buffer.begin() + 4));
-
-          buffer_type expected(buffer_size, buffer_default);
-          expected.at(0) = { 0, false };
-          expected.at(1) = { 1, false };
-          expected.at(2) = { 2, true };
-          expected.at(3) = { 3, true };
-
-          for (size_t i = 0; i < buffer_size; ++i) {
-            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-          }
+          // Check state of 'iter'
+          iter = {21, false};
+          AssertThat(out.size(), Is().EqualTo(4u));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{2, false}));
+          AssertThat(out.at(3), Is().EqualTo(pair_type{21, false}));
         });
 
-        it("outputs expected values into buffer for [~1]", [&]() {
-          buffer_type buffer(buffer_size, buffer_default);
+        it("outputs [{0, false}, {2, false}] for [4]", [&]() {
+          output_vector out;
+          auto iter = bdd_satmin(bdd_4, std::back_inserter(out));
 
-          auto ret = bdd_satmin(bdd(bdd_1, true), buffer.begin(), buffer.end());
+          // Check state of 'out'
+          AssertThat(out.size(), Is().EqualTo(2u));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{0, false}));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{2, false}));
 
-          AssertThat(ret, Is().EqualTo(buffer.begin() + 3));
-
-          buffer_type expected(buffer_size, buffer_default);
-          expected.at(0) = { 0, false };
-          expected.at(1) = { 1, false };
-          expected.at(2) = { 2, false };
-
-          for (size_t i = 0; i < buffer_size; ++i) {
-            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-          }
+          // Check state of 'iter'
+          iter = {8, false};
+          AssertThat(out.size(), Is().EqualTo(3u));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{2, false}));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{8, false}));
         });
 
-        it("throws 'out_of_range' if buffer is too small [1]", [&]() {
-          buffer_type buffer(1, buffer_default);
-          AssertThrows(out_of_range, bdd_satmin(bdd_1, buffer.begin(), buffer.end()));
+        it("outputs [{0, false}, {2, true}, {3, true}] for [~4]", [&]() {
+          output_vector out;
+          auto iter = bdd_satmin(bdd(bdd_4, true), std::back_inserter(out));
+
+          // Check state of 'out'
+          AssertThat(out.size(), Is().EqualTo(3u));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{0, false}));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{2, true}));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{3, true}));
+
+          // Check state of 'iter'
+          iter = {4, false};
+          AssertThat(out.size(), Is().EqualTo(4u));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{3, true}));
+          AssertThat(out.at(3), Is().EqualTo(pair_type{4, false}));
         });
 
-        it("outputs expected values into buffer for [4]", [&]() {
-          buffer_type buffer(buffer_size, buffer_default);
+        it("outputs [{1, false}, {3, false}] for [4(+1)]", [&]() {
+          output_vector out;
+          auto iter = bdd_satmin(bdd(bdd_4, false, +1), std::back_inserter(out));
 
-          auto ret = bdd_satmin(bdd_4, buffer.begin(), buffer.end());
+          // Check state of 'out'
+          AssertThat(out.size(), Is().EqualTo(2u));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{1, false}));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{3, false}));
 
-          AssertThat(ret, Is().EqualTo(buffer.begin() + 2));
-
-          buffer_type expected(buffer_size, buffer_default);
-          expected.at(0) = { 0, false };
-          expected.at(1) = { 2, false };
-
-          for (size_t i = 0; i < buffer_size; ++i) {
-            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-          }
-        });
-
-        it("outputs expected values into buffer for [~4]", [&]() {
-          buffer_type buffer(buffer_size, buffer_default);
-
-          auto ret = bdd_satmin(bdd(bdd_4, true), buffer.begin(), buffer.end());
-
-          AssertThat(ret, Is().EqualTo(buffer.begin() + 3));
-
-          buffer_type expected(buffer_size, buffer_default);
-          expected.at(0) = { 0, false };
-          expected.at(1) = { 2, true };
-          expected.at(2) = { 3, true };
-
-          for (size_t i = 0; i < buffer_size; ++i) {
-            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-          }
-        });
-
-        it("outputs expected values into buffer for [4(+1)]", [&]() {
-          buffer_type buffer(buffer_size, buffer_default);
-
-          auto ret = bdd_satmin(bdd(bdd_4, false, +1), buffer.begin(), buffer.end());
-
-          AssertThat(ret, Is().EqualTo(buffer.begin() + 2));
-
-          buffer_type expected(buffer_size, buffer_default);
-          expected.at(0) = { 1, false };
-          expected.at(1) = { 3, false };
-
-          for (size_t i = 0; i < buffer_size; ++i) {
-            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-          }
-        });
-
-        it("throws 'out_of_range' if buffer is too small [~4]", [&]() {
-          buffer_type buffer(2, buffer_default);
-          AssertThrows(out_of_range, bdd_satmin(bdd(bdd_4, true), buffer.begin(), buffer.end()));
+          // Check state of 'iter'
+          iter = {5, false};
+          AssertThat(out.size(), Is().EqualTo(3u));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{3, false}));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{5, false}));
         });
       });
 
@@ -3698,173 +3681,149 @@ go_bandit([]() {
         });
       });
 
-      describe("bdd_satmax(const bdd&, MutIter, MutIter)", [&]() {
-        using buffer_type = std::vector<pair<bdd::label_type, bool>>;
-
-        const buffer_type::value_type buffer_default(bdd::max_label + 1, false);
-        const size_t buffer_size = 4;
+      describe("bdd_satmax(const bdd&, OutputIter)", [&]() {
+        using pair_type = pair<bdd::label_type, bool>;
+        using output_vector = std::vector<pair_type>;
 
         it("outputs nothing in buffer for false terminal", [&]() {
-          buffer_type buffer(buffer_size, buffer_default);
+          output_vector out;
+          auto iter = bdd_satmax(bdd_F, std::back_inserter(out));
 
-          auto ret = bdd_satmax(bdd_F, buffer.begin(), buffer.end());
+          // Check state of 'out'
+          AssertThat(out.size(), Is().EqualTo(0u));
 
-          AssertThat(ret, Is().EqualTo(buffer.begin() + 0));
-
-          buffer_type expected(buffer_size, buffer_default);
-
-          for (size_t i = 0; i < buffer_size; ++i) {
-            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-          }
+          // Check state of 'iter'
+          iter = {21, true};
+          AssertThat(out.size(), Is().EqualTo(1u));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{21, true}));
         });
 
         it("outputs nothing in buffer for true terminal", [&]() {
-          buffer_type buffer(buffer_size, buffer_default);
+          output_vector out;
+          auto iter = bdd_satmax(bdd_T, std::back_inserter(out));
 
-          auto ret = bdd_satmax(bdd_T, buffer.begin(), buffer.end());
+          // Check state of 'out'
+          AssertThat(out.size(), Is().EqualTo(0u));
 
-          AssertThat(ret, Is().EqualTo(buffer.begin() + 0));
-
-          buffer_type expected(buffer_size, buffer_default);
-
-          for (size_t i = 0; i < buffer_size; ++i) {
-            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-          }
+          // Check state of 'iter'
+          iter = {42, true};
+          AssertThat(out.size(), Is().EqualTo(1u));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{42, true}));
         });
 
         it("outputs {x0, true} for [0]", [&]() {
-          buffer_type buffer(buffer_size, buffer_default);
+          output_vector out;
+          auto iter = bdd_satmax(bdd_0, std::back_inserter(out));
 
-          auto ret = bdd_satmax(bdd_0, buffer.begin(), buffer.end());
+          // Check state of 'out'
+          AssertThat(out.size(), Is().EqualTo(1u));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{0, true}));
 
-          AssertThat(ret, Is().EqualTo(buffer.begin() + 1));
-
-          buffer_type expected(buffer_size, buffer_default);
-          expected.at(0) = { 0, true };
-
-          for (size_t i = 0; i < buffer_size; ++i) {
-            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-          }
+          // Check state of 'iter'
+          iter = {42, true};
+          AssertThat(out.size(), Is().EqualTo(2u));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{0, true}));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{42, true}));
         });
 
         it("outputs {x0, false} for [~0]", [&]() {
-          buffer_type buffer(buffer_size, buffer_default);
+          output_vector out;
+          auto iter = bdd_satmax(bdd(bdd_0, true), std::back_inserter(out));
 
-          auto ret = bdd_satmax(bdd(bdd_0, true), buffer.begin(), buffer.end());
+          // Check state of 'out'
+          AssertThat(out.size(), Is().EqualTo(1u));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{0, false}));
 
-          AssertThat(ret, Is().EqualTo(buffer.begin() + 1));
-
-          buffer_type expected(buffer_size, buffer_default);
-          expected.at(0) = { 0, false };
-
-          for (size_t i = 0; i < buffer_size; ++i) {
-            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-          }
-        });
-
-        it("throws 'out_of_range' if buffer is too small [0]", [&]() {
-          buffer_type buffer(0, buffer_default);
-          AssertThrows(out_of_range, bdd_satmax(bdd_0, buffer.begin(), buffer.end()));
+          // Check state of 'iter'
+          iter = {8, false};
+          AssertThat(out.size(), Is().EqualTo(2u));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{0, false}));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{8, false}));
         });
 
         it("outputs expected values into buffer for [2]", [&]() {
-          buffer_type buffer(buffer_size, buffer_default);
+          output_vector out;
+          auto iter = bdd_satmax(bdd_2, std::back_inserter(out));
 
-          auto ret = bdd_satmax(bdd_2, buffer.begin(), buffer.end());
+          // Check state of 'out'
+          AssertThat(out.size(), Is().EqualTo(2u));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{0, true}));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{2, true}));
 
-          AssertThat(ret, Is().EqualTo(buffer.begin() + 2));
-
-          buffer_type expected(buffer_size, buffer_default);
-          expected.at(0) = { 0, true };
-          expected.at(1) = { 2, true };
-
-          for (size_t i = 0; i < buffer_size; ++i) {
-            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-          }
+          // Check state of 'iter'
+          iter = {4, false};
+          AssertThat(out.size(), Is().EqualTo(3u));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{2, true}));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{4, false}));
         });
 
         it("outputs expected values into buffer for [~2]", [&]() {
-          buffer_type buffer(buffer_size, buffer_default);
+          output_vector out;
+          auto iter = bdd_satmax(bdd(bdd_2, true), std::back_inserter(out));
 
-          auto ret = bdd_satmax(bdd(bdd_2, true), buffer.begin(), buffer.end());
+          // Check state of 'out'
+          AssertThat(out.size(), Is().EqualTo(3u));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{0, true}));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{2, false}));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{3, true}));
 
-          AssertThat(ret, Is().EqualTo(buffer.begin() + 3));
-
-          buffer_type expected(buffer_size, buffer_default);
-          expected.at(0) = { 0, true };
-          expected.at(1) = { 2, false };
-          expected.at(2) = { 3, true };
-
-          for (size_t i = 0; i < buffer_size; ++i) {
-            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-          }
-        });
-
-        it("throws 'out_of_range' if buffer is too small [2]", [&]() {
-          buffer_type buffer(1, buffer_default);
-          AssertThrows(out_of_range, bdd_satmax(bdd_2, buffer.begin(), buffer.end()));
-        });
-
-        it("throws 'out_of_range' if buffer is too small [~2]", [&]() {
-          buffer_type buffer(2, buffer_default);
-          AssertThrows(out_of_range, bdd_satmax(bdd(bdd_2, true), buffer.begin(), buffer.end()));
+          // Check state of 'iter'
+          iter = {4, false};
+          AssertThat(out.size(), Is().EqualTo(4u));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{3, true}));
+          AssertThat(out.at(3), Is().EqualTo(pair_type{4, false}));
         });
 
         it("outputs expected values into buffer for [4]", [&]() {
-          buffer_type buffer(buffer_size, buffer_default);
+          output_vector out;
+          auto iter = bdd_satmax(bdd_4, std::back_inserter(out));
 
-          auto ret = bdd_satmax(bdd_4, buffer.begin(), buffer.end());
+          // Check state of 'out'
+          AssertThat(out.size(), Is().EqualTo(3u));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{0, true}));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{1, true}));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{2, true}));
 
-          AssertThat(ret, Is().EqualTo(buffer.begin() + 3));
-
-          buffer_type expected(buffer_size, buffer_default);
-          expected.at(0) = { 0, true };
-          expected.at(1) = { 1, true };
-          expected.at(2) = { 2, true };
-
-          for (size_t i = 0; i < buffer_size; ++i) {
-            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-          }
+          // Check state of 'iter'
+          iter = {3, false};
+          AssertThat(out.size(), Is().EqualTo(4u));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{2, true}));
+          AssertThat(out.at(3), Is().EqualTo(pair_type{3, false}));
         });
 
         it("outputs expected values into buffer for [~4]", [&]() {
-          buffer_type buffer(buffer_size, buffer_default);
+          output_vector out;
+          auto iter = bdd_satmax(bdd(bdd_4, true), std::back_inserter(out));
 
-          auto ret = bdd_satmax(bdd(bdd_4, true), buffer.begin(), buffer.end());
+          // Check state of 'out'
+          AssertThat(out.size(), Is().EqualTo(4u));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{0, true}));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{1, true}));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{2, false}));
+          AssertThat(out.at(3), Is().EqualTo(pair_type{3, true}));
 
-          AssertThat(ret, Is().EqualTo(buffer.begin() + 4));
-
-          buffer_type expected(buffer_size, buffer_default);
-          expected.at(0) = { 0, true };
-          expected.at(1) = { 1, true };
-          expected.at(2) = { 2, false };
-          expected.at(3) = { 3, true };
-
-          for (size_t i = 0; i < buffer_size; ++i) {
-            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-          }
+          // Check state of 'iter'
+          iter = {4, false};
+          AssertThat(out.size(), Is().EqualTo(5u));
+          AssertThat(out.at(3), Is().EqualTo(pair_type{3, true}));
+          AssertThat(out.at(4), Is().EqualTo(pair_type{4, false}));
         });
 
         it("outputs expected values into buffer for [4(+2)]", [&]() {
-          buffer_type buffer(buffer_size, buffer_default);
+          output_vector out;
+          auto iter = bdd_satmax(bdd(bdd_4, false, +2), std::back_inserter(out));
 
-          auto ret = bdd_satmax(bdd(bdd_4, false, +2), buffer.begin(), buffer.end());
+          // Check state of 'out'
+          AssertThat(out.size(), Is().EqualTo(3u));
+          AssertThat(out.at(0), Is().EqualTo(pair_type{2, true}));
+          AssertThat(out.at(1), Is().EqualTo(pair_type{3, true}));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{4, true}));
 
-          AssertThat(ret, Is().EqualTo(buffer.begin() + 3));
-
-          buffer_type expected(buffer_size, buffer_default);
-          expected.at(0) = { 2, true };
-          expected.at(1) = { 3, true };
-          expected.at(2) = { 4, true };
-
-          for (size_t i = 0; i < buffer_size; ++i) {
-            AssertThat(buffer.at(i), Is().EqualTo(expected.at(i)));
-          }
-        });
-
-        it("throws 'out_of_range' if buffer is too small [~4]", [&]() {
-          buffer_type buffer(2, buffer_default);
-          AssertThrows(out_of_range, bdd_satmax(bdd(bdd_4, true), buffer.begin(), buffer.end()));
+          // Check state of 'iter'
+          iter = {5, true};
+          AssertThat(out.size(), Is().EqualTo(4u));
+          AssertThat(out.at(2), Is().EqualTo(pair_type{4, true}));
+          AssertThat(out.at(3), Is().EqualTo(pair_type{5, true}));
         });
       });
     } // bdd_satmin, bdd_satmax

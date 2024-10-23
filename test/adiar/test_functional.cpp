@@ -1,8 +1,8 @@
 #include "../test.h"
 
-#include<iterator>
-#include<set>
-#include<vector>
+#include <iterator>
+#include <set>
+#include <vector>
 
 go_bandit([]() {
   describe("adiar/functional.h", []() {
