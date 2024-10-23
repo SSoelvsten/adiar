@@ -541,10 +541,10 @@ uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <tr class="memitem:gaba9c6758f6c0ba4fea4ccc7b68f5b8d6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gaba9c6758f6c0ba4fea4ccc7b68f5b8d6">adiar::bdd_support</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="group__module____functional.html#ga3d65dbfd2713f575acf291dfbabd8e7b">consumer</a>&lt; <a class="el" href="classadiar_1_1internal_1_1dd.html#a89544dd479c73f3704c989d54e72b10b">bdd::label_type</a> &gt; &amp;cb)</td></tr>
 <tr class="memdesc:gaba9c6758f6c0ba4fea4ccc7b68f5b8d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get (in <em>ascending</em> order) all of the variable labels that occur in the BDD.  <a href="group__module____bdd.html#gaba9c6758f6c0ba4fea4ccc7b68f5b8d6">More...</a><br /></td></tr>
 <tr class="separator:gaba9c6758f6c0ba4fea4ccc7b68f5b8d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gabfbddc98031801febb1dbb35faf0f500"><td class="memTemplParams" colspan="2">template&lt;typename ForwardIt &gt; </td></tr>
-<tr class="memitem:gabfbddc98031801febb1dbb35faf0f500"><td class="memTemplItemLeft" align="right" valign="top">ForwardIt&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gabfbddc98031801febb1dbb35faf0f500">adiar::bdd_support</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, ForwardIt begin, ForwardIt end)</td></tr>
-<tr class="memdesc:gabfbddc98031801febb1dbb35faf0f500"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy all of the variable labels (in <em>ascending</em> order) that occur in the BDD into the given container.  <a href="group__module____bdd.html#gabfbddc98031801febb1dbb35faf0f500">More...</a><br /></td></tr>
-<tr class="separator:gabfbddc98031801febb1dbb35faf0f500"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5874e66c0ca512231140c2955d92daaa"><td class="memTemplParams" colspan="2">template&lt;typename OutputIt , typename  = enable_if&lt;!is_convertible&lt;OutputIt, consumer&lt;bdd::label_type&gt;&gt;&gt;&gt; </td></tr>
+<tr class="memitem:ga5874e66c0ca512231140c2955d92daaa"><td class="memTemplItemLeft" align="right" valign="top">OutputIt&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga5874e66c0ca512231140c2955d92daaa">adiar::bdd_support</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, OutputIt iter)</td></tr>
+<tr class="memdesc:ga5874e66c0ca512231140c2955d92daaa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy all of the variable labels (in <em>ascending</em> order) that occur in the BDD into the given container.  <a href="group__module____bdd.html#ga5874e66c0ca512231140c2955d92daaa">More...</a><br /></td></tr>
+<tr class="separator:ga5874e66c0ca512231140c2955d92daaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gafd88e3b4d657fe0affd7a77983aceca2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1internal_1_1dd.html#a89544dd479c73f3704c989d54e72b10b">bdd::label_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gafd88e3b4d657fe0affd7a77983aceca2">adiar::bdd_topvar</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
 <tr class="memdesc:gafd88e3b4d657fe0affd7a77983aceca2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the root's variable label.  <a href="group__module____bdd.html#gafd88e3b4d657fe0affd7a77983aceca2">More...</a><br /></td></tr>
 <tr class="separator:gafd88e3b4d657fe0affd7a77983aceca2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -570,6 +570,10 @@ uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <tr class="memitem:ga1ef5628506e4807ec53c1fc53586433b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga1ef5628506e4807ec53c1fc53586433b">adiar::bdd_satmin</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="group__module____functional.html#ga3d65dbfd2713f575acf291dfbabd8e7b">consumer</a>&lt; <a class="el" href="namespaceadiar.html#a0bd43cb068187d7c464b6547ba6585d5">pair</a>&lt; <a class="el" href="classadiar_1_1internal_1_1dd.html#a89544dd479c73f3704c989d54e72b10b">bdd::label_type</a>, bool &gt;&gt; &amp;c)</td></tr>
 <tr class="memdesc:ga1ef5628506e4807ec53c1fc53586433b"><td class="mdescLeft">&#160;</td><td class="mdescRight">The lexicographically smallest x such that f(x) is true.  <a href="group__module____bdd.html#ga1ef5628506e4807ec53c1fc53586433b">More...</a><br /></td></tr>
 <tr class="separator:ga1ef5628506e4807ec53c1fc53586433b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa410b4cfdd89f77f002a913f452b5596"><td class="memTemplParams" colspan="2">template&lt;typename OutputIt , typename  = enable_if&lt;!is_convertible&lt;OutputIt, consumer&lt;pair&lt;bdd::label_type, bool&gt;&gt;&gt;                                 &amp;&amp; !is_convertible&lt;OutputIt, bdd&gt;&gt;&gt; </td></tr>
+<tr class="memitem:gaa410b4cfdd89f77f002a913f452b5596"><td class="memTemplItemLeft" align="right" valign="top">OutputIt&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gaa410b4cfdd89f77f002a913f452b5596">adiar::bdd_satmin</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, OutputIt iter)</td></tr>
+<tr class="memdesc:gaa410b4cfdd89f77f002a913f452b5596"><td class="mdescLeft">&#160;</td><td class="mdescRight">The lexicographically smallest x such that f(x) is true.  <a href="group__module____bdd.html#gaa410b4cfdd89f77f002a913f452b5596">More...</a><br /></td></tr>
+<tr class="separator:gaa410b4cfdd89f77f002a913f452b5596"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga9845c0561ddec1f079e4b14351011d44"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1bdd.html">bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga9845c0561ddec1f079e4b14351011d44">adiar::bdd_satmax</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
 <tr class="memdesc:ga9845c0561ddec1f079e4b14351011d44"><td class="mdescLeft">&#160;</td><td class="mdescRight">The lexicographically largest cube x such that f(x) is true.  <a href="group__module____bdd.html#ga9845c0561ddec1f079e4b14351011d44">More...</a><br /></td></tr>
 <tr class="separator:ga9845c0561ddec1f079e4b14351011d44"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -586,6 +590,10 @@ uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <tr class="memitem:ga66c7ff029696ad6326e51a8bd3d95e18"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga66c7ff029696ad6326e51a8bd3d95e18">adiar::bdd_satmax</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="group__module____functional.html#ga3d65dbfd2713f575acf291dfbabd8e7b">consumer</a>&lt; <a class="el" href="namespaceadiar.html#a0bd43cb068187d7c464b6547ba6585d5">pair</a>&lt; <a class="el" href="classadiar_1_1internal_1_1dd.html#a89544dd479c73f3704c989d54e72b10b">bdd::label_type</a>, bool &gt;&gt; &amp;c)</td></tr>
 <tr class="memdesc:ga66c7ff029696ad6326e51a8bd3d95e18"><td class="mdescLeft">&#160;</td><td class="mdescRight">The lexicographically largest x such that f(x) is true.  <a href="group__module____bdd.html#ga66c7ff029696ad6326e51a8bd3d95e18">More...</a><br /></td></tr>
 <tr class="separator:ga66c7ff029696ad6326e51a8bd3d95e18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga94cbe7ad980d6b40479a159634361eac"><td class="memTemplParams" colspan="2">template&lt;typename OutputIt , typename  = enable_if&lt;!is_convertible&lt;OutputIt, consumer&lt;pair&lt;bdd::label_type, bool&gt;&gt;&gt;                                 &amp;&amp; !is_convertible&lt;OutputIt, bdd&gt;&gt;&gt; </td></tr>
+<tr class="memitem:ga94cbe7ad980d6b40479a159634361eac"><td class="memTemplItemLeft" align="right" valign="top">OutputIt&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga94cbe7ad980d6b40479a159634361eac">adiar::bdd_satmax</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, OutputIt iter)</td></tr>
+<tr class="memdesc:ga94cbe7ad980d6b40479a159634361eac"><td class="mdescLeft">&#160;</td><td class="mdescRight">The lexicographically largest x such that f(x) is true.  <a href="group__module____bdd.html#ga94cbe7ad980d6b40479a159634361eac">More...</a><br /></td></tr>
+<tr class="separator:ga94cbe7ad980d6b40479a159634361eac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga179d92e328f6b01953994d73827f8b70"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceadiar.html#a0bd43cb068187d7c464b6547ba6585d5">pair</a>&lt; <a class="el" href="classadiar_1_1bdd.html">bdd</a>, double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga179d92e328f6b01953994d73827f8b70">adiar::bdd_optmin</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="group__module____functional.html#ga3adf1876f8333cf8cbe78255823b0f8e">cost</a>&lt; <a class="el" href="classadiar_1_1internal_1_1dd.html#a89544dd479c73f3704c989d54e72b10b">bdd::label_type</a> &gt; &amp;c)</td></tr>
 <tr class="memdesc:ga179d92e328f6b01953994d73827f8b70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Obtain the satisfying assignment that is minimal for the given linear cost function over the global domain.  <a href="group__module____bdd.html#ga179d92e328f6b01953994d73827f8b70">More...</a><br /></td></tr>
 <tr class="separator:ga179d92e328f6b01953994d73827f8b70"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -3161,7 +3169,7 @@ template&lt;typename ForwardIt &gt; </div>
 </div>
 </div>
 <a id="ga9845c0561ddec1f079e4b14351011d44"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga9845c0561ddec1f079e4b14351011d44">&#9670;&nbsp;</a></span>bdd_satmax() <span class="overload">[1/5]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ga9845c0561ddec1f079e4b14351011d44">&#9670;&nbsp;</a></span>bdd_satmax() <span class="overload">[1/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3183,7 +3191,7 @@ template&lt;typename ForwardIt &gt; </div>
 </div>
 </div>
 <a id="ga539d63946319326099ab7f492bb9d854"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga539d63946319326099ab7f492bb9d854">&#9670;&nbsp;</a></span>bdd_satmax() <span class="overload">[2/5]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ga539d63946319326099ab7f492bb9d854">&#9670;&nbsp;</a></span>bdd_satmax() <span class="overload">[2/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3227,7 +3235,7 @@ template&lt;typename ForwardIt &gt; </div>
 </div>
 </div>
 <a id="ga66c7ff029696ad6326e51a8bd3d95e18"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga66c7ff029696ad6326e51a8bd3d95e18">&#9670;&nbsp;</a></span>bdd_satmax() <span class="overload">[3/5]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ga66c7ff029696ad6326e51a8bd3d95e18">&#9670;&nbsp;</a></span>bdd_satmax() <span class="overload">[3/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3263,7 +3271,7 @@ template&lt;typename ForwardIt &gt; </div>
 </div>
 </div>
 <a id="ga73ece7320c8fe34f4ee063a5354bf90c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga73ece7320c8fe34f4ee063a5354bf90c">&#9670;&nbsp;</a></span>bdd_satmax() <span class="overload">[4/5]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ga73ece7320c8fe34f4ee063a5354bf90c">&#9670;&nbsp;</a></span>bdd_satmax() <span class="overload">[4/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3307,7 +3315,7 @@ template&lt;typename ForwardIt &gt; </div>
 </div>
 </div>
 <a id="ga1a0527ba6fb9ef4585ee6c463e6c3048"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga1a0527ba6fb9ef4585ee6c463e6c3048">&#9670;&nbsp;</a></span>bdd_satmax() <span class="overload">[5/5]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ga1a0527ba6fb9ef4585ee6c463e6c3048">&#9670;&nbsp;</a></span>bdd_satmax() <span class="overload">[5/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3353,8 +3361,48 @@ template&lt;typename ForwardIt , typename  = enable_if&lt;is_const&lt;typename F
 
 </div>
 </div>
+<a id="ga94cbe7ad980d6b40479a159634361eac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga94cbe7ad980d6b40479a159634361eac">&#9670;&nbsp;</a></span>bdd_satmax() <span class="overload">[6/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename OutputIt , typename  = enable_if&lt;!is_convertible&lt;OutputIt, consumer&lt;pair&lt;bdd::label_type, bool&gt;&gt;&gt;                                 &amp;&amp; !is_convertible&lt;OutputIt, bdd&gt;&gt;&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">OutputIt adiar::bdd_satmax </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">OutputIt&#160;</td>
+          <td class="paramname"><em>iter</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The lexicographically largest x such that f(x) is true. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>BDD of interest.</td></tr>
+    <tr><td class="paramname">begin</td><td>Single-pass output iterator for where to place the output.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The output iterator at its final state. </dd></dl>
+
+</div>
+</div>
 <a id="ga82d50901064486da23984c7dfac196c0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga82d50901064486da23984c7dfac196c0">&#9670;&nbsp;</a></span>bdd_satmin() <span class="overload">[1/5]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ga82d50901064486da23984c7dfac196c0">&#9670;&nbsp;</a></span>bdd_satmin() <span class="overload">[1/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3376,7 +3424,7 @@ template&lt;typename ForwardIt , typename  = enable_if&lt;is_const&lt;typename F
 </div>
 </div>
 <a id="ga2c600f0789f08714cbd97269a5745d56"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga2c600f0789f08714cbd97269a5745d56">&#9670;&nbsp;</a></span>bdd_satmin() <span class="overload">[2/5]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ga2c600f0789f08714cbd97269a5745d56">&#9670;&nbsp;</a></span>bdd_satmin() <span class="overload">[2/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3420,7 +3468,7 @@ template&lt;typename ForwardIt , typename  = enable_if&lt;is_const&lt;typename F
 </div>
 </div>
 <a id="ga1ef5628506e4807ec53c1fc53586433b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga1ef5628506e4807ec53c1fc53586433b">&#9670;&nbsp;</a></span>bdd_satmin() <span class="overload">[3/5]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ga1ef5628506e4807ec53c1fc53586433b">&#9670;&nbsp;</a></span>bdd_satmin() <span class="overload">[3/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3456,7 +3504,7 @@ template&lt;typename ForwardIt , typename  = enable_if&lt;is_const&lt;typename F
 </div>
 </div>
 <a id="ga06a5818785795393947914b0cbd13dc5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga06a5818785795393947914b0cbd13dc5">&#9670;&nbsp;</a></span>bdd_satmin() <span class="overload">[4/5]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ga06a5818785795393947914b0cbd13dc5">&#9670;&nbsp;</a></span>bdd_satmin() <span class="overload">[4/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3500,7 +3548,7 @@ template&lt;typename ForwardIt , typename  = enable_if&lt;is_const&lt;typename F
 </div>
 </div>
 <a id="ga88de9d1f4d354db1b0bde2fa0c6f26cd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga88de9d1f4d354db1b0bde2fa0c6f26cd">&#9670;&nbsp;</a></span>bdd_satmin() <span class="overload">[5/5]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ga88de9d1f4d354db1b0bde2fa0c6f26cd">&#9670;&nbsp;</a></span>bdd_satmin() <span class="overload">[5/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3546,6 +3594,46 @@ template&lt;typename ForwardIt , typename  = enable_if&lt;is_const&lt;typename F
 
 </div>
 </div>
+<a id="gaa410b4cfdd89f77f002a913f452b5596"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaa410b4cfdd89f77f002a913f452b5596">&#9670;&nbsp;</a></span>bdd_satmin() <span class="overload">[6/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename OutputIt , typename  = enable_if&lt;!is_convertible&lt;OutputIt, consumer&lt;pair&lt;bdd::label_type, bool&gt;&gt;&gt;                                 &amp;&amp; !is_convertible&lt;OutputIt, bdd&gt;&gt;&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">OutputIt adiar::bdd_satmin </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">OutputIt&#160;</td>
+          <td class="paramname"><em>iter</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The lexicographically smallest x such that f(x) is true. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>BDD of interest.</td></tr>
+    <tr><td class="paramname">begin</td><td>Single-pass output iterator for where to place the output.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The output iterator at its final state. </dd></dl>
+
+</div>
+</div>
 <a id="gaba9c6758f6c0ba4fea4ccc7b68f5b8d6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gaba9c6758f6c0ba4fea4ccc7b68f5b8d6">&#9670;&nbsp;</a></span>bdd_support() <span class="overload">[1/2]</span></h2>
 
@@ -3583,16 +3671,16 @@ template&lt;typename ForwardIt , typename  = enable_if&lt;is_const&lt;typename F
 
 </div>
 </div>
-<a id="gabfbddc98031801febb1dbb35faf0f500"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gabfbddc98031801febb1dbb35faf0f500">&#9670;&nbsp;</a></span>bdd_support() <span class="overload">[2/2]</span></h2>
+<a id="ga5874e66c0ca512231140c2955d92daaa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga5874e66c0ca512231140c2955d92daaa">&#9670;&nbsp;</a></span>bdd_support() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ForwardIt &gt; </div>
+template&lt;typename OutputIt , typename  = enable_if&lt;!is_convertible&lt;OutputIt, consumer&lt;bdd::label_type&gt;&gt;&gt;&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">ForwardIt adiar::bdd_support </td>
+          <td class="memname">OutputIt adiar::bdd_support </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
           <td class="paramname"><em>f</em>, </td>
@@ -3600,14 +3688,8 @@ template&lt;typename ForwardIt &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">ForwardIt&#160;</td>
-          <td class="paramname"><em>begin</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">ForwardIt&#160;</td>
-          <td class="paramname"><em>end</em>&#160;</td>
+          <td class="paramtype">OutputIt&#160;</td>
+          <td class="paramname"><em>iter</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -3621,18 +3703,11 @@ template&lt;typename ForwardIt &gt; </div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">f</td><td>BDD of interest.</td></tr>
-    <tr><td class="paramname">begin</td><td>Single-pass forward iterator for where to place the output.</td></tr>
-    <tr><td class="paramname">end</td><td>Marks the end for <code>begin</code>.</td></tr>
+    <tr><td class="paramname">iter</td><td>Single-pass output iterator for where to place the output.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>An iterator to the first entry that still is left empty.</dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">out_of_range</td><td>If the distance between <code>begin</code> and <code>end</code> is not big enough to contain all variables in <code>f</code>. </td></tr>
-  </table>
-  </dd>
-</dl>
+<dl class="section return"><dt>Returns</dt><dd>The output iterator at its final state. </dd></dl>
 
 </div>
 </div>

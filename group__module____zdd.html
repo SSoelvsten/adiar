@@ -484,10 +484,10 @@ uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <tr class="memitem:gaf3f8d25600420295e6d18b5c0961d71d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____zdd.html#gaf3f8d25600420295e6d18b5c0961d71d">adiar::zdd_support</a> (const <a class="el" href="classadiar_1_1zdd.html">zdd</a> &amp;A, const <a class="el" href="group__module____functional.html#ga3d65dbfd2713f575acf291dfbabd8e7b">consumer</a>&lt; <a class="el" href="classadiar_1_1internal_1_1dd.html#a89544dd479c73f3704c989d54e72b10b">zdd::label_type</a> &gt; &amp;cb)</td></tr>
 <tr class="memdesc:gaf3f8d25600420295e6d18b5c0961d71d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get (in <em>ascending</em> order) all of the variable labels that occur in the family.  <a href="group__module____zdd.html#gaf3f8d25600420295e6d18b5c0961d71d">More...</a><br /></td></tr>
 <tr class="separator:gaf3f8d25600420295e6d18b5c0961d71d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf09b76057ef50c6733aa943ab8cfa79e"><td class="memTemplParams" colspan="2">template&lt;typename ForwardIt &gt; </td></tr>
-<tr class="memitem:gaf09b76057ef50c6733aa943ab8cfa79e"><td class="memTemplItemLeft" align="right" valign="top">ForwardIt&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____zdd.html#gaf09b76057ef50c6733aa943ab8cfa79e">adiar::zdd_support</a> (const <a class="el" href="classadiar_1_1zdd.html">zdd</a> &amp;A, ForwardIt begin, ForwardIt end)</td></tr>
-<tr class="memdesc:gaf09b76057ef50c6733aa943ab8cfa79e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy all of the variable labels (in <em>ascending</em> order) that occur in the family into the given container.  <a href="group__module____zdd.html#gaf09b76057ef50c6733aa943ab8cfa79e">More...</a><br /></td></tr>
-<tr class="separator:gaf09b76057ef50c6733aa943ab8cfa79e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga087cbc3ceb2c2e6babe6eabf97ff14cb"><td class="memTemplParams" colspan="2">template&lt;typename OutputIt , typename  = enable_if&lt;!is_convertible&lt;OutputIt, consumer&lt;zdd::label_type&gt;&gt;&gt;&gt; </td></tr>
+<tr class="memitem:ga087cbc3ceb2c2e6babe6eabf97ff14cb"><td class="memTemplItemLeft" align="right" valign="top">OutputIt&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____zdd.html#ga087cbc3ceb2c2e6babe6eabf97ff14cb">adiar::zdd_support</a> (const <a class="el" href="classadiar_1_1zdd.html">zdd</a> &amp;A, OutputIt iter)</td></tr>
+<tr class="memdesc:ga087cbc3ceb2c2e6babe6eabf97ff14cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy all of the variable labels (in <em>ascending</em> order) that occur in the family into the given container.  <a href="group__module____zdd.html#ga087cbc3ceb2c2e6babe6eabf97ff14cb">More...</a><br /></td></tr>
+<tr class="separator:ga087cbc3ceb2c2e6babe6eabf97ff14cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga0ec28a7b324e4a26f771437549cf48e8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1internal_1_1dd.html#a89544dd479c73f3704c989d54e72b10b">zdd::label_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____zdd.html#ga0ec28a7b324e4a26f771437549cf48e8">adiar::zdd_topvar</a> (const <a class="el" href="classadiar_1_1zdd.html">zdd</a> &amp;f)</td></tr>
 <tr class="memdesc:ga0ec28a7b324e4a26f771437549cf48e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the root's variable label.  <a href="group__module____zdd.html#ga0ec28a7b324e4a26f771437549cf48e8">More...</a><br /></td></tr>
 <tr class="separator:ga0ec28a7b324e4a26f771437549cf48e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -510,20 +510,20 @@ uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <tr class="memitem:gad24382b1781a922587b054efd1135ba5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____zdd.html#gad24382b1781a922587b054efd1135ba5">adiar::zdd_minelem</a> (const <a class="el" href="classadiar_1_1zdd.html">zdd</a> &amp;A, const <a class="el" href="group__module____functional.html#ga3d65dbfd2713f575acf291dfbabd8e7b">consumer</a>&lt; <a class="el" href="classadiar_1_1internal_1_1dd.html#a89544dd479c73f3704c989d54e72b10b">zdd::label_type</a> &gt; &amp;cb)</td></tr>
 <tr class="memdesc:gad24382b1781a922587b054efd1135ba5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the lexicographically smallest set a in A.  <a href="group__module____zdd.html#gad24382b1781a922587b054efd1135ba5">More...</a><br /></td></tr>
 <tr class="separator:gad24382b1781a922587b054efd1135ba5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaaaf3745e2fa7383dbab0f178c708a044"><td class="memTemplParams" colspan="2">template&lt;typename ForwardIt &gt; </td></tr>
-<tr class="memitem:gaaaf3745e2fa7383dbab0f178c708a044"><td class="memTemplItemLeft" align="right" valign="top">ForwardIt&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____zdd.html#gaaaf3745e2fa7383dbab0f178c708a044">adiar::zdd_minelem</a> (const <a class="el" href="classadiar_1_1zdd.html">zdd</a> &amp;A, ForwardIt begin, ForwardIt end)</td></tr>
-<tr class="memdesc:gaaaf3745e2fa7383dbab0f178c708a044"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the lexicographically smallest set a in A.  <a href="group__module____zdd.html#gaaaf3745e2fa7383dbab0f178c708a044">More...</a><br /></td></tr>
-<tr class="separator:gaaaf3745e2fa7383dbab0f178c708a044"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaaf6a693d4d9f26d51bbd741d8f1799dd"><td class="memTemplParams" colspan="2">template&lt;typename OutputIt , typename  = enable_if&lt;!is_convertible&lt;OutputIt, consumer&lt;zdd::label_type&gt;&gt;&gt;&gt; </td></tr>
+<tr class="memitem:gaaf6a693d4d9f26d51bbd741d8f1799dd"><td class="memTemplItemLeft" align="right" valign="top">OutputIt&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____zdd.html#gaaf6a693d4d9f26d51bbd741d8f1799dd">adiar::zdd_minelem</a> (const <a class="el" href="classadiar_1_1zdd.html">zdd</a> &amp;A, OutputIt iter)</td></tr>
+<tr class="memdesc:gaaf6a693d4d9f26d51bbd741d8f1799dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the lexicographically smallest set a in A.  <a href="group__module____zdd.html#gaaf6a693d4d9f26d51bbd741d8f1799dd">More...</a><br /></td></tr>
+<tr class="separator:gaaf6a693d4d9f26d51bbd741d8f1799dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab28d627cfb7390f47f78b1c8158c1c6a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1zdd.html">zdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____zdd.html#gab28d627cfb7390f47f78b1c8158c1c6a">adiar::zdd_maxelem</a> (const <a class="el" href="classadiar_1_1zdd.html">zdd</a> &amp;A)</td></tr>
 <tr class="memdesc:gab28d627cfb7390f47f78b1c8158c1c6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the lexicographically largest set a in A.  <a href="group__module____zdd.html#gab28d627cfb7390f47f78b1c8158c1c6a">More...</a><br /></td></tr>
 <tr class="separator:gab28d627cfb7390f47f78b1c8158c1c6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gacc765316133da891711bf58fd431b813"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____zdd.html#gacc765316133da891711bf58fd431b813">adiar::zdd_maxelem</a> (const <a class="el" href="classadiar_1_1zdd.html">zdd</a> &amp;A, const <a class="el" href="group__module____functional.html#ga3d65dbfd2713f575acf291dfbabd8e7b">consumer</a>&lt; <a class="el" href="classadiar_1_1internal_1_1dd.html#a89544dd479c73f3704c989d54e72b10b">zdd::label_type</a> &gt; &amp;cb)</td></tr>
 <tr class="memdesc:gacc765316133da891711bf58fd431b813"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the lexicographically largest set a in A.  <a href="group__module____zdd.html#gacc765316133da891711bf58fd431b813">More...</a><br /></td></tr>
 <tr class="separator:gacc765316133da891711bf58fd431b813"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga92f6b307775c0b3d547bcbd3c347ad59"><td class="memTemplParams" colspan="2">template&lt;typename ForwardIt &gt; </td></tr>
-<tr class="memitem:ga92f6b307775c0b3d547bcbd3c347ad59"><td class="memTemplItemLeft" align="right" valign="top">ForwardIt&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____zdd.html#ga92f6b307775c0b3d547bcbd3c347ad59">adiar::zdd_maxelem</a> (const <a class="el" href="classadiar_1_1zdd.html">zdd</a> &amp;A, ForwardIt begin, ForwardIt end)</td></tr>
-<tr class="memdesc:ga92f6b307775c0b3d547bcbd3c347ad59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the lexicographically largest set a in A.  <a href="group__module____zdd.html#ga92f6b307775c0b3d547bcbd3c347ad59">More...</a><br /></td></tr>
-<tr class="separator:ga92f6b307775c0b3d547bcbd3c347ad59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaee0e4e01b25e985c6d867f033446595d"><td class="memTemplParams" colspan="2">template&lt;typename OutputIt , typename  = enable_if&lt;!is_convertible&lt;OutputIt, consumer&lt;zdd::label_type&gt;&gt;&gt;&gt; </td></tr>
+<tr class="memitem:gaee0e4e01b25e985c6d867f033446595d"><td class="memTemplItemLeft" align="right" valign="top">OutputIt&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____zdd.html#gaee0e4e01b25e985c6d867f033446595d">adiar::zdd_maxelem</a> (const <a class="el" href="classadiar_1_1zdd.html">zdd</a> &amp;A, OutputIt iter)</td></tr>
+<tr class="memdesc:gaee0e4e01b25e985c6d867f033446595d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the lexicographically largest set a in A.  <a href="group__module____zdd.html#gaee0e4e01b25e985c6d867f033446595d">More...</a><br /></td></tr>
+<tr class="separator:gaee0e4e01b25e985c6d867f033446595d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader">Conversion to ZDDs</h2></td></tr>
 <tr class="memitem:gae7fb6f2b4fe7bdcd22c9e3d3f451e200"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____zdd.html">__zdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____zdd.html#gae7fb6f2b4fe7bdcd22c9e3d3f451e200">adiar::zdd_from</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="group__module____functional.html#ga13ea491f2be12fdc18cf118b931a423a">generator</a>&lt; <a class="el" href="classadiar_1_1internal_1_1dd.html#a89544dd479c73f3704c989d54e72b10b">zdd::label_type</a> &gt; &amp;dom)</td></tr>
@@ -1807,16 +1807,16 @@ template&lt;typename ForwardIt &gt; </div>
 
 </div>
 </div>
-<a id="ga92f6b307775c0b3d547bcbd3c347ad59"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga92f6b307775c0b3d547bcbd3c347ad59">&#9670;&nbsp;</a></span>zdd_maxelem() <span class="overload">[3/3]</span></h2>
+<a id="gaee0e4e01b25e985c6d867f033446595d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaee0e4e01b25e985c6d867f033446595d">&#9670;&nbsp;</a></span>zdd_maxelem() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ForwardIt &gt; </div>
+template&lt;typename OutputIt , typename  = enable_if&lt;!is_convertible&lt;OutputIt, consumer&lt;zdd::label_type&gt;&gt;&gt;&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">ForwardIt adiar::zdd_maxelem </td>
+          <td class="memname">OutputIt adiar::zdd_maxelem </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classadiar_1_1zdd.html">zdd</a> &amp;&#160;</td>
           <td class="paramname"><em>A</em>, </td>
@@ -1824,14 +1824,8 @@ template&lt;typename ForwardIt &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">ForwardIt&#160;</td>
-          <td class="paramname"><em>begin</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">ForwardIt&#160;</td>
-          <td class="paramname"><em>end</em>&#160;</td>
+          <td class="paramtype">OutputIt&#160;</td>
+          <td class="paramname"><em>iter</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1845,18 +1839,11 @@ template&lt;typename ForwardIt &gt; </div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">A</td><td>Set of sets of interest.</td></tr>
-    <tr><td class="paramname">begin</td><td>Single-pass forward iterator for where to place the output.</td></tr>
-    <tr><td class="paramname">end</td><td>Marks the end for <code>begin</code>.</td></tr>
+    <tr><td class="paramname">begin</td><td>Single-pass output iterator for where to place the output.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>An iterator to the first entry that still is left empty.</dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">out_of_range</td><td>If the distance between <code>begin</code> and <code>end</code> is not big enough to contain all variables in <code>A</code>. </td></tr>
-  </table>
-  </dd>
-</dl>
+<dl class="section return"><dt>Returns</dt><dd>The output iterator at its final state. </dd></dl>
 
 </div>
 </div>
@@ -1951,16 +1938,16 @@ template&lt;typename ForwardIt &gt; </div>
 
 </div>
 </div>
-<a id="gaaaf3745e2fa7383dbab0f178c708a044"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaaaf3745e2fa7383dbab0f178c708a044">&#9670;&nbsp;</a></span>zdd_minelem() <span class="overload">[3/3]</span></h2>
+<a id="gaaf6a693d4d9f26d51bbd741d8f1799dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaaf6a693d4d9f26d51bbd741d8f1799dd">&#9670;&nbsp;</a></span>zdd_minelem() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ForwardIt &gt; </div>
+template&lt;typename OutputIt , typename  = enable_if&lt;!is_convertible&lt;OutputIt, consumer&lt;zdd::label_type&gt;&gt;&gt;&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">ForwardIt adiar::zdd_minelem </td>
+          <td class="memname">OutputIt adiar::zdd_minelem </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classadiar_1_1zdd.html">zdd</a> &amp;&#160;</td>
           <td class="paramname"><em>A</em>, </td>
@@ -1968,14 +1955,8 @@ template&lt;typename ForwardIt &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">ForwardIt&#160;</td>
-          <td class="paramname"><em>begin</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">ForwardIt&#160;</td>
-          <td class="paramname"><em>end</em>&#160;</td>
+          <td class="paramtype">OutputIt&#160;</td>
+          <td class="paramname"><em>iter</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1990,17 +1971,10 @@ template&lt;typename ForwardIt &gt; </div>
   <table class="params">
     <tr><td class="paramname">A</td><td>Set of sets of interest.</td></tr>
     <tr><td class="paramname">begin</td><td>Single-pass forward iterator for where to place the output.</td></tr>
-    <tr><td class="paramname">end</td><td>Marks the end for <code>begin</code>.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>An iterator to the first entry that still is left empty.</dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">out_of_range</td><td>If the distance between <code>begin</code> and <code>end</code> is not big enough to contain all variables in <code>A</code>. </td></tr>
-  </table>
-  </dd>
-</dl>
+<dl class="section return"><dt>Returns</dt><dd>The output iterator at its final state. </dd></dl>
 
 </div>
 </div>
@@ -2897,16 +2871,16 @@ template&lt;typename ForwardIt &gt; </div>
 
 </div>
 </div>
-<a id="gaf09b76057ef50c6733aa943ab8cfa79e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaf09b76057ef50c6733aa943ab8cfa79e">&#9670;&nbsp;</a></span>zdd_support() <span class="overload">[2/2]</span></h2>
+<a id="ga087cbc3ceb2c2e6babe6eabf97ff14cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga087cbc3ceb2c2e6babe6eabf97ff14cb">&#9670;&nbsp;</a></span>zdd_support() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ForwardIt &gt; </div>
+template&lt;typename OutputIt , typename  = enable_if&lt;!is_convertible&lt;OutputIt, consumer&lt;zdd::label_type&gt;&gt;&gt;&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">ForwardIt adiar::zdd_support </td>
+          <td class="memname">OutputIt adiar::zdd_support </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classadiar_1_1zdd.html">zdd</a> &amp;&#160;</td>
           <td class="paramname"><em>A</em>, </td>
@@ -2914,14 +2888,8 @@ template&lt;typename ForwardIt &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">ForwardIt&#160;</td>
-          <td class="paramname"><em>begin</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">ForwardIt&#160;</td>
-          <td class="paramname"><em>end</em>&#160;</td>
+          <td class="paramtype">OutputIt&#160;</td>
+          <td class="paramname"><em>iter</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -2935,18 +2903,11 @@ template&lt;typename ForwardIt &gt; </div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">A</td><td>ZDD of interest.</td></tr>
-    <tr><td class="paramname">begin</td><td>Single-pass forward iterator for where to place the output.</td></tr>
-    <tr><td class="paramname">end</td><td>Marks the end for <code>begin</code>.</td></tr>
+    <tr><td class="paramname">begin</td><td>Single-pass output iterator for where to place the output.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>An iterator to the first entry that still is left empty.</dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">out_of_range</td><td>If the distance between <code>begin</code> and <code>end</code> is not big enough to contain all variables in <code>A</code>. </td></tr>
-  </table>
-  </dd>
-</dl>
+<dl class="section return"><dt>Returns</dt><dd>The output iterator at its final state. </dd></dl>
 
 </div>
 </div>
