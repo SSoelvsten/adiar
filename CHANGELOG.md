@@ -1,6 +1,6 @@
 # v2.1.0
 
-**Date: N/A**
+**Date: 23rd of October, 2024**
 
 ## New Features
 
