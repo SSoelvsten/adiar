@@ -1,5 +1,7 @@
 <map id="adiar::internal::__dd" name="adiar::internal::__dd">
-<area shape="rect" id="node1" title=" " alt="" coords="43,5,194,32"/>
-<area shape="rect" id="node2" href="$classadiar_1_1____bdd.html" title="A (possibly) unreduced Binary Decision Diagram." alt="" coords="5,80,107,107"/>
-<area shape="rect" id="node3" href="$classadiar_1_1____zdd.html" title="A (possibly unreduced) Zero&#45;suppressed Decision Diagram." alt="" coords="131,80,231,107"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="43,5,194,31"/>
+<area shape="rect" id="Node000002" href="$classadiar_1_1____bdd.html" title="A (possibly) unreduced Binary Decision Diagram." alt="" coords="5,79,107,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="101,43,68,80,64,77,97,39"/>
+<area shape="rect" id="Node000003" href="$classadiar_1_1____zdd.html" title="A (possibly unreduced) Zero&#45;suppressed Decision Diagram." alt="" coords="131,79,231,104"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="140,39,173,77,169,80,136,43"/>
 </map>
