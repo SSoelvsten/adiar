@@ -7,22 +7,22 @@ contributing to Adiar.
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
-- [Contribution Guidelines](#contribution-guidelines)
-    - [Getting Started](#getting-started)
-        - [Visual Studio Code](#visual-studio-code)
-    - [Git Practices](#git-practices)
-        - [Commits and Messages](#commits-and-messages)
-        - [Linear History](#linear-history)
-        - [Branching](#branching)
-    - [Code Formatting](#code-formatting)
-    - [Design Principles](#design-principles)
-        - [§1 Functional-First](#1-functional-first)
-        - [§2 Interoperability with Users' Data Structures](#2-interoperability-with-users-data-structures)
-        - [§3 Run-time over Compilation-time](#3-run-time-over-compilation-time)
-        - [§4 Naming Scheme](#4-naming-scheme)
-        - [§5 No Almost Always Auto!](#5-no-almost-always-auto)
-        - [§6 Documentation Comments Everywhere](#6-documentation-comments-everywhere)
-        - [§7 Test Everything Thoroughly](#7-test-everything-thoroughly)
+- [Getting Started](#getting-started)
+    - [Visual Studio Code](#visual-studio-code)
+- [Git Practices](#git-practices)
+    - [Commits and Messages](#commits-and-messages)
+    - [Linear History](#linear-history)
+    - [Branching](#branching)
+- [Code Formatting](#code-formatting)
+- [Generative AI](#generative-ai)
+- [Design Principles](#design-principles)
+    - [§1 Functional-First](#1-functional-first)
+    - [§2 Interoperability with Users' Data Structures](#2-interoperability-with-users-data-structures)
+    - [§3 Run-time over Compilation-time](#3-run-time-over-compilation-time)
+    - [§4 Naming Scheme](#4-naming-scheme)
+    - [§5 No Almost Always Auto!](#5-no-almost-always-auto)
+    - [§6 Documentation Comments Everywhere](#6-documentation-comments-everywhere)
+    - [§7 Test Everything Thoroughly](#7-test-everything-thoroughly)
 
 <!-- markdown-toc end -->
 
@@ -128,6 +128,21 @@ set up *Clang Format* to follow the same style (together with other formatting
 requirements).
 
 Before committing anything, please ensure it is properly formatted.
+
+## Generative AI
+
+**Contributions should be without assistance of Generative AI, such as Copilot.**
+
+There are numerous reasons - legally and especially ethically - to be skeptical
+towards and critical of the use of AI. For example, using it is at the detriment
+to your ability to acquire the skills and knowledge needed to understand the
+language, the codebase, the data structures, and the algorithms. Hence, using it
+will inevitably introduce bugs due to a lack of understanding or negligence.
+Furthermore, it is merely plagiarism with a few extra steps.
+
+Any situation in which an AI assistant would be of benefit to you is a sign of a
+missing abstraction and/or documentation. Hence, the underlying issue should
+be resolved instead. Please do so in an Issue and/or a Pull Request.
 
 ## Design Principles
 
