@@ -112,11 +112,11 @@ The following branch prefixes are reserved.
 - `project/<year>/<name>`:
   These branches contain local copies of previous student projects.
 
-- `experiment/<version>/<name>`
+- `experiment/<version>/<name>`:
   These are stale branches that contain algorithmic changes needed for
   experimental evaluation but should never be merged into *main*.
 
-- `gh-pages`
+- `gh-pages`:
   This is the output branch for the latest Doxygen build of `main`.
 
 ## Code Formatting
