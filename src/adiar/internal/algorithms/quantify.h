@@ -1801,7 +1801,7 @@ namespace adiar::internal
         // HACK: Undo the += 1 in the nested call
         stats_quantify.runs -= 1u;
 #endif
-        return std::move(out);
+        return out;
       } else { // !Policy::quantify_onset
         // TODO: only designed for 'OR' at this point in time
         if (!on_level) { return typename Policy::dd_type(dd->number_of_terminals[true] > 0); }
