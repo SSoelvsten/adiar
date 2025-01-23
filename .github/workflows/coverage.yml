@@ -61,7 +61,7 @@ jobs:
       if: always()
       run: |
         lcov -c -d build/ -o ./coverage.info
-        lcov --remove coverage.info --output-file coverage.info "/usr/*" "*/external/*" "./test/*"
+        lcov --remove coverage.info --output-file coverage.info --ignore-errors unused "/usr/*" "*/external/*" "./test/*"
 
     - name: Upload report to Codecov.io
       working-directory: ${{runner.workspace}}
