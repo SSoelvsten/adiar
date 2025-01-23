@@ -36,15 +36,16 @@ jobs:
         os: [ubuntu-latest]
         cc:
           # GNU Compiler
-          - { cc: gcc,   v: 10, cxx: g++ } # oldest possible
-          - { cc: gcc,   v: 11, cxx: g++ } # default
-          - { cc: gcc,   v: 12, cxx: g++ } # newest
+          - { cc: gcc,   v: 12, cxx: g++ }
+          - { cc: gcc,   v: 13, cxx: g++ }
+          - { cc: gcc,   v: 14, cxx: g++ }
 
           # Clang Compiler
           # - { cc: clang, v: 11, cxx: clang++ } # oldest possible
-          - { cc: clang, v: 12, cxx: clang++ } # oldest supported
-          - { cc: clang, v: 14, cxx: clang++ } # default
-          - { cc: clang, v: 15, cxx: clang++ } # newst possible
+          - { cc: clang, v: 14, cxx: clang++ }
+          - { cc: clang, v: 15, cxx: clang++ }
+          - { cc: clang, v: 16, cxx: clang++ }
+          - { cc: clang, v: 17, cxx: clang++ }
 
     env:
       cc: ${{matrix.cc.cc}}-${{matrix.cc.v}}
