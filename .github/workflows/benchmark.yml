@@ -63,12 +63,18 @@ jobs:
           submodules: 'recursive'
           fetch-depth: '0'
 
-      - name: 'apt install'
+      - name: 'apt install boost'
         run: |
           sudo apt update
           sudo apt install libboost-all-dev
 
-      - name: 'pip install'
+      - name: 'apt install cargo (+ cbindgen)'
+        run: |
+          sudo apt update
+          sudo apt install cargo
+          cargo install --force cbindgen
+
+      - name: 'pip install wget'
         run: |
           sudo pip install wget
 
@@ -123,12 +129,18 @@ jobs:
           submodules: 'recursive'
           fetch-depth: '0'
 
-      - name: 'apt install'
+      - name: 'apt install boost'
         run: |
           sudo apt update
           sudo apt install libboost-all-dev
 
-      - name: 'pip install'
+      - name: 'apt install cargo (+ cbindgen)'
+        run: |
+          sudo apt update
+          sudo apt install cargo
+          cargo install --force cbindgen
+
+      - name: 'pip install wget'
         run: |
           sudo pip install wget
 
@@ -178,12 +190,18 @@ jobs:
           submodules: 'recursive'
           fetch-depth: '0'
 
-      - name: 'apt install'
+      - name: 'apt install boost'
         run: |
           sudo apt update
           sudo apt install libboost-all-dev
 
-      - name: 'pip install'
+      - name: 'apt install cargo (+ cbindgen)'
+        run: |
+          sudo apt update
+          sudo apt install cargo
+          cargo install --force cbindgen
+
+      - name: 'pip install wget'
         run: |
           sudo pip install wget
 
