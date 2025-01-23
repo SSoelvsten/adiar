@@ -83,6 +83,12 @@ jobs:
         sudo apt update
         sudo apt install libboost-all-dev
 
+    - name: Apt | install cargo + cbindgen
+      run: |
+        sudo apt update
+        sudo apt install cargo
+        cargo install --force cbindgen
+
     - name: CMake | build
       run: |
         cmake -E make_directory build
@@ -136,6 +142,12 @@ jobs:
       run: |
         sudo apt update
         sudo apt install libboost-all-dev
+
+    - name: Apt | install cargo + cbindgen
+      run: |
+        sudo apt update
+        sudo apt install cargo
+        cargo install --force cbindgen
 
     - name: CMake | build
       run: |
