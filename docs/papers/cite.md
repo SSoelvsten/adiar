@@ -228,7 +228,7 @@ further improve performance of the product construction algorithms.
              and Rysgaard, Casper Moldrup
              and van de Pol, Jaco},
     booktitle = {Model Checking Software},
-    year      = {2023},
+    year      = {2024},
     editor    = {Neele, Thomas
              and Wijs, Anton},
     pages     = {137--145},
