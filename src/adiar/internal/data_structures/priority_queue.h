@@ -96,9 +96,6 @@ namespace adiar::internal
   template <typename T, typename Comp = std::less<T>>
   using internal_priority_queue = priority_queue<memory_mode::Internal, T, Comp>;
 
-  // LCOV_EXCL_START
-  // TODO: Unit test external memory variants?
-
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Wrapper for TPIE's internal binary heap.
   //////////////////////////////////////////////////////////////////////////////
@@ -162,8 +159,6 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   template <typename T, typename Comp = std::less<T>>
   using external_priority_queue = priority_queue<memory_mode::External, T, Comp>;
-
-  // LCOV_EXCL_STOP
 }
 
 #endif // ADIAR_INTERNAL_DATA_STRUCTURES_PRIORITY_QUEUE_H

@@ -46,6 +46,7 @@ go_bandit([]() {
 #include "adiar/internal/algorithms/test_isomorphism.cpp"
 #include "adiar/internal/algorithms/test_nested_sweeping.cpp"
 #include "adiar/internal/algorithms/test_reduce.cpp"
+#include "adiar/internal/data_structures/test_priority_queue.cpp"
 #include "adiar/internal/data_structures/test_level_merger.cpp"
 #include "adiar/internal/data_structures/test_levelized_priority_queue.cpp"
 #include "adiar/internal/data_types/test_arc.cpp"
