@@ -10,7 +10,7 @@ go_bandit([]() {
     //    F
     */
     { // Garbage collect writer to free write-lock
-      node_writer nw(bdd_F);
+      node_ofstream nw(bdd_F);
       nw << node(false);
     }
 
@@ -19,7 +19,7 @@ go_bandit([]() {
     //    T
     */
     { // Garbage collect writer to free write-lock
-      node_writer nw(bdd_T);
+      node_ofstream nw(bdd_T);
       nw << node(true);
     }
 
@@ -30,7 +30,7 @@ go_bandit([]() {
     //    F T
     */
     { // Garbage collect writer to free write-lock
-      node_writer nw(bdd_x1);
+      node_ofstream nw(bdd_x1);
       nw << node(1, bdd::max_id, terminal_F, terminal_T);
     }
 
@@ -41,7 +41,7 @@ go_bandit([]() {
     //    T F
     */
     { // Garbage collect writer to free write-lock
-      node_writer nw(bdd_x1__neg);
+      node_ofstream nw(bdd_x1__neg);
       nw << node(1, bdd::max_id, terminal_T, terminal_F);
     }
 
@@ -62,7 +62,7 @@ go_bandit([]() {
       const bdd::node_type n2(2, bdd::max_id, terminal_T, n3.uid());
       const bdd::node_type n1(1, bdd::max_id, n2.uid(), n3.uid());
 
-      node_writer nw(bdd_fig4);
+      node_ofstream nw(bdd_fig4);
       nw << n3 << n2 << n1;
     }
 
@@ -89,7 +89,7 @@ go_bandit([]() {
       const bdd::node_type n2(1, bdd::max_id, n3.uid(), n5.uid());
       const bdd::node_type n1(0, bdd::max_id, n2.uid(), terminal_T);
 
-      node_writer nw(bdd_1);
+      node_ofstream nw(bdd_1);
       nw << n6 << n5 << n4 << n3 << n2 << n1;
     }
 
@@ -116,7 +116,7 @@ go_bandit([]() {
       const bdd::node_type n2(2, bdd::max_id, terminal_F, n3.uid());
       const bdd::node_type n1(0, bdd::max_id, n2.uid(), terminal_T);
 
-      node_writer nw(bdd_2);
+      node_ofstream nw(bdd_2);
       nw << n6 << n5 << n4 << n3 << n2 << n1;
     }
 

@@ -10,7 +10,7 @@ go_bandit([]() {
       //           F
       */
       {
-        node_writer w(F);
+        node_ofstream w(F);
         w << node(false);
       }
 
@@ -19,7 +19,7 @@ go_bandit([]() {
       //           T
       */
       {
-        node_writer w(T);
+        node_ofstream w(T);
         w << node(true);
       }
 
@@ -30,7 +30,7 @@ go_bandit([]() {
       //          F T
       */
       {
-        node_writer w(x42);
+        node_ofstream w(x42);
         w << node(42, node::max_id, node::pointer_type(false), node::pointer_type(true));
       }
 
@@ -106,7 +106,7 @@ go_bandit([]() {
       //        F T
       */
       {
-        node_writer w(x21);
+        node_ofstream w(x21);
         w << node(21, node::max_id, node::pointer_type(false), node::pointer_type(true));
       }
 
@@ -122,7 +122,7 @@ go_bandit([]() {
         const node n2(42, node::max_id, node::pointer_type(false), node::pointer_type(true));
         const node n1(21, node::max_id, node::pointer_type(false), n2.uid());
 
-        node_writer w(x21_and_x42);
+        node_ofstream w(x21_and_x42);
         w << n2 << n1;
       }
 
@@ -139,7 +139,7 @@ go_bandit([]() {
         const node n2(42, node::max_id - 1, node::pointer_type(true), node::pointer_type(false));
         const node n1(21, node::max_id, n2.uid(), n3.uid());
 
-        node_writer w(x21_xor_x42);
+        node_ofstream w(x21_xor_x42);
         w << n3 << n2 << n1;
       }
 
@@ -216,7 +216,7 @@ go_bandit([]() {
         const node n2(1, node::max_id, node::pointer_type(false), n3.uid());
         const node n1(0, node::max_id, n2.uid(), n3.uid());
 
-        node_writer w(dd_4);
+        node_ofstream w(dd_4);
         w << n4 << n3 << n2 << n1;
       }
 
@@ -240,7 +240,7 @@ go_bandit([]() {
         const node n2(1, node::max_id, node::pointer_type(false), node::pointer_type(true));
         const node n1(0, node::max_id, n2.uid(), n3.uid());
 
-        node_writer w(dd_5);
+        node_ofstream w(dd_5);
         w << n4 << n3 << n2 << n1;
       }
 
@@ -264,7 +264,7 @@ go_bandit([]() {
         const node n2(1, node::max_id, node::pointer_type(false), node::pointer_type(true));
         const node n1(0, node::max_id, n2.uid(), n3.uid());
 
-        node_writer w(dd_6);
+        node_ofstream w(dd_6);
         w << n4 << n3 << n2 << n1;
       }
 
@@ -288,7 +288,7 @@ go_bandit([]() {
         const node n2(22, node::max_id, node::pointer_type(true), n3.uid());
         const node n1(21, node::max_id, node::pointer_type(false), n2.uid());
 
-        node_writer w(x21_x22_x42_chain);
+        node_ofstream w(x21_x22_x42_chain);
         w << n3 << n2 << n1;
       }
 
@@ -335,7 +335,7 @@ go_bandit([]() {
             const node n2(1, node::max_id - 1, n4.uid(), n5.uid());
             const node n1(0, node::max_id, n2.uid(), n2.uid());
 
-            node_writer w(in_a);
+            node_ofstream w(in_a);
             w << n7 << n6 << n5 << n4 << n3 << n2 << n1;
           }
 
@@ -360,7 +360,7 @@ go_bandit([]() {
             const node n2(1, node::max_id - 1, n5.uid(), n4.uid());
             const node n1(0, node::max_id, n2.uid(), n3.uid());
 
-            node_writer w(in_b);
+            node_ofstream w(in_b);
             w << n7 << n6 << n5 << n4 << n3 << n2 << n1;
           }
 
@@ -417,7 +417,7 @@ go_bandit([]() {
             const node n2(42, node::max_id, node::pointer_type(false), node::pointer_type(true));
             const node n1(21, node::max_id, node::pointer_type(true), n2.uid());
 
-            node_writer w(b);
+            node_ofstream w(b);
             w << n2 << n1;
           }
 
@@ -442,7 +442,7 @@ go_bandit([]() {
             const node n2(42, node::max_id, node::pointer_type(true), node::pointer_type(false));
             const node n1(21, node::max_id, node::pointer_type(false), n2.uid());
 
-            node_writer w(b);
+            node_ofstream w(b);
             w << n2 << n1;
           }
 
@@ -498,7 +498,7 @@ go_bandit([]() {
         const node n2(1, node::max_id - 1, node::pointer_type(false), n5.uid());
         const node n1(0, node::max_id, n2.uid(), n3.uid());
 
-        node_writer w(dd_8);
+        node_ofstream w(dd_8);
         w << n5 << n4 << n3 << n2 << n1;
       }
 
@@ -523,7 +523,7 @@ go_bandit([]() {
         const node n2(1, node::max_id - 1, node::pointer_type(false), n5.uid());
         const node n1(0, node::max_id, n2.uid(), n3.uid());
 
-        node_writer w(dd_9);
+        node_ofstream w(dd_9);
         w << n5 << n4 << n3 << n2 << n1;
       }
 
@@ -548,7 +548,7 @@ go_bandit([]() {
         const node n2(22, node::max_id, node::pointer_type(false), node::pointer_type(true));
         const node n1(21, node::max_id, node::pointer_type(false), n2.uid());
 
-        node_writer w(x21_and_x22);
+        node_ofstream w(x21_and_x22);
         w << n2 << n1;
       }
 
@@ -613,7 +613,7 @@ go_bandit([]() {
             const node n2(1, node::max_id - 1, n5.uid(), n4.uid());
             const node n1(0, node::max_id, n2.uid(), n3.uid());
 
-            node_writer w(in_a);
+            node_ofstream w(in_a);
             w << n6 << n5 << n4 << n3 << n2 << n1;
           }
 
@@ -640,7 +640,7 @@ go_bandit([]() {
             const node n2(1, node::max_id - 1, n6.uid(), n4.uid());
             const node n1(0, node::max_id, n2.uid(), n3.uid());
 
-            node_writer w(in_b);
+            node_ofstream w(in_b);
             w << n6 << n5 << n4 << n3 << n2 << n1;
           }
 
@@ -659,7 +659,7 @@ go_bandit([]() {
       */
 
       { // Garbage collect writers to free write-lock
-        node_writer w(not_x42);
+        node_ofstream w(not_x42);
         w << node(42, node::max_id, node::pointer_type(true), node::pointer_type(false));
       }
 
@@ -671,7 +671,7 @@ go_bandit([]() {
       */
 
       { // Garbage collect writers to free write-lock
-        node_writer w(trivial_x69);
+        node_ofstream w(trivial_x69);
         w << node(60, node::max_id, node::pointer_type(true), node::pointer_type(true));
       }
 
@@ -683,7 +683,7 @@ go_bandit([]() {
       */
 
       { // Garbage collect writers to free write-lock
-        node_writer w(not_trivial_x69);
+        node_ofstream w(not_trivial_x69);
         w << node(60, node::max_id, node::pointer_type(false), node::pointer_type(false));
       }
 
@@ -703,7 +703,7 @@ go_bandit([]() {
         const node n2(1, node::max_id - 1, node::pointer_type(true), n4.uid());
         const node n1(0, node::max_id, n2.uid(), n3.uid());
 
-        node_writer w(dd_1);
+        node_ofstream w(dd_1);
         w << n4 << n3 << n2 << n1;
       }
 
@@ -725,7 +725,7 @@ go_bandit([]() {
         const node n2(1, node::max_id - 1, node::pointer_type(false), n4.uid());
         const node n1(0, node::max_id, n2.uid(), n3.uid());
 
-        node_writer w(dd_1n);
+        node_ofstream w(dd_1n);
         w << n4 << n3 << n2 << n1;
       }
 
@@ -747,7 +747,7 @@ go_bandit([]() {
         const node n2(1, node::max_id - 1, node::pointer_type(false), n4.uid());
         const node n1(0, node::max_id, n2.uid(), n3.uid());
 
-        node_writer w(dd_1_low_leaf);
+        node_ofstream w(dd_1_low_leaf);
         w << n4 << n3 << n2 << n1;
       }
 
@@ -770,7 +770,7 @@ go_bandit([]() {
         const node n2(1, node::max_id - 1, node::pointer_type(true), n4.uid());
         const node n1(0, node::max_id, n2.uid(), n3.uid());
 
-        node_writer w(dd_1_high_leaf);
+        node_ofstream w(dd_1_high_leaf);
         w << n4 << n3 << n2 << n1;
       }
 
@@ -792,7 +792,7 @@ go_bandit([]() {
         const node n2(1, node::max_id - 1, node::pointer_type(false), n5.uid());
         const node n1(0, node::max_id, n2.uid(), n3.uid());
 
-        node_writer w(dd_2);
+        node_ofstream w(dd_2);
         w << n5 << n4 << n3 << n2 << n1;
       }
 
@@ -816,7 +816,7 @@ go_bandit([]() {
         const node n2(1, node::max_id - 1, node::pointer_type(true), n4.uid());
         const node n1(0, node::max_id, n2.uid(), n3.uid());
 
-        node_writer w(dd_2n);
+        node_ofstream w(dd_2n);
         w << n5 << n4 << n3 << n2 << n1;
       }
 
@@ -839,7 +839,7 @@ go_bandit([]() {
         const node n2(1, node::max_id - 1, n4.uid(), n5.uid());
         const node n1(0, node::max_id, n2.uid(), n3.uid());
 
-        node_writer w(dd_2_low_child);
+        node_ofstream w(dd_2_low_child);
         w << n5 << n4 << n3 << n2 << n1;
       }
 
@@ -862,7 +862,7 @@ go_bandit([]() {
         const node n2(1, node::max_id - 1, n5.uid(), n4.uid());
         const node n1(0, node::max_id, n2.uid(), n3.uid());
 
-        node_writer w(dd_2_low_child2);
+        node_ofstream w(dd_2_low_child2);
         w << n5 << n4 << n3 << n2 << n1;
       }
 
@@ -885,7 +885,7 @@ go_bandit([]() {
         const node n2(1, node::max_id - 1, node::pointer_type(false), n4.uid());
         const node n1(0, node::max_id, n2.uid(), n3.uid());
 
-        node_writer w(dd_2_high_child);
+        node_ofstream w(dd_2_high_child);
         w << n5 << n4 << n3 << n2 << n1;
       }
 
@@ -907,7 +907,7 @@ go_bandit([]() {
         const node n2(1, node::max_id, n3.uid(), node::pointer_type(false));
         const node n1(0, node::max_id, n3.uid(), n2.uid());
 
-        node_writer w(dd_3);
+        node_ofstream w(dd_3);
         w << n4 << n3 << n2 << n1;
       }
 
@@ -931,7 +931,7 @@ go_bandit([]() {
         const node n2(1, node::max_id, n3.uid(), node::pointer_type(true));
         const node n1(0, node::max_id, n3.uid(), n2.uid());
 
-        node_writer w(dd_3n);
+        node_ofstream w(dd_3n);
         w << n4 << n3 << n2 << n1;
       }
 
@@ -955,7 +955,7 @@ go_bandit([]() {
         const node n2(1, node::max_id, n4.uid(), node::pointer_type(false));
         const node n1(0, node::max_id, n3.uid(), n2.uid());
 
-        node_writer w(dd_3_low_child);
+        node_ofstream w(dd_3_low_child);
         w << n4 << n3 << n2 << n1;
       }
 
@@ -979,7 +979,7 @@ go_bandit([]() {
         const node n2(1, node::max_id, node::pointer_type(true), n3.uid());
         const node n1(0, node::max_id, n2.uid(), n3.uid());
 
-        node_writer w(dd_4n);
+        node_ofstream w(dd_4n);
         w << n4 << n3 << n2 << n1;
       }
 
@@ -1003,7 +1003,7 @@ go_bandit([]() {
         const node n2(1, node::max_id, node::pointer_type(false), n4.uid());
         const node n1(0, node::max_id, n2.uid(), n3.uid());
 
-        node_writer w(dd_4_high_child);
+        node_ofstream w(dd_4_high_child);
         w << n4 << n3 << n2 << n1;
       }
 
@@ -1024,7 +1024,7 @@ go_bandit([]() {
         const node n2(1, node::max_id - 1, n4.uid(), node::pointer_type(true));
         const node n1(0, node::max_id, n2.uid(), n3.uid());
 
-        node_writer w(dd_7);
+        node_ofstream w(dd_7);
         w << n5 << n4 << n3 << n2 << n1;
       }
 
@@ -1048,7 +1048,7 @@ go_bandit([]() {
         const node n2(1, node::max_id - 1, n4.uid(), node::pointer_type(false));
         const node n1(0, node::max_id, n3.uid(), n2.uid());
 
-        node_writer w(dd_7n);
+        node_ofstream w(dd_7n);
         w << n5 << n4 << n3 << n2 << n1;
       }
 
@@ -1071,7 +1071,7 @@ go_bandit([]() {
         const node n2(1, node::max_id - 1, n4.uid(), n5.uid());
         const node n1(0, node::max_id, n2.uid(), n3.uid());
 
-        node_writer w(dd_7_high_child);
+        node_ofstream w(dd_7_high_child);
         w << n5 << n4 << n3 << n2 << n1;
       }
 
@@ -1172,7 +1172,7 @@ go_bandit([]() {
             const node n2(2, node::max_id - 1, node::pointer_type(true), n4.uid());
             const node n1(1, node::max_id, n2.uid(), n3.uid());
 
-            node_writer w(dd_1_shift);
+            node_ofstream w(dd_1_shift);
             w << n4 << n3 << n2 << n1;
           }
 
@@ -1389,7 +1389,7 @@ go_bandit([]() {
             const node n2(2, node::max_id - 1, node::pointer_type(false), n4.uid());
             const node n1(1, node::max_id, n2.uid(), n3.uid());
 
-            node_writer w(dd_1n_shift);
+            node_ofstream w(dd_1n_shift);
             w << n4 << n3 << n2 << n1;
           }
 
@@ -1464,7 +1464,7 @@ go_bandit([]() {
             const node n2(1, node::max_id - 1, n5.uid(), n4.uid());
             const node n1(0, node::max_id, n2.uid(), n3.uid());
 
-            node_writer w(dd_2_low_childn);
+            node_ofstream w(dd_2_low_childn);
             w << n5 << n4 << n3 << n2 << n1;
           }
 
@@ -1560,7 +1560,7 @@ go_bandit([]() {
             const node n2(1, node::max_id, node::pointer_type(false), node::pointer_type(true));
             const node n1(0, node::max_id, n2.uid(), node::pointer_type(false));
 
-            node_writer w(a);
+            node_ofstream w(a);
             w << n2 << n1;
           }
 
@@ -1576,7 +1576,7 @@ go_bandit([]() {
             const node n2(1, node::max_id, node::pointer_type(true), node::pointer_type(false));
             const node n1(0, node::max_id, node::pointer_type(true), n2.uid());
 
-            node_writer w(b);
+            node_ofstream w(b);
             w << n2 << n1;
           }
 
@@ -1600,7 +1600,7 @@ go_bandit([]() {
             const node n2(1, node::max_id, n3.uid(), node::pointer_type(false));
             const node n1(0, node::max_id, node::pointer_type(true), n2.uid());
 
-            node_writer w(a);
+            node_ofstream w(a);
             w << n3 << n2 << n1;
           }
 
@@ -1626,7 +1626,7 @@ go_bandit([]() {
             const node n2(1, node::max_id, n3.uid(), node::pointer_type(false));
             const node n1(0, node::max_id, n2.uid(), node::pointer_type(true));
 
-            node_writer w(a);
+            node_ofstream w(a);
             w << n3 << n2 << n1;
           }
 
@@ -1658,7 +1658,7 @@ go_bandit([]() {
             const node n2(1, node::max_id - 1, n4.uid(), node::pointer_type(false));
             const node n1(0, node::max_id, n3.uid(), n2.uid());
 
-            node_writer w(dd_1b);
+            node_ofstream w(dd_1b);
             w << n4 << n3 << n2 << n1;
           }
 
@@ -1697,7 +1697,7 @@ go_bandit([]() {
             const node n2(1, node::max_id - 1, node::pointer_type(false), n4.uid());
             const node n1(0, node::max_id, n2.uid(), n3.uid());
 
-            node_writer w(dd_2b);
+            node_ofstream w(dd_2b);
             w << n5 << n4 << n3 << n2 << n1;
           }
 
@@ -1748,7 +1748,7 @@ go_bandit([]() {
             const node n2(1, node::max_id, n3.uid(), n4.uid());
             const node n1(0, node::max_id, n3.uid(), n2.uid());
 
-            node_writer w(a);
+            node_ofstream w(a);
             w << n6 << n5 << n4 << n3 << n2 << n1;
           }
 
@@ -1769,7 +1769,7 @@ go_bandit([]() {
             const node n2(1, node::max_id, n4.uid(), n3.uid());
             const node n1(0, node::max_id, n3.uid(), n2.uid());
 
-            node_writer w(b);
+            node_ofstream w(b);
             w << n6 << n5 << n4 << n3 << n2 << n1;
           }
 

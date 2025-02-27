@@ -9,7 +9,7 @@
 #include <adiar/internal/data_types/tuple.h>
 #include <adiar/internal/dd.h>
 #include <adiar/internal/io/node_file.h>
-#include <adiar/internal/io/node_writer.h>
+#include <adiar/internal/io/node_ofstream.h>
 #include <adiar/internal/unreachable.h>
 
 namespace adiar::internal
@@ -63,7 +63,7 @@ namespace adiar::internal
       shared_levelized_file<bdd::node_type> nf;
 
       bool has_output = true;
-      node_writer nw(nf);
+      node_ofstream nw(nf);
 
       ifstream<typename from_policy::label_type, true> ls(dom);
 

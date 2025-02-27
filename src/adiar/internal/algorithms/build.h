@@ -9,7 +9,7 @@
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/io/ifstream.h>
-#include <adiar/internal/io/node_writer.h>
+#include <adiar/internal/io/node_ofstream.h>
 #include <adiar/internal/io/shared_file_ptr.h>
 
 namespace adiar::internal
@@ -24,7 +24,7 @@ namespace adiar::internal
     using node_type = typename DdPolicy::node_type;
     shared_levelized_file<node_type> nf;
     {
-      node_writer nw(nf);
+      node_ofstream nw(nf);
       nw.unsafe_push(node_type(value));
       nw.unsafe_set_number_of_terminals(!value, value);
       nw.unsafe_set_canonical(true);
@@ -49,7 +49,7 @@ namespace adiar::internal
 
     shared_levelized_file<node_type> nf;
     {
-      node_writer nw(nf);
+      node_ofstream nw(nf);
       nw.unsafe_push(node(label, pointer_type::max_id, pointer_type(false), pointer_type(true)));
       nw.unsafe_push(level_info(label, 1u));
       nw.unsafe_set_canonical(true);
@@ -72,7 +72,7 @@ namespace adiar::internal
     if (!next) { return build_terminal<Policy>(Policy::init_terminal); }
 
     shared_levelized_file<typename Policy::node_type> nf;
-    node_writer nw(nf);
+    node_ofstream nw(nf);
 
     size_t max_internal_cut = 1;
 

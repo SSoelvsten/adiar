@@ -8,8 +8,8 @@
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/io/file.h>
-#include <adiar/internal/io/file_writer.h>
 #include <adiar/internal/io/ifstream.h>
+#include <adiar/internal/io/ofstream.h>
 
 namespace adiar
 {

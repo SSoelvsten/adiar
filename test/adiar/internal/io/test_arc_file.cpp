@@ -5,12 +5,12 @@
 #include <adiar/internal/io/narc_raccess.h>
 
 go_bandit([]() {
-  describe("adiar/internal/io/arc_file.h , arc_ifstream.h , arc_writer.h", []() {
-    describe("arc_writer", []() {
+  describe("adiar/internal/io/arc_file.h , arc_ifstream.h , arc_ofstream.h", []() {
+    describe("arc_ofstream", []() {
       it("can push level information", []() {
         levelized_file<arc> af;
 
-        arc_writer aw(af);
+        arc_ofstream aw(af);
         aw << (level_info{ 0, 1 }) << (level_info{ 1, 2 });
         aw.detach();
 
@@ -28,7 +28,7 @@ go_bandit([]() {
       it("can push internal arcs", []() {
         levelized_file<arc> af;
 
-        arc_writer aw(af);
+        arc_ofstream aw(af);
         aw.push_internal(arc(arc::pointer_type(0, 0), false, arc::pointer_type(1, 0)));
         aw.push_internal(arc(arc::pointer_type(0, 0), true, arc::pointer_type(1, 0)));
         aw.push_internal(arc(arc::pointer_type(1, 0), false, arc::pointer_type(2, 0)));
@@ -52,7 +52,7 @@ go_bandit([]() {
       it("can push terminal arcs [in-order]", []() {
         levelized_file<arc> af;
 
-        arc_writer aw(af);
+        arc_ofstream aw(af);
         aw.push_terminal(arc(arc::pointer_type(0, 0), false, arc::pointer_type(true)));
         aw.push_terminal(arc(arc::pointer_type(0, 0), true, arc::pointer_type(true)));
         aw.detach();
@@ -86,7 +86,7 @@ go_bandit([]() {
       it("can push terminal arcs [out-of-order]", []() {
         levelized_file<arc> af;
 
-        arc_writer aw(af);
+        arc_ofstream aw(af);
         aw.push_terminal(arc(arc::pointer_type(0, 0), true, arc::pointer_type(true)));
         aw.push_terminal(arc(arc::pointer_type(0, 0), false, arc::pointer_type(false)));
         aw.detach();
@@ -118,7 +118,7 @@ go_bandit([]() {
       it("can push mixed arcs", []() {
         levelized_file<arc> af;
 
-        arc_writer aw(af);
+        arc_ofstream aw(af);
 
         aw << arc(arc::pointer_type(0, 0), false, arc::pointer_type(1, 0))
            << arc(arc::pointer_type(1, 0), true, arc::pointer_type(true))  // <-- in-order
@@ -174,7 +174,7 @@ go_bandit([]() {
       });
     });
 
-    describe("arc_writer + arc_ifstream", []() {
+    describe("arc_ofstream + arc_ifstream", []() {
       levelized_file<arc> af;
       /*
                      _0_     ---- x0
@@ -186,7 +186,7 @@ go_bandit([]() {
                   F T  T
        */
       {
-        arc_writer aw(af);
+        arc_ofstream aw(af);
         aw << arc(arc::pointer_type(0, 0), false, arc::pointer_type(1, 0));
         aw << arc(arc::pointer_type(1, 0), true, arc::pointer_type(true));  // <-- in-order
         aw << arc(arc::pointer_type(1, 1), false, arc::pointer_type(true)); // <-- in-order
@@ -366,12 +366,12 @@ go_bandit([]() {
       */
     });
 
-    describe("arc_writer + narc_ifstream", []() {
+    describe("arc_ofstream + narc_ifstream", []() {
       it("marks file as de-transposed on attach", []() {
         levelized_file<arc> af;
 
         {
-          arc_writer aw(af);
+          arc_ofstream aw(af);
           aw.push_terminal(arc(arc::pointer_type(0, 0), false, arc::pointer_type(false)));
           aw.push_terminal(arc(arc::pointer_type(0, 0), true, arc::pointer_type(true)));
 
@@ -391,7 +391,7 @@ go_bandit([]() {
       //      F T
       */
       {
-        arc_writer aw(x0_ordered);
+        arc_ofstream aw(x0_ordered);
         aw.push_terminal(arc(arc::pointer_type(0, 0), false, arc::pointer_type(false)));
         aw.push_terminal(arc(arc::pointer_type(0, 0), true, arc::pointer_type(true)));
 
@@ -406,7 +406,7 @@ go_bandit([]() {
       //      F T        <-- arcs swapped
       */
       {
-        arc_writer aw(x0_unordered);
+        arc_ofstream aw(x0_unordered);
         aw.push_terminal(arc(arc::pointer_type(0, 0), true, arc::pointer_type(true)));
         aw.push_terminal(arc(arc::pointer_type(0, 0), false, arc::pointer_type(false)));
 
@@ -505,7 +505,7 @@ go_bandit([]() {
       */
 
       {
-        arc_writer aw(large_untransposed);
+        arc_ofstream aw(large_untransposed);
 
         aw.push(level_info(0, 1));
 
@@ -640,7 +640,7 @@ go_bandit([]() {
         */
 
         {
-          arc_writer aw(af);
+          arc_ofstream aw(af);
 
           aw.push(level_info(0, 1));
 
@@ -694,7 +694,7 @@ go_bandit([]() {
       */
 
       {
-        arc_writer aw(large_untransposed2);
+        arc_ofstream aw(large_untransposed2);
 
         aw.push(level_info(0, 1));
 
@@ -783,7 +783,7 @@ go_bandit([]() {
       */
     });
 
-    describe("arc_writer + narc_raccess", []() {
+    describe("arc_ofstream + narc_raccess", []() {
       levelized_file<arc> afA;
       /*
       //            1          ---- afA
@@ -791,7 +791,7 @@ go_bandit([]() {
       //           F T
       */
       {
-        arc_writer aw(afA);
+        arc_ofstream aw(afA);
         aw.push_terminal(arc(arc::pointer_type(1, 0), false, arc::pointer_type(false)));
         aw.push_terminal(arc(arc::pointer_type(1, 0), true, arc::pointer_type(true)));
 
@@ -816,7 +816,7 @@ go_bandit([]() {
       // The BDD will be constructed semi-transposed, i.e. the edge from 1 ---> 5 is "late"
       */
       {
-        arc_writer aw(afB);
+        arc_ofstream aw(afB);
 
         aw.push_internal(arc(arc::pointer_type(0, 0), false, arc::pointer_type(1, 0)));
         aw.push_internal(arc(arc::pointer_type(1, 0), false, arc::pointer_type(2, 0)));

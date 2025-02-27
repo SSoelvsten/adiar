@@ -11,12 +11,12 @@
 #include <adiar/internal/data_types/tuple.h>
 #include <adiar/internal/dd_func.h>
 #include <adiar/internal/io/arc_file.h>
-#include <adiar/internal/io/arc_writer.h>
-#include <adiar/internal/io/levelized_file_writer.h>
+#include <adiar/internal/io/arc_ofstream.h>
 #include <adiar/internal/io/levelized_ifstream.h>
+#include <adiar/internal/io/levelized_ofstream.h>
 #include <adiar/internal/io/node_file.h>
 #include <adiar/internal/io/node_ifstream.h>
-#include <adiar/internal/io/node_writer.h>
+#include <adiar/internal/io/node_ofstream.h>
 #include <adiar/internal/memory.h>
 #include <adiar/internal/util.h>
 
@@ -65,7 +65,7 @@ namespace adiar
     internal::node::pointer_type root_else = internal::node::pointer_type::nil();
 
     internal::shared_levelized_file<bdd::node_type> out_nodes;
-    internal::node_writer nw(out_nodes);
+    internal::node_ofstream nw(out_nodes);
 
     // zip 'then' and 'else' cases
     internal::node_ifstream<true> in_nodes_then(bdd_then);
@@ -149,7 +149,7 @@ namespace adiar
   template <typename PriorityQueue_1>
   inline void
   __ite_resolve_request(PriorityQueue_1& ite_pq_1,
-                        internal::arc_writer& aw,
+                        internal::arc_ofstream& aw,
                         const internal::node::pointer_type source,
                         internal::node::pointer_type r_if,
                         internal::node::pointer_type r_then,
@@ -203,7 +203,7 @@ namespace adiar
 
     // Set up output
     internal::shared_levelized_file<internal::arc> out_arcs;
-    internal::arc_writer aw(out_arcs);
+    internal::arc_ofstream aw(out_arcs);
 
     out_arcs->max_1level_cut = 0;
 
@@ -540,7 +540,7 @@ namespace adiar
       // Input streams
       - 3 * internal::node_ifstream<>::memory_usage()
       // Output stream
-      - internal::arc_writer::memory_usage();
+      - internal::arc_ofstream::memory_usage();
 
     constexpr size_t data_structures_in_pq_1 =
       ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, internal::memory_mode::Internal>::data_structures;

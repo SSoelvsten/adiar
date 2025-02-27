@@ -5,7 +5,7 @@ go_bandit([]() {
     shared_levelized_file<bdd::node_type> terminal_T_nf;
 
     { // Garbage collect writer to free write-lock
-      node_writer nw(terminal_T_nf);
+      node_ofstream nw(terminal_T_nf);
       nw << node(true);
     }
 
@@ -14,7 +14,7 @@ go_bandit([]() {
     shared_levelized_file<bdd::node_type> terminal_F_nf;
 
     { // Garbage collect writer to free write-lock
-      node_writer nw(terminal_F_nf);
+      node_ofstream nw(terminal_F_nf);
       nw << node(false);
     }
 
@@ -35,7 +35,7 @@ go_bandit([]() {
     ptr_uint64 terminal_F_ptr = ptr_uint64(false);
 
     { // Garbage collect writer to free write-lock
-      node_writer nw(bdd_1_nf);
+      node_ofstream nw(bdd_1_nf);
 
       nw << node(2, node::max_id, terminal_F_ptr, terminal_T_ptr)
          << node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), terminal_T_ptr)
@@ -60,7 +60,7 @@ go_bandit([]() {
     */
 
     { // Garbage collect writer to free write-lock
-      node_writer nw(bdd_2_nf);
+      node_ofstream nw(bdd_2_nf);
 
       nw << node(2, node::max_id, terminal_F_ptr, terminal_T_ptr)
          << node(1, node::max_id, ptr_uint64(2, ptr_uint64::max_id), terminal_T_ptr)

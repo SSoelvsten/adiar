@@ -17,7 +17,7 @@ go_bandit([]() {
       shared_levelized_file<bdd::node_type> reduced_bdd;
 
       { // Garbage collect writer early
-        node_writer rw(reduced_bdd);
+        node_ofstream rw(reduced_bdd);
 
         rw << node(42, 1, ptr_uint64(false), ptr_uint64(true))
            << node(42, 0, ptr_uint64(true), ptr_uint64(false))
@@ -34,7 +34,7 @@ go_bandit([]() {
       shared_levelized_file<bdd::node_type> reduced_bdd;
 
       { // Garbage collect writer early
-        node_writer rw(reduced_bdd);
+        node_ofstream rw(reduced_bdd);
 
         rw << node(1, 1, ptr_uint64(false), ptr_uint64(true))
            << node(1, 0, ptr_uint64(true), ptr_uint64(false))
@@ -73,7 +73,7 @@ go_bandit([]() {
       shared_levelized_file<zdd::node_type> reduced_zdd;
 
       { // Garbage collect writer early
-        node_writer rw(reduced_zdd);
+        node_ofstream rw(reduced_zdd);
 
         rw << node(42, 0, ptr_uint64(false), ptr_uint64(true))
            << node(1, 2, ptr_uint64(42, 0), ptr_uint64(42, 0))
@@ -104,7 +104,7 @@ go_bandit([]() {
       shared_levelized_file<arc> unreduced_bdd;
 
       { // Garbage collect writer early
-        arc_writer uw(unreduced_bdd);
+        arc_ofstream uw(unreduced_bdd);
 
         uw.push_terminal({ flag(ptr_uint64(2, 0)), ptr_uint64(true) });
         uw.push_terminal({ ptr_uint64(2, 0), ptr_uint64(true) });

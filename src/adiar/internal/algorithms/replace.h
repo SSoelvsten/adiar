@@ -14,7 +14,7 @@
 #include <adiar/internal/io/levelized_ifstream.h>
 #include <adiar/internal/io/node_file.h>
 #include <adiar/internal/io/node_ifstream.h>
-#include <adiar/internal/io/node_writer.h>
+#include <adiar/internal/io/node_ofstream.h>
 
 namespace adiar::internal
 {
@@ -150,12 +150,12 @@ namespace adiar::internal
 
     // Set up outputs
     shared_levelized_file<typename Policy::node_type> out_file;
-    node_writer out_writer(out_file);
+    node_ofstream out(out_file);
 
-    out_writer.unsafe_set_sorted(dd->sorted);
-    out_writer.unsafe_set_indexable(dd->indexable);
+    out.unsafe_set_sorted(dd->sorted);
+    out.unsafe_set_indexable(dd->indexable);
 
-    out_writer.unsafe_set_1level_cut(
+    out.unsafe_set_1level_cut(
       { dd->max_1level_cut[cut::Internal],
         dd->max_1level_cut[dd.is_negated() ? cut::Internal_True : cut::Internal_False],
         dd->max_1level_cut[dd.is_negated() ? cut::Internal_False : cut::Internal_True],
@@ -163,13 +163,13 @@ namespace adiar::internal
 
     { // Copy over nodes (in "reverse" to still follow the same order on disk)
       node_ifstream<true> in_nodes(dd);
-      while (in_nodes.can_pull()) { out_writer.unsafe_push(__replace(in_nodes.pull(), m)); }
+      while (in_nodes.can_pull()) { out.unsafe_push(__replace(in_nodes.pull(), m)); }
     }
     { // Copy over levels (also in "reverse")
       level_info_ifstream<true> in_levels(dd);
       while (in_levels.can_pull()) {
         const level_info li = in_levels.pull();
-        out_writer.unsafe_push(level_info(m(li.level()), li.width()));
+        out.unsafe_push(level_info(m(li.level()), li.width()));
       }
     }
 

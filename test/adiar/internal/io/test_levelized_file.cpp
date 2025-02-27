@@ -4,7 +4,7 @@
 
 go_bandit([]() {
   describe(
-    "adiar/internal/io/levelized_file.h , levelized_ifstream.h , levelized_file_writer.h", []() {
+    "adiar/internal/io/levelized_file.h , levelized_ifstream.h , levelized_ofstream.h", []() {
       // The default folder for temporary files is '/tmp/' on Ubuntu and '/var/tmp/'
       // on Fedora. Both of these are to the OS not on the same drive and so you get
       // a 'cross-device link' error when using std::filesystem::rename(...) to move
@@ -548,22 +548,22 @@ go_bandit([]() {
         });
       });
 
-      describe("levelized_file() + levelized_file_writer", [&tmp_path, &curr_path]() {
+      describe("levelized_file() + levelized_ofstream", [&tmp_path, &curr_path]() {
         it("it can attach to and detach from an empty file [con-/destructor]", []() {
           levelized_file<int> lf;
-          levelized_file_writer<int> lfw(lf);
+          levelized_ofstream<int> lfw(lf);
         });
 
         it("it can attach to and detach from an empty file [member functions]", []() {
           levelized_file<int> lf;
-          levelized_file_writer<int> lfw;
+          levelized_ofstream<int> lfw;
           lfw.attach(lf);
           lfw.detach();
         });
 
         it("it remembers it was attached", []() {
           levelized_file<int> lf;
-          levelized_file_writer<int> lfw(lf);
+          levelized_ofstream<int> lfw(lf);
 
           AssertThat(lfw.attached(), Is().True());
           lfw.detach();
@@ -574,7 +574,7 @@ go_bandit([]() {
           levelized_file<int> lf;
           AssertThat(lf.exists(), Is().False());
 
-          levelized_file_writer<int> lfw(lf);
+          levelized_ofstream<int> lfw(lf);
           lfw.detach();
 
           AssertThat(lf.exists(), Is().True());
@@ -583,7 +583,7 @@ go_bandit([]() {
         it("reports whether elements were pushed [int<0>]", []() {
           levelized_file<int> lf;
 
-          levelized_file_writer<int> lfw(lf);
+          levelized_ofstream<int> lfw(lf);
 
           AssertThat(lfw.has_pushed(), Is().False());
           AssertThat(lfw.empty(), Is().True());
@@ -597,7 +597,7 @@ go_bandit([]() {
         it("reports whether elements were pushed [int<1>]", []() {
           levelized_file<int> lf;
 
-          levelized_file_writer<int> lfw(lf);
+          levelized_ofstream<int> lfw(lf);
 
           AssertThat(lfw.has_pushed(), Is().False());
           AssertThat(lfw.empty(), Is().True());
@@ -611,7 +611,7 @@ go_bandit([]() {
         it("reports whether elements were pushed [level_info]", []() {
           levelized_file<int> lf;
 
-          levelized_file_writer<int> lfw(lf);
+          levelized_ofstream<int> lfw(lf);
 
           AssertThat(lfw.has_pushed(), Is().False());
           AssertThat(lfw.empty(), Is().True());
@@ -624,7 +624,7 @@ go_bandit([]() {
 
         it("changes size when writing content to '.file_0'", []() {
           levelized_file<int> lf;
-          levelized_file_writer<int> lfw(lf);
+          levelized_ofstream<int> lfw(lf);
 
           AssertThat(lfw.size(), Is().EqualTo(0u));
           AssertThat(lfw.size(0), Is().EqualTo(0u));
@@ -655,7 +655,7 @@ go_bandit([]() {
 
         it("changes size when writing content to '.file_1'", []() {
           levelized_file<int> lf;
-          levelized_file_writer<int> lfw(lf);
+          levelized_ofstream<int> lfw(lf);
 
           AssertThat(lfw.size(), Is().EqualTo(0u));
           AssertThat(lfw.size(0), Is().EqualTo(0u));
@@ -683,7 +683,7 @@ go_bandit([]() {
 
         it("changes size when writing content to both '.file_0' and '.file_1'", []() {
           levelized_file<int> lf;
-          levelized_file_writer<int> lfw(lf);
+          levelized_ofstream<int> lfw(lf);
 
           AssertThat(lfw.size(), Is().EqualTo(0u));
           AssertThat(lfw.size(0), Is().EqualTo(0u));
@@ -735,7 +735,7 @@ go_bandit([]() {
 
         it("changes size when writing content to '.levels'", []() {
           levelized_file<int> lf;
-          levelized_file_writer<int> lfw(lf);
+          levelized_ofstream<int> lfw(lf);
 
           AssertThat(lfw.size(), Is().EqualTo(0u));
           AssertThat(lfw.levels(), Is().EqualTo(0u));
@@ -773,7 +773,7 @@ go_bandit([]() {
             std::filesystem::remove(path_prefix + ".levels");
 
           levelized_file<int> lf;
-          levelized_file_writer<int> lfw(lf);
+          levelized_ofstream<int> lfw(lf);
           lfw.push<0>(42);
           lfw.push<1>(2);
           lfw.push<0>(21);
@@ -817,7 +817,7 @@ go_bandit([]() {
             std::filesystem::remove(path_prefix + ".levels");
 
           levelized_file<int> lf;
-          levelized_file_writer<int> lfw(lf);
+          levelized_ofstream<int> lfw(lf);
           lfw.push<1>(42);
           lfw.push<0>(2);
           lfw.push<0>(21);
@@ -849,12 +849,12 @@ go_bandit([]() {
         });
       });
 
-      describe("levelized_file() + levelized_ifstream + levelized_file_writer",
+      describe("levelized_file() + levelized_ifstream + levelized_ofstream",
                [&tmp_path /*, &curr_path*/]() {
                  it("can read written content", []() {
                    levelized_file<int> lf;
                    {
-                     levelized_file_writer<int> lfw(lf);
+                     levelized_ofstream<int> lfw(lf);
                      lfw.push<0>(23);
                      lfw.push<0>(8);
                      lfw.push<1>(16);
@@ -874,7 +874,7 @@ go_bandit([]() {
                  it("can read written content in reverse", []() {
                    levelized_file<int> lf;
                    {
-                     levelized_file_writer<int> lfw(lf);
+                     levelized_ofstream<int> lfw(lf);
                      lfw.push<0>(18);
                      lfw.push<1>(24);
                      lfw.push<0>(32);
@@ -906,7 +906,7 @@ go_bandit([]() {
 
                    levelized_file<int> lf;
                    {
-                     levelized_file_writer<int> lfw(lf);
+                     levelized_ofstream<int> lfw(lf);
                      lfw.push<0>(23);
                      lfw.push<0>(32);
                      lfw.push<1>(24);
@@ -933,7 +933,7 @@ go_bandit([]() {
 
                    levelized_file<int> lf;
                    {
-                     levelized_file_writer<int> lfw(lf);
+                     levelized_ofstream<int> lfw(lf);
                      lfw.push<0>(0);
                      lfw.push<1>(1);
                      lfw.push<0>(2);
@@ -958,9 +958,9 @@ go_bandit([]() {
                  });
                });
 
-      describe("levelized_file() + levelized_file_writer + level_info_ifstream", []() {
+      describe("levelized_file() + levelized_ofstream + level_info_ifstream", []() {
         levelized_file<int> lf;
-        levelized_file_writer lfw(lf);
+        levelized_ofstream lfw(lf);
 
         lfw.push<0>(-1);
         lfw.push<0>(1);
@@ -1284,7 +1284,7 @@ go_bandit([]() {
         });
 
         // Customly construct a non-empty levelized file without using the
-        // 'levelized_file_writer'.
+        // 'levelized_ofstream'.
         const std::string path_prefix = tmp_path + "existing-prefix.adiar";
 
         // Clean up after prior tests
@@ -1297,7 +1297,7 @@ go_bandit([]() {
 
         {
           levelized_file<int> lf;
-          levelized_file_writer<int> lfw(lf);
+          levelized_ofstream<int> lfw(lf);
 
           lfw.push<0>(0);
           lfw.push<1>(42);
@@ -1338,7 +1338,7 @@ go_bandit([]() {
 
         it("cannot reattach a writer to a persisted file", [&path_prefix]() {
           levelized_file<int> lf(path_prefix);
-          levelized_file_writer<int> lfw;
+          levelized_ofstream<int> lfw;
           AssertThrows(runtime_error, lfw.attach(lf));
         });
 
@@ -1408,7 +1408,7 @@ go_bandit([]() {
         it("can sort a temporary non-empty file", []() {
           levelized_file<int> lf;
 
-          levelized_file_writer<int> lfw(lf);
+          levelized_ofstream<int> lfw(lf);
           lfw.push<0>(-1);
           lfw.push<1>(0);
           lfw.push<0>(2);
@@ -1538,7 +1538,7 @@ go_bandit([]() {
 
           { // Construct a persisted non-empty levelized file by hand
             levelized_file<int> lf;
-            levelized_file_writer lfw(lf);
+            levelized_ofstream lfw(lf);
 
             lfw.push<0>(-1);
             lfw.push<0>(8);
@@ -1676,7 +1676,7 @@ go_bandit([]() {
           levelized_file<int> lf1;
           // Set file and stats content
           {
-            levelized_file_writer<int> lfw(lf1);
+            levelized_ofstream<int> lfw(lf1);
 
             lfw.push<0>(21);
             lfw.push<1>(42);
@@ -1762,7 +1762,7 @@ go_bandit([]() {
 
           // Set stats content and state
           {
-            levelized_file_writer<int> lfw(lf1);
+            levelized_ofstream<int> lfw(lf1);
 
             lfw.push<0>(21);
             lfw.push<1>(42);

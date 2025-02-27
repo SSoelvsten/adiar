@@ -2,7 +2,7 @@
 #include <filesystem>
 
 go_bandit([]() {
-  describe("adiar/internal/io/file.h , ifstream.h , file_writer.h", []() {
+  describe("adiar/internal/io/file.h , ifstream.h , ofstream.h", []() {
     // The default folder for temporary files is '/tmp/' on Ubuntu and '/var/tmp/'
     // on Fedora. Both of these are to the OS not on the same drive and so you get
     // a 'cross-device link' error when using std::filesystem::rename(...) to move
@@ -258,21 +258,21 @@ go_bandit([]() {
       });
     });
 
-    describe("file() + file_writer", [&tmp_path, &curr_path]() {
+    describe("file() + ofstream", [&tmp_path, &curr_path]() {
       it("can attach to and detach from an empty file [con-/destructor]", []() {
         file<int> f;
-        file_writer<int> fw(f);
+        ofstream<int> fw(f);
       });
 
       it("can attach to and detach from an empty file [member functions]", []() {
         file<int> f;
-        file_writer<int> fw;
+        ofstream<int> fw;
         fw.detach();
       });
 
       it("remembers it was attached", []() {
         file<int> f;
-        file_writer<int> fw(f);
+        ofstream<int> fw(f);
         AssertThat(fw.attached(), Is().True());
         fw.detach();
         AssertThat(fw.attached(), Is().False());
@@ -282,7 +282,7 @@ go_bandit([]() {
         file<int> f;
         AssertThat(f.exists(), Is().False());
 
-        file_writer<int> fw(f);
+        ofstream<int> fw(f);
         fw.detach();
 
         AssertThat(f.exists(), Is().True());
@@ -290,7 +290,7 @@ go_bandit([]() {
 
       it("reports whether elements were pushed", []() {
         file<int> f;
-        file_writer<int> fw(f);
+        ofstream<int> fw(f);
 
         AssertThat(fw.has_pushed(), Is().False());
         AssertThat(fw.empty(), Is().True());
@@ -308,7 +308,7 @@ go_bandit([]() {
       it("changes size when writing content to file [1]", []() {
         file<int> f;
 
-        file_writer<int> fw(f);
+        ofstream<int> fw(f);
 
         AssertThat(fw.size(), Is().EqualTo(0u));
         fw << 1 << 2;
@@ -323,7 +323,7 @@ go_bandit([]() {
       it("changes size when writing content to file [2]", []() {
         file<int> f;
 
-        file_writer<int> fw(f);
+        ofstream<int> fw(f);
         AssertThat(fw.size(), Is().EqualTo(0u));
         fw << 42;
         AssertThat(fw.size(), Is().EqualTo(1u));
@@ -343,7 +343,7 @@ go_bandit([]() {
 
         file<int> f;
 
-        file_writer<int> fw(f);
+        ofstream<int> fw(f);
         fw << 42 << 21;
         fw.detach();
 
@@ -368,7 +368,7 @@ go_bandit([]() {
 
         file<int> f;
 
-        file_writer<int> fw(f);
+        ofstream<int> fw(f);
         fw << 42 << 21;
         fw.detach();
 
@@ -385,11 +385,11 @@ go_bandit([]() {
       });
     });
 
-    describe("file() + ifstream + file_writer", [&tmp_path, &curr_path]() {
+    describe("file() + ifstream + ofstream", [&tmp_path, &curr_path]() {
       it("can read written content [1]", []() {
         file<int> f;
 
-        file_writer<int> fw(f);
+        ofstream<int> fw(f);
         fw << 1 << 2 << 3;
         fw.detach();
         AssertThat(fw.attached(), Is().False());
@@ -408,7 +408,7 @@ go_bandit([]() {
       it("can read written content [2]", []() {
         file<int> f;
 
-        file_writer<int> fw(f);
+        ofstream<int> fw(f);
         fw << 42 << 21;
         fw.detach();
         AssertThat(fw.attached(), Is().False());
@@ -425,7 +425,7 @@ go_bandit([]() {
       it("can read written content in reverse [1]", []() {
         file<int> f;
 
-        file_writer<int> fw(f);
+        ofstream<int> fw(f);
         fw << 1 << 2 << 3;
         fw.detach();
         AssertThat(fw.attached(), Is().False());
@@ -444,7 +444,7 @@ go_bandit([]() {
       it("can read written content in reverse [2]", []() {
         file<int> f;
 
-        file_writer<int> fw(f);
+        ofstream<int> fw(f);
         fw << 42 << 21;
         fw.detach();
         AssertThat(fw.attached(), Is().False());
@@ -461,7 +461,7 @@ go_bandit([]() {
       it("can seek existing elements [forward]", []() {
         file<int> f;
 
-        file_writer<int> fw(f);
+        ofstream<int> fw(f);
         fw << 1 << 2 << 3 << 4 << 5 << 6;
         fw.detach();
         AssertThat(fw.attached(), Is().False());
@@ -481,7 +481,7 @@ go_bandit([]() {
       it("can seek existing elements [reverse]", []() {
         file<int> f;
 
-        file_writer<int> fw(f);
+        ofstream<int> fw(f);
         fw << 6 << 5 << 4 << 3 << 2 << 1;
         fw.detach();
         AssertThat(fw.attached(), Is().False());
@@ -501,7 +501,7 @@ go_bandit([]() {
       it("can seek non-existing element [forward]", []() {
         file<int> f;
 
-        file_writer<int> fw(f);
+        ofstream<int> fw(f);
         fw << 1 << 2 << 3 << 5 << 6;
         fw.detach();
         AssertThat(fw.attached(), Is().False());
@@ -517,7 +517,7 @@ go_bandit([]() {
       it("can seek non-existing element [reverse]", []() {
         file<int> f;
 
-        file_writer<int> fw(f);
+        ofstream<int> fw(f);
         fw << 6 << 5 << 3 << 2 << 1;
         fw.detach();
         AssertThat(fw.attached(), Is().False());
@@ -533,7 +533,7 @@ go_bandit([]() {
       it("can seek past end [forward]", []() {
         file<int> f;
 
-        file_writer<int> fw(f);
+        ofstream<int> fw(f);
         fw << 1 << 2 << 3 << 5 << 6;
         fw.detach();
         AssertThat(fw.attached(), Is().False());
@@ -551,7 +551,7 @@ go_bandit([]() {
       it("can seek past end [reverse]", []() {
         file<int> f;
 
-        file_writer<int> fw(f);
+        ofstream<int> fw(f);
         fw << 6 << 5 << 3 << 2 << 1;
         fw.detach();
         AssertThat(fw.attached(), Is().False());
@@ -569,7 +569,7 @@ go_bandit([]() {
       it("can sort written content", []() {
         file<int> f;
 
-        file_writer<int> fw(f);
+        ofstream<int> fw(f);
         fw << 42 << 2 << 32 << 21;
         fw.sort<std::less<>>();
         fw.detach();
@@ -597,7 +597,7 @@ go_bandit([]() {
 
         file<int> f;
 
-        file_writer<int> fw(f);
+        ofstream<int> fw(f);
         fw << 12 << 9 << 1;
         fw.detach();
 
@@ -624,7 +624,7 @@ go_bandit([]() {
 
         file<int> f;
 
-        file_writer<int> fw(f);
+        ofstream<int> fw(f);
         fw << 12 << 9 << 1;
         fw.detach();
 
@@ -651,7 +651,7 @@ go_bandit([]() {
 
         file<int> f;
 
-        file_writer<int> fw(f);
+        ofstream<int> fw(f);
         fw << 8 << 9 << 4 << 2;
         fw.detach();
 
@@ -680,7 +680,7 @@ go_bandit([]() {
 
         file<int> f;
 
-        file_writer<int> fw(f);
+        ofstream<int> fw(f);
         fw << 8 << 9 << 4 << 2;
         fw.detach();
 
@@ -759,7 +759,7 @@ go_bandit([]() {
       {
         file<int> f;
 
-        file_writer<int> fw(f);
+        ofstream<int> fw(f);
         fw << 0 << 1 << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9;
         fw.detach();
 
@@ -832,7 +832,7 @@ go_bandit([]() {
 
       it("cannot reattach a writer to a persisted file", [&path]() {
         file<int> f(path);
-        file_writer<int> fw;
+        ofstream<int> fw;
         AssertThrows(runtime_error, fw.attach(f));
       });
 
@@ -869,7 +869,7 @@ go_bandit([]() {
       it("can sort non-empty file [1]", []() {
         file<int> f;
 
-        file_writer<int> fw(f);
+        ofstream<int> fw(f);
         fw << 8 << 9 << 4 << 2;
         fw.detach();
 
@@ -891,7 +891,7 @@ go_bandit([]() {
       it("can sort non-empty file [2]", []() {
         file<int> f;
 
-        file_writer<int> fw(f);
+        ofstream<int> fw(f);
         fw << 42 << -1 << 8 << 21 << 8 << 3;
         fw.detach();
 
@@ -938,7 +938,7 @@ go_bandit([]() {
           file<int> f;
           f.touch();
 
-          file_writer<int> fw(f);
+          ofstream<int> fw(f);
           fw << -1 << 8 << 3;
           fw.detach();
 
@@ -999,7 +999,7 @@ go_bandit([]() {
 
       it("can copy over an existing file [non-empty, 1]", []() {
         file<int> f1;
-        file_writer<int> fw(f1);
+        ofstream<int> fw(f1);
 
         fw << 21 << 42 << 21;
         fw.detach();
@@ -1025,7 +1025,7 @@ go_bandit([]() {
 
       it("can copy over an existing file [non-empty, 2]", []() {
         file<int> f1;
-        file_writer<int> fw(f1);
+        ofstream<int> fw(f1);
 
         fw << 0 << 1 << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9;
         fw.detach();
@@ -1075,7 +1075,7 @@ go_bandit([]() {
 
       it("is temporary if original file is temporary [non-empty]", []() {
         file<int> f1;
-        file_writer<int> fw(f1);
+        ofstream<int> fw(f1);
         fw << 0 << 1 << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9;
         fw.detach();
         AssertThat(f1.exists(), Is().True());
@@ -1109,7 +1109,7 @@ go_bandit([]() {
         std::string path;
         {
           file<int> f1;
-          file_writer<int> fw(f1);
+          ofstream<int> fw(f1);
           fw << 0 << 1 << 2 << 3 << 4;
           fw.detach();
           f1.make_persistent();

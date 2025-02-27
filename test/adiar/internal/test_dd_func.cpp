@@ -10,25 +10,25 @@ go_bandit([]() {
 
     shared_levelized_file<node> terminal_F;
     {
-      node_writer writer(terminal_F);
+      node_ofstream writer(terminal_F);
       writer << node(false);
     }
 
     shared_levelized_file<node> terminal_T;
     {
-      node_writer writer(terminal_T);
+      node_ofstream writer(terminal_T);
       writer << node(true);
     }
 
     shared_levelized_file<node> x0;
     {
-      node_writer writer(x0);
+      node_ofstream writer(x0);
       writer << node(0, node::max_id, false_ptr, true_ptr);
     }
 
     shared_levelized_file<node> x42;
     {
-      node_writer writer(x42);
+      node_ofstream writer(x42);
       writer << node(42, node::max_id, false_ptr, true_ptr);
     }
 
@@ -37,7 +37,7 @@ go_bandit([]() {
       node n3 = node(4, node::max_id, true_ptr, false_ptr);
       node n2 = node(3, node::max_id, n3.uid(), false_ptr);
       node n1 = node(1, node::max_id, n3.uid(), n2.uid());
-      node_writer writer(bdd_file);
+      node_ofstream writer(bdd_file);
       writer << n3 << n2 << n1;
     }
 
@@ -47,7 +47,7 @@ go_bandit([]() {
       node n3 = node(2, node::max_id - 1, false_ptr, true_ptr);
       node n2 = node(1, node::max_id, n4.uid(), n4.uid());
       node n1 = node(0, node::max_id, n3.uid(), n4.uid());
-      node_writer writer(zdd_file);
+      node_ofstream writer(zdd_file);
       writer << n4 << n3 << n2 << n1;
     }
 

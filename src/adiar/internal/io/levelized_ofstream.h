@@ -1,12 +1,12 @@
-#ifndef ADIAR_INTERNAL_IO_LEVELIZED_FILE_WRITER_H
-#define ADIAR_INTERNAL_IO_LEVELIZED_FILE_WRITER_H
+#ifndef ADIAR_INTERNAL_IO_LEVELIZED_OFSTREAM_H
+#define ADIAR_INTERNAL_IO_LEVELIZED_OFSTREAM_H
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/io/arc_file.h>
 #include <adiar/internal/io/file.h>
-#include <adiar/internal/io/file_writer.h>
 #include <adiar/internal/io/levelized_file.h>
 #include <adiar/internal/io/node_file.h>
+#include <adiar/internal/io/ofstream.h>
 #include <adiar/internal/memory.h>
 
 namespace adiar::internal
@@ -14,10 +14,10 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Writer to a set of file(s) with 'meta' information.
   ///
-  /// \see node_writer arc_writer
+  /// \see node_ofstream arc_ofstream
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename T>
-  class levelized_file_writer
+  class levelized_ofstream
   {
   public:
     using value_type = T;
@@ -25,8 +25,8 @@ namespace adiar::internal
     static size_t
     memory_usage()
     {
-      return file_traits<value_type>::files * file_writer<value_type>::memory_usage()
-        + 1u * file_writer<level_info>::memory_usage();
+      return file_traits<value_type>::files * ofstream<value_type>::memory_usage()
+        + 1u * ofstream<level_info>::memory_usage();
     }
 
   protected:
@@ -38,20 +38,20 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Writers for the file with level information.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    file_writer<level_info> _level_writer;
+    ofstream<level_info> _level_ofstream;
 
-    static constexpr size_t elem_writers = file_traits<value_type>::files;
+    static constexpr size_t elem_ofstreams = file_traits<value_type>::files;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Writers for each of the files with 'value_type'.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    file_writer<value_type> _elem_writers[elem_writers];
+    ofstream<value_type> _elem_ofstreams[elem_ofstreams];
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct unattached to any levelized file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    levelized_file_writer()
+    levelized_ofstream()
     {}
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -59,7 +59,7 @@ namespace adiar::internal
     ///
     /// \pre No file stream or other writer is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    levelized_file_writer(levelized_file<value_type>& f)
+    levelized_ofstream(levelized_file<value_type>& f)
     {
       attach(f);
     }
@@ -69,7 +69,7 @@ namespace adiar::internal
     ///
     /// \pre No file stream or other writer is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    levelized_file_writer(adiar::shared_ptr<levelized_file<value_type>> f)
+    levelized_ofstream(adiar::shared_ptr<levelized_file<value_type>> f)
     {
       attach(f);
     }
@@ -77,8 +77,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Detaches and cleans up when destructed.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    ~levelized_file_writer()
-    {} // <-- detach within `~file_writer<...>()`
+    ~levelized_ofstream()
+    {} // <-- detach within `~ofstream<...>()`
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -97,9 +97,9 @@ namespace adiar::internal
       // 'std::shared_ptr' directly.
       _file_ptr = std::shared_ptr<levelized_file<value_type>>(&f, [](void*) {});
 
-      _level_writer.attach(f._level_info_file, nullptr);
+      _level_ofstream.attach(f._level_info_file, nullptr);
       for (size_t s_idx = 0; s_idx < file_traits<value_type>::files; s_idx++)
-        _elem_writers[s_idx].attach(f._files[s_idx], nullptr);
+        _elem_ofstreams[s_idx].attach(f._files[s_idx], nullptr);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -112,9 +112,9 @@ namespace adiar::internal
 
       _file_ptr = f;
 
-      _level_writer.attach(f->_level_info_file, f);
+      _level_ofstream.attach(f->_level_info_file, f);
       for (size_t s_idx = 0; s_idx < file_traits<value_type>::files; s_idx++)
-        _elem_writers[s_idx].attach(f->_files[s_idx], f);
+        _elem_ofstreams[s_idx].attach(f->_files[s_idx], f);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -123,10 +123,10 @@ namespace adiar::internal
     bool
     attached() const
     {
-      const bool res = _level_writer.attached();
+      const bool res = _level_ofstream.attached();
 #ifndef NDEBUG
-      for (size_t s_idx = 0; s_idx < elem_writers; s_idx++) {
-        adiar_assert(_elem_writers[s_idx].attached() == res,
+      for (size_t s_idx = 0; s_idx < elem_ofstreams; s_idx++) {
+        adiar_assert(_elem_ofstreams[s_idx].attached() == res,
                      "Attachment ought to be synchronised.");
       }
 #endif
@@ -139,8 +139,8 @@ namespace adiar::internal
     void
     detach()
     {
-      _level_writer.detach();
-      for (size_t s_idx = 0; s_idx < elem_writers; s_idx++) _elem_writers[s_idx].detach();
+      _level_ofstream.detach();
+      for (size_t s_idx = 0; s_idx < elem_ofstreams; s_idx++) _elem_ofstreams[s_idx].detach();
       _file_ptr.reset();
     }
 
@@ -155,7 +155,7 @@ namespace adiar::internal
     void
     push(const level_info& li)
     {
-      _level_writer.push(li);
+      _level_ofstream.push(li);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -166,7 +166,7 @@ namespace adiar::internal
     ///
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    levelized_file_writer<value_type>&
+    levelized_ofstream<value_type>&
     operator<<(const level_info& li)
     {
       this->push(li);
@@ -186,9 +186,9 @@ namespace adiar::internal
     void
     push(const value_type& e)
     {
-      static_assert(s_idx < elem_writers, "Sub-stream index must be within [0; elem_writers).");
+      static_assert(s_idx < elem_ofstreams, "Sub-stream index must be within [0; elem_ofstreams).");
 
-      _elem_writers[s_idx].push(e);
+      _elem_ofstreams[s_idx].push(e);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -197,8 +197,8 @@ namespace adiar::internal
     size_t
     size(const size_t s_idx) const
     {
-      adiar_assert(s_idx < elem_writers, "Sub-stream index must be within [0; elem_writers).");
-      return _elem_writers[s_idx].size();
+      adiar_assert(s_idx < elem_ofstreams, "Sub-stream index must be within [0; elem_ofstreams).");
+      return _elem_ofstreams[s_idx].size();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -208,7 +208,7 @@ namespace adiar::internal
     size() const
     {
       size_t acc = 0u;
-      for (size_t s_idx = 0; s_idx < elem_writers; s_idx++) { acc += size(s_idx); }
+      for (size_t s_idx = 0; s_idx < elem_ofstreams; s_idx++) { acc += size(s_idx); }
       return acc;
     }
 
@@ -218,7 +218,7 @@ namespace adiar::internal
     size_t
     levels() const
     {
-      return _level_writer.size();
+      return _level_ofstream.size();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -227,7 +227,7 @@ namespace adiar::internal
     bool
     has_pushed() const
     {
-      for (size_t s_idx = 0; s_idx < elem_writers; s_idx++) {
+      for (size_t s_idx = 0; s_idx < elem_ofstreams; s_idx++) {
         if (size(s_idx) > 0) { return true; }
       }
       return levels() > 0;
@@ -244,4 +244,4 @@ namespace adiar::internal
   };
 }
 
-#endif // ADIAR_INTERNAL_IO_LEVELIZED_FILE_WRITER_H
+#endif // ADIAR_INTERNAL_IO_LEVELIZED_OFSTREAM_H

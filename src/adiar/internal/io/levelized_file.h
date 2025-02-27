@@ -115,7 +115,7 @@ namespace adiar::internal
     friend class levelized_ifstream;
 
     template <typename tparam__elem_t>
-    friend class levelized_file_writer;
+    friend class levelized_ofstream;
 
     template <bool tparam__REVERSE>
     friend class level_info_ifstream;
@@ -397,7 +397,7 @@ namespace adiar::internal
     /// \param path_prefix Prefix of the path used for the underlying files.
     ///
     /// \pre `is_persistent() == false` (other's might depend on it) and `path_prefix` names a yet
-    ///      non-existing file. Neither should a `ifstream` nor a `file_writer` be hooked into
+    ///      non-existing file. Neither should a `ifstream` nor a `ofstream` be hooked into
     ///      this file.
     ///
     /// \throws runtime_error Preconditions are violated.

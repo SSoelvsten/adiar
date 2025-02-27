@@ -78,14 +78,14 @@ namespace adiar::internal
     friend class ifstream;
 
     template <typename value_type>
-    friend class file_writer;
+    friend class ofstream;
 
     template <typename value_type, bool split_on_levels>
     friend class levelized_file;
 
     // Remove?
     template <typename value_type>
-    friend class levelized_file_writer;
+    friend class levelized_ofstream;
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -261,7 +261,7 @@ namespace adiar::internal
     /// \param new_path Path to move the file to.
     ///
     /// \pre `can_move()`and `new_path` names a yet non-existing file. Neither should any
-    ///      `ifstream`s or `file_writer`s be hooked into this file.
+    ///      `ifstream`s or `ofstream`s be hooked into this file.
     ///
     /// \throws runtime_error Preconditions are violated
     ///
@@ -313,7 +313,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Sort the content of this file in relation to a given predicate.
     ///
-    /// \pre `is_persistent() == false` and `ifstream` nor `file_writer` is attached to this
+    /// \pre `is_persistent() == false` and `ifstream` nor `ofstream` is attached to this
     ///      file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     template <typename pred_t = std::less<value_type>>
