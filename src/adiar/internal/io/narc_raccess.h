@@ -1,17 +1,17 @@
-#ifndef ADIAR_INTERNAL_IO_NODE_ARC_RACCESS_H
-#define ADIAR_INTERNAL_IO_NODE_ARC_RACCESS_H
+#ifndef ADIAR_INTERNAL_IO_NARC_RACCESS_H
+#define ADIAR_INTERNAL_IO_NARC_RACCESS_H
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/dd.h>
 #include <adiar/internal/io/levelized_raccess.h>
-#include <adiar/internal/io/node_arc_stream.h>
+#include <adiar/internal/io/narc_stream.h>
 
 namespace adiar::internal
 {
-  class node_arc_raccess : public levelized_raccess<node_arc_stream<>>
+  class narc_raccess : public levelized_raccess<narc_stream<>>
   {
-    using parent_type = levelized_raccess<node_arc_stream<>>;
+    using parent_type = levelized_raccess<narc_stream<>>;
 
   public:
     static size_t
@@ -34,9 +34,9 @@ namespace adiar::internal
     ///
     /// \pre The given levelized file is *indexable*.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_arc_raccess(levelized_file<arc>& f,
-                     const bool negate                                   = false,
-                     [[maybe_unused]] const arc::signed_label_type shift = 0)
+    narc_raccess(levelized_file<arc>& f,
+                 const bool negate                                   = false,
+                 [[maybe_unused]] const arc::signed_label_type shift = 0)
       : parent_type(f, negate)
     {
       // adiar_assert(f.indexable);
@@ -49,9 +49,9 @@ namespace adiar::internal
     ///
     /// \pre The given shared levelized file is *indexable*.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_arc_raccess(const shared_ptr<levelized_file<arc>>& f,
-                     const bool negate                                   = false,
-                     [[maybe_unused]] const arc::signed_label_type shift = 0)
+    narc_raccess(const shared_ptr<levelized_file<arc>>& f,
+                 const bool negate                                   = false,
+                 [[maybe_unused]] const arc::signed_label_type shift = 0)
       : parent_type(f, negate)
     {
       // adiar_assert(f->indexable);
@@ -64,8 +64,8 @@ namespace adiar::internal
     ///
     /// \pre The unreduced decision diagram is indexable. This is (almost) always the case.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_arc_raccess(const __dd& diagram)
-      : node_arc_raccess(diagram.template get<__dd::shared_arc_file_type>(), diagram._negate)
+    narc_raccess(const __dd& diagram)
+      : narc_raccess(diagram.template get<__dd::shared_arc_file_type>(), diagram._negate)
     {}
 
   public:
@@ -91,4 +91,4 @@ namespace adiar::internal
   };
 }
 
-#endif // ADIAR_INTERNAL_IO_NODE_ARC_RACCESS_H
+#endif // ADIAR_INTERNAL_IO_NARC_RACCESS_H

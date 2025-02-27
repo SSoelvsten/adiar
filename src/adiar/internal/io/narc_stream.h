@@ -1,5 +1,5 @@
-#ifndef ADIAR_INTERNAL_IO_NODE_ARC_STREAM_H
-#define ADIAR_INTERNAL_IO_NODE_ARC_STREAM_H
+#ifndef ADIAR_INTERNAL_IO_NARC_STREAM_H
+#define ADIAR_INTERNAL_IO_NARC_STREAM_H
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/data_types/arc.h>
@@ -20,7 +20,7 @@ namespace adiar::internal
   /// \see shared_levelized_file<arc>
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <bool Reverse = false>
-  class node_arc_stream : protected arc_stream<!Reverse>
+  class narc_stream : protected arc_stream<!Reverse>
   {
   public:
     using value_type = node;
@@ -60,18 +60,18 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Create unattached to any file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_arc_stream() = default;
+    narc_stream() = default;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_arc_stream(const node_arc_stream<Reverse>&) = delete;
-    node_arc_stream(node_arc_stream<Reverse>&&)      = delete;
+    narc_stream(const narc_stream<Reverse>&) = delete;
+    narc_stream(narc_stream<Reverse>&&)      = delete;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to an arc file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_arc_stream(levelized_file<arc>& file,
-                    [[maybe_unused]] const bool negate                         = false,
-                    [[maybe_unused]] const node::signed_label_type level_shift = 0)
+    narc_stream(levelized_file<arc>& file,
+                [[maybe_unused]] const bool negate                         = false,
+                [[maybe_unused]] const node::signed_label_type level_shift = 0)
       : _stream(/*need to sort before attach*/)
     {
       adiar_assert(negate == false);
@@ -82,9 +82,9 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a shared arc file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_arc_stream(const shared_ptr<levelized_file<arc>>& file,
-                    [[maybe_unused]] const bool negate                         = false,
-                    [[maybe_unused]] const node::signed_label_type level_shift = 0)
+    narc_stream(const shared_ptr<levelized_file<arc>>& file,
+                [[maybe_unused]] const bool negate                         = false,
+                [[maybe_unused]] const node::signed_label_type level_shift = 0)
       : _stream(/*need to sort before attach*/)
     {
       adiar_assert(negate == false);
@@ -97,7 +97,7 @@ namespace adiar::internal
     ///
     /// \pre The given diagram should contain an unreduced diagram.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_arc_stream(const __dd& diagram)
+    narc_stream(const __dd& diagram)
       : _stream(/*need to sort before attach*/)
     {
       adiar_assert(diagram.template has<__dd::shared_arc_file_type>());
@@ -229,4 +229,4 @@ namespace adiar::internal
   };
 }
 
-#endif // ADIAR_INTERNAL_IO_NODE_ARC_STREAM
+#endif // ADIAR_INTERNAL_IO_NARC_STREAM

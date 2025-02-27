@@ -23,8 +23,8 @@
 #include <adiar/internal/io/arc_writer.h>
 #include <adiar/internal/io/file.h>
 #include <adiar/internal/io/file_stream.h>
-#include <adiar/internal/io/node_arc_raccess.h>
-#include <adiar/internal/io/node_arc_stream.h>
+#include <adiar/internal/io/narc_raccess.h>
+#include <adiar/internal/io/narc_stream.h>
 #include <adiar/internal/io/node_raccess.h>
 #include <adiar/internal/io/node_stream.h>
 #include <adiar/internal/io/shared_file_ptr.h>
@@ -75,12 +75,12 @@ namespace adiar::internal
   /// \details This is used during repeated (partial) quantification.
   template <size_t LookAhead, memory_mode MemoryMode>
   using quantify_priority_queue_1_arc_t =
-    levelized_node_arc_priority_queue<quantify_request<0>,
-                                      request_data_first_lt<quantify_request<0>>,
-                                      LookAhead,
-                                      MemoryMode,
-                                      1,
-                                      0>;
+    levelized_narc_priority_queue<quantify_request<0>,
+                                  request_data_first_lt<quantify_request<0>>,
+                                  LookAhead,
+                                  MemoryMode,
+                                  1,
+                                  0>;
 
   /// \brief Type of the secondary priority queue to further forward requests across a level.
   template <memory_mode MemoryMode>
@@ -909,11 +909,11 @@ namespace adiar::internal
       ep.template get<exec_policy::access>() == exec_policy::access::Random_Access
       || ( // Heuristically, if the narrowest canonical fits
         ep.template get<exec_policy::access>() == exec_policy::access::Auto
-        && node_arc_raccess::memory_usage(width) <= ra_threshold)) {
+        && narc_raccess::memory_usage(width) <= ra_threshold)) {
 #ifdef ADIAR_STATS
       stats_quantify.ra.runs += 1u;
 #endif
-      return __quantify_ra<node_arc_raccess, quantify_priority_queue_1_arc_t>(ep, in, policy);
+      return __quantify_ra<narc_raccess, quantify_priority_queue_1_arc_t>(ep, in, policy);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -921,7 +921,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
     stats_quantify.pq.runs += 1u;
 #endif
-    return __quantify_pq<node_arc_stream<>, quantify_priority_queue_1_arc_t>(ep, in, policy);
+    return __quantify_pq<narc_stream<>, quantify_priority_queue_1_arc_t>(ep, in, policy);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
