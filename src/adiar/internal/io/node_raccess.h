@@ -1,17 +1,20 @@
-#ifndef ADIAR_INTERNAL_IO_NODE_ARC_RANDOM_ACCESS_H
-#define ADIAR_INTERNAL_IO_NODE_ARC_RANDOM_ACCESS_H
+#ifndef ADIAR_INTERNAL_IO_NODE_RACCESS_H
+#define ADIAR_INTERNAL_IO_NODE_RACCESS_H
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/dd.h>
-#include <adiar/internal/io/levelized_random_access.h>
-#include <adiar/internal/io/node_arc_stream.h>
+#include <adiar/internal/io/levelized_raccess.h>
+#include <adiar/internal/io/node_stream.h>
 
 namespace adiar::internal
 {
-  class node_arc_random_access : public levelized_random_access<node_arc_stream<>>
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// \brief Random-access to the contents of a levelized file of node.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  class node_raccess : public levelized_raccess<node_stream<>>
   {
-    using parent_type = levelized_random_access<node_arc_stream<>>;
+    using parent_type = levelized_raccess<node_stream<>>;
 
   public:
     static size_t
@@ -22,51 +25,48 @@ namespace adiar::internal
     }
 
     static size_t
-    memory_usage(const __dd& diagram)
+    memory_usage(const dd& diagram)
     {
-      adiar_assert(diagram.template has<__dd::shared_arc_file_type>());
-      return parent_type::memory_usage(diagram.template get<__dd::shared_arc_file_type>()->width);
+      return parent_type::memory_usage(diagram->width);
     }
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Construct attached to a levelized file of arcs.
+    /// \brief Construct attached to a levelized file of nodes.
     ///
     /// \pre The given levelized file is *indexable*.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_arc_random_access(levelized_file<arc>& f,
-                           const bool negate                                   = false,
-                           [[maybe_unused]] const arc::signed_label_type shift = 0)
-      : parent_type(f, negate)
+    node_raccess(const levelized_file<value_type>& f,
+                 const bool negate                         = false,
+                 const node::signed_label_type level_shift = 0)
+      : parent_type(f, negate, level_shift)
     {
-      // adiar_assert(f.indexable);
-      adiar_assert(negate == false);
-      adiar_assert(shift == false);
+      adiar_assert(f.indexable);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Construct attached to a shared levelized file of arcs.
+    /// \brief Construct attached to a shared levelized file of nodes.
     ///
     /// \pre The given shared levelized file is *indexable*.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_arc_random_access(const shared_ptr<levelized_file<arc>>& f,
-                           const bool negate                                   = false,
-                           [[maybe_unused]] const arc::signed_label_type shift = 0)
-      : parent_type(f, negate)
+    node_raccess(const shared_ptr<levelized_file<value_type>>& f,
+                 const bool negate                         = false,
+                 const node::signed_label_type level_shift = 0)
+      : parent_type(f, negate, level_shift)
     {
-      // adiar_assert(f->indexable);
-      adiar_assert(negate == false);
-      adiar_assert(shift == false);
+      adiar_assert(f->indexable);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Construct attached to an unreduced decision diagram.
+    /// \brief Construct attached to a decision diagram.
     ///
-    /// \pre The unreduced decision diagram is indexable. This is (almost) always the case.
+    /// \pre The given decision diagram is indexable.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_arc_random_access(const __dd& diagram)
-      : node_arc_random_access(diagram.template get<__dd::shared_arc_file_type>(), diagram._negate)
-    {}
+    node_raccess(const dd& diagram)
+      : node_raccess(diagram.file_ptr(), diagram.is_negated(), diagram.shift())
+    {
+      adiar_assert(diagram->indexable);
+    }
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85,10 +85,12 @@ namespace adiar::internal
     const value_type&
     at(uid_type u) const
     {
-      adiar_assert(static_cast<signed_label_type>(u.label()) == current_level());
-      return parent_type::at(static_cast<idx_type>(u.id()));
+      adiar_assert(static_cast<signed_label_type>(u.label()) == this->current_level());
+
+      const idx_type idx = this->current_width() - ((uid_type::max_id + 1u) - u.id());
+      return parent_type::at(idx);
     }
   };
 }
 
-#endif // ADIAR_INTERNAL_IO_NODE_ARC_RANDOM_ACCESS_H
+#endif // ADIAR_INTERNAL_IO_NODE_RACCESS_H

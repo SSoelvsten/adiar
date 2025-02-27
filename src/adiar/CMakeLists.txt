@@ -83,7 +83,7 @@ set(HEADERS
   internal/io/levelized_file.h
   internal/io/levelized_file_stream.h
   internal/io/levelized_file_writer.h
-  internal/io/levelized_random_access.h
+  internal/io/levelized_raccess.h
 
   internal/io/shared_file_ptr.h
 
@@ -92,8 +92,8 @@ set(HEADERS
   internal/io/arc_writer.h
 
   internal/io/node_file.h
-  internal/io/node_random_access.h
-  internal/io/node_arc_random_access.h
+  internal/io/node_raccess.h
+  internal/io/node_arc_raccess.h
   internal/io/node_arc_stream.h
   internal/io/node_stream.h
   internal/io/node_writer.h
