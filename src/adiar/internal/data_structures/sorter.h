@@ -2,6 +2,7 @@
 #define ADIAR_INTERNAL_DATA_STRUCTURES_SORTER_H
 
 #include <algorithm>
+#include <limits>
 #include <math.h>
 #include <memory>
 #include <string>
@@ -18,7 +19,7 @@ namespace adiar::internal
   class sorter;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// \brief Wrapper for TPIE's internal vector with standard quick-sort.
+  /// \brief Wrapper for TPIE's internal vector with TPIE's parallel quick-sort.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename T, typename Comp>
   class sorter<memory_mode::Internal, T, Comp>
@@ -29,17 +30,22 @@ namespace adiar::internal
   private:
     using array_type = tpie::array<T>;
     array_type _array;
+
     Comp _pred;
-    size_t _size;
-    size_t _front_idx;
+    bool _sorted = false;
+
+    size_t _size = 0;
+    size_t _front_idx = 0;
 
   public:
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     static size_t
     memory_usage(size_t no_elements)
     {
       return array_type::memory_usage(no_elements);
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     static size_t
     memory_fits(size_t memory_bytes)
     {
@@ -49,8 +55,10 @@ namespace adiar::internal
       return ret;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     static constexpr size_t data_structures = 1u;
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     static unique_ptr<sorter<memory_mode::Internal, value_type, Comp>>
     make_unique(size_t memory_bytes, size_t no_elements, size_t no_sorters = 1, Comp comp = Comp())
     {
@@ -58,6 +66,7 @@ namespace adiar::internal
         memory_bytes, no_elements, no_sorters, comp);
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     static void
     reset_unique(unique_ptr<sorter<memory_mode::Internal, value_type, Comp>>& u_ptr,
                  size_t /*memory_bytes*/,
@@ -68,6 +77,7 @@ namespace adiar::internal
       u_ptr->reset();
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
   public:
     sorter([[maybe_unused]] size_t memory_bytes,
            size_t no_elements,
@@ -75,72 +85,82 @@ namespace adiar::internal
            Comp comp                          = Comp())
       : _array(no_elements)
       , _pred(comp)
-      , _size(0)
-      , _front_idx(0)
     {
       adiar_assert(no_elements <= memory_fits(memory_bytes / no_sorters),
                    "Must be instantiated with enough memory.");
     }
 
   public:
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     bool
-    can_push()
+    can_push() const
     {
-      return _front_idx == 0u && _array.size() > _size;
+      return !this->_sorted && this->_array.size() > this->_size;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     void
     push(const value_type& v)
     {
-      adiar_assert(can_push());
-      _array[_size++] = v;
+      adiar_assert(this->can_push());
+      this->_array[_size++] = v;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     void
     sort()
     {
-      tpie::parallel_sort(_array.begin(), _array.begin() + _size, _pred);
-      _front_idx = 0;
+      adiar_assert(this->_sorted == false);
+      tpie::parallel_sort(this->_array.begin(), this->_array.begin() + this->_size, this->_pred);
+      this->_sorted = true;
+      adiar_assert(this->_front_idx == 0);
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     bool
     can_pull() const
     {
-      // TODO (debug): check it has been sorted
-      return _size != _front_idx;
+      adiar_assert(this->_sorted, "Only retrieve content when done pushing and sorting it.");
+      return this->_front_idx < this->_size;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     value_type
     top() const
     {
-      adiar_assert(can_pull());
-      return _array[_front_idx];
+      adiar_assert(this->can_pull());
+      return this->_array[this->_front_idx];
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     value_type
     pull()
     {
-      adiar_assert(can_pull());
-      return _array[_front_idx++];
+      adiar_assert(this->can_pull());
+      return this->_array[this->_front_idx++];
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     void
     reset()
     {
-      _size      = 0;
-      _front_idx = 0;
+      this->_sorted    = false;
+      this->_size      = 0;
+      this->_front_idx = 0;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     size_t
     size() const
     {
-      return _size - _front_idx;
+      return this->_size - this->_front_idx;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     bool
     empty() const
     {
-      return size() == 0;
+      return this->size() == 0;
     }
   };
 
@@ -149,9 +169,6 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename T, typename Comp = std::less<T>>
   using internal_sorter = sorter<memory_mode::Internal, T, Comp>;
-
-  // LCOV_EXCL_START
-  // TODO: Unit test external memory variants?
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Wrapper for TPIE's external memory sorter, tpie::merge_sorter.
@@ -194,7 +211,7 @@ namespace adiar::internal
     }
 
   public:
-    sorter(size_t memory_bytes, size_t no_elements, size_t number_of_sorters, Comp comp = Comp())
+    sorter(size_t memory_bytes, size_t no_elements, size_t number_of_sorters = 1, Comp comp = Comp())
       : _sorter(comp)
     {
       // Quickfix: Issue https://github.com/thomasmoelhave/tpie/issues/250
@@ -235,7 +252,9 @@ namespace adiar::internal
       // We intend to have the memory divided between all the sorters, such that one can be in phase
       // 2 while everyone else is in phase 1 or 3.
       //
-      // | p1 | p1 | p1 |       . . . p2 . . .         |
+      // +----+----+----+------------------------------+
+      // | p1 | p1 | p3 |       . . . p2 . . .         |
+      // +----+----+----+------------------------------+
       //
       // Phase two is the one that makes the most out of a lot of memory. So, we want to have phase
       // 2 have the largest share. For simplicity, we currently have all the p1 sorters have 1/16 of
@@ -243,22 +262,12 @@ namespace adiar::internal
       //
       // TODO: It would be better to make p2 'exponentially' larger than p1 for some notion of
       //       'exponentiality'.
-      //
-      // TODO: phase 1 should be upper bounded by the number of elements possibly placed in this
-      //       queue. See Issue #189 on ssoelvsten/adiar as to why. I would suggest for us to upper
-      //       bound the 1/16th by slightly more than the amount of memory necessary to hold all
-      //       values simultaneously.
 
       // -------------------------------------------------------------------------------------------
       // Phase 1 : Push Mergesort base cases
 
       // Take up at most 1/(Sorter-1)'th of 1/16th of the total memory. The last sorter is either in
       // the same phase or another phase.
-      //
-      //                Intendeds shared memory layout of sorters
-      //   +--------+-----------------------------------------------------+
-      //   | p1 . . | p2/p3 . . . . . . . . . . . . . . . . . . . . . . . |
-      //   +--------+-----------------------------------------------------+
       const size_t maximum_phase1 = (memory_bytes >> 4) / (number_of_sorters - 1);
 
       const size_t phase1 =
@@ -300,9 +309,9 @@ namespace adiar::internal
       _sorter.begin();
     }
 
-    bool
-    can_push();
-
+    // bool
+    // can_push();
+    //
     // TODO: Update TPIE merge sorter to access the current phase Enum.
 
     void
@@ -369,8 +378,6 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename T, typename Comp = std::less<T>>
   using external_sorter = sorter<memory_mode::External, T, Comp>;
-
-  // LCOV_EXCL_STOP
 }
 
 #endif // ADIAR_INTERNAL_DATA_STRUCTURES_SORTER_H
