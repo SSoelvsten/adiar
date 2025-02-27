@@ -150,6 +150,9 @@ test/adiar/internal/data_structures/level_merger:
 test/adiar/internal/data_structures/levelized_priority_queue:
 	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_structures TEST_NAME=levelized_priority_queue
 
+test/adiar/internal/data_structures/priority_queue:
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_structures TEST_NAME=priority_queue
+
 test/adiar/internal/data_types/arc:
 	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_types TEST_NAME=arc
 
