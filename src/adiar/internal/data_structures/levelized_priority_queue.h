@@ -1471,8 +1471,8 @@ namespace adiar::internal
                                                                 LevelSkip>;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// \brief Levelized Priority Queue to be used with `levelized_file<arc>` and a `node_arc_stream`
-  ///        or `node_arc_raccess`.
+  /// \brief Levelized Priority Queue to be used with `levelized_file<arc>` and a `narc_stream`
+  ///        or `narc_raccess`.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename T,
             typename Comp         = std::less<T>,
@@ -1480,15 +1480,15 @@ namespace adiar::internal
             memory_mode mem_mode  = memory_mode::External,
             size_t LevelFileCount = 1u,
             size_t LevelSkip      = 1u>
-  using levelized_node_arc_priority_queue = levelized_priority_queue<T,
-                                                                     Comp,
-                                                                     LookAhead,
-                                                                     mem_mode,
-                                                                     shared_levelized_file<arc>,
-                                                                     LevelFileCount,
-                                                                     std::less<arc::label_type>,
-                                                                     true,
-                                                                     LevelSkip>;
+  using levelized_narc_priority_queue = levelized_priority_queue<T,
+                                                                 Comp,
+                                                                 LookAhead,
+                                                                 mem_mode,
+                                                                 shared_levelized_file<arc>,
+                                                                 LevelFileCount,
+                                                                 std::less<arc::label_type>,
+                                                                 true,
+                                                                 LevelSkip>;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Levelized Priority Queue to be used with `shared_file<label_type>`.

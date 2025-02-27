@@ -91,10 +91,11 @@ set(HEADERS
   internal/io/arc_stream.h
   internal/io/arc_writer.h
 
+  internal/io/narc_raccess.h
+  internal/io/narc_stream.h
+
   internal/io/node_file.h
   internal/io/node_raccess.h
-  internal/io/node_arc_raccess.h
-  internal/io/node_arc_stream.h
   internal/io/node_stream.h
   internal/io/node_writer.h
 )
