@@ -1,7 +1,7 @@
 #include <adiar/bdd.h>
 
 #include <adiar/internal/algorithms/pred.h>
-#include <adiar/internal/io/node_stream.h>
+#include <adiar/internal/io/node_ifstream.h>
 
 namespace adiar
 {
@@ -48,7 +48,7 @@ namespace adiar
   {
     if (!bdd_isvar(f)) { return false; }
 
-    internal::node_stream<> ns(f);
+    internal::node_ifstream<> ns(f);
     const bdd::node_type root = ns.pull();
 
     adiar_assert(root.low() != root.high(), "A reduced BDD cannot have identical children");
@@ -61,7 +61,7 @@ namespace adiar
   {
     if (!bdd_isvar(f)) { return false; }
 
-    internal::node_stream<> ns(f);
+    internal::node_ifstream<> ns(f);
     const bdd::node_type root = ns.pull();
 
     adiar_assert(root.low() != root.high(), "A reduced BDD cannot have identical children");

@@ -16,53 +16,53 @@ using namespace bandit;
 //
 // We also do a few little hacks, to read unreduced output from the file_union
 // class.
-#include <adiar/internal/io/arc_stream.h>
+#include <adiar/internal/io/arc_ifstream.h>
 #include <adiar/internal/io/arc_writer.h>
-#include <adiar/internal/io/node_stream.h>
+#include <adiar/internal/io/node_ifstream.h>
 #include <adiar/internal/io/node_writer.h>
 
 using namespace adiar;
 using namespace adiar::internal;
 
-using level_info_test_stream = level_info_stream<true>;
+using level_info_test_ifstream = level_info_ifstream<true>;
 
-class node_test_stream : public node_stream<true>
+class node_test_ifstream : public node_ifstream<true>
 {
 public:
-  node_test_stream(const shared_levelized_file<dd::node_type>& f)
-    : node_stream<true>(f)
+  node_test_ifstream(const shared_levelized_file<dd::node_type>& f)
+    : node_ifstream<true>(f)
   {}
 
-  node_test_stream(const bdd& f)
-    : node_stream<true>(f)
+  node_test_ifstream(const bdd& f)
+    : node_ifstream<true>(f)
   {}
 
-  node_test_stream(const __bdd& f)
-    : node_stream<true>(f.get<__bdd::shared_node_file_type>(), f._negate)
+  node_test_ifstream(const __bdd& f)
+    : node_ifstream<true>(f.get<__bdd::shared_node_file_type>(), f._negate)
   {}
 
-  node_test_stream(const zdd& f)
-    : node_stream<true>(f)
+  node_test_ifstream(const zdd& f)
+    : node_ifstream<true>(f)
   {}
 
-  node_test_stream(const __zdd& f)
-    : node_stream<true>(f.get<__zdd::shared_node_file_type>(), f._negate)
+  node_test_ifstream(const __zdd& f)
+    : node_ifstream<true>(f.get<__zdd::shared_node_file_type>(), f._negate)
   {}
 };
 
-class arc_test_stream : public arc_stream<true>
+class arc_test_ifstream : public arc_ifstream<true>
 {
 public:
-  arc_test_stream(const shared_levelized_file<arc>& f)
-    : arc_stream<true>(f)
+  arc_test_ifstream(const shared_levelized_file<arc>& f)
+    : arc_ifstream<true>(f)
   {}
 
-  arc_test_stream(const __bdd& bdd)
-    : arc_stream<true>(bdd.get<__bdd::shared_arc_file_type>())
+  arc_test_ifstream(const __bdd& bdd)
+    : arc_ifstream<true>(bdd.get<__bdd::shared_arc_file_type>())
   {}
 
-  arc_test_stream(const __zdd& zdd)
-    : arc_stream<true>(zdd.get<__zdd::shared_arc_file_type>())
+  arc_test_ifstream(const __zdd& zdd)
+    : arc_ifstream<true>(zdd.get<__zdd::shared_arc_file_type>())
   {}
 };
 

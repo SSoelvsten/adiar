@@ -492,13 +492,13 @@ go_bandit([]() {
           const zdd in = zdd_1;
           zdd out      = zdd_project(ep, in, [](zdd::label_type) { return false; });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -513,13 +513,13 @@ go_bandit([]() {
         it("computes zdd_2 with dom = Ø to be { Ø } for non-empty input [&&]", [&]() {
           zdd out = zdd_project(ep, zdd(zdd_2), [](zdd::label_type) { return false; });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -534,13 +534,13 @@ go_bandit([]() {
         it("computes zdd_3 with disjoint dom = { x | x > 2 } to be { Ø } [&&]", [&]() {
           zdd out = zdd_project(ep, zdd(zdd_3), [](zdd::label_type x) { return x > 2; });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -566,7 +566,7 @@ go_bandit([]() {
 
           zdd out = zdd_project(ep, zdd(zdd_3), [](zdd::label_type x) { return !(x % 2); });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, zdd::max_id, terminal_T, terminal_T)));
@@ -580,7 +580,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -608,13 +608,13 @@ go_bandit([]() {
           const zdd in = zdd_1;
           zdd out      = zdd_project(ep, in, [](zdd::label_type) { return false; });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -629,13 +629,13 @@ go_bandit([]() {
         it("computes zdd_3 with disjoint dom = { x | x > 2 } to be { Ø } [&&]", [&]() {
           zdd out = zdd_project(ep, zdd(zdd_3), [](zdd::label_type x) { return x > 2; });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -661,7 +661,7 @@ go_bandit([]() {
 
           zdd out = zdd_project(ep, zdd(zdd_3), [](zdd::label_type x) { return !(x % 2); });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, zdd::max_id, terminal_T, terminal_T)));
@@ -675,7 +675,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -709,7 +709,7 @@ go_bandit([]() {
           */
           zdd out = zdd_project(ep, in, [](const zdd::label_type x) { return x % 2 == 0; });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(4, zdd::max_id, terminal_T, terminal_T)));
@@ -728,7 +728,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(4, 1u)));
@@ -761,14 +761,14 @@ go_bandit([]() {
           */
           zdd out = zdd_project(ep, in, [](const zdd::label_type x) { return x == 5; });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(5, zdd::max_id, terminal_T, terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(5, 1u)));
@@ -804,7 +804,7 @@ go_bandit([]() {
             return x == 0 || x % 2;
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(3, zdd::max_id, terminal_T, terminal_T)));
@@ -823,7 +823,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(3, 1u)));
@@ -886,14 +886,14 @@ go_bandit([]() {
             return x == 0;
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(0, zdd::max_id, terminal_T, terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -946,7 +946,7 @@ go_bandit([]() {
             return x == 0 || x % 2;
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(3, zdd::max_id, terminal_T, terminal_T)));
@@ -958,7 +958,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(3, 1u)));
@@ -1009,13 +1009,13 @@ go_bandit([]() {
         it("computes zdd_2 with dom = Ø to be { Ø } for non-empty input [&&]", [&]() {
           zdd out = zdd_project(ep, zdd(zdd_2), [](zdd::label_type) { return false; });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -1030,13 +1030,13 @@ go_bandit([]() {
         it("computes zdd_3 with disjoint dom = { x | x > 2 } to be { Ø } [&&]", [&]() {
           zdd out = zdd_project(ep, zdd(zdd_3), [](zdd::label_type x) { return x > 2; });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -1067,7 +1067,7 @@ go_bandit([]() {
                return (x % 2) == 0;
              });
 
-             node_test_stream out_nodes(out);
+             node_test_ifstream out_nodes(out);
 
              AssertThat(out_nodes.can_pull(), Is().True());
              AssertThat(out_nodes.pull(),
@@ -1082,7 +1082,7 @@ go_bandit([]() {
 
              AssertThat(out_nodes.can_pull(), Is().False());
 
-             level_info_test_stream ms(out);
+             level_info_test_ifstream ms(out);
 
              AssertThat(ms.can_pull(), Is().True());
              AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -1131,7 +1131,7 @@ go_bandit([]() {
 
           zdd out = zdd_project(ep, zdd(zdd_1), [](zdd::label_type x) { return x % 2 == 1; });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(3, zdd::max_id, terminal_T, terminal_T)));
@@ -1145,7 +1145,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(3, 1u)));
@@ -1180,7 +1180,7 @@ go_bandit([]() {
 
           zdd out = zdd_project(ep, zdd(zdd_1), [](zdd::label_type x) { return x != 0 && x != 2; });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(4, zdd::max_id, terminal_T, terminal_T)));
@@ -1200,7 +1200,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(4, 1u)));
@@ -1236,7 +1236,7 @@ go_bandit([]() {
 
           zdd out = zdd_project(ep, zdd(zdd_3), [](zdd::label_type x) { return x % 2 == 0; });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, zdd::max_id, terminal_T, terminal_T)));
@@ -1250,7 +1250,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -1283,14 +1283,14 @@ go_bandit([]() {
 
           zdd out = zdd_project(ep, zdd(zdd_3), [](zdd::label_type x) { return x % 2 == 1; });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, zdd::max_id, terminal_T, terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -1313,7 +1313,7 @@ go_bandit([]() {
             return x <= 2;
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (2) / (3)
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, zdd::max_id, terminal_T, terminal_T)));
@@ -1327,7 +1327,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -1378,7 +1378,7 @@ go_bandit([]() {
             return 1 < x;
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (o) / (n,o)
           AssertThat(
@@ -1693,7 +1693,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(13u, 2u)));
@@ -1800,7 +1800,7 @@ go_bandit([]() {
             return 1 < x;
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True()); // (o) / (n,o)
           AssertThat(
@@ -2115,7 +2115,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(13u, 2u)));
@@ -2235,13 +2235,13 @@ go_bandit([]() {
               return x > 2;
             });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -2289,7 +2289,7 @@ go_bandit([]() {
               return !(x % 2);
             });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, zdd::max_id, terminal_T, terminal_T)));
@@ -2303,7 +2303,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -2356,14 +2356,14 @@ go_bandit([]() {
               return x % 2;
             });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, zdd::max_id, terminal_T, terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -2409,13 +2409,13 @@ go_bandit([]() {
             return false;
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -2458,13 +2458,13 @@ go_bandit([]() {
               return false;
             });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -2497,13 +2497,13 @@ go_bandit([]() {
             return x > 2;
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -2544,13 +2544,13 @@ go_bandit([]() {
               return x > 2;
             });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -2592,7 +2592,7 @@ go_bandit([]() {
             return !(x % 2);
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, zdd::max_id, terminal_T, terminal_T)));
@@ -2606,7 +2606,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -2665,7 +2665,7 @@ go_bandit([]() {
               return !(x % 2);
             });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, zdd::max_id, terminal_T, terminal_T)));
@@ -2679,7 +2679,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -2728,14 +2728,14 @@ go_bandit([]() {
             return x % 2;
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, zdd::max_id, terminal_T, terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -2791,14 +2791,14 @@ go_bandit([]() {
               return x % 2;
             });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, zdd::max_id, terminal_T, terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -2830,7 +2830,7 @@ go_bandit([]() {
           __zdd out = zdd_project(
             ep, __zdd(zdd_8__unreduced, ep), [](const zdd::label_type x) { return x != 3; });
 
-          node_test_stream nodes(out);
+          node_test_ifstream nodes(out);
 
           // (8)
           AssertThat(nodes.can_pull(), Is().True());
@@ -2863,7 +2863,7 @@ go_bandit([]() {
 
           AssertThat(nodes.can_pull(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(4u, 1u)));
@@ -2925,13 +2925,13 @@ go_bandit([]() {
           const zdd in = zdd_1;
           zdd out      = zdd_project(in, []() -> optional<zdd::label_type> { return {}; });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -2946,13 +2946,13 @@ go_bandit([]() {
         it("collapses zdd_2 with dom = Ø into { Ø } [&&]", [&]() {
           zdd out = zdd_project(ep, zdd(zdd_2), []() -> optional<zdd::label_type> { return {}; });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -2968,13 +2968,13 @@ go_bandit([]() {
           const zdd in = zdd_3;
           zdd out      = zdd_project(ep, in, []() -> optional<zdd::label_type> { return {}; });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -2997,13 +2997,13 @@ go_bandit([]() {
             return { ret };
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -3022,13 +3022,13 @@ go_bandit([]() {
                                                     : make_optional<zdd::label_type>();
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -3067,13 +3067,13 @@ go_bandit([]() {
                             : make_optional<zdd::label_type>();
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -3099,7 +3099,7 @@ go_bandit([]() {
                             : make_optional<zdd::label_type>();
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(
             out_nodes.pull(),
@@ -3107,7 +3107,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
           AssertThat(ms.can_pull(), Is().False());
@@ -3141,7 +3141,7 @@ go_bandit([]() {
                                         : make_optional<zdd::label_type>();
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(4, zdd::max_id, terminal_T, terminal_T)));
@@ -3160,7 +3160,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(4, 1u)));
@@ -3198,7 +3198,7 @@ go_bandit([]() {
                                         : make_optional<zdd::label_type>();
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(4, zdd::max_id, terminal_T, terminal_T)));
@@ -3215,7 +3215,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(4, 1u)));
@@ -3256,7 +3256,7 @@ go_bandit([]() {
             return { ret };
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, zdd::max_id, terminal_T, terminal_T)));
@@ -3270,7 +3270,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -3308,7 +3308,7 @@ go_bandit([]() {
             return { ret };
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(4, zdd::max_id, terminal_T, terminal_T)));
@@ -3326,7 +3326,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(4, 2u)));
@@ -3366,7 +3366,7 @@ go_bandit([]() {
             return res;
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(4, zdd::max_id, terminal_T, terminal_T)));
@@ -3384,7 +3384,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(4, 2u)));
@@ -3411,13 +3411,13 @@ go_bandit([]() {
           const zdd in = zdd_1;
           zdd out      = zdd_project(ep, in, []() -> optional<zdd::label_type> { return {}; });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -3432,13 +3432,13 @@ go_bandit([]() {
         it("collapses zdd_2 with dom = Ø into { Ø } [&&]", [&]() {
           zdd out = zdd_project(ep, zdd(zdd_2), []() -> optional<zdd::label_type> { return {}; });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -3454,13 +3454,13 @@ go_bandit([]() {
           const zdd in = zdd_3;
           zdd out      = zdd_project(ep, in, []() -> optional<zdd::label_type> { return {}; });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -3479,13 +3479,13 @@ go_bandit([]() {
             return { var-- };
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -3503,13 +3503,13 @@ go_bandit([]() {
                                         : make_optional<zdd::label_type>();
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -3549,13 +3549,13 @@ go_bandit([]() {
                             : make_optional<zdd::label_type>();
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -3581,7 +3581,7 @@ go_bandit([]() {
                             : make_optional<zdd::label_type>();
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(
             out_nodes.pull(),
@@ -3589,7 +3589,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
           AssertThat(ms.can_pull(), Is().False());
@@ -3623,7 +3623,7 @@ go_bandit([]() {
                                         : make_optional<zdd::label_type>();
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(4, zdd::max_id, terminal_T, terminal_T)));
@@ -3642,7 +3642,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(4, 1u)));
@@ -3680,7 +3680,7 @@ go_bandit([]() {
                                         : make_optional<zdd::label_type>();
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(4, zdd::max_id, terminal_T, terminal_T)));
@@ -3697,7 +3697,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(4, 1u)));
@@ -3738,7 +3738,7 @@ go_bandit([]() {
             return ret;
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, zdd::max_id, terminal_T, terminal_T)));
@@ -3752,7 +3752,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -3790,7 +3790,7 @@ go_bandit([]() {
             return { ret };
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(4, zdd::max_id, terminal_T, terminal_T)));
@@ -3808,7 +3808,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(4, 2u)));
@@ -3848,7 +3848,7 @@ go_bandit([]() {
             return res;
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(4, zdd::max_id, terminal_T, terminal_T)));
@@ -3866,7 +3866,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(4, 2u)));
@@ -3906,7 +3906,7 @@ go_bandit([]() {
             return { res };
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(4, zdd::max_id, terminal_T, terminal_T)));
@@ -3925,7 +3925,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(4, 1u)));
@@ -3962,14 +3962,14 @@ go_bandit([]() {
             return 5;
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(5, zdd::max_id, terminal_T, terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(5, 1u)));
@@ -4014,13 +4014,13 @@ go_bandit([]() {
               return x--;
             });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -4050,7 +4050,7 @@ go_bandit([]() {
               return x -= 2;
             });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, zdd::max_id, terminal_T, terminal_T)));
@@ -4064,7 +4064,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -4101,14 +4101,14 @@ go_bandit([]() {
               return x -= 2;
             });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, zdd::max_id, terminal_T, terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -4131,13 +4131,13 @@ go_bandit([]() {
         it("computes zdd_2 (reduced) with dom = Ø to be { Ø } for non-empty input [&&]", [&]() {
           zdd out = zdd_project(ep, __zdd(zdd_2), []() { return make_optional<int>(); });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -4153,13 +4153,13 @@ go_bandit([]() {
           zdd out =
             zdd_project(ep, __zdd(zdd_2__unreduced, ep), []() { return make_optional<int>(); });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -4177,13 +4177,13 @@ go_bandit([]() {
             return x--;
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -4202,13 +4202,13 @@ go_bandit([]() {
               return x--;
             });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -4236,7 +4236,7 @@ go_bandit([]() {
             return x -= 2;
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, zdd::max_id, terminal_T, terminal_T)));
@@ -4250,7 +4250,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -4287,7 +4287,7 @@ go_bandit([]() {
               return x -= 2;
             });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, zdd::max_id, terminal_T, terminal_T)));
@@ -4301,7 +4301,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -4337,14 +4337,14 @@ go_bandit([]() {
             return x -= 2;
           });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, zdd::max_id, terminal_T, terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -4378,14 +4378,14 @@ go_bandit([]() {
               return x -= 2;
             });
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, zdd::max_id, terminal_T, terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -4410,7 +4410,7 @@ go_bandit([]() {
               return { x };
             });
 
-          node_test_stream nodes(out);
+          node_test_ifstream nodes(out);
 
           // (8)
           AssertThat(nodes.can_pull(), Is().True());
@@ -4443,7 +4443,7 @@ go_bandit([]() {
 
           AssertThat(nodes.can_pull(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(4u, 1u)));
@@ -4481,7 +4481,7 @@ go_bandit([]() {
           */
           zdd out = zdd_project(ep, zdd(zdd_2), dom.cbegin(), dom.cend());
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(4, zdd::max_id, terminal_T, terminal_T)));
@@ -4498,7 +4498,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(4, 1u)));
@@ -4539,7 +4539,7 @@ go_bandit([]() {
           */
           zdd out = zdd_project(ep, zdd(zdd_3), dom.cbegin(), dom.cend());
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, zdd::max_id, terminal_T, terminal_T)));
@@ -4553,7 +4553,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -4588,7 +4588,7 @@ go_bandit([]() {
           */
           zdd out = zdd_project(ep, in, dom.cbegin(), dom.cend());
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(4, zdd::max_id, terminal_T, terminal_T)));
@@ -4606,7 +4606,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(4, 2u)));
@@ -4647,13 +4647,13 @@ go_bandit([]() {
           const std::vector<int> dom = {};
           zdd out = zdd_project(ep, __zdd(zdd_3__unreduced, ep), dom.begin(), dom.end());
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -4680,7 +4680,7 @@ go_bandit([]() {
           const std::vector<int> dom = { 0, 2, 4 };
           zdd out = zdd_project(ep, __zdd(zdd_3__unreduced, ep), dom.rbegin(), dom.rend());
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, zdd::max_id, terminal_T, terminal_T)));
@@ -4694,7 +4694,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -4728,14 +4728,14 @@ go_bandit([]() {
           const std::vector<int> dom = { 7, 5, 3, 1 };
           zdd out = zdd_project(ep, __zdd(zdd_3__unreduced, ep), dom.begin(), dom.end());
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, zdd::max_id, terminal_T, terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -4759,13 +4759,13 @@ go_bandit([]() {
           const std::vector<int> dom;
           zdd out = zdd_project(ep, __zdd(zdd_2), dom.rbegin(), dom.rend());
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -4781,13 +4781,13 @@ go_bandit([]() {
           const std::vector<int> dom = {};
           zdd out = zdd_project(ep, __zdd(zdd_2__unreduced, ep), dom.rbegin(), dom.rend());
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -4803,13 +4803,13 @@ go_bandit([]() {
           const std::vector<int> dom = { 3, 4, 5 };
           zdd out                    = zdd_project(ep, __zdd(zdd_3), dom.rbegin(), dom.rend());
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -4825,13 +4825,13 @@ go_bandit([]() {
           const std::vector<int> dom = { 3, 4, 5 };
           zdd out = zdd_project(ep, __zdd(zdd_3__unreduced, ep), dom.rbegin(), dom.rend());
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
           AssertThat(ms.can_pull(), Is().False());
 
           AssertThat(out->max_1level_cut[cut::Internal], Is().GreaterThanOrEqualTo(0u));
@@ -4857,7 +4857,7 @@ go_bandit([]() {
           const std::vector<int> dom = { 6, 4, 2, 0 };
           zdd out                    = zdd_project(ep, __zdd(zdd_3), dom.begin(), dom.end());
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, zdd::max_id, terminal_T, terminal_T)));
@@ -4871,7 +4871,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -4905,7 +4905,7 @@ go_bandit([]() {
           const std::vector<int> dom = { 6, 4, 2, 0 };
           zdd out = zdd_project(ep, __zdd(zdd_3__unreduced, ep), dom.begin(), dom.end());
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, zdd::max_id, terminal_T, terminal_T)));
@@ -4919,7 +4919,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -4953,14 +4953,14 @@ go_bandit([]() {
           const std::vector<int> dom = { 1, 3, 5, 7 };
           zdd out                    = zdd_project(ep, __zdd(zdd_3), dom.rbegin(), dom.rend());
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, zdd::max_id, terminal_T, terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -4991,14 +4991,14 @@ go_bandit([]() {
           const std::vector<int> dom = { 1, 3, 5, 7 };
           zdd out = zdd_project(ep, __zdd(zdd_3__unreduced, ep), dom.rbegin(), dom.rend());
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, zdd::max_id, terminal_T, terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream ms(out);
+          level_info_test_ifstream ms(out);
 
           AssertThat(ms.can_pull(), Is().True());
           AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -5018,7 +5018,7 @@ go_bandit([]() {
           std::vector<int> dom = { 5, 4, 2, 1, 0 };
           __zdd out = zdd_project(ep, __zdd(zdd_8__unreduced, ep), dom.begin(), dom.end());
 
-          node_test_stream nodes(out);
+          node_test_ifstream nodes(out);
 
           // (8)
           AssertThat(nodes.can_pull(), Is().True());
@@ -5051,7 +5051,7 @@ go_bandit([]() {
 
           AssertThat(nodes.can_pull(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(4u, 1u)));

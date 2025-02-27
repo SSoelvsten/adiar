@@ -24,7 +24,7 @@ namespace adiar
   bdd_from(const exec_policy& ep, const zdd& A)
   {
     const internal::shared_file<bdd::label_type> dom = domain_get();
-    internal::file_stream<domain_var> ds(dom);
+    internal::ifstream<domain_var> ds(dom);
 
     return bdd_from(ep, A, make_generator(ds));
   }

@@ -1,11 +1,11 @@
 #include "../../../test.h"
 #include <filesystem>
 
+#include <adiar/internal/io/narc_ifstream.h>
 #include <adiar/internal/io/narc_raccess.h>
-#include <adiar/internal/io/narc_stream.h>
 
 go_bandit([]() {
-  describe("adiar/internal/io/arc_file.h , arc_stream.h , arc_writer.h", []() {
+  describe("adiar/internal/io/arc_file.h , arc_ifstream.h , arc_writer.h", []() {
     describe("arc_writer", []() {
       it("can push level information", []() {
         levelized_file<arc> af;
@@ -69,7 +69,7 @@ go_bandit([]() {
 
         // AssertThat(af.semi_transposed, Is().True());
 
-        levelized_file_stream<arc> lfs(af);
+        levelized_ifstream<arc> lfs(af);
         AssertThat(lfs.can_pull<0>(), Is().False());
 
         AssertThat(lfs.can_pull<1>(), Is().True());
@@ -101,7 +101,7 @@ go_bandit([]() {
         AssertThat(af.number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(af.number_of_terminals[true], Is().EqualTo(1u));
 
-        levelized_file_stream<arc> lfs(af);
+        levelized_ifstream<arc> lfs(af);
         AssertThat(lfs.can_pull<0>(), Is().False());
 
         AssertThat(lfs.can_pull<1>(), Is().True());
@@ -141,7 +141,7 @@ go_bandit([]() {
         AssertThat(af.number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(af.number_of_terminals[true], Is().EqualTo(4u));
 
-        levelized_file_stream<arc> lfs(af);
+        levelized_ifstream<arc> lfs(af);
         AssertThat(lfs.can_pull<0>(), Is().True());
         AssertThat(lfs.pull<0>(),
                    Is().EqualTo(arc(arc::pointer_type(0, 0), false, arc::pointer_type(1, 0))));
@@ -174,7 +174,7 @@ go_bandit([]() {
       });
     });
 
-    describe("arc_writer + arc_stream", []() {
+    describe("arc_writer + arc_ifstream", []() {
       levelized_file<arc> af;
       /*
                      _0_     ---- x0
@@ -198,7 +198,7 @@ go_bandit([]() {
       }
 
       it("merges terminal arcs on 'pull' [default: backwards]", [&af]() {
-        arc_stream<> as(af);
+        arc_ifstream<> as(af);
 
         AssertThat(as.can_pull_terminal(), Is().True());
         AssertThat(as.pull_terminal(),
@@ -219,7 +219,7 @@ go_bandit([]() {
       });
 
       it("merges terminal arcs on 'pull' [non-default: forwards]", [&af]() {
-        arc_stream<true> as(af);
+        arc_ifstream<true> as(af);
 
         AssertThat(as.can_pull_terminal(), Is().True());
         AssertThat(as.pull_terminal(),
@@ -241,7 +241,7 @@ go_bandit([]() {
 
       /*
       it("merges terminal arcs on 'pull' [negated]", [&af]() {
-        arc_stream<> as(af, true);
+        arc_ifstream<> as(af, true);
 
         AssertThat(as.can_pull_terminal(), Is().True());
         AssertThat(as.pull_terminal(),
@@ -263,7 +263,7 @@ go_bandit([]() {
       */
 
       it("reads internal arcs as given [non-default: forwards]", [&af]() {
-        arc_stream<> as(af);
+        arc_ifstream<> as(af);
 
         AssertThat(as.can_pull_internal(), Is().True());
         AssertThat(as.pull_internal(),
@@ -278,7 +278,7 @@ go_bandit([]() {
       });
 
       it("provides number of unread terminals [negate=false]", [&af]() {
-        arc_stream<> as(af);
+        arc_ifstream<> as(af);
 
         AssertThat(as.unread_terminals(), Is().EqualTo(5u));
         AssertThat(as.unread_terminals(false), Is().EqualTo(1u));
@@ -322,7 +322,7 @@ go_bandit([]() {
 
       /*
       it("provides number of unread terminals [negate=true]", [&af]() {
-        arc_stream<> as(af, true);
+        arc_ifstream<> as(af, true);
 
         AssertThat(as.unread_terminals(), Is().EqualTo(5u));
         AssertThat(as.unread_terminals(false), Is().EqualTo(4u));
@@ -366,7 +366,7 @@ go_bandit([]() {
       */
     });
 
-    describe("arc_writer + narc_stream", []() {
+    describe("arc_writer + narc_ifstream", []() {
       it("marks file as de-transposed on attach", []() {
         levelized_file<arc> af;
 
@@ -380,7 +380,7 @@ go_bandit([]() {
         }
 
         AssertThat(af.semi_transposed, Is().True());
-        narc_stream ns(af);
+        narc_ifstream ns(af);
         AssertThat(af.semi_transposed, Is().False());
       });
 
@@ -415,7 +415,7 @@ go_bandit([]() {
       }
 
       it("can pull from 'x0' BDD [in-order]", [&]() {
-        narc_stream ns(x0_ordered);
+        narc_ifstream ns(x0_ordered);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(),
@@ -425,7 +425,7 @@ go_bandit([]() {
       });
 
       it("can pull single-node BDD [out-of-order]", [&]() {
-        narc_stream ns(x0_unordered);
+        narc_ifstream ns(x0_unordered);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(),
@@ -435,7 +435,7 @@ go_bandit([]() {
       });
 
       it("can reattach to same file", [&]() {
-        narc_stream ns(x0_ordered);
+        narc_ifstream ns(x0_ordered);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(),
@@ -445,7 +445,7 @@ go_bandit([]() {
       });
 
       it("can peek single-node BDD [in-order]", [&]() {
-        narc_stream ns(x0_ordered);
+        narc_ifstream ns(x0_ordered);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.peek(),
@@ -455,7 +455,7 @@ go_bandit([]() {
       });
 
       it("can peek single-node BDD [out-of-order]", [&]() {
-        narc_stream ns(x0_unordered);
+        narc_ifstream ns(x0_unordered);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.peek(),
@@ -466,7 +466,7 @@ go_bandit([]() {
 
       /*
       it("can read single-node BDD [negated]", [&]() {
-        narc_stream ns(x0_ordered, true);
+        narc_ifstream ns(x0_ordered, true);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(),
@@ -477,7 +477,7 @@ go_bandit([]() {
       */
 
       it("can pull after peek of single-node BDD", [&]() {
-        narc_stream ns(x0_ordered);
+        narc_ifstream ns(x0_ordered);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.peek(),
@@ -538,7 +538,7 @@ go_bandit([]() {
       it("can pull larger BDD [internals already sorted]", [&]() {
         AssertThat(large_untransposed.semi_transposed, Is().False());
 
-        narc_stream ns(large_untransposed);
+        narc_ifstream ns(large_untransposed);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(),
@@ -566,7 +566,7 @@ go_bandit([]() {
       it("can peek and pull larger BDD", [&]() {
         AssertThat(large_untransposed.semi_transposed, Is().False());
 
-        narc_stream ns(large_untransposed);
+        narc_ifstream ns(large_untransposed);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.peek(),
@@ -609,7 +609,7 @@ go_bandit([]() {
       it("can peek the same node twice in larger BDD", [&]() {
         AssertThat(large_untransposed.semi_transposed, Is().False());
 
-        narc_stream ns(large_untransposed);
+        narc_ifstream ns(large_untransposed);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(),
@@ -661,7 +661,7 @@ go_bandit([]() {
 
         AssertThat(af.semi_transposed, Is().True());
 
-        narc_stream ns(af);
+        narc_ifstream ns(af);
 
         AssertThat(af.semi_transposed, Is().False());
 
@@ -727,7 +727,7 @@ go_bandit([]() {
       it("can pull larger BDD [reverse]", [&]() {
         AssertThat(large_untransposed2.semi_transposed, Is().False());
 
-        narc_stream<true> ns(large_untransposed2);
+        narc_ifstream<true> ns(large_untransposed2);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(),
@@ -756,7 +756,7 @@ go_bandit([]() {
       it("can pull larger BDD [negated + reverse]", [&]() {
         AssertThat(large_untransposed2.semi_transposed, Is().False());
 
-        narc_stream<true> ns(large_untransposed2, true);
+        narc_ifstream<true> ns(large_untransposed2, true);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(),

@@ -77,26 +77,26 @@ set(HEADERS
 
   # adiar/internal/io
   internal/io/file.h
-  internal/io/file_stream.h
+  internal/io/ifstream.h
   internal/io/file_writer.h
 
   internal/io/levelized_file.h
-  internal/io/levelized_file_stream.h
+  internal/io/levelized_ifstream.h
   internal/io/levelized_file_writer.h
   internal/io/levelized_raccess.h
 
   internal/io/shared_file_ptr.h
 
   internal/io/arc_file.h
-  internal/io/arc_stream.h
+  internal/io/arc_ifstream.h
   internal/io/arc_writer.h
 
   internal/io/narc_raccess.h
-  internal/io/narc_stream.h
+  internal/io/narc_ifstream.h
 
   internal/io/node_file.h
   internal/io/node_raccess.h
-  internal/io/node_stream.h
+  internal/io/node_ifstream.h
   internal/io/node_writer.h
 )
 

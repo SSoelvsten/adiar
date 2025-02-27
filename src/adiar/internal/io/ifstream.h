@@ -1,6 +1,7 @@
-#ifndef ADIAR_INTERNAL_IO_FILE_STREAM_H
-#define ADIAR_INTERNAL_IO_FILE_STREAM_H
+#ifndef ADIAR_INTERNAL_IO_IFSTREAM_H
+#define ADIAR_INTERNAL_IO_IFSTREAM_H
 
+#include <tpie/file_stream.h>
 #include <tpie/sort.h>
 #include <tpie/tpie.h>
 
@@ -18,7 +19,7 @@ namespace adiar::internal
   /// \tparam Reverse Whether the reading direction should be reversed
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename T, bool Reverse = false>
-  class file_stream
+  class ifstream
   {
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -61,17 +62,17 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct unattached to any file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    file_stream()
+    ifstream()
     {}
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    file_stream(const file_stream<value_type, Reverse>&) = delete;
-    file_stream(file_stream<value_type, Reverse>&&)      = delete;
+    ifstream(const ifstream<value_type, Reverse>&) = delete;
+    ifstream(ifstream<value_type, Reverse>&&)      = delete;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a given shared `file<value_type>`.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    file_stream(const file<value_type>& f)
+    ifstream(const file<value_type>& f)
     {
       attach(f);
     }
@@ -79,7 +80,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a given shared `file<value_type>`.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    file_stream(const adiar::shared_ptr<file<value_type>>& f)
+    ifstream(const adiar::shared_ptr<file<value_type>>& f)
     {
       attach(f);
     }
@@ -87,7 +88,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Detaches and cleans up when destructed.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    ~file_stream()
+    ~ifstream()
     {
       detach();
     }
@@ -115,7 +116,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // Befriend the few places that need direct access to the above 'attach'.
     template <typename tparam__elem_t, bool tparam__Reverse>
-    friend class levelized_file_stream;
+    friend class levelized_ifstream;
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -263,4 +264,4 @@ namespace adiar::internal
   };
 }
 
-#endif // ADIAR_INTERNAL_IO_FILE_STREAM_H
+#endif // ADIAR_INTERNAL_IO_IFSTREAM_H

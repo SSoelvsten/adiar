@@ -1,10 +1,10 @@
-#ifndef ADIAR_INTERNAL_IO_NODE_STREAM_H
-#define ADIAR_INTERNAL_IO_NODE_STREAM_H
+#ifndef ADIAR_INTERNAL_IO_NODE_IFSTREAM_H
+#define ADIAR_INTERNAL_IO_NODE_IFSTREAM_H
 
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/dd.h>
 #include <adiar/internal/io/levelized_file.h>
-#include <adiar/internal/io/levelized_file_stream.h>
+#include <adiar/internal/io/levelized_ifstream.h>
 
 namespace adiar::internal
 {
@@ -16,12 +16,12 @@ namespace adiar::internal
   ///
   /// \see shared_levelized_file<node>
   //
-  // TODO: Move '!' negation out of 'file_stream', 'levelized_file_stream', and instead in here!
+  // TODO: Move '!' negation out of 'ifstream', 'levelized_ifstream', and instead in here!
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <bool Reverse = false>
-  class node_stream : public levelized_file_stream<node, !Reverse>
+  class node_ifstream : public levelized_ifstream<node, !Reverse>
   {
-    using parent_type = levelized_file_stream<node, !Reverse>;
+    using parent_type = levelized_ifstream<node, !Reverse>;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Whether nodes should be \em negated on-the-fly.
@@ -37,18 +37,18 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Create unattached to any file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_stream() = default;
+    node_ifstream() = default;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_stream(const node_stream<Reverse>&) = delete;
-    node_stream(node_stream<Reverse>&&)      = delete;
+    node_ifstream(const node_ifstream<Reverse>&) = delete;
+    node_ifstream(node_ifstream<Reverse>&&)      = delete;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a node file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_stream(const levelized_file<node>& file,
-                bool negate                   = false,
-                node::signed_label_type shift = 0)
+    node_ifstream(const levelized_file<node>& file,
+                  bool negate                   = false,
+                  node::signed_label_type shift = 0)
       : parent_type(file)
       , _negate(negate)
       , _shift(shift)
@@ -57,9 +57,9 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a shared node file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_stream(const shared_ptr<levelized_file<node>>& file,
-                bool negate                   = false,
-                node::signed_label_type shift = 0)
+    node_ifstream(const shared_ptr<levelized_file<node>>& file,
+                  bool negate                   = false,
+                  node::signed_label_type shift = 0)
       : parent_type(file)
       , _negate(negate)
       , _shift(shift)
@@ -68,7 +68,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a Decision Diagram.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_stream(const dd& diagram)
+    node_ifstream(const dd& diagram)
       : parent_type(diagram.file_ptr())
       , _negate(diagram.is_negated())
       , _shift(diagram.shift())
@@ -116,10 +116,10 @@ namespace adiar::internal
     seek(const node::uid_type& u)
     {
       const node::uid_type u_unshifted = shift_replace(u.as_ptr(), -this->_shift);
-      const node n_raw                 = parent_type::_streams[0].seek(std::move(u_unshifted));
+      const node n_raw                 = parent_type::_ifstreams[0].seek(std::move(u_unshifted));
       return shift_replace(cnot(std::move(n_raw), this->_negate), this->_shift);
     }
   };
 }
 
-#endif // ADIAR_INTERNAL_IO_NODE_STREAM_H
+#endif // ADIAR_INTERNAL_IO_NODE_IFSTREAM_H

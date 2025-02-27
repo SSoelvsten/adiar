@@ -22,11 +22,11 @@
 #include <adiar/internal/io/arc_file.h>
 #include <adiar/internal/io/arc_writer.h>
 #include <adiar/internal/io/file.h>
-#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/ifstream.h>
+#include <adiar/internal/io/narc_ifstream.h>
 #include <adiar/internal/io/narc_raccess.h>
-#include <adiar/internal/io/narc_stream.h>
+#include <adiar/internal/io/node_ifstream.h>
 #include <adiar/internal/io/node_raccess.h>
-#include <adiar/internal/io/node_stream.h>
 #include <adiar/internal/io/shared_file_ptr.h>
 #include <adiar/internal/unreachable.h>
 #include <adiar/internal/util.h>
@@ -714,7 +714,7 @@ namespace adiar::internal
     // Check for trivial terminal-only return on shortcutting the root
     typename Policy::pointer_type root;
 
-    { // Detach and garbage collect node_stream<>
+    { // Detach and garbage collect node_ifstream<>
       NodeStream in_nodes(in);
       root = in_nodes.pull().uid();
     }
@@ -867,7 +867,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
     stats_quantify.pq.runs += 1u;
 #endif
-    return __quantify_pq<node_stream<>, quantify_priority_queue_1_node_t>(ep, in, policy);
+    return __quantify_pq<node_ifstream<>, quantify_priority_queue_1_node_t>(ep, in, policy);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -921,7 +921,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
     stats_quantify.pq.runs += 1u;
 #endif
-    return __quantify_pq<narc_stream<>, quantify_priority_queue_1_arc_t>(ep, in, policy);
+    return __quantify_pq<narc_ifstream<>, quantify_priority_queue_1_arc_t>(ep, in, policy);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1014,7 +1014,7 @@ namespace adiar::internal
     static size_t
     stream_memory()
     {
-      return node_stream<>::memory_usage() + arc_writer::memory_usage();
+      return node_ifstream<>::memory_usage() + arc_writer::memory_usage();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1131,13 +1131,13 @@ namespace adiar::internal
         using PriorityQueue_2 = quantify_priority_queue_2_t<memory_mode::Internal>;
         PriorityQueue_2 pq_2(inner_remaining_memory, max_pq_2_size);
 
-        return __quantify_pq<node_stream<>, PriorityQueue_1, PriorityQueue_2>(
+        return __quantify_pq<node_ifstream<>, PriorityQueue_1, PriorityQueue_2>(
           ep, outer_file, *this, pq_1, pq_2);
       } else {
         using PriorityQueue_2 = quantify_priority_queue_2_t<memory_mode::External>;
         PriorityQueue_2 pq_2(inner_remaining_memory, max_pq_2_size);
 
-        return __quantify_pq<node_stream<>, PriorityQueue_1, PriorityQueue_2>(
+        return __quantify_pq<node_ifstream<>, PriorityQueue_1, PriorityQueue_2>(
           ep, outer_file, *this, pq_1, pq_2);
       }
     }
@@ -1437,7 +1437,7 @@ namespace adiar::internal
     res.dd_width = dd_width(dd);
     res.dd_vars  = dd_varcount(dd);
 
-    level_info_stream<false /* top-down */> lis(dd);
+    level_info_ifstream<false /* top-down */> lis(dd);
 
     size_t shallow_threshold = res.dd_size / 3;
 
@@ -1488,7 +1488,7 @@ namespace adiar::internal
   __quantify__get_deepest(const typename Policy::dd_type& dd,
                           const predicate<typename Policy::label_type>& pred)
   {
-    level_info_stream<true /* bottom-up */> lis(dd);
+    level_info_ifstream<true /* bottom-up */> lis(dd);
 
     while (lis.can_pull()) {
       const typename Policy::label_type l = lis.pull().label();
@@ -1748,7 +1748,7 @@ namespace adiar::internal
                           const typename Policy::label_type bot_level,
                           const optional<typename Policy::label_type> top_level)
   {
-    level_info_stream<true /* bottom-up */> lis(dd);
+    level_info_ifstream<true /* bottom-up */> lis(dd);
 
     while (lis.can_pull()) {
       const typename Policy::label_type l = lis.pull().label();
@@ -1867,7 +1867,7 @@ namespace adiar::internal
         }
 
         {
-          level_info_stream<true> in_meta(dd);
+          level_info_ifstream<true> in_meta(dd);
           typename Policy::label_type dd_level = in_meta.pull().level();
 
           for (;;) {

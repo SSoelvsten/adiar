@@ -13,8 +13,8 @@
 #include <adiar/internal/io/arc_writer.h>
 #include <adiar/internal/io/file.h>
 #include <adiar/internal/io/levelized_file.h>
-#include <adiar/internal/io/levelized_file_stream.h>
-#include <adiar/internal/io/node_stream.h>
+#include <adiar/internal/io/levelized_ifstream.h>
+#include <adiar/internal/io/node_ifstream.h>
 #include <adiar/internal/io/shared_file_ptr.h>
 
 namespace adiar::internal
@@ -40,33 +40,33 @@ namespace adiar::internal
   // TODO: Rename 'stream_t' into 'type'
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename File>
-  struct level_stream_t
+  struct level_ifstream_t
   {
     template <bool Reverse = false>
-    using stream_t = level_info_stream<Reverse>;
+    using stream_t = level_info_ifstream<Reverse>;
   };
 
   template <>
-  struct level_stream_t<file<ptr_uint64::label_type>>
+  struct level_ifstream_t<file<ptr_uint64::label_type>>
   {
     template <bool Reverse = false>
-    using stream_t = file_stream<ptr_uint64::label_type, Reverse>;
+    using stream_t = ifstream<ptr_uint64::label_type, Reverse>;
   };
 
   template <>
-  struct level_stream_t<shared_file<ptr_uint64::label_type>>
+  struct level_ifstream_t<shared_file<ptr_uint64::label_type>>
   {
     template <bool Reverse = false>
-    using stream_t = file_stream<ptr_uint64::label_type, Reverse>;
+    using stream_t = ifstream<ptr_uint64::label_type, Reverse>;
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// \brief  Turn a `level_stream<...>` into a level-only generator function.
+  /// \brief  Turn a `level_ifstream<...>` into a level-only generator function.
   ///
   /// \remark The direction (*ascending* vs. *descending*) of the generator is dictated by the given
   ///         stream's direction.
   ///
-  /// \see level_stream_t, generator
+  /// \see level_ifstream_t, generator
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename LevelStream>
   generator<ptr_uint64::label_type>
@@ -86,10 +86,10 @@ namespace adiar::internal
   bool
   disjoint_levels(const A& a, const B& b)
   {
-    using stream1_t = typename level_stream_t<A>::template stream_t<false>;
+    using stream1_t = typename level_ifstream_t<A>::template stream_t<false>;
     stream1_t sa(a);
 
-    using stream2_t = typename level_stream_t<B>::template stream_t<false>;
+    using stream2_t = typename level_ifstream_t<B>::template stream_t<false>;
     stream2_t sb(b);
 
     while (sa.can_pull() && sb.can_pull()) {
@@ -112,7 +112,7 @@ namespace adiar::internal
   bool
   has_level(const DD& d, const typename DD::label_type x)
   {
-    level_info_stream<> in_meta(d);
+    level_info_ifstream<> in_meta(d);
     while (in_meta.can_pull()) {
       level_info m = in_meta.pull();
 
@@ -189,7 +189,7 @@ namespace adiar::internal
     {
       arc_writer aw(af);
       { // Split every node into their arcs.
-        node_stream ns(d);
+        node_ifstream ns(d);
         while (ns.can_pull()) {
           const typename DD::node_type n = ns.pull();
 
@@ -201,7 +201,7 @@ namespace adiar::internal
       { // Copy over meta information
         af->max_1level_cut = d->max_1level_cut[cut::Internal];
 
-        level_info_stream<> lis(d);
+        level_info_ifstream<> lis(d);
         while (lis.can_pull()) { aw << lis.pull(); }
       }
     }

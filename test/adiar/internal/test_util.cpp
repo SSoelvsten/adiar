@@ -33,7 +33,7 @@ go_bandit([]() {
         AssertThat(out->size(1), Is().EqualTo(3u));
         AssertThat(out->size(2), Is().EqualTo(0u));
 
-        arc_test_stream arcs(out);
+        arc_test_ifstream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True()); // n2
         AssertThat(arcs.pull_internal(), Is().EqualTo(arc{ n1.uid(), false, n2.uid() }));
@@ -55,7 +55,7 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream levels(out);
+        level_info_test_ifstream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
         AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -104,7 +104,7 @@ go_bandit([]() {
         AssertThat(out->size(1), Is().EqualTo(4u));
         AssertThat(out->size(2), Is().EqualTo(0u));
 
-        arc_test_stream arcs(out);
+        arc_test_ifstream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True()); // n2
         AssertThat(arcs.pull_internal(), Is().EqualTo(arc{ n1.uid(), true, n2.uid() }));
@@ -137,7 +137,7 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream levels(out);
+        level_info_test_ifstream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
         AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -190,7 +190,7 @@ go_bandit([]() {
         AssertThat(out->size(1), Is().EqualTo(5u));
         AssertThat(out->size(2), Is().EqualTo(0u));
 
-        arc_test_stream arcs(out);
+        arc_test_ifstream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True()); // n2
         AssertThat(arcs.pull_internal(), Is().EqualTo(arc{ n1.uid(), false, n2.uid() }));
@@ -223,7 +223,7 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream levels(out);
+        level_info_test_ifstream levels(out);
 
         AssertThat(levels.can_pull(), Is().True());
         AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));

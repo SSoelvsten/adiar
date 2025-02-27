@@ -344,7 +344,7 @@ go_bandit([]() {
       describe("bdd_and(f,g)", [&]() {
         it("resolves F /\\ T terminal-only BDDs", [&]() {
           __bdd out = bdd_and(bdd_F, bdd_T);
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -376,7 +376,7 @@ go_bandit([]() {
           }
 
           __bdd out = bdd_and(bdd_T, bdd_T2);
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -411,7 +411,7 @@ go_bandit([]() {
         it("shortcuts F /\\ x0", [&]() {
           __bdd out = bdd_and(bdd_F, bdd_x0);
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -438,7 +438,7 @@ go_bandit([]() {
         it("shortcuts F /\\ [2]", [&]() {
           __bdd out = bdd_and(bdd_F, bdd_2);
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -473,7 +473,7 @@ go_bandit([]() {
         it("collapses on the same BDD twice, where one is negated [left]", [&]() {
           __bdd out = bdd_and(bdd(bdd_1, true), bdd(bdd_1, false));
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -500,7 +500,7 @@ go_bandit([]() {
         it("collapses on the same BDD twice, where one is negated [right]", [&]() {
           __bdd out = bdd_and(bdd(bdd_1, false), bdd(bdd_1, true));
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -561,7 +561,7 @@ go_bandit([]() {
         it("collapses on the same BDD twice, where one is negated [left]", [&]() {
           __bdd out = bdd_nand(bdd(bdd_2, true), bdd(bdd_2, false));
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -588,7 +588,7 @@ go_bandit([]() {
         it("collapses on the same BDD twice, where one is negated [right]", [&]() {
           __bdd out = bdd_nand(bdd(bdd_2, false), bdd(bdd_2, true));
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -624,7 +624,7 @@ go_bandit([]() {
       describe("bdd_or(f,g)", [&]() {
         it("resolves T \\/ F terminal-only BDDs", [&]() {
           __bdd out = bdd_or(bdd_T, bdd_F);
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -657,7 +657,7 @@ go_bandit([]() {
           }
 
           __bdd out = bdd_or(bdd_F, bdd_F2);
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -700,7 +700,7 @@ go_bandit([]() {
         it("shortcuts [1] \\/ T", [&]() {
           __bdd out = bdd_or(bdd_1, bdd_T);
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -727,7 +727,7 @@ go_bandit([]() {
         it("shortcuts [2] \\/ T", [&]() {
           __bdd out = bdd_or(bdd_2, bdd_T);
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -762,7 +762,7 @@ go_bandit([]() {
         it("collapses on the same BDD twice, where one is negated [left]", [&]() {
           __bdd out = bdd_or(bdd(bdd_1, true), bdd(bdd_1, false));
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -789,7 +789,7 @@ go_bandit([]() {
         it("collapses on the same BDD twice, where one is negated [right]", [&]() {
           __bdd out = bdd_or(bdd(bdd_1, false), bdd(bdd_1, true));
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -841,7 +841,7 @@ go_bandit([]() {
         it("collapses on the same BDD twice, where one is negated [left]", [&]() {
           __bdd out = bdd_nor(bdd(bdd_3, true), bdd(bdd_3, false));
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -868,7 +868,7 @@ go_bandit([]() {
         it("collapses on the same BDD twice, where one is negated [right]", [&]() {
           __bdd out = bdd_nor(bdd(bdd_3, false), bdd(bdd_3, true));
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -904,7 +904,7 @@ go_bandit([]() {
       describe("bdd_xor(f,g)", [&]() {
         it("resolves F ^ T terminal-only BDDs", [&]() {
           __bdd out = bdd_xor(bdd_F, bdd_T);
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -930,7 +930,7 @@ go_bandit([]() {
 
         it("resolves T ^ T terminal-only BDDs", [&]() {
           __bdd out = bdd_xor(bdd_T, bdd_T);
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -973,7 +973,7 @@ go_bandit([]() {
         it("collapses on the same BDD twice", [&]() {
           __bdd out = bdd_xor(bdd_1, bdd_1);
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -1000,7 +1000,7 @@ go_bandit([]() {
         it("collapses on the same BDD twice, where one is negated [left]", [&]() {
           __bdd out = bdd_xor(bdd(bdd_1, true), bdd(bdd_1, false));
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -1027,7 +1027,7 @@ go_bandit([]() {
         it("collapses on the same BDD twice, where one is negated [right]", [&]() {
           __bdd out = bdd_xor(bdd(bdd_2, false), bdd(bdd_2, true));
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -1054,7 +1054,7 @@ go_bandit([]() {
         it("collapses on the same BDD twice, when both are negated", [&]() {
           __bdd out = bdd_xor(bdd(bdd_1, true), bdd(bdd_1, true));
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -1082,7 +1082,7 @@ go_bandit([]() {
       describe("bdd_imp(f,g)", [&]() {
         it("resolves F -> T terminal-only BDDs", [&]() {
           __bdd out = bdd_imp(bdd_F, bdd_T);
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -1108,7 +1108,7 @@ go_bandit([]() {
 
         it("resolves T -> F terminal-only BDDs", [&]() {
           __bdd out = bdd_imp(bdd_T, bdd_F);
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -1134,7 +1134,7 @@ go_bandit([]() {
 
         it("resolves T -> T terminal-only BDDs", [&]() {
           __bdd out = bdd_imp(bdd_T, bdd_T);
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -1169,7 +1169,7 @@ go_bandit([]() {
         it("shortcuts F -> [1]", [&]() {
           __bdd out = bdd_imp(bdd_F, bdd_1);
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -1196,7 +1196,7 @@ go_bandit([]() {
         it("collapses when given the same BDD twice", [&]() {
           __bdd out = bdd_imp(bdd_1, bdd_1);
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -1259,7 +1259,7 @@ go_bandit([]() {
         it("collapses when given the same BDD twice, when both are negated", [&]() {
           __bdd out = bdd_imp(bdd(bdd_1, true), bdd(bdd_1, true));
 
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -1324,7 +1324,7 @@ go_bandit([]() {
 
           __bdd out = bdd_and(ep, bdd_x0, bdd_not_x0);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().False());
 
@@ -1337,7 +1337,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -1365,7 +1365,7 @@ go_bandit([]() {
 
           __bdd out = bdd_and(ep, bdd_x0, bdd_x2);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -1386,7 +1386,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -1415,7 +1415,7 @@ go_bandit([]() {
 
           __bdd out = bdd_and(ep, bdd(bdd_x0, false, +0), bdd(bdd_x0, false, +1));
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -1436,7 +1436,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -1473,7 +1473,7 @@ go_bandit([]() {
 
           __bdd out = bdd_and(ep, bdd_1, bdd_2);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -1533,7 +1533,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -1574,7 +1574,7 @@ go_bandit([]() {
 
           __bdd out = bdd_and(ep, bdd(bdd_1, false, +0), bdd(bdd_2, false, -1));
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -1621,7 +1621,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -1690,7 +1690,7 @@ go_bandit([]() {
 
           __bdd out = bdd_and(ep, bdd_group_1, bdd_group_2);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True()); // (2,2)
           AssertThat(arcs.pull_internal(),
@@ -1732,7 +1732,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -1774,7 +1774,7 @@ go_bandit([]() {
 
           __bdd out = bdd_or(ep, bdd(bdd_x0, false, +2), bdd_x2);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().False());
 
@@ -1787,7 +1787,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -1815,7 +1815,7 @@ go_bandit([]() {
 
           __bdd out = bdd_or(ep, bdd_x0, bdd_x2);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -1835,7 +1835,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -1866,7 +1866,7 @@ go_bandit([]() {
 
           __bdd out = bdd_or(ep, bdd_x2, bdd_x1);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -1886,7 +1886,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -1915,7 +1915,7 @@ go_bandit([]() {
 
           __bdd out = bdd_or(ep, bdd(bdd_x0, false, +2), bdd(bdd_x1, false, +0));
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -1935,7 +1935,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -1970,7 +1970,7 @@ go_bandit([]() {
 
           __bdd out = bdd_or(ep, bdd_1, bdd_2);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -2012,7 +2012,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -2050,7 +2050,7 @@ go_bandit([]() {
           */
           __bdd out = bdd_or(ep, bdd(bdd_1, false, +0), bdd(bdd_2, false, -1));
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
 
@@ -2071,7 +2071,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -2106,7 +2106,7 @@ go_bandit([]() {
 
           __bdd out = bdd_xor(ep, bdd(bdd_x0, false, +1), bdd_x1);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().False());
 
@@ -2119,7 +2119,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -2149,7 +2149,7 @@ go_bandit([]() {
 
           __bdd out = bdd_xor(ep, bdd_x0, bdd_x1);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -2177,7 +2177,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -2210,7 +2210,7 @@ go_bandit([]() {
 
           __bdd out = bdd_xor(ep, bdd(bdd_x0, false, +2), bdd_x1);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -2238,7 +2238,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -2269,7 +2269,7 @@ go_bandit([]() {
 
           __bdd out = bdd_xor(ep, bdd_x0, bdd(bdd_x0, false, +2));
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -2297,7 +2297,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -2333,7 +2333,7 @@ go_bandit([]() {
           */
           __bdd out = bdd_xor(ep, bdd_2, bdd_x2);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -2375,7 +2375,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -2404,7 +2404,7 @@ go_bandit([]() {
 
           __bdd out = bdd_xor(ep, bdd_1, bdd_2);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -2478,7 +2478,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -2533,7 +2533,7 @@ go_bandit([]() {
 
           __bdd out = bdd_xor(ep, bdd_3, bdd_1);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True()); // (2,3)
           AssertThat(arcs.pull_internal(),
@@ -2607,7 +2607,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -2656,7 +2656,7 @@ go_bandit([]() {
 
           __bdd out = bdd_xor(ep, bdd_canon, bdd_indexable);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -2737,7 +2737,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -2782,7 +2782,7 @@ go_bandit([]() {
 
           __bdd out = bdd_imp(ep, bdd_x0, bdd_x1);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -2803,7 +2803,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -2859,7 +2859,7 @@ go_bandit([]() {
 
           __bdd out = bdd_and(ep, bdd_x0, bdd_not_x0);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().False());
 
@@ -2872,7 +2872,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -2900,7 +2900,7 @@ go_bandit([]() {
 
           __bdd out = bdd_and(ep, bdd_x0, bdd_x2);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -2921,7 +2921,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -2950,7 +2950,7 @@ go_bandit([]() {
 
           __bdd out = bdd_and(ep, bdd(bdd_x0, false, +0), bdd(bdd_x0, false, +1));
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -2971,7 +2971,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -3008,7 +3008,7 @@ go_bandit([]() {
 
           __bdd out = bdd_and(ep, bdd_1, bdd_2);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -3068,7 +3068,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -3105,7 +3105,7 @@ go_bandit([]() {
 
           __bdd out = bdd_or(ep, bdd(bdd_x0, false, +2), bdd_x2);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().False());
 
@@ -3118,7 +3118,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -3146,7 +3146,7 @@ go_bandit([]() {
 
           __bdd out = bdd_or(ep, bdd_x0, bdd_x2);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -3166,7 +3166,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -3197,7 +3197,7 @@ go_bandit([]() {
 
           __bdd out = bdd_or(ep, bdd_x2, bdd_x1);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -3217,7 +3217,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -3246,7 +3246,7 @@ go_bandit([]() {
 
           __bdd out = bdd_or(ep, bdd(bdd_x0, false, +2), bdd(bdd_x1, false, +0));
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -3266,7 +3266,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -3296,7 +3296,7 @@ go_bandit([]() {
           */
           __bdd out = bdd_or(ep, bdd(bdd_1, false, +0), bdd(bdd_2, false, -1));
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
 
@@ -3317,7 +3317,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -3348,7 +3348,7 @@ go_bandit([]() {
 
           __bdd out = bdd_xor(ep, bdd_x0, bdd_not_x0);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().False());
 
@@ -3361,7 +3361,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -3385,7 +3385,7 @@ go_bandit([]() {
 
           __bdd out = bdd_xor(ep, bdd(bdd_x0, false, +1), bdd_x1);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().False());
 
@@ -3398,7 +3398,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -3427,7 +3427,7 @@ go_bandit([]() {
 
           __bdd out = bdd_xor(ep, bdd_x1, bdd_x0);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -3455,7 +3455,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -3487,7 +3487,7 @@ go_bandit([]() {
 
           __bdd out = bdd_xor(ep, bdd_x1, bdd(bdd_x0, false, +2));
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -3515,7 +3515,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -3548,7 +3548,7 @@ go_bandit([]() {
 
           __bdd out = bdd_xor(ep, bdd_x0, bdd_x1);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -3576,7 +3576,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -3608,7 +3608,7 @@ go_bandit([]() {
 
           __bdd out = bdd_xor(ep, bdd_x2, bdd_x1);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -3636,7 +3636,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -3668,7 +3668,7 @@ go_bandit([]() {
 
           __bdd out = bdd_xor(ep, bdd(bdd_x0, false, +2), bdd_x1);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -3696,7 +3696,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -3727,7 +3727,7 @@ go_bandit([]() {
 
           __bdd out = bdd_xor(ep, bdd_x0, bdd(bdd_x0, false, +2));
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -3755,7 +3755,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -3817,7 +3817,7 @@ go_bandit([]() {
 
           __bdd out = bdd_xor(bdd_ra, bdd_0xnor2);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -3860,7 +3860,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -3935,7 +3935,7 @@ go_bandit([]() {
 
           __bdd out = bdd_xor(ep, bdd_0xnor2, bdd_wide2);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -4009,7 +4009,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -4052,7 +4052,7 @@ go_bandit([]() {
 
           __bdd out = bdd_xor(ep, bdd_thin, bdd_wide);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -4111,7 +4111,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -4154,7 +4154,7 @@ go_bandit([]() {
 
           __bdd out = bdd_xor(ep, bdd_wide, bdd_thin);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -4213,7 +4213,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -4240,7 +4240,7 @@ go_bandit([]() {
         it("uses random access on non-canonical but indexable ([canonical] ^ [indexable])", [&]() {
           __bdd out = bdd_xor(ep, bdd_canon, bdd_indexable);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True()); // (2,2)
           AssertThat(arcs.pull_internal(),
@@ -4321,7 +4321,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -4350,7 +4350,7 @@ go_bandit([]() {
         it("uses random access non-canonical but indexable ([indexable] ^ [canonical])", [&]() {
           __bdd out = bdd_xor(ep, bdd_indexable, bdd_canon);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True()); // (2,2)
           AssertThat(arcs.pull_internal(),
@@ -4431,7 +4431,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -4460,7 +4460,7 @@ go_bandit([]() {
         it("uses random access on indexable ([canonical] ^ [non-indexable])", [&]() {
           __bdd out = bdd_xor(ep, bdd_canon, bdd_unindexable);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True()); // (2,2)
           AssertThat(arcs.pull_internal(),
@@ -4541,7 +4541,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -4570,7 +4570,7 @@ go_bandit([]() {
         it("uses random access on indexable ([non-indexable] ^ [canonical])", [&]() {
           __bdd out = bdd_xor(ep, bdd_unindexable, bdd_canon);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True()); // (2,2)
           AssertThat(arcs.pull_internal(),
@@ -4651,7 +4651,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -4695,7 +4695,7 @@ go_bandit([]() {
           */
           __bdd out = bdd_imp(ep, bdd_wide, bdd_thin);
 
-          arc_test_stream arcs(out);
+          arc_test_ifstream arcs(out);
 
           AssertThat(arcs.can_pull_internal(), Is().True());
           AssertThat(arcs.pull_internal(),
@@ -4754,7 +4754,7 @@ go_bandit([]() {
 
           AssertThat(arcs.can_pull_terminal(), Is().False());
 
-          level_info_test_stream levels(out);
+          level_info_test_ifstream levels(out);
 
           AssertThat(levels.can_pull(), Is().True());
           AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -4797,7 +4797,7 @@ go_bandit([]() {
              */
              __bdd out = bdd_imp(ep, bdd_thin, bdd_wide);
 
-             arc_test_stream arcs(out);
+             arc_test_ifstream arcs(out);
 
              AssertThat(arcs.can_pull_internal(), Is().True());
              AssertThat(arcs.pull_internal(),
@@ -4851,7 +4851,7 @@ go_bandit([]() {
 
              AssertThat(arcs.can_pull_terminal(), Is().False());
 
-             level_info_test_stream levels(out);
+             level_info_test_ifstream levels(out);
 
              AssertThat(levels.can_pull(), Is().True());
              AssertThat(levels.pull(), Is().EqualTo(level_info(0, 1u)));

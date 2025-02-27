@@ -5,16 +5,16 @@
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/dd.h>
 #include <adiar/internal/io/levelized_raccess.h>
-#include <adiar/internal/io/node_stream.h>
+#include <adiar/internal/io/node_ifstream.h>
 
 namespace adiar::internal
 {
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Random-access to the contents of a levelized file of node.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  class node_raccess : public levelized_raccess<node_stream<>>
+  class node_raccess : public levelized_raccess<node_ifstream<>>
   {
-    using parent_type = levelized_raccess<node_stream<>>;
+    using parent_type = levelized_raccess<node_ifstream<>>;
 
   public:
     static size_t

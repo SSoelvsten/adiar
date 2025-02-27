@@ -179,7 +179,7 @@ go_bandit([]() {
 
         __bdd out = bdd_restrict(exec_policy(), bdd_1, ass.begin(), ass.end());
 
-        arc_test_stream arcs(out);
+        arc_test_ifstream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(), Is().EqualTo(arc{ n1_1.uid(), true, n1_5.uid() }));
@@ -195,7 +195,7 @@ go_bandit([]() {
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ n1_5.uid(), true, terminal_T }));
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
 
         AssertThat(meta_arcs.can_pull(), Is().True());
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -230,7 +230,7 @@ go_bandit([]() {
 
         __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
 
-        arc_test_stream arcs(out);
+        arc_test_ifstream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(), Is().EqualTo(arc{ n1_2.uid(), false, n1_3.uid() }));
@@ -252,7 +252,7 @@ go_bandit([]() {
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ n1_4.uid(), true, terminal_F }));
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
 
         AssertThat(meta_arcs.can_pull(), Is().True());
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -287,7 +287,7 @@ go_bandit([]() {
 
         __bdd out = bdd_restrict(bdd(bdd_1, false, +1), ass.begin(), ass.end());
 
-        arc_test_stream arcs(out);
+        arc_test_ifstream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(),
@@ -315,7 +315,7 @@ go_bandit([]() {
         AssertThat(arcs.pull_terminal(),
                    Is().EqualTo(arc{ bdd::pointer_type(3, 1), true, terminal_F }));
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
 
         AssertThat(meta_arcs.can_pull(), Is().True());
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -349,7 +349,7 @@ go_bandit([]() {
 
         __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
 
-        arc_test_stream arcs(out);
+        arc_test_ifstream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
@@ -359,7 +359,7 @@ go_bandit([]() {
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ n1_3.uid(), true, terminal_T }));
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
 
         AssertThat(meta_arcs.can_pull(), Is().True());
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -380,13 +380,13 @@ go_bandit([]() {
 
         __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
 
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
@@ -411,13 +411,13 @@ go_bandit([]() {
 
         __bdd out = bdd_restrict(bdd_1, ass.begin(), ass.end());
 
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
@@ -440,13 +440,13 @@ go_bandit([]() {
 
         __bdd out = bdd_restrict(bdd_2_high_F, ass.begin(), ass.end());
 
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
@@ -469,13 +469,13 @@ go_bandit([]() {
 
         __bdd out = bdd_restrict(bdd_2_low_T, ass.begin(), ass.end());
 
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
@@ -547,7 +547,7 @@ go_bandit([]() {
 
         __bdd out = bdd_restrict(bdd_4, ass.begin(), ass.end());
 
-        arc_test_stream arcs(out);
+        arc_test_ifstream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
@@ -559,7 +559,7 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
 
         AssertThat(meta_arcs.can_pull(), Is().True());
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -580,7 +580,7 @@ go_bandit([]() {
 
         __bdd out = bdd_restrict(bdd_5, ass.begin(), ass.end());
 
-        arc_test_stream arcs(out);
+        arc_test_ifstream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(), Is().EqualTo(arc{ n5_5.uid(), true, n5_8.uid() }));
@@ -598,7 +598,7 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
 
         AssertThat(meta_arcs.can_pull(), Is().True());
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -624,7 +624,7 @@ go_bandit([]() {
 
         __bdd out = bdd_restrict(bdd_5, ass.begin(), ass.end());
 
-        arc_test_stream arcs(out);
+        arc_test_ifstream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(), Is().EqualTo(arc{ n5_7.uid(), false, n5_9.uid() }));
@@ -642,7 +642,7 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
 
         AssertThat(meta_arcs.can_pull(), Is().True());
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -680,7 +680,7 @@ go_bandit([]() {
 
         __bdd out = bdd_restrict(bdd_1, 2, true);
 
-        arc_test_stream arcs(out);
+        arc_test_ifstream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(), Is().EqualTo(arc{ n1_1.uid(), true, n1_2.uid() }));
@@ -702,7 +702,7 @@ go_bandit([]() {
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ n1_5.uid(), true, terminal_T }));
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
 
         AssertThat(meta_arcs.can_pull(), Is().True());
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -739,7 +739,7 @@ go_bandit([]() {
 
         __bdd out = bdd_restrict(bdd_1, 1, false);
 
-        arc_test_stream arcs(out);
+        arc_test_ifstream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(), Is().EqualTo(arc{ n1_1.uid(), false, n1_3.uid() }));
@@ -755,7 +755,7 @@ go_bandit([]() {
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ n1_3.uid(), true, terminal_T }));
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
 
         AssertThat(meta_arcs.can_pull(), Is().True());
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -789,7 +789,7 @@ go_bandit([]() {
 
         __bdd out = bdd_restrict(bdd(bdd_1, false, +1), 2, false);
 
-        arc_test_stream arcs(out);
+        arc_test_ifstream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(),
@@ -809,7 +809,7 @@ go_bandit([]() {
         AssertThat(arcs.pull_terminal(),
                    Is().EqualTo(arc{ bdd::pointer_type(3, 0), true, terminal_T }));
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
 
         AssertThat(meta_arcs.can_pull(), Is().True());
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -845,7 +845,7 @@ go_bandit([]() {
 
         __bdd out = bdd_restrict(bdd_1, 1, true);
 
-        arc_test_stream arcs(out);
+        arc_test_ifstream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(), Is().EqualTo(arc{ n1_1.uid(), false, n1_3.uid() }));
@@ -873,7 +873,7 @@ go_bandit([]() {
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), Is().EqualTo(arc{ n1_5.uid(), true, terminal_T }));
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
 
         AssertThat(meta_arcs.can_pull(), Is().True());
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -910,7 +910,7 @@ go_bandit([]() {
 
         __bdd out = bdd_restrict(bdd_1, 0, true);
 
-        arc_test_stream arcs(out);
+        arc_test_ifstream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(), Is().EqualTo(arc{ n1_2.uid(), false, n1_3.uid() }));
@@ -940,7 +940,7 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
 
         AssertThat(meta_arcs.can_pull(), Is().True());
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -977,7 +977,7 @@ go_bandit([]() {
 
         __bdd out = bdd_restrict(bdd(bdd_1, false, +1), 1, true);
 
-        arc_test_stream arcs(out);
+        arc_test_ifstream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(),
@@ -1015,7 +1015,7 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
 
         AssertThat(meta_arcs.can_pull(), Is().True());
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -1042,13 +1042,13 @@ go_bandit([]() {
       it("returns terminal of restricted root [F]", [&]() {
         __bdd out = bdd_restrict(bdd_2_high_F, 1, true);
 
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
@@ -1069,13 +1069,13 @@ go_bandit([]() {
       it("returns terminal of restricted root [T]", [&]() {
         __bdd out = bdd_restrict(bdd_2_low_T, 0, false);
 
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
@@ -1130,7 +1130,7 @@ go_bandit([]() {
 
         __bdd out = bdd_restrict(bdd_3, 2, true);
 
-        arc_test_stream arcs(out);
+        arc_test_ifstream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(), Is().EqualTo(arc{ n3_1.uid(), false, n3_2.uid() }));
@@ -1154,7 +1154,7 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
 
         AssertThat(meta_arcs.can_pull(), Is().True());
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -1188,7 +1188,7 @@ go_bandit([]() {
 
         __bdd out = bdd_restrict(bdd_4, 2, true);
 
-        arc_test_stream arcs(out);
+        arc_test_ifstream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(), Is().EqualTo(arc{ n4_1.uid(), false, n4_2.uid() }));
@@ -1212,7 +1212,7 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
 
         AssertThat(meta_arcs.can_pull(), Is().True());
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -1236,7 +1236,7 @@ go_bandit([]() {
       it("skips 'dead' nodes in BDD 5 for x1 = T", [&]() {
         __bdd out = bdd_restrict(bdd_5, 1, true);
 
-        arc_test_stream arcs(out);
+        arc_test_ifstream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(), Is().EqualTo(arc{ n5_1.uid(), false, n5_5.uid() }));
@@ -1272,7 +1272,7 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
 
         AssertThat(meta_arcs.can_pull(), Is().True());
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -1307,7 +1307,7 @@ go_bandit([]() {
 
         __bdd out = bdd_low(bdd_1);
 
-        arc_test_stream arcs(out);
+        arc_test_ifstream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
@@ -1319,7 +1319,7 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
 
         AssertThat(meta_arcs.can_pull(), Is().True());
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -1344,7 +1344,7 @@ go_bandit([]() {
 
         __bdd out = bdd_low(bdd(bdd_1, false, +2));
 
-        arc_test_stream arcs(out);
+        arc_test_ifstream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
@@ -1358,7 +1358,7 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
 
         AssertThat(meta_arcs.can_pull(), Is().True());
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(4, 1u)));
@@ -1377,13 +1377,13 @@ go_bandit([]() {
       it("returns terminal in BDD 2", [&]() {
         __bdd out = bdd_low(bdd_2_low_T);
 
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
@@ -1404,13 +1404,13 @@ go_bandit([]() {
       it("returns terminal in shifted BDD 2(+1)", [&]() {
         __bdd out = bdd_low(bdd(bdd_2_low_T, false, +1));
 
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
@@ -1449,7 +1449,7 @@ go_bandit([]() {
 
         __bdd out = bdd_high(bdd_1);
 
-        arc_test_stream arcs(out);
+        arc_test_ifstream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(), Is().EqualTo(arc{ n1_2.uid(), false, n1_3.uid() }));
@@ -1479,7 +1479,7 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
 
         AssertThat(meta_arcs.can_pull(), Is().True());
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -1516,7 +1516,7 @@ go_bandit([]() {
 
         __bdd out = bdd_high(bdd(bdd_1, false, +2));
 
-        arc_test_stream arcs(out);
+        arc_test_ifstream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
         AssertThat(arcs.pull_internal(),
@@ -1554,7 +1554,7 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
 
         AssertThat(meta_arcs.can_pull(), Is().True());
         AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(3, 1u)));
@@ -1581,13 +1581,13 @@ go_bandit([]() {
       it("returns terminal in BDD 2", [&]() {
         __bdd out = bdd_high(bdd_2_high_F);
 
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],
@@ -1608,13 +1608,13 @@ go_bandit([]() {
       it("returns terminal in shifted BDD 2(+1)", [&]() {
         __bdd out = bdd_high(bdd(bdd_2_high_F, false, +1));
 
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream meta_arcs(out);
+        level_info_test_ifstream meta_arcs(out);
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_node_file_type>()->max_1level_cut[cut::Internal],

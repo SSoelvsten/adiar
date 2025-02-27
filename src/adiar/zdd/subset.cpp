@@ -3,7 +3,7 @@
 
 #include <adiar/internal/algorithms/select.h>
 #include <adiar/internal/assert.h>
-#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/ifstream.h>
 #include <adiar/internal/unreachable.h>
 
 namespace adiar

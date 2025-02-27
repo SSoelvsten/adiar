@@ -10,7 +10,7 @@
 #include <adiar/internal/data_types/request.h>
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/dd_func.h>
-#include <adiar/internal/io/node_stream.h>
+#include <adiar/internal/io/node_ifstream.h>
 
 namespace adiar::internal
 {
@@ -121,7 +121,7 @@ namespace adiar::internal
     uint64_t result = 0u;
 
     // Set up input
-    node_stream<> ns(dd);
+    node_ifstream<> ns(dd);
 
     // Set up cross-level priority queue with a request for the root
     PriorityQueue count_pq({ dd }, pq_max_memory, pq_max_size, stats_count.lpq);
@@ -175,7 +175,7 @@ namespace adiar::internal
     // structures and check whether we can run them with a faster internal
     // memory variant.
 
-    const size_t aux_available_memory = memory_available() - node_stream<>::memory_usage();
+    const size_t aux_available_memory = memory_available() - node_ifstream<>::memory_usage();
 
     const size_t pq_memory_fits =
       count_priority_queue_t<typename Policy::data_type,

@@ -2,7 +2,7 @@
 
 #include <adiar/internal/algorithms/traverse.h>
 #include <adiar/internal/data_types/node.h>
-#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/ifstream.h>
 
 namespace adiar
 {

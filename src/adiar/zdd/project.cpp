@@ -8,7 +8,7 @@
 #include <adiar/internal/cut.h>
 #include <adiar/internal/data_types/level_info.h>
 #include <adiar/internal/data_types/node.h>
-#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/ifstream.h>
 
 namespace adiar
 {

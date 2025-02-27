@@ -41,9 +41,9 @@ namespace adiar::internal
     ///
     /// \see __reduce_level
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    template <typename dd_policy, typename pq_t, typename arc_stream_t>
+    template <typename dd_policy, typename pq_t, typename arc_ifstream_t>
     void
-    __reduce_level__fast(arc_stream_t& arcs,
+    __reduce_level__fast(arc_ifstream_t& arcs,
                          const typename dd_policy::label_type in_label,
                          const typename dd_policy::label_type out_label,
                          pq_t& pq,
@@ -114,15 +114,15 @@ namespace adiar::internal
       __reduce_level__epilogue<>(arcs, pq, out_writer, terminal_value);
     }
 
-    template <typename dd_policy, typename pq_t, typename arc_stream_t>
+    template <typename dd_policy, typename pq_t, typename arc_ifstream_t>
     void
-    __reduce_level__fast(arc_stream_t& arcs,
+    __reduce_level__fast(arc_ifstream_t& arcs,
                          const typename dd_policy::label_type label,
                          pq_t& pq,
                          node_writer& out_writer,
                          statistics::reduce_t& stats = internal::stats_reduce)
     {
-      return __reduce_level__fast<dd_policy, pq_t, arc_stream_t>(
+      return __reduce_level__fast<dd_policy, pq_t, arc_ifstream_t>(
         arcs, label, label, pq, out_writer, stats);
     }
 
@@ -608,11 +608,11 @@ namespace adiar::internal
         static tpie::memory_size_type
         memory_usage()
         {
-          return level_info_stream<>::memory_usage();
+          return level_info_ifstream<>::memory_usage();
         }
 
       private:
-        level_info_stream<> _lis;
+        level_info_ifstream<> _lis;
         nesting_policy& _policy_impl;
 
       public:
@@ -1337,14 +1337,14 @@ namespace adiar::internal
       /// \brief Decorator for inner and outer unreduced files to provide access to the arcs from
       ///        inner sweep's file while still providing the meta data of both.
       //////////////////////////////////////////////////////////////////////////////////////////////
-      class up__arc_stream__decorator
+      class up__arc_ifstream__decorator
       {
       private:
-        arc_stream<>& _inner_arcs;
-        const arc_stream<>& _outer_arcs;
+        arc_ifstream<>& _inner_arcs;
+        const arc_ifstream<>& _outer_arcs;
 
       public:
-        up__arc_stream__decorator(arc_stream<>& inner_arcs, const arc_stream<>& outer_arcs)
+        up__arc_ifstream__decorator(arc_ifstream<>& inner_arcs, const arc_ifstream<>& outer_arcs)
           : _inner_arcs(inner_arcs)
           , _outer_arcs(outer_arcs)
         {}
@@ -1432,7 +1432,7 @@ namespace adiar::internal
       template <typename nesting_policy, typename inner_pq_t, typename outer_pq_t>
       inline void
       up(const exec_policy& /*ep*/,
-         const arc_stream<>& outer_arcs,
+         const arc_ifstream<>& outer_arcs,
          outer_pq_t& outer_pq,
          node_writer& outer_writer,
          const typename nesting_policy::shared_arc_file_type& inner_arcs_file,
@@ -1447,10 +1447,10 @@ namespace adiar::internal
 #endif
 
         // Set up input
-        arc_stream<> inner_arcs(inner_arcs_file);
-        up__arc_stream__decorator decorated_arcs(inner_arcs, outer_arcs);
+        arc_ifstream<> inner_arcs(inner_arcs_file);
+        up__arc_ifstream__decorator decorated_arcs(inner_arcs, outer_arcs);
 
-        level_info_stream<> inner_levels(inner_arcs_file);
+        level_info_ifstream<> inner_levels(inner_arcs_file);
 
         // Set up (decorated) priority queue
         inner_pq_t inner_pq({ inner_arcs_file },
@@ -1526,7 +1526,7 @@ namespace adiar::internal
       template <typename nesting_policy, typename outer_pq_t>
       void
       up(const exec_policy& ep,
-         const arc_stream<>& outer_arcs,
+         const arc_ifstream<>& outer_arcs,
          outer_pq_t& outer_pq,
          node_writer& outer_writer,
          const typename nesting_policy::shared_arc_file_type& inner_arcs_file,
@@ -1540,7 +1540,7 @@ namespace adiar::internal
         // whether we can run them with a faster internal memory variant.
 
         const size_t inner_aux_available_memory =
-          inner_memory - arc_stream<>::memory_usage() - level_info_stream<>::memory_usage();
+          inner_memory - arc_ifstream<>::memory_usage() - level_info_ifstream<>::memory_usage();
 
         const size_t inner_pq_memory = inner_aux_available_memory / 2;
         const size_t inner_sorters_memory =
@@ -1658,7 +1658,7 @@ namespace adiar::internal
 #endif
 
     // Set up input
-    arc_stream<> outer_arcs(dag);
+    arc_ifstream<> outer_arcs(dag);
 
     // Set up (intermediate) output
     shared_node_file_type outer_file = __reduce_init_output<nesting_policy>();
@@ -1666,7 +1666,7 @@ namespace adiar::internal
     node_writer outer_writer(outer_file);
 
     // Outer Up Sweep: Obtain access to the levels to get the inputs width.
-    level_info_stream outer_levels(dag);
+    level_info_ifstream outer_levels(dag);
 
     // Outer Up Sweep: Instantiate the (levelized) priority queue and other Reduce state variables,
     //                 e.g. i-level cuts.
@@ -2118,8 +2118,8 @@ namespace adiar::internal
 
     const size_t aux_outer_memory = outer_memory
       // Input streams
-      - arc_stream<>::memory_usage()
-      - level_info_stream<>::memory_usage()
+      - arc_ifstream<>::memory_usage()
+      - level_info_ifstream<>::memory_usage()
       // Inner Iterator
       - nested_sweeping::outer::inner_iterator<nesting_policy>::memory_usage()
       // Output streams

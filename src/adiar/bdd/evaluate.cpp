@@ -8,9 +8,9 @@
 #include <adiar/internal/assert.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/data_types/level_info.h>
-#include <adiar/internal/io/file_stream.h>
 #include <adiar/internal/io/file_writer.h>
-#include <adiar/internal/io/levelized_file_stream.h>
+#include <adiar/internal/io/ifstream.h>
+#include <adiar/internal/io/levelized_ifstream.h>
 #include <adiar/internal/io/node_writer.h>
 #include <adiar/internal/util.h>
 
@@ -268,7 +268,7 @@ namespace adiar
   {
     if (!bdd_iscube(d)) { throw domain_error("BDD 'd' is not a cube"); }
 
-    typename internal::level_stream_t<bdd>::template stream_t<> d_levels(d);
+    typename internal::level_ifstream_t<bdd>::template stream_t<> d_levels(d);
     const generator<bdd::label_type> d_gen = make_generator__levels(d_levels);
 
     const size_t total_levels = std::min<size_t>(f->levels() + d->levels(), bdd::max_label + 1);
@@ -300,7 +300,7 @@ namespace adiar
   {
     if (!bdd_iscube(d)) { throw domain_error("BDD 'd' is not a cube"); }
 
-    typename internal::level_stream_t<bdd>::template stream_t<> d_levels(d);
+    typename internal::level_ifstream_t<bdd>::template stream_t<> d_levels(d);
     const generator<bdd::label_type> d_gen = make_generator__levels(d_levels);
 
     const size_t total_levels = std::min<size_t>(f->levels() + d->levels(), bdd::max_label + 1);

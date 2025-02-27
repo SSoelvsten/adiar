@@ -8,13 +8,13 @@ go_bandit([]() {
     describe("bdd_terminal(v)", [&]() {
       it("can create true terminal [bdd_const]", [&]() {
         bdd res = bdd_const(true);
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->sorted, Is().True());
@@ -39,13 +39,13 @@ go_bandit([]() {
 
       it("can create true terminal [bdd_terminal]", [&]() {
         bdd res = bdd_terminal(true);
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->sorted, Is().True());
@@ -70,13 +70,13 @@ go_bandit([]() {
 
       it("can create true terminal [bdd_true]", [&]() {
         bdd res = bdd_true();
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(0u));
@@ -101,13 +101,13 @@ go_bandit([]() {
 
       it("can create true terminal [bdd_top]", [&]() {
         bdd res = bdd_top();
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(0u));
@@ -132,13 +132,13 @@ go_bandit([]() {
 
       it("can create false terminal [bdd_const]", [&]() {
         bdd res = bdd_const(false);
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(0u));
@@ -163,13 +163,13 @@ go_bandit([]() {
 
       it("can create false terminal [bdd_terminal]", [&]() {
         bdd res = bdd_terminal(false);
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(0u));
@@ -194,13 +194,13 @@ go_bandit([]() {
 
       it("can create false terminal [bdd_false]", [&]() {
         bdd res = bdd_false();
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(0u));
@@ -225,13 +225,13 @@ go_bandit([]() {
 
       it("can create false terminal [bdd_bot]", [&]() {
         bdd res = bdd_bot();
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(0u));
@@ -258,13 +258,13 @@ go_bandit([]() {
     describe("bdd_ithvar(i)", [&]() {
       it("can create x0", [&]() {
         bdd res = bdd_ithvar(0);
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(0, node::max_id, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -292,13 +292,13 @@ go_bandit([]() {
 
       it("can create x42", [&]() {
         bdd res = bdd_ithvar(42);
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(42, node::max_id, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(42, 1u)));
@@ -331,13 +331,13 @@ go_bandit([]() {
     describe("bdd_nithvar(i)", [&]() {
       it("can create !x1", [&]() {
         bdd res = bdd_nithvar(1);
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id, terminal_T, terminal_F)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -365,13 +365,13 @@ go_bandit([]() {
 
       it("can create !x3", [&]() {
         bdd res = bdd_nithvar(3);
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id, terminal_T, terminal_F)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(3, 1u)));
@@ -406,13 +406,13 @@ go_bandit([]() {
         const auto gen = []() { return make_optional<pair<bdd::label_type, bool>>(); };
 
         bdd res = bdd_and(gen);
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(0u));
@@ -444,14 +444,14 @@ go_bandit([]() {
         };
 
         bdd res = bdd_and(gen);
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -487,14 +487,14 @@ go_bandit([]() {
         };
 
         bdd res = bdd_and(gen);
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id, terminal_T, terminal_F)));
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -529,13 +529,13 @@ go_bandit([]() {
         const auto gen = []() { return make_optional<int>(); };
 
         bdd res = bdd_and(gen);
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(0u));
@@ -566,14 +566,14 @@ go_bandit([]() {
         };
 
         bdd res = bdd_and(gen);
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -608,14 +608,14 @@ go_bandit([]() {
         };
 
         bdd res = bdd_and(gen);
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id, terminal_T, terminal_F)));
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -650,13 +650,13 @@ go_bandit([]() {
         std::vector<int> vars;
 
         bdd res = bdd_and(vars.rbegin(), vars.rend());
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(0u));
@@ -683,14 +683,14 @@ go_bandit([]() {
         std::vector<int> vars = { 1 };
 
         bdd res = bdd_and(vars.rbegin(), vars.rend());
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -721,14 +721,14 @@ go_bandit([]() {
         std::vector<int> vars = { -1 };
 
         bdd res = bdd_and(vars.rbegin(), vars.rend());
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id, terminal_T, terminal_F)));
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -759,7 +759,7 @@ go_bandit([]() {
         std::vector<int> vars = { 1, 2, 5 };
 
         bdd res = bdd_and(vars.rbegin(), vars.rend());
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, node::max_id, terminal_F, terminal_T)));
@@ -776,7 +776,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(5, 1u)));
@@ -813,7 +813,7 @@ go_bandit([]() {
         std::vector<int> vars = { -1, -2, 5 };
 
         bdd res = bdd_and(vars.rbegin(), vars.rend());
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, node::max_id, terminal_F, terminal_T)));
@@ -830,7 +830,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(5, 1u)));
@@ -867,7 +867,7 @@ go_bandit([]() {
         std::vector<int> vars = { 1, -2 };
 
         bdd res = bdd_and(vars.rbegin(), vars.rend());
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id, terminal_T, terminal_F)));
@@ -879,7 +879,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -913,7 +913,7 @@ go_bandit([]() {
         std::vector<int> vars = { 1, 2, 2, 5 };
 
         bdd res = bdd_and(vars.rbegin(), vars.rend());
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, node::max_id, terminal_F, terminal_T)));
@@ -930,7 +930,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(5, 1u)));
@@ -967,7 +967,7 @@ go_bandit([]() {
         std::vector<uint64_t> vars = { 1, 3 };
 
         bdd res = bdd_and(vars.rbegin(), vars.rend());
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id, terminal_F, terminal_T)));
@@ -979,7 +979,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(3, 1u)));
@@ -1013,7 +1013,7 @@ go_bandit([]() {
         std::vector<char> vars = { 'a', 'b', 'c', 'd' };
 
         bdd res = bdd_and(vars.rbegin(), vars.rend());
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node('d', node::max_id, terminal_F, terminal_T)));
@@ -1035,7 +1035,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info('d', 1u)));
@@ -1083,13 +1083,13 @@ go_bandit([]() {
         const auto gen = []() { return make_optional<pair<bdd::label_type, bool>>(); };
 
         bdd res = bdd_or(gen);
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(0u));
@@ -1121,14 +1121,14 @@ go_bandit([]() {
         };
 
         bdd res = bdd_or(gen);
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -1164,14 +1164,14 @@ go_bandit([]() {
         };
 
         bdd res = bdd_or(gen);
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id, terminal_T, terminal_F)));
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -1206,13 +1206,13 @@ go_bandit([]() {
         const auto gen = []() { return make_optional<int>(); };
 
         bdd res = bdd_or(gen);
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(0u));
@@ -1243,14 +1243,14 @@ go_bandit([]() {
         };
 
         bdd res = bdd_or(gen);
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -1285,14 +1285,14 @@ go_bandit([]() {
         };
 
         bdd res = bdd_or(gen);
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, node::max_id, terminal_T, terminal_F)));
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -1327,7 +1327,7 @@ go_bandit([]() {
         std::vector<int> vars = { 1, 2, 5 };
 
         bdd res = bdd_or(vars.rbegin(), vars.rend());
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, node::max_id, terminal_F, terminal_T)));
@@ -1344,7 +1344,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(5, 1u)));
@@ -1381,13 +1381,13 @@ go_bandit([]() {
         std::vector<int> vars;
 
         bdd res = bdd_or(vars.rbegin(), vars.rend());
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(0u));
@@ -1409,7 +1409,7 @@ go_bandit([]() {
         std::vector<int> vars = { 1, -3 };
 
         bdd res = bdd_or(vars.rbegin(), vars.rend());
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id, terminal_T, terminal_F)));
@@ -1421,7 +1421,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(3, 1u)));
@@ -1455,7 +1455,7 @@ go_bandit([]() {
         std::vector<int> vars = { -2, 4 };
 
         bdd res = bdd_or(vars.rbegin(), vars.rend());
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, node::max_id, terminal_F, terminal_T)));
@@ -1467,7 +1467,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(4, 1u)));
@@ -1501,7 +1501,7 @@ go_bandit([]() {
         std::vector<int> vars = { 1, 2, 2, 5 };
 
         bdd res = bdd_or(vars.rbegin(), vars.rend());
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, node::max_id, terminal_F, terminal_T)));
@@ -1518,7 +1518,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(5, 1u)));
@@ -1555,7 +1555,7 @@ go_bandit([]() {
         std::vector<int64_t> vars = { 1, -2, 3, 5 };
 
         bdd res = bdd_or(vars.rbegin(), vars.rend());
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, node::max_id, terminal_F, terminal_T)));
@@ -1577,7 +1577,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(5, 1u)));
@@ -1625,13 +1625,13 @@ go_bandit([]() {
         const auto gen = []() { return make_optional<int>(); };
 
         bdd res = bdd_cube(gen);
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(0u));
@@ -1663,14 +1663,14 @@ go_bandit([]() {
         };
 
         bdd res = bdd_cube(gen);
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(0, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -1712,7 +1712,7 @@ go_bandit([]() {
         };
 
         bdd res = bdd_cube(gen);
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id, terminal_T, terminal_F)));
@@ -1734,7 +1734,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(3, 1u)));
@@ -1776,13 +1776,13 @@ go_bandit([]() {
         const auto gen = []() { return make_optional<pair<bdd::label_type, bool>>(); };
 
         bdd res = bdd_cube(gen);
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(0u));
@@ -1814,14 +1814,14 @@ go_bandit([]() {
         };
 
         bdd res = bdd_cube(gen);
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(0, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -1863,7 +1863,7 @@ go_bandit([]() {
         };
 
         bdd res = bdd_cube(gen);
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id, terminal_F, terminal_T)));
@@ -1885,7 +1885,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(3, 1u)));
@@ -1927,13 +1927,13 @@ go_bandit([]() {
         std::vector<int> vars;
 
         bdd res = bdd_cube(vars.rbegin(), vars.rend());
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(0u));
@@ -1960,14 +1960,14 @@ go_bandit([]() {
         std::vector<int> vars = { 42 };
 
         bdd res = bdd_cube(vars.rbegin(), vars.rend());
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(42, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(42, 1u)));
@@ -1998,14 +1998,14 @@ go_bandit([]() {
         std::vector<int> vars = { -4 };
 
         bdd res = bdd_cube(vars.rbegin(), vars.rend());
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, node::max_id, terminal_T, terminal_F)));
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(4, 1u)));
@@ -2036,7 +2036,7 @@ go_bandit([]() {
         std::vector<int> vars = { 1, -3, 5 };
 
         bdd res = bdd_cube(vars.rbegin(), vars.rend());
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, node::max_id, terminal_F, terminal_T)));
@@ -2053,7 +2053,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(5, 1u)));
@@ -2090,7 +2090,7 @@ go_bandit([]() {
         std::vector<int> vars = { -0, -2, -4 };
 
         bdd res = bdd_cube(vars.rbegin(), vars.rend());
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, node::max_id, terminal_T, terminal_F)));
@@ -2107,7 +2107,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(4, 1u)));
@@ -2144,7 +2144,7 @@ go_bandit([]() {
         std::vector<pair<bdd::label_type, bool>> vars = { { 0, true }, { 2, true }, { 4, true } };
 
         bdd res = bdd_cube(vars.rbegin(), vars.rend());
-        node_test_stream ns(res);
+        node_test_ifstream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, node::max_id, terminal_T, terminal_F)));
@@ -2161,7 +2161,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(res);
+        level_info_test_ifstream ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(4, 1u)));

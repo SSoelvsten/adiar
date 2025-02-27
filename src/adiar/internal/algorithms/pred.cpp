@@ -3,7 +3,7 @@
 #include <adiar/internal/assert.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/dd.h>
-#include <adiar/internal/io/levelized_file_stream.h>
+#include <adiar/internal/io/levelized_ifstream.h>
 
 namespace adiar::internal
 {
@@ -20,7 +20,7 @@ namespace adiar::internal
   class input_bound_levels
   {
   private:
-    level_info_stream<> in_meta_1;
+    level_info_ifstream<> in_meta_1;
 
     size_t curr_level_size      = 0;
     size_t curr_level_processed = 0;
@@ -41,7 +41,7 @@ namespace adiar::internal
     static constexpr size_t
     memory_usage()
     {
-      return level_info_stream<>::memory_usage();
+      return level_info_ifstream<>::memory_usage();
     }
 
   public:
@@ -172,8 +172,8 @@ namespace adiar::internal
   bool
   fast_isomorphism_check(const dd& a, const dd& b)
   {
-    node_stream<> in_nodes_a(a);
-    node_stream<> in_nodes_b(b);
+    node_ifstream<> in_nodes_a(a);
+    node_ifstream<> in_nodes_b(b);
 
     while (in_nodes_a.can_pull()) {
       adiar_assert(in_nodes_b.can_pull(), "The number of nodes should coincide");
@@ -236,9 +236,9 @@ namespace adiar::internal
     }
 
     // Are they trivially not the same, since the labels or the size of each level does not match?
-    { // Create new scope to garbage collect the two meta_streams early
-      level_info_stream<> in_meta_a(a);
-      level_info_stream<> in_meta_b(b);
+    { // Create new scope to garbage collect the two meta_ifstreams early
+      level_info_ifstream<> in_meta_a(a);
+      level_info_ifstream<> in_meta_b(b);
 
       while (in_meta_a.can_pull()) {
         adiar_assert(in_meta_b.can_pull(), "level_info files are same size");

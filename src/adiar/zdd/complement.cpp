@@ -60,7 +60,7 @@ namespace adiar
                       const internal::shared_file<zdd::label_type>& universe)
     {
       // TODO: remove
-      internal::file_stream<zdd::label_type, true> ls(universe);
+      internal::ifstream<zdd::label_type, true> ls(universe);
 
       const generator<zdd::label_type> universe_generator = make_generator(ls);
 
@@ -139,7 +139,7 @@ namespace adiar
   zdd_complement(const exec_policy& ep, const zdd& A)
   {
     const internal::shared_file<zdd::label_type> dom = domain_get();
-    internal::file_stream<domain_var> ds(dom);
+    internal::ifstream<domain_var> ds(dom);
 
     return zdd_complement(ep, A, make_generator(ds));
   }

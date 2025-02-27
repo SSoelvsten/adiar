@@ -11,9 +11,9 @@
 #include <adiar/internal/algorithms/reduce.h>
 #include <adiar/internal/assert.h>
 #include <adiar/internal/dd_func.h>
-#include <adiar/internal/io/levelized_file_stream.h>
+#include <adiar/internal/io/levelized_ifstream.h>
 #include <adiar/internal/io/node_file.h>
-#include <adiar/internal/io/node_stream.h>
+#include <adiar/internal/io/node_ifstream.h>
 #include <adiar/internal/io/node_writer.h>
 
 namespace adiar::internal
@@ -162,11 +162,11 @@ namespace adiar::internal
         dd->max_1level_cut[cut::All] });
 
     { // Copy over nodes (in "reverse" to still follow the same order on disk)
-      node_stream<true> in_nodes(dd);
+      node_ifstream<true> in_nodes(dd);
       while (in_nodes.can_pull()) { out_writer.unsafe_push(__replace(in_nodes.pull(), m)); }
     }
     { // Copy over levels (also in "reverse")
-      level_info_stream<true> in_levels(dd);
+      level_info_ifstream<true> in_levels(dd);
       while (in_levels.can_pull()) {
         const level_info li = in_levels.pull();
         out_writer.unsafe_push(level_info(m(li.level()), li.width()));
@@ -268,7 +268,7 @@ namespace adiar::internal
   {
     replace_type m_type;
     {
-      level_info_stream<false> ls(dd);
+      level_info_ifstream<false> ls(dd);
       m_type = __replace__infer_type<Policy>(ls, m);
     }
     return replace<Policy>(ep, dd, m, m_type);
@@ -344,7 +344,7 @@ namespace adiar::internal
 
     replace_type m_type;
     {
-      level_info_stream<true> ls(__dd);
+      level_info_ifstream<true> ls(__dd);
       m_type = __replace__infer_type<Policy>(ls, m);
     }
     return replace<Policy, false>(ep, std::move(__dd), m, m_type);

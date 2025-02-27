@@ -115,7 +115,7 @@ go_bandit([]() {
         AssertThat(std::filesystem::exists(path), Is().False());
       });
 
-      describe("w/ file_writer + file_stream", []() {
+      describe("w/ file_writer + ifstream", []() {
         it("file_writer is part of reference counting", []() {
           std::string path;
 
@@ -131,10 +131,10 @@ go_bandit([]() {
           AssertThat(std::filesystem::exists(path), Is().False());
         });
 
-        it("file_stream is part of reference counting", []() {
+        it("ifstream is part of reference counting", []() {
           std::string path;
 
-          file_stream<int> fs;
+          ifstream<int> fs;
           {
             shared_file<int> f;
             path = f->path();
@@ -153,7 +153,7 @@ go_bandit([]() {
             fw << 1 << 2 << 3 << 4;
           }
           {
-            file_stream<int, false> fs(f);
+            ifstream<int, false> fs(f);
             AssertThat(fs.can_pull(), Is().True());
             AssertThat(fs.pull(), Is().EqualTo(1));
             AssertThat(fs.can_pull(), Is().True());
@@ -173,7 +173,7 @@ go_bandit([]() {
             fw << 21 << 42 << 21 << 84;
           }
           {
-            file_stream<int, true> fs(f);
+            ifstream<int, true> fs(f);
             AssertThat(fs.can_pull(), Is().True());
             AssertThat(fs.pull(), Is().EqualTo(84));
             AssertThat(fs.can_pull(), Is().True());
@@ -218,7 +218,7 @@ go_bandit([]() {
 
           // Check content
           {
-            file_stream<int> fs(f2);
+            ifstream<int> fs(f2);
             AssertThat(fs.can_pull(), Is().True());
             AssertThat(fs.pull(), Is().EqualTo(1));
             AssertThat(fs.can_pull(), Is().True());
@@ -256,7 +256,7 @@ go_bandit([]() {
         {
           shared_file<int> f(file_path);
 
-          file_stream<int> fs(f);
+          ifstream<int> fs(f);
           AssertThat(fs.can_pull(), Is().True());
           AssertThat(fs.pull(), Is().EqualTo(0));
           AssertThat(fs.can_pull(), Is().True());
@@ -298,7 +298,7 @@ go_bandit([]() {
         {
           shared_file<int> f(file_path);
 
-          file_stream<int> fs(f);
+          ifstream<int> fs(f);
           AssertThat(fs.can_pull(), Is().True());
           AssertThat(fs.pull(), Is().EqualTo(1));
           AssertThat(fs.can_pull(), Is().True());
@@ -453,7 +453,7 @@ go_bandit([]() {
         AssertThat(std::filesystem::exists(paths[2]), Is().False());
       });
 
-      describe("w/ levelized_file_writer + levelized_file_stream + level_info_stream", []() {
+      describe("w/ levelized_file_writer + levelized_ifstream + level_info_ifstream", []() {
         it("levelized_file_writer is part of reference counting", []() {
           std::array<std::string, 2u + 1u> paths;
 
@@ -479,10 +479,10 @@ go_bandit([]() {
           AssertThat(std::filesystem::exists(paths[2]), Is().False());
         });
 
-        it("levelized_file_stream is part of reference counting", []() {
+        it("levelized_ifstream is part of reference counting", []() {
           std::array<std::string, 2u + 1u> paths;
 
-          levelized_file_stream<int> lfs;
+          levelized_ifstream<int> lfs;
           {
             shared_levelized_file<int> lf;
             paths = lf->paths();
@@ -504,10 +504,10 @@ go_bandit([]() {
           AssertThat(std::filesystem::exists(paths[2]), Is().False());
         });
 
-        it("level_info_stream is part of reference counting", []() {
+        it("level_info_ifstream is part of reference counting", []() {
           std::array<std::string, 2u + 1u> paths;
 
-          level_info_stream<> lis;
+          level_info_ifstream<> lis;
           {
             shared_levelized_file<int> lf;
             paths = lf->paths();
@@ -544,8 +544,8 @@ go_bandit([]() {
             lfw.push(level_info{ 2, 1 });
           }
           {
-            levelized_file_stream<int, false> lfs(lf); // <-- default: forwards
-            level_info_stream<false> lis(lf);          // <-- default: backwards
+            levelized_ifstream<int, false> lfs(lf); // <-- default: forwards
+            level_info_ifstream<false> lis(lf);     // <-- default: backwards
 
             AssertThat(lfs.can_pull<0>(), Is().True());
             AssertThat(lfs.pull<0>(), Is().EqualTo(42));
@@ -590,8 +590,8 @@ go_bandit([]() {
             lfw.push(level_info{ 4, 1 });
           }
           {
-            levelized_file_stream<int, true> lfs(lf); // <-- default: forwards
-            level_info_stream<true> lis(lf);          // <-- default: backwards
+            levelized_ifstream<int, true> lfs(lf); // <-- default: forwards
+            level_info_ifstream<true> lis(lf);     // <-- default: backwards
 
             AssertThat(lfs.can_pull<0>(), Is().True());
             AssertThat(lfs.pull<0>(), Is().EqualTo(1));
@@ -686,7 +686,7 @@ go_bandit([]() {
 
           // Check content
           {
-            levelized_file_stream<int> lfs(lf2);
+            levelized_ifstream<int> lfs(lf2);
 
             AssertThat(lfs.can_pull<0>(), Is().True());
             AssertThat(lfs.pull<0>(), Is().EqualTo(2));
@@ -696,7 +696,7 @@ go_bandit([]() {
 
             AssertThat(lfs.can_pull<1>(), Is().False());
 
-            level_info_stream<> lis(lf2);
+            level_info_ifstream<> lis(lf2);
 
             AssertThat(lis.can_pull(), Is().True());
             AssertThat(lis.pull(), Is().EqualTo(level_info{ 0, 1 }));
@@ -733,7 +733,7 @@ go_bandit([]() {
         {
           shared_levelized_file<int> lf(path_prefix);
 
-          levelized_file_stream<int> lfs(lf);
+          levelized_ifstream<int> lfs(lf);
 
           AssertThat(lfs.can_pull<0>(), Is().True());
           AssertThat(lfs.pull<0>(), Is().EqualTo(42));
@@ -741,7 +741,7 @@ go_bandit([]() {
 
           AssertThat(lfs.can_pull<1>(), Is().False());
 
-          level_info_stream<false> lis(lf);
+          level_info_ifstream<false> lis(lf);
 
           AssertThat(lis.can_pull(), Is().True());
           AssertThat(lis.pull(), Is().EqualTo(level_info{ 0, 1 }));
@@ -790,7 +790,7 @@ go_bandit([]() {
         {
           shared_levelized_file<int> lf(path_prefix);
 
-          levelized_file_stream<int> lfs(lf);
+          levelized_ifstream<int> lfs(lf);
 
           AssertThat(lfs.can_pull<0>(), Is().True());
           AssertThat(lfs.pull<0>(), Is().EqualTo(21));
@@ -802,7 +802,7 @@ go_bandit([]() {
           AssertThat(lfs.pull<1>(), Is().EqualTo(14));
           AssertThat(lfs.can_pull<1>(), Is().False());
 
-          level_info_stream<false> lis(lf);
+          level_info_ifstream<false> lis(lf);
 
           AssertThat(lis.can_pull(), Is().True());
           AssertThat(lis.pull(), Is().EqualTo(level_info{ 1, 2 }));

@@ -125,14 +125,14 @@ go_bandit([]() {
         const auto [cube, cost] = bdd_optmin(bdd_T, [](int) -> double { return 0.0; });
 
         // Check BDD is T
-        node_test_stream ns(cube);
+        node_test_ifstream ns(cube);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(true)));
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(cube);
+        level_info_test_ifstream ms(cube);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(cube->width, Is().EqualTo(0u));
@@ -158,14 +158,14 @@ go_bandit([]() {
         const auto [cube, cost] = bdd_optmin(bdd_T, [](int) -> double { return 1.0; });
 
         // Check BDD is T
-        node_test_stream ns(cube);
+        node_test_ifstream ns(cube);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(true)));
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(cube);
+        level_info_test_ifstream ms(cube);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(cube->width, Is().EqualTo(0u));
@@ -191,14 +191,14 @@ go_bandit([]() {
         const auto [cube, cost] = bdd_optmin(bdd_F, [](int) -> double { return 0.0; });
 
         // Check BDD is F
-        node_test_stream ns(cube);
+        node_test_ifstream ns(cube);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(false)));
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(cube);
+        level_info_test_ifstream ms(cube);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(cube->width, Is().EqualTo(0u));
@@ -224,14 +224,14 @@ go_bandit([]() {
         const auto [cube, cost] = bdd_optmin(bdd_F, [](int) -> double { return 1.0; });
 
         // Check BDD is F
-        node_test_stream ns(cube);
+        node_test_ifstream ns(cube);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(false)));
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(cube);
+        level_info_test_ifstream ms(cube);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(cube->width, Is().EqualTo(0u));
@@ -257,7 +257,7 @@ go_bandit([]() {
         const auto [cube, cost] = bdd_optmin(bdd_fig4, [](int) -> double { return 1.0; });
 
         // Check BDD is expected cube
-        node_test_stream ns(cube);
+        node_test_ifstream ns(cube);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id, terminal_T, terminal_F)));
@@ -269,7 +269,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(cube);
+        level_info_test_ifstream ms(cube);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -302,7 +302,7 @@ go_bandit([]() {
         const auto [cube, cost] = bdd_optmin(bdd_fig4, [](int) -> double { return 1.0; });
 
         // Check BDD is expected cube
-        node_test_stream ns(cube);
+        node_test_ifstream ns(cube);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id, terminal_T, terminal_F)));
@@ -314,7 +314,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(cube);
+        level_info_test_ifstream ms(cube);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -347,14 +347,14 @@ go_bandit([]() {
         const auto [cube, cost] = bdd_optmin(bdd_1, [](int) -> double { return 1.0; });
 
         // Check BDD is expected cube
-        node_test_stream ns(cube);
+        node_test_ifstream ns(cube);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(0, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(cube);
+        level_info_test_ifstream ms(cube);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -385,7 +385,7 @@ go_bandit([]() {
           bdd_optmin(bdd_1, [](int x) -> double { return 1.0 + 2 * (1 - x % 2); });
 
         // Check BDD is expected cube
-        node_test_stream ns(cube);
+        node_test_ifstream ns(cube);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id, terminal_F, terminal_T)));
@@ -402,7 +402,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(cube);
+        level_info_test_ifstream ms(cube);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(3, 1u)));
@@ -439,7 +439,7 @@ go_bandit([]() {
           bdd_optmin(bdd_1, [](int x) -> double { return 0.5 + (x == 0 || x == 3 ? 42.0 : 0.0); });
 
         // Check BDD is expected cube
-        node_test_stream ns(cube);
+        node_test_ifstream ns(cube);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, node::max_id, terminal_F, terminal_T)));
@@ -461,7 +461,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream ms(cube);
+        level_info_test_ifstream ms(cube);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(4, 1u)));
@@ -504,7 +504,7 @@ go_bandit([]() {
            });
 
            // Check BDD is expected cube
-           node_test_stream ns(cube);
+           node_test_ifstream ns(cube);
 
            AssertThat(ns.can_pull(), Is().True());
            AssertThat(ns.pull(), Is().EqualTo(node(4, node::max_id, terminal_F, terminal_T)));
@@ -531,7 +531,7 @@ go_bandit([]() {
 
            AssertThat(ns.can_pull(), Is().False());
 
-           level_info_test_stream ms(cube);
+           level_info_test_ifstream ms(cube);
 
            AssertThat(ms.can_pull(), Is().True());
            AssertThat(ms.pull(), Is().EqualTo(level_info(4, 1u)));

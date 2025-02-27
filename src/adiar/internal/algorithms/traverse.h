@@ -6,7 +6,7 @@
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/dd.h>
 #include <adiar/internal/io/node_file.h>
-#include <adiar/internal/io/node_stream.h>
+#include <adiar/internal/io/node_ifstream.h>
 
 namespace adiar::internal
 {
@@ -23,7 +23,7 @@ namespace adiar::internal
   void
   traverse(const Dd& dd, Visitor& visitor)
   {
-    node_stream<> in_nodes(dd);
+    node_ifstream<> in_nodes(dd);
 
     typename Dd::node_type n      = in_nodes.pull();
     typename Dd::pointer_type tgt = n.uid();

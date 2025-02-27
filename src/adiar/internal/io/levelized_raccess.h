@@ -42,7 +42,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief File stream to obtain the contents of each level
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    stream_type _stream;
+    stream_type _ifstream;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Maximum width of the contents of 'lfs'. This is the maximum number of elements needed
@@ -89,10 +89,10 @@ namespace adiar::internal
     levelized_raccess(levelized_file<T>& f,
                       const bool negate                          = false,
                       const typename T::signed_label_type& shift = 0)
-      : _stream(f, negate, shift)
+      : _ifstream(f, negate, shift)
       , _max_width(f.width)
       , _level_buffer(f.width)
-      , _root(_stream.peek().uid())
+      , _root(_ifstream.peek().uid())
     {
       init();
     }
@@ -104,10 +104,10 @@ namespace adiar::internal
     levelized_raccess(const levelized_file<T>& f,
                       const bool negate                         = false,
                       const typename T::signed_label_type shift = 0)
-      : _stream(f, negate, shift)
+      : _ifstream(f, negate, shift)
       , _max_width(f.width)
       , _level_buffer(f.width)
-      , _root(_stream.peek().uid())
+      , _root(_ifstream.peek().uid())
     {
       init();
     }
@@ -119,10 +119,10 @@ namespace adiar::internal
     levelized_raccess(const shared_ptr<levelized_file<T>>& f,
                       const bool negate                         = false,
                       const typename T::signed_label_type shift = 0)
-      : _stream(f, negate, shift)
+      : _ifstream(f, negate, shift)
       , _max_width(f->width)
       , _level_buffer(f->width)
-      , _root(_stream.peek().uid())
+      , _root(_ifstream.peek().uid())
     {
       init();
     }
@@ -131,11 +131,11 @@ namespace adiar::internal
     void
     init()
     {
-      adiar_assert(_stream.can_pull(), "given file should be non-empty");
+      adiar_assert(_ifstream.can_pull(), "given file should be non-empty");
 
       // Skip the terminal node for terminal only BDDs. This way, 'has_next_level' is a mere
       // 'can_pull' on the underlying stream.
-      if (_root.is_terminal()) { _stream.pull(); }
+      if (_root.is_terminal()) { _ifstream.pull(); }
     }
 
   public:
@@ -154,7 +154,7 @@ namespace adiar::internal
     bool
     has_next_level() const
     {
-      return _stream.can_pull();
+      return _ifstream.can_pull();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -165,7 +165,7 @@ namespace adiar::internal
     signed_label_type
     next_level()
     {
-      return _stream.peek().uid().label();
+      return _ifstream.peek().uid().label();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -190,15 +190,15 @@ namespace adiar::internal
       if (!has_next_level()) { return; }
 
       // Skip all levels not of interest
-      while (_stream.can_pull()
-             && static_cast<signed_label_type>(_stream.peek().uid().label()) < level) {
-        _stream.pull();
+      while (_ifstream.can_pull()
+             && static_cast<signed_label_type>(_ifstream.peek().uid().label()) < level) {
+        _ifstream.pull();
       }
 
       // Copy over all elements from the requested level
-      while (_stream.can_pull()
-             && static_cast<signed_label_type>(_stream.peek().uid().label()) == level) {
-        _level_buffer[_curr_width++] = _stream.pull();
+      while (_ifstream.can_pull()
+             && static_cast<signed_label_type>(_ifstream.peek().uid().label()) == level) {
+        _level_buffer[_curr_width++] = _ifstream.pull();
       }
     }
 

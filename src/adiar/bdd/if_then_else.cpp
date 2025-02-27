@@ -12,10 +12,10 @@
 #include <adiar/internal/dd_func.h>
 #include <adiar/internal/io/arc_file.h>
 #include <adiar/internal/io/arc_writer.h>
-#include <adiar/internal/io/levelized_file_stream.h>
 #include <adiar/internal/io/levelized_file_writer.h>
+#include <adiar/internal/io/levelized_ifstream.h>
 #include <adiar/internal/io/node_file.h>
-#include <adiar/internal/io/node_stream.h>
+#include <adiar/internal/io/node_ifstream.h>
 #include <adiar/internal/io/node_writer.h>
 #include <adiar/internal/memory.h>
 #include <adiar/internal/util.h>
@@ -68,8 +68,8 @@ namespace adiar
     internal::node_writer nw(out_nodes);
 
     // zip 'then' and 'else' cases
-    internal::node_stream<true> in_nodes_then(bdd_then);
-    internal::node_stream<true> in_nodes_else(bdd_else);
+    internal::node_ifstream<true> in_nodes_then(bdd_then);
+    internal::node_ifstream<true> in_nodes_else(bdd_else);
 
     while (in_nodes_then.can_pull() || in_nodes_else.can_pull()) {
       bool from_then = in_nodes_then.can_pull()
@@ -87,7 +87,7 @@ namespace adiar
     adiar_assert(!root_then.is_nil(), "Did not obtain root from then stream");
     adiar_assert(!root_else.is_nil(), "Did not obtain root from else stream");
 
-    internal::node_stream<true> in_nodes_if(bdd_if);
+    internal::node_ifstream<true> in_nodes_if(bdd_if);
 
     while (in_nodes_if.can_pull()) {
       const internal::node n = in_nodes_if.pull();
@@ -130,7 +130,7 @@ namespace adiar
   }
 
   inline void
-  ite_init_request(internal::node_stream<>& in_nodes,
+  ite_init_request(internal::node_ifstream<>& in_nodes,
                    internal::node& v,
                    const internal::node::label_type out_label,
                    internal::node::pointer_type& low,
@@ -192,13 +192,13 @@ namespace adiar
             const size_t pq_3_memory,
             const size_t max_pq_3_size)
   {
-    internal::node_stream<> in_nodes_if(bdd_if);
+    internal::node_ifstream<> in_nodes_if(bdd_if);
     bdd::node_type v_if = in_nodes_if.pull();
 
-    internal::node_stream<> in_nodes_then(bdd_then);
+    internal::node_ifstream<> in_nodes_then(bdd_then);
     bdd::node_type v_then = in_nodes_then.pull();
 
-    internal::node_stream<> in_nodes_else(bdd_else);
+    internal::node_ifstream<> in_nodes_else(bdd_else);
     bdd::node_type v_else = in_nodes_else.pull();
 
     // Set up output
@@ -538,7 +538,7 @@ namespace adiar
     // we can run them with a faster internal memory variant.
     const tpie::memory_size_type aux_available_memory = internal::memory_available()
       // Input streams
-      - 3 * internal::node_stream<>::memory_usage()
+      - 3 * internal::node_ifstream<>::memory_usage()
       // Output stream
       - internal::arc_writer::memory_usage();
 

@@ -8,7 +8,7 @@
 #include <adiar/internal/cut.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/uid.h>
-#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/ifstream.h>
 #include <adiar/internal/io/node_writer.h>
 #include <adiar/internal/io/shared_file_ptr.h>
 
