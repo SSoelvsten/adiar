@@ -650,7 +650,7 @@ namespace adiar::internal
     const size_t sorters_memory =
       aux_available_memory - pq_memory - tpie::file_stream<mapping>::memory_usage();
 
-    const tpie::memory_size_type pq_memory_fits =
+    const size_t pq_memory_fits =
       reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(pq_memory);
 
     const bool internal_only =

@@ -182,15 +182,15 @@ namespace adiar::internal
       "'ptr_uint64::label_type' should leave a window of at least one above 'max_label'");
 
   private:
-    static tpie::memory_size_type
+    static size_t
     const_memory_usage()
     {
       return level_merger_t::memory_usage();
     }
 
   public:
-    static tpie::memory_size_type
-    memory_usage(tpie::memory_size_type no_elements)
+    static size_t
+    memory_usage(size_t no_elements)
     {
       return priority_queue<memory_mode::Internal, value_type, value_comp_type>::memory_usage(
                no_elements)
@@ -199,8 +199,8 @@ namespace adiar::internal
         + const_memory_usage();
     }
 
-    static tpie::memory_size_type
-    memory_fits(tpie::memory_size_type memory_bytes)
+    static size_t
+    memory_fits(size_t memory_bytes)
     {
       const size_t const_memory_bytes = const_memory_usage();
 
@@ -265,22 +265,22 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Total memory given in constructor.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    const tpie::memory_size_type _memory_given;
+    const size_t _memory_given;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Memory used by the label merger.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    const tpie::memory_size_type _memory_occupied_by_merger = level_merger_t::memory_usage();
+    const size_t _memory_occupied_by_merger = level_merger_t::memory_usage();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Memory to be used for the buckets.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    const tpie::memory_size_type _memory_for_buckets;
+    const size_t _memory_for_buckets;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Memory to be used for the overflow priority queue.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    const tpie::memory_size_type _memory_occupied_by_overflow;
+    const size_t _memory_occupied_by_overflow;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Provides the levels to distribute all elements across.
@@ -336,8 +336,8 @@ namespace adiar::internal
 #endif
 
   private:
-    static tpie::memory_size_type
-    mem_overflow_queue(tpie::memory_size_type memory_given)
+    static size_t
+    mem_overflow_queue(size_t memory_given)
     {
       const size_t const_memory = const_memory_usage();
 
@@ -362,8 +362,8 @@ namespace adiar::internal
 
         // LCOV_EXCL_START
         // TODO: Unit test external memory variants?
-        const tpie::memory_size_type eight_MiB      = 8 * 1024;
-        const tpie::memory_size_type weighted_share = memory_given / (4 * buckets + 1);
+        const size_t eight_MiB      = 8 * 1024;
+        const size_t weighted_share = memory_given / (4 * buckets + 1);
 
         return std::max(eight_MiB, weighted_share);
         // LCOV_EXCL_STOP
@@ -374,7 +374,7 @@ namespace adiar::internal
       }
     }
 
-    levelized_priority_queue(tpie::memory_size_type memory_given,
+    levelized_priority_queue(size_t memory_given,
                              size_t max_size,
                              [[maybe_unused]] statistics::levelized_priority_queue_t& stats)
       : _max_size(max_size)
@@ -401,7 +401,7 @@ namespace adiar::internal
     /// \param memory_given Total amount of memory to use
     ////////////////////////////////////////////////////////////////////////////////////////////////
     levelized_priority_queue(const LevelFile (&files)[LevelFileCount],
-                             tpie::memory_size_type memory_given,
+                             size_t memory_given,
                              size_t max_size,
                              statistics::levelized_priority_queue_t& stats)
       : levelized_priority_queue(memory_given, max_size, stats)
@@ -418,7 +418,7 @@ namespace adiar::internal
     /// \param memory_given Total amount of memory to use
     ////////////////////////////////////////////////////////////////////////////////////////////////
     levelized_priority_queue(const dd (&dds)[LevelFileCount],
-                             tpie::memory_size_type memory_given,
+                             size_t memory_given,
                              size_t max_size,
                              statistics::levelized_priority_queue_t& stats)
       : levelized_priority_queue(memory_given, max_size, stats)
@@ -435,7 +435,7 @@ namespace adiar::internal
     /// \param memory_given Total amount of memory to use
     ////////////////////////////////////////////////////////////////////////////////////////////////
     levelized_priority_queue(const __dd (&dds)[LevelFileCount],
-                             tpie::memory_size_type memory_given,
+                             size_t memory_given,
                              size_t max_size,
                              statistics::levelized_priority_queue_t& stats)
       : levelized_priority_queue(memory_given, max_size, stats)
@@ -1070,15 +1070,15 @@ namespace adiar::internal
     static constexpr ptr_uint64::label_type no_label = ptr_uint64::max_label + 1;
 
   public:
-    static tpie::memory_size_type
-    memory_usage(tpie::memory_size_type no_elements)
+    static size_t
+    memory_usage(size_t no_elements)
     {
       return priority_queue<memory_mode::Internal, value_type, value_comp_type>::memory_usage(
         no_elements);
     }
 
-    static tpie::memory_size_type
-    memory_fits(tpie::memory_size_type memory_bytes)
+    static size_t
+    memory_fits(size_t memory_bytes)
     {
       return priority_queue<memory_mode::Internal, value_type, value_comp_type>::memory_fits(
         memory_bytes);
@@ -1108,7 +1108,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Total memory given in constructor.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    const tpie::memory_size_type _memory_given;
+    const size_t _memory_given;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Overflow priority queue used for elements pushed to a level where a bucket is (yet)
@@ -1129,7 +1129,7 @@ namespace adiar::internal
 #endif
 
   private:
-    levelized_priority_queue(tpie::memory_size_type memory_given,
+    levelized_priority_queue(size_t memory_given,
                              size_t max_size,
                              [[maybe_unused]] statistics::levelized_priority_queue_t& stats)
       : _max_size(max_size)
@@ -1149,7 +1149,7 @@ namespace adiar::internal
     /// \param memory_given Total amount of memory to use
     ////////////////////////////////////////////////////////////////////////////////////////////////
     levelized_priority_queue(const LevelFile (& /*files*/)[LevelFileCount],
-                             tpie::memory_size_type memory_given,
+                             size_t memory_given,
                              size_t max_size,
                              statistics::levelized_priority_queue_t& stats)
       : levelized_priority_queue(memory_given, max_size, stats)
@@ -1163,7 +1163,7 @@ namespace adiar::internal
     /// \param memory_given Total amount of memory to use
     ////////////////////////////////////////////////////////////////////////////////////////////////
     levelized_priority_queue(const dd (& /*dds*/)[LevelFileCount],
-                             tpie::memory_size_type memory_given,
+                             size_t memory_given,
                              size_t max_size,
                              statistics::levelized_priority_queue_t& stats)
       : levelized_priority_queue(memory_given, max_size, stats)
@@ -1177,7 +1177,7 @@ namespace adiar::internal
     /// \param memory_given Total amount of memory to use
     ////////////////////////////////////////////////////////////////////////////////////////////////
     levelized_priority_queue(const __dd (& /*dds*/)[LevelFileCount],
-                             tpie::memory_size_type memory_given,
+                             size_t memory_given,
                              size_t max_size,
                              statistics::levelized_priority_queue_t& stats)
       : levelized_priority_queue(memory_given, max_size, stats)

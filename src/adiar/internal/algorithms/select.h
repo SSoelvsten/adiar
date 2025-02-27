@@ -195,10 +195,10 @@ namespace adiar::internal
     //
     // We then may derive an upper bound on the size of auxiliary data structures and check whether
     // we can run them with a faster internal memory variant.
-    const tpie::memory_size_type aux_available_memory =
+    const size_t aux_available_memory =
       memory_available() - node_ifstream<>::memory_usage() - arc_ofstream::memory_usage();
 
-    const tpie::memory_size_type pq_memory_fits =
+    const size_t pq_memory_fits =
       select_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(
         aux_available_memory);
 

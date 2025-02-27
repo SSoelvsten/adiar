@@ -536,7 +536,7 @@ namespace adiar
     //
     // We then may derive an upper bound on the size of auxiliary data structures and check whether
     // we can run them with a faster internal memory variant.
-    const tpie::memory_size_type aux_available_memory = internal::memory_available()
+    const size_t aux_available_memory = internal::memory_available()
       // Input streams
       - 3 * internal::node_ifstream<>::memory_usage()
       // Output stream

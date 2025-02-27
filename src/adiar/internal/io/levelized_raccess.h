@@ -33,7 +33,7 @@ namespace adiar::internal
 
   public:
     static size_t
-    memory_usage(tpie::memory_size_type max_width)
+    memory_usage(size_t max_width)
     {
       return stream_type::memory_usage() + tpie::array<value_type>::memory_usage(max_width);
     }

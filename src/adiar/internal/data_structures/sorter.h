@@ -34,16 +34,16 @@ namespace adiar::internal
     size_t _front_idx;
 
   public:
-    static tpie::memory_size_type
-    memory_usage(tpie::memory_size_type no_elements)
+    static size_t
+    memory_usage(size_t no_elements)
     {
       return array_type::memory_usage(no_elements);
     }
 
-    static tpie::memory_size_type
-    memory_fits(tpie::memory_size_type memory_bytes)
+    static size_t
+    memory_fits(size_t memory_bytes)
     {
-      const tpie::memory_size_type ret = array_type::memory_fits(memory_bytes);
+      const size_t ret = array_type::memory_fits(memory_bytes);
 
       adiar_assert(memory_usage(ret) <= memory_bytes, "memory_fits and memory_usage should agree.");
       return ret;
@@ -198,7 +198,7 @@ namespace adiar::internal
       : _sorter(comp)
     {
       // Quickfix: Issue https://github.com/thomasmoelhave/tpie/issues/250
-      constexpr tpie::memory_size_type minimum_phase1 =
+      constexpr size_t minimum_phase1 =
         sizeof(value_type) * 128 * 1024 + 5 * 1024 * 1024;
 
       // ===========================================================================================
@@ -208,7 +208,7 @@ namespace adiar::internal
       // Consult the internal sorter to get a bound of how much memory is
       // necessary to sort these elements in internal memory. We don't need to
       // allocate more than a constant of this for the external memory case.
-      const tpie::memory_size_type no_elements_memory =
+      const size_t no_elements_memory =
         2 * sorter<memory_mode::Internal, value_type, Comp>::memory_usage(no_elements);
 
       // ===========================================================================================
@@ -259,9 +259,9 @@ namespace adiar::internal
       //   +--------+-----------------------------------------------------+
       //   | p1 . . | p2/p3 . . . . . . . . . . . . . . . . . . . . . . . |
       //   +--------+-----------------------------------------------------+
-      const tpie::memory_size_type maximum_phase1 = (memory_bytes >> 4) / (number_of_sorters - 1);
+      const size_t maximum_phase1 = (memory_bytes >> 4) / (number_of_sorters - 1);
 
-      const tpie::memory_size_type phase1 =
+      const size_t phase1 =
         std::max(minimum_phase1, std::min(maximum_phase1, no_elements_memory));
 
       // -------------------------------------------------------------------------------------------
@@ -269,16 +269,16 @@ namespace adiar::internal
       //
       // Based on internal workings of `tpie::merge_sorter` this should be at least twice the size
       // of the phase 1 memory.
-      constexpr tpie::memory_size_type minimum_phase3 = /*2 **/ minimum_phase1;
+      constexpr size_t minimum_phase3 = /*2 **/ minimum_phase1;
 
-      const tpie::memory_size_type phase3 = std::max(minimum_phase3, phase1);
+      const size_t phase3 = std::max(minimum_phase3, phase1);
 
       // -------------------------------------------------------------------------------------------
       // Phase 2 : Merge sorted lists until there are few enough for phase 3.
       //
       // Use the remaining sorter memory for this very step. If one is in this phase, then all other
       // sorters are in phase 1.
-      const tpie::memory_size_type phase2 = memory_bytes - phase1 * (number_of_sorters - 1);
+      const size_t phase2 = memory_bytes - phase1 * (number_of_sorters - 1);
 
       // -----------------------------------------------------------------------
       // Sanity tests...

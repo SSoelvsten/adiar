@@ -59,8 +59,8 @@ namespace adiar::internal
   bool
   __comparison_check(const typename Policy::dd_type& in_0,
                      const typename Policy::dd_type& in_1,
-                     const tpie::memory_size_type pq_1_memory,
-                     const tpie::memory_size_type pq_2_memory,
+                     const size_t pq_1_memory,
+                     const size_t pq_2_memory,
                      const size_t max_pq_size)
   {
     // Set up input
