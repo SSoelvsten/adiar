@@ -1,5 +1,5 @@
-#ifndef ADIAR_INTERNAL_IO_LEVELIZED_RANDOM_ACCESS_H
-#define ADIAR_INTERNAL_IO_LEVELIZED_RANDOM_ACCESS_H
+#ifndef ADIAR_INTERNAL_IO_LEVELIZED_RACCESS_H
+#define ADIAR_INTERNAL_IO_LEVELIZED_RACCESS_H
 
 #include <tpie/array.h>
 
@@ -13,13 +13,13 @@ namespace adiar::internal
   ///
   /// \tparam StreamType Stream to wrap with a *levelized random access* buffer.
   //
-  // TODO: Generalize parts of 'node_random_access' to reuse it with levelized files with other
+  // TODO: Generalize parts of 'node_raccess' to reuse it with levelized files with other
   //       types of content. Yet, what use-case do we have for this?
   //
   // TODO: Support 'StreamType<Reverse>'
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename StreamType>
-  class levelized_random_access
+  class levelized_raccess
   {
   private:
     using stream_type = StreamType /*<Default (top-down) direction>*/;
@@ -77,7 +77,7 @@ namespace adiar::internal
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    // levelized_random_access()
+    // levelized_raccess()
     // { }
     //
     // TODO: Add 'attach(...)', 'attached()' 'detach()' working multi-usage.
@@ -86,9 +86,9 @@ namespace adiar::internal
     /// \brief Construct attached to a mutable levelized file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     template <typename T>
-    levelized_random_access(levelized_file<T>& f,
-                            const bool negate                          = false,
-                            const typename T::signed_label_type& shift = 0)
+    levelized_raccess(levelized_file<T>& f,
+                      const bool negate                          = false,
+                      const typename T::signed_label_type& shift = 0)
       : _stream(f, negate, shift)
       , _max_width(f.width)
       , _level_buffer(f.width)
@@ -101,9 +101,9 @@ namespace adiar::internal
     /// \brief Construct attached to an immutable levelized file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     template <typename T>
-    levelized_random_access(const levelized_file<T>& f,
-                            const bool negate                         = false,
-                            const typename T::signed_label_type shift = 0)
+    levelized_raccess(const levelized_file<T>& f,
+                      const bool negate                         = false,
+                      const typename T::signed_label_type shift = 0)
       : _stream(f, negate, shift)
       , _max_width(f.width)
       , _level_buffer(f.width)
@@ -116,9 +116,9 @@ namespace adiar::internal
     /// \brief Construct attached to an immutable shared levelized file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     template <typename T>
-    levelized_random_access(const shared_ptr<levelized_file<T>>& f,
-                            const bool negate                         = false,
-                            const typename T::signed_label_type shift = 0)
+    levelized_raccess(const shared_ptr<levelized_file<T>>& f,
+                      const bool negate                         = false,
+                      const typename T::signed_label_type shift = 0)
       : _stream(f, negate, shift)
       , _max_width(f->width)
       , _level_buffer(f->width)
@@ -263,4 +263,4 @@ namespace adiar::internal
   };
 }
 
-#endif // ADIAR_INTERNAL_IO_LEVELIZED_RANDOM_ACCESS_H
+#endif // ADIAR_INTERNAL_IO_LEVELIZED_RACCESS_H

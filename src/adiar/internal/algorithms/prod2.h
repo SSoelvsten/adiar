@@ -20,7 +20,7 @@
 #include <adiar/internal/dd_func.h>
 #include <adiar/internal/io/arc_file.h>
 #include <adiar/internal/io/arc_writer.h>
-#include <adiar/internal/io/node_random_access.h>
+#include <adiar/internal/io/node_raccess.h>
 #include <adiar/internal/io/node_stream.h>
 #include <adiar/internal/memory.h>
 #include <adiar/internal/util.h>
@@ -292,7 +292,7 @@ namespace adiar::internal
 
     // Set up input
     node_stream<> in_nodes_pq(in_pq);
-    node_random_access in_nodes_ra(in_ra);
+    node_raccess in_nodes_ra(in_ra);
 
     node v_pq = in_nodes_pq.pull();
 
@@ -668,7 +668,7 @@ namespace adiar::internal
       // Input stream
       - node_stream<>::memory_usage()
       // Random access
-      - node_random_access::memory_usage(in_ra)
+      - node_raccess::memory_usage(in_ra)
       // Output stream
       - arc_writer::memory_usage();
 
@@ -862,7 +862,7 @@ namespace adiar::internal
       || ( // Heuristically, if the narrowest canonical fits
         ep.template get<exec_policy::access>() == exec_policy::access::Auto
         && (in_0->indexable || in_1->indexable)
-        && (node_random_access::memory_usage(min_width) <= ra_threshold))) {
+        && (node_raccess::memory_usage(min_width) <= ra_threshold))) {
 #ifdef ADIAR_STATS
       stats_prod2.ra.runs += 1u;
 #endif

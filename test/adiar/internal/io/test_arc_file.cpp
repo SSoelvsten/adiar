@@ -1,7 +1,7 @@
 #include "../../../test.h"
 #include <filesystem>
 
-#include <adiar/internal/io/node_arc_random_access.h>
+#include <adiar/internal/io/node_arc_raccess.h>
 #include <adiar/internal/io/node_arc_stream.h>
 
 go_bandit([]() {
@@ -783,7 +783,7 @@ go_bandit([]() {
       */
     });
 
-    describe("arc_writer + node_arc_random_access", []() {
+    describe("arc_writer + node_arc_raccess", []() {
       levelized_file<arc> afA;
       /*
       //            1          ---- afA
@@ -853,7 +853,7 @@ go_bandit([]() {
       describe(".setup_next_level(...) + .[has_]current_level() + ", [&]() {
         it("has empty levels before root [A]", [&]() {
           levelized_file<arc> in = levelized_file<arc>::copy(afA);
-          node_arc_random_access nara(in);
+          node_arc_raccess nara(in);
 
           AssertThat(nara.has_current_level(), Is().False());
 
@@ -873,7 +873,7 @@ go_bandit([]() {
 
         it("has empty levels after having skipped content [A]", [&]() {
           levelized_file<arc> in = levelized_file<arc>::copy(afA);
-          node_arc_random_access nara(in);
+          node_arc_raccess nara(in);
 
           AssertThat(nara.has_current_level(), Is().False());
 
@@ -894,7 +894,7 @@ go_bandit([]() {
 
         it("sets up the first default 'next' level to be the root [A]", [&]() {
           levelized_file<arc> in = levelized_file<arc>::copy(afA);
-          node_arc_random_access nara(in);
+          node_arc_raccess nara(in);
 
           AssertThat(nara.has_current_level(), Is().False());
 
@@ -911,7 +911,7 @@ go_bandit([]() {
 
         it("sets up consecutive default 'next' level to be the non-empty levels [B]", [&]() {
           levelized_file<arc> in = levelized_file<arc>::copy(afB);
-          node_arc_random_access nara(in);
+          node_arc_raccess nara(in);
 
           AssertThat(nara.has_current_level(), Is().False());
 
@@ -964,7 +964,7 @@ go_bandit([]() {
 
         it("can go to empty level in-between non-empty ones [B]", [&]() {
           levelized_file<arc> in = levelized_file<arc>::copy(afB);
-          node_arc_random_access nra(in);
+          node_arc_raccess nra(in);
           nra.setup_next_level(3u);
 
           AssertThat(nra.has_current_level(), Is().True());
@@ -978,7 +978,7 @@ go_bandit([]() {
 
         it("can go from empty level to the next non-empty one [B]", [&]() {
           levelized_file<arc> in = levelized_file<arc>::copy(afB);
-          node_arc_random_access nra(in);
+          node_arc_raccess nra(in);
           nra.setup_next_level(3u);
 
           AssertThat(nra.has_next_level(), Is().True());
@@ -996,7 +996,7 @@ go_bandit([]() {
       describe(".at(...)", [&]() {
         it("provides random access to root level [idx] [A]", [&]() {
           levelized_file<arc> in = levelized_file<arc>::copy(afA);
-          node_arc_random_access nara(in);
+          node_arc_raccess nara(in);
 
           nara.setup_next_level();
           AssertThat(nara.at(0u), Is().EqualTo(A_n1));
@@ -1004,7 +1004,7 @@ go_bandit([]() {
 
         it("provides random access to root level [uid] [A]", [&]() {
           levelized_file<arc> in = levelized_file<arc>::copy(afA);
-          node_arc_random_access nara(in);
+          node_arc_raccess nara(in);
 
           nara.setup_next_level();
           AssertThat(nara.at(A_n1.uid()), Is().EqualTo(A_n1));
@@ -1012,7 +1012,7 @@ go_bandit([]() {
 
         it("provides random access to root [idx] [B]", [&]() {
           levelized_file<arc> in = levelized_file<arc>::copy(afB);
-          node_arc_random_access nara(in);
+          node_arc_raccess nara(in);
 
           nara.setup_next_level();
           AssertThat(nara.at(0u), Is().EqualTo(B_n1));
@@ -1020,7 +1020,7 @@ go_bandit([]() {
 
         it("provides random access to root [uid] [B]", [&]() {
           levelized_file<arc> in = levelized_file<arc>::copy(afB);
-          node_arc_random_access nara(in);
+          node_arc_raccess nara(in);
 
           nara.setup_next_level();
           AssertThat(nara.at(B_n1.uid()), Is().EqualTo(B_n1));
@@ -1028,7 +1028,7 @@ go_bandit([]() {
 
         it("provides random access to non-root single-node level [idx] [B]", [&]() {
           levelized_file<arc> in = levelized_file<arc>::copy(afB);
-          node_arc_random_access nara(in);
+          node_arc_raccess nara(in);
 
           nara.setup_next_level(1u);
           AssertThat(nara.at(0u), Is().EqualTo(B_n2));
@@ -1036,7 +1036,7 @@ go_bandit([]() {
 
         it("provides random access to non-root single-node level [uid] [B]", [&]() {
           levelized_file<arc> in = levelized_file<arc>::copy(afB);
-          node_arc_random_access nara(in);
+          node_arc_raccess nara(in);
 
           nara.setup_next_level(1u);
           AssertThat(nara.at(B_n2.uid()), Is().EqualTo(B_n2));
@@ -1044,7 +1044,7 @@ go_bandit([]() {
 
         it("provides in-order access to multi-node level in order [idx] [B]", [&]() {
           levelized_file<arc> in = levelized_file<arc>::copy(afB);
-          node_arc_random_access nara(in);
+          node_arc_raccess nara(in);
 
           nara.setup_next_level(2u);
           AssertThat(nara.at(0u), Is().EqualTo(B_n3));
@@ -1054,7 +1054,7 @@ go_bandit([]() {
 
         it("provides in-order access to multi-node level [uid] [B]", [&]() {
           levelized_file<arc> in = levelized_file<arc>::copy(afB);
-          node_arc_random_access nara(in);
+          node_arc_raccess nara(in);
 
           nara.setup_next_level(2u);
           AssertThat(nara.at(B_n3.uid()), Is().EqualTo(B_n3));
@@ -1064,7 +1064,7 @@ go_bandit([]() {
 
         it("allows skipping over nodes on multi-node level [idx] [B]", [&]() {
           levelized_file<arc> in = levelized_file<arc>::copy(afB);
-          node_arc_random_access nara(in);
+          node_arc_raccess nara(in);
 
           nara.setup_next_level(2u);
           AssertThat(nara.at(0u), Is().EqualTo(B_n3));
@@ -1073,7 +1073,7 @@ go_bandit([]() {
 
         it("provides in-order random access to multi-node level [uid] [B]", [&]() {
           levelized_file<arc> in = levelized_file<arc>::copy(afB);
-          node_arc_random_access nara(in);
+          node_arc_raccess nara(in);
 
           nara.setup_next_level(2u);
           AssertThat(nara.at(B_n4.uid()), Is().EqualTo(B_n4));
@@ -1081,7 +1081,7 @@ go_bandit([]() {
 
         it("provides out-of-order random access to multi-node level [idx] [B]", [&]() {
           levelized_file<arc> in = levelized_file<arc>::copy(afB);
-          node_arc_random_access nara(in);
+          node_arc_raccess nara(in);
 
           nara.setup_next_level(2u);
           AssertThat(nara.at(2u), Is().EqualTo(B_n5));
@@ -1091,7 +1091,7 @@ go_bandit([]() {
 
         it("provides out-of-order random access to multi-node level [uid] [B]", [&]() {
           levelized_file<arc> in = levelized_file<arc>::copy(afB);
-          node_arc_random_access nara(in);
+          node_arc_raccess nara(in);
 
           nara.setup_next_level(2u);
           AssertThat(nara.at(B_n5.uid()), Is().EqualTo(B_n5));
@@ -1101,7 +1101,7 @@ go_bandit([]() {
 
         it("provides recurring out-of-order random access to multi-node level [idx] [B]", [&]() {
           levelized_file<arc> in = levelized_file<arc>::copy(afB);
-          node_arc_random_access nara(in);
+          node_arc_raccess nara(in);
 
           nara.setup_next_level(2u);
           AssertThat(nara.at(0u), Is().EqualTo(B_n3));
@@ -1115,7 +1115,7 @@ go_bandit([]() {
 
         it("provides recurring out-of-order random access to multi-node level [uid] [B]", [&]() {
           levelized_file<arc> in = levelized_file<arc>::copy(afB);
-          node_arc_random_access nara(in);
+          node_arc_raccess nara(in);
 
           nara.setup_next_level(2u);
           AssertThat(nara.at(B_n3.uid()), Is().EqualTo(B_n3));
@@ -1129,7 +1129,7 @@ go_bandit([]() {
 
         it("provides access after having gone by default from an empty level [B]", [&]() {
           levelized_file<arc> in = levelized_file<arc>::copy(afB);
-          node_arc_random_access nara(in);
+          node_arc_raccess nara(in);
 
           nara.setup_next_level(3u);
 
@@ -1153,14 +1153,14 @@ go_bandit([]() {
       describe(".root()", [&]() {
         it("provides root before accessing anything [B]", [&]() {
           levelized_file<arc> in = levelized_file<arc>::copy(afB);
-          node_arc_random_access nara(in);
+          node_arc_raccess nara(in);
 
           AssertThat(nara.root(), Is().EqualTo(arc::pointer_type(0, 0)));
         });
 
         it("provides root after accessing node below it [B]", [&]() {
           levelized_file<arc> in = levelized_file<arc>::copy(afB);
-          node_arc_random_access nara(in);
+          node_arc_raccess nara(in);
 
           nara.setup_next_level(2u);
           AssertThat(nara.at(B_n4.uid()), Is().EqualTo(B_n4));

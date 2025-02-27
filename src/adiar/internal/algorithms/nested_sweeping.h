@@ -12,7 +12,7 @@
 #include <adiar/internal/data_types/ptr.h>
 #include <adiar/internal/data_types/request.h>
 #include <adiar/internal/dd_func.h>
-#include <adiar/internal/io/node_random_access.h>
+#include <adiar/internal/io/node_raccess.h>
 #include <adiar/internal/memory.h>
 #include <adiar/internal/util.h>
 
