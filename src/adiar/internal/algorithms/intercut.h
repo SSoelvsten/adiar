@@ -14,8 +14,8 @@
 #include <adiar/internal/io/arc_file.h>
 #include <adiar/internal/io/arc_writer.h>
 #include <adiar/internal/io/file.h>
-#include <adiar/internal/io/file_stream.h>
-#include <adiar/internal/io/node_stream.h>
+#include <adiar/internal/io/ifstream.h>
+#include <adiar/internal/io/node_ifstream.h>
 
 namespace adiar::internal
 {
@@ -185,7 +185,7 @@ namespace adiar::internal
              const size_t pq_memory,
              const size_t max_pq_size)
   {
-    node_stream<> in_nodes(dd);
+    node_ifstream<> in_nodes(dd);
     node n = in_nodes.pull();
 
     // TODO: Only copy `xs` into a `shared_file<label_type>`, in the degenerate
@@ -205,7 +205,7 @@ namespace adiar::internal
 
     if (n.is_terminal()) { return intercut_policy::on_terminal_input(n.value(), dd, hit_levels); }
 
-    file_stream<typename intercut_policy::label_type> ls(hit_levels);
+    ifstream<typename intercut_policy::label_type> ls(hit_levels);
     typename intercut_policy::label_type l = ls.pull();
 
     shared_levelized_file<arc> out_arcs;
@@ -329,7 +329,7 @@ namespace adiar::internal
     // memory variant.
     const tpie::memory_size_type aux_available_memory = memory_available()
       // Input stream
-      - node_stream<>::memory_usage()
+      - node_ifstream<>::memory_usage()
       // Output stream
       - arc_writer::memory_usage();
 

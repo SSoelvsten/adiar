@@ -6,8 +6,8 @@
 
 #include <adiar/internal/dd.h>
 #include <adiar/internal/io/arc_file.h>
-#include <adiar/internal/io/arc_stream.h>
-#include <adiar/internal/io/node_stream.h>
+#include <adiar/internal/io/arc_ifstream.h>
+#include <adiar/internal/io/node_ifstream.h>
 
 namespace adiar::internal
 {
@@ -17,7 +17,7 @@ namespace adiar::internal
   /// \tparam File      Type of the node container.
   ///
   /// \param nodes      Container with nodes which can be read with a
-  ///                   `node_stream<>`.
+  ///                   `node_ifstream<>`.
   ///
   /// \param out        Output stream.
   ///
@@ -31,7 +31,7 @@ namespace adiar::internal
     out << "digraph DD {"
         << "\n";
 
-    node_stream<> ns(nodes);
+    node_ifstream<> ns(nodes);
 
     if (nodes->is_terminal()) {
       const bool value = ns.pull().value();
@@ -154,7 +154,7 @@ namespace adiar::internal
 
     out << "\t// Node Arcs" << std::endl;
 
-    arc_stream<> as(arcs);
+    arc_ifstream<> as(arcs);
     while (as.can_pull_internal()) {
       const arc a = as.pull_internal();
       out << "\t"

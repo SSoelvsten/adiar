@@ -11,7 +11,7 @@
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/dd.h>
 #include <adiar/internal/io/levelized_file.h>
-#include <adiar/internal/io/levelized_file_stream.h>
+#include <adiar/internal/io/levelized_ifstream.h>
 
 namespace adiar::internal
 {
@@ -64,8 +64,8 @@ namespace adiar::internal
                      const size_t max_pq_size)
   {
     // Set up input
-    node_stream<> in_nodes_0(in_0);
-    node_stream<> in_nodes_1(in_1);
+    node_ifstream<> in_nodes_0(in_0);
+    node_ifstream<> in_nodes_1(in_1);
 
     node v0 = in_nodes_0.pull();
     node v1 = in_nodes_1.pull();
@@ -191,7 +191,7 @@ namespace adiar::internal
     // we can run them with a faster internal memory variant.
     const size_t aux_available_memory = memory_available()
       // Input
-      - 2 * node_stream<>::memory_usage()
+      - 2 * node_ifstream<>::memory_usage()
       // Level checker policy
       - Policy::level_check_t::memory_usage();
 

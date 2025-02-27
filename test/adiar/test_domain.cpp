@@ -51,7 +51,7 @@ go_bandit([]() {
 
         AssertThat(domain_isset(), Is().True());
 
-        file_stream<node::label_type> ls(domain_get());
+        ifstream<node::label_type> ls(domain_get());
 
         AssertThat(ls.can_pull(), Is().False());
       });
@@ -62,7 +62,7 @@ go_bandit([]() {
 
         AssertThat(domain_isset(), Is().True());
 
-        file_stream<node::label_type> ls(domain_get());
+        ifstream<node::label_type> ls(domain_get());
 
         AssertThat(ls.can_pull(), Is().True());
         AssertThat(ls.pull(), Is().EqualTo(0u));
@@ -76,7 +76,7 @@ go_bandit([]() {
 
         AssertThat(domain_isset(), Is().True());
 
-        file_stream<node::label_type> ls(domain_get());
+        ifstream<node::label_type> ls(domain_get());
 
         AssertThat(ls.can_pull(), Is().True());
         AssertThat(ls.pull(), Is().EqualTo(0u));
@@ -109,7 +109,7 @@ go_bandit([]() {
         {
           AssertThat(domain_isset(), Is().True());
 
-          file_stream<node::label_type> ls(domain_get());
+          ifstream<node::label_type> ls(domain_get());
 
           AssertThat(ls.can_pull(), Is().True());
           AssertThat(ls.pull(), Is().EqualTo(0u));
@@ -127,7 +127,7 @@ go_bandit([]() {
         {
           AssertThat(domain_isset(), Is().True());
 
-          file_stream<node::label_type> ls(domain_get());
+          ifstream<node::label_type> ls(domain_get());
 
           AssertThat(ls.can_pull(), Is().True());
           AssertThat(ls.pull(), Is().EqualTo(0u));
@@ -156,7 +156,7 @@ go_bandit([]() {
         domain_set(gen);
         AssertThat(domain_isset(), Is().True());
 
-        file_stream<node::label_type> ls(domain_get());
+        ifstream<node::label_type> ls(domain_get());
 
         AssertThat(ls.can_pull(), Is().True());
         AssertThat(ls.pull(), Is().EqualTo(1u));
@@ -188,7 +188,7 @@ go_bandit([]() {
 
         AssertThat(domain_isset(), Is().True());
 
-        file_stream<node::label_type> ls(domain_get());
+        ifstream<node::label_type> ls(domain_get());
 
         AssertThat(ls.can_pull(), Is().True());
         AssertThat(ls.pull(), Is().EqualTo(0u));
@@ -217,7 +217,7 @@ go_bandit([]() {
         { // Check for xs
           AssertThat(domain_isset(), Is().True());
 
-          file_stream<node::label_type> ls(domain_get());
+          ifstream<node::label_type> ls(domain_get());
 
           AssertThat(ls.can_pull(), Is().True());
           AssertThat(ls.pull(), Is().EqualTo(2u));
@@ -237,7 +237,7 @@ go_bandit([]() {
         { // Check for ys
           AssertThat(domain_isset(), Is().True());
 
-          file_stream<node::label_type> ls(domain_get());
+          ifstream<node::label_type> ls(domain_get());
 
           AssertThat(ls.can_pull(), Is().True());
           AssertThat(ls.pull(), Is().EqualTo(0u));

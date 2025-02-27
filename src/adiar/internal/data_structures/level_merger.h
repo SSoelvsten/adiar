@@ -4,8 +4,8 @@
 #include <adiar/internal/assert.h>
 #include <adiar/internal/dd.h>
 #include <adiar/internal/io/file.h>
-#include <adiar/internal/io/file_stream.h>
-#include <adiar/internal/io/levelized_file_stream.h>
+#include <adiar/internal/io/ifstream.h>
+#include <adiar/internal/io/levelized_ifstream.h>
 #include <adiar/internal/io/shared_file_ptr.h>
 #include <adiar/internal/memory.h>
 #include <adiar/internal/util.h>
@@ -30,7 +30,7 @@ namespace adiar::internal
   {
     static_assert(0 < FileCount, "At least one file should be merged");
 
-    using stream_type = typename level_stream_t<File>::template stream_t<Reverse>;
+    using stream_type = typename level_ifstream_t<File>::template stream_t<Reverse>;
 
   public:
     static size_t
@@ -44,7 +44,7 @@ namespace adiar::internal
   private:
     Comp _comparator = Comp();
 
-    unique_ptr<stream_type> _level_streams[FileCount];
+    unique_ptr<stream_type> _level_ifstreams[FileCount];
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,7 +54,7 @@ namespace adiar::internal
     hook(const File (&fs)[FileCount])
     {
       for (size_t idx = 0u; idx < FileCount; idx++) {
-        _level_streams[idx] = adiar::make_unique<stream_type>(fs[idx]);
+        _level_ifstreams[idx] = adiar::make_unique<stream_type>(fs[idx]);
       }
     }
 
@@ -65,7 +65,7 @@ namespace adiar::internal
     hook(const dd (&dds)[FileCount])
     {
       for (size_t idx = 0u; idx < FileCount; idx++) {
-        _level_streams[idx] =
+        _level_ifstreams[idx] =
           adiar::make_unique<stream_type>(dds[idx].file_ptr(), dds[idx].shift());
       }
     }
@@ -77,7 +77,7 @@ namespace adiar::internal
     hook(const __dd (&dds)[FileCount])
     {
       for (size_t idx = 0u; idx < FileCount; idx++) {
-        _level_streams[idx] = adiar::make_unique<stream_type>(dds[idx] /*, dds[idx]._shift*/);
+        _level_ifstreams[idx] = adiar::make_unique<stream_type>(dds[idx] /*, dds[idx]._shift*/);
       }
     }
 
@@ -88,7 +88,7 @@ namespace adiar::internal
     can_pull()
     {
       for (size_t idx = 0u; idx < FileCount; idx++) {
-        if (_level_streams[idx]->can_pull()) { return true; }
+        if (_level_ifstreams[idx]->can_pull()) { return true; }
       }
       return false;
     }
@@ -106,10 +106,11 @@ namespace adiar::internal
       bool has_min_level   = false;
       level_type min_level = 0u;
       for (size_t idx = 0u; idx < FileCount; idx++) {
-        if (_level_streams[idx]->can_pull()
-            && (!has_min_level || _comparator(level_of(_level_streams[idx]->peek()), min_level))) {
+        if (_level_ifstreams[idx]->can_pull()
+            && (!has_min_level
+                || _comparator(level_of(_level_ifstreams[idx]->peek()), min_level))) {
           has_min_level = true;
-          min_level     = level_of(_level_streams[idx]->peek());
+          min_level     = level_of(_level_ifstreams[idx]->peek());
         }
       }
 
@@ -129,9 +130,9 @@ namespace adiar::internal
       level_type min_level = peek();
 
       // pull from all with min_level
-      for (const unique_ptr<stream_type>& level_info_stream : _level_streams) {
-        if (level_info_stream->can_pull() && level_of(level_info_stream->peek()) == min_level) {
-          level_info_stream->pull();
+      for (const unique_ptr<stream_type>& level_info_ifstream : _level_ifstreams) {
+        if (level_info_ifstream->can_pull() && level_of(level_info_ifstream->peek()) == min_level) {
+          level_info_ifstream->pull();
         }
       }
       return min_level;

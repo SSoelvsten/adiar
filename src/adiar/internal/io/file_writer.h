@@ -56,7 +56,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a given `file<value_type>`.
     ///
-    /// \pre No `file_stream` is currently attached to this file.
+    /// \pre No `ifstream` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     file_writer(file<value_type>& f)
     {
@@ -66,7 +66,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a given shared `file<value_type>`.
     ///
-    /// \pre No `file_stream` is currently attached to this file.
+    /// \pre No `ifstream` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     file_writer(adiar::shared_ptr<file<value_type>>& f)
     {
@@ -104,7 +104,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Attach to a file.
     ///
-    /// \pre No `file_stream` is currently attached to this file.
+    /// \pre No `ifstream` is currently attached to this file.
     ///
     /// \warning Since ownership is \em not shared with this writer, you have to ensure, that the
     ///          file in question is not destructed before `.detach()` is called.
@@ -118,7 +118,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Attach to a shared file.
     ///
-    /// \pre No `file_stream` is currently attached to this file.
+    /// \pre No `ifstream` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
     attach(adiar::shared_ptr<file<value_type>> f)

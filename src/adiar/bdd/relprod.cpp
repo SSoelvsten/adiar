@@ -338,7 +338,7 @@ namespace adiar
   {
     replace_type m_type;
     {
-      internal::level_info_stream<false> ls(relation);
+      internal::level_info_ifstream<false> ls(relation);
       m_type = internal::__replace__infer_type<bdd_policy>(ls, m);
     }
     return bdd_relnext(ep, states, relation, m, m_type);
@@ -421,7 +421,7 @@ namespace adiar
   {
     replace_type m_type;
     {
-      internal::level_info_stream<false> ls(states);
+      internal::level_info_ifstream<false> ls(states);
       m_type = internal::__replace__infer_type<bdd_policy>(ls, m);
     }
 

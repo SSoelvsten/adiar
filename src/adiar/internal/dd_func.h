@@ -3,7 +3,7 @@
 
 #include <adiar/functional.h>
 
-#include <adiar/internal/io/levelized_file_stream.h>
+#include <adiar/internal/io/levelized_ifstream.h>
 
 namespace adiar::internal
 {
@@ -148,8 +148,8 @@ namespace adiar::internal
   void
   dd_support(const DD& dd, const consumer<typename DD::label_type>& cb)
   {
-    level_info_stream<> info_stream(dd);
-    while (info_stream.can_pull()) { cb(info_stream.pull().label()); }
+    level_info_ifstream<> info_ifstream(dd);
+    while (info_ifstream.can_pull()) { cb(info_ifstream.pull().label()); }
   }
 }
 

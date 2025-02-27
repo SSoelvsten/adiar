@@ -12,7 +12,7 @@
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/level_info.h>
 #include <adiar/internal/io/file.h>
-#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/ifstream.h>
 
 namespace adiar::internal
 {
@@ -112,13 +112,13 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // Befriend the few places that need direct access to these variables.
     template <typename tparam__elem_t, bool tparam__REVERSE>
-    friend class levelized_file_stream;
+    friend class levelized_ifstream;
 
     template <typename tparam__elem_t>
     friend class levelized_file_writer;
 
     template <bool tparam__REVERSE>
-    friend class level_info_stream;
+    friend class level_info_ifstream;
 
   private:
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -306,7 +306,7 @@ namespace adiar::internal
     first_level() const
     {
       adiar_assert(this->levels() > 0u);
-      file_stream<level_info, true> fs(this->_level_info_file);
+      ifstream<level_info, true> fs(this->_level_info_file);
       return fs.pull().level();
     }
 
@@ -319,7 +319,7 @@ namespace adiar::internal
     last_level() const
     {
       adiar_assert(this->levels() > 0u);
-      file_stream<level_info, false> fs(this->_level_info_file);
+      ifstream<level_info, false> fs(this->_level_info_file);
       return fs.pull().level();
     }
 
@@ -397,7 +397,7 @@ namespace adiar::internal
     /// \param path_prefix Prefix of the path used for the underlying files.
     ///
     /// \pre `is_persistent() == false` (other's might depend on it) and `path_prefix` names a yet
-    ///      non-existing file. Neither should a `file_stream` nor a `file_writer` be hooked into
+    ///      non-existing file. Neither should a `ifstream` nor a `file_writer` be hooked into
     ///      this file.
     ///
     /// \throws runtime_error Preconditions are violated.

@@ -4,7 +4,7 @@
 
 go_bandit([]() {
   describe(
-    "adiar/internal/io/levelized_file.h , levelized_file_stream.h , levelized_file_writer.h", []() {
+    "adiar/internal/io/levelized_file.h , levelized_ifstream.h , levelized_file_writer.h", []() {
       // The default folder for temporary files is '/tmp/' on Ubuntu and '/var/tmp/'
       // on Fedora. Both of these are to the OS not on the same drive and so you get
       // a 'cross-device link' error when using std::filesystem::rename(...) to move
@@ -507,22 +507,22 @@ go_bandit([]() {
         });
       });
 
-      describe("levelized_file() + levelized_file_stream", []() {
+      describe("levelized_file() + levelized_ifstream", []() {
         it("it can attach to and detach from an empty file [con-/destructor]", []() {
           levelized_file<int> lf;
-          levelized_file_stream<int> lfs(lf);
+          levelized_ifstream<int> lfs(lf);
         });
 
         it("it can attach to and detach from an empty file [member functions]", []() {
           levelized_file<int> lf;
-          levelized_file_stream<int> lfs;
+          levelized_ifstream<int> lfs;
           lfs.attach(lf);
           lfs.detach();
         });
 
         it("it remembers it was attached", []() {
           levelized_file<int> lf;
-          levelized_file_stream<int> lfs(lf);
+          levelized_ifstream<int> lfs(lf);
 
           AssertThat(lfs.attached(), Is().True());
           lfs.detach();
@@ -531,7 +531,7 @@ go_bandit([]() {
 
         it("it cannot be pulled from", []() {
           levelized_file<int> lf;
-          levelized_file_stream<int> lfs(lf);
+          levelized_ifstream<int> lfs(lf);
 
           AssertThat(lfs.template can_pull<0>(), Is().False());
           AssertThat(lfs.template can_pull<1>(), Is().False());
@@ -539,7 +539,7 @@ go_bandit([]() {
 
         it("it can be reset", []() {
           levelized_file<int> lf;
-          levelized_file_stream<int> lfs(lf);
+          levelized_ifstream<int> lfs(lf);
 
           lfs.reset();
           AssertThat(lfs.attached(), Is().True());
@@ -849,7 +849,7 @@ go_bandit([]() {
         });
       });
 
-      describe("levelized_file() + levelized_file_stream + levelized_file_writer",
+      describe("levelized_file() + levelized_ifstream + levelized_file_writer",
                [&tmp_path /*, &curr_path*/]() {
                  it("can read written content", []() {
                    levelized_file<int> lf;
@@ -862,7 +862,7 @@ go_bandit([]() {
                      lfw.push<1>(24);
                    }
                    {
-                     levelized_file_stream<int> lfs(lf);
+                     levelized_ifstream<int> lfs(lf);
                      AssertThat(lfs.pull<0>(), Is().EqualTo(23));
                      AssertThat(lfs.pull<0>(), Is().EqualTo(8));
                      AssertThat(lfs.pull<0>(), Is().EqualTo(32));
@@ -883,7 +883,7 @@ go_bandit([]() {
                      lfw.push<0>(16);
                    }
                    {
-                     levelized_file_stream<int, true> lfs(lf);
+                     levelized_ifstream<int, true> lfs(lf);
                      AssertThat(lfs.pull<0>(), Is().EqualTo(16));
                      AssertThat(lfs.pull<0>(), Is().EqualTo(32));
                      AssertThat(lfs.pull<0>(), Is().EqualTo(18));
@@ -913,7 +913,7 @@ go_bandit([]() {
                    }
                    lf.move(path_prefix);
                    {
-                     levelized_file_stream<int> lfs(lf);
+                     levelized_ifstream<int> lfs(lf);
                      AssertThat(lfs.pull<0>(), Is().EqualTo(23));
                      AssertThat(lfs.pull<0>(), Is().EqualTo(32));
                      AssertThat(lfs.pull<1>(), Is().EqualTo(24));
@@ -945,7 +945,7 @@ go_bandit([]() {
                    }
                    lf.move(path_prefix);
                    {
-                     levelized_file_stream<int, true> lfs(lf);
+                     levelized_ifstream<int, true> lfs(lf);
                      AssertThat(lfs.pull<0>(), Is().EqualTo(6));
                      AssertThat(lfs.pull<0>(), Is().EqualTo(4));
                      AssertThat(lfs.pull<0>(), Is().EqualTo(2));
@@ -958,7 +958,7 @@ go_bandit([]() {
                  });
                });
 
-      describe("levelized_file() + levelized_file_writer + level_info_stream", []() {
+      describe("levelized_file() + levelized_file_writer + level_info_ifstream", []() {
         levelized_file<int> lf;
         levelized_file_writer lfw(lf);
 
@@ -973,7 +973,7 @@ go_bandit([]() {
         lfw.detach();
 
         it("pulls by default level information in reverse", [&]() {
-          level_info_stream fs(lf);
+          level_info_ifstream fs(lf);
 
           AssertThat(fs.can_pull(), Is().True());
           AssertThat(fs.pull(), Is().EqualTo(level_info{ 3u, 3u }));
@@ -985,7 +985,7 @@ go_bandit([]() {
         });
 
         it("peeks by default level information in reverse", [&]() {
-          level_info_stream fs(lf);
+          level_info_ifstream fs(lf);
 
           AssertThat(fs.can_pull(), Is().True());
           AssertThat(fs.peek(), Is().EqualTo(level_info{ 3u, 3u }));
@@ -1000,7 +1000,7 @@ go_bandit([]() {
         });
 
         it("can read level information forwards", [&]() {
-          level_info_stream<true> fs(lf);
+          level_info_ifstream<true> fs(lf);
 
           AssertThat(fs.can_pull(), Is().True());
           AssertThat(fs.pull(), Is().EqualTo(level_info{ 1u, 2u }));
@@ -1012,7 +1012,7 @@ go_bandit([]() {
         });
 
         it("can peek level information forwards", [&]() {
-          level_info_stream<true> fs(lf);
+          level_info_ifstream<true> fs(lf);
 
           AssertThat(fs.can_pull(), Is().True());
           AssertThat(fs.peek(), Is().EqualTo(level_info{ 1u, 2u }));
@@ -1027,7 +1027,7 @@ go_bandit([]() {
         });
 
         it("shifts level information [+0]", [&]() {
-          level_info_stream fs(lf, +0);
+          level_info_ifstream fs(lf, +0);
 
           AssertThat(fs.can_pull(), Is().True());
           AssertThat(fs.peek(), Is().EqualTo(level_info{ 3u, 3u }));
@@ -1041,7 +1041,7 @@ go_bandit([]() {
         });
 
         it("shifts level information [+1]", [&]() {
-          level_info_stream fs(lf, +1);
+          level_info_ifstream fs(lf, +1);
 
           AssertThat(fs.can_pull(), Is().True());
           AssertThat(fs.peek(), Is().EqualTo(level_info{ 4u, 3u }));
@@ -1055,7 +1055,7 @@ go_bandit([]() {
         });
 
         it("shifts level information [+2]", [&]() {
-          level_info_stream fs(lf, +2);
+          level_info_ifstream fs(lf, +2);
 
           AssertThat(fs.can_pull(), Is().True());
           AssertThat(fs.peek(), Is().EqualTo(level_info{ 5u, 3u }));
@@ -1069,7 +1069,7 @@ go_bandit([]() {
         });
 
         it("shifts level information [-1]", [&]() {
-          level_info_stream fs(lf, -1);
+          level_info_ifstream fs(lf, -1);
 
           AssertThat(fs.can_pull(), Is().True());
           AssertThat(fs.peek(), Is().EqualTo(level_info{ 2u, 3u }));
@@ -1328,7 +1328,7 @@ go_bandit([]() {
 
         it("can read content with a stream", [&path_prefix]() {
           levelized_file<int> lf(path_prefix);
-          levelized_file_stream<int> lfs(lf);
+          levelized_ifstream<int> lfs(lf);
 
           AssertThat(lfs.pull<0>(), Is().EqualTo(0));
           AssertThat(lfs.pull<0>(), Is().EqualTo(2));
@@ -1424,7 +1424,7 @@ go_bandit([]() {
           lfw.detach();
 
           { // Check is unsorted first
-            levelized_file_stream<int> lfs(lf);
+            levelized_ifstream<int> lfs(lf);
             AssertThat(lfs.can_pull<0>(), Is().True());
             AssertThat(lfs.pull<0>(), Is().EqualTo(-1));
             AssertThat(lfs.can_pull<0>(), Is().True());
@@ -1448,7 +1448,7 @@ go_bandit([]() {
 
           lf.sort<std::less<int>>(0);
           { // Check has (only) the first file sorted
-            levelized_file_stream<int> lfs(lf);
+            levelized_ifstream<int> lfs(lf);
 
             AssertThat(lfs.can_pull<0>(), Is().True());
             AssertThat(lfs.pull<0>(), Is().EqualTo(-1));
@@ -1473,7 +1473,7 @@ go_bandit([]() {
 
           lf.sort<std::less<int>>(1);
           { // Check has both files sorted
-            levelized_file_stream<int> lfs(lf);
+            levelized_ifstream<int> lfs(lf);
 
             AssertThat(lfs.can_pull<0>(), Is().True());
             AssertThat(lfs.pull<0>(), Is().EqualTo(-1));
@@ -1562,7 +1562,7 @@ go_bandit([]() {
           { // Check content is not sorted
             levelized_file<int> lf(path_prefix);
 
-            levelized_file_stream<int> lfs(lf);
+            levelized_ifstream<int> lfs(lf);
             AssertThat(lfs.can_pull<0>(), Is().True());
             AssertThat(lfs.pull<0>(), Is().EqualTo(-1));
             AssertThat(lfs.can_pull<0>(), Is().True());
@@ -1577,7 +1577,7 @@ go_bandit([]() {
             AssertThat(lfs.pull<1>(), Is().EqualTo(2));
             AssertThat(lfs.can_pull<1>(), Is().False());
 
-            level_info_stream<true> fs_lvls(lf);
+            level_info_ifstream<true> fs_lvls(lf);
             AssertThat(fs_lvls.can_pull(), Is().True());
             AssertThat(fs_lvls.pull(), Is().EqualTo(level_info{ 2, 1 }));
             AssertThat(fs_lvls.can_pull(), Is().True());
@@ -1710,7 +1710,7 @@ go_bandit([]() {
 
           // Check file content
           {
-            levelized_file_stream<int> lfs(lf2);
+            levelized_ifstream<int> lfs(lf2);
 
             AssertThat(lfs.can_pull<0>(), Is().True());
             AssertThat(lfs.pull<0>(), Is().EqualTo(21));
@@ -1722,7 +1722,7 @@ go_bandit([]() {
             AssertThat(lfs.pull<1>(), Is().EqualTo(42));
             AssertThat(lfs.can_pull<1>(), Is().False());
 
-            level_info_stream<true> fs_lvls(lf2);
+            level_info_ifstream<true> fs_lvls(lf2);
             AssertThat(fs_lvls.can_pull(), Is().True());
             AssertThat(fs_lvls.pull(), Is().EqualTo(level_info{ 0, 1 }));
             AssertThat(fs_lvls.can_pull(), Is().True());

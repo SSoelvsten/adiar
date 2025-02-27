@@ -1,10 +1,10 @@
-#ifndef ADIAR_INTERNAL_IO_ARC_STREAM_H
-#define ADIAR_INTERNAL_IO_ARC_STREAM_H
+#ifndef ADIAR_INTERNAL_IO_ARC_IFSTREAM_H
+#define ADIAR_INTERNAL_IO_ARC_IFSTREAM_H
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/io/levelized_file.h>
-#include <adiar/internal/io/levelized_file_stream.h>
+#include <adiar/internal/io/levelized_ifstream.h>
 
 namespace adiar::internal
 {
@@ -14,10 +14,10 @@ namespace adiar::internal
   /// \see shared_levelized_file<arc>
   //////////////////////////////////////////////////////////////////////////////
   template <bool Reverse = false>
-  class arc_stream : public levelized_file_stream<arc, !Reverse>
+  class arc_ifstream : public levelized_ifstream<arc, !Reverse>
   {
   private:
-    using parent_t = levelized_file_stream<arc, !Reverse>;
+    using parent_t = levelized_ifstream<arc, !Reverse>;
 
   public:
     static size_t
@@ -43,16 +43,16 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct a stream unattached to any file.
     ////////////////////////////////////////////////////////////////////////////
-    arc_stream() = default;
+    arc_ifstream() = default;
 
     ////////////////////////////////////////////////////////////////////////////
-    arc_stream(const arc_stream<Reverse>&) = delete;
-    arc_stream(arc_stream<Reverse>&&)      = delete;
+    arc_ifstream(const arc_ifstream<Reverse>&) = delete;
+    arc_ifstream(arc_ifstream<Reverse>&&)      = delete;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct a stream attached to an arc file.
     ////////////////////////////////////////////////////////////////////////////
-    arc_stream(const levelized_file<arc>& file)
+    arc_ifstream(const levelized_file<arc>& file)
     {
       attach(file);
     }
@@ -60,7 +60,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct a stream unattached to a shared arc file.
     ////////////////////////////////////////////////////////////////////////////
-    arc_stream(const shared_ptr<levelized_file<arc>>& file)
+    arc_ifstream(const shared_ptr<levelized_file<arc>>& file)
     {
       attach(file);
     }
@@ -68,7 +68,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Detaches and cleans up when destructed.
     ////////////////////////////////////////////////////////////////////////////
-    ~arc_stream() = default;
+    ~arc_ifstream() = default;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -212,4 +212,4 @@ namespace adiar::internal
   };
 }
 
-#endif // ADIAR_INTERNAL_IO_ARC_STREAM_H
+#endif // ADIAR_INTERNAL_IO_ARC_IFSTREAM_H

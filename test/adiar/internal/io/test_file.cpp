@@ -2,7 +2,7 @@
 #include <filesystem>
 
 go_bandit([]() {
-  describe("adiar/internal/io/file.h , file_stream.h , file_writer.h", []() {
+  describe("adiar/internal/io/file.h , ifstream.h , file_writer.h", []() {
     // The default folder for temporary files is '/tmp/' on Ubuntu and '/var/tmp/'
     // on Fedora. Both of these are to the OS not on the same drive and so you get
     // a 'cross-device link' error when using std::filesystem::rename(...) to move
@@ -221,21 +221,21 @@ go_bandit([]() {
       });
     });
 
-    describe("file() + file_stream", []() {
+    describe("file() + ifstream", []() {
       it("can attach to and detach from an empty file [con-/destructor]", []() {
         file<int> f;
-        file_stream<int> fs(f);
+        ifstream<int> fs(f);
       });
 
       it("can attach to and detach from an empty file [member functions]", []() {
         file<int> f;
-        file_stream<int> fs;
+        ifstream<int> fs;
         fs.attach(f);
       });
 
       it("remembers it was attached", []() {
         file<int> f;
-        file_stream<int> fs(f);
+        ifstream<int> fs(f);
         AssertThat(fs.attached(), Is().True());
         fs.detach();
         AssertThat(fs.attached(), Is().False());
@@ -243,14 +243,14 @@ go_bandit([]() {
 
       it("cannot be pulled from", []() {
         file<int> f;
-        file_stream<int> fs(f);
+        ifstream<int> fs(f);
 
         AssertThat(fs.can_pull(), Is().False());
       });
 
       it("can be reset", []() {
         file<int> f;
-        file_stream<int> fs(f);
+        ifstream<int> fs(f);
 
         fs.reset();
         AssertThat(fs.attached(), Is().True());
@@ -385,7 +385,7 @@ go_bandit([]() {
       });
     });
 
-    describe("file() + file_stream + file_writer", [&tmp_path, &curr_path]() {
+    describe("file() + ifstream + file_writer", [&tmp_path, &curr_path]() {
       it("can read written content [1]", []() {
         file<int> f;
 
@@ -394,7 +394,7 @@ go_bandit([]() {
         fw.detach();
         AssertThat(fw.attached(), Is().False());
 
-        file_stream<int, false> fs(f);
+        ifstream<int, false> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(1));
         AssertThat(fs.can_pull(), Is().True());
@@ -413,7 +413,7 @@ go_bandit([]() {
         fw.detach();
         AssertThat(fw.attached(), Is().False());
 
-        file_stream<int, false> fs(f);
+        ifstream<int, false> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(42));
         AssertThat(fs.can_pull(), Is().True());
@@ -430,7 +430,7 @@ go_bandit([]() {
         fw.detach();
         AssertThat(fw.attached(), Is().False());
 
-        file_stream<int, true> fs(f);
+        ifstream<int, true> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(3));
         AssertThat(fs.can_pull(), Is().True());
@@ -449,7 +449,7 @@ go_bandit([]() {
         fw.detach();
         AssertThat(fw.attached(), Is().False());
 
-        file_stream<int, true> fs(f);
+        ifstream<int, true> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(21));
         AssertThat(fs.can_pull(), Is().True());
@@ -466,7 +466,7 @@ go_bandit([]() {
         fw.detach();
         AssertThat(fw.attached(), Is().False());
 
-        file_stream<int> fs(f);
+        ifstream<int> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.seek(2), Is().EqualTo(2));
         AssertThat(fs.can_pull(), Is().True());
@@ -486,7 +486,7 @@ go_bandit([]() {
         fw.detach();
         AssertThat(fw.attached(), Is().False());
 
-        file_stream<int, true> fs(f);
+        ifstream<int, true> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.seek(2), Is().EqualTo(2));
         AssertThat(fs.can_pull(), Is().True());
@@ -506,7 +506,7 @@ go_bandit([]() {
         fw.detach();
         AssertThat(fw.attached(), Is().False());
 
-        file_stream<int> fs(f);
+        ifstream<int> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.seek(2), Is().EqualTo(2));
         AssertThat(fs.can_pull(), Is().True());
@@ -522,7 +522,7 @@ go_bandit([]() {
         fw.detach();
         AssertThat(fw.attached(), Is().False());
 
-        file_stream<int, true> fs(f);
+        ifstream<int, true> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.seek(2), Is().EqualTo(2));
         AssertThat(fs.can_pull(), Is().True());
@@ -538,7 +538,7 @@ go_bandit([]() {
         fw.detach();
         AssertThat(fw.attached(), Is().False());
 
-        file_stream<int> fs(f);
+        ifstream<int> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.seek(3), Is().EqualTo(3));
         AssertThat(fs.can_pull(), Is().True());
@@ -556,7 +556,7 @@ go_bandit([]() {
         fw.detach();
         AssertThat(fw.attached(), Is().False());
 
-        file_stream<int, true> fs(f);
+        ifstream<int, true> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.seek(3), Is().EqualTo(3));
         AssertThat(fs.can_pull(), Is().True());
@@ -575,7 +575,7 @@ go_bandit([]() {
         fw.detach();
         AssertThat(fw.attached(), Is().False());
 
-        file_stream<int> fs(f);
+        ifstream<int> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(2));
         AssertThat(fs.can_pull(), Is().True());
@@ -604,7 +604,7 @@ go_bandit([]() {
         AssertThat(f.can_move(), Is().True());
         f.move(new_path);
 
-        file_stream<int, false> fs(f);
+        ifstream<int, false> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(12));
         AssertThat(fs.can_pull(), Is().True());
@@ -631,7 +631,7 @@ go_bandit([]() {
         AssertThat(f.can_move(), Is().True());
         f.move(new_path);
 
-        file_stream<int, false> fs(f);
+        ifstream<int, false> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(12));
         AssertThat(fs.can_pull(), Is().True());
@@ -658,7 +658,7 @@ go_bandit([]() {
         AssertThat(f.can_move(), Is().True());
         f.move(new_path);
 
-        file_stream<int, true> fs(f);
+        ifstream<int, true> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(2));
         AssertThat(fs.can_pull(), Is().True());
@@ -687,7 +687,7 @@ go_bandit([]() {
         AssertThat(f.can_move(), Is().True());
         f.move(new_path);
 
-        file_stream<int, true> fs(f);
+        ifstream<int, true> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(2));
         AssertThat(fs.can_pull(), Is().True());
@@ -778,7 +778,7 @@ go_bandit([]() {
 
       it("can read content with a stream", [&path]() {
         file<int> f(path);
-        file_stream<int> fs(f);
+        ifstream<int> fs(f);
 
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(0));
@@ -805,7 +805,7 @@ go_bandit([]() {
 
       it("can read content in reverse with a stream", [&path]() {
         file<int> f(path);
-        file_stream<int, true> fs(f);
+        ifstream<int, true> fs(f);
 
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(9));
@@ -848,7 +848,7 @@ go_bandit([]() {
         f.sort<std::less<int>>();
         AssertThat(f.exists(), Is().False());
 
-        file_stream<int> fs(f);
+        ifstream<int> fs(f);
         AssertThat(fs.can_pull(), Is().False());
         fs.detach();
       });
@@ -861,7 +861,7 @@ go_bandit([]() {
         f.sort<std::less<int>>();
         AssertThat(f.exists(), Is().True());
 
-        file_stream<int> fs(f);
+        ifstream<int> fs(f);
         AssertThat(fs.can_pull(), Is().False());
         fs.detach();
       });
@@ -875,7 +875,7 @@ go_bandit([]() {
 
         f.sort<std::less<int>>();
 
-        file_stream<int> fs(f);
+        ifstream<int> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(2));
         AssertThat(fs.can_pull(), Is().True());
@@ -897,7 +897,7 @@ go_bandit([]() {
 
         f.sort<std::less<int>>();
 
-        file_stream<int> fs(f);
+        ifstream<int> fs(f);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(-1));
         AssertThat(fs.can_pull(), Is().True());
@@ -952,7 +952,7 @@ go_bandit([]() {
 
         { // Check is not sorted
           file<int> f(path);
-          file_stream<int> fs(f);
+          ifstream<int> fs(f);
           AssertThat(fs.can_pull(), Is().True());
           AssertThat(fs.pull(), Is().EqualTo(-1));
           AssertThat(fs.can_pull(), Is().True());
@@ -1012,7 +1012,7 @@ go_bandit([]() {
         AssertThat(f2.size(), Is().EqualTo(3u));
         AssertThat(f2.path(), Is().Not().EqualTo(f1.path()));
 
-        file_stream<int> fs(f2);
+        ifstream<int> fs(f2);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(21));
         AssertThat(fs.can_pull(), Is().True());
@@ -1038,7 +1038,7 @@ go_bandit([]() {
         AssertThat(f2.size(), Is().EqualTo(10u));
         AssertThat(f2.path(), Is().Not().EqualTo(f1.path()));
 
-        file_stream<int> fs(f2);
+        ifstream<int> fs(f2);
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(0));
         AssertThat(fs.can_pull(), Is().True());

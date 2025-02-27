@@ -5,7 +5,7 @@
 #include <adiar/internal/algorithms/intercut.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/io/file.h>
-#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/ifstream.h>
 
 namespace adiar
 {
@@ -33,7 +33,7 @@ namespace adiar
     {
       // TODO: simplify with generator function as input
       if (terminal_value) {
-        internal::file_stream<zdd::label_type, true> ls(vars);
+        internal::ifstream<zdd::label_type, true> ls(vars);
         return zdd_vars(make_generator(ls));
       } else {
         return dd;

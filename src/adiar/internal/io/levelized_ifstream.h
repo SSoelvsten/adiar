@@ -1,10 +1,10 @@
-#ifndef ADIAR_INTERNAL_IO_LEVELIZED_FILE_STREAM_H
-#define ADIAR_INTERNAL_IO_LEVELIZED_FILE_STREAM_H
+#ifndef ADIAR_INTERNAL_IO_LEVELIZED_IFSTREAM_H
+#define ADIAR_INTERNAL_IO_LEVELIZED_IFSTREAM_H
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/data_types/level_info.h>
 #include <adiar/internal/dd.h>
-#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/ifstream.h>
 #include <adiar/internal/io/levelized_file.h>
 #include <adiar/internal/unreachable.h>
 
@@ -28,7 +28,7 @@ namespace adiar::internal
   ///         underlying stream. Hence, we do hide a negation of the \em Reverse parameter.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename T, bool Reverse = false>
-  class levelized_file_stream
+  class levelized_ifstream
   {
   public:
     using value_type = T;
@@ -39,27 +39,27 @@ namespace adiar::internal
     static size_t
     memory_usage()
     {
-      return streams * file_stream<value_type, Reverse>::memory_usage();
+      return streams * ifstream<value_type, Reverse>::memory_usage();
     }
 
   protected:
-    file_stream<value_type, Reverse> _streams[streams];
+    ifstream<value_type, Reverse> _ifstreams[streams];
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Create unattached to any file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    levelized_file_stream()
+    levelized_ifstream()
     {}
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    levelized_file_stream(const levelized_file_stream<value_type, Reverse>&) = delete;
-    levelized_file_stream(levelized_file_stream<value_type, Reverse>&&)      = delete;
+    levelized_ifstream(const levelized_ifstream<value_type, Reverse>&) = delete;
+    levelized_ifstream(levelized_ifstream<value_type, Reverse>&&)      = delete;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a levelized file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    levelized_file_stream(const levelized_file<value_type>& lf)
+    levelized_ifstream(const levelized_file<value_type>& lf)
     {
       attach(lf);
     }
@@ -67,7 +67,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a shared levelized file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    levelized_file_stream(const shared_ptr<levelized_file<value_type>>& lf)
+    levelized_ifstream(const shared_ptr<levelized_file<value_type>>& lf)
     {
       attach(lf);
     }
@@ -75,7 +75,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Detaches and cleans up when destructed.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    ~levelized_file_stream() = default; // <-- detach is within 'file_stream'.
+    ~levelized_ifstream() = default; // <-- detach is within 'ifstream'.
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89,7 +89,7 @@ namespace adiar::internal
       if (!f.exists()) f.__touch();
 
       for (size_t s_idx = 0; s_idx < streams; s_idx++)
-        _streams[s_idx].attach(f._files[s_idx], nullptr);
+        _ifstreams[s_idx].attach(f._files[s_idx], nullptr);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -102,7 +102,8 @@ namespace adiar::internal
     {
       if (!f->exists()) f->touch();
 
-      for (size_t s_idx = 0; s_idx < streams; s_idx++) _streams[s_idx].attach(f->_files[s_idx], f);
+      for (size_t s_idx = 0; s_idx < streams; s_idx++)
+        _ifstreams[s_idx].attach(f->_files[s_idx], f);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -111,11 +112,11 @@ namespace adiar::internal
     bool
     attached() const
     {
-      const bool res = _streams[0].attached();
+      const bool res = _ifstreams[0].attached();
 #ifndef NDEBUG
       // TODO: trust the compiler to notice this is an empty for-loop?
       for (size_t s_idx = 1; s_idx < streams; s_idx++) {
-        adiar_assert(_streams[s_idx].attached() == res, "Attachment ought to be synchronised.");
+        adiar_assert(_ifstreams[s_idx].attached() == res, "Attachment ought to be synchronised.");
       }
 #endif
       return res;
@@ -127,7 +128,7 @@ namespace adiar::internal
     void
     detach()
     {
-      for (size_t s_idx = 0; s_idx < streams; s_idx++) _streams[s_idx].detach();
+      for (size_t s_idx = 0; s_idx < streams; s_idx++) _ifstreams[s_idx].detach();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -136,7 +137,7 @@ namespace adiar::internal
     void
     reset()
     {
-      for (size_t s_idx = 0; s_idx < streams; s_idx++) _streams[s_idx].reset();
+      for (size_t s_idx = 0; s_idx < streams; s_idx++) _ifstreams[s_idx].reset();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -147,7 +148,7 @@ namespace adiar::internal
     can_pull() const
     {
       static_assert(s_idx < streams, "Sub-stream index must be within [0; streams).");
-      return _streams[s_idx].can_pull();
+      return _ifstreams[s_idx].can_pull();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -160,7 +161,7 @@ namespace adiar::internal
     pull()
     {
       static_assert(s_idx < streams, "Sub-stream index must be within [0; streams)");
-      return _streams[s_idx].pull();
+      return _ifstreams[s_idx].pull();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -174,7 +175,7 @@ namespace adiar::internal
     peek()
     {
       static_assert(s_idx < streams, "Sub-stream index must be within [0; streams)");
-      return _streams[s_idx].peek();
+      return _ifstreams[s_idx].peek();
     }
   };
 
@@ -182,14 +183,14 @@ namespace adiar::internal
   /// \brief Stream to access per-level meta information.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <bool Reverse = false>
-  class level_info_stream : public file_stream<level_info, !Reverse>
+  class level_info_ifstream : public ifstream<level_info, !Reverse>
   {
-    using parent_type = file_stream<level_info, !Reverse>;
+    using parent_type = ifstream<level_info, !Reverse>;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Number of levels with which an element ought to be shifted.
     //
-    // TODO: Specialize `level_info_stream` for node files?
+    // TODO: Specialize `level_info_ifstream` for node files?
     ////////////////////////////////////////////////////////////////////////////////////////////////
     level_info::signed_level_type _shift = 0;
 
@@ -197,11 +198,11 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct unattached to a levelized file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    level_info_stream() = default;
+    level_info_ifstream() = default;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    level_info_stream(const level_info_stream<Reverse>&) = delete;
-    level_info_stream(level_info_stream<Reverse>&&)      = delete;
+    level_info_ifstream(const level_info_ifstream<Reverse>&) = delete;
+    level_info_ifstream(level_info_ifstream<Reverse>&&)      = delete;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a file<level_info>.
@@ -209,7 +210,7 @@ namespace adiar::internal
     /// \param shift_levels
     ///    Number of variable labels (and levels) to shift by.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    level_info_stream(const file<level_info>& f, level_info::signed_level_type shift = 0)
+    level_info_ifstream(const file<level_info>& f, level_info::signed_level_type shift = 0)
       : _shift(shift)
     {
       parent_type::attach(f);
@@ -221,8 +222,8 @@ namespace adiar::internal
     /// \param shift_levels
     ///    Number of variable labels (and levels) to shift by.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    level_info_stream(const adiar::shared_ptr<file<level_info>>& f,
-                      level_info::signed_level_type shift = 0)
+    level_info_ifstream(const adiar::shared_ptr<file<level_info>>& f,
+                        level_info::signed_level_type shift = 0)
       : _shift(shift)
     {
       parent_type::attach(f);
@@ -232,8 +233,8 @@ namespace adiar::internal
     /// \brief Construct attached to a levelized file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     template <typename value_type>
-    level_info_stream(const levelized_file<value_type, false>& lf,
-                      level_info::signed_level_type shift = 0)
+    level_info_ifstream(const levelized_file<value_type, false>& lf,
+                        level_info::signed_level_type shift = 0)
     {
       attach(lf, shift);
     }
@@ -242,8 +243,8 @@ namespace adiar::internal
     /// \brief Construct attached to a shared levelized file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     template <typename value_type>
-    level_info_stream(const adiar::shared_ptr<levelized_file<value_type, false>>& lf,
-                      level_info::signed_level_type shift = 0)
+    level_info_ifstream(const adiar::shared_ptr<levelized_file<value_type, false>>& lf,
+                        level_info::signed_level_type shift = 0)
     {
       attach(lf, shift);
     }
@@ -251,7 +252,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a (reduced) decision diagram.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    level_info_stream(const dd& diagram)
+    level_info_ifstream(const dd& diagram)
     {
       attach(diagram);
     }
@@ -259,7 +260,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a (possibly unreduced) decision diagram.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    level_info_stream(const __dd& diagram)
+    level_info_ifstream(const __dd& diagram)
     {
       attach(diagram);
     }
@@ -267,7 +268,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Detaches and cleans up when destructed.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    ~level_info_stream() = default; // <-- detach in '~file<level_info>()'
+    ~level_info_ifstream() = default; // <-- detach in '~file<level_info>()'
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -348,4 +349,4 @@ namespace adiar::internal
   };
 }
 
-#endif // ADIAR_INTERNAL_IO_LEVELIZED_FILE_STREAM_H
+#endif // ADIAR_INTERNAL_IO_LEVELIZED_IFSTREAM_H

@@ -115,7 +115,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -137,7 +137,7 @@ go_bandit([]() {
                                      node::pointer_type(1, node::max_id))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -221,7 +221,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::max_id, terminal_F, terminal_T)));
@@ -244,7 +244,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
@@ -332,7 +332,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -367,7 +367,7 @@ go_bandit([]() {
                                      node::pointer_type(1, node::max_id))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 2u)));
@@ -455,7 +455,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -483,7 +483,7 @@ go_bandit([]() {
                                      node::pointer_type(1, node::max_id))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
@@ -583,7 +583,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -625,7 +625,7 @@ go_bandit([]() {
                                      node::pointer_type(1, node::max_id))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
@@ -717,7 +717,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // 5
         AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id, terminal_F, terminal_T)));
@@ -742,7 +742,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 2u)));
@@ -830,7 +830,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // 6
         AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id, terminal_F, terminal_T)));
@@ -855,7 +855,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 2u)));
@@ -938,7 +938,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -960,7 +960,7 @@ go_bandit([]() {
                                      node::pointer_type(1, node::max_id))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -1045,7 +1045,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -1073,7 +1073,7 @@ go_bandit([]() {
                                      node::pointer_type(1, node::max_id))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
@@ -1161,7 +1161,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -1182,7 +1182,7 @@ go_bandit([]() {
                                      node::pointer_type(2, node::max_id - 1))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 2u)));
@@ -1262,7 +1262,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -1276,7 +1276,7 @@ go_bandit([]() {
           Is().EqualTo(node(0, node::max_id, node::pointer_type(2, node::max_id), terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -1365,7 +1365,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         // n6
         AssertThat(out_nodes.can_pull(), Is().True());
@@ -1392,7 +1392,7 @@ go_bandit([]() {
                                      node::pointer_type(2, node::max_id))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
@@ -1485,7 +1485,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -1493,7 +1493,7 @@ go_bandit([]() {
         AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::max_id, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -1583,7 +1583,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -1631,7 +1631,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(4, 1u)));
@@ -1719,7 +1719,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         // n4
         AssertThat(out_nodes.can_pull(), Is().True());
@@ -1750,7 +1750,7 @@ go_bandit([]() {
           Is().EqualTo(node(0, node::max_id, node::pointer_type(1, node::max_id), terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 2u)));
@@ -1822,7 +1822,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -1830,7 +1830,7 @@ go_bandit([]() {
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
         AssertThat(out_meta.can_pull(), Is().False());
 
         AssertThat(out->width, Is().EqualTo(0u));
@@ -1886,13 +1886,13 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
         AssertThat(out_meta.can_pull(), Is().False());
 
         AssertThat(out->width, Is().EqualTo(0u));
@@ -1941,13 +1941,13 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u, 1u)));
@@ -2045,7 +2045,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n11
         AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id, terminal_F, terminal_T)));
@@ -2091,7 +2091,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(5, 2u)));
@@ -2222,7 +2222,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n14
         AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id, terminal_F, terminal_T)));
@@ -2296,7 +2296,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(5, 2u)));
@@ -2406,7 +2406,7 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n8
         AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::max_id, terminal_F, terminal_T)));
@@ -2446,7 +2446,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(4, 1u)));
@@ -2535,14 +2535,14 @@ go_bandit([]() {
         AssertThat(bdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n2
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id, terminal_F, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -2604,14 +2604,14 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::max_id, terminal_T, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -2686,7 +2686,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -2714,7 +2714,7 @@ go_bandit([]() {
                                      node::pointer_type(1, node::max_id))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
@@ -2804,7 +2804,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -2820,7 +2820,7 @@ go_bandit([]() {
                                      node::pointer_type(1, node::max_id))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -2886,7 +2886,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -2894,7 +2894,7 @@ go_bandit([]() {
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
         AssertThat(out_meta.can_pull(), Is().False());
 
         AssertThat(out->width, Is().EqualTo(0u));
@@ -2950,7 +2950,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -2958,7 +2958,7 @@ go_bandit([]() {
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -3018,13 +3018,13 @@ go_bandit([]() {
         AssertThat(out->is_canonical(), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
         AssertThat(out_meta.can_pull(), Is().False());
 
         AssertThat(out->width, Is().EqualTo(0u));
@@ -3073,13 +3073,13 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(42, node::max_id, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(42u, 1u)));
@@ -3132,13 +3132,13 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::max_id, terminal_T, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(12u, 1u)));
@@ -3237,7 +3237,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n11
         AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::max_id, terminal_T, terminal_T)));
@@ -3283,7 +3283,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(5, 2u)));
@@ -3375,7 +3375,7 @@ go_bandit([]() {
         AssertThat(zdd_iscanonical(out), Is().True());
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n2
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::max_id, terminal_F, terminal_T)));
@@ -3389,7 +3389,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));

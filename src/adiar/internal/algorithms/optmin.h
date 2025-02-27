@@ -4,7 +4,7 @@
 #include "adiar/functional.h"
 #include "adiar/internal/data_types/node.h"
 #include "adiar/internal/data_types/ptr.h"
-#include "adiar/internal/io/arc_stream.h"
+#include "adiar/internal/io/arc_ifstream.h"
 #include "adiar/types.h"
 #include <algorithm>
 #include <cmath>
@@ -24,7 +24,7 @@
 #include <adiar/internal/dd_func.h>
 #include <adiar/internal/io/arc_file.h>
 #include <adiar/internal/io/arc_writer.h>
-#include <adiar/internal/io/node_stream.h>
+#include <adiar/internal/io/node_ifstream.h>
 
 namespace adiar::internal
 {
@@ -81,7 +81,7 @@ namespace adiar::internal
       arc_writer aw(best_parent_graph);
 
       // Set up input
-      node_stream<> ns(dd);
+      node_ifstream<> ns(dd);
 
       // Set up cross-level priority queue with a request for the root
       PriorityQueue optmin_pq({ dd }, pq_max_memory, pq_max_size, stats_optmin.lpq);
@@ -171,7 +171,7 @@ namespace adiar::internal
     // the previous node which pointed to the last node we outputted, together with whether it was
     // enabled or not in the solution.
     {
-      arc_stream ns(best_parent_graph);
+      arc_ifstream ns(best_parent_graph);
       arc next = { min_so_far_end, node::pointer_type(true) };
       policy.out(min_so_far_end.label(), min_so_far_end.out_idx());
       while (ns.can_pull_internal()) {
@@ -200,7 +200,7 @@ namespace adiar::internal
     // structures and check whether we can run them with a faster internal
     // memory variant.
 
-    const size_t aux_available_memory = memory_available() - node_stream<>::memory_usage();
+    const size_t aux_available_memory = memory_available() - node_ifstream<>::memory_usage();
 
     const size_t pq_memory_fits =
       optmin_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(

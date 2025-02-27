@@ -4,7 +4,7 @@
 #include <adiar/internal/io/node_raccess.h>
 
 go_bandit([]() {
-  describe("adiar/internal/io/node_file.h , node_stream.h , node_writer.h", []() {
+  describe("adiar/internal/io/node_file.h , node_ifstream.h , node_writer.h", []() {
     describe("node_writer [ .unsafe_* ] + node_file::stats", []() {
       // TODO: does not update canonicity
       // TODO: does update number of terminals
@@ -875,7 +875,7 @@ go_bandit([]() {
       });
     });
 
-    describe("node_writer + node_stream", []() {
+    describe("node_writer + node_ifstream", []() {
       describe(".can_pull(), .pull(), .peek()", []() {
         const node n3(2, 1, node::pointer_type(false), node::pointer_type(true));
         const node n2(2, 0, node::pointer_type(true), node::pointer_type(false));
@@ -888,7 +888,7 @@ go_bandit([]() {
         }
 
         it("pulls top-down (backwards) by default", [&]() {
-          node_stream<> ns(nf);
+          node_ifstream<> ns(nf);
 
           AssertThat(ns.can_pull(), Is().True());
           AssertThat(ns.pull(), Is().EqualTo(n1));
@@ -903,7 +903,7 @@ go_bandit([]() {
         });
 
         it("pulls and peeks top-down (backwards) by default", [&]() {
-          node_stream<> ns(nf);
+          node_ifstream<> ns(nf);
 
           AssertThat(ns.can_pull(), Is().True());
           AssertThat(ns.peek(), Is().EqualTo(n1));
@@ -922,7 +922,7 @@ go_bandit([]() {
         });
 
         it("pulls bottom-up (forwards) if requested", [&]() {
-          node_stream<true> ns(nf);
+          node_ifstream<true> ns(nf);
 
           AssertThat(ns.can_pull(), Is().True());
           AssertThat(ns.pull(), Is().EqualTo(n3));
@@ -937,7 +937,7 @@ go_bandit([]() {
         });
 
         it("pulls and peeks bottom-up (forwards) if requested", [&]() {
-          node_stream<true> ns(nf);
+          node_ifstream<true> ns(nf);
 
           AssertThat(ns.can_pull(), Is().True());
           AssertThat(ns.peek(), Is().EqualTo(n3));
@@ -955,7 +955,7 @@ go_bandit([]() {
         });
 
         it("negates pulls on-the-fly", [&]() {
-          node_stream<> ns(nf, true);
+          node_ifstream<> ns(nf, true);
 
           AssertThat(ns.can_pull(), Is().True());
           AssertThat(ns.pull(), Is().EqualTo(n1));
@@ -972,7 +972,7 @@ go_bandit([]() {
         });
 
         it("negates peeks on-the-fly", [&]() {
-          node_stream<> ns(nf, true);
+          node_ifstream<> ns(nf, true);
 
           AssertThat(ns.can_pull(), Is().True());
           AssertThat(ns.peek(), Is().EqualTo(n1));
@@ -992,7 +992,7 @@ go_bandit([]() {
         });
 
         it("shifts pulls on-the-fly [+0]", [&]() {
-          node_stream<> ns(nf, false, +0);
+          node_ifstream<> ns(nf, false, +0);
 
           AssertThat(ns.can_pull(), Is().True());
           AssertThat(ns.pull(), Is().EqualTo(n1));
@@ -1007,7 +1007,7 @@ go_bandit([]() {
         });
 
         it("shifts peeks on-the-fly [+0]", [&]() {
-          node_stream<> ns(nf, false, +0);
+          node_ifstream<> ns(nf, false, +0);
 
           AssertThat(ns.can_pull(), Is().True());
           AssertThat(ns.peek(), Is().EqualTo(n1));
@@ -1025,7 +1025,7 @@ go_bandit([]() {
         });
 
         it("shifts pulls on-the-fly [+1]", [&]() {
-          node_stream<> ns(nf, false, +1);
+          node_ifstream<> ns(nf, false, +1);
 
           AssertThat(ns.can_pull(), Is().True());
           AssertThat(ns.pull(),
@@ -1043,7 +1043,7 @@ go_bandit([]() {
         });
 
         it("shifts pulls on-the-fly [+1]", [&]() {
-          node_stream<> ns(nf, false, +1);
+          node_ifstream<> ns(nf, false, +1);
 
           AssertThat(ns.can_pull(), Is().True());
           AssertThat(ns.peek(),
@@ -1064,7 +1064,7 @@ go_bandit([]() {
         });
 
         it("shifts and negates pulls on-the-fly [+1]", [&]() {
-          node_stream<> ns(nf, true, +1);
+          node_ifstream<> ns(nf, true, +1);
 
           AssertThat(ns.can_pull(), Is().True());
           AssertThat(ns.pull(),
@@ -1082,7 +1082,7 @@ go_bandit([]() {
         });
 
         it("shifts and negates pulls on-the-fly [+1]", [&]() {
-          node_stream<> ns(nf, true, +1);
+          node_ifstream<> ns(nf, true, +1);
 
           AssertThat(ns.can_pull(), Is().True());
           AssertThat(ns.peek(),
@@ -1111,7 +1111,7 @@ go_bandit([]() {
             nw << node(false);
           }
 
-          node_stream<> ns(nf);
+          node_ifstream<> ns(nf);
 
           AssertThat(ns.seek(node::uid_type(0, 0)), Is().EqualTo(node(false)));
           AssertThat(ns.seek(node::uid_type(1, 0)), Is().EqualTo(node(false)));
@@ -1127,7 +1127,7 @@ go_bandit([]() {
             nw << node(true);
           }
 
-          node_stream<> ns(nf);
+          node_ifstream<> ns(nf);
 
           AssertThat(ns.seek(node::uid_type(0, 0)), Is().EqualTo(node(true)));
           AssertThat(ns.seek(node::uid_type(1, 0)), Is().EqualTo(node(true)));
@@ -1145,7 +1145,7 @@ go_bandit([]() {
         }
 
         it("can seek existing elements", [&]() {
-          node_stream<> ns(nf);
+          node_ifstream<> ns(nf);
 
           AssertThat(ns.seek(node::uid_type(0, 0)),
                      Is().EqualTo(node(0, 0, node::uid_type(2, 0), node::uid_type(2, 1))));
@@ -1154,7 +1154,7 @@ go_bandit([]() {
         });
 
         it("can seek non-existing element in the middle ", [&]() {
-          node_stream<> ns(nf);
+          node_ifstream<> ns(nf);
 
           AssertThat(ns.seek(node::uid_type(0, 0)),
                      Is().EqualTo(node(0, 0, node::pointer_type(2, 0), node::pointer_type(2, 1))));
@@ -1169,14 +1169,14 @@ go_bandit([]() {
         });
 
         it("can seek past end [1]", [&]() {
-          node_stream<> ns(nf);
+          node_ifstream<> ns(nf);
 
           AssertThat(ns.seek(node::uid_type(node::max_label, node::max_id)),
                      Is().EqualTo(node(2, 1, node::pointer_type(false), node::pointer_type(true))));
         });
 
         it("can seek past end [2]", [&]() {
-          node_stream<> ns(nf);
+          node_ifstream<> ns(nf);
 
           AssertThat(ns.seek(node::uid_type(0, 0)),
                      Is().EqualTo(node(0, 0, node::pointer_type(2, 0), node::pointer_type(2, 1))));
@@ -1187,7 +1187,7 @@ go_bandit([]() {
         });
 
         it("negates seek result", [&]() {
-          node_stream<> ns(nf, true);
+          node_ifstream<> ns(nf, true);
 
           AssertThat(ns.seek(node::uid_type(0, 0)),
                      Is().EqualTo(node(0, 0, node::pointer_type(2, 0), node::pointer_type(2, 1))));
@@ -1198,7 +1198,7 @@ go_bandit([]() {
         });
 
         it("can seek shifted nodes [+2]", [&]() {
-          node_stream<> ns(nf, false, +2);
+          node_ifstream<> ns(nf, false, +2);
 
           AssertThat(ns.seek(node::uid_type(2, 0)),
                      Is().EqualTo(node(2, 0, node::pointer_type(4, 0), node::pointer_type(4, 1))));
@@ -1211,7 +1211,7 @@ go_bandit([]() {
         });
 
         it("can seek negated shifted nodes [+2]", [&]() {
-          node_stream<> ns(nf, true, +1);
+          node_ifstream<> ns(nf, true, +1);
 
           AssertThat(ns.seek(node::uid_type(1, 0)),
                      Is().EqualTo(node(1, 0, node::pointer_type(3, 0), node::pointer_type(3, 1))));

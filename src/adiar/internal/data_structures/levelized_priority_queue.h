@@ -1432,8 +1432,8 @@ namespace adiar::internal
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// \brief Levelized Priority Queue to be used with `levelized_file<node>` and a `node_stream` or
-  ///        `node_raccess`.
+  /// \brief Levelized Priority Queue to be used with `levelized_file<node>` and a `node_ifstream`
+  ///        or `node_raccess`.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename T,
             typename Comp         = std::less<T>,
@@ -1452,7 +1452,7 @@ namespace adiar::internal
                                                                  LevelSkip>;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// \brief Levelized Priority Queue to be used with `levelized_file<arc>` and an `arc_stream`.
+  /// \brief Levelized Priority Queue to be used with `levelized_file<arc>` and an `arc_ifstream`.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename T,
             typename Comp         = std::less<T>,
@@ -1471,7 +1471,7 @@ namespace adiar::internal
                                                                 LevelSkip>;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// \brief Levelized Priority Queue to be used with `levelized_file<arc>` and a `narc_stream`
+  /// \brief Levelized Priority Queue to be used with `levelized_file<arc>` and a `narc_ifstream`
   ///        or `narc_raccess`.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename T,

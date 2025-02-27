@@ -78,7 +78,7 @@ go_bandit([]() {
         bdd out = bdd_not(terminal_T);
 
         // Check if it is correct
-        node_test_stream ns(out);
+        node_test_ifstream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(false)));
@@ -90,7 +90,7 @@ go_bandit([]() {
         bdd out  = bdd_not(temp);
 
         // Check if it is correct
-        node_test_stream ns(out);
+        node_test_ifstream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id, terminal_F_ptr, terminal_T_ptr)));
@@ -114,7 +114,7 @@ go_bandit([]() {
         bdd out = bdd_not(terminal_F);
 
         // Check if it is correct
-        node_test_stream ns(out);
+        node_test_ifstream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(true)));
@@ -126,7 +126,7 @@ go_bandit([]() {
         bdd out  = bdd_not(temp);
 
         // Check if it is correct
-        node_test_stream ns(out);
+        node_test_ifstream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(false)));
@@ -138,7 +138,7 @@ go_bandit([]() {
         bdd out = bdd_not(bdd_1);
 
         // Check if it is correct
-        node_test_stream ns(out);
+        node_test_ifstream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id, terminal_T_ptr, terminal_F_ptr)));
@@ -163,7 +163,7 @@ go_bandit([]() {
         bdd out = bdd_not(temp);
 
         // Check if it is correct
-        node_test_stream ns(out);
+        node_test_ifstream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id, terminal_F_ptr, terminal_T_ptr)));
@@ -188,7 +188,7 @@ go_bandit([]() {
         bdd out  = bdd_not(temp);
 
         // Check if it is correct
-        node_test_stream ns(out);
+        node_test_ifstream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id, terminal_F_ptr, terminal_T_ptr)));
@@ -213,7 +213,7 @@ go_bandit([]() {
         bdd out = bdd_not(bdd_1_shifted);
 
         // Check if it is correct
-        node_test_stream ns(out);
+        node_test_ifstream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id, terminal_T_ptr, terminal_F_ptr)));
@@ -236,7 +236,7 @@ go_bandit([]() {
       it("negates terminal-children in BDD 2", [&]() {
         bdd out = bdd_not(bdd_2_nf);
 
-        node_test_stream ns(out);
+        node_test_ifstream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id, terminal_T_ptr, terminal_F_ptr)));
@@ -267,7 +267,7 @@ go_bandit([]() {
         bdd out = bdd_not(terminal_T_nf);
 
         // Check if it is correct
-        node_test_stream ns(out);
+        node_test_ifstream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(false)));
@@ -278,7 +278,7 @@ go_bandit([]() {
         bdd out = bdd_not(bdd_not(terminal_T));
 
         // Check if it is correct
-        node_test_stream ns(out);
+        node_test_ifstream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(true)));
@@ -289,7 +289,7 @@ go_bandit([]() {
         bdd out = bdd_not(terminal_F);
 
         // Check if it is correct
-        node_test_stream ns(out);
+        node_test_ifstream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(true)));
@@ -300,7 +300,7 @@ go_bandit([]() {
         bdd out = bdd_not(bdd_not(terminal_F));
 
         // Check if it is correct
-        node_test_stream ns(out);
+        node_test_ifstream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(false)));
@@ -311,7 +311,7 @@ go_bandit([]() {
         bdd out = bdd_not(bdd_1_nf);
 
         // Check if it is correct
-        node_test_stream ns(out);
+        node_test_ifstream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id, terminal_T_ptr, terminal_F_ptr)));
@@ -337,7 +337,7 @@ go_bandit([]() {
         bdd out = bdd_not(bdd_not(bdd_1));
 
         // Check if it is correct
-        node_test_stream ns(out);
+        node_test_ifstream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id, terminal_F_ptr, terminal_T_ptr)));
@@ -361,7 +361,7 @@ go_bandit([]() {
         bdd out = bdd_not(bdd(bdd_1_nf, false, +1));
 
         // Check if it is correct
-        node_test_stream ns(out);
+        node_test_ifstream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, node::max_id, terminal_T_ptr, terminal_F_ptr)));
@@ -384,7 +384,7 @@ go_bandit([]() {
       it("negates terminal-children in BDD 2", [&]() {
         bdd out = bdd_not(bdd_2_nf);
 
-        node_test_stream ns(out);
+        node_test_ifstream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, node::max_id, terminal_T_ptr, terminal_F_ptr)));

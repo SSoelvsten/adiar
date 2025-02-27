@@ -459,14 +459,14 @@ go_bandit([]() {
           const bdd out = bdd_satmin(bdd_0);
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::max_id, terminal_F, terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -491,14 +491,14 @@ go_bandit([]() {
           const bdd out = bdd_satmin(bdd(bdd_0, true));
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::max_id, terminal_T, terminal_F)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -523,7 +523,7 @@ go_bandit([]() {
           const bdd out = bdd_satmin(bdd_1);
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::max_id, terminal_F, terminal_T)));
@@ -545,7 +545,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
@@ -579,7 +579,7 @@ go_bandit([]() {
           const bdd out = bdd_satmin(bdd(bdd_1, true));
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id, terminal_T, terminal_F)));
@@ -596,7 +596,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -627,7 +627,7 @@ go_bandit([]() {
           const bdd out = bdd_satmin(bdd_2);
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::max_id, terminal_T, terminal_F)));
@@ -649,7 +649,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
@@ -683,7 +683,7 @@ go_bandit([]() {
           const bdd out = bdd_satmin(bdd(bdd_2, true));
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id, terminal_T, terminal_F)));
@@ -700,7 +700,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -731,7 +731,7 @@ go_bandit([]() {
           const bdd out = bdd_satmin(bdd_3);
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(5, bdd::max_id, terminal_T, terminal_F)));
@@ -748,7 +748,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(5, 1u)));
@@ -779,7 +779,7 @@ go_bandit([]() {
           const bdd out = bdd_satmin(bdd(bdd_3, true));
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(5, bdd::max_id, terminal_F, terminal_T)));
@@ -796,7 +796,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(5, 1u)));
@@ -827,7 +827,7 @@ go_bandit([]() {
           const bdd out = bdd_satmin(bdd(bdd_3, false, -1));
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(4, bdd::max_id, terminal_T, terminal_F)));
@@ -844,7 +844,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(4, 1u)));
@@ -875,7 +875,7 @@ go_bandit([]() {
           const bdd out = bdd_satmin(bdd(bdd_3, false, +1));
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(6, bdd::max_id, terminal_T, terminal_F)));
@@ -892,7 +892,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(6, 1u)));
@@ -923,7 +923,7 @@ go_bandit([]() {
           const bdd out = bdd_satmin(bdd_4);
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id, terminal_T, terminal_F)));
@@ -935,7 +935,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -963,7 +963,7 @@ go_bandit([]() {
           const bdd out = bdd_satmin(bdd(bdd_4, true));
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::max_id, terminal_F, terminal_T)));
@@ -980,7 +980,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
@@ -1028,7 +1028,7 @@ go_bandit([]() {
           const bdd out = bdd_satmin(bdd_T, gen);
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id, terminal_T, terminal_F)));
@@ -1045,7 +1045,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -1081,7 +1081,7 @@ go_bandit([]() {
           const bdd out = bdd_satmin(bdd_0, gen);
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id, terminal_T, terminal_F)));
@@ -1098,7 +1098,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -1134,7 +1134,7 @@ go_bandit([]() {
           const bdd out = bdd_satmin(bdd_3, gen);
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(6, bdd::max_id, terminal_T, terminal_F)));
@@ -1166,7 +1166,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(6, 1u)));
@@ -1211,7 +1211,7 @@ go_bandit([]() {
           const bdd out = bdd_satmin(bdd_1, gen);
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(4, bdd::max_id, terminal_T, terminal_F)));
@@ -1238,7 +1238,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(4, 1u)));
@@ -1280,7 +1280,7 @@ go_bandit([]() {
           const bdd out = bdd_satmin(bdd_3, gen);
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(7, bdd::max_id, terminal_T, terminal_F)));
@@ -1302,7 +1302,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(7, 1u)));
@@ -1341,7 +1341,7 @@ go_bandit([]() {
           const bdd out = bdd_satmin(bdd(bdd_3, false, -1), gen);
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(6, bdd::max_id, terminal_T, terminal_F)));
@@ -1363,7 +1363,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(6, 1u)));
@@ -1402,7 +1402,7 @@ go_bandit([]() {
           const bdd out = bdd_satmin(bdd(bdd_3, false, +1), gen);
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(8, bdd::max_id, terminal_T, terminal_F)));
@@ -1424,7 +1424,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(8, 1u)));
@@ -1462,7 +1462,7 @@ go_bandit([]() {
           const bdd out = bdd_satmin(bdd_1, d.cbegin(), d.cend());
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::max_id, terminal_F, terminal_T)));
@@ -1484,7 +1484,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
@@ -1519,7 +1519,7 @@ go_bandit([]() {
           const bdd out            = bdd_satmin(bdd_3, d.cbegin(), d.cend());
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(7, bdd::max_id, terminal_T, terminal_F)));
@@ -1541,7 +1541,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(7, 1u)));
@@ -1576,7 +1576,7 @@ go_bandit([]() {
           const bdd out            = bdd_satmin(bdd(bdd_3, false, +1), d.cbegin(), d.cend());
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(6, bdd::max_id, terminal_T, terminal_F)));
@@ -1598,7 +1598,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(6, 1u)));
@@ -1638,7 +1638,7 @@ go_bandit([]() {
           const bdd out            = bdd_satmin(bdd_1, bdd_cube(d.rbegin(), d.rend()));
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::max_id, terminal_F, terminal_T)));
@@ -1660,7 +1660,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
@@ -1695,7 +1695,7 @@ go_bandit([]() {
           const bdd out            = bdd_satmin(bdd_3, bdd_cube(d.rbegin(), d.rend()));
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(7, bdd::max_id, terminal_T, terminal_F)));
@@ -1717,7 +1717,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(7, 1u)));
@@ -1752,7 +1752,7 @@ go_bandit([]() {
           const bdd out = bdd_satmin(bdd(bdd_3, false, +1), bdd_cube(d.rbegin(), d.rend()));
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(6, bdd::max_id, terminal_T, terminal_F)));
@@ -1774,7 +1774,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(6, 1u)));
@@ -2181,14 +2181,14 @@ go_bandit([]() {
           const bdd out = bdd_satmax(bdd_0);
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::max_id, terminal_F, terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -2213,14 +2213,14 @@ go_bandit([]() {
           const bdd out = bdd_satmax(bdd(bdd_0, true));
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::max_id, terminal_T, terminal_F)));
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(0, 1u)));
@@ -2245,7 +2245,7 @@ go_bandit([]() {
           const bdd out = bdd_satmax(bdd_1);
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id, terminal_T, terminal_F)));
@@ -2257,7 +2257,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -2285,7 +2285,7 @@ go_bandit([]() {
           const bdd out = bdd_satmax(bdd(bdd_1, true));
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id, terminal_F, terminal_T)));
@@ -2297,7 +2297,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -2325,7 +2325,7 @@ go_bandit([]() {
           const bdd out = bdd_satmax(bdd_2);
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id, terminal_F, terminal_T)));
@@ -2337,7 +2337,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -2365,7 +2365,7 @@ go_bandit([]() {
           const bdd out = bdd_satmax(bdd(bdd_2, true));
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::max_id, terminal_F, terminal_T)));
@@ -2382,7 +2382,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
@@ -2413,7 +2413,7 @@ go_bandit([]() {
           const bdd out = bdd_satmax(bdd_3);
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(5, bdd::max_id, terminal_F, terminal_T)));
@@ -2425,7 +2425,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(5, 1u)));
@@ -2453,7 +2453,7 @@ go_bandit([]() {
           const bdd out = bdd_satmax(bdd(bdd_3, true));
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(5, bdd::max_id, terminal_T, terminal_F)));
@@ -2465,7 +2465,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(5, 1u)));
@@ -2493,7 +2493,7 @@ go_bandit([]() {
           const bdd out = bdd_satmax(bdd(bdd_3, false, -1));
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(4, bdd::max_id, terminal_F, terminal_T)));
@@ -2505,7 +2505,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(4, 1u)));
@@ -2533,7 +2533,7 @@ go_bandit([]() {
           const bdd out = bdd_satmax(bdd(bdd_3, false, +1));
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(6, bdd::max_id, terminal_F, terminal_T)));
@@ -2545,7 +2545,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(6, 1u)));
@@ -2573,7 +2573,7 @@ go_bandit([]() {
           const bdd out = bdd_satmax(bdd_4);
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id, terminal_F, terminal_T)));
@@ -2590,7 +2590,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -2621,7 +2621,7 @@ go_bandit([]() {
           const bdd out = bdd_satmax(bdd(bdd_4, true));
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::max_id, terminal_F, terminal_T)));
@@ -2643,7 +2643,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(3, 1u)));
@@ -2694,7 +2694,7 @@ go_bandit([]() {
           const bdd out = bdd_satmax(bdd_T, gen);
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id, terminal_F, terminal_T)));
@@ -2711,7 +2711,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -2747,7 +2747,7 @@ go_bandit([]() {
           const bdd out = bdd_satmax(bdd_0, gen);
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::max_id, terminal_F, terminal_T)));
@@ -2764,7 +2764,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -2800,7 +2800,7 @@ go_bandit([]() {
           const bdd out = bdd_satmax(bdd_3, gen);
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(6, bdd::max_id, terminal_F, terminal_T)));
@@ -2827,7 +2827,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(6, 1u)));
@@ -2869,7 +2869,7 @@ go_bandit([]() {
           const bdd out = bdd_satmax(bdd_1, gen);
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(4, bdd::max_id, terminal_F, terminal_T)));
@@ -2896,7 +2896,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(4, 1u)));
@@ -2938,7 +2938,7 @@ go_bandit([]() {
           const bdd out = bdd_satmax(bdd_3, gen);
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(7, bdd::max_id, terminal_F, terminal_T)));
@@ -2960,7 +2960,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(7, 1u)));
@@ -2999,7 +2999,7 @@ go_bandit([]() {
           const bdd out = bdd_satmax(bdd(bdd_3, false, -1), gen);
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(6, bdd::max_id, terminal_F, terminal_T)));
@@ -3021,7 +3021,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(6, 1u)));
@@ -3060,7 +3060,7 @@ go_bandit([]() {
           const bdd out = bdd_satmax(bdd(bdd_3, false, +1), gen);
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(8, bdd::max_id, terminal_F, terminal_T)));
@@ -3082,7 +3082,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(8, 1u)));
@@ -3119,7 +3119,7 @@ go_bandit([]() {
           const bdd out            = bdd_satmax(bdd_1, d.cbegin(), d.cend());
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(4, bdd::max_id, terminal_F, terminal_T)));
@@ -3146,7 +3146,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(4, 1u)));
@@ -3184,7 +3184,7 @@ go_bandit([]() {
           const bdd out            = bdd_satmax(bdd_3, d.cbegin(), d.cend());
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(7, bdd::max_id, terminal_F, terminal_T)));
@@ -3206,7 +3206,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(7, 1u)));
@@ -3241,7 +3241,7 @@ go_bandit([]() {
           const bdd out            = bdd_satmax(bdd(bdd_3, false, -1), d.cbegin(), d.cend());
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(6, bdd::max_id, terminal_F, terminal_T)));
@@ -3263,7 +3263,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(6, 1u)));
@@ -3303,7 +3303,7 @@ go_bandit([]() {
           const bdd out            = bdd_satmax(bdd_1, bdd_cube(d.rbegin(), d.rend()));
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(4, bdd::max_id, terminal_F, terminal_T)));
@@ -3330,7 +3330,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(4, 1u)));
@@ -3368,7 +3368,7 @@ go_bandit([]() {
           const bdd out            = bdd_satmax(bdd_3, bdd_cube(d.rbegin(), d.rend()));
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(7, bdd::max_id, terminal_F, terminal_T)));
@@ -3390,7 +3390,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(7, 1u)));
@@ -3425,7 +3425,7 @@ go_bandit([]() {
           const bdd out = bdd_satmax(bdd(bdd_3, false, -1), bdd_cube(d.rbegin(), d.rend()));
 
           // Check it looks all right
-          node_test_stream out_nodes(out);
+          node_test_ifstream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(6, bdd::max_id, terminal_F, terminal_T)));
@@ -3447,7 +3447,7 @@ go_bandit([]() {
 
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream out_meta(out);
+          level_info_test_ifstream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(level_info(6, 1u)));

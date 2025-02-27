@@ -20,8 +20,8 @@
 #include <adiar/internal/dd_func.h>
 #include <adiar/internal/io/arc_file.h>
 #include <adiar/internal/io/arc_writer.h>
+#include <adiar/internal/io/node_ifstream.h>
 #include <adiar/internal/io/node_raccess.h>
-#include <adiar/internal/io/node_stream.h>
 #include <adiar/internal/memory.h>
 #include <adiar/internal/util.h>
 
@@ -291,7 +291,7 @@ namespace adiar::internal
     arc_writer aw(out_arcs);
 
     // Set up input
-    node_stream<> in_nodes_pq(in_pq);
+    node_ifstream<> in_nodes_pq(in_pq);
     node_raccess in_nodes_ra(in_ra);
 
     node v_pq = in_nodes_pq.pull();
@@ -415,8 +415,8 @@ namespace adiar::internal
     out_arcs->max_1level_cut = 0;
 
     // Set up input
-    node_stream<> in_nodes_0(in_0);
-    node_stream<> in_nodes_1(in_1);
+    node_ifstream<> in_nodes_0(in_0);
+    node_ifstream<> in_nodes_1(in_1);
 
     node v0 = in_nodes_0.pull();
     node v1 = in_nodes_1.pull();
@@ -666,7 +666,7 @@ namespace adiar::internal
 
     const size_t pq_available_memory = memory_available()
       // Input stream
-      - node_stream<>::memory_usage()
+      - node_ifstream<>::memory_usage()
       // Random access
       - node_raccess::memory_usage(in_ra)
       // Output stream
@@ -723,7 +723,7 @@ namespace adiar::internal
     // we can run them with a faster internal memory variant.
     const size_t aux_available_memory = memory_available()
       // Input streams
-      - 2 * node_stream<>::memory_usage()
+      - 2 * node_ifstream<>::memory_usage()
       // Output stream
       - arc_writer::memory_usage();
 

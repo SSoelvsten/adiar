@@ -13,7 +13,7 @@
 #include <adiar/internal/data_types/level_info.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/io/arc_file.h>
-#include <adiar/internal/io/arc_stream.h>
+#include <adiar/internal/io/arc_ifstream.h>
 #include <adiar/internal/io/node_file.h>
 #include <adiar/internal/io/node_writer.h>
 #include <adiar/internal/memory.h>
@@ -216,9 +216,9 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// \brief Merging priority queue with terminal_arc stream.
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename pq_t, typename arc_stream_t>
+  template <typename pq_t, typename arc_ifstream_t>
   inline arc
-  __reduce_get_next(pq_t& reduce_pq, arc_stream_t& arcs)
+  __reduce_get_next(pq_t& reduce_pq, arc_ifstream_t& arcs)
   {
     if (!reduce_pq.can_pull()
         || (arcs.can_pull_terminal() && arcs.peek_terminal().source() > reduce_pq.top().source())) {
@@ -262,9 +262,9 @@ namespace adiar::internal
   ///
   /// \see __reduce_level
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename arc_stream_t, typename pq_t>
+  template <typename arc_ifstream_t, typename pq_t>
   inline void
-  __reduce_level__epilogue(arc_stream_t& arcs,
+  __reduce_level__epilogue(arc_ifstream_t& arcs,
                            pq_t& reduce_pq,
                            node_writer& out_writer,
                            const bool terminal_val);
@@ -277,9 +277,9 @@ namespace adiar::internal
   template <typename Policy,
             template <typename, typename> typename sorter_t,
             typename pq_t,
-            typename arc_stream_t>
+            typename arc_ifstream_t>
   size_t
-  __reduce_level(arc_stream_t& arcs,
+  __reduce_level(arc_ifstream_t& arcs,
                  const typename Policy::label_type in_label,
                  const typename Policy::label_type out_label,
                  pq_t& reduce_pq,
@@ -440,10 +440,10 @@ namespace adiar::internal
   template <typename Policy,
             template <typename, typename> typename sorter_t,
             typename pq_t,
-            typename arc_stream_t>
+            typename arc_ifstream_t>
   //[[deprecated("Use '__reduce_label' with a separate 'in_label' and 'out_label'")]]
   size_t
-  __reduce_level(arc_stream_t& arcs,
+  __reduce_level(arc_ifstream_t& arcs,
                  const typename Policy::label_type label,
                  pq_t& reduce_pq,
                  node_writer& out_writer,
@@ -451,14 +451,14 @@ namespace adiar::internal
                  const size_t unreduced_width,
                  statistics::reduce_t& stats = stats_reduce)
   {
-    return __reduce_level<Policy, sorter_t, pq_t, arc_stream_t>(
+    return __reduce_level<Policy, sorter_t, pq_t, arc_ifstream_t>(
       arcs, label, label, reduce_pq, out_writer, sorters_memory, unreduced_width, stats);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename arc_stream_t, typename pq_t>
+  template <typename arc_ifstream_t, typename pq_t>
   inline void
-  __reduce_level__epilogue(arc_stream_t& arcs,
+  __reduce_level__epilogue(arc_ifstream_t& arcs,
                            pq_t& reduce_pq,
                            node_writer& out_writer,
                            const bool terminal_val)
@@ -528,8 +528,8 @@ namespace adiar::internal
     stats_reduce.sum_terminal_arcs += in_file->size(1) + in_file->size(2);
 #endif
 
-    arc_stream<> arcs(in_file);
-    level_info_stream<> levels(in_file);
+    arc_ifstream<> arcs(in_file);
+    level_info_ifstream<> levels(in_file);
 
     // Set up output
     shared_levelized_file<typename Policy::node_type> out_file = __reduce_init_output<Policy>();
@@ -641,8 +641,8 @@ namespace adiar::internal
     // memory variant.
     const size_t aux_available_memory = memory_available()
       // Input streams
-      - arc_stream<>::memory_usage()
-      - level_info_stream<>::memory_usage()
+      - arc_ifstream<>::memory_usage()
+      - level_info_ifstream<>::memory_usage()
       // Output streams
       - node_writer::memory_usage();
 

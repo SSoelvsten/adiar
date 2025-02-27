@@ -102,14 +102,14 @@ go_bandit([]() {
         zdd out = zdd_minelem(zdd_F);
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_type(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -131,14 +131,14 @@ go_bandit([]() {
         zdd out = zdd_minelem(zdd_T);
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_type(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -160,7 +160,7 @@ go_bandit([]() {
         zdd out = zdd_minelem(zdd_1);
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(),
@@ -168,7 +168,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -193,14 +193,14 @@ go_bandit([]() {
         zdd out = zdd_minelem(zdd_2);
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_type(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -222,7 +222,7 @@ go_bandit([]() {
         zdd out = zdd_minelem(zdd_3);
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(),
@@ -234,7 +234,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(4, 1u)));
@@ -262,7 +262,7 @@ go_bandit([]() {
         zdd out = zdd_minelem(zdd_4);
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(),
@@ -270,7 +270,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -430,14 +430,14 @@ go_bandit([]() {
         zdd out = zdd_maxelem(zdd_F);
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_type(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -459,14 +459,14 @@ go_bandit([]() {
         zdd out = zdd_maxelem(zdd_T);
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(zdd::node_type(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -488,7 +488,7 @@ go_bandit([]() {
         zdd out = zdd_maxelem(zdd_1);
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(),
@@ -500,7 +500,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(2, 1u)));
@@ -528,7 +528,7 @@ go_bandit([]() {
         zdd out = zdd_maxelem(zdd_2);
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(),
@@ -536,7 +536,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));
@@ -561,7 +561,7 @@ go_bandit([]() {
         zdd out = zdd_maxelem(zdd_4);
 
         // Check it looks all right
-        node_test_stream out_nodes(out);
+        node_test_ifstream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(),
@@ -573,7 +573,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream out_meta(out);
+        level_info_test_ifstream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(level_info(1, 1u)));

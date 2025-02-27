@@ -65,7 +65,7 @@ namespace adiar::internal
       bool has_output = true;
       node_writer nw(nf);
 
-      file_stream<typename from_policy::label_type, true> ls(dom);
+      ifstream<typename from_policy::label_type, true> ls(dom);
 
       while (ls.can_pull()) {
         const typename to_policy::label_type next_label = ls.pull();

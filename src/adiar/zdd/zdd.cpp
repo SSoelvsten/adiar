@@ -13,7 +13,7 @@
 #include <adiar/internal/algorithms/reduce.h>
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/node.h>
-#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/ifstream.h>
 
 namespace adiar
 {
