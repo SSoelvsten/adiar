@@ -1796,6 +1796,8 @@ go_bandit([]() {
                { flag(inner_n1), flag(inner_n2) }, {}, { ptr_uint64(1, 0, false) });
              sorter.push(req);
 
+             sorter.sort();
+
              test_pq_t pq({ bdd(dag) }, memory_available(), 16, lpq_stats);
              test_decorator dec(pq, sorter);
 

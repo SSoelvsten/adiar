@@ -6,3 +6,6 @@ add_test(adiar-internal-data_structures-levelized_priority_queue
 
 add_test(adiar-internal-data_structures-priority_queue
          test_priority_queue.cpp)
+
+add_test(adiar-internal-data_structures-sorter
+         test_sorter.cpp)
