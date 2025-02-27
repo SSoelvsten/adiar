@@ -193,15 +193,15 @@ namespace adiar::internal
 
       public:
         ////////////////////////////////////////////////////////////////////////////////////////////
-        static tpie::memory_size_type
-        memory_usage(tpie::memory_size_type no_elements)
+        static size_t
+        memory_usage(size_t no_elements)
         {
           return sorter_t::memory_usage(no_elements);
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
-        static tpie::memory_size_type
-        memory_fits(tpie::memory_size_type memory_bytes)
+        static size_t
+        memory_fits(size_t memory_bytes)
         {
           return sorter_t::memory_fits(memory_bytes);
         }
@@ -605,7 +605,7 @@ namespace adiar::internal
 
       public:
         ////////////////////////////////////////////////////////////////////////
-        static tpie::memory_size_type
+        static size_t
         memory_usage()
         {
           return level_info_ifstream<>::memory_usage();
@@ -1546,7 +1546,7 @@ namespace adiar::internal
         const size_t inner_sorters_memory =
           inner_aux_available_memory - inner_pq_memory - tpie::file_stream<mapping>::memory_usage();
 
-        const tpie::memory_size_type inner_pq_memory_fits =
+        const size_t inner_pq_memory_fits =
           up__pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(inner_pq_memory);
 
         // TODO (optimization):
@@ -2141,10 +2141,10 @@ namespace adiar::internal
 
     const size_t outer_roots_memory = aux_outer_memory - outer_pq_memory;
 
-    const tpie::memory_size_type outer_pq_memory_fits =
+    const size_t outer_pq_memory_fits =
       outer_default_lpq_t::memory_fits(outer_pq_memory);
 
-    const tpie::memory_size_type outer_roots_memory_fits =
+    const size_t outer_roots_memory_fits =
       internal_roots_sorter_t::memory_fits(outer_pq_memory);
 
     const size_t pq_roots_bound = (dag->max_1level_cut * 3u) / 2u;
