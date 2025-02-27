@@ -15,7 +15,7 @@
 #include <adiar/internal/io/arc_file.h>
 #include <adiar/internal/io/arc_ifstream.h>
 #include <adiar/internal/io/node_file.h>
-#include <adiar/internal/io/node_writer.h>
+#include <adiar/internal/io/node_ofstream.h>
 #include <adiar/internal/memory.h>
 
 namespace adiar::internal
@@ -266,7 +266,7 @@ namespace adiar::internal
   inline void
   __reduce_level__epilogue(arc_ifstream_t& arcs,
                            pq_t& reduce_pq,
-                           node_writer& out_writer,
+                           node_ofstream& out,
                            const bool terminal_val);
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -283,7 +283,7 @@ namespace adiar::internal
                  const typename Policy::label_type in_label,
                  const typename Policy::label_type out_label,
                  pq_t& reduce_pq,
-                 node_writer& out_writer,
+                 node_ofstream& out,
                  const size_t sorters_memory,
                  const size_t unreduced_width,
                  [[maybe_unused]] statistics::reduce_t& stats = stats_reduce)
@@ -346,7 +346,7 @@ namespace adiar::internal
           || out_node.high() != unflag(next_node.high())) {
         adiar_assert(0 <= out_id, "Should still have more ids left");
         out_node = node(out_label, out_id--, unflag(next_node.low()), unflag(next_node.high()));
-        out_writer.unsafe_push(out_node);
+        out.unsafe_push(out_node);
 
         __reduce_cut_add(next_node.low().is_flagged() ? tainted_1level_cut : local_1level_cut,
                          out_node.low());
@@ -363,7 +363,7 @@ namespace adiar::internal
 
     // Add number of nodes to level information, if any nodes were pushed to the output.
     const size_t reduced_width = Policy::max_id - out_id;
-    if (reduced_width > 0) { out_writer.unsafe_push(level_info(out_label, reduced_width)); }
+    if (reduced_width > 0) { out.unsafe_push(level_info(out_label, reduced_width)); }
 
     // Sort mappings for Reduction rule 2 back in order of arcs.internal
     red2_mapping.sort();
@@ -419,13 +419,13 @@ namespace adiar::internal
     red1_mapping.close();
 
     // Update with new possible maximum 1-level cut (the one below the current level)
-    out_writer.unsafe_max_1level_cut(local_1level_cut);
+    out.unsafe_max_1level_cut(local_1level_cut);
 
     // Add the tainted edges
-    out_writer.unsafe_inc_1level_cut(tainted_1level_cut);
+    out.unsafe_inc_1level_cut(tainted_1level_cut);
 
     const bool terminal_value = next_red1.new_uid.is_terminal() && next_red1.new_uid.value();
-    __reduce_level__epilogue<>(arcs, reduce_pq, out_writer, terminal_value);
+    __reduce_level__epilogue<>(arcs, reduce_pq, out, terminal_value);
 
     adiar_assert(reduced_width <= unreduced_width, "Reduction should only ever remove nodes");
 
@@ -446,13 +446,13 @@ namespace adiar::internal
   __reduce_level(arc_ifstream_t& arcs,
                  const typename Policy::label_type label,
                  pq_t& reduce_pq,
-                 node_writer& out_writer,
+                 node_ofstream& out,
                  const size_t sorters_memory,
                  const size_t unreduced_width,
                  statistics::reduce_t& stats = stats_reduce)
   {
     return __reduce_level<Policy, sorter_t, pq_t, arc_ifstream_t>(
-      arcs, label, label, reduce_pq, out_writer, sorters_memory, unreduced_width, stats);
+      arcs, label, label, reduce_pq, out, sorters_memory, unreduced_width, stats);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -460,7 +460,7 @@ namespace adiar::internal
   inline void
   __reduce_level__epilogue(arc_ifstream_t& arcs,
                            pq_t& reduce_pq,
-                           node_writer& out_writer,
+                           node_ofstream& out,
                            const bool terminal_val)
   {
 
@@ -494,7 +494,7 @@ namespace adiar::internal
                      || arcs.peek_internal().target().label() < reduce_pq.current_level(),
                    "All internal arcs for 'current_level' should be processed");
 
-    } else if (!out_writer.has_pushed()) {
+    } else if (!out.has_pushed()) {
       adiar_assert(!arcs.can_pull_internal() && !arcs.can_pull_terminal(),
                    "All nodes should be processed at this point");
 
@@ -505,11 +505,11 @@ namespace adiar::internal
       // adiar_assert(next_red1.new_uid.is_terminal(),
       //             "A node must have been suppressed in favour of a terminal");
 
-      out_writer.unsafe_push(node(terminal_val));
-      out_writer.unsafe_set_number_of_terminals(!terminal_val, terminal_val);
+      out.unsafe_push(node(terminal_val));
+      out.unsafe_set_number_of_terminals(!terminal_val, terminal_val);
 
       // NOTE: We do not need to update the cuts, since this is taken care of in
-      //       `~out_writer() = out_writer.detach()`.
+      //       `~out() = out.detach()`.
     }
   }
 
@@ -534,7 +534,7 @@ namespace adiar::internal
     // Set up output
     shared_levelized_file<typename Policy::node_type> out_file = __reduce_init_output<Policy>();
 
-    node_writer out_writer(out_file);
+    node_ofstream out(out_file);
 
     // Trivial single-node case
     if (!arcs.can_pull_internal()) {
@@ -550,16 +550,16 @@ namespace adiar::internal
 #endif
         const bool terminal_val = reduction_rule_ret.value();
         const node out_node     = node(terminal_val);
-        out_writer.unsafe_push(out_node);
+        out.unsafe_push(out_node);
 
-        out_writer.unsafe_set_number_of_terminals(!terminal_val, terminal_val);
+        out.unsafe_set_number_of_terminals(!terminal_val, terminal_val);
         __reduce_cut_add(out_file->max_1level_cut, 0u, !terminal_val, terminal_val);
       } else {
         const typename Policy::label_type out_level = policy.map_level(e_low.source().level());
 
-        out_writer.unsafe_push(node(out_level, Policy::max_id, e_low.target(), e_high.target()));
+        out.unsafe_push(node(out_level, Policy::max_id, e_low.target(), e_high.target()));
 
-        out_writer.unsafe_push(level_info(out_level, 1u));
+        out.unsafe_push(level_info(out_level, 1u));
 
         out_file->max_1level_cut[cut::Internal] = 1u;
 
@@ -599,10 +599,10 @@ namespace adiar::internal
       const size_t unreduced_width = current_level_info.width();
       if (unreduced_width <= internal_sorter_can_fit) {
         __reduce_level<Policy, internal_sorter>(
-          arcs, in_level, out_level, reduce_pq, out_writer, sorters_memory, unreduced_width);
+          arcs, in_level, out_level, reduce_pq, out, sorters_memory, unreduced_width);
       } else {
         __reduce_level<Policy, external_sorter>(
-          arcs, in_level, out_level, reduce_pq, out_writer, sorters_memory, unreduced_width);
+          arcs, in_level, out_level, reduce_pq, out, sorters_memory, unreduced_width);
       }
     }
 
@@ -644,7 +644,7 @@ namespace adiar::internal
       - arc_ifstream<>::memory_usage()
       - level_info_ifstream<>::memory_usage()
       // Output streams
-      - node_writer::memory_usage();
+      - node_ofstream::memory_usage();
 
     const size_t pq_memory = aux_available_memory / 2;
     const size_t sorters_memory =

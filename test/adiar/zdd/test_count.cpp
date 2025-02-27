@@ -23,7 +23,7 @@ go_bandit([]() {
       node n2 = node(1, 0, n3.uid(), n4.uid());
       node n1 = node(0, 0, n3.uid(), n2.uid());
 
-      node_writer nw_1(zdd_1);
+      node_ofstream nw_1(zdd_1);
       nw_1 << n4 << n3 << n2 << n1;
     }
 
@@ -41,7 +41,7 @@ go_bandit([]() {
       node n2 = node(2, 0, terminal_F, terminal_T);
       node n1 = node(1, 0, n2.uid(), terminal_T);
 
-      node_writer nw_2(zdd_2);
+      node_ofstream nw_2(zdd_2);
       nw_2 << n2 << n1;
     }
 
@@ -52,7 +52,7 @@ go_bandit([]() {
     // This describes the set {}
 
     { // Garbage collect writer to free write-lock
-      node_writer nw_T(zdd_T);
+      node_ofstream nw_T(zdd_T);
       nw_T << node(true);
     }
 
@@ -63,7 +63,7 @@ go_bandit([]() {
     // This describes no set
 
     { // Garbage collect writer to free write-lock
-      node_writer nw_F(zdd_F);
+      node_ofstream nw_F(zdd_F);
       nw_F << node(false);
     }
 
@@ -76,7 +76,7 @@ go_bandit([]() {
     // This describes the set { 1 }
 
     { // Garbage collect writer to free write-lock
-      node_writer nw_root_1(zdd_root_1);
+      node_ofstream nw_root_1(zdd_root_1);
       nw_root_1 << node(1, 0, terminal_F, terminal_T);
     }
 

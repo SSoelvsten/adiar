@@ -27,7 +27,7 @@ go_bandit([]() {
       node n1 = node(0, 0, n3.uid(), n2.uid());
 
       { // Garbage collect writer to free write-lock
-        node_writer nw(bdd);
+        node_ofstream nw(bdd);
         nw << n5 << n4 << n3 << n2 << n1;
       }
 
@@ -52,7 +52,7 @@ go_bandit([]() {
       node skip_n1 = node(0, 0, skip_n2.uid(), skip_n3.uid());
 
       { // Garbage collect writer to free write-lock
-        node_writer skip_nw(skip_bdd);
+        node_ofstream skip_nw(skip_bdd);
         skip_nw << skip_n4 << skip_n3 << skip_n2 << skip_n1;
       }
 
@@ -66,19 +66,19 @@ go_bandit([]() {
       */
 
       { // Garbage collect writer to free write-lock
-        node_writer nw(non_zero_bdd);
+        node_ofstream nw(non_zero_bdd);
         nw << node(1, 0, terminal_F, terminal_T);
       }
 
       shared_levelized_file<bdd::node_type> bdd_F;
       { // Garbage collect writer to free write-lock
-        node_writer nw(bdd_F);
+        node_ofstream nw(bdd_F);
         nw << node(false);
       }
 
       shared_levelized_file<bdd::node_type> bdd_T;
       { // Garbage collect writer to free write-lock
-        node_writer nw(bdd_T);
+        node_ofstream nw(bdd_T);
         nw << node(true);
       }
 
@@ -324,13 +324,13 @@ go_bandit([]() {
 
       shared_levelized_file<bdd::node_type> bdd_T;
       {
-        node_writer nw(bdd_T);
+        node_ofstream nw(bdd_T);
         nw << node(true);
       }
 
       shared_levelized_file<bdd::node_type> bdd_F;
       {
-        node_writer nw(bdd_F);
+        node_ofstream nw(bdd_F);
         nw << node(false);
       }
 
@@ -341,7 +341,7 @@ go_bandit([]() {
       //             F T
       */
       {
-        node_writer nw(bdd_0);
+        node_ofstream nw(bdd_0);
         nw << node(0, bdd::max_id, terminal_F, terminal_T);
       }
 
@@ -365,7 +365,7 @@ go_bandit([]() {
         node n2 = node(1, bdd::max_id, n3.uid(), n4.uid());
         node n1 = node(0, bdd::max_id, n2.uid(), n4.uid());
 
-        node_writer nw(bdd_1);
+        node_ofstream nw(bdd_1);
         nw << n5 << n4 << n3 << n2 << n1;
       }
 
@@ -392,7 +392,7 @@ go_bandit([]() {
         node n2 = node(1, bdd::max_id, n3.uid(), n4.uid());
         node n1 = node(0, bdd::max_id, n2.uid(), n5.uid());
 
-        node_writer nw(bdd_2);
+        node_ofstream nw(bdd_2);
         nw << n6 << n5 << n4 << n3 << n2 << n1;
       }
 
@@ -413,7 +413,7 @@ go_bandit([]() {
         node n2 = node(3, bdd::max_id, n3.uid(), n4.uid());
         node n1 = node(1, bdd::max_id, n2.uid(), n4.uid());
 
-        node_writer nw(bdd_3);
+        node_ofstream nw(bdd_3);
         nw << n4 << n3 << n2 << n1;
       }
 
@@ -440,7 +440,7 @@ go_bandit([]() {
         node n2 = node(1, bdd::max_id, n4.uid(), n5.uid());
         node n1 = node(0, bdd::max_id, n3.uid(), n2.uid());
 
-        node_writer nw(bdd_4);
+        node_ofstream nw(bdd_4);
         nw << n6 << n5 << n4 << n3 << n2 << n1;
       }
 

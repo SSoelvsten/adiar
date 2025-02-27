@@ -70,7 +70,7 @@ struct lpq_test_gt
 };
 
 typedef shared_file_ptr<levelized_file<lpq_test_data>> lpq_test_file;
-typedef levelized_file_writer<lpq_test_data> lpq_test_writer;
+typedef levelized_ofstream<lpq_test_data> lpq_test_ofstream;
 
 template <typename file_t, size_t look_ahead>
 using test_priority_queue = levelized_priority_queue<lpq_test_data,
@@ -109,7 +109,7 @@ go_bandit([]() {
         shared_file<ptr_uint64::label_type> f;
 
         { // Garbage collect the writer early
-          label_writer fw(f);
+          ofstream<ptr_uint64::label_type> fw(f);
           fw << 2;
         }
 
@@ -125,7 +125,7 @@ go_bandit([]() {
         shared_file<ptr_uint64::label_type> f;
 
         { // Garbage collect the writer early
-          label_writer fw(f);
+          ofstream<ptr_uint64::label_type> fw(f);
           fw << 1 << 2;
         }
 
@@ -143,7 +143,7 @@ go_bandit([]() {
         shared_file<ptr_uint64::label_type> f;
 
         { // Garbage collect the writer early
-          label_writer fw(f);
+          ofstream<ptr_uint64::label_type> fw(f);
           fw << 1       // skipped
              << 3 << 4; // buckets
         }
@@ -162,7 +162,7 @@ go_bandit([]() {
         shared_file<ptr_uint64::label_type> f;
 
         { // Garbage collect the writer early
-          label_writer fw(f);
+          ofstream<ptr_uint64::label_type> fw(f);
           fw << 1      // skipped
              << 2 << 4 // buckets
              << 5;     // overflow
@@ -190,7 +190,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 0      // skipped
                << 2 << 3 // buckets
@@ -223,7 +223,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1      // skipped
                << 2 << 3 // buckets
@@ -256,7 +256,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1      // skipped
                << 2 << 3 // buckets
@@ -288,7 +288,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1            // skipped
                << 2 << 3       // buckets
@@ -329,7 +329,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1      // skipped
                << 2 << 3 // buckets
@@ -377,7 +377,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1       // skipped
                << 2 << 3  // buckets
@@ -425,7 +425,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1      // skipped
                << 2 << 3 // buckets
@@ -461,7 +461,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1           // skipped
                << 2 << 3 << 4 // buckets (after element in 3)
@@ -511,7 +511,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1      // skipped
                << 3 << 4 // buckets
@@ -540,7 +540,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1           // skipped
                << 2 << 4 << 5 // buckets
@@ -571,7 +571,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1      // skipped
                << 2 << 3 // buckets
@@ -604,7 +604,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1      // skipped
                << 2 << 3 // buckets
@@ -637,7 +637,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1      // skipped
                << 2 << 3 // buckets
@@ -668,7 +668,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1      // skipped
                << 2 << 3 // buckets
@@ -696,7 +696,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1      // skipped
                << 2 << 3 // buckets
@@ -724,7 +724,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1      // skipped
                << 2 << 4 // buckets
@@ -755,7 +755,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1      // skipped
                << 2 << 3 // buckets
@@ -788,7 +788,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1            // skipped
                << 2 << 3       // buckets
@@ -822,7 +822,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1           // skipped
                << 2 << 3 << 4 // buckets (after element in 2)
@@ -860,7 +860,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(2, 2u)); // bucket
             fw.push(level_info(1, 1u)); // skipped
@@ -886,7 +886,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(4, 2u)); // overflow
             fw.push(level_info(3, 3u)); // bucket
@@ -937,7 +937,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(4, 1u)); // overflow
             fw.push(level_info(3, 3u)); // bucket
@@ -961,7 +961,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(4, 2u)); // overflow
             fw.push(level_info(3, 3u)); // bucket
@@ -993,7 +993,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(5, 1u)); // .
             fw.push(level_info(4, 2u)); // overflow
@@ -1030,7 +1030,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(5, 2u)); // .
             fw.push(level_info(4, 2u)); // overflow
@@ -1069,7 +1069,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(4, 2u));
             fw.push(level_info(3, 4u));
@@ -1099,7 +1099,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(5, 2u));
             fw.push(level_info(4, 4u));
@@ -1130,7 +1130,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0                 // skipped
               << 1 << 2            // buckets
               << 3 << 4 << 5 << 6; // overflow
@@ -1179,7 +1179,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0                 // skipped
               << 1 << 2            // buckets
               << 3 << 4 << 5 << 6; // overflow
@@ -1219,7 +1219,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0                      // skipped
               << 1 << 2                 // buckets
               << 3 << 4 << 5 << 6 << 7; // overflow
@@ -1271,7 +1271,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0                      // skipped
               << 1 << 2                 // buckets
               << 3 << 4 << 5 << 6 << 7; // overflow
@@ -1319,7 +1319,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0            // skipped
               << 1 << 2       // buckets
               << 3 << 4 << 5; // overflow
@@ -1365,7 +1365,7 @@ go_bandit([]() {
              shared_file<ptr_uint64::label_type> f;
 
              {
-               label_writer w(f);
+               ofstream<ptr_uint64::label_type> w(f);
                w << 0           // skipped
                  << 1 << 2 << 3 // buckets (after first 'setup_next_level')
                  << 4 << 5;
@@ -1410,7 +1410,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0       // skipped
               << 1 << 2  // buckets
               << 3 << 4; // overflow
@@ -1454,7 +1454,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0                 // skipped
               << 1 << 2            // buckets
               << 3 << 4 << 5 << 6; // overflow
@@ -1495,7 +1495,7 @@ go_bandit([]() {
             shared_file<ptr_uint64::label_type> f;
 
             {
-              label_writer w(f);
+              ofstream<ptr_uint64::label_type> w(f);
               w << 0       // skipped
                 << 1 << 2  // buckets
                 << 3 << 4; // overflow
@@ -1533,7 +1533,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0                      // skipped
               << 1 << 2                 // buckets
               << 3 << 4 << 5 << 6 << 7; // overflow
@@ -1579,7 +1579,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0                      // skipped
               << 1 << 2                 // buckets
               << 3 << 4 << 5 << 6 << 7; // overflow
@@ -1623,7 +1623,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0            // skipped
               << 1 << 2       // buckets
               << 3 << 4 << 5; // overflow
@@ -1666,7 +1666,7 @@ go_bandit([]() {
              shared_file<ptr_uint64::label_type> f;
 
              {
-               label_writer w(f);
+               ofstream<ptr_uint64::label_type> w(f);
                w << 0           // skipped
                  << 1 << 2 << 3 // buckets (after first 'setup_next_level')
                  << 4 << 5;
@@ -1709,7 +1709,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0      // skipped
               << 1 << 2 // buckets
               << 3;     // overflow
@@ -1733,7 +1733,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0      // skipped
               << 1 << 2 // buckets
               << 3;     // overflow
@@ -1761,7 +1761,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0       // skipped
               << 1 << 2  // buckets
               << 3 << 4; // overflow
@@ -1785,7 +1785,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0       // skipped
               << 1 << 2  // buckets
               << 3 << 4; // overflow
@@ -1827,7 +1827,7 @@ go_bandit([]() {
         shared_file<ptr_uint64::label_type> f;
 
         { // Garbage collect the writer early
-          label_writer fw(f);
+          ofstream<ptr_uint64::label_type> fw(f);
 
           fw << 1            // skipped
              << 2 << 3       // buckets
@@ -1888,7 +1888,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(6, 2u)); // .
             fw.push(level_info(5, 4u)); // .
@@ -1922,7 +1922,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(6, 2u)); // .
             fw.push(level_info(5, 2u)); // .
@@ -1954,7 +1954,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(6, 2u)); // .
             fw.push(level_info(5, 2u)); // .
@@ -1987,7 +1987,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(6, 2u)); // .
             fw.push(level_info(5, 2u)); // .
@@ -2028,7 +2028,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
             fw << 0       // skipped
                << 1 << 2; // buckets
           }
@@ -2049,7 +2049,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
             fw << 0       // skipped
                << 1 << 2; // buckets
           }
@@ -2072,7 +2072,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
             fw << 0       // skipped
                << 1 << 2  // buckets
                << 3 << 4; // overflow
@@ -2094,7 +2094,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
             fw << 0       // skipped
                << 1 << 2; // buckets
           }
@@ -2117,7 +2117,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
             fw << 0       // skipped
                << 1 << 2  // buckets
                << 3 << 4; // overflow
@@ -2141,7 +2141,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
             fw << 0       // skipped
                << 1 << 2; // buckets
           }
@@ -2164,7 +2164,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
             fw << 0       // skipped
                << 1 << 2  // buckets
                << 3 << 4; // overflow
@@ -2188,7 +2188,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
             fw << 0       // skipped
                << 1 << 2; // buckets
           }
@@ -2209,7 +2209,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
             fw << 0       // skipped
                << 1 << 2  // buckets
                << 3 << 4; // overflow
@@ -2254,7 +2254,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 0 // skipped
                << 2 << 3 << 4;
@@ -2283,7 +2283,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1 // skipped
                << 2 << 3 << 4;
@@ -2312,7 +2312,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1 // skipped
                << 2 << 3 << 4;
@@ -2343,7 +2343,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1 // skipped
                << 2 << 3 << 4 << 5 << 6;
@@ -2383,7 +2383,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1 // skipped
                << 2 << 3 << 4;
@@ -2427,7 +2427,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1 // skipped
                << 2 << 3 << 4 << 5;
@@ -2471,7 +2471,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1 // skipped
                << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9;
@@ -2500,7 +2500,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1                                // skipped
                << 2 << 3 << 4 << 5 << 6 << 7 << 8; // overflow that will have relabelled bucket(s)
@@ -2544,7 +2544,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1 // skipped
                << 2 << 3 << 4;
@@ -2576,7 +2576,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1 // skipped
                << 2 << 3 << 4;
@@ -2605,7 +2605,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1 // skipped
                << 2 << 3 << 4;
@@ -2632,7 +2632,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1 // skipped
                << 2 << 4 << 5;
@@ -2662,7 +2662,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1 // skipped
                << 2 << 3 << 4;
@@ -2694,7 +2694,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1 // skipped
                << 2 << 3 << 4 << 5 << 6;
@@ -2724,7 +2724,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
 
             fw << 1 // skipped
                << 2 << 3 << 4 << 5 << 6 << 7 << 9 << 10 << 11;
@@ -2759,7 +2759,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(2, 2u));
             fw.push(level_info(1, 1u)); // skipped
@@ -2785,7 +2785,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(4, 2u));
             fw.push(level_info(3, 3u));
@@ -2836,7 +2836,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(4, 1u));
             fw.push(level_info(3, 3u));
@@ -2860,7 +2860,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(4, 2u));
             fw.push(level_info(3, 3u));
@@ -2892,7 +2892,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(5, 1u));
             fw.push(level_info(4, 2u));
@@ -2929,7 +2929,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(5, 2u));
             fw.push(level_info(4, 2u));
@@ -2968,7 +2968,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(4, 2u));
             fw.push(level_info(3, 4u));
@@ -2998,7 +2998,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(5, 2u));
             fw.push(level_info(4, 4u));
@@ -3029,7 +3029,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0 // skipped
               << 1 << 2 << 3 << 4 << 5 << 6;
           }
@@ -3077,7 +3077,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0 // skipped
               << 1 << 2 << 3 << 4 << 5 << 6;
           }
@@ -3116,7 +3116,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0 // skipped
               << 1 << 2 << 3 << 4 << 5 << 6 << 7;
           }
@@ -3167,7 +3167,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0 // skipped
               << 1 << 2 << 3 << 4 << 5 << 6 << 7;
           }
@@ -3214,7 +3214,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0 // skipped
               << 1 << 2 << 3 << 4 << 5;
           }
@@ -3258,7 +3258,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0 // skipped
               << 1 << 2 << 3 << 4 << 5;
           }
@@ -3302,7 +3302,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0 // skipped
               << 1 << 2 << 3 << 4;
           }
@@ -3345,7 +3345,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0 // skipped
               << 1 << 2 << 3 << 4 << 5 << 6;
           }
@@ -3383,7 +3383,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0 // skipped
               << 1 << 2 << 3 << 4;
           }
@@ -3418,7 +3418,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0 // skipped
               << 1 << 2 << 3 << 4 << 5 << 6 << 7;
           }
@@ -3463,7 +3463,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0 // skipped
               << 1 << 2 << 3 << 4 << 5 << 6 << 7;
           }
@@ -3506,7 +3506,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0 // skipped
               << 1 << 2 << 3 << 4 << 5;
           }
@@ -3546,7 +3546,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0 // skipped
               << 1 << 2 << 3 << 4 << 5;
           }
@@ -3588,7 +3588,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0 // skipped
               << 1 << 2 << 3;
           }
@@ -3611,7 +3611,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0 // skipped
               << 1 << 2 << 3;
           }
@@ -3638,7 +3638,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0 // skipped
               << 1 << 2 << 3 << 4;
           }
@@ -3661,7 +3661,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           {
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
             w << 0 // skipped
               << 1 << 2 << 3 << 4;
           }
@@ -3702,7 +3702,7 @@ go_bandit([]() {
         shared_file<ptr_uint64::label_type> f;
 
         { // Garbage collect the writer early
-          label_writer fw(f);
+          ofstream<ptr_uint64::label_type> fw(f);
 
           fw << 1            // skipped
              << 2 << 3       // buckets
@@ -3762,7 +3762,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(6, 2u));
             fw.push(level_info(5, 4u));
@@ -3796,7 +3796,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(6, 2u));
             fw.push(level_info(5, 2u));
@@ -3828,7 +3828,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(6, 2u));
             fw.push(level_info(5, 2u));
@@ -3861,7 +3861,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(6, 2u));
             fw.push(level_info(5, 2u));
@@ -3902,7 +3902,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
             fw << 0 // skipped
                << 1 << 2;
           }
@@ -3923,7 +3923,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
             fw << 0 // skipped
                << 1 << 2;
           }
@@ -3946,7 +3946,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
             fw << 0 // skipped
                << 1 << 2 << 3 << 4;
           }
@@ -3967,7 +3967,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
             fw << 0 // skipped
                << 1 << 2;
           }
@@ -3990,7 +3990,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
             fw << 0 // skipped
                << 1 << 2 << 3 << 4;
           }
@@ -4013,7 +4013,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
             fw << 0 // skipped
                << 1 << 2;
           }
@@ -4036,7 +4036,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
             fw << 0 // skipped
                << 1 << 2 << 3 << 4;
           }
@@ -4059,7 +4059,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
             fw << 0 // skipped
                << 1 << 2;
           }
@@ -4080,7 +4080,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer fw(f);
+            ofstream<ptr_uint64::label_type> fw(f);
             fw << 0 // skipped
                << 1 << 2 << 3 << 4;
           }
@@ -4103,7 +4103,7 @@ go_bandit([]() {
       shared_file<ptr_uint64::label_type> f;
 
       { // Garbage collect the writer early
-        label_writer fw(f);
+        ofstream<ptr_uint64::label_type> fw(f);
 
         fw << 3 // skipped
            << 2 << 1 << 0;
@@ -4233,7 +4233,7 @@ go_bandit([]() {
                shared_file<ptr_uint64::label_type> f;
 
                { // Garbage collect the writer early
-                 label_writer fw(f);
+                 ofstream<ptr_uint64::label_type> fw(f);
 
                  fw << 3 // skipped
                     << 2 << 1 << 0;
@@ -4383,7 +4383,7 @@ go_bandit([]() {
         shared_file<ptr_uint64::label_type> f;
 
         { // Garbage collect the writer early
-          label_writer fw(f);
+          ofstream<ptr_uint64::label_type> fw(f);
           fw << 2;
         }
 
@@ -4409,7 +4409,7 @@ go_bandit([]() {
         shared_file<ptr_uint64::label_type> f;
 
         { // Garbage collect the writer early
-          label_writer fw(f);
+          ofstream<ptr_uint64::label_type> fw(f);
           fw << 1 << 3 << 4;
         }
 
@@ -4436,7 +4436,7 @@ go_bandit([]() {
         lpq_test_file f;
 
         { // Garbage collect the writer early
-          lpq_test_writer fw(f);
+          lpq_test_ofstream fw(f);
 
           fw.push(level_info(1, 1u)); // bucket
         }
@@ -4477,7 +4477,7 @@ go_bandit([]() {
         lpq_test_file f;
 
         { // Garbage collect the writer early
-          lpq_test_writer fw(f);
+          lpq_test_ofstream fw(f);
 
           fw.push(level_info(4, 2u)); // .
           fw.push(level_info(3, 3u)); // overflow
@@ -4525,7 +4525,7 @@ go_bandit([]() {
         lpq_test_file f;
 
         { // Garbage collect the writer early
-          lpq_test_writer fw(f);
+          lpq_test_ofstream fw(f);
 
           fw.push(level_info(4, 2u)); // bucket
           fw.push(level_info(3, 3u)); // bucket
@@ -4580,7 +4580,7 @@ go_bandit([]() {
         lpq_test_file f;
 
         { // Garbage collect the writer early
-          lpq_test_writer fw(f);
+          lpq_test_ofstream fw(f);
 
           fw.push(level_info(4, 2u)); // bucket
           fw.push(level_info(3, 3u)); // bucket
@@ -4647,7 +4647,7 @@ go_bandit([]() {
         lpq_test_file f1;
 
         { // Garbage collect the writer early
-          lpq_test_writer fw(f1);
+          lpq_test_ofstream fw(f1);
 
           fw.push(level_info(4, 2u)); // bucket
           fw.push(level_info(2, 2u)); // overflow
@@ -4656,7 +4656,7 @@ go_bandit([]() {
 
         lpq_test_file f2;
         { // Garbage collect the writer early
-          lpq_test_writer fw(f2);
+          lpq_test_ofstream fw(f2);
 
           fw.push(level_info(3, 3u)); // bucket
           fw.push(level_info(2, 2u)); // overflow
@@ -4762,7 +4762,7 @@ go_bandit([]() {
         lpq_test_file f;
 
         { // Garbage collect the writer early
-          lpq_test_writer fw(f);
+          lpq_test_ofstream fw(f);
 
           fw.push(level_info(1, 1u));
         }
@@ -4803,7 +4803,7 @@ go_bandit([]() {
         lpq_test_file f;
 
         { // Garbage collect the writer early
-          lpq_test_writer fw(f);
+          lpq_test_ofstream fw(f);
 
           fw.push(level_info(4, 2u));
           fw.push(level_info(3, 3u));
@@ -4848,13 +4848,13 @@ go_bandit([]() {
         lpq_test_file f2;
 
         { // Garbage collect the writer early
-          lpq_test_writer fw1(f1);
+          lpq_test_ofstream fw1(f1);
 
           fw1.push(level_info(4, 2u));
           fw1.push(level_info(3, 3u));
           fw1.push(level_info(1, 1u));
 
-          lpq_test_writer fw2(f2);
+          lpq_test_ofstream fw2(f2);
 
           fw2.push(level_info(2, 1u));
           fw2.push(level_info(1, 2u));
@@ -4923,13 +4923,13 @@ go_bandit([]() {
         lpq_test_file f2;
 
         { // Garbage collect the writer early
-          lpq_test_writer fw1(f1);
+          lpq_test_ofstream fw1(f1);
 
           fw1.push(level_info(4, 2u));
           fw1.push(level_info(3, 3u));
           fw1.push(level_info(1, 1u));
 
-          lpq_test_writer fw2(f2);
+          lpq_test_ofstream fw2(f2);
 
           fw2.push(level_info(2, 1u));
           fw2.push(level_info(1, 2u));
@@ -5011,7 +5011,7 @@ go_bandit([]() {
         lpq_test_file f;
 
         { // Garbage collect the writer early
-          lpq_test_writer fw(f);
+          lpq_test_ofstream fw(f);
 
           fw.push(level_info(1, 1u)); // skipped
         }
@@ -5028,7 +5028,7 @@ go_bandit([]() {
         lpq_test_file f;
 
         { // Garbage collect the writer early
-          lpq_test_writer fw(f);
+          lpq_test_ofstream fw(f);
 
           fw.push(level_info(4, 1u)); // bucket
           fw.push(level_info(3, 2u)); // bucket
@@ -5048,7 +5048,7 @@ go_bandit([]() {
         lpq_test_file f;
 
         { // Garbage collect the writer early
-          lpq_test_writer fw(f);
+          lpq_test_ofstream fw(f);
 
           fw.push(level_info(8, 1u)); // .
           fw.push(level_info(7, 3u)); // .
@@ -5074,7 +5074,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(7, 2u)); // .
             fw.push(level_info(6, 3u)); // overflow
@@ -5248,7 +5248,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(8, 1u));  // .
             fw.push(level_info(7, 4u));  // .
@@ -5289,7 +5289,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(8, 2u)); // .
             fw.push(level_info(7, 3u)); // .
@@ -5321,7 +5321,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(12, 2u)); // .
             fw.push(level_info(11, 4u)); // .
@@ -5371,7 +5371,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(8, 2u)); // .
             fw.push(level_info(7, 2u)); // .
@@ -5577,7 +5577,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(4, 2u)); // bucket
             fw.push(level_info(3, 3u)); // bucket
@@ -5645,7 +5645,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(2, 2u)); // bucket
             fw.push(level_info(1, 2u)); // bucket
@@ -5688,7 +5688,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
 
             w << 0                            // skipped
               << 1 << 2 << 3 << 4             // buckets
@@ -5734,7 +5734,7 @@ go_bandit([]() {
           shared_file<ptr_uint64::label_type> f;
 
           { // Garbage collect the writer early
-            label_writer w(f);
+            ofstream<ptr_uint64::label_type> w(f);
 
             w << 0                            // skipped
               << 1 << 2 << 3 << 4             // buckets
@@ -5774,7 +5774,7 @@ go_bandit([]() {
              lpq_test_file f;
 
              { // Garbage collect the writer early
-               lpq_test_writer fw(f);
+               lpq_test_ofstream fw(f);
 
                fw.push(level_info(8, 1u)); // .
                fw.push(level_info(7, 1u)); // .
@@ -5818,7 +5818,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(8, 2u)); // .
             fw.push(level_info(7, 4u)); // .
@@ -5868,7 +5868,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(6, 1u)); // overflow
             fw.push(level_info(5, 2u)); // bucket
@@ -5900,7 +5900,7 @@ go_bandit([]() {
           lpq_test_file f;
 
           { // Garbage collect the writer early
-            lpq_test_writer fw(f);
+            lpq_test_ofstream fw(f);
 
             fw.push(level_info(8, 1u)); // .
             fw.push(level_info(7, 2u)); // .

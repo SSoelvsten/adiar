@@ -20,7 +20,7 @@
 #include <adiar/internal/data_types/request.h>
 #include <adiar/internal/data_types/tuple.h>
 #include <adiar/internal/io/arc_file.h>
-#include <adiar/internal/io/arc_writer.h>
+#include <adiar/internal/io/arc_ofstream.h>
 #include <adiar/internal/io/file.h>
 #include <adiar/internal/io/ifstream.h>
 #include <adiar/internal/io/narc_ifstream.h>
@@ -142,7 +142,7 @@ namespace adiar::internal
   template <typename Policy, typename PriorityQueue>
   inline void
   __quantify_recurse_out(PriorityQueue& pq,
-                         arc_writer& aw,
+                         arc_ofstream& aw,
                          const typename Policy::pointer_type source,
                          const quantify_request<0>::target_t& target)
   {
@@ -167,11 +167,11 @@ namespace adiar::internal
   struct __quantify_recurse_in__output_node
   {
   private:
-    arc_writer& _aw;
+    arc_ofstream& _aw;
     const UId& _out_uid;
 
   public:
-    __quantify_recurse_in__output_node(arc_writer& aw, const UId& out_uid)
+    __quantify_recurse_in__output_node(arc_ofstream& aw, const UId& out_uid)
       : _aw(aw)
       , _out_uid(out_uid)
     {
@@ -198,11 +198,11 @@ namespace adiar::internal
   struct __quantify_recurse_in__output_terminal
   {
   private:
-    arc_writer& _aw;
+    arc_ofstream& _aw;
     const Pointer& _out_terminal;
 
   public:
-    __quantify_recurse_in__output_terminal(arc_writer& aw, const Pointer& out_terminal)
+    __quantify_recurse_in__output_terminal(arc_ofstream& aw, const Pointer& out_terminal)
       : _aw(aw)
       , _out_terminal(out_terminal)
     {
@@ -315,7 +315,7 @@ namespace adiar::internal
   {
     // Set up output
     shared_levelized_file<arc> out_arcs;
-    arc_writer aw(out_arcs);
+    arc_ofstream aw(out_arcs);
 
     // Process requests in topological order of both BDDs
     while (!pq.empty()) {
@@ -462,7 +462,7 @@ namespace adiar::internal
 
     // Set up output
     shared_levelized_file<arc> out_arcs;
-    arc_writer aw(out_arcs);
+    arc_ofstream aw(out_arcs);
 
     // Process requests in topological order of both BDDs
     while (!pq_1.empty()) {
@@ -653,7 +653,7 @@ namespace adiar::internal
       // Input stream
       - NodeRandomAccess::memory_usage(in)
       // Output stream
-      - arc_writer::memory_usage();
+      - arc_ofstream::memory_usage();
 
     const size_t pq_memory_fits =
       PriorityQueueTemplate<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(pq_memory);
@@ -750,7 +750,7 @@ namespace adiar::internal
       // Input stream
       - NodeStream::memory_usage()
       // Output stream
-      - arc_writer::memory_usage();
+      - arc_ofstream::memory_usage();
 
     constexpr size_t data_structures_in_pq_1 =
       PriorityQueue_1_Template<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::data_structures;
@@ -1014,7 +1014,7 @@ namespace adiar::internal
     static size_t
     stream_memory()
     {
-      return node_ifstream<>::memory_usage() + arc_writer::memory_usage();
+      return node_ifstream<>::memory_usage() + arc_ofstream::memory_usage();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////

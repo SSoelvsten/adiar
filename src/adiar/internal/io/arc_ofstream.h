@@ -1,11 +1,11 @@
-#ifndef ADIAR_INTERNAL_IO_ARC_WRITER_H
-#define ADIAR_INTERNAL_IO_ARC_WRITER_H
+#ifndef ADIAR_INTERNAL_IO_ARC_OFSTREAM_H
+#define ADIAR_INTERNAL_IO_ARC_OFSTREAM_H
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/level_info.h>
 #include <adiar/internal/io/arc_file.h>
-#include <adiar/internal/io/levelized_file_writer.h>
+#include <adiar/internal/io/levelized_ofstream.h>
 
 namespace adiar::internal
 {
@@ -14,7 +14,7 @@ namespace adiar::internal
   ///
   /// \see shared_levelized_file<arc>
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  class arc_writer : public levelized_file_writer<arc>
+  class arc_ofstream : public levelized_ofstream<arc>
   {
   private:
     bool __has_latest_terminal = false;
@@ -32,8 +32,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct unattached to any levelized arc file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    arc_writer()
-      : levelized_file_writer<arc>()
+    arc_ofstream()
+      : levelized_ofstream<arc>()
     {}
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -41,8 +41,8 @@ namespace adiar::internal
     ///
     /// \pre The file is empty.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    arc_writer(levelized_file<arc>& af)
-      : levelized_file_writer<arc>()
+    arc_ofstream(levelized_file<arc>& af)
+      : levelized_ofstream<arc>()
     {
       attach(af);
     }
@@ -52,8 +52,8 @@ namespace adiar::internal
     ///
     /// \pre The file is empty.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    arc_writer(shared_ptr<levelized_file<arc>> af)
-      : levelized_file_writer<arc>()
+    arc_ofstream(shared_ptr<levelized_file<arc>> af)
+      : levelized_ofstream<arc>()
     {
       attach(af);
     }
@@ -61,7 +61,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Detaches and cleans up from the levelized file (if need be).
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    ~arc_writer()
+    ~arc_ofstream()
     {
       // Sort the out-of-order terminals with 'detach()'.
       detach();
@@ -84,7 +84,7 @@ namespace adiar::internal
 
       // TODO: remove precondition and set up __latest_terminal.
 
-      return levelized_file_writer::attach(af);
+      return levelized_ofstream::attach(af);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -100,7 +100,7 @@ namespace adiar::internal
 
       // TODO: remove precondition and set up __latest_terminal.
 
-      return levelized_file_writer::attach(af);
+      return levelized_ofstream::attach(af);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -112,12 +112,12 @@ namespace adiar::internal
       if (!attached()) return;
 
 #ifdef ADIAR_STATS
-      if (_elem_writers[idx__terminals__out_of_order].size() != 0u) {
+      if (_elem_ofstreams[idx__terminals__out_of_order].size() != 0u) {
         stats_arc_file.sort_out_of_order += 1;
       }
 #endif
-      _elem_writers[idx__terminals__out_of_order].sort<arc_source_lt>();
-      levelized_file_writer::detach();
+      _elem_ofstreams[idx__terminals__out_of_order].sort<arc_source_lt>();
+      levelized_ofstream::detach();
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -134,7 +134,7 @@ namespace adiar::internal
       stats_arc_file.push_level += 1;
 #endif
       _file_ptr->width = std::max<size_t>(_file_ptr->width, li.width());
-      levelized_file_writer::push(li);
+      levelized_ofstream::push(li);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -144,7 +144,7 @@ namespace adiar::internal
     ///
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    arc_writer&
+    arc_ofstream&
     operator<<(const level_info& li)
     {
       this->push(li);
@@ -176,7 +176,7 @@ namespace adiar::internal
     ///
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    arc_writer&
+    arc_ofstream&
     operator<<(const arc& a)
     {
       this->push(a);
@@ -197,7 +197,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
       stats_arc_file.push_internal += 1;
 #endif
-      levelized_file_writer::template push<idx__internal>(a);
+      levelized_ofstream::template push<idx__internal>(a);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -219,13 +219,13 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
         stats_arc_file.push_in_order += 1;
 #endif
-        levelized_file_writer::template push<idx__terminals__in_order>(a);
+        levelized_ofstream::template push<idx__terminals__in_order>(a);
       } else {
         // Given arc is 'out-of-order' compared to latest 'in-order' pushed
 #ifdef ADIAR_STATS
         stats_arc_file.push_out_of_order += 1;
 #endif
-        levelized_file_writer::template push<idx__terminals__out_of_order>(a);
+        levelized_ofstream::template push<idx__terminals__out_of_order>(a);
       }
 
       _file_ptr->number_of_terminals[a.target().value()]++;
@@ -233,4 +233,4 @@ namespace adiar::internal
   };
 }
 
-#endif // ADIAR_INTERNAL_IO_ARC_WRITER_H
+#endif // ADIAR_INTERNAL_IO_ARC_OFSTREAM_H

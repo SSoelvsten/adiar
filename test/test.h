@@ -17,9 +17,9 @@ using namespace bandit;
 // We also do a few little hacks, to read unreduced output from the file_union
 // class.
 #include <adiar/internal/io/arc_ifstream.h>
-#include <adiar/internal/io/arc_writer.h>
+#include <adiar/internal/io/arc_ofstream.h>
 #include <adiar/internal/io/node_ifstream.h>
-#include <adiar/internal/io/node_writer.h>
+#include <adiar/internal/io/node_ofstream.h>
 
 using namespace adiar;
 using namespace adiar::internal;

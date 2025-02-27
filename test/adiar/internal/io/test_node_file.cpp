@@ -4,14 +4,14 @@
 #include <adiar/internal/io/node_raccess.h>
 
 go_bandit([]() {
-  describe("adiar/internal/io/node_file.h , node_ifstream.h , node_writer.h", []() {
-    describe("node_writer [ .unsafe_* ] + node_file::stats", []() {
+  describe("adiar/internal/io/node_file.h , node_ifstream.h , node_ofstream.h", []() {
+    describe("node_ofstream [ .unsafe_* ] + node_file::stats", []() {
       // TODO: does not update canonicity
       // TODO: does update number of terminals
       // TODO: does increase 1-level and 2-level cuts
     });
 
-    describe("node_writer [ << ] + node_file::stats", []() {
+    describe("node_ofstream [ << ] + node_file::stats", []() {
       // -------------------------------------------------------------------------------------------
       // Canonical node files where the max 1-level cut and max 2-level cuts are the same.
       /*
@@ -20,7 +20,7 @@ go_bandit([]() {
       std::cout << "A" << std::endl;
       levelized_file<node> nf_F;
       {
-        node_writer nw(nf_F);
+        node_ofstream nw(nf_F);
         nw << node(false);
       }
 
@@ -30,7 +30,7 @@ go_bandit([]() {
       std::cout << "A" << std::endl;
       levelized_file<node> nf_T;
       {
-        node_writer nw(nf_T);
+        node_ofstream nw(nf_T);
         nw << node(true);
       }
 
@@ -41,7 +41,7 @@ go_bandit([]() {
       */
       levelized_file<node> nf_42;
       {
-        node_writer nw(nf_42);
+        node_ofstream nw(nf_42);
         nw << node(42, node::max_id, node::pointer_type(false), node::pointer_type(true));
       }
 
@@ -52,7 +52,7 @@ go_bandit([]() {
       */
       levelized_file<node> nf_not42;
       {
-        node_writer nw(nf_not42);
+        node_ofstream nw(nf_not42);
         nw << node(42, node::max_id, node::pointer_type(false), node::pointer_type(true));
       }
 
@@ -63,7 +63,7 @@ go_bandit([]() {
       */
       levelized_file<node> nf_42andnot42;
       {
-        node_writer nw(nf_42andnot42);
+        node_ofstream nw(nf_42andnot42);
         nw << node(42, node::max_id, node::pointer_type(true), node::pointer_type(true));
       }
 
@@ -76,7 +76,7 @@ go_bandit([]() {
       */
       levelized_file<node> nf_0and1;
       {
-        node_writer nw(nf_0and1);
+        node_ofstream nw(nf_0and1);
         nw << node(1, node::max_id, node::pointer_type(false), node::pointer_type(true))
            << node(0,
                    node::max_id,
@@ -95,7 +95,7 @@ go_bandit([]() {
       */
       levelized_file<node> nf_0and1and2;
       {
-        node_writer nw(nf_0and1and2);
+        node_ofstream nw(nf_0and1and2);
         nw << node(2, node::max_id, node::pointer_type(false), node::pointer_type(true))
            << node(1,
                    node::max_id,
@@ -118,7 +118,7 @@ go_bandit([]() {
       */
       levelized_file<node> nf_0and1_or_2;
       {
-        node_writer nw(nf_0and1_or_2);
+        node_ofstream nw(nf_0and1_or_2);
         nw << node(2, node::max_id, node::pointer_type(false), node::pointer_type(true))
            << node(1,
                    node::max_id,
@@ -139,7 +139,7 @@ go_bandit([]() {
       */
       levelized_file<node> nf_21xor42;
       {
-        node_writer nw(nf_21xor42);
+        node_ofstream nw(nf_21xor42);
         nw << node(42, node::max_id, node::pointer_type(false), node::pointer_type(true))
            << node(42, node::max_id - 1, node::pointer_type(true), node::pointer_type(false))
            << node(21,
@@ -159,7 +159,7 @@ go_bandit([]() {
       */
       levelized_file<node> nf_0xnor1_or_2;
       {
-        node_writer nw(nf_0xnor1_or_2);
+        node_ofstream nw(nf_0xnor1_or_2);
         nw << node(2, node::max_id, node::pointer_type(false), node::pointer_type(true))
            << node(1,
                    node::max_id,
@@ -186,7 +186,7 @@ go_bandit([]() {
       */
       levelized_file<node> nf_0xor1_or_2;
       {
-        node_writer nw(nf_0xor1_or_2);
+        node_ofstream nw(nf_0xor1_or_2);
         nw << node(2, node::max_id, node::pointer_type(false), node::pointer_type(true))
            << node(1,
                    node::max_id,
@@ -219,7 +219,7 @@ go_bandit([]() {
       {
         // In comments, we provide the sum (mod 2) before adding the
         // respective variable.
-        node_writer nw(nf_sum01234_mod2);
+        node_ofstream nw(nf_sum01234_mod2);
         nw << node(4, node::max_id, node::pointer_type(false), node::pointer_type(true))     // 0
            << node(4, node::max_id - 1, node::pointer_type(true), node::pointer_type(false)) // 1
            << node(3,
@@ -273,7 +273,7 @@ go_bandit([]() {
       */
       levelized_file<node> nf_larger_2level_cut_A;
       {
-        node_writer nw(nf_larger_2level_cut_A);
+        node_ofstream nw(nf_larger_2level_cut_A);
         nw << node(3, node::max_id, node::pointer_type(false), node::pointer_type(true))
            << node(3, node::max_id - 1, node::pointer_type(true), node::pointer_type(false))
            << node(2,
@@ -315,7 +315,7 @@ go_bandit([]() {
       */
       levelized_file<node> nf_larger_2level_cut_B;
       {
-        node_writer nw(nf_larger_2level_cut_B);
+        node_ofstream nw(nf_larger_2level_cut_B);
         nw << node(3, node::max_id, node::pointer_type(false), node::pointer_type(true))
            << node(2, node::max_id, node::pointer_type(false), node::pointer_type(true))
            << node(2,
@@ -360,7 +360,7 @@ go_bandit([]() {
         it("is false for single node due to too small Id", [&]() {
           levelized_file<node> nf;
           {
-            node_writer nw(nf);
+            node_ofstream nw(nf);
             nw << node(21, 42, node::pointer_type(false), node::pointer_type(true));
           }
 
@@ -378,7 +378,7 @@ go_bandit([]() {
         it("is false if child ordering with terminals are mismatching", [&]() {
           levelized_file<node> nf;
           {
-            node_writer nw(nf);
+            node_ofstream nw(nf);
             nw << node(42, node::max_id, node::pointer_type(true), node::pointer_type(false))
                << node(42, node::max_id - 1, node::pointer_type(false), node::pointer_type(true))
                << node(21,
@@ -395,7 +395,7 @@ go_bandit([]() {
         it("is false if id is not reset per level", [&]() {
           levelized_file<node> nf;
           {
-            node_writer nw(nf);
+            node_ofstream nw(nf);
             nw << node(42, node::max_id, node::pointer_type(false), node::pointer_type(true))
                << node(42, node::max_id - 1, node::pointer_type(true), node::pointer_type(false))
                << node(21,
@@ -412,7 +412,7 @@ go_bandit([]() {
         it("is false if id is decremented by more than one", [&]() {
           levelized_file<node> nf;
           {
-            node_writer nw(nf);
+            node_ofstream nw(nf);
             nw << node(42, node::max_id, node::pointer_type(false), node::pointer_type(true))
                << node(42, node::max_id - 2, node::pointer_type(true), node::pointer_type(false))
                << node(21,
@@ -442,7 +442,7 @@ go_bandit([]() {
            [&]() {
              levelized_file<node> nf;
              {
-               node_writer nw(nf);
+               node_ofstream nw(nf);
                nw << node(2, node::max_id, node::pointer_type(false), node::pointer_type(true))
                   << node(1,
                           node::max_id,
@@ -466,7 +466,7 @@ go_bandit([]() {
         it("is false due to internal uid low-children are out-of-order", [&]() {
           levelized_file<node> nf;
           {
-            node_writer nw(nf);
+            node_ofstream nw(nf);
             nw << node(3, node::max_id, node::pointer_type(false), node::pointer_type(true))
                << node(2, node::max_id, node::pointer_type(false), node::pointer_type(true))
                << node(2,
@@ -495,7 +495,7 @@ go_bandit([]() {
         it("is false due to internal uid high-children are out-of-order", [&]() {
           levelized_file<node> nf;
           {
-            node_writer nw(nf);
+            node_ofstream nw(nf);
             nw << node(3, node::max_id, node::pointer_type(false), node::pointer_type(true))
                << node(2, node::max_id, node::pointer_type(false), node::pointer_type(true))
                << node(2,
@@ -556,7 +556,7 @@ go_bandit([]() {
            */
           levelized_file<node> nf;
           {
-            node_writer nw(nf);
+            node_ofstream nw(nf);
             nw << node(3, node::max_id, node::pointer_type(false), node::pointer_type(true)) // n6
                << node(2,
                        node::max_id,
@@ -826,7 +826,7 @@ go_bandit([]() {
       it("Recognises being the False terminal", [&]() {
         levelized_file<node> nf;
         {
-          node_writer nw(nf);
+          node_ofstream nw(nf);
           nw << node(false);
         }
 
@@ -839,7 +839,7 @@ go_bandit([]() {
       it("Recognises being the True terminal", [&]() {
         levelized_file<node> nf;
         {
-          node_writer nw(nf);
+          node_ofstream nw(nf);
           nw << node(true);
         }
 
@@ -852,7 +852,7 @@ go_bandit([]() {
       it("Recognises being a non-terminal [x1]", [&]() {
         levelized_file<node> nf;
         {
-          node_writer nw(nf);
+          node_ofstream nw(nf);
           nw << node(1, 0, node::pointer_type(false), node::pointer_type(true));
         }
 
@@ -864,7 +864,7 @@ go_bandit([]() {
       it("Recognises being a non-terminal [~x0 & x1]", [&]() {
         levelized_file<node> nf;
         {
-          node_writer nw(nf);
+          node_ofstream nw(nf);
           nw << node(1, 0, node::pointer_type(false), node::pointer_type(true))
              << node(0, 0, node::pointer_type(1, 0), node::pointer_type(false));
         }
@@ -875,7 +875,7 @@ go_bandit([]() {
       });
     });
 
-    describe("node_writer + node_ifstream", []() {
+    describe("node_ofstream + node_ifstream", []() {
       describe(".can_pull(), .pull(), .peek()", []() {
         const node n3(2, 1, node::pointer_type(false), node::pointer_type(true));
         const node n2(2, 0, node::pointer_type(true), node::pointer_type(false));
@@ -883,7 +883,7 @@ go_bandit([]() {
 
         levelized_file<node> nf;
         {
-          node_writer nw(nf);
+          node_ofstream nw(nf);
           nw << n3 << n2 << n1;
         }
 
@@ -1107,7 +1107,7 @@ go_bandit([]() {
         it("can seek in False sink", [&]() {
           levelized_file<node> nf;
           {
-            node_writer nw(nf);
+            node_ofstream nw(nf);
             nw << node(false);
           }
 
@@ -1123,7 +1123,7 @@ go_bandit([]() {
         it("can seek in True sink", [&]() {
           levelized_file<node> nf;
           {
-            node_writer nw(nf);
+            node_ofstream nw(nf);
             nw << node(true);
           }
 
@@ -1138,7 +1138,7 @@ go_bandit([]() {
 
         levelized_file<node> nf;
         {
-          node_writer nw(nf);
+          node_ofstream nw(nf);
           nw << node(2, 1, node::pointer_type(false), node::pointer_type(true))
              << node(2, 0, node::pointer_type(true), node::pointer_type(false))
              << node(0, 0, node::pointer_type(2, 0), node::pointer_type(2, 1));
@@ -1227,7 +1227,7 @@ go_bandit([]() {
       });
     });
 
-    describe("node_writer + node_raccess", []() {
+    describe("node_ofstream + node_raccess", []() {
       /*
       //              1      ---- x1
       //             / \
@@ -1237,7 +1237,7 @@ go_bandit([]() {
 
       levelized_file<node> nf_A;
       {
-        node_writer nw(nf_A);
+        node_ofstream nw(nf_A);
         nw << A_n1;
       }
 
@@ -1263,7 +1263,7 @@ go_bandit([]() {
 
       levelized_file<node> nf_B;
       {
-        node_writer nw(nf_B);
+        node_ofstream nw(nf_B);
         nw << B_n7 << B_n6 << B_n5 << B_n4 << B_n3 << B_n2 << B_n1;
       }
 
@@ -1271,7 +1271,7 @@ go_bandit([]() {
         it("has no levels for 'F' terminal", []() {
           levelized_file<node> nf;
           {
-            node_writer nw(nf);
+            node_ofstream nw(nf);
             nw << node(false);
           }
 
@@ -1294,7 +1294,7 @@ go_bandit([]() {
         it("has no levels for 'T' terminal", []() {
           levelized_file<node> nf;
           {
-            node_writer nw(nf);
+            node_ofstream nw(nf);
             nw << node(true);
           }
 
@@ -1758,7 +1758,7 @@ go_bandit([]() {
         it("provides root for 'F' terminal", []() {
           levelized_file<node> nf;
           {
-            node_writer nw(nf);
+            node_ofstream nw(nf);
             nw << node(false);
           }
 
@@ -1770,7 +1770,7 @@ go_bandit([]() {
         it("provides root for 'T' terminal", []() {
           levelized_file<node> nf;
           {
-            node_writer nw(nf);
+            node_ofstream nw(nf);
             nw << node(true);
           }
 

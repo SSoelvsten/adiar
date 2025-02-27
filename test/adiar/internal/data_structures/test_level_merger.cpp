@@ -8,7 +8,7 @@ go_bandit([]() {
       it("can pull from one level_info stream", []() {
         shared_levelized_file<int> f;
         { // Garbage collect the writer
-          levelized_file_writer<int> fw(f);
+          levelized_ofstream<int> fw(f);
 
           fw.push(level_info(4, 1u));
           fw.push(level_info(3, 2u));
@@ -39,7 +39,7 @@ go_bandit([]() {
         shared_levelized_file<int> f;
 
         { // Garbage collect the writer
-          levelized_file_writer<int> fw(f);
+          levelized_ofstream<int> fw(f);
 
           fw.push(level_info(4, 1u));
           fw.push(level_info(3, 2u));
@@ -67,7 +67,7 @@ go_bandit([]() {
         shared_levelized_file<int> f2;
 
         { // Garbage collect the writer
-          levelized_file_writer<int> fw1(f1);
+          levelized_ofstream<int> fw1(f1);
 
           fw1.push(level_info(1, 1u));
         }
@@ -87,7 +87,7 @@ go_bandit([]() {
         shared_levelized_file<int> f2;
 
         { // Garbage collect the writer
-          levelized_file_writer<int> fw1(f1);
+          levelized_ofstream<int> fw1(f1);
 
           fw1.push(level_info(1, 1u));
           fw1.push(level_info(2, 1u));
@@ -111,13 +111,13 @@ go_bandit([]() {
         shared_levelized_file<int> f2;
 
         { // Garbage collect the writers
-          levelized_file_writer<int> fw1(f1);
+          levelized_ofstream<int> fw1(f1);
 
           fw1.push(level_info(4, 1u));
           fw1.push(level_info(2, 2u));
           fw1.push(level_info(1, 1u));
 
-          levelized_file_writer<int> fw2(f2);
+          levelized_ofstream<int> fw2(f2);
 
           fw2.push(level_info(4, 1u));
           fw2.push(level_info(3, 1u));
@@ -147,11 +147,11 @@ go_bandit([]() {
         shared_levelized_file<int> f2;
 
         { // Garbage collect the writers
-          levelized_file_writer<int> fw1(f1);
+          levelized_ofstream<int> fw1(f1);
 
           fw1.push(level_info(2, 1u));
 
-          levelized_file_writer<int> fw2(f2);
+          levelized_ofstream<int> fw2(f2);
 
           fw2.push(level_info(1, 1u));
         }
@@ -174,11 +174,11 @@ go_bandit([]() {
         shared_levelized_file<int> f2;
 
         { // Garbage collect the writers
-          levelized_file_writer<int> fw1(f1);
+          levelized_ofstream<int> fw1(f1);
 
           fw1.push(level_info(2, 1u));
 
-          levelized_file_writer<int> fw2(f2);
+          levelized_ofstream<int> fw2(f2);
 
           fw2.push(level_info(1, 1u));
         }
@@ -201,12 +201,12 @@ go_bandit([]() {
         shared_levelized_file<int> f2;
 
         { // Garbage collect the writers
-          levelized_file_writer<int> fw1(f1);
+          levelized_ofstream<int> fw1(f1);
 
           fw1.push(level_info(4, 2u));
           fw1.push(level_info(2, 1u));
 
-          levelized_file_writer<int> fw2(f2);
+          levelized_ofstream<int> fw2(f2);
 
           fw2.push(level_info(4, 3u));
           fw2.push(level_info(3, 2u));
@@ -232,12 +232,12 @@ go_bandit([]() {
         shared_levelized_file<int> f2;
 
         { // Garbage collect the writers
-          levelized_file_writer<int> fw1(f1);
+          levelized_ofstream<int> fw1(f1);
 
           fw1.push(level_info(4, 2u));
           fw1.push(level_info(2, 1u));
 
-          levelized_file_writer<int> fw2(f2);
+          levelized_ofstream<int> fw2(f2);
 
           fw2.push(level_info(4, 3u));
           fw2.push(level_info(3, 2u));
@@ -263,12 +263,12 @@ go_bandit([]() {
         shared_levelized_file<int> f2 = shared_levelized_file<int>();
 
         { // Garbage collect the writers
-          levelized_file_writer<int> fw1(f1);
+          levelized_ofstream<int> fw1(f1);
 
           fw1.push(level_info(4, 2u));
           fw1.push(level_info(2, 1u));
 
-          levelized_file_writer<int> fw2(f2);
+          levelized_ofstream<int> fw2(f2);
 
           fw2.push(level_info(4, 1u));
           fw2.push(level_info(3, 2u));
@@ -294,7 +294,7 @@ go_bandit([]() {
         shared_file<ptr_uint64::label_type> f;
 
         { // Garbage collect the writers
-          label_writer w(f);
+          ofstream<ptr_uint64::label_type> w(f);
           w << 0 << 2 << 3;
         }
 
@@ -319,10 +319,10 @@ go_bandit([]() {
         shared_file<ptr_uint64::label_type> f2;
 
         { // Garbage collect the writers
-          label_writer w1(f1);
+          ofstream<ptr_uint64::label_type> w1(f1);
           w1 << 0 << 2 << 3;
 
-          label_writer w2(f2);
+          ofstream<ptr_uint64::label_type> w2(f2);
           w2 << 0 << 1 << 3;
         }
 
@@ -357,7 +357,7 @@ go_bandit([]() {
       //         F T
       */
       {
-        node_writer nw(nf_x0);
+        node_ofstream nw(nf_x0);
         nw << node(0, node::max_id, terminal_F, terminal_T);
       }
 
@@ -368,7 +368,7 @@ go_bandit([]() {
       //         F T
       */
       {
-        node_writer nw(nf_x1);
+        node_ofstream nw(nf_x1);
         nw << node(1, node::max_id, terminal_F, terminal_T);
       }
 
@@ -383,7 +383,7 @@ go_bandit([]() {
       //         F T
       */
       {
-        node_writer nw(nf_x0_or_x2);
+        node_ofstream nw(nf_x0_or_x2);
         nw << node(2, node::max_id, terminal_F, terminal_T)
            << node(0, node::max_id, node::pointer_type(2, node::max_id), terminal_T);
       }

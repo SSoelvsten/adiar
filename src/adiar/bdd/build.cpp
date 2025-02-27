@@ -8,7 +8,7 @@
 #include <adiar/internal/data_types/ptr.h>
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/io/ifstream.h>
-#include <adiar/internal/io/levelized_file_writer.h>
+#include <adiar/internal/io/levelized_ofstream.h>
 #include <adiar/internal/util.h>
 
 namespace adiar

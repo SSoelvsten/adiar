@@ -23,7 +23,7 @@ go_bandit([]() {
 
         shared_levelized_file<bdd::node_type> in;
         {
-          node_writer writer(in);
+          node_ofstream writer(in);
           writer << n3 << n2 << n1;
         }
 
@@ -94,7 +94,7 @@ go_bandit([]() {
 
         shared_levelized_file<bdd::node_type> in;
         {
-          node_writer writer(in);
+          node_ofstream writer(in);
           writer << n5 << n4 << n3 << n2 << n1;
         }
 
@@ -180,7 +180,7 @@ go_bandit([]() {
 
         shared_levelized_file<bdd::node_type> in;
         {
-          node_writer writer(in);
+          node_ofstream writer(in);
           writer << n5 << n4 << n3 << n2 << n1;
         }
 

@@ -4,7 +4,7 @@ go_bandit([]() {
   describe("adiar/zdd/zdd.h", [&]() {
     shared_levelized_file<zdd::node_type> x0_nf;
     {
-      node_writer nw_0(x0_nf);
+      node_ofstream nw_0(x0_nf);
       nw_0 << node(0, node::max_id, ptr_uint64(false), ptr_uint64(true));
     }
 
@@ -12,7 +12,7 @@ go_bandit([]() {
 
     shared_levelized_file<zdd::node_type> x1_nf;
     {
-      node_writer nw_1(x1_nf);
+      node_ofstream nw_1(x1_nf);
       nw_1 << node(1, node::max_id, ptr_uint64(false), ptr_uint64(true));
     }
 
@@ -20,7 +20,7 @@ go_bandit([]() {
 
     shared_levelized_file<zdd::node_type> x0_or_x1_nf;
     {
-      node_writer nw_01(x0_or_x1_nf);
+      node_ofstream nw_01(x0_or_x1_nf);
 
       nw_01 << node(1, node::max_id, ptr_uint64(false), ptr_uint64(true));
 
@@ -31,7 +31,7 @@ go_bandit([]() {
 
     shared_levelized_file<zdd::node_type> terminal_T_nf;
     {
-      node_writer nw_T(terminal_T_nf);
+      node_ofstream nw_T(terminal_T_nf);
       nw_T << node(true);
     }
 
@@ -39,7 +39,7 @@ go_bandit([]() {
 
     shared_levelized_file<zdd::node_type> terminal_F_nf;
     {
-      node_writer nw_F(terminal_F_nf);
+      node_ofstream nw_F(terminal_F_nf);
       nw_F << node(false);
     }
 
@@ -48,7 +48,7 @@ go_bandit([]() {
     __zdd::shared_arc_file_type x0_or_x1_af;
 
     {
-      arc_writer aw(x0_or_x1_af);
+      arc_ofstream aw(x0_or_x1_af);
       aw.push_internal(arc{ ptr_uint64(0, 0), false, ptr_uint64(1, 0) });
 
       aw.push_terminal(arc{ ptr_uint64(0, 0), true, ptr_uint64(true) });
@@ -173,7 +173,7 @@ go_bandit([]() {
         it("accepts {{0}} == {{0}} (different files)", [&]() {
           shared_levelized_file<zdd::node_type> other_nf;
           {
-            node_writer nw(other_nf);
+            node_ofstream nw(other_nf);
             nw << node(0, node::max_id, ptr_uint64(false), ptr_uint64(true));
           }
           zdd other(other_nf);
@@ -193,7 +193,7 @@ go_bandit([]() {
 
           shared_levelized_file<zdd::node_type> expected;
           {
-            node_writer nw(expected);
+            node_ofstream nw(expected);
             nw << node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))
                << node(0, node::max_id, ptr_uint64(true), ptr_uint64(1, ptr_uint64::max_id));
           }
@@ -265,7 +265,7 @@ go_bandit([]() {
 
           shared_levelized_file<zdd::node_type> expected;
           {
-            node_writer nw(expected);
+            node_ofstream nw(expected);
             nw << node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))
                << node(0, node::max_id, ptr_uint64(true), ptr_uint64(1, ptr_uint64::max_id));
           }
@@ -278,7 +278,7 @@ go_bandit([]() {
 
           shared_levelized_file<zdd::node_type> expected;
           {
-            node_writer nw(expected);
+            node_ofstream nw(expected);
             nw << node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))
                << node(0, node::max_id, ptr_uint64(true), ptr_uint64(1, ptr_uint64::max_id));
           }

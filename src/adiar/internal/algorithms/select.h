@@ -14,7 +14,7 @@
 #include <adiar/internal/data_types/request.h>
 #include <adiar/internal/dd.h>
 #include <adiar/internal/io/arc_file.h>
-#include <adiar/internal/io/arc_writer.h>
+#include <adiar/internal/io/arc_ofstream.h>
 #include <adiar/internal/io/file.h>
 #include <adiar/internal/io/ifstream.h>
 #include <adiar/internal/io/node_ifstream.h>
@@ -67,7 +67,7 @@ namespace adiar::internal
   template <typename PriorityQueue>
   inline void
   __select_recurse_out(PriorityQueue& pq,
-                       arc_writer& aw,
+                       arc_ofstream& aw,
                        const ptr_uint64& source,
                        const ptr_uint64& target)
   {
@@ -89,7 +89,7 @@ namespace adiar::internal
   {
     // Set up outputs
     shared_levelized_file<arc> out_arcs;
-    arc_writer aw(out_arcs);
+    arc_ofstream aw(out_arcs);
 
     out_arcs->max_1level_cut = 0;
     bool output_changes      = false;
@@ -196,7 +196,7 @@ namespace adiar::internal
     // We then may derive an upper bound on the size of auxiliary data structures and check whether
     // we can run them with a faster internal memory variant.
     const tpie::memory_size_type aux_available_memory =
-      memory_available() - node_ifstream<>::memory_usage() - arc_writer::memory_usage();
+      memory_available() - node_ifstream<>::memory_usage() - arc_ofstream::memory_usage();
 
     const tpie::memory_size_type pq_memory_fits =
       select_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(

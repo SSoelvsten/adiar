@@ -5,7 +5,7 @@ go_bandit([]() {
     shared_levelized_file<bdd::node_type> x0_nf;
 
     {
-      node_writer nw(x0_nf);
+      node_ofstream nw(x0_nf);
       nw << node(0, node::max_id, ptr_uint64(false), ptr_uint64(true));
     }
 
@@ -14,7 +14,7 @@ go_bandit([]() {
     shared_levelized_file<bdd::node_type> x1_nf;
 
     {
-      node_writer nw(x1_nf);
+      node_ofstream nw(x1_nf);
       nw << node(1, node::max_id, ptr_uint64(false), ptr_uint64(true));
     }
 
@@ -23,7 +23,7 @@ go_bandit([]() {
     shared_levelized_file<bdd::node_type> x0_and_x1_nf;
 
     {
-      node_writer nw(x0_and_x1_nf);
+      node_ofstream nw(x0_and_x1_nf);
       nw << node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))
          << node(0, node::max_id, ptr_uint64(false), ptr_uint64(1, ptr_uint64::max_id));
     }
@@ -33,7 +33,7 @@ go_bandit([]() {
 
     shared_levelized_file<bdd::node_type> terminal_T_nf;
     {
-      node_writer nw(terminal_T_nf);
+      node_ofstream nw(terminal_T_nf);
       nw << node(true);
     }
 
@@ -41,7 +41,7 @@ go_bandit([]() {
 
     shared_levelized_file<bdd::node_type> terminal_F_nf;
     {
-      node_writer nw(terminal_F_nf);
+      node_ofstream nw(terminal_F_nf);
       nw << node(false);
     }
 
@@ -50,7 +50,7 @@ go_bandit([]() {
     shared_levelized_file<arc> x0_af;
 
     {
-      arc_writer aw(x0_af);
+      arc_ofstream aw(x0_af);
       aw.push_internal(arc{ ptr_uint64(0, 0), true, ptr_uint64(1, 0) });
 
       aw.push_terminal(arc{ ptr_uint64(0, 0), false, ptr_uint64(false) });
@@ -226,7 +226,7 @@ go_bandit([]() {
         it("checks (x0 & x1) matches a copy", [&]() {
           shared_levelized_file<bdd::node_type> other_nf;
           {
-            node_writer nw(other_nf);
+            node_ofstream nw(other_nf);
             nw << node(1, node::max_id, ptr_uint64(false), ptr_uint64(true))
                << node(0, node::max_id, ptr_uint64(false), ptr_uint64(1, ptr_uint64::max_id));
           }

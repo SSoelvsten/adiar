@@ -9,8 +9,8 @@
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/tuple.h>
 #include <adiar/internal/io/ifstream.h>
-#include <adiar/internal/io/levelized_file_writer.h>
 #include <adiar/internal/io/levelized_ifstream.h>
+#include <adiar/internal/io/levelized_ofstream.h>
 
 namespace adiar
 {

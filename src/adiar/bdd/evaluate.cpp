@@ -8,10 +8,10 @@
 #include <adiar/internal/assert.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/data_types/level_info.h>
-#include <adiar/internal/io/file_writer.h>
 #include <adiar/internal/io/ifstream.h>
 #include <adiar/internal/io/levelized_ifstream.h>
-#include <adiar/internal/io/node_writer.h>
+#include <adiar/internal/io/node_ofstream.h>
+#include <adiar/internal/io/ofstream.h>
 #include <adiar/internal/util.h>
 
 namespace adiar

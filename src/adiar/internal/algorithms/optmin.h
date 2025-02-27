@@ -23,7 +23,7 @@
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/dd_func.h>
 #include <adiar/internal/io/arc_file.h>
-#include <adiar/internal/io/arc_writer.h>
+#include <adiar/internal/io/arc_ofstream.h>
 #include <adiar/internal/io/node_ifstream.h>
 
 namespace adiar::internal
@@ -78,7 +78,7 @@ namespace adiar::internal
     node::pointer_type min_so_far_end = node::pointer_type::nil();
 
     {
-      arc_writer aw(best_parent_graph);
+      arc_ofstream aw(best_parent_graph);
 
       // Set up input
       node_ifstream<> ns(dd);

@@ -9,14 +9,14 @@ go_bandit([]() {
     shared_levelized_file<bdd::node_type> terminal_F;
 
     { // Garbage collect writer to free write-lock}
-      node_writer nw_F(terminal_F);
+      node_ofstream nw_F(terminal_F);
       nw_F << node(false);
     }
 
     shared_levelized_file<bdd::node_type> terminal_T;
 
     { // Garbage collect writer to free write-lock
-      node_writer nw_T(terminal_T);
+      node_ofstream nw_T(terminal_T);
       nw_T << node(true);
     }
 
@@ -25,7 +25,7 @@ go_bandit([]() {
     shared_levelized_file<bdd::node_type> bdd_x2;
 
     { // Garbage collect writer to free write-lock
-      node_writer nw_x2(bdd_x2);
+      node_ofstream nw_x2(bdd_x2);
       nw_x2 << node(2, node::max_id, ptr_uint64(false), ptr_uint64(true));
     }
 
@@ -44,7 +44,7 @@ go_bandit([]() {
     const node n1_1 = node(0, node::max_id, ptr_uint64(true), n1_2.uid());
 
     { // Garbage collect writer to free write-lock
-      node_writer nw_1(bdd_1);
+      node_ofstream nw_1(bdd_1);
       nw_1 << n1_2 << n1_1;
     }
 
@@ -62,7 +62,7 @@ go_bandit([]() {
     */
     shared_levelized_file<arc> bdd_1__unreduced;
     {
-      arc_writer aw_1(bdd_1__unreduced);
+      arc_ofstream aw_1(bdd_1__unreduced);
 
       const bdd::pointer_type n1_3(2, 0);
       const bdd::pointer_type n1_2(1, 0);
@@ -103,7 +103,7 @@ go_bandit([]() {
     const node n2_1 = node(0, node::max_id, n2_2.uid(), n2_3.uid());
 
     { // Garbage collect writer to free write-lock
-      node_writer nw_2(bdd_2);
+      node_ofstream nw_2(bdd_2);
       nw_2 << n2_5 << n2_4 << n2_3 << n2_2 << n2_1;
     }
 
@@ -126,7 +126,7 @@ go_bandit([]() {
     const node n3_1 = node(0, node::max_id, n3_3.uid(), n3_2.uid());
 
     { // Garbage collect writer to free write-lock
-      node_writer nw_3(bdd_3);
+      node_ofstream nw_3(bdd_3);
       nw_3 << n3_4 << n3_3 << n3_2 << n3_1;
     }
 
@@ -152,7 +152,7 @@ go_bandit([]() {
     const node n4_1 = node(0, node::max_id, n4_3.uid(), n4_2.uid());
 
     { // Garbage collect writer to free write-lock
-      node_writer nw_4(bdd_4);
+      node_ofstream nw_4(bdd_4);
       nw_4 << n4_5 << n4_4 << n4_3 << n4_2 << n4_1;
     }
 
@@ -174,7 +174,7 @@ go_bandit([]() {
     */
     shared_levelized_file<arc> bdd_4__unreduced;
     {
-      arc_writer aw_4(bdd_4__unreduced);
+      arc_ofstream aw_4(bdd_4__unreduced);
 
       const bdd::pointer_type n4_7(4, 0);
       const bdd::pointer_type n4_6(3, 1);
@@ -229,7 +229,7 @@ go_bandit([]() {
     { // Garbage collect writer to free write-lock
       const node n5_1(0, node::max_id, ptr_uint64(false), n5_2.uid());
 
-      node_writer nw_5(bdd_5F);
+      node_ofstream nw_5(bdd_5F);
       nw_5 << n5_4 << n5_3 << n5_2 << n5_1;
     }
 
@@ -238,7 +238,7 @@ go_bandit([]() {
     { // Garbage collect writer to free write-lock
       const node n5_1(0, node::max_id, ptr_uint64(true), n5_2.uid());
 
-      node_writer nw_5(bdd_5T);
+      node_ofstream nw_5(bdd_5T);
       nw_5 << n5_4 << n5_3 << n5_2 << n5_1;
     }
 
@@ -268,7 +268,7 @@ go_bandit([]() {
       const node n6_2(1, node::max_id - 1, n6_6, n6_5);
       const node n6_1(0, node::max_id, n6_3, n6_2);
 
-      node_writer nw_6(bdd_6);
+      node_ofstream nw_6(bdd_6);
       nw_6 << n6_8 << n6_7 << n6_6 << n6_5 << n6_4 << n6_3 << n6_2 << n6_1;
     }
 
@@ -287,7 +287,7 @@ go_bandit([]() {
       const node n6_2(1, node::max_id - 1, n6_6, n6_5);
       const node n6_1(0, node::max_id, n6_3, n6_2);
 
-      node_writer nw_6(bdd_6_x4T);
+      node_ofstream nw_6(bdd_6_x4T);
       nw_6 << n6_9 << n6_8 << n6_7 << n6_6 << n6_5 << n6_4 << n6_3 << n6_2 << n6_1;
     }
 
@@ -314,7 +314,7 @@ go_bandit([]() {
     const node n7_1(0, node::max_id, n7_3, n7_2);
 
     { // Garbage collect writer to free write-lock
-      node_writer nw_7(bdd_7);
+      node_ofstream nw_7(bdd_7);
       nw_7 << n7_5 << n7_4 << n7_3 << n7_2 << n7_1;
     }
 
@@ -337,7 +337,7 @@ go_bandit([]() {
     shared_levelized_file<bdd::node_type> bdd_8a, bdd_8b;
 
     { // Garbage collect writer to free write-lock
-      node_writer nw_8a(bdd_8a);
+      node_ofstream nw_8a(bdd_8a);
       nw_8a << node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))                      // 5
             << node(2, node::max_id, ptr_uint64(true), ptr_uint64(3, ptr_uint64::max_id))      // 4
             << node(2, node::max_id - 1, ptr_uint64(false), ptr_uint64(3, ptr_uint64::max_id)) // 3
@@ -351,7 +351,7 @@ go_bandit([]() {
                     ptr_uint64(3, ptr_uint64::max_id)) // 1
         ;
 
-      node_writer nw_8b(bdd_8b);
+      node_ofstream nw_8b(bdd_8b);
       nw_8b << node(3, node::max_id, ptr_uint64(false), ptr_uint64(true))                      // 5
             << node(2, node::max_id, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(true))      // 4
             << node(2, node::max_id - 1, ptr_uint64(3, ptr_uint64::max_id), ptr_uint64(false)) // 3
@@ -394,7 +394,7 @@ go_bandit([]() {
 
     shared_levelized_file<bdd::node_type> bdd_9T;
     { // Garbage collect writer to free write-lock
-      node_writer nw(bdd_9T);
+      node_ofstream nw(bdd_9T);
       nw << n9T_8 << n9T_7 << n9T_6 << n9T_5 << n9T_4 << n9T_3 << n9T_2 << n9T_1;
     }
 
@@ -427,7 +427,7 @@ go_bandit([]() {
     shared_levelized_file<bdd::node_type> bdd_9F;
 
     { // Garbage collect writer to free write-lock
-      node_writer nw(bdd_9F);
+      node_ofstream nw(bdd_9F);
       nw << n9F_8 << n9F_7 << n9F_6 << n9F_5 << n9F_4 << n9F_3 << n9F_2 << n9F_1;
     }
 
@@ -458,7 +458,7 @@ go_bandit([]() {
     shared_levelized_file<bdd::node_type> bdd_10;
 
     { // Garbage collect writer to free write-lock
-      node_writer nw(bdd_10);
+      node_ofstream nw(bdd_10);
       nw << n10_8 << n10_7 << n10_6 << n10_5 << n10_4 << n10_3 << n10_2 << n10_1;
     }
 
@@ -481,7 +481,7 @@ go_bandit([]() {
     node n11_1 = node(2, node::max_id, n11_3.uid(), n11_2.uid());
 
     { // Garbage collect writer to free write-lock
-      node_writer nw_11(bdd_11);
+      node_ofstream nw_11(bdd_11);
       nw_11 << n11_4 << n11_3 << n11_2 << n11_1;
     }
 
@@ -511,7 +511,7 @@ go_bandit([]() {
     shared_levelized_file<bdd::node_type> bdd_12a;
 
     { // Garbage collect writer to free write-lock
-      node_writer nw(bdd_12a);
+      node_ofstream nw(bdd_12a);
       nw << n12a_7 << n12a_6 << n12a_5 << n12a_4 << n12a_3 << n12a_2 << n12a_1;
     }
 
@@ -542,7 +542,7 @@ go_bandit([]() {
     shared_levelized_file<bdd::node_type> bdd_12b;
 
     { // Garbage collect writer to free write-lock
-      node_writer nw(bdd_12b);
+      node_ofstream nw(bdd_12b);
       nw << n12b_8 << n12b_7 << n12b_6 << n12b_5 << n12b_4 << n12b_3 << n12b_2 << n12b_1;
     }
 
@@ -602,7 +602,7 @@ go_bandit([]() {
     shared_levelized_file<bdd::node_type> bdd_13;
 
     { // Garbage collect writer to free write-lock
-      node_writer nw(bdd_13);
+      node_ofstream nw(bdd_13);
       nw << n13_16 << n13_15 << n13_14 << n13_13 << n13_12 << n13_11 << n13_10 << n13_9 << n13_8
          << n13_7 << n13_6 << n13_5 << n13_4 << n13_3 << n13_2 << n13_1;
     }
@@ -643,7 +643,7 @@ go_bandit([]() {
     shared_levelized_file<bdd::node_type> bdd_14a;
 
     { // Garbage collect writer to free write-lock
-      node_writer nw(bdd_14a);
+      node_ofstream nw(bdd_14a);
       nw << n14_13 << n14_12 << n14_11 << n14_10 << n14_9 << n14_8 << n14_7 << n14_6 << n14_5
          << n14_4 << n14_3 << n14_2 << n14_1;
     }
@@ -663,7 +663,7 @@ go_bandit([]() {
     shared_levelized_file<bdd::node_type> bdd_14b;
 
     { // Garbage collect writer to free write-lock
-      node_writer nw(bdd_14b);
+      node_ofstream nw(bdd_14b);
       nw << n14_13 << n14_12 << n14_11 << n14_10 << n14_9 << n14_8 << n14_7 << n14_6 << n14_5
          << n14_4 << n14_3 << n14_2 << n14_1 << n14b_2 << n14b_1;
     }
@@ -822,7 +822,7 @@ go_bandit([]() {
     shared_levelized_file<bdd::node_type> bdd_15;
 
     { // Garbage collect writer to free write-lock
-      node_writer nw(bdd_15);
+      node_ofstream nw(bdd_15);
       nw << n15_o << n15_n << n15_17 << n15_16 << n15_m << n15_l << n15_15 << n15_14 << n15_k
          << n15_j << n15_13 << n15_12 << n15_i << n15_h << n15_11 << n15_10 << n15_g << n15_f
          << n15_9 << n15_8 << n15_7 << n15_d << n15_6 << n15_5 << n15_c << n15_b << n15_4 << n15_3
@@ -873,7 +873,7 @@ go_bandit([]() {
       const node n2 = node(1, node::max_id, n3.uid(), n4.uid());
       const node n1 = node(0, node::max_id, n2.uid(), nc.uid());
 
-      node_writer nw(bdd_16);
+      node_ofstream nw(bdd_16);
       nw << nc << nb << na << n9_3 << n9_2 << n9_1 << n8 << n7 << n6 << n5 << n4 << n3 << n2 << n1;
     }
 
@@ -918,7 +918,7 @@ go_bandit([]() {
       const node n2 = node(1, node::max_id - 1, n5.uid(), n4.uid());
       const node n1 = node(0, node::max_id, n2.uid(), n3.uid());
 
-      node_writer nw(bdd_17a);
+      node_ofstream nw(bdd_17a);
       nw << n7 << n6 << n5 << n4 << n3 << n2 << n1;
     }
 
@@ -945,7 +945,7 @@ go_bandit([]() {
       const node n2 = node(1, node::max_id - 1, n5.uid(), n4.uid());
       const node n1 = node(0, node::max_id, n2.uid(), n3.uid());
 
-      node_writer nw(bdd_17b);
+      node_ofstream nw(bdd_17b);
       nw << n7 << n6 << n5 << n4 << n3 << n2 << n1;
     }
 
@@ -974,7 +974,7 @@ go_bandit([]() {
       const node n18_2(1, node::max_id, bdd::pointer_type(true), n18_5.uid());
       const node n18_1(0, node::max_id, n18_3.uid(), n18_2.uid());
 
-      node_writer nw(bdd_18T);
+      node_ofstream nw(bdd_18T);
       nw << n18_5 << n18_4 << n18_3 << n18_2 << n18_1;
     }
 
@@ -998,7 +998,7 @@ go_bandit([]() {
       const node n18_2(1, node::max_id, bdd::pointer_type(false), n18_5.uid());
       const node n18_1(0, node::max_id, n18_3.uid(), n18_2.uid());
 
-      node_writer nw(bdd_18F);
+      node_ofstream nw(bdd_18F);
       nw << n18_5 << n18_4 << n18_3 << n18_2 << n18_1;
     }
 
@@ -1055,7 +1055,7 @@ go_bandit([]() {
       const node n2(1, node::max_id, n3.uid(), n4.uid());
       const node n1(0, node::max_id, bdd::pointer_type(false), n2.uid());
 
-      node_writer nw(bdd_19);
+      node_ofstream nw(bdd_19);
       nw << n15 << n14 << n13 << n12 << n11 << n10 << n9 << n8 << n7 << n6 << n5 << n4 << n3 << n2
          << n1;
     }
@@ -1081,7 +1081,7 @@ go_bandit([]() {
 
     shared_levelized_file<arc> bdd_20__unreduced;
     {
-      arc_writer aw(bdd_20__unreduced);
+      arc_ofstream aw(bdd_20__unreduced);
 
       const bdd::pointer_type n8(4, 1);
       const bdd::pointer_type n7(4, 0);
@@ -2363,7 +2363,7 @@ go_bandit([]() {
           node n1 = node(0, node::max_id, n2.uid(), ptr_uint64(true));
 
           { // Garbage collect writer to free write-lock
-            node_writer bdd_chain_w(bdd_chain);
+            node_ofstream bdd_chain_w(bdd_chain);
             bdd_chain_w << n4 << n3 << n2 << n1;
           }
 

@@ -47,7 +47,7 @@ namespace adiar::internal
                          const typename dd_policy::label_type in_label,
                          const typename dd_policy::label_type out_label,
                          pq_t& pq,
-                         node_writer& out_writer,
+                         node_ofstream& out,
                          [[maybe_unused]] statistics::reduce_t& stats = internal::stats_reduce)
     {
       // Count number of arcs that cross this level. Since all or no levels are reduced with this
@@ -79,7 +79,7 @@ namespace adiar::internal
         adiar_assert(out_id > 0, "Should still have more ids left");
         const typename dd_policy::node_type out_node(
           out_label, out_id--, e_low.target(), e_high.target());
-        out_writer.unsafe_push(out_node);
+        out.unsafe_push(out_node);
 
         // Forward resulting node to parents
         const node::pointer_type e_src = e_low.source();
@@ -97,21 +97,21 @@ namespace adiar::internal
       }
 
       // Update with new possible maximum 1-level cut.
-      out_writer.unsafe_max_1level_cut(local_1level_cut);
+      out.unsafe_max_1level_cut(local_1level_cut);
 
       // Add number of nodes to level information, if any nodes were pushed to the output.
       // Furthermore, mark as unsorted if at least two nodes were output (their order might
       // very much have been wrong).
       if (out_id != dd_policy::max_id) {
         const size_t width = dd_policy::max_id - out_id;
-        out_writer.unsafe_push(level_info(out_label, width));
+        out.unsafe_push(level_info(out_label, width));
 
-        if (width > 1u) { out_writer.unsafe_set_sorted(false); }
+        if (width > 1u) { out.unsafe_set_sorted(false); }
       }
 
       // Set up priority queue for next level
       constexpr bool terminal_value = false; // <-- NOTE: Dummy value
-      __reduce_level__epilogue<>(arcs, pq, out_writer, terminal_value);
+      __reduce_level__epilogue<>(arcs, pq, out, terminal_value);
     }
 
     template <typename dd_policy, typename pq_t, typename arc_ifstream_t>
@@ -119,11 +119,11 @@ namespace adiar::internal
     __reduce_level__fast(arc_ifstream_t& arcs,
                          const typename dd_policy::label_type label,
                          pq_t& pq,
-                         node_writer& out_writer,
+                         node_ofstream& out,
                          statistics::reduce_t& stats = internal::stats_reduce)
     {
       return __reduce_level__fast<dd_policy, pq_t, arc_ifstream_t>(
-        arcs, label, label, pq, out_writer, stats);
+        arcs, label, label, pq, out, stats);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1434,7 +1434,7 @@ namespace adiar::internal
       up(const exec_policy& /*ep*/,
          const arc_ifstream<>& outer_arcs,
          outer_pq_t& outer_pq,
-         node_writer& outer_writer,
+         node_ofstream& outer_ofstream,
          const typename nesting_policy::shared_arc_file_type& inner_arcs_file,
          const size_t inner_pq_memory,
          const size_t inner_pq_max_size,
@@ -1485,7 +1485,7 @@ namespace adiar::internal
 #endif
 
             nested_sweeping::__reduce_level__fast<nesting_policy>(
-              decorated_arcs, level, decorated_pq, outer_writer, stats.inner_up);
+              decorated_arcs, level, decorated_pq, outer_ofstream, stats.inner_up);
           } else {
             const size_t unreduced_width = inner_level_info.width();
 
@@ -1493,7 +1493,7 @@ namespace adiar::internal
               __reduce_level<nesting_policy, internal_sorter>(decorated_arcs,
                                                               level,
                                                               decorated_pq,
-                                                              outer_writer,
+                                                              outer_ofstream,
                                                               inner_sorters_memory,
                                                               unreduced_width,
                                                               stats.inner_up);
@@ -1501,7 +1501,7 @@ namespace adiar::internal
               __reduce_level<nesting_policy, external_sorter>(decorated_arcs,
                                                               level,
                                                               decorated_pq,
-                                                              outer_writer,
+                                                              outer_ofstream,
                                                               inner_sorters_memory,
                                                               unreduced_width,
                                                               stats.inner_up);
@@ -1528,7 +1528,7 @@ namespace adiar::internal
       up(const exec_policy& ep,
          const arc_ifstream<>& outer_arcs,
          outer_pq_t& outer_pq,
-         node_writer& outer_writer,
+         node_ofstream& outer_ofstream,
          const typename nesting_policy::shared_arc_file_type& inner_arcs_file,
          const size_t inner_memory,
          const bool is_last_inner)
@@ -1576,7 +1576,7 @@ namespace adiar::internal
           return up<nesting_policy, inner_pq_t>(ep,
                                                 outer_arcs,
                                                 outer_pq,
-                                                outer_writer,
+                                                outer_ofstream,
                                                 inner_arcs_file,
                                                 inner_pq_memory,
                                                 inner_pq_max_size,
@@ -1591,7 +1591,7 @@ namespace adiar::internal
           return up<nesting_policy, inner_pq_t>(ep,
                                                 outer_arcs,
                                                 outer_pq,
-                                                outer_writer,
+                                                outer_ofstream,
                                                 inner_arcs_file,
                                                 inner_pq_memory,
                                                 inner_pq_max_size,
@@ -1605,7 +1605,7 @@ namespace adiar::internal
           return up<nesting_policy, inner_pq_t>(ep,
                                                 outer_arcs,
                                                 outer_pq,
-                                                outer_writer,
+                                                outer_ofstream,
                                                 inner_arcs_file,
                                                 inner_pq_memory,
                                                 inner_pq_max_size,
@@ -1663,7 +1663,7 @@ namespace adiar::internal
     // Set up (intermediate) output
     shared_node_file_type outer_file = __reduce_init_output<nesting_policy>();
 
-    node_writer outer_writer(outer_file);
+    node_ofstream outer_ofstream(outer_file);
 
     // Outer Up Sweep: Obtain access to the levels to get the inputs width.
     level_info_ifstream outer_levels(dag);
@@ -1741,7 +1741,7 @@ namespace adiar::internal
                                                                 outer_level.level(),
                                                                 out_level,
                                                                 outer_pq,
-                                                                outer_writer,
+                                                                outer_ofstream,
                                                                 nested_sweeping::stats.outer_up);
         } else {
           const size_t unreduced_width = outer_level.width();
@@ -1751,7 +1751,7 @@ namespace adiar::internal
                                                             outer_level.level(),
                                                             out_level,
                                                             outer_pq,
-                                                            outer_writer,
+                                                            outer_ofstream,
                                                             outer_sorters_memory,
                                                             unreduced_width,
                                                             nested_sweeping::stats.outer_up);
@@ -1760,7 +1760,7 @@ namespace adiar::internal
                                                             outer_level.level(),
                                                             out_level,
                                                             outer_pq,
-                                                            outer_writer,
+                                                            outer_ofstream,
                                                             outer_sorters_memory,
                                                             unreduced_width,
                                                             nested_sweeping::stats.outer_up);
@@ -1789,7 +1789,7 @@ namespace adiar::internal
                                                                 outer_level.level(),
                                                                 out_level,
                                                                 outer_pq_decorator,
-                                                                outer_writer,
+                                                                outer_ofstream,
                                                                 nested_sweeping::stats.outer_up);
         } else {
           const size_t unreduced_width = outer_level.width();
@@ -1799,7 +1799,7 @@ namespace adiar::internal
                                                             outer_level.level(),
                                                             out_level,
                                                             outer_pq_decorator,
-                                                            outer_writer,
+                                                            outer_ofstream,
                                                             outer_sorters_memory,
                                                             unreduced_width,
                                                             nested_sweeping::stats.outer_up);
@@ -1808,7 +1808,7 @@ namespace adiar::internal
                                                             outer_level.level(),
                                                             out_level,
                                                             outer_pq_decorator,
-                                                            outer_writer,
+                                                            outer_ofstream,
                                                             outer_sorters_memory,
                                                             unreduced_width,
                                                             nested_sweeping::stats.outer_up);
@@ -1919,7 +1919,7 @@ namespace adiar::internal
 #endif
         adiar_assert(outer_roots.size() > 0, "Nested Sweep needs some number of requests");
 
-        outer_writer.detach();
+        outer_ofstream.detach();
 
 #ifdef ADIAR_STATS
         nested_sweeping::stats.inner_down.inputs.acc_size += outer_file->size();
@@ -1956,11 +1956,11 @@ namespace adiar::internal
           inner_unreduced.template get<shared_arc_file_type>();
 
         outer_file = __reduce_init_output<nesting_policy>();
-        outer_writer.attach(outer_file);
+        outer_ofstream.attach(outer_file);
 
         if (is_last_inner) {
           nested_sweeping::inner::up<nesting_policy>(
-            ep, outer_arcs, outer_pq, outer_writer, inner_arcs, inner_memory, is_last_inner);
+            ep, outer_arcs, outer_pq, outer_ofstream, inner_arcs, inner_memory, is_last_inner);
         } else {
           adiar_assert(next_inner < outer_level.level(),
                        "If 'next_inner' is not illegal, then it is above current level");
@@ -1970,7 +1970,7 @@ namespace adiar::internal
           nested_sweeping::inner::up<nesting_policy>(ep,
                                                      outer_arcs,
                                                      outer_pq_decorator,
-                                                     outer_writer,
+                                                     outer_ofstream,
                                                      inner_arcs,
                                                      inner_memory,
                                                      is_last_inner);
@@ -2007,10 +2007,10 @@ namespace adiar::internal
         nested_sweeping::stats.outer_up.skipped_nested_levels += 1u;
         nested_sweeping::stats.outer_up.skipped_nested_levels__prune += 1u;
 #endif
-        if (outer_writer.size() != 0) {
-          outer_writer.detach();
+        if (outer_ofstream.size() != 0) {
+          outer_ofstream.detach();
           outer_file = __reduce_init_output<nesting_policy>();
-          outer_writer.attach(outer_file);
+          outer_ofstream.attach(outer_file);
         }
       }
 
@@ -2058,7 +2058,7 @@ namespace adiar::internal
     }
 
     // Return (now not anymore 'intermediate') output
-    outer_writer.detach();
+    outer_ofstream.detach();
     return outer_file;
   }
 
@@ -2123,7 +2123,7 @@ namespace adiar::internal
       // Inner Iterator
       - nested_sweeping::outer::inner_iterator<nesting_policy>::memory_usage()
       // Output streams
-      - node_writer::memory_usage();
+      - node_ofstream::memory_usage();
 
     using outer_default_lpq_t =
       nested_sweeping::outer::up__pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>;

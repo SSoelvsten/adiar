@@ -1,5 +1,5 @@
-#ifndef ADIAR_INTERNAL_IO_NODE_WRITER_H
-#define ADIAR_INTERNAL_IO_NODE_WRITER_H
+#ifndef ADIAR_INTERNAL_IO_NODE_OFSTREAM_H
+#define ADIAR_INTERNAL_IO_NODE_OFSTREAM_H
 
 #include <adiar/exception.h>
 
@@ -7,7 +7,7 @@
 #include <adiar/internal/cut.h>
 #include <adiar/internal/data_types/level_info.h>
 #include <adiar/internal/data_types/node.h>
-#include <adiar/internal/io/levelized_file_writer.h>
+#include <adiar/internal/io/levelized_ofstream.h>
 #include <adiar/internal/io/node_file.h>
 
 namespace adiar::internal
@@ -18,7 +18,7 @@ namespace adiar::internal
   ///
   /// \see   shared_levelized_file<node>
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  class node_writer : public levelized_file_writer<node>
+  class node_ofstream : public levelized_ofstream<node>
   {
   private:
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -64,34 +64,34 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct unattached to any levelized node file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_writer()
-      : levelized_file_writer<node>()
+    node_ofstream()
+      : levelized_ofstream<node>()
     {}
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a levelized node file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_writer(levelized_file<node>& nf)
-      : levelized_file_writer<node>(nf)
+    node_ofstream(levelized_file<node>& nf)
+      : levelized_ofstream<node>(nf)
     {
-      _file_ptr->sorted    = !levelized_file_writer::has_pushed();
-      _file_ptr->indexable = !levelized_file_writer::has_pushed();
+      _file_ptr->sorted    = !levelized_ofstream::has_pushed();
+      _file_ptr->indexable = !levelized_ofstream::has_pushed();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a shared levelized node file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    node_writer(adiar::shared_ptr<levelized_file<node>> nf)
-      : levelized_file_writer<node>(nf)
+    node_ofstream(adiar::shared_ptr<levelized_file<node>> nf)
+      : levelized_ofstream<node>(nf)
     {
-      _file_ptr->sorted    = !levelized_file_writer::has_pushed();
-      _file_ptr->indexable = !levelized_file_writer::has_pushed();
+      _file_ptr->sorted    = !levelized_ofstream::has_pushed();
+      _file_ptr->indexable = !levelized_ofstream::has_pushed();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Detaches and cleans up from the levelized file (if need be).
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    ~node_writer()
+    ~node_ofstream()
     {
       detach();
     }
@@ -102,7 +102,7 @@ namespace adiar::internal
     void
     attach(adiar::shared_ptr<levelized_file<node>>& f)
     {
-      levelized_file_writer::attach(f);
+      levelized_ofstream::attach(f);
 
       // Reset all meta-data
       _latest_node = dummy();
@@ -125,7 +125,7 @@ namespace adiar::internal
     bool
     attached() const
     {
-      return levelized_file_writer::attached();
+      return levelized_ofstream::attached();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -175,7 +175,7 @@ namespace adiar::internal
       // Run final i-level cut computations
       fixup_ilevel_cuts();
 
-      levelized_file_writer::detach();
+      levelized_ofstream::detach();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -192,7 +192,7 @@ namespace adiar::internal
     push(const node& n)
     {
       if (!attached()) {
-        throw domain_error("node_writer is not yet attached to any levelized_file<node>");
+        throw domain_error("node_ofstream is not yet attached to any levelized_file<node>");
       }
 
       const bool first_push = _latest_node == dummy();
@@ -274,7 +274,7 @@ namespace adiar::internal
       unsafe_push(n);
     }
 
-    node_writer&
+    node_ofstream&
     operator<<(const node& n)
     {
       this->push(n);
@@ -291,7 +291,7 @@ namespace adiar::internal
       stats_node_file.push_level += 1;
 #endif
       _file_ptr->width = std::max<size_t>(_file_ptr->width, m.width());
-      levelized_file_writer::push(m);
+      levelized_ofstream::push(m);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -306,7 +306,7 @@ namespace adiar::internal
       if (n.low().is_terminal()) { _file_ptr->number_of_terminals[n.low().value()]++; }
       if (n.high().is_terminal()) { _file_ptr->number_of_terminals[n.high().value()]++; }
 
-      levelized_file_writer::template push<0>(n);
+      levelized_ofstream::template push<0>(n);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -380,7 +380,7 @@ namespace adiar::internal
     bool
     has_pushed()
     {
-      return levelized_file_writer::has_pushed();
+      return levelized_ofstream::has_pushed();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -389,7 +389,7 @@ namespace adiar::internal
     bool
     empty()
     {
-      return levelized_file_writer::empty();
+      return levelized_ofstream::empty();
     }
 
   private:
@@ -400,7 +400,7 @@ namespace adiar::internal
     void
     fixup_ilevel_cuts()
     {
-      const size_t number_of_nodes = levelized_file_writer::size();
+      const size_t number_of_nodes = levelized_ofstream::size();
       const size_t number_of_false = _file_ptr->number_of_terminals[false];
       const size_t number_of_true  = _file_ptr->number_of_terminals[true];
 
@@ -444,7 +444,7 @@ namespace adiar::internal
 
       // -------------------------------------------------------------------------------------------
       // Maximum 2-level cut
-      const size_t number_of_levels = levelized_file_writer::levels();
+      const size_t number_of_levels = levelized_ofstream::levels();
 
       if (is_terminal || number_of_nodes == number_of_levels) {
         for (size_t ct = 0u; ct < cut::size; ct++) {
@@ -485,4 +485,4 @@ namespace adiar::internal
   };
 }
 
-#endif // ADIAR_INTERNAL_IO_NODE_WRITER_H
+#endif // ADIAR_INTERNAL_IO_NODE_OFSTREAM_H

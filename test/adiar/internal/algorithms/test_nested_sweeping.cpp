@@ -51,7 +51,7 @@ public:
   static size_t
   stream_memory()
   {
-    return node_ifstream<>::memory_usage() + arc_writer::memory_usage();
+    return node_ifstream<>::memory_usage() + arc_ofstream::memory_usage();
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -97,7 +97,7 @@ public:
     shared_levelized_file<arc> af;
     af->max_1level_cut = 1;
 
-    arc_writer aw(af);
+    arc_ofstream aw(af);
 
     while (!inner_pq.empty()) {
       inner_pq.setup_next_level();
@@ -154,7 +154,7 @@ private:
   template <bool is_high, typename inner_pq_t>
   void
   forward_arc(inner_pq_t& inner_pq,
-              arc_writer& aw,
+              arc_ofstream& aw,
               const node::uid_type& uid,
               const node::pointer_type& c)
   {
@@ -276,7 +276,7 @@ public:
     shared_levelized_file<arc> af;
     af->max_1level_cut = 1;
 
-    arc_writer aw(af);
+    arc_ofstream aw(af);
 
     while (!inner_pq.empty()) {
       inner_pq.setup_next_level();
@@ -401,7 +401,7 @@ go_bandit([]() {
     shared_levelized_file<arc> outer_dag;
 
     { // Garbage collect writer to free write-lock
-      arc_writer aw(outer_dag);
+      arc_ofstream aw(outer_dag);
 
       aw.push_internal({ outer_n1, true, outer_n2 });
       aw.push_internal({ outer_n2, true, outer_n3 });
@@ -1104,7 +1104,7 @@ go_bandit([]() {
           shared_levelized_file<arc> dag;
 
           { // Garbage collect writer to free write-lock
-            arc_writer aw(dag);
+            arc_ofstream aw(dag);
 
             aw.push_internal({ n1, true, n2 });
             aw.push_internal({ n2, true, n3 });
@@ -1143,7 +1143,7 @@ go_bandit([]() {
           shared_levelized_file<arc> dag;
 
           { // Garbage collect writer to free write-lock
-            arc_writer aw(dag);
+            arc_ofstream aw(dag);
 
             aw.push_internal({ n1, true, n2 });
             aw.push_internal({ n2, true, n3 });
@@ -1186,7 +1186,7 @@ go_bandit([]() {
           shared_levelized_file<arc> dag;
 
           { // Garbage collect writer to free write-lock
-            arc_writer aw(dag);
+            arc_ofstream aw(dag);
 
             aw.push_internal({ n1, true, n2 });
             aw.push_internal({ n2, true, n3 });
@@ -1235,7 +1235,7 @@ go_bandit([]() {
         */
 
         { // Garbage collect writer to free write-lock
-          node_writer nw(dag);
+          node_ofstream nw(dag);
 
           nw << node(inner_n6, terminal_F, terminal_T) << node(inner_n5, terminal_T, terminal_F)
              << node(inner_n4, terminal_T, inner_n5) << node(inner_n3, terminal_F, terminal_T)
@@ -1825,7 +1825,7 @@ go_bandit([]() {
         shared_levelized_file<arc> inner_dag;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(inner_dag);
+          arc_ofstream aw(inner_dag);
 
           aw.push_internal({ outer_n3, true, outer_n4 });
           aw.push_internal({ outer_n4, true, outer_n5 });
@@ -2001,7 +2001,7 @@ go_bandit([]() {
 
         shared_levelized_file<arc> outer;
         { // Garbage collect writer to free write-lock
-          arc_writer aw(outer);
+          arc_ofstream aw(outer);
 
           aw.push_internal({ n0, false, n1 });
           aw.push_terminal({ n0, true, terminal_F });
@@ -2014,7 +2014,7 @@ go_bandit([]() {
 
         shared_levelized_file<arc> inner;
         { // Garbage collect writer to free write-lock
-          arc_writer aw(inner);
+          arc_ofstream aw(inner);
 
           aw.push_internal({ n1, true, n2 });
 
@@ -2110,7 +2110,7 @@ go_bandit([]() {
           shared_levelized_file<arc> in;
 
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in);
+            arc_ofstream aw(in);
 
             aw.push_internal({ n1, false, n2 });
             aw.push_internal({ n1, true, n3 });
@@ -2129,7 +2129,7 @@ go_bandit([]() {
 
           // Outer state
           shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
-          node_writer out_writer(out);
+          node_ofstream out_ofstream(out);
 
           arc_ifstream arcs(in);
 
@@ -2139,9 +2139,9 @@ go_bandit([]() {
           arcs.pull_terminal(); // 4 ---> T
           arcs.pull_terminal(); // 4 - -> F
 
-          out_writer.unsafe_push(node(2, node::max_id, terminal_F, terminal_T));
-          out_writer.unsafe_push(level_info(2, 1));
-          out_writer.unsafe_max_1level_cut({ 0, 1, 1, 2 });
+          out_ofstream.unsafe_push(node(2, node::max_id, terminal_F, terminal_T));
+          out_ofstream.unsafe_push(level_info(2, 1));
+          out_ofstream.unsafe_max_1level_cut({ 0, 1, 1, 2 });
 
           // 3 ---> 4
           pq.push(arc(arcs.pull_internal().source(), node::pointer_type(2, node::max_id)));
@@ -2155,7 +2155,7 @@ go_bandit([]() {
           pq.setup_next_level(1);
 
           // Reduce level x1
-          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 1, pq, out_writer);
+          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 1, pq, out_ofstream);
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(2u));
@@ -2173,7 +2173,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
 
           // Check node and meta files are correct
-          out_writer.detach();
+          out_ofstream.detach();
 
           node_test_ifstream out_nodes(out);
 
@@ -2225,7 +2225,7 @@ go_bandit([]() {
           shared_levelized_file<arc> in;
 
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in);
+            arc_ofstream aw(in);
 
             aw.push_internal({ n1, false, n2 });
             aw.push_internal({ n1, true, n3 });
@@ -2242,14 +2242,14 @@ go_bandit([]() {
           // Outer state
           shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
 
-          node_writer out_writer(out);
+          node_ofstream out_ofstream(out);
 
           arc_ifstream arcs(in);
 
           pq_t pq({ in }, memory_available(), 16);
 
           // Reduce level x1
-          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 1, pq, out_writer);
+          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 1, pq, out_ofstream);
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(2u));
@@ -2267,7 +2267,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
 
           // Check node and meta files are correct
-          out_writer.detach();
+          out_ofstream.detach();
 
           node_test_ifstream out_nodes(out);
 
@@ -2306,7 +2306,7 @@ go_bandit([]() {
           shared_levelized_file<arc> in;
 
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in);
+            arc_ofstream aw(in);
 
             aw.push_internal({ n1, false, n2 });
             aw.push_internal({ n1, true, n3 });
@@ -2323,14 +2323,14 @@ go_bandit([]() {
           // Outer state
           shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
 
-          node_writer out_writer(out);
+          node_ofstream out_ofstream(out);
 
           arc_ifstream arcs(in);
 
           pq_t pq({ in }, memory_available(), 16);
 
           // Reduce level x1
-          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 1, pq, out_writer);
+          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 1, pq, out_ofstream);
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(2u));
@@ -2348,7 +2348,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
 
           // Check node and meta files are correct
-          out_writer.detach();
+          out_ofstream.detach();
 
           node_test_ifstream out_nodes(out);
 
@@ -2393,7 +2393,7 @@ go_bandit([]() {
           shared_levelized_file<arc> in;
 
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in);
+            arc_ofstream aw(in);
 
             aw.push_internal({ n1, false, n2 });
             aw.push_internal({ n1, true, n3 });
@@ -2415,7 +2415,7 @@ go_bandit([]() {
           // Outer state
           shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
 
-          node_writer out_writer(out);
+          node_ofstream out_ofstream(out);
 
           arc_ifstream arcs(in);
 
@@ -2424,14 +2424,14 @@ go_bandit([]() {
           // Simulate reduction of x2
           arcs.pull_terminal(); // 5 ---> T
           arcs.pull_terminal(); // 5 - -> F
-          out_writer.unsafe_push(node(2, node::max_id, terminal_F, terminal_T));
+          out_ofstream.unsafe_push(node(2, node::max_id, terminal_F, terminal_T));
 
           arcs.pull_terminal(); // 4 ---> F
           arcs.pull_terminal(); // 4 - -> T
-          out_writer.unsafe_push(node(2, node::max_id - 1, terminal_T, terminal_F));
+          out_ofstream.unsafe_push(node(2, node::max_id - 1, terminal_T, terminal_F));
 
-          out_writer.unsafe_push(level_info(2, 2));
-          out_writer.unsafe_max_1level_cut({ 0, 2, 3, 5 });
+          out_ofstream.unsafe_push(level_info(2, 2));
+          out_ofstream.unsafe_max_1level_cut({ 0, 2, 3, 5 });
 
           // 3 ---> 5
           pq.push(arc(arcs.pull_internal().source(), node::pointer_type(2, node::max_id)));
@@ -2443,7 +2443,7 @@ go_bandit([]() {
           pq.setup_next_level(1);
 
           // Reduce level x1
-          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 1, pq, out_writer);
+          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 1, pq, out_ofstream);
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(2u));
@@ -2461,7 +2461,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(3u));
 
           // Check node and meta files are correct
-          out_writer.detach();
+          out_ofstream.detach();
 
           node_test_ifstream out_nodes(out);
 
@@ -2520,7 +2520,7 @@ go_bandit([]() {
           shared_levelized_file<arc> in;
 
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in);
+            arc_ofstream aw(in);
 
             aw.push_internal({ n1, false, n2 });
             aw.push_internal({ n1, true, n3 });
@@ -2540,7 +2540,7 @@ go_bandit([]() {
           // Outer state
           shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
 
-          node_writer out_writer(out);
+          node_ofstream out_ofstream(out);
 
           arc_ifstream arcs(in);
 
@@ -2549,10 +2549,10 @@ go_bandit([]() {
           // Simulate reduction of x2
           arcs.pull_terminal(); // 4 ---> T
           arcs.pull_terminal(); // 4 - -> F
-          out_writer.unsafe_push(node(2, node::max_id, terminal_F, terminal_T));
+          out_ofstream.unsafe_push(node(2, node::max_id, terminal_F, terminal_T));
 
-          out_writer.unsafe_push(level_info(2, 1));
-          out_writer.unsafe_max_1level_cut({ 0, 1, 2, 2 });
+          out_ofstream.unsafe_push(level_info(2, 1));
+          out_ofstream.unsafe_max_1level_cut({ 0, 1, 2, 2 });
 
           // 3 ---> 4
           pq.push(arc(arcs.pull_internal().source(), node::pointer_type(2, node::max_id)));
@@ -2564,7 +2564,7 @@ go_bandit([]() {
           pq.setup_next_level(1);
 
           // Reduce level x1
-          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 1, pq, out_writer);
+          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 1, pq, out_ofstream);
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(2u));
@@ -2582,7 +2582,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
 
           // Check node and meta files are correct
-          out_writer.detach();
+          out_ofstream.detach();
 
           node_test_ifstream out_nodes(out);
 
@@ -2635,7 +2635,7 @@ go_bandit([]() {
           shared_levelized_file<arc> in;
 
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in);
+            arc_ofstream aw(in);
 
             aw.push_internal({ n1, false, n2 });
             aw.push_internal({ n1, true, n3 });
@@ -2655,7 +2655,7 @@ go_bandit([]() {
           // Outer state
           shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
 
-          node_writer out_writer(out);
+          node_ofstream out_ofstream(out);
 
           arc_ifstream arcs(in);
 
@@ -2664,9 +2664,9 @@ go_bandit([]() {
           // Simulate reduction of x2
           arcs.pull_terminal(); // 4 ---> T
           arcs.pull_terminal(); // 4 - -> F
-          out_writer.unsafe_push(node(2, node::max_id, terminal_F, terminal_T));
+          out_ofstream.unsafe_push(node(2, node::max_id, terminal_F, terminal_T));
 
-          out_writer.unsafe_push(level_info(2, 1));
+          out_ofstream.unsafe_push(level_info(2, 1));
 
           // HACK: do not set 1-level cut to see desired behaviour
 
@@ -2676,7 +2676,7 @@ go_bandit([]() {
           pq.setup_next_level(1);
 
           // Reduce level x1
-          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 1, pq, out_writer);
+          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 1, pq, out_ofstream);
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(2u));
@@ -2694,7 +2694,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
 
           // Check node and meta files are correct
-          out_writer.detach();
+          out_ofstream.detach();
 
           node_test_ifstream out_nodes(out);
 
@@ -2749,7 +2749,7 @@ go_bandit([]() {
           shared_levelized_file<arc> in;
 
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in);
+            arc_ofstream aw(in);
 
             aw.push_internal({ n1, false, n2 });
             aw.push_internal({ n2, false, n3 });
@@ -2774,7 +2774,7 @@ go_bandit([]() {
           // Outer state
           shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
 
-          node_writer out_writer(out);
+          node_ofstream out_ofstream(out);
 
           arc_ifstream arcs(in);
 
@@ -2783,10 +2783,10 @@ go_bandit([]() {
           // Simulate reduction of x3
           arcs.pull_terminal(); // 6 ---> T
           arcs.pull_terminal(); // 6 - -> F
-          out_writer.unsafe_push(node(3, node::max_id, terminal_F, terminal_T));
+          out_ofstream.unsafe_push(node(3, node::max_id, terminal_F, terminal_T));
 
-          out_writer.unsafe_push(level_info(3, 1));
-          out_writer.unsafe_max_1level_cut({ 0, 1, 1, 2 });
+          out_ofstream.unsafe_push(level_info(3, 1));
+          out_ofstream.unsafe_max_1level_cut({ 0, 1, 1, 2 });
 
           // 5 ---> 6
           pq.push(arc(arcs.pull_internal().source(), node::pointer_type(3, node::max_id)));
@@ -2796,7 +2796,7 @@ go_bandit([]() {
           pq.setup_next_level(2);
 
           // Reduce level x1
-          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 2, pq, out_writer);
+          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 2, pq, out_ofstream);
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(3u));
@@ -2814,7 +2814,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
 
           // Check node and meta files are correct
-          out_writer.detach();
+          out_ofstream.detach();
 
           node_test_ifstream out_nodes(out);
 
@@ -2874,7 +2874,7 @@ go_bandit([]() {
           shared_levelized_file<arc> in;
 
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in);
+            arc_ofstream aw(in);
 
             aw.push_internal({ n1, false, n2 });
             aw.push_internal({ n1, true, n3 });
@@ -2896,7 +2896,7 @@ go_bandit([]() {
           // Outer state
           shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
 
-          node_writer out_writer(out);
+          node_ofstream out_ofstream(out);
 
           arc_ifstream arcs(in);
 
@@ -2905,14 +2905,14 @@ go_bandit([]() {
           // Simulate reduction of x2
           arcs.pull_terminal(); // 5 ---> T
           arcs.pull_terminal(); // 5 - -> F
-          out_writer.unsafe_push(node(2, node::max_id, terminal_F, terminal_T));
+          out_ofstream.unsafe_push(node(2, node::max_id, terminal_F, terminal_T));
 
           arcs.pull_terminal(); // 4 ---> F
           arcs.pull_terminal(); // 4 - -> T
-          out_writer.unsafe_push(node(2, node::max_id - 1, terminal_T, terminal_F));
+          out_ofstream.unsafe_push(node(2, node::max_id - 1, terminal_T, terminal_F));
 
-          out_writer.unsafe_push(level_info(2, 2));
-          out_writer.unsafe_max_1level_cut({ 0, 2, 2, 4 });
+          out_ofstream.unsafe_push(level_info(2, 2));
+          out_ofstream.unsafe_max_1level_cut({ 0, 2, 2, 4 });
 
           // 3 ---> 5
           pq.push(arc(arcs.pull_internal().source(), node::pointer_type(2, node::max_id)));
@@ -2926,7 +2926,7 @@ go_bandit([]() {
           pq.setup_next_level(1);
 
           // Reduce level x1
-          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 1, pq, out_writer);
+          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 1, pq, out_ofstream);
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(2u));
@@ -2944,7 +2944,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
 
           // Check node and meta files are correct
-          out_writer.detach();
+          out_ofstream.detach();
 
           node_test_ifstream out_nodes(out);
 
@@ -3004,7 +3004,7 @@ go_bandit([]() {
           shared_levelized_file<arc> in;
 
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in);
+            arc_ofstream aw(in);
 
             aw.push_internal({ n1, false, n2 });
             aw.push_internal({ n2, false, n3 });
@@ -3026,18 +3026,18 @@ go_bandit([]() {
           // Outer state
           shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
 
-          node_writer out_writer(out);
+          node_ofstream out_ofstream(out);
 
           arc_ifstream arcs(in);
 
           pq_t pq({ in }, memory_available(), 16);
 
-          out_writer.unsafe_max_1level_cut({ 0, 0, 0, 0 });
+          out_ofstream.unsafe_max_1level_cut({ 0, 0, 0, 0 });
 
           pq.setup_next_level(2);
 
           // Reduce level x2
-          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 2, pq, out_writer);
+          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 2, pq, out_ofstream);
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(3u));
@@ -3055,7 +3055,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
 
           // Check node and meta files are correct
-          out_writer.detach();
+          out_ofstream.detach();
 
           node_test_ifstream out_nodes(out);
 
@@ -3093,7 +3093,7 @@ go_bandit([]() {
           shared_levelized_file<arc> in;
 
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in);
+            arc_ofstream aw(in);
 
             aw.push_terminal({ n1, false, terminal_T });
             aw.push_terminal({ n1, true, terminal_T });
@@ -3104,14 +3104,14 @@ go_bandit([]() {
           // Outer state
           shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
 
-          node_writer out_writer(out);
+          node_ofstream out_ofstream(out);
 
           arc_ifstream arcs(in);
 
           pq_t pq({ in }, memory_available(), 16);
 
           // Reduce level x0
-          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 0, pq, out_writer);
+          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 0, pq, out_ofstream);
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(1u));
@@ -3129,7 +3129,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
 
           // Check node and meta files are correct
-          out_writer.detach();
+          out_ofstream.detach();
 
           node_test_ifstream out_nodes(out);
 
@@ -3163,7 +3163,7 @@ go_bandit([]() {
           shared_levelized_file<arc> in;
 
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in);
+            arc_ofstream aw(in);
 
             aw.push_internal({ n1, false, n2 });
             aw.push_internal({ n1, true, n3 });
@@ -3180,7 +3180,7 @@ go_bandit([]() {
           // Outer state
           shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
 
-          node_writer out_writer(out);
+          node_ofstream out_ofstream(out);
 
           arc_ifstream arcs(in);
 
@@ -3201,7 +3201,7 @@ go_bandit([]() {
           pq.setup_next_level(0);
 
           // Reduce level x0
-          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 0, pq, out_writer);
+          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 0, pq, out_ofstream);
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(1u));
@@ -3219,7 +3219,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
 
           // Check node and meta files are correct
-          out_writer.detach();
+          out_ofstream.detach();
 
           node_test_ifstream out_nodes(out);
 
@@ -3258,7 +3258,7 @@ go_bandit([]() {
           shared_levelized_file<arc> in;
 
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in);
+            arc_ofstream aw(in);
 
             aw.push_internal({ n1, false, n2 });
             aw.push_internal({ n1, true, n3 });
@@ -3275,14 +3275,14 @@ go_bandit([]() {
           // Outer state
           shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
 
-          node_writer out_writer(out);
+          node_ofstream out_ofstream(out);
 
           arc_ifstream arcs(in);
 
           pq_t pq({ in }, memory_available(), 16);
 
           // Reduce level x1 (mapping it to x2)
-          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 1, 2, pq, out_writer);
+          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 1, 2, pq, out_ofstream);
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(2u));
@@ -3300,7 +3300,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
 
           // Check node and meta files are correct
-          out_writer.detach();
+          out_ofstream.detach();
 
           node_test_ifstream out_nodes(out);
 
@@ -3345,7 +3345,7 @@ go_bandit([]() {
           shared_levelized_file<arc> in;
 
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in);
+            arc_ofstream aw(in);
 
             aw.push_internal({ n1, false, n2 });
             aw.push_internal({ n1, true, n3 });
@@ -3367,7 +3367,7 @@ go_bandit([]() {
           // Outer state
           shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
 
-          node_writer out_writer(out);
+          node_ofstream out_ofstream(out);
 
           arc_ifstream arcs(in);
 
@@ -3376,14 +3376,14 @@ go_bandit([]() {
           // Simulate reduction of x2
           arcs.pull_terminal(); // 5 ---> T
           arcs.pull_terminal(); // 5 - -> F
-          out_writer.unsafe_push(node(3, node::max_id, terminal_F, terminal_T));
+          out_ofstream.unsafe_push(node(3, node::max_id, terminal_F, terminal_T));
 
           arcs.pull_terminal(); // 4 ---> F
           arcs.pull_terminal(); // 4 - -> T
-          out_writer.unsafe_push(node(3, node::max_id - 1, terminal_T, terminal_F));
+          out_ofstream.unsafe_push(node(3, node::max_id - 1, terminal_T, terminal_F));
 
-          out_writer.unsafe_push(level_info(3, 2));
-          out_writer.unsafe_max_1level_cut({ 0, 2, 3, 5 });
+          out_ofstream.unsafe_push(level_info(3, 2));
+          out_ofstream.unsafe_max_1level_cut({ 0, 2, 3, 5 });
 
           // 3 ---> 5
           pq.push(arc(arcs.pull_internal().source(), node::pointer_type(3, node::max_id)));
@@ -3395,7 +3395,7 @@ go_bandit([]() {
           pq.setup_next_level(1);
 
           // Reduce level x2 (mapping it to x1)
-          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 2, 1, pq, out_writer);
+          nested_sweeping::__reduce_level__fast<bdd_policy>(arcs, 2, 1, pq, out_ofstream);
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(2u));
@@ -3413,7 +3413,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(3u));
 
           // Check node and meta files are correct
-          out_writer.detach();
+          out_ofstream.detach();
 
           node_test_ifstream out_nodes(out);
 
@@ -3476,7 +3476,7 @@ go_bandit([]() {
 
         shared_levelized_file<node> outer_file;
         { // Garbage collect writer to free write-lock
-          node_writer nw(outer_file);
+          node_ofstream nw(outer_file);
           nw << n5 << n4 << n3 << n2;
         }
 
@@ -3647,7 +3647,7 @@ go_bandit([]() {
 
           shared_levelized_file<node> outer_file;
           { // Garbage collect writer to free write-lock
-            node_writer nw(outer_file);
+            node_ofstream nw(outer_file);
             nw << n1;
           }
 
@@ -3721,7 +3721,7 @@ go_bandit([]() {
 
           shared_levelized_file<arc> in_outer;
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in_outer);
+            arc_ofstream aw(in_outer);
 
             aw.push_internal({ n0, false, n1 });
             aw.push_internal({ n0, true, n2 });
@@ -3737,7 +3737,7 @@ go_bandit([]() {
           shared_levelized_file<arc> in_inner;
 
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in_inner);
+            arc_ofstream aw(in_inner);
 
             aw.push_internal({ flag(n1.as_ptr(true)), n3 });
             aw.push_internal({ flag(n2.as_ptr(false)), n4 });
@@ -3764,7 +3764,7 @@ go_bandit([]() {
             using test_policy = test_not_sweep</*FinalCanonical*/ true, /*FastReduce*/ false>;
 
             shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
-            node_writer out_writer(out);
+            node_ofstream out_ofstream(out);
 
             const size_t available_memory = memory_available();
 
@@ -3783,7 +3783,7 @@ go_bandit([]() {
             nested_sweeping::inner::up<test_policy>(exec_policy(),
                                                     stream_outer,
                                                     out_pq,
-                                                    out_writer,
+                                                    out_ofstream,
                                                     in_inner,
                                                     available_memory / 2,
                                                     false);
@@ -3804,7 +3804,7 @@ go_bandit([]() {
             AssertThat(out->number_of_terminals[true], Is().EqualTo(3u));
 
             // Check node and meta files are correct
-            out_writer.detach();
+            out_ofstream.detach();
 
             node_test_ifstream out_nodes(out);
 
@@ -3857,7 +3857,7 @@ go_bandit([]() {
             using test_policy = test_not_sweep</*FinalCanonical*/ true, /*FastReduce*/ true>;
 
             shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
-            node_writer out_writer(out);
+            node_ofstream out_ofstream(out);
 
             const size_t available_memory = memory_available();
 
@@ -3878,7 +3878,7 @@ go_bandit([]() {
             nested_sweeping::inner::up<test_policy>(exec_policy(),
                                                     stream_outer,
                                                     out_pq,
-                                                    out_writer,
+                                                    out_ofstream,
                                                     in_inner,
                                                     available_memory / 2,
                                                     false);
@@ -3895,7 +3895,7 @@ go_bandit([]() {
             AssertThat(out->number_of_terminals[true], Is().EqualTo(4u));
 
             // Check node and meta files are correct
-            out_writer.detach();
+            out_ofstream.detach();
 
             node_test_ifstream out_nodes(out);
 
@@ -3953,7 +3953,7 @@ go_bandit([]() {
             using test_policy = test_not_sweep</*FinalCanonical*/ true, /*FastReduce*/ true>;
 
             shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
-            node_writer out_writer(out);
+            node_ofstream out_ofstream(out);
 
             const size_t available_memory = memory_available();
 
@@ -3972,7 +3972,7 @@ go_bandit([]() {
             nested_sweeping::inner::up<test_policy>(exec_policy(),
                                                     stream_outer,
                                                     out_pq,
-                                                    out_writer,
+                                                    out_ofstream,
                                                     in_inner,
                                                     available_memory / 2,
                                                     true);
@@ -3993,7 +3993,7 @@ go_bandit([]() {
             AssertThat(out->number_of_terminals[true], Is().EqualTo(3u));
 
             // Check node and meta files are correct
-            out_writer.detach();
+            out_ofstream.detach();
 
             node_test_ifstream out_nodes(out);
 
@@ -4048,7 +4048,7 @@ go_bandit([]() {
                using test_policy = test_not_sweep</*FinalCanonical*/ true, /*FastReduce*/ true>;
 
                shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
-               node_writer out_writer(out);
+               node_ofstream out_ofstream(out);
 
                const size_t available_memory = memory_available();
 
@@ -4069,7 +4069,7 @@ go_bandit([]() {
                nested_sweeping::inner::up<test_policy>(exec_policy(),
                                                        stream_outer,
                                                        out_pq,
-                                                       out_writer,
+                                                       out_ofstream,
                                                        in_inner,
                                                        available_memory / 2,
                                                        false);
@@ -4086,7 +4086,7 @@ go_bandit([]() {
                AssertThat(out->number_of_terminals[true], Is().EqualTo(4u));
 
                // Check node and meta files are correct
-               out_writer.detach();
+               out_ofstream.detach();
 
                node_test_ifstream out_nodes(out);
 
@@ -4172,7 +4172,7 @@ go_bandit([]() {
 
           shared_levelized_file<arc> in_outer;
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in_outer);
+            arc_ofstream aw(in_outer);
 
             aw.push_internal({ n0, false, n1 });
             aw.push_internal({ n0, true, n2 });
@@ -4188,7 +4188,7 @@ go_bandit([]() {
           shared_levelized_file<arc> in_inner;
 
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in_inner);
+            arc_ofstream aw(in_inner);
 
             aw.push_internal({ flag(n1.as_ptr(true)), n3 });
             aw.push_internal({ flag(n2.as_ptr(false)), n4 });
@@ -4212,7 +4212,7 @@ go_bandit([]() {
           }
 
           shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
-          node_writer out_writer(out);
+          node_ofstream out_ofstream(out);
 
           const size_t available_memory = memory_available();
 
@@ -4230,8 +4230,13 @@ go_bandit([]() {
           //          / \
           //          T F
           */
-          nested_sweeping::inner::up<test_policy>(
-            exec_policy(), stream_outer, out_pq, out_writer, in_inner, available_memory / 2, false);
+          nested_sweeping::inner::up<test_policy>(exec_policy(),
+                                                  stream_outer,
+                                                  out_pq,
+                                                  out_ofstream,
+                                                  in_inner,
+                                                  available_memory / 2,
+                                                  false);
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(3u));
@@ -4245,7 +4250,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(4u));
 
           // Check node and meta files are correct
-          out_writer.detach();
+          out_ofstream.detach();
 
           node_test_ifstream out_nodes(out);
 
@@ -4314,7 +4319,7 @@ go_bandit([]() {
 
           shared_levelized_file<arc> in_outer;
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in_outer);
+            arc_ofstream aw(in_outer);
 
             aw.push(level_info(1, 1u));
             aw.push(level_info(2, 1u));
@@ -4327,7 +4332,7 @@ go_bandit([]() {
           shared_levelized_file<arc> in_inner;
 
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in_inner);
+            arc_ofstream aw(in_inner);
 
             aw.push_internal({ flag(n1.as_ptr(true)), n2 });
 
@@ -4341,7 +4346,7 @@ go_bandit([]() {
           }
 
           shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
-          node_writer out_writer(out);
+          node_ofstream out_ofstream(out);
 
           const size_t available_memory = memory_available();
 
@@ -4357,8 +4362,13 @@ go_bandit([]() {
           //    |  / \
           //    F  F T
           */
-          nested_sweeping::inner::up<test_policy>(
-            exec_policy(), stream_outer, out_pq, out_writer, in_inner, available_memory / 2, false);
+          nested_sweeping::inner::up<test_policy>(exec_policy(),
+                                                  stream_outer,
+                                                  out_pq,
+                                                  out_ofstream,
+                                                  in_inner,
+                                                  available_memory / 2,
+                                                  false);
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(1u));
@@ -4372,7 +4382,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
 
           // Check node and meta files are correct
-          out_writer.detach();
+          out_ofstream.detach();
 
           node_test_ifstream out_nodes(out);
 
@@ -4420,7 +4430,7 @@ go_bandit([]() {
 
           shared_levelized_file<arc> in_outer;
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in_outer);
+            arc_ofstream aw(in_outer);
 
             aw.push_terminal({ n1, false, terminal_F });
 
@@ -4436,7 +4446,7 @@ go_bandit([]() {
           shared_levelized_file<arc> in_inner;
 
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in_inner);
+            arc_ofstream aw(in_inner);
 
             aw.push_internal({ flag(n1.as_ptr(true)), n2 });
 
@@ -4451,7 +4461,7 @@ go_bandit([]() {
           }
 
           shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
-          node_writer out_writer(out);
+          node_ofstream out_ofstream(out);
 
           const size_t available_memory = memory_available();
 
@@ -4465,8 +4475,13 @@ go_bandit([]() {
           //       / \
           //       F T
           */
-          nested_sweeping::inner::up<test_policy>(
-            exec_policy(), stream_outer, out_pq, out_writer, in_inner, available_memory / 2, false);
+          nested_sweeping::inner::up<test_policy>(exec_policy(),
+                                                  stream_outer,
+                                                  out_pq,
+                                                  out_ofstream,
+                                                  in_inner,
+                                                  available_memory / 2,
+                                                  false);
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(1u));
@@ -4480,7 +4495,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
 
           // Check node and meta files are correct
-          out_writer.detach();
+          out_ofstream.detach();
 
           node_test_ifstream out_nodes(out);
 
@@ -4528,7 +4543,7 @@ go_bandit([]() {
 
           shared_levelized_file<arc> in_outer;
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in_outer);
+            arc_ofstream aw(in_outer);
 
             aw.push(level_info(1, 1u));
             aw.push(level_info(2, 1u));
@@ -4540,7 +4555,7 @@ go_bandit([]() {
           shared_levelized_file<arc> in_inner;
 
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in_inner);
+            arc_ofstream aw(in_inner);
 
             aw.push_internal({ flag(n1.as_ptr(true)), n2 });
             aw.push_internal({ n2.as_ptr(true), n3 });
@@ -4557,7 +4572,7 @@ go_bandit([]() {
           }
 
           shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
-          node_writer out_writer(out);
+          node_ofstream out_ofstream(out);
 
           const size_t available_memory = memory_available();
 
@@ -4571,8 +4586,13 @@ go_bandit([]() {
           //       / \
           //       F T <-- T tainted in global cut
           */
-          nested_sweeping::inner::up<test_policy>(
-            exec_policy(), stream_outer, out_pq, out_writer, in_inner, available_memory / 2, false);
+          nested_sweeping::inner::up<test_policy>(exec_policy(),
+                                                  stream_outer,
+                                                  out_pq,
+                                                  out_ofstream,
+                                                  in_inner,
+                                                  available_memory / 2,
+                                                  false);
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(1u));
@@ -4586,7 +4606,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
 
           // Check node and meta files are correct
-          out_writer.detach();
+          out_ofstream.detach();
 
           node_test_ifstream out_nodes(out);
 
@@ -4631,7 +4651,7 @@ go_bandit([]() {
 
           shared_levelized_file<arc> in_outer;
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in_outer);
+            arc_ofstream aw(in_outer);
 
             aw.push(level_info(1, 1u));
             aw.push(level_info(2, 1u));
@@ -4643,7 +4663,7 @@ go_bandit([]() {
           shared_levelized_file<arc> in_inner;
 
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in_inner);
+            arc_ofstream aw(in_inner);
 
             aw.push_internal({ flag(n1.as_ptr(true)), n2 });
 
@@ -4657,7 +4677,7 @@ go_bandit([]() {
           }
 
           shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
-          node_writer out_writer(out);
+          node_ofstream out_ofstream(out);
 
           const size_t available_memory = memory_available();
 
@@ -4669,8 +4689,13 @@ go_bandit([]() {
           //  -   - \ -   -   -    -
           //        T <-- in 'out_pq', not in 'out'
           */
-          nested_sweeping::inner::up<test_policy>(
-            exec_policy(), stream_outer, out_pq, out_writer, in_inner, available_memory / 2, false);
+          nested_sweeping::inner::up<test_policy>(exec_policy(),
+                                                  stream_outer,
+                                                  out_pq,
+                                                  out_ofstream,
+                                                  in_inner,
+                                                  available_memory / 2,
+                                                  false);
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(0u));
@@ -4684,7 +4709,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
 
           // Check node and meta files are correct
-          out_writer.detach();
+          out_ofstream.detach();
 
           node_test_ifstream out_nodes(out);
 
@@ -4723,7 +4748,7 @@ go_bandit([]() {
 
           shared_levelized_file<arc> in_outer;
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in_outer);
+            arc_ofstream aw(in_outer);
 
             aw.push(level_info(1, 1u));
             aw.push(level_info(2, 1u));
@@ -4735,7 +4760,7 @@ go_bandit([]() {
           shared_levelized_file<arc> in_inner;
 
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in_inner);
+            arc_ofstream aw(in_inner);
 
             aw.push_internal({ flag(n1.as_ptr(true)), n2 });
 
@@ -4750,7 +4775,7 @@ go_bandit([]() {
           }
 
           shared_levelized_file<node> out = __reduce_init_output<bdd_policy>();
-          node_writer out_writer(out);
+          node_ofstream out_ofstream(out);
 
           const size_t available_memory = memory_available();
 
@@ -4764,8 +4789,13 @@ go_bandit([]() {
           //    |  / \
           //    F  F T
           */
-          nested_sweeping::inner::up<test_policy>(
-            exec_policy(), stream_outer, out_pq, out_writer, in_inner, available_memory / 2, false);
+          nested_sweeping::inner::up<test_policy>(exec_policy(),
+                                                  stream_outer,
+                                                  out_pq,
+                                                  out_ofstream,
+                                                  in_inner,
+                                                  available_memory / 2,
+                                                  false);
 
           // Check meta variables before detach computations
           AssertThat(out->width, Is().EqualTo(1u));
@@ -4779,7 +4809,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
 
           // Check node and meta files are correct
-          out_writer.detach();
+          out_ofstream.detach();
 
           node_test_ifstream out_nodes(out);
 
@@ -4818,7 +4848,7 @@ go_bandit([]() {
         */
         shared_levelized_file<node> in;
         {
-          node_writer nw(in);
+          node_ofstream nw(in);
           nw << node(true);
         }
 
@@ -4850,7 +4880,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, true, n2 });
           aw.push_internal({ n2, false, n3 });
@@ -4944,7 +4974,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n1, true, n3 });
@@ -5042,7 +5072,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, true, n2 });
 
@@ -5128,7 +5158,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n1, true, n3 });
@@ -5259,7 +5289,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n1, true, n3 });
@@ -5360,7 +5390,7 @@ go_bandit([]() {
         shared_levelized_file<node> in;
 
         { // Garbage collect writer to free write-lock
-          node_writer nw(in);
+          node_ofstream nw(in);
           nw << n7 << n8 << n6 /*<< n5*/ << n4 << n3 << n2 << n1;
         }
 
@@ -5464,7 +5494,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n2, true, n3 });
@@ -5607,7 +5637,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n2, true, n3 });
@@ -5729,7 +5759,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n1, true, n3 });
@@ -5820,7 +5850,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n2, false, n3 });
@@ -5915,7 +5945,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, true, n2 });
           aw.push_internal({ n2, false, n3 });
@@ -5992,7 +6022,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, true, n2 });
           aw.push_internal({ n2, false, n3 });
@@ -6065,7 +6095,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
 
@@ -6141,7 +6171,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n1, true, n3 });
@@ -6253,7 +6283,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n1, true, n2 });
@@ -6324,7 +6354,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
 
@@ -6390,7 +6420,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
 
@@ -6456,7 +6486,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
 
@@ -6524,7 +6554,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
 
@@ -6603,7 +6633,7 @@ go_bandit([]() {
           shared_levelized_file<arc> in;
 
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in);
+            arc_ofstream aw(in);
 
             aw.push_internal({ n1, false, n2 });
             aw.push_internal({ n1, true, n3 });
@@ -6739,7 +6769,7 @@ go_bandit([]() {
           shared_levelized_file<arc> in;
 
           { // Garbage collect writer to free write-lock
-            arc_writer aw(in);
+            arc_ofstream aw(in);
 
             aw.push_internal({ n1, false, n2 });
             aw.push_internal({ n1, true, n3 });
@@ -6890,7 +6920,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, true, n2 });
           aw.push_internal({ n1, false, n3 });

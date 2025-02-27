@@ -16,32 +16,32 @@ go_bandit([]() {
     shared_levelized_file<bdd::node_type> bdd_x0_xor_x2;
 
     { // Garbage collect writers to free write-lock
-      node_writer nw_F(bdd_F);
+      node_ofstream nw_F(bdd_F);
       nw_F << node(false);
 
-      node_writer nw_T(bdd_T);
+      node_ofstream nw_T(bdd_T);
       nw_T << node(true);
 
-      node_writer nw_x0(bdd_x0);
+      node_ofstream nw_x0(bdd_x0);
       nw_x0 << node(0, 0, terminal_F, terminal_T);
 
-      node_writer nw_not_x0(bdd_not_x0);
+      node_ofstream nw_not_x0(bdd_not_x0);
       nw_not_x0 << node(0, 0, terminal_T, terminal_F);
 
-      node_writer nw_x1(bdd_x1);
+      node_ofstream nw_x1(bdd_x1);
       nw_x1 << node(1, 0, terminal_F, terminal_T);
 
-      node_writer nw_not_x1(bdd_not_x1);
+      node_ofstream nw_not_x1(bdd_not_x1);
       nw_not_x1 << node(1, 0, terminal_T, terminal_F);
 
-      node_writer nw_x2(bdd_x2);
+      node_ofstream nw_x2(bdd_x2);
       nw_x2 << node(2, 0, terminal_F, terminal_T);
 
-      node_writer nw_x0_xor_x1(bdd_x0_xor_x1);
+      node_ofstream nw_x0_xor_x1(bdd_x0_xor_x1);
       nw_x0_xor_x1 << node(1, 1, terminal_T, terminal_F) << node(1, 0, terminal_F, terminal_T)
                    << node(0, 0, ptr_uint64(1, 0), ptr_uint64(1, 1));
 
-      node_writer nw_x0_xor_x2(bdd_x0_xor_x2);
+      node_ofstream nw_x0_xor_x2(bdd_x0_xor_x2);
       nw_x0_xor_x2 << node(2, 1, terminal_T, terminal_F) << node(2, 0, terminal_F, terminal_T)
                    << node(0, 0, ptr_uint64(2, 0), ptr_uint64(2, 1));
     }
@@ -60,7 +60,7 @@ go_bandit([]() {
     */
 
     { // Garbage collect writers to free write-lock
-      node_writer nw_1(bdd_1);
+      node_ofstream nw_1(bdd_1);
       nw_1 << node(3, 0, terminal_F, terminal_T)             // 7
            << node(2, 2, terminal_F, terminal_T)             // 6
            << node(2, 1, terminal_T, ptr_uint64(3, 0))       // 5
@@ -85,7 +85,7 @@ go_bandit([]() {
     */
 
     { // Garbage collect writers to free write-lock
-      node_writer nw_2(bdd_2);
+      node_ofstream nw_2(bdd_2);
       nw_2 << node(3, 1, terminal_F, terminal_T)             // 9
            << node(3, 0, terminal_T, terminal_F)             // 8
            << node(2, 3, terminal_F, terminal_T)             // 7
@@ -112,7 +112,7 @@ go_bandit([]() {
     */
 
     { // Garbage collect writers to free write-lock
-      node_writer nw_3(bdd_3);
+      node_ofstream nw_3(bdd_3);
       nw_3 << node(3, 0, terminal_F, terminal_T)             // 6
            << node(2, 2, terminal_F, terminal_T)             // 5
            << node(2, 1, terminal_F, ptr_uint64(3, 0))       // 4
@@ -135,7 +135,7 @@ go_bandit([]() {
     //                     T F   F T
     */
     { // Garbage collect writers to free write-lock
-      node_writer nw_4(bdd_4);
+      node_ofstream nw_4(bdd_4);
       nw_4 << node(3, 1, terminal_F, terminal_T)             // 7
            << node(3, 0, terminal_T, terminal_F)             // 6
            << node(2, 2, terminal_F, ptr_uint64(3, 1))       // 5
@@ -159,7 +159,7 @@ go_bandit([]() {
     //                       T F
     */
     { // Garbage collect writers to free write-lock
-      node_writer nw_5(bdd_5);
+      node_ofstream nw_5(bdd_5);
       nw_5 << node(3, 0, terminal_T, terminal_F)             // 6
            << node(2, 2, terminal_F, ptr_uint64(3, 0))       // 5
            << node(2, 1, terminal_F, terminal_T)             // 4
@@ -180,7 +180,7 @@ go_bandit([]() {
     //                               F T T F
     */
     { // Garbage collect writers to free write-lock
-      node_writer nw_6(bdd_6);
+      node_ofstream nw_6(bdd_6);
       nw_6 << node(2, 1, terminal_T, terminal_F) << node(2, 0, terminal_F, terminal_T)
            << node(1, 0, ptr_uint64(2, 0), ptr_uint64(2, 1))
            << node(0, 0, terminal_F, ptr_uint64(1, 0));
@@ -197,7 +197,7 @@ go_bandit([]() {
     //                               T F F T
     */
     { // Garbage collect writers to free write-lock
-      node_writer nw_not_6(bdd_not_6);
+      node_ofstream nw_not_6(bdd_not_6);
       nw_not_6 << node(2, 1, terminal_F, terminal_T) << node(2, 0, terminal_T, terminal_F)
                << node(1, 0, ptr_uint64(2, 0), ptr_uint64(2, 1))
                << node(0, 0, terminal_T, ptr_uint64(1, 0));
@@ -217,7 +217,7 @@ go_bandit([]() {
     */
 
     {
-      node_writer nw_7(bdd_7);
+      node_ofstream nw_7(bdd_7);
       nw_7 << node(3, 0, terminal_F, terminal_T)             // 5
            << node(2, 1, ptr_uint64(3, 0), terminal_T)       // 4
            << node(2, 0, terminal_F, ptr_uint64(3, 0))       // 3
@@ -239,7 +239,7 @@ go_bandit([]() {
     //                             T F
     */
     {
-      node_writer nw_8(bdd_8);
+      node_ofstream nw_8(bdd_8);
       nw_8 << node(3, 0, terminal_T, terminal_F)             // 4
            << node(2, 0, terminal_T, ptr_uint64(3, 0))       // 3
            << node(1, 0, ptr_uint64(2, 0), ptr_uint64(3, 0)) // 2
@@ -1294,7 +1294,7 @@ go_bandit([]() {
         // level once to resolve the request
         shared_levelized_file<bdd::node_type> bdd_x0_xnor_x1;
         {
-          node_writer nw_x0_xnor_x1(bdd_x0_xnor_x1);
+          node_ofstream nw_x0_xnor_x1(bdd_x0_xnor_x1);
           nw_x0_xnor_x1 << node(1, 1, terminal_T, terminal_F) << node(1, 0, terminal_F, terminal_T)
                         << node(0, 0, ptr_uint64(1, 1), ptr_uint64(1, 0));
         }
@@ -1383,7 +1383,7 @@ go_bandit([]() {
         //              F T
         */
         {
-          node_writer nw_x3(bdd_x3);
+          node_ofstream nw_x3(bdd_x3);
           nw_x3 << node(3, 0, terminal_F, terminal_T);
         }
 
@@ -1396,7 +1396,7 @@ go_bandit([]() {
         //              F T
         */
         {
-          node_writer nw_x1_and_x2(bdd_x1_and_x2);
+          node_ofstream nw_x1_and_x2(bdd_x1_and_x2);
           nw_x1_and_x2 << node(2, 1, terminal_F, terminal_T)
                        << node(1, 0, terminal_F, ptr_uint64(2, 1));
         }
@@ -1809,7 +1809,7 @@ go_bandit([]() {
         //                        T F F T
         */
         {
-          node_writer nw_x0_xnor_x2(bdd_x0_xnor_x2);
+          node_ofstream nw_x0_xnor_x2(bdd_x0_xnor_x2);
           nw_x0_xnor_x2 << node(2, 1, terminal_T, terminal_F)              // 3
                         << node(2, 0, terminal_F, terminal_T)              // 2
                         << node(0, 0, ptr_uint64(2, 1), ptr_uint64(2, 0)); // 1
@@ -1936,7 +1936,7 @@ go_bandit([]() {
         */
 
         {
-          node_writer nw_x1_xor_x2(bdd_x1_xor_x2_2);
+          node_ofstream nw_x1_xor_x2(bdd_x1_xor_x2_2);
           nw_x1_xor_x2 << node(2, 1, terminal_F, terminal_T)              // 3
                        << node(2, 0, terminal_T, terminal_F)              // 2
                        << node(1, 0, ptr_uint64(2, 1), ptr_uint64(2, 0)); // 1
@@ -2068,7 +2068,7 @@ go_bandit([]() {
         */
 
         {
-          node_writer nw_if(bdd_if);
+          node_ofstream nw_if(bdd_if);
           nw_if << node(2, 0, terminal_F, terminal_T)        // 3
                 << node(1, 0, ptr_uint64(2, 0), terminal_F)  // 2
                 << node(0, 0, ptr_uint64(1, 0), terminal_F); // 1
@@ -2187,7 +2187,7 @@ go_bandit([]() {
         //                       F T
         */
         {
-          node_writer nw_if(bdd_if);
+          node_ofstream nw_if(bdd_if);
           nw_if << node(2, 0, terminal_F, terminal_T)       // 3
                 << node(1, 0, terminal_F, ptr_uint64(2, 0)) // 2
                 << node(0, 0, ptr_uint64(1, 0), terminal_T) // 1
@@ -2397,7 +2397,7 @@ go_bandit([]() {
         */
 
         {
-          node_writer nw_x1_and_x3(bdd_x1_and_x3);
+          node_ofstream nw_x1_and_x3(bdd_x1_and_x3);
           nw_x1_and_x3 << node(3, 42, terminal_F, terminal_T)        // 2
                        << node(1, 0, terminal_F, ptr_uint64(3, 42)); // 1
         }
@@ -2478,7 +2478,7 @@ go_bandit([]() {
         */
 
         {
-          node_writer nw_then(bdd_then);
+          node_ofstream nw_then(bdd_then);
           nw_then << node(6, 1, terminal_T, terminal_F)              // 6
                   << node(4, 1, terminal_T, ptr_uint64(6, 1))        // 5
                   << node(4, 0, terminal_F, terminal_T)              // 4
@@ -2497,7 +2497,7 @@ go_bandit([]() {
         */
 
         {
-          node_writer nw_else(bdd_else);
+          node_ofstream nw_else(bdd_else);
           nw_else << node(8, 1, terminal_T, terminal_F)             // 3
                   << node(8, 0, terminal_F, terminal_T)             // 2
                   << node(5, 0, ptr_uint64(8, 0), ptr_uint64(8, 1)) // 1
@@ -2604,19 +2604,19 @@ go_bandit([]() {
       it("can derive canonicity when zipping with one-node 'if'", [&]() {
         shared_levelized_file<bdd::node_type> bdd_if;
         {
-          node_writer nw_if(bdd_if);
+          node_ofstream nw_if(bdd_if);
           nw_if << node(0, node::max_id, terminal_T, terminal_F);
         }
 
         shared_levelized_file<bdd::node_type> bdd_a;
         {
-          node_writer nw_a(bdd_a);
+          node_ofstream nw_a(bdd_a);
           nw_a << node(2, node::max_id, terminal_F, terminal_T);
         }
 
         shared_levelized_file<bdd::node_type> bdd_b;
         {
-          node_writer nw_b(bdd_b);
+          node_ofstream nw_b(bdd_b);
           nw_b << node(1, node::max_id, terminal_T, terminal_F);
         }
 
@@ -2636,21 +2636,21 @@ go_bandit([]() {
       it("can derive canonicity when zipping negated 'then' or 'else'", [&]() {
         shared_levelized_file<bdd::node_type> bdd_if;
         {
-          node_writer nw_if(bdd_if);
+          node_ofstream nw_if(bdd_if);
           nw_if << node(0, node::max_id, terminal_T, terminal_F);
         }
         AssertThat(bdd_iscanonical(bdd(bdd_if)), Is().True());
 
         shared_levelized_file<bdd::node_type> bdd_a;
         {
-          node_writer nw_a(bdd_a);
+          node_ofstream nw_a(bdd_a);
           nw_a << node(2, node::max_id, terminal_F, terminal_T);
         }
         AssertThat(bdd_iscanonical(bdd(bdd_a)), Is().True());
 
         shared_levelized_file<bdd::node_type> bdd_b;
         {
-          node_writer nw_b(bdd_b);
+          node_ofstream nw_b(bdd_b);
           nw_b << node(3, node::max_id, terminal_F, terminal_T)
                << node(3, node::max_id - 1, terminal_T, terminal_F)
                << node(1,
@@ -2662,7 +2662,7 @@ go_bandit([]() {
 
         shared_levelized_file<bdd::node_type> bdd_c;
         {
-          node_writer nw_c(bdd_c);
+          node_ofstream nw_c(bdd_c);
           nw_c << node(1, node::max_id, terminal_T, terminal_F);
         }
         AssertThat(bdd_iscanonical(bdd(bdd_c)), Is().True());
@@ -2689,7 +2689,7 @@ go_bandit([]() {
       it("can derive canonicity when zipping 'if' with multiple nodes on a level", [&]() {
         shared_levelized_file<bdd::node_type> bdd_if;
         {
-          node_writer nw_if(bdd_if);
+          node_ofstream nw_if(bdd_if);
           nw_if << node(1, node::max_id, terminal_T, terminal_T)
                 << node(1, node::max_id - 1, terminal_F, terminal_F)
                 << node(0,
@@ -2700,13 +2700,13 @@ go_bandit([]() {
 
         shared_levelized_file<bdd::node_type> bdd_a;
         {
-          node_writer nw_a(bdd_a);
+          node_ofstream nw_a(bdd_a);
           nw_a << node(3, node::max_id, terminal_F, terminal_T);
         }
 
         shared_levelized_file<bdd::node_type> bdd_b;
         {
-          node_writer nw_b(bdd_b);
+          node_ofstream nw_b(bdd_b);
           nw_b << node(2, node::max_id, terminal_T, terminal_F);
         }
 

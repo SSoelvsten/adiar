@@ -8,14 +8,14 @@ go_bandit([]() {
     // Ø
     shared_levelized_file<zdd::node_type> zdd_empty;
     {
-      node_writer nw(zdd_empty);
+      node_ofstream nw(zdd_empty);
       nw << node(false);
     }
 
     // { Ø }
     shared_levelized_file<zdd::node_type> zdd_null;
     {
-      node_writer nw(zdd_null);
+      node_ofstream nw(zdd_null);
       nw << node(true);
     }
 
@@ -46,7 +46,7 @@ go_bandit([]() {
       const node n2(1, zdd::max_id, n3.uid(), n3.uid());
       const node n1(0, zdd::max_id, n2.uid(), terminal_T);
 
-      node_writer nw(zdd_1);
+      node_ofstream nw(zdd_1);
       nw << n5 << n4 << n3 << n2 << n1;
     }
 
@@ -71,7 +71,7 @@ go_bandit([]() {
       const node n2(2, zdd::max_id, terminal_F, n4.uid());
       const node n1(0, zdd::max_id, n2.uid(), n3.uid());
 
-      node_writer nw(zdd_2);
+      node_ofstream nw(zdd_2);
       nw << n4 << n3 << n2 << n1;
     }
 
@@ -95,7 +95,7 @@ go_bandit([]() {
     */
     shared_levelized_file<arc> zdd_2__unreduced;
     {
-      arc_writer aw(zdd_2__unreduced);
+      arc_ofstream aw(zdd_2__unreduced);
 
       const zdd::pointer_type n7(5, 0);
       const zdd::pointer_type n6(4, 0);
@@ -148,7 +148,7 @@ go_bandit([]() {
       const node n2(1, zdd::max_id, n3.uid(), n4.uid());
       const node n1(0, zdd::max_id, n2.uid(), n4.uid());
 
-      node_writer nw(zdd_3);
+      node_ofstream nw(zdd_3);
       nw << n4 << n3 << n2 << n1;
     }
 
@@ -169,7 +169,7 @@ go_bandit([]() {
     */
     shared_levelized_file<arc> zdd_3__unreduced;
     {
-      arc_writer aw(zdd_3__unreduced);
+      arc_ofstream aw(zdd_3__unreduced);
 
       const zdd::pointer_type n7(3, 0);
       const zdd::pointer_type n6(2, 2);
@@ -221,7 +221,7 @@ go_bandit([]() {
       const node n2(2, zdd::max_id - 1, n4.uid(), n4.uid());
       const node n1(0, zdd::max_id, n2.uid(), n3.uid());
 
-      node_writer nw(zdd_4);
+      node_ofstream nw(zdd_4);
       nw << n5 << n4 << n3 << n2 << n1;
     }
 
@@ -333,7 +333,7 @@ go_bandit([]() {
 
     shared_levelized_file<zdd::node_type> zdd_5;
     {
-      node_writer nw(zdd_5);
+      node_ofstream nw(zdd_5);
       nw << n5_o << n5_n << n5_17 << n5_16 << n5_m << n5_l << n5_15 << n5_14 << n5_k << n5_j
          << n5_13 << n5_12 << n5_i << n5_h << n5_11 << n5_10 << n5_g << n5_f << n5_9 << n5_8 << n5_7
          << n5_d << n5_6 << n5_5 << n5_c << n5_b << n5_4 << n5_3 << n5_2 << n5_1 << n5_a << n5_r3
@@ -380,7 +380,7 @@ go_bandit([]() {
       const node n2 = node(1, zdd::max_id, n3.uid(), n4.uid());
       const node n1 = node(0, zdd::max_id, n2.uid(), nc.uid());
 
-      node_writer nw(zdd_6);
+      node_ofstream nw(zdd_6);
       nw << nc << nb << na << n9_3 << n9_2 << n9_1 << n8 << n7 << n6 << n5 << n4 << n3 << n2 << n1;
     }
 
@@ -400,7 +400,7 @@ go_bandit([]() {
       const node n2(1, zdd::max_id, terminal_F, terminal_T);
       const node n1(0, zdd::max_id, n3.uid(), n2.uid());
 
-      node_writer nw(zdd_7);
+      node_ofstream nw(zdd_7);
       nw << n3 << n2 << n1;
     }
 
@@ -433,7 +433,7 @@ go_bandit([]() {
     */
     shared_levelized_file<arc> zdd_8__unreduced;
     {
-      arc_writer aw(zdd_8__unreduced);
+      arc_ofstream aw(zdd_8__unreduced);
 
       const bdd::pointer_type n8(4, 1);
       const bdd::pointer_type n7(4, 0);
@@ -3044,14 +3044,14 @@ go_bandit([]() {
         // Single-node case
         shared_levelized_file<zdd::node_type> zdd_x1;
         {
-          node_writer nw(zdd_x1);
+          node_ofstream nw(zdd_x1);
           nw << node(1u, zdd::max_id, zdd::pointer_type(false), zdd::pointer_type(true));
         }
 
         it("returns { Ø } for {1} with dom = {0} [const &]", [&]() {
           shared_file<zdd::label_type> dom;
           {
-            label_writer lw(dom);
+            ofstream<ptr_uint64::label_type> lw(dom);
             lw << 0;
           }
 
@@ -3527,14 +3527,14 @@ go_bandit([]() {
         // Single-node case
         shared_levelized_file<zdd::node_type> zdd_x1;
         {
-          node_writer nw(zdd_x1);
+          node_ofstream nw(zdd_x1);
           nw << node(1u, zdd::max_id, zdd::pointer_type(false), zdd::pointer_type(true));
         }
 
         it("returns { Ø } for {1} with dom = {0} [const &]", [&]() {
           shared_file<zdd::label_type> dom;
           {
-            label_writer lw(dom);
+            ofstream<ptr_uint64::label_type> lw(dom);
             lw << 0;
           }
 

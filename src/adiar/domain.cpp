@@ -1,7 +1,7 @@
 #include "domain.h"
 
 #include <adiar/internal/data_types/node.h>
-#include <adiar/internal/io/file_writer.h>
+#include <adiar/internal/io/ofstream.h>
 
 namespace adiar
 {
@@ -15,7 +15,7 @@ namespace adiar
   {
     internal::shared_file<domain_var> dom;
     { // Garbage collect writer to free write-lock
-      internal::file_writer<domain_var> lw(dom);
+      internal::ofstream<domain_var> lw(dom);
       for (domain_var v = 0; v < varcount; v++) { lw << v; }
     }
     domain_set(dom);
@@ -26,7 +26,7 @@ namespace adiar
   {
     internal::shared_file<domain_var> dom;
     { // Garbage collect writer to free write-lock
-      internal::file_writer<domain_var> lw(dom);
+      internal::ofstream<domain_var> lw(dom);
 
       optional<domain_var> v;
       while ((v = gen())) { lw << v.value(); }

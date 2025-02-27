@@ -1,5 +1,5 @@
-#ifndef ADIAR_INTERNAL_IO_FILE_WRITER_H
-#define ADIAR_INTERNAL_IO_FILE_WRITER_H
+#ifndef ADIAR_INTERNAL_IO_OFSTREAM_H
+#define ADIAR_INTERNAL_IO_OFSTREAM_H
 
 #include <tpie/file_stream.h>
 #include <tpie/sort.h>
@@ -22,7 +22,7 @@ namespace adiar::internal
   ///          else. In all our current use-cases, the check induces a total ordering.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename T>
-  class file_writer
+  class ofstream
   {
   public:
     using value_type = T;
@@ -50,7 +50,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct unattached to any file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    file_writer()
+    ofstream()
     {}
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -58,7 +58,7 @@ namespace adiar::internal
     ///
     /// \pre No `ifstream` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    file_writer(file<value_type>& f)
+    ofstream(file<value_type>& f)
     {
       attach(f);
     }
@@ -68,7 +68,7 @@ namespace adiar::internal
     ///
     /// \pre No `ifstream` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    file_writer(adiar::shared_ptr<file<value_type>>& f)
+    ofstream(adiar::shared_ptr<file<value_type>>& f)
     {
       attach(f);
     }
@@ -76,7 +76,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Detaches and cleans up when destructed.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    ~file_writer()
+    ~ofstream()
     {
       detach();
     }
@@ -98,7 +98,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // Befriend the few places that need direct access to the above 'attach'.
     template <typename tparam__elem_t>
-    friend class levelized_file_writer;
+    friend class levelized_ofstream;
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -161,7 +161,7 @@ namespace adiar::internal
     ///
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    file_writer<value_type>&
+    ofstream<value_type>&
     operator<<(const value_type& e)
     {
       this->push(e);
@@ -216,9 +216,6 @@ namespace adiar::internal
       tpie::sort(_stream, pred, pi);
     }
   };
-
-  // TODO: remove...
-  using label_writer = file_writer<ptr_uint64::label_type>;
 }
 
-#endif // ADIAR_INTERNAL_IO_FILE_WRITER_H
+#endif // ADIAR_INTERNAL_IO_OFSTREAM_H

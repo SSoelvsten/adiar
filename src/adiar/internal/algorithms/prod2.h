@@ -19,7 +19,7 @@
 #include <adiar/internal/dd.h>
 #include <adiar/internal/dd_func.h>
 #include <adiar/internal/io/arc_file.h>
-#include <adiar/internal/io/arc_writer.h>
+#include <adiar/internal/io/arc_ofstream.h>
 #include <adiar/internal/io/node_ifstream.h>
 #include <adiar/internal/io/node_raccess.h>
 #include <adiar/internal/memory.h>
@@ -95,7 +95,7 @@ namespace adiar::internal
   template <typename Policy, typename PriorityQueue>
   inline void
   __prod2_recurse_out(PriorityQueue& pq,
-                      arc_writer& aw,
+                      arc_ofstream& aw,
                       const Policy& policy,
                       const ptr_uint64& source,
                       const typename PriorityQueue::value_type::target_t& target)
@@ -118,11 +118,11 @@ namespace adiar::internal
   struct __prod2_recurse_in__output_node
   {
   private:
-    arc_writer& _aw;
+    arc_ofstream& _aw;
     const typename Policy::node_type::uid_type& _out_uid;
 
   public:
-    __prod2_recurse_in__output_node(arc_writer& aw,
+    __prod2_recurse_in__output_node(arc_ofstream& aw,
                                     const typename Policy::node_type::uid_type& out_uid)
       : _aw(aw)
       , _out_uid(out_uid)
@@ -146,11 +146,11 @@ namespace adiar::internal
   struct __prod2_recurse_in__output_terminal
   {
   private:
-    arc_writer& _aw;
+    arc_ofstream& _aw;
     const Pointer& _out_terminal;
 
   public:
-    __prod2_recurse_in__output_terminal(arc_writer& aw, const Pointer& out_terminal)
+    __prod2_recurse_in__output_terminal(arc_ofstream& aw, const Pointer& out_terminal)
       : _aw(aw)
       , _out_terminal(out_terminal)
     {}
@@ -288,7 +288,7 @@ namespace adiar::internal
 
     // Set up output
     shared_levelized_file<arc> out_arcs;
-    arc_writer aw(out_arcs);
+    arc_ofstream aw(out_arcs);
 
     // Set up input
     node_ifstream<> in_nodes_pq(in_pq);
@@ -410,7 +410,7 @@ namespace adiar::internal
   {
     // Set up output
     shared_levelized_file<arc> out_arcs;
-    arc_writer aw(out_arcs);
+    arc_ofstream aw(out_arcs);
 
     out_arcs->max_1level_cut = 0;
 
@@ -670,7 +670,7 @@ namespace adiar::internal
       // Random access
       - node_raccess::memory_usage(in_ra)
       // Output stream
-      - arc_writer::memory_usage();
+      - arc_ofstream::memory_usage();
 
     const size_t pq_memory_fits =
       prod_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(
@@ -725,7 +725,7 @@ namespace adiar::internal
       // Input streams
       - 2 * node_ifstream<>::memory_usage()
       // Output stream
-      - arc_writer::memory_usage();
+      - arc_ofstream::memory_usage();
 
     constexpr size_t data_structures_in_pq_1 =
       prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::data_structures;

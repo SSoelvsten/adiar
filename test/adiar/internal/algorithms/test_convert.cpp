@@ -12,13 +12,13 @@ go_bandit([]() {
 
     shared_levelized_file<dd::node_type> nf_F;
     {
-      node_writer w(nf_F);
+      node_ofstream w(nf_F);
       w << node(false);
     }
 
     shared_levelized_file<dd::node_type> nf_T;
     {
-      node_writer w(nf_T);
+      node_ofstream w(nf_T);
       w << node(true);
     }
 
@@ -27,19 +27,19 @@ go_bandit([]() {
 
     shared_levelized_file<dd::node_type> nf_x0;
     {
-      node_writer nw(nf_x0);
+      node_ofstream nw(nf_x0);
       nw << node(0, node::max_id, terminal_F, terminal_T);
     }
 
     shared_levelized_file<dd::node_type> nf_x1;
     {
-      node_writer nw(nf_x1);
+      node_ofstream nw(nf_x1);
       nw << node(1, node::max_id, terminal_F, terminal_T);
     }
 
     shared_levelized_file<dd::node_type> nf_x2;
     {
-      node_writer nw(nf_x2);
+      node_ofstream nw(nf_x2);
       nw << node(2, node::max_id, terminal_F, terminal_T);
     }
 
@@ -52,21 +52,21 @@ go_bandit([]() {
 
     shared_levelized_file<dd::node_type> nf_x0_null;
     {
-      node_writer nw(nf_x0_null);
+      node_ofstream nw(nf_x0_null);
       nw << node(0, node::max_id, terminal_T, terminal_T);
     }
     zdd zdd_x0_null(nf_x0_null);
 
     shared_levelized_file<dd::node_type> nf_x1_null;
     {
-      node_writer nw(nf_x1_null);
+      node_ofstream nw(nf_x1_null);
       nw << node(1, node::max_id, terminal_T, terminal_T);
     }
     zdd zdd_x1_null(nf_x1_null);
 
     shared_levelized_file<dd::node_type> nf_x2_null;
     {
-      node_writer nw(nf_x2_null);
+      node_ofstream nw(nf_x2_null);
       nw << node(2, node::max_id, terminal_T, terminal_T);
     }
     zdd zdd_x2_null(nf_x2_null);
@@ -78,7 +78,7 @@ go_bandit([]() {
       const node n2 = node(1, zdd::max_id, terminal_F, terminal_T);
       const node n1 = node(0, zdd::max_id, n2.uid(), terminal_T);
 
-      node_writer nw(nf_minato_fig5);
+      node_ofstream nw(nf_minato_fig5);
       nw << n2 << n1;
     }
     zdd zdd_minato_fig5(nf_minato_fig5);
@@ -92,7 +92,7 @@ go_bandit([]() {
       const node n2 = node(1, bdd::max_id - 1, terminal_F, n4.uid());
       const node n1 = node(0, bdd::max_id, n2.uid(), n3.uid());
 
-      node_writer nw(nf_minato_fig3_a);
+      node_ofstream nw(nf_minato_fig3_a);
       nw << n4 << n3 << n2 << n1;
     }
     bdd bdd_minato_fig3_a(nf_minato_fig3_a);
@@ -105,7 +105,7 @@ go_bandit([]() {
       const node n2 = node(1, bdd::max_id - 1, terminal_F, n4.uid());
       const node n1 = node(0, bdd::max_id, n2.uid(), n3.uid());
 
-      node_writer nw(nf_minato_fig3_b);
+      node_ofstream nw(nf_minato_fig3_b);
       nw << n5 << n4 << n3 << n2 << n1;
     }
     bdd bdd_minato_fig3_b(nf_minato_fig3_b);
@@ -434,7 +434,7 @@ go_bandit([]() {
           const node n1 = node(1, node::max_id, n2.uid(), n2.uid());
           const node n0 = node(0, node::max_id, n1.uid(), n1.uid());
 
-          node_writer nw(nf_pow_dom);
+          node_ofstream nw(nf_pow_dom);
           nw << n2 << n1 << n0;
         }
         zdd zdd_pow(nf_pow_dom);
@@ -459,7 +459,7 @@ go_bandit([]() {
           const node n1 = node(2, node::max_id, n2.uid(), n2.uid());
           const node n0 = node(0, node::max_id, n1.uid(), n1.uid());
 
-          node_writer nw(nf_pow_dom);
+          node_ofstream nw(nf_pow_dom);
           nw << n2 << n1 << n0;
         }
         zdd zdd_pow(nf_pow_dom);
@@ -495,7 +495,7 @@ go_bandit([]() {
           const node n2 = node(1, node::max_id - 1, terminal_F, n4.uid());
           const node n1 = node(0, node::max_id, n2.uid(), n3.uid());
 
-          node_writer nw(nf);
+          node_ofstream nw(nf);
           nw << n4 << n3 << n2 << n1;
         }
         zdd in(nf);
@@ -699,7 +699,7 @@ go_bandit([]() {
           const node n2 = node(2, node::max_id, n3.uid(), n3.uid());
           const node n1 = node(1, node::max_id, n2.uid(), terminal_T);
 
-          node_writer nw(nf);
+          node_ofstream nw(nf);
           nw << n3 << n2 << n1;
         }
 
@@ -772,7 +772,7 @@ go_bandit([]() {
           const node n2 = node(1, node::max_id, n3.uid(), terminal_T);
           const node n1 = node(0, node::max_id, n3.uid(), n2.uid());
 
-          node_writer nw(nf);
+          node_ofstream nw(nf);
           nw << n3 << n2 << n1;
         }
 
@@ -863,7 +863,7 @@ go_bandit([]() {
             const node n2 = node(1, node::max_id - 1, terminal_T, n4.uid());
             const node n1 = node(0, node::max_id, n2.uid(), n3.uid());
 
-            node_writer nw(nf_in);
+            node_ofstream nw(nf_in);
             nw << n4 << n3 << n2 << n1;
           }
 
@@ -968,7 +968,7 @@ go_bandit([]() {
           const node n2 = node(3, node::max_id, n3.uid(), n4.uid());
           const node n1 = node(1, node::max_id, n2.uid(), n2.uid());
 
-          node_writer w(in);
+          node_ofstream w(in);
           w << n7 << n6 << n5 << n4 << n3 << n2 << n1;
         }
 
@@ -1403,7 +1403,7 @@ go_bandit([]() {
       it("kills and bridges root on ~x1 with dom = { 0,1,2 }", [&]() {
         shared_levelized_file<bdd::node_type> nf;
         {
-          node_writer nw(nf);
+          node_ofstream nw(nf);
           nw << node(1, node::max_id, terminal_T, terminal_F);
         }
         bdd in(nf);
@@ -1453,7 +1453,7 @@ go_bandit([]() {
       it("kills root into { Ø } on ~x0 into with dom = { 0 }", [&]() {
         shared_levelized_file<bdd::node_type> nf;
         {
-          node_writer nw(nf);
+          node_ofstream nw(nf);
           nw << node(0, node::max_id, terminal_T, terminal_F);
         }
         bdd in(nf);
@@ -1478,7 +1478,7 @@ go_bandit([]() {
           const node n2 = node(2, node::max_id, n3.uid(), terminal_F);
           const node n1 = node(0, node::max_id, n2.uid(), terminal_F);
 
-          node_writer nw(nf);
+          node_ofstream nw(nf);
           nw << n3 << n2 << n1;
         }
         bdd in(nf);
@@ -1644,7 +1644,7 @@ go_bandit([]() {
           const node n2 = node(1, node::max_id - 1, terminal_T, n3.uid());
           const node n1 = node(0, node::max_id, n2.uid(), terminal_F);
 
-          node_writer nw(nf);
+          node_ofstream nw(nf);
           nw << n4 << n3 << n2 << n1;
         }
         bdd in(nf);
@@ -1711,7 +1711,7 @@ go_bandit([]() {
           const node n2 = node(1, node::max_id - 1, n5.uid(), n4.uid());
           const node n1 = node(0, node::max_id, n3.uid(), n2.uid());
 
-          node_writer nw(nf);
+          node_ofstream nw(nf);
           nw << n5 << n4 << n3 << n2 << n1;
         }
         bdd in(nf);
@@ -1818,7 +1818,7 @@ go_bandit([]() {
           const node n2 = node(2, node::max_id, n3.uid(), terminal_F);
           const node n1 = node(0, node::max_id, n2.uid(), terminal_F);
 
-          node_writer nw(nf);
+          node_ofstream nw(nf);
           nw << n3 << n2 << n1;
         }
         bdd in(nf);

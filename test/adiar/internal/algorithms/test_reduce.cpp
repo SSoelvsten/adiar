@@ -11,7 +11,7 @@ go_bandit([]() {
     shared_levelized_file<node> x0x1_node_file;
 
     { // Garbage collect writer to free write-lock
-      node_writer nw(x0x1_node_file);
+      node_ofstream nw(x0x1_node_file);
 
       nw << node(1, node::max_id, terminal_F, terminal_T)
          << node(0, node::max_id, terminal_F, node::pointer_type(1, node::max_id));
@@ -88,7 +88,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, true, n2 });
           aw.push_internal({ n1, false, n3 });
@@ -192,7 +192,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n1, true, n3 });
@@ -300,7 +300,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, true, n2 });
           aw.push_internal({ n1, false, n3 });
@@ -425,7 +425,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, true, n2 });
           aw.push_internal({ n1, false, n3 });
@@ -549,7 +549,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n1, true, n3 });
@@ -686,7 +686,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n1, true, n3 });
@@ -799,7 +799,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n1, true, n3 });
@@ -911,7 +911,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer early
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, true, n2 });
           aw.push_internal({ n1, false, n3 });
@@ -1015,7 +1015,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, true, n2 });
           aw.push_internal({ n1, false, n3 });
@@ -1132,7 +1132,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n1, true, n3 });
@@ -1235,7 +1235,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n2, false, n3 });
@@ -1333,7 +1333,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n1, true, n3 });
@@ -1458,7 +1458,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, true, n2 });
           aw.push_internal({ n1, false, n3 });
@@ -1544,7 +1544,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n1, true, n3 });
@@ -1687,7 +1687,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n2, false, n3 });
@@ -1804,7 +1804,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_terminal({ n1, false, terminal_F });
           aw.push_terminal({ n1, true, terminal_F });
@@ -1864,7 +1864,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, true, n2 });
 
@@ -1923,7 +1923,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_terminal({ n1, false, terminal_F });
           aw.push_terminal({ n1, true, terminal_T });
@@ -2001,7 +2001,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n1, true, n3 });
@@ -2172,7 +2172,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n1, true, n3 });
@@ -2369,7 +2369,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n1, true, n3 });
@@ -2508,7 +2508,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n1, true, n3 });
@@ -2582,7 +2582,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, true, n2 });
 
@@ -2656,7 +2656,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, true, n2 });
           aw.push_internal({ n1, false, n3 });
@@ -2777,7 +2777,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n1, true, n3 });
@@ -2868,7 +2868,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_terminal({ n1, false, terminal_T });
           aw.push_terminal({ n1, true, terminal_F });
@@ -2928,7 +2928,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, n2 });
 
@@ -2996,7 +2996,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, true, n2 });
 
@@ -3055,7 +3055,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_terminal({ n1, false, terminal_F });
           aw.push_terminal({ n1, true, terminal_T });
@@ -3114,7 +3114,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_terminal({ n1, false, terminal_T });
           aw.push_terminal({ n1, true, terminal_T });
@@ -3193,7 +3193,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n1, true, n3 });
@@ -3348,7 +3348,7 @@ go_bandit([]() {
         shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
-          arc_writer aw(in);
+          arc_ofstream aw(in);
 
           aw.push_internal({ n1, false, n2 });
           aw.push_internal({ n1, true, n3 });

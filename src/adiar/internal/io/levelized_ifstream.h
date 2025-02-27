@@ -81,7 +81,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Attach to a levelized file.
     ///
-    /// \pre No `levelized_file_writer` is currently attached to this file.
+    /// \pre No `levelized_ofstream` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
     attach(const levelized_file<value_type>& f)
@@ -95,7 +95,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Attach to a shared levelized file.
     ///
-    /// \pre No `levelized_file_writer` is currently attached to this file.
+    /// \pre No `levelized_ofstream` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
     attach(const shared_ptr<levelized_file<value_type>>& f)

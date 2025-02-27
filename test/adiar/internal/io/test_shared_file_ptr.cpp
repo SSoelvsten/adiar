@@ -115,11 +115,11 @@ go_bandit([]() {
         AssertThat(std::filesystem::exists(path), Is().False());
       });
 
-      describe("w/ file_writer + ifstream", []() {
-        it("file_writer is part of reference counting", []() {
+      describe("w/ ofstream + ifstream", []() {
+        it("ofstream is part of reference counting", []() {
           std::string path;
 
-          file_writer<int> fw;
+          ofstream<int> fw;
           {
             shared_file<int> f;
             path = f->path();
@@ -149,7 +149,7 @@ go_bandit([]() {
         it("can read written content", []() {
           shared_file<int> f;
           {
-            file_writer<int> fw(f);
+            ofstream<int> fw(f);
             fw << 1 << 2 << 3 << 4;
           }
           {
@@ -169,7 +169,7 @@ go_bandit([]() {
         it("can read written content in reverse", []() {
           shared_file<int> f;
           {
-            file_writer<int> fw(f);
+            ofstream<int> fw(f);
             fw << 21 << 42 << 21 << 84;
           }
           {
@@ -207,7 +207,7 @@ go_bandit([]() {
         it("can copy over non-empty file", []() {
           shared_file<int> f1;
           {
-            file_writer<int> fw(f1);
+            ofstream<int> fw(f1);
             fw << 1 << 2 << 4 << 8 << 16;
           }
 
@@ -243,7 +243,7 @@ go_bandit([]() {
         { // Create a persisted file
           shared_file<int> f;
 
-          file_writer<int> fw(f);
+          ofstream<int> fw(f);
           fw << 0 << 2 << 4 << 6 << 8;
 
           // TODO: header file content
@@ -285,7 +285,7 @@ go_bandit([]() {
         { // Create a persisted file
           shared_file<int> f;
 
-          file_writer<int> fw(f);
+          ofstream<int> fw(f);
           fw << 1 << 3 << 5 << 7;
 
           // TODO: header file content
@@ -453,11 +453,11 @@ go_bandit([]() {
         AssertThat(std::filesystem::exists(paths[2]), Is().False());
       });
 
-      describe("w/ levelized_file_writer + levelized_ifstream + level_info_ifstream", []() {
-        it("levelized_file_writer is part of reference counting", []() {
+      describe("w/ levelized_ofstream + levelized_ifstream + level_info_ifstream", []() {
+        it("levelized_ofstream is part of reference counting", []() {
           std::array<std::string, 2u + 1u> paths;
 
-          levelized_file_writer<int> lfw;
+          levelized_ofstream<int> lfw;
           {
             shared_levelized_file<int> lf;
             paths = lf->paths();
@@ -532,7 +532,7 @@ go_bandit([]() {
         it("can read written content", []() {
           shared_levelized_file<int> lf;
           {
-            levelized_file_writer<int> lfw(lf);
+            levelized_ofstream<int> lfw(lf);
             lfw.push<0>(42);
             lfw.push<0>(22);
             lfw.push<1>(1);
@@ -576,7 +576,7 @@ go_bandit([]() {
         it("can read written content in reverse", []() {
           shared_levelized_file<int> lf;
           {
-            levelized_file_writer<int> lfw(lf);
+            levelized_ofstream<int> lfw(lf);
             lfw.push<0>(16);
             lfw.push<0>(8);
             lfw.push<1>(2);
@@ -659,7 +659,7 @@ go_bandit([]() {
         it("can copy over non-empty file", []() {
           shared_levelized_file<int> lf1;
           {
-            levelized_file_writer<int> lfw(lf1);
+            levelized_ofstream<int> lfw(lf1);
             lfw.push<0>(2);
             lfw.push<0>(3);
 
@@ -719,7 +719,7 @@ go_bandit([]() {
         { // Create a persisted file
           shared_levelized_file<int> lf;
 
-          levelized_file_writer<int> lfw(lf);
+          levelized_ofstream<int> lfw(lf);
           lfw.push<0>(42);
           lfw.push(level_info{ 0, 1 });
 
@@ -773,7 +773,7 @@ go_bandit([]() {
         { // Create a persisted file
           shared_levelized_file<int> lf;
 
-          levelized_file_writer<int> lfw(lf);
+          levelized_ofstream<int> lfw(lf);
           lfw.push<0>(21);
           lfw.push(level_info{ 0, 1 });
           lfw.push<1>(7);

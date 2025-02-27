@@ -12,7 +12,7 @@
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/dd_func.h>
 #include <adiar/internal/io/arc_file.h>
-#include <adiar/internal/io/arc_writer.h>
+#include <adiar/internal/io/arc_ofstream.h>
 #include <adiar/internal/io/file.h>
 #include <adiar/internal/io/ifstream.h>
 #include <adiar/internal/io/node_ifstream.h>
@@ -121,7 +121,7 @@ namespace adiar::internal
 
     template <typename pq_t>
     static inline void
-    forward(arc_writer& aw,
+    forward(arc_ofstream& aw,
             pq_t& pq,
             const typename intercut_policy::pointer_type source,
             const typename intercut_policy::pointer_type target,
@@ -139,14 +139,14 @@ namespace adiar::internal
     }
   };
 
-  class intercut_out__writer
+  class intercut_out__ofstream
   {
   public:
     static constexpr bool ignore_nil = true;
 
     template <typename pq_t>
     static inline void
-    forward(arc_writer& aw,
+    forward(arc_ofstream& aw,
             pq_t& /*pq*/,
             const ptr_uint64 source,
             const ptr_uint64 target,
@@ -159,7 +159,7 @@ namespace adiar::internal
 
   template <typename intercut_policy, typename in_policy, typename pq_t>
   inline void
-  intercut_in__pq(arc_writer& aw,
+  intercut_in__pq(arc_ofstream& aw,
                   pq_t& pq,
                   const typename intercut_policy::label_type out_label,
                   const typename intercut_policy::pointer_type pq_target,
@@ -197,7 +197,7 @@ namespace adiar::internal
     // `dd_levels`, and expose `xs`.
     shared_file<typename intercut_policy::label_type> hit_levels;
     {
-      file_writer<typename intercut_policy::label_type> lw(hit_levels);
+      ofstream<typename intercut_policy::label_type> lw(hit_levels);
       for (auto x = xs(); x; x = xs()) { lw << x.value(); }
 
       if (lw.size() == 0) { return intercut_policy::on_empty_labels(dd); }
@@ -209,13 +209,13 @@ namespace adiar::internal
     typename intercut_policy::label_type l = ls.pull();
 
     shared_levelized_file<arc> out_arcs;
-    arc_writer aw(out_arcs);
+    arc_ofstream aw(out_arcs);
 
     out_arcs->max_1level_cut = 0;
 
     shared_file<typename intercut_policy::label_type> dd_levels;
     {
-      file_writer<typename intercut_policy::label_type> lw(dd_levels);
+      ofstream<typename intercut_policy::label_type> lw(dd_levels);
       dd_support(dd, [&lw](const typename intercut_policy::label_type x) { lw << x; });
     }
 
@@ -274,7 +274,7 @@ namespace adiar::internal
           intercut_out__pq<intercut_policy>::forward(
             aw, intercut_pq, out_uid.as_ptr(true), ro.high, out_label, l);
 
-          intercut_in__pq<intercut_policy, intercut_out__writer>(
+          intercut_in__pq<intercut_policy, intercut_out__ofstream>(
             aw, intercut_pq, out_label, n.uid(), out_uid, l);
         }
       }
@@ -294,7 +294,7 @@ namespace adiar::internal
         intercut_out__pq<intercut_policy>::forward(
           aw, intercut_pq, out_uid.as_ptr(true), ro.high, out_label, l);
 
-        intercut_in__pq<intercut_policy, intercut_out__writer>(
+        intercut_in__pq<intercut_policy, intercut_out__ofstream>(
           aw, intercut_pq, out_label, request.target(), out_uid, l);
       }
 
@@ -331,7 +331,7 @@ namespace adiar::internal
       // Input stream
       - node_ifstream<>::memory_usage()
       // Output stream
-      - arc_writer::memory_usage();
+      - arc_ofstream::memory_usage();
 
     const size_t pq_memory = aux_available_memory;
 

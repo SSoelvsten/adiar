@@ -6,10 +6,10 @@ go_bandit([]() {
     shared_levelized_file<zdd::node_type> zdd_T;
 
     { // Garbage collect writers to free write-lock
-      node_writer nw_F(zdd_F);
+      node_ofstream nw_F(zdd_F);
       nw_F << node(false);
 
-      node_writer nw_T(zdd_T);
+      node_ofstream nw_T(zdd_T);
       nw_T << node(true);
     }
 
@@ -31,7 +31,7 @@ go_bandit([]() {
       const node n2 = node(4, node::max_id, terminal_T, terminal_T);
       const node n1 = node(2, node::max_id, n2.uid(), n2.uid());
 
-      node_writer nw(zdd_pow_24);
+      node_ofstream nw(zdd_pow_24);
       nw << n2 << n1;
     }
 
@@ -299,7 +299,7 @@ go_bandit([]() {
       it("adds out-of-set chain above root on { { 3 } } and U = { 0, 1, 2, 3 }", [&]() {
         shared_levelized_file<zdd::node_type> zdd_x3;
         {
-          node_writer nw(zdd_x3);
+          node_ofstream nw(zdd_x3);
           /*
           //      1        ---- x3
           //     / \
@@ -408,7 +408,7 @@ go_bandit([]() {
       it("adds out-of-set chain above and below root on { { 2 } } and U = { 0, 1, 2, 3 }", [&]() {
         shared_levelized_file<zdd::node_type> zdd_x2;
         {
-          node_writer nw(zdd_x2);
+          node_ofstream nw(zdd_x2);
           nw << node(2, node::max_id, terminal_F, terminal_T);
         }
 
@@ -507,7 +507,7 @@ go_bandit([]() {
           //      T T
           */
           {
-            node_writer nw(zdd_x1_null);
+            node_ofstream nw(zdd_x1_null);
             nw << node(1, node::max_id, terminal_T, terminal_T);
           }
 
@@ -628,7 +628,7 @@ go_bandit([]() {
           const node n2 = node(3, node::max_id, n3.uid(), n4.uid());
           const node n1 = node(2, node::max_id, n2.uid(), n4.uid());
 
-          node_writer nw(in);
+          node_ofstream nw(in);
           nw << n4 << n3 << n2 << n1;
         }
 
@@ -767,7 +767,7 @@ go_bandit([]() {
               node(2, node::max_id - 1, terminal_T, n4.uid()); // <-- breaks canonicity
             const node n1 = node(1, node::max_id, n2.uid(), n3.uid());
 
-            node_writer nw(in);
+            node_ofstream nw(in);
             nw << n7 << n6 << n5 << n4 << n3 << n2 << n1;
           }
 

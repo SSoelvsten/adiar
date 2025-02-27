@@ -16,7 +16,7 @@ go_bandit([]() {
         shared_file<node::label_type> dom;
 
         { // Garbage collect writer to free write-lock
-          label_writer lw(dom);
+          ofstream<ptr_uint64::label_type> lw(dom);
           lw << 1 << 2 << 3;
         }
 
@@ -255,7 +255,7 @@ go_bandit([]() {
         shared_file<node::label_type> dom;
 
         { // Garbage collect writer to free write-lock
-          label_writer lw(dom);
+          ofstream<ptr_uint64::label_type> lw(dom);
           lw << 1 << 2 << 3;
         }
 
@@ -271,7 +271,7 @@ go_bandit([]() {
         shared_file<node::label_type> dom1;
 
         { // Garbage collect writer to free write-lock
-          label_writer lw(dom1);
+          ofstream<ptr_uint64::label_type> lw(dom1);
           lw << 1 << 2 << 3;
         }
 
@@ -283,7 +283,7 @@ go_bandit([]() {
         shared_file<node::label_type> dom2;
 
         { // Garbage collect writer to free write-lock
-          label_writer lw(dom2);
+          ofstream<ptr_uint64::label_type> lw(dom2);
           lw << 4 << 9 << 35;
         }
 

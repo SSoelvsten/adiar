@@ -1,7 +1,7 @@
 #include "adiar/exec_policy.h"
 #include "adiar/functional.h"
 #include "adiar/internal/data_types/tuple.h"
-#include "adiar/internal/io/node_writer.h"
+#include "adiar/internal/io/node_ofstream.h"
 #include "adiar/internal/io/shared_file_ptr.h"
 #include "adiar/types.h"
 
@@ -80,7 +80,7 @@ namespace adiar
       return pair<bdd, double>(f, bdd_optmin(ep, f, c, [](pair<bdd::label_type, bool>) {}));
     }
 
-    internal::node_writer nw(nf);
+    internal::node_ofstream nw(nf);
     bdd::pointer_type root = bdd::pointer_type(true);
     double value           = bdd_optmin(ep, f, c, [&nw, &root](pair<bdd::label_type, bool> pair) {
       const bdd::label_type x = pair.first;

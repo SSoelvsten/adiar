@@ -10,7 +10,7 @@
 #include <adiar/internal/data_types/convert.h>
 #include <adiar/internal/dd.h>
 #include <adiar/internal/io/arc_file.h>
-#include <adiar/internal/io/arc_writer.h>
+#include <adiar/internal/io/arc_ofstream.h>
 #include <adiar/internal/io/file.h>
 #include <adiar/internal/io/levelized_file.h>
 #include <adiar/internal/io/levelized_ifstream.h>
@@ -187,7 +187,7 @@ namespace adiar::internal
 
     // Create the contents of 'af'
     {
-      arc_writer aw(af);
+      arc_ofstream aw(af);
       { // Split every node into their arcs.
         node_ifstream ns(d);
         while (ns.can_pull()) {
