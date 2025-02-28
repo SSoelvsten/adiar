@@ -156,6 +156,9 @@ test/adiar/internal/data_structures/priority_queue:
 test/adiar/internal/data_structures/sorter:
 	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_structures TEST_NAME=sorter
 
+test/adiar/internal/data_structures/stack:
+	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_structures TEST_NAME=stack
+
 test/adiar/internal/data_types/arc:
 	$(MAKE) $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_types TEST_NAME=arc
 

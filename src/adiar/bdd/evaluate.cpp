@@ -1,12 +1,12 @@
 #include <adiar/bdd.h>
 #include <adiar/exception.h>
 #include <adiar/functional.h>
-#include <tpie/internal_stack.h>
 #include <tpie/tpie.h>
 
 #include <adiar/internal/algorithms/traverse.h>
 #include <adiar/internal/assert.h>
 #include <adiar/internal/cut.h>
+#include <adiar/internal/data_structures/stack.h>
 #include <adiar/internal/data_types/level_info.h>
 #include <adiar/internal/io/ifstream.h>
 #include <adiar/internal/io/levelized_ifstream.h>
@@ -133,9 +133,7 @@ namespace adiar
     // Reserve an internal memory vector (of up to 8 MiB) for the result.
     // TODO: Abstract the stack into <adiar/internal/data_structures/stack.h>.
     using value_type = pair<bdd::label_type, bool>;
-    using stack_type = tpie::internal_stack<value_type>;
-
-    stack_type _stack;
+    internal::stack<internal::memory_mode::Internal, value_type> _stack;
 
   public:
     bdd_satX__stack(const generator<bdd::label_type>& g, const size_t stack_size)

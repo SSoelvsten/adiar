@@ -1,10 +1,10 @@
 #include <adiar/functional.h>
 #include <adiar/zdd.h>
-#include <tpie/internal_stack.h>
 #include <tpie/tpie.h>
 
 #include <adiar/internal/algorithms/traverse.h>
 #include <adiar/internal/assert.h>
+#include <adiar/internal/data_structures/stack.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/io/file.h>
@@ -85,9 +85,7 @@ namespace adiar
     // Reserve an internal memory vector (of up to 8 MiB) for the result.
     // TODO: Abstract the stack into <adiar/internal/data_structures/stack.h>.
     using value_type = zdd::label_type;
-    using stack_type = tpie::internal_stack<value_type>;
-
-    stack_type _stack;
+    internal::stack<internal::memory_mode::Internal, value_type> _stack;
 
   public:
     __zdd_Xelem__stack(size_t max_size)
