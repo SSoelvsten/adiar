@@ -74,7 +74,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     ifstream(const file<value_type>& f)
     {
-      attach(f);
+      open(f);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82,7 +82,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     ifstream(const adiar::shared_ptr<file<value_type>>& f)
     {
-      attach(f);
+      open(f);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,16 +90,16 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     ~ifstream()
     {
-      detach();
+      close();
     }
 
   protected:
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    attach(const file<value_type>& f, const adiar::shared_ptr<void>& shared_ptr)
+    open(const file<value_type>& f, const adiar::shared_ptr<void>& shared_ptr)
     {
       // Detach from prior file, if any.
-      if (attached()) { detach(); }
+      if (is_open()) { close(); }
 
       // Hook into reference counting.
       _file_ptr = shared_ptr;
@@ -120,41 +120,41 @@ namespace adiar::internal
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Attach to a file.
+    /// \brief Open a file.
     ///
     /// \pre No `iofstream` or `ofstream` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    attach(const file<value_type>& f)
+    open(const file<value_type>& f)
     {
-      attach(f, nullptr);
+      open(f, nullptr);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Attach to a shared file.
+    /// \brief Open a shared file.
     ///
     /// \pre No `iofstream` or `ofstream` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    attach(const adiar::shared_ptr<file<value_type>>& f)
+    open(const adiar::shared_ptr<file<value_type>>& f)
     {
-      attach(*f, f);
+      open(*f, f);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether the reader is currently attached.
+    /// \brief Whether the reader is currently open.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     bool
-    attached() const
+    is_open() const
     {
       return _stream.is_open();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Detach from the file, i.e. close the stream.
+    /// \brief Close a file, i.e. close the stream.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    detach()
+    close()
     {
       _stream.close();
       if (_file_ptr) { _file_ptr.reset(); }
@@ -189,7 +189,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the stream contains more elements.
     ///
-    /// \pre `attached() == true`.
+    /// \pre `is_open() == true`.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     bool
     can_pull() const
@@ -213,7 +213,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the next element (and move the read head).
     ///
-    /// \pre `attached() == true` and`can_pull() == true`.
+    /// \pre `is_open() == true` and`can_pull() == true`.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     const value_type
     pull()
@@ -230,7 +230,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the next element (but do not move the read head)
     ///
-    /// \pre `attached() == true` and `can_pull() == true`.
+    /// \pre `is_open() == true` and `can_pull() == true`.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     const value_type
     peek()
@@ -249,7 +249,7 @@ namespace adiar::internal
     ///
     /// \param s The value to seek for
     ///
-    /// \pre     The content is in ascending order, `attached() == true`, and `can_pull() == true`.
+    /// \pre     The content is in ascending order, `is_open() == true`, and `can_pull() == true`.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     template <typename seek_t = value_type>
     const value_type

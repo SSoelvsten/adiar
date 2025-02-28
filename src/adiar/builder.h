@@ -422,12 +422,12 @@ namespace adiar
           throw domain_error("There must be at least one node or terminal in the decision diagram");
         }
       }
-      nw.detach();
+      nw.close();
 
       if (unref_nodes > 1) { throw domain_error("Decision diagram has more than one root"); }
 
       const typename Policy::dd_type res(nf);
-      detach();
+      close();
       return res;
     }
 
@@ -441,7 +441,7 @@ namespace adiar
     void
     clear() noexcept
     {
-      detach();
+      close();
     }
 
   private:
@@ -452,12 +452,12 @@ namespace adiar
     attach_if_needed() noexcept
     {
       if (!nf) {
-        adiar_assert(!nw.attached(),
+        adiar_assert(!nw.is_open(),
                      "`nw`'s attachment should be consistent with existence of `nf`");
 
         // Initialise file
         nf = internal::make_shared_levelized_file<node_type>();
-        nw.attach(nf);
+        nw.open(nf);
 
         // Initialise state variables
         current_label    = Policy::max_label;
@@ -475,9 +475,9 @@ namespace adiar
     /// \brief Detaches the node writer and releases the pointer to the file.
     /////////////////////////////////////////////////////////////////////////////////////////////////
     inline void
-    detach() noexcept
+    close() noexcept
     {
-      nw.detach();
+      nw.close();
       nf.reset();
     }
 

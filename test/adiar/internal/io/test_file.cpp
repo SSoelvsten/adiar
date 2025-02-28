@@ -236,15 +236,15 @@ go_bandit([]() {
       it("can attach to and detach from an empty file [member functions]", []() {
         file<int> f;
         ifstream<int> fs;
-        fs.attach(f);
+        fs.open(f);
       });
 
       it("remembers it was attached", []() {
         file<int> f;
         ifstream<int> fs(f);
-        AssertThat(fs.attached(), Is().True());
-        fs.detach();
-        AssertThat(fs.attached(), Is().False());
+        AssertThat(fs.is_open(), Is().True());
+        fs.close();
+        AssertThat(fs.is_open(), Is().False());
       });
 
       it("cannot be pulled from", []() {
@@ -259,7 +259,7 @@ go_bandit([]() {
         ifstream<int> fs(f);
 
         fs.reset();
-        AssertThat(fs.attached(), Is().True());
+        AssertThat(fs.is_open(), Is().True());
         AssertThat(fs.can_pull(), Is().False());
       });
     });
@@ -273,15 +273,15 @@ go_bandit([]() {
       it("can attach to and detach from an empty file [member functions]", []() {
         file<int> f;
         ofstream<int> fw;
-        fw.detach();
+        fw.close();
       });
 
       it("remembers it was attached", []() {
         file<int> f;
         ofstream<int> fw(f);
-        AssertThat(fw.attached(), Is().True());
-        fw.detach();
-        AssertThat(fw.attached(), Is().False());
+        AssertThat(fw.is_open(), Is().True());
+        fw.close();
+        AssertThat(fw.is_open(), Is().False());
       });
 
       it("exists after writer attach", []() {
@@ -289,7 +289,7 @@ go_bandit([]() {
         AssertThat(f.exists(), Is().False());
 
         ofstream<int> fw(f);
-        fw.detach();
+        fw.close();
 
         AssertThat(f.exists(), Is().True());
       });
@@ -321,7 +321,7 @@ go_bandit([]() {
         AssertThat(fw.size(), Is().EqualTo(2u));
         fw << 3;
         AssertThat(fw.size(), Is().EqualTo(3u));
-        fw.detach();
+        fw.close();
 
         AssertThat(f.size(), Is().EqualTo(3u));
       });
@@ -335,7 +335,7 @@ go_bandit([]() {
         AssertThat(fw.size(), Is().EqualTo(1u));
         fw << 21;
         AssertThat(fw.size(), Is().EqualTo(2u));
-        fw.detach();
+        fw.close();
 
         AssertThat(f.size(), Is().EqualTo(2u));
       });
@@ -351,7 +351,7 @@ go_bandit([]() {
 
         ofstream<int> fw(f);
         fw << 42 << 21;
-        fw.detach();
+        fw.close();
 
         std::string old_path = f.path();
 
@@ -376,7 +376,7 @@ go_bandit([]() {
 
         ofstream<int> fw(f);
         fw << 42 << 21;
-        fw.detach();
+        fw.close();
 
         std::string old_path = f.path();
 
@@ -397,8 +397,8 @@ go_bandit([]() {
 
         ofstream<int> fw(f);
         fw << 1 << 2 << 3;
-        fw.detach();
-        AssertThat(fw.attached(), Is().False());
+        fw.close();
+        AssertThat(fw.is_open(), Is().False());
 
         ifstream<int, false> fs(f);
         AssertThat(fs.can_pull(), Is().True());
@@ -408,7 +408,7 @@ go_bandit([]() {
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(3));
         AssertThat(fs.can_pull(), Is().False());
-        fs.detach();
+        fs.close();
       });
 
       it("can read written content [2]", []() {
@@ -416,8 +416,8 @@ go_bandit([]() {
 
         ofstream<int> fw(f);
         fw << 42 << 21;
-        fw.detach();
-        AssertThat(fw.attached(), Is().False());
+        fw.close();
+        AssertThat(fw.is_open(), Is().False());
 
         ifstream<int, false> fs(f);
         AssertThat(fs.can_pull(), Is().True());
@@ -425,7 +425,7 @@ go_bandit([]() {
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(21));
         AssertThat(fs.can_pull(), Is().False());
-        fs.detach();
+        fs.close();
       });
 
       it("can read written content in reverse [1]", []() {
@@ -433,8 +433,8 @@ go_bandit([]() {
 
         ofstream<int> fw(f);
         fw << 1 << 2 << 3;
-        fw.detach();
-        AssertThat(fw.attached(), Is().False());
+        fw.close();
+        AssertThat(fw.is_open(), Is().False());
 
         ifstream<int, true> fs(f);
         AssertThat(fs.can_pull(), Is().True());
@@ -444,7 +444,7 @@ go_bandit([]() {
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(1));
         AssertThat(fs.can_pull(), Is().False());
-        fs.detach();
+        fs.close();
       });
 
       it("can read written content in reverse [2]", []() {
@@ -452,8 +452,8 @@ go_bandit([]() {
 
         ofstream<int> fw(f);
         fw << 42 << 21;
-        fw.detach();
-        AssertThat(fw.attached(), Is().False());
+        fw.close();
+        AssertThat(fw.is_open(), Is().False());
 
         ifstream<int, true> fs(f);
         AssertThat(fs.can_pull(), Is().True());
@@ -461,7 +461,7 @@ go_bandit([]() {
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(42));
         AssertThat(fs.can_pull(), Is().False());
-        fs.detach();
+        fs.close();
       });
 
       it("can seek existing elements [forward]", []() {
@@ -469,8 +469,8 @@ go_bandit([]() {
 
         ofstream<int> fw(f);
         fw << 1 << 2 << 3 << 4 << 5 << 6;
-        fw.detach();
-        AssertThat(fw.attached(), Is().False());
+        fw.close();
+        AssertThat(fw.is_open(), Is().False());
 
         ifstream<int> fs(f);
         AssertThat(fs.can_pull(), Is().True());
@@ -489,8 +489,8 @@ go_bandit([]() {
 
         ofstream<int> fw(f);
         fw << 6 << 5 << 4 << 3 << 2 << 1;
-        fw.detach();
-        AssertThat(fw.attached(), Is().False());
+        fw.close();
+        AssertThat(fw.is_open(), Is().False());
 
         ifstream<int, true> fs(f);
         AssertThat(fs.can_pull(), Is().True());
@@ -509,8 +509,8 @@ go_bandit([]() {
 
         ofstream<int> fw(f);
         fw << 1 << 2 << 3 << 5 << 6;
-        fw.detach();
-        AssertThat(fw.attached(), Is().False());
+        fw.close();
+        AssertThat(fw.is_open(), Is().False());
 
         ifstream<int> fs(f);
         AssertThat(fs.can_pull(), Is().True());
@@ -525,8 +525,8 @@ go_bandit([]() {
 
         ofstream<int> fw(f);
         fw << 6 << 5 << 3 << 2 << 1;
-        fw.detach();
-        AssertThat(fw.attached(), Is().False());
+        fw.close();
+        AssertThat(fw.is_open(), Is().False());
 
         ifstream<int, true> fs(f);
         AssertThat(fs.can_pull(), Is().True());
@@ -541,8 +541,8 @@ go_bandit([]() {
 
         ofstream<int> fw(f);
         fw << 1 << 2 << 3 << 5 << 6;
-        fw.detach();
-        AssertThat(fw.attached(), Is().False());
+        fw.close();
+        AssertThat(fw.is_open(), Is().False());
 
         ifstream<int> fs(f);
         AssertThat(fs.can_pull(), Is().True());
@@ -559,8 +559,8 @@ go_bandit([]() {
 
         ofstream<int> fw(f);
         fw << 6 << 5 << 3 << 2 << 1;
-        fw.detach();
-        AssertThat(fw.attached(), Is().False());
+        fw.close();
+        AssertThat(fw.is_open(), Is().False());
 
         ifstream<int, true> fs(f);
         AssertThat(fs.can_pull(), Is().True());
@@ -578,8 +578,8 @@ go_bandit([]() {
         ofstream<int> fw(f);
         fw << 42 << 2 << 32 << 21;
         fw.sort<std::less<>>();
-        fw.detach();
-        AssertThat(fw.attached(), Is().False());
+        fw.close();
+        AssertThat(fw.is_open(), Is().False());
 
         ifstream<int> fs(f);
         AssertThat(fs.can_pull(), Is().True());
@@ -591,7 +591,7 @@ go_bandit([]() {
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(42));
         AssertThat(fs.can_pull(), Is().False());
-        fs.detach();
+        fs.close();
       });
 
       it("can read from 'moved' file [/tmp/]", [&tmp_path]() {
@@ -605,7 +605,7 @@ go_bandit([]() {
 
         ofstream<int> fw(f);
         fw << 12 << 9 << 1;
-        fw.detach();
+        fw.close();
 
         AssertThat(f.can_move(), Is().True());
         f.move(new_path);
@@ -618,7 +618,7 @@ go_bandit([]() {
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(1));
         AssertThat(fs.can_pull(), Is().False());
-        fs.detach();
+        fs.close();
       });
 
       it("can read from 'moved' file [./]", [&curr_path]() {
@@ -632,7 +632,7 @@ go_bandit([]() {
 
         ofstream<int> fw(f);
         fw << 12 << 9 << 1;
-        fw.detach();
+        fw.close();
 
         AssertThat(f.can_move(), Is().True());
         f.move(new_path);
@@ -645,7 +645,7 @@ go_bandit([]() {
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(1));
         AssertThat(fs.can_pull(), Is().False());
-        fs.detach();
+        fs.close();
       });
 
       it("can read from 'moved' file in reverse [/tmp/]", [&tmp_path]() {
@@ -659,7 +659,7 @@ go_bandit([]() {
 
         ofstream<int> fw(f);
         fw << 8 << 9 << 4 << 2;
-        fw.detach();
+        fw.close();
 
         AssertThat(f.can_move(), Is().True());
         f.move(new_path);
@@ -674,7 +674,7 @@ go_bandit([]() {
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(8));
         AssertThat(fs.can_pull(), Is().False());
-        fs.detach();
+        fs.close();
       });
 
       it("can read from 'moved' file in reverse [./]", [&curr_path]() {
@@ -688,7 +688,7 @@ go_bandit([]() {
 
         ofstream<int> fw(f);
         fw << 8 << 9 << 4 << 2;
-        fw.detach();
+        fw.close();
 
         AssertThat(f.can_move(), Is().True());
         f.move(new_path);
@@ -703,13 +703,13 @@ go_bandit([]() {
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(8));
         AssertThat(fs.can_pull(), Is().False());
-        fs.detach();
+        fs.close();
       });
     });
 
     describe("iofstream", []() {
       iofstream<int> s;
-      s.attach();
+      s.open();
 
       it("temporary file is initially empty", [&s]() {
         AssertThat(s.size(), Is().EqualTo(0u));
@@ -958,7 +958,7 @@ go_bandit([]() {
 
         ofstream<int> fw(f);
         fw << 0 << 1 << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9;
-        fw.detach();
+        fw.close();
 
         f.move(path);
         f.make_persistent();
@@ -1030,7 +1030,7 @@ go_bandit([]() {
       it("cannot reattach a writer to a persisted file", [&path]() {
         file<int> f(path);
         ofstream<int> fw;
-        AssertThrows(runtime_error, fw.attach(f));
+        AssertThrows(runtime_error, fw.open(f));
       });
 
       // Clean up for above tests
@@ -1047,7 +1047,7 @@ go_bandit([]() {
 
         ifstream<int> fs(f);
         AssertThat(fs.can_pull(), Is().False());
-        fs.detach();
+        fs.close();
       });
 
       it("can sort existing empty file", []() {
@@ -1060,7 +1060,7 @@ go_bandit([]() {
 
         ifstream<int> fs(f);
         AssertThat(fs.can_pull(), Is().False());
-        fs.detach();
+        fs.close();
       });
 
       it("can sort non-empty file [1]", []() {
@@ -1068,7 +1068,7 @@ go_bandit([]() {
 
         ofstream<int> fw(f);
         fw << 8 << 9 << 4 << 2;
-        fw.detach();
+        fw.close();
 
         f.sort<std::less<int>>();
 
@@ -1082,7 +1082,7 @@ go_bandit([]() {
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(9));
         AssertThat(fs.can_pull(), Is().False());
-        fs.detach();
+        fs.close();
       });
 
       it("can sort non-empty file [2]", []() {
@@ -1090,7 +1090,7 @@ go_bandit([]() {
 
         ofstream<int> fw(f);
         fw << 42 << -1 << 8 << 21 << 8 << 3;
-        fw.detach();
+        fw.close();
 
         f.sort<std::less<int>>();
 
@@ -1108,7 +1108,7 @@ go_bandit([]() {
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(42));
         AssertThat(fs.can_pull(), Is().False());
-        fs.detach();
+        fs.close();
       });
 
       it("cannot sort a persisted empty file", []() {
@@ -1137,7 +1137,7 @@ go_bandit([]() {
 
           ofstream<int> fw(f);
           fw << -1 << 8 << 3;
-          fw.detach();
+          fw.close();
 
           path = f.path();
           f.make_persistent();
@@ -1157,7 +1157,7 @@ go_bandit([]() {
           AssertThat(fs.can_pull(), Is().True());
           AssertThat(fs.pull(), Is().EqualTo(3));
           AssertThat(fs.can_pull(), Is().False());
-          fs.detach();
+          fs.close();
         }
 
         // Clean up for this test
@@ -1199,7 +1199,7 @@ go_bandit([]() {
         ofstream<int> fw(f1);
 
         fw << 21 << 42 << 21;
-        fw.detach();
+        fw.close();
         AssertThat(f1.exists(), Is().True());
         AssertThat(f1.size(), Is().EqualTo(3u));
 
@@ -1217,7 +1217,7 @@ go_bandit([]() {
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(21));
         AssertThat(fs.can_pull(), Is().False());
-        fs.detach();
+        fs.close();
       });
 
       it("can copy over an existing file [non-empty, 2]", []() {
@@ -1225,7 +1225,7 @@ go_bandit([]() {
         ofstream<int> fw(f1);
 
         fw << 0 << 1 << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9;
-        fw.detach();
+        fw.close();
         AssertThat(f1.exists(), Is().True());
         AssertThat(f1.size(), Is().EqualTo(10u));
 
@@ -1257,7 +1257,7 @@ go_bandit([]() {
         AssertThat(fs.can_pull(), Is().True());
         AssertThat(fs.pull(), Is().EqualTo(9));
         AssertThat(fs.can_pull(), Is().False());
-        fs.detach();
+        fs.close();
       });
 
       it("is temporary if original file is temporary [empty]", []() {
@@ -1274,7 +1274,7 @@ go_bandit([]() {
         file<int> f1;
         ofstream<int> fw(f1);
         fw << 0 << 1 << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9;
-        fw.detach();
+        fw.close();
         AssertThat(f1.exists(), Is().True());
         AssertThat(f1.size(), Is().EqualTo(10u));
 
@@ -1308,7 +1308,7 @@ go_bandit([]() {
           file<int> f1;
           ofstream<int> fw(f1);
           fw << 0 << 1 << 2 << 3 << 4;
-          fw.detach();
+          fw.close();
           f1.make_persistent();
 
           file<int> f2 = file<int>::copy(f1);

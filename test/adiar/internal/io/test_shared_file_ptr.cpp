@@ -123,11 +123,11 @@ go_bandit([]() {
           {
             shared_file<int> f;
             path = f->path();
-            fw.attach(f);
+            fw.open(f);
             AssertThat(std::filesystem::exists(path), Is().True());
           }
           AssertThat(std::filesystem::exists(path), Is().True());
-          fw.detach();
+          fw.close();
           AssertThat(std::filesystem::exists(path), Is().False());
         });
 
@@ -138,11 +138,11 @@ go_bandit([]() {
           {
             shared_file<int> f;
             path = f->path();
-            fs.attach(f);
+            fs.open(f);
             AssertThat(std::filesystem::exists(path), Is().True());
           }
           AssertThat(std::filesystem::exists(path), Is().True());
-          fs.detach();
+          fs.close();
           AssertThat(std::filesystem::exists(path), Is().False());
         });
 
@@ -247,7 +247,7 @@ go_bandit([]() {
           fw << 0 << 2 << 4 << 6 << 8;
 
           // TODO: header file content
-          fw.detach();
+          fw.close();
 
           f->move(file_path);
           f->make_persistent();
@@ -289,7 +289,7 @@ go_bandit([]() {
           fw << 1 << 3 << 5 << 7;
 
           // TODO: header file content
-          fw.detach();
+          fw.close();
 
           f->move(file_path);
           f->make_persistent();
@@ -461,7 +461,7 @@ go_bandit([]() {
           {
             shared_levelized_file<int> lf;
             paths = lf->paths();
-            lfw.attach(lf);
+            lfw.open(lf);
 
             AssertThat(lf->exists(), Is().True());
             AssertThat(std::filesystem::exists(paths[0]), Is().True());
@@ -472,7 +472,7 @@ go_bandit([]() {
           AssertThat(std::filesystem::exists(paths[1]), Is().True());
           AssertThat(std::filesystem::exists(paths[2]), Is().True());
 
-          lfw.detach();
+          lfw.close();
 
           AssertThat(std::filesystem::exists(paths[0]), Is().False());
           AssertThat(std::filesystem::exists(paths[1]), Is().False());
@@ -486,7 +486,7 @@ go_bandit([]() {
           {
             shared_levelized_file<int> lf;
             paths = lf->paths();
-            lfs.attach(lf);
+            lfs.open(lf);
 
             AssertThat(lf->exists(), Is().True());
             AssertThat(std::filesystem::exists(paths[0]), Is().True());
@@ -497,7 +497,7 @@ go_bandit([]() {
           AssertThat(std::filesystem::exists(paths[1]), Is().True());
           AssertThat(std::filesystem::exists(paths[2]), Is().True());
 
-          lfs.detach();
+          lfs.close();
 
           AssertThat(std::filesystem::exists(paths[0]), Is().False());
           AssertThat(std::filesystem::exists(paths[1]), Is().False());
@@ -511,7 +511,7 @@ go_bandit([]() {
           {
             shared_levelized_file<int> lf;
             paths = lf->paths();
-            lis.attach(lf);
+            lis.open(lf);
 
             AssertThat(lf->exists(), Is().True());
             AssertThat(std::filesystem::exists(paths[0]), Is().True());
@@ -522,7 +522,7 @@ go_bandit([]() {
           AssertThat(std::filesystem::exists(paths[1]), Is().True());
           AssertThat(std::filesystem::exists(paths[2]), Is().True());
 
-          lis.detach();
+          lis.close();
 
           AssertThat(std::filesystem::exists(paths[0]), Is().False());
           AssertThat(std::filesystem::exists(paths[1]), Is().False());
@@ -724,7 +724,7 @@ go_bandit([]() {
           lfw.push(level_info{ 0, 1 });
 
           // TODO: header file content
-          lfw.detach();
+          lfw.close();
 
           lf->move(path_prefix);
           lf->make_persistent();
@@ -781,7 +781,7 @@ go_bandit([]() {
           lfw.push(level_info{ 1, 2 });
 
           // TODO: header file content
-          lfw.detach();
+          lfw.close();
 
           lf->move(path_prefix);
           lf->make_persistent();

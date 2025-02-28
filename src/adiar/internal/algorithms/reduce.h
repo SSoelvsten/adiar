@@ -314,7 +314,7 @@ namespace adiar::internal
       if (reduction_rule_ret != n.uid()) {
         // Open red1_mapping first (and create file on disk) when at least one
         // element is written to it.
-        if (!red1_mapping.attached()) { red1_mapping.attach(); }
+        if (!red1_mapping.is_open()) { red1_mapping.open(); }
 #ifdef ADIAR_STATS
         stats.removed_by_rule_1 += 1u;
 #endif
@@ -370,7 +370,7 @@ namespace adiar::internal
 
     // Merging of red1_mapping and red2_mapping
     mapping next_red1  = { node::uid_type(), node::uid_type() }; // <-- dummy value
-    bool has_next_red1 = red1_mapping.attached() && red1_mapping.size() > 0;
+    bool has_next_red1 = red1_mapping.is_open() && red1_mapping.size() > 0;
     if (has_next_red1) {
       red1_mapping.seek_begin();
       next_red1 = red1_mapping.next();
@@ -416,7 +416,7 @@ namespace adiar::internal
     }
 
     // Move on to the next level
-    red1_mapping.detach();
+    red1_mapping.close();
 
     // Update with new possible maximum 1-level cut (the one below the current level)
     out.unsafe_max_1level_cut(local_1level_cut);
@@ -509,7 +509,7 @@ namespace adiar::internal
       out.unsafe_set_number_of_terminals(!terminal_val, terminal_val);
 
       // NOTE: We do not need to update the cuts, since this is taken care of in
-      //       `~out() = out.detach()`.
+      //       `~out() = out.close()`.
     }
   }
 

@@ -80,7 +80,7 @@ namespace adiar::internal
     // levelized_raccess()
     // { }
     //
-    // TODO: Add 'attach(...)', 'attached()' 'detach()' working multi-usage.
+    // TODO: Add 'open(...)', 'is_open()' 'close()' working multi-usage.
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a mutable levelized file.

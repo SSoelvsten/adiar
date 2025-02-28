@@ -1920,7 +1920,7 @@ namespace adiar::internal
 #endif
         adiar_assert(outer_roots.size() > 0, "Nested Sweep needs some number of requests");
 
-        outer_ofstream.detach();
+        outer_ofstream.close();
 
 #ifdef ADIAR_STATS
         nested_sweeping::stats.inner_down.inputs.acc_size += outer_file->size();
@@ -1957,7 +1957,7 @@ namespace adiar::internal
           inner_unreduced.template get<shared_arc_file_type>();
 
         outer_file = __reduce_init_output<nesting_policy>();
-        outer_ofstream.attach(outer_file);
+        outer_ofstream.open(outer_file);
 
         if (is_last_inner) {
           nested_sweeping::inner::up<nesting_policy>(
@@ -2009,9 +2009,9 @@ namespace adiar::internal
         nested_sweeping::stats.outer_up.skipped_nested_levels__prune += 1u;
 #endif
         if (outer_ofstream.size() != 0) {
-          outer_ofstream.detach();
+          outer_ofstream.close();
           outer_file = __reduce_init_output<nesting_policy>();
-          outer_ofstream.attach(outer_file);
+          outer_ofstream.open(outer_file);
         }
       }
 
@@ -2059,7 +2059,7 @@ namespace adiar::internal
     }
 
     // Return (now not anymore 'intermediate') output
-    outer_ofstream.detach();
+    outer_ofstream.close();
     return outer_file;
   }
 

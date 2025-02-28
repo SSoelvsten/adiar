@@ -61,7 +61,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     levelized_ifstream(const levelized_file<value_type>& lf)
     {
-      attach(lf);
+      open(lf);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -69,7 +69,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     levelized_ifstream(const shared_ptr<levelized_file<value_type>>& lf)
     {
-      attach(lf);
+      open(lf);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79,44 +79,44 @@ namespace adiar::internal
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Attach to a levelized file.
+    /// \brief Open a levelized file.
     ///
     /// \pre No `levelized_ofstream` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    attach(const levelized_file<value_type>& f)
+    open(const levelized_file<value_type>& f)
     {
       if (!f.exists()) f.__touch();
 
       for (size_t s_idx = 0; s_idx < streams; s_idx++)
-        _ifstreams[s_idx].attach(f._files[s_idx], nullptr);
+        _ifstreams[s_idx].open(f._files[s_idx], nullptr);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Attach to a shared levelized file.
+    /// \brief Open a shared levelized file.
     ///
     /// \pre No `levelized_ofstream` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    attach(const shared_ptr<levelized_file<value_type>>& f)
+    open(const shared_ptr<levelized_file<value_type>>& f)
     {
       if (!f->exists()) f->touch();
 
       for (size_t s_idx = 0; s_idx < streams; s_idx++)
-        _ifstreams[s_idx].attach(f->_files[s_idx], f);
+        _ifstreams[s_idx].open(f->_files[s_idx], f);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Whether this stream is attached to a levelized file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     bool
-    attached() const
+    is_open() const
     {
-      const bool res = _ifstreams[0].attached();
+      const bool res = _ifstreams[0].is_open();
 #ifndef NDEBUG
       // TODO: trust the compiler to notice this is an empty for-loop?
       for (size_t s_idx = 1; s_idx < streams; s_idx++) {
-        adiar_assert(_ifstreams[s_idx].attached() == res, "Attachment ought to be synchronised.");
+        adiar_assert(_ifstreams[s_idx].is_open() == res, "Attachment ought to be synchronised.");
       }
 #endif
       return res;
@@ -126,9 +126,9 @@ namespace adiar::internal
     /// \brief Detaches the stream from a levelized file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    detach()
+    close()
     {
-      for (size_t s_idx = 0; s_idx < streams; s_idx++) _ifstreams[s_idx].detach();
+      for (size_t s_idx = 0; s_idx < streams; s_idx++) _ifstreams[s_idx].close();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -213,7 +213,7 @@ namespace adiar::internal
     level_info_ifstream(const file<level_info>& f, level_info::signed_level_type shift = 0)
       : _shift(shift)
     {
-      parent_type::attach(f);
+      parent_type::open(f);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -226,7 +226,7 @@ namespace adiar::internal
                         level_info::signed_level_type shift = 0)
       : _shift(shift)
     {
-      parent_type::attach(f);
+      parent_type::open(f);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -236,7 +236,7 @@ namespace adiar::internal
     level_info_ifstream(const levelized_file<value_type, false>& lf,
                         level_info::signed_level_type shift = 0)
     {
-      attach(lf, shift);
+      open(lf, shift);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -246,7 +246,7 @@ namespace adiar::internal
     level_info_ifstream(const adiar::shared_ptr<levelized_file<value_type, false>>& lf,
                         level_info::signed_level_type shift = 0)
     {
-      attach(lf, shift);
+      open(lf, shift);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -254,7 +254,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     level_info_ifstream(const dd& diagram)
     {
-      attach(diagram);
+      open(diagram);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -262,7 +262,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     level_info_ifstream(const __dd& diagram)
     {
-      attach(diagram);
+      open(diagram);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -272,51 +272,51 @@ namespace adiar::internal
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Attach to a levelized file.
+    /// \brief Open to a levelized file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     template <typename value_type>
     void
-    attach(const levelized_file<value_type, false>& lf, level_info::signed_level_type shift = 0)
+    open(const levelized_file<value_type, false>& lf, level_info::signed_level_type shift = 0)
     {
       if (!lf.exists()) lf.__touch();
-      parent_type::attach(lf._level_info_file, nullptr);
+      parent_type::open(lf._level_info_file, nullptr);
       this->_shift = shift;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Attach to a shared levelized file.
+    /// \brief Open to a shared levelized file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     template <typename value_type>
     void
-    attach(const adiar::shared_ptr<levelized_file<value_type, false>>& lf,
+    open(const adiar::shared_ptr<levelized_file<value_type, false>>& lf,
            level_info::signed_level_type shift = 0)
     {
       if (!lf->exists()) lf->touch();
-      parent_type::attach(lf->_level_info_file, lf);
+      parent_type::open(lf->_level_info_file, lf);
       this->_shift = shift;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Attach to a (reduced) decision diagram.
+    /// \brief Open to a (reduced) decision diagram.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    attach(const dd& diagram)
+    open(const dd& diagram)
     {
-      attach<node>(diagram.file_ptr());
+      open<node>(diagram.file_ptr());
       this->_shift = diagram.shift();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Attach to a (possibly unreduced) decision diagram.
+    /// \brief Open to a (possibly unreduced) decision diagram.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    attach(const __dd& diagram)
+    open(const __dd& diagram)
     {
       if (diagram.has<__dd::shared_arc_file_type>()) {
-        attach<arc>(diagram.get<__dd::shared_arc_file_type>());
+        open<arc>(diagram.get<__dd::shared_arc_file_type>());
         this->_shift = 0;
       } else if (diagram.has<__dd::shared_node_file_type>()) {
-        attach<node>(diagram.get<__dd::shared_node_file_type>());
+        open<node>(diagram.get<__dd::shared_node_file_type>());
         this->_shift = diagram._shift;
       } else {
         // We should never be in the case of hooking into a 'no_file'. That type should only be used

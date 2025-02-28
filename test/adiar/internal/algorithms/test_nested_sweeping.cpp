@@ -2175,7 +2175,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
 
           // Check node and meta files are correct
-          out_ofstream.detach();
+          out_ofstream.close();
 
           node_test_ifstream out_nodes(out);
 
@@ -2269,7 +2269,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
 
           // Check node and meta files are correct
-          out_ofstream.detach();
+          out_ofstream.close();
 
           node_test_ifstream out_nodes(out);
 
@@ -2350,7 +2350,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
 
           // Check node and meta files are correct
-          out_ofstream.detach();
+          out_ofstream.close();
 
           node_test_ifstream out_nodes(out);
 
@@ -2463,7 +2463,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(3u));
 
           // Check node and meta files are correct
-          out_ofstream.detach();
+          out_ofstream.close();
 
           node_test_ifstream out_nodes(out);
 
@@ -2584,7 +2584,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
 
           // Check node and meta files are correct
-          out_ofstream.detach();
+          out_ofstream.close();
 
           node_test_ifstream out_nodes(out);
 
@@ -2696,7 +2696,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
 
           // Check node and meta files are correct
-          out_ofstream.detach();
+          out_ofstream.close();
 
           node_test_ifstream out_nodes(out);
 
@@ -2816,7 +2816,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
 
           // Check node and meta files are correct
-          out_ofstream.detach();
+          out_ofstream.close();
 
           node_test_ifstream out_nodes(out);
 
@@ -2946,7 +2946,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
 
           // Check node and meta files are correct
-          out_ofstream.detach();
+          out_ofstream.close();
 
           node_test_ifstream out_nodes(out);
 
@@ -3057,7 +3057,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
 
           // Check node and meta files are correct
-          out_ofstream.detach();
+          out_ofstream.close();
 
           node_test_ifstream out_nodes(out);
 
@@ -3131,7 +3131,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
 
           // Check node and meta files are correct
-          out_ofstream.detach();
+          out_ofstream.close();
 
           node_test_ifstream out_nodes(out);
 
@@ -3221,7 +3221,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
 
           // Check node and meta files are correct
-          out_ofstream.detach();
+          out_ofstream.close();
 
           node_test_ifstream out_nodes(out);
 
@@ -3302,7 +3302,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(2u));
 
           // Check node and meta files are correct
-          out_ofstream.detach();
+          out_ofstream.close();
 
           node_test_ifstream out_nodes(out);
 
@@ -3415,7 +3415,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(3u));
 
           // Check node and meta files are correct
-          out_ofstream.detach();
+          out_ofstream.close();
 
           node_test_ifstream out_nodes(out);
 
@@ -3806,7 +3806,7 @@ go_bandit([]() {
             AssertThat(out->number_of_terminals[true], Is().EqualTo(3u));
 
             // Check node and meta files are correct
-            out_ofstream.detach();
+            out_ofstream.close();
 
             node_test_ifstream out_nodes(out);
 
@@ -3897,7 +3897,7 @@ go_bandit([]() {
             AssertThat(out->number_of_terminals[true], Is().EqualTo(4u));
 
             // Check node and meta files are correct
-            out_ofstream.detach();
+            out_ofstream.close();
 
             node_test_ifstream out_nodes(out);
 
@@ -3995,7 +3995,7 @@ go_bandit([]() {
             AssertThat(out->number_of_terminals[true], Is().EqualTo(3u));
 
             // Check node and meta files are correct
-            out_ofstream.detach();
+            out_ofstream.close();
 
             node_test_ifstream out_nodes(out);
 
@@ -4088,7 +4088,7 @@ go_bandit([]() {
                AssertThat(out->number_of_terminals[true], Is().EqualTo(4u));
 
                // Check node and meta files are correct
-               out_ofstream.detach();
+               out_ofstream.close();
 
                node_test_ifstream out_nodes(out);
 
@@ -4252,7 +4252,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(4u));
 
           // Check node and meta files are correct
-          out_ofstream.detach();
+          out_ofstream.close();
 
           node_test_ifstream out_nodes(out);
 
@@ -4384,7 +4384,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
 
           // Check node and meta files are correct
-          out_ofstream.detach();
+          out_ofstream.close();
 
           node_test_ifstream out_nodes(out);
 
@@ -4497,7 +4497,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
 
           // Check node and meta files are correct
-          out_ofstream.detach();
+          out_ofstream.close();
 
           node_test_ifstream out_nodes(out);
 
@@ -4608,7 +4608,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
 
           // Check node and meta files are correct
-          out_ofstream.detach();
+          out_ofstream.close();
 
           node_test_ifstream out_nodes(out);
 
@@ -4711,7 +4711,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(0u));
 
           // Check node and meta files are correct
-          out_ofstream.detach();
+          out_ofstream.close();
 
           node_test_ifstream out_nodes(out);
 
@@ -4811,7 +4811,7 @@ go_bandit([]() {
           AssertThat(out->number_of_terminals[true], Is().EqualTo(1u));
 
           // Check node and meta files are correct
-          out_ofstream.detach();
+          out_ofstream.close();
 
           node_test_ifstream out_nodes(out);
 
