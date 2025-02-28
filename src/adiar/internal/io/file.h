@@ -57,8 +57,9 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     using access_type = tpie::access_type;
 
-    static constexpr access_type read_access  = tpie::access_type::access_read;
-    static constexpr access_type write_access = tpie::access_type::access_write;
+    static constexpr access_type r_access  = tpie::access_type::access_read;
+    static constexpr access_type w_access  = tpie::access_type::access_write;
+    static constexpr access_type rw_access = tpie::access_type::access_read_write;
 
   private:
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79,6 +80,9 @@ namespace adiar::internal
 
     template <typename value_type>
     friend class ofstream;
+
+    template <typename value_type>
+    friend class iofstream;
 
     template <typename value_type, bool split_on_levels>
     friend class levelized_file;
@@ -166,7 +170,7 @@ namespace adiar::internal
       if (!exists()) { return 0u; }
 
       tpie::file_stream<value_type> fs;
-      fs.open(_tpie_file, read_access);
+      fs.open(_tpie_file, r_access);
       return fs.size();
     }
 
@@ -186,9 +190,9 @@ namespace adiar::internal
     {
       if (exists()) return;
 
-      // The file exists on disk, after opening it with write_access.
+      // The file exists on disk, after opening it with write access.
       tpie::file_stream<value_type> fs;
-      fs.open(_tpie_file, write_access);
+      fs.open(_tpie_file, w_access);
     }
 
   public:

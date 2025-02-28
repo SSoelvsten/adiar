@@ -14,6 +14,7 @@
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/io/arc_file.h>
 #include <adiar/internal/io/arc_ifstream.h>
+#include <adiar/internal/io/iofstream.h>
 #include <adiar/internal/io/node_file.h>
 #include <adiar/internal/io/node_ofstream.h>
 #include <adiar/internal/memory.h>
@@ -289,11 +290,10 @@ namespace adiar::internal
                  [[maybe_unused]] statistics::reduce_t& stats = stats_reduce)
   {
     // Temporary file for Reduction Rule 1 mappings (opened later if need be)
-    tpie::file_stream<mapping> red1_mapping;
+    iofstream<mapping> red1_mapping;
 
-    // Sorter to find Reduction Rule 2 mappings
+    // Sorters to find Reduction Rule 2 mappings
     sorter_t<node, reduce_node_children_lt> child_grouping(sorters_memory, unreduced_width, 2);
-
     sorter_t<mapping, reduce_uid_lt> red2_mapping(sorters_memory, unreduced_width, 2);
 
     // Pull out all nodes from reduce_pq and terminal_arcs for this level
@@ -314,7 +314,7 @@ namespace adiar::internal
       if (reduction_rule_ret != n.uid()) {
         // Open red1_mapping first (and create file on disk) when at least one
         // element is written to it.
-        if (!red1_mapping.is_open()) { red1_mapping.open(); }
+        if (!red1_mapping.attached()) { red1_mapping.attach(); }
 #ifdef ADIAR_STATS
         stats.removed_by_rule_1 += 1u;
 #endif
@@ -370,10 +370,10 @@ namespace adiar::internal
 
     // Merging of red1_mapping and red2_mapping
     mapping next_red1  = { node::uid_type(), node::uid_type() }; // <-- dummy value
-    bool has_next_red1 = red1_mapping.is_open() && red1_mapping.size() > 0;
+    bool has_next_red1 = red1_mapping.attached() && red1_mapping.size() > 0;
     if (has_next_red1) {
-      red1_mapping.seek(0);
-      next_red1 = red1_mapping.read();
+      red1_mapping.seek_begin();
+      next_red1 = red1_mapping.next();
     }
 
     mapping next_red2  = { node::uid_type(), node::uid_type() }; // <-- dummy value
@@ -407,8 +407,8 @@ namespace adiar::internal
 
       // Update the mapping that was used
       if (is_red1_current) {
-        has_next_red1 = red1_mapping.can_read();
-        if (has_next_red1) { next_red1 = red1_mapping.read(); }
+        has_next_red1 = red1_mapping.has_next();
+        if (has_next_red1) { next_red1 = red1_mapping.next(); }
       } else {
         has_next_red2 = red2_mapping.can_pull();
         if (has_next_red2) { next_red2 = red2_mapping.pull(); }
@@ -416,7 +416,7 @@ namespace adiar::internal
     }
 
     // Move on to the next level
-    red1_mapping.close();
+    red1_mapping.detach();
 
     // Update with new possible maximum 1-level cut (the one below the current level)
     out.unsafe_max_1level_cut(local_1level_cut);
@@ -648,7 +648,7 @@ namespace adiar::internal
 
     const size_t pq_memory = aux_available_memory / 2;
     const size_t sorters_memory =
-      aux_available_memory - pq_memory - tpie::file_stream<mapping>::memory_usage();
+      aux_available_memory - pq_memory - iofstream<mapping>::memory_usage();
 
     const size_t pq_memory_fits =
       reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(pq_memory);
