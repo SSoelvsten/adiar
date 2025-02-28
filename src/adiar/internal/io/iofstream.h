@@ -1,74 +1,68 @@
-#ifndef ADIAR_INTERNAL_IO_OFSTREAM_H
-#define ADIAR_INTERNAL_IO_OFSTREAM_H
+#ifndef ADIAR_INTERNAL_IO_IOFSTREAM_H
+#define ADIAR_INTERNAL_IO_IOFSTREAM_H
 
 #include <tpie/file_stream.h>
-#include <tpie/sort.h>
 
 #include <adiar/internal/assert.h>
-#include <adiar/internal/data_types/level_info.h>
-#include <adiar/internal/data_types/ptr.h>
 #include <adiar/internal/io/file.h>
-#include <adiar/internal/memory.h>
 
 namespace adiar::internal
 {
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// \brief Write-only access to a simple file including a consistency check on the given input.
-  ///
-  /// \tparam T
-  ///    Type of the file's content.
-  ///
-  /// \details The consistency check verifies, whether something is allowed to come after something
-  ///          else. In all our current use-cases, the check induces a total ordering.
+  /// \brief Stream to a file with a bidirectional read and write direction.
   //////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename T>
-  class ofstream
+  class iofstream
   {
   public:
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of the file's elements.
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     using value_type = T;
 
   public:
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     static size_t
-    memory_usage()
+      memory_usage()
     {
       return tpie::file_stream<value_type>::memory_usage();
     }
 
   private:
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief If attached to a shared file, then hook into the reference counting such that the file
-    ///        is not garbage collected while we write to it.
+    /// \brief If attached to a shared file, then hook into the reference counting such that the
+    ///        file is not garbage collected while we read from and/or write to it.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     shared_ptr<void> _file_ptr;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief TPIE's file stream object to write elements with.
+    /// \brief TPIE's file stream object to read/write the file with.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    tpie::file_stream<value_type> _stream;
+    mutable typename tpie::file_stream<value_type> _stream;
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct unattached to any file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    ofstream()
+    iofstream()
     {}
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Construct attached to a given `file<value_type>`.
-    ///
-    /// \pre No `iofstream` or `ifstream` is currently attached to this file.
+    iofstream(const iofstream<value_type>&) = delete;
+    iofstream(iofstream<value_type>&&)      = delete;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    ofstream(file<value_type>& f)
+    /// \brief Construct attached to a given shared `file<value_type>`.
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    iofstream(const file<value_type>& f)
     {
       attach(f);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a given shared `file<value_type>`.
-    ///
-    /// \pre No `iofstream` or `ifstream` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    ofstream(adiar::shared_ptr<file<value_type>>& f)
+    iofstream(const adiar::shared_ptr<file<value_type>>& f)
     {
       attach(f);
     }
@@ -76,7 +70,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Detaches and cleans up when destructed.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    ~ofstream()
+    ~iofstream()
     {
       detach();
     }
@@ -84,138 +78,163 @@ namespace adiar::internal
   protected:
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    attach(file<value_type>& f, adiar::shared_ptr<void> p)
+    attach(const file<value_type>& f, const adiar::shared_ptr<void>& shared_ptr)
     {
-      if (f.is_persistent()) throw runtime_error("Cannot attach writer to a persisted file");
+      // Detach from prior file, if any.
+      if (this->attached()) { this->detach(); }
 
-      if (attached()) { detach(); }
-      _file_ptr = p;
+      // Hook into reference counting.
+      this->_file_ptr = shared_ptr;
 
-      _stream.open(f._tpie_file, file<value_type>::w_access);
-      _stream.seek(0, tpie::file_stream_base::end);
+      // Open the stream to the file
+      this->_stream.open(f._tpie_file, file<value_type>::rw_access);
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    // Befriend the few places that need direct access to the above 'attach'.
-    template <typename tparam__elem_t>
-    friend class levelized_ofstream;
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Attach to a file.
-    ///
-    /// \pre No `iofstream` or `ifstream` is currently attached to this file.
-    ///
-    /// \warning Since ownership is \em not shared with this writer, you have to ensure, that the
-    ///          file in question is not destructed before `.detach()` is called.
+    /// \brief Attach to an unnamed temporary file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    attach(file<value_type>& f)
+    attach()
     {
-      attach(f, nullptr);
+      this->_stream.open();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Attach to a file.
+    ///
+    /// \pre No other `iofstream` or `ofstream` is currently attached to this file.
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    void
+    attach(const file<value_type>& f)
+    {
+      this->attach(f, nullptr);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Attach to a shared file.
     ///
-    /// \pre No `iofstream` or `ifstream` is currently attached to this file.
+    /// \pre No other `iofstream` or `ofstream` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    attach(adiar::shared_ptr<file<value_type>> f)
+    attach(const adiar::shared_ptr<file<value_type>>& f)
     {
-      attach(*f, f);
+      this->attach(*f, f);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether the writer currently is attached to any file.
+    /// \brief Whether the reader is currently attached.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     bool
     attached() const
     {
-      return _stream.is_open();
+      return this->_stream.is_open();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Detach from a file (if need be).
+    /// \brief Detach from the file, i.e. close the stream.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
     detach()
     {
-      _stream.close();
-      if (_file_ptr) { _file_ptr.reset(); }
+      this->_stream.close();
+      if (this->_file_ptr) { this->_file_ptr.reset(); }
     }
 
+  public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Push an element to the end of the file.
+    /// \brief Seek to a given offset (index).
     ///
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    void
-    push(const value_type& e)
+    void seek(size_t offset)
     {
-      _stream.write(e);
+      this->_stream.seek(offset);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Push an element to the end of the file.
+    /// \brief Seek to the beginning of the stream.
     ///
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    ofstream<value_type>&
-    operator<<(const value_type& e)
+    void seek_begin()
     {
-      this->push(e);
-      return *this;
+      this->_stream.seek(0);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether anything has been pushed the file.
+    /// \brief Seek to the end of the stream.
     ///
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    bool
-    has_pushed() const
+    void seek_end()
     {
-      return _stream.size() > 0;
+      this->_stream.seek(0, tpie::file_stream_base::end);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether the underlying file is empty.
+    size_t offset() const
+    {
+      return this->_stream.offset();
+    }
+
+    size_t size() const
+    {
+      return this->_stream.size();
+    }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether there is a next element to retrieve.
     ///
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    bool
-    empty() const
+    bool has_next() const
     {
-      return !has_pushed();
+      return _stream.can_read();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Number of elements written to this file.
+    /// \brief Obtain the next element.
     ///
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    size_t
-    size() const
+    const value_type& next()
     {
-      return _stream.size();
+      return _stream.read();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Sort the content of the attached file.
+    /// \brief Whether there is a next element to retrieve.
     ///
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    template <typename pred_t = std::less<value_type>>
-    void
-    sort(const pred_t pred = pred_t())
+    bool has_prev() const
     {
-      if (empty()) return;
+      return _stream.can_read_back();
+    }
 
-      tpie::progress_indicator_null pi;
-      tpie::sort(_stream, pred, pi);
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain the previous element.
+    ///
+    /// \pre `attached() == true`.
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    const value_type& prev()
+    {
+      return _stream.read_back();
+    }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief Write to the current offset and move read-head to the next position.
+    ///
+    /// \pre `attached() == true`.
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    void write(const value_type &v)
+    {
+      this->_stream.write(v);
     }
   };
 }
 
-#endif // ADIAR_INTERNAL_IO_OFSTREAM_H
+#endif // ADIAR_INTERNAL_IO_IOFSTREAM_H

@@ -1,8 +1,14 @@
 #include "../../../test.h"
+
 #include <filesystem>
 
+#include <adiar/internal/io/file.h>
+#include <adiar/internal/io/ifstream.h>
+#include <adiar/internal/io/iofstream.h>
+#include <adiar/internal/io/ofstream.h>
+
 go_bandit([]() {
-  describe("adiar/internal/io/file.h , ifstream.h , ofstream.h", []() {
+  describe("adiar/internal/io/file.h , ifstream.h , ofstream.h, iofstream.h", []() {
     // The default folder for temporary files is '/tmp/' on Ubuntu and '/var/tmp/'
     // on Fedora. Both of these are to the OS not on the same drive and so you get
     // a 'cross-device link' error when using std::filesystem::rename(...) to move
@@ -698,6 +704,197 @@ go_bandit([]() {
         AssertThat(fs.pull(), Is().EqualTo(8));
         AssertThat(fs.can_pull(), Is().False());
         fs.detach();
+      });
+    });
+
+    describe("iofstream", []() {
+      iofstream<int> s;
+      s.attach();
+
+      it("temporary file is initially empty", [&s]() {
+        AssertThat(s.size(), Is().EqualTo(0u));
+        AssertThat(s.has_prev(), Is().False());
+        AssertThat(s.has_next(), Is().False());
+      });
+
+      it("can write elements", [&s]() {
+        AssertThat(s.size(), Is().EqualTo(0u));
+        s.write(1);
+        AssertThat(s.size(), Is().EqualTo(1u));
+        s.write(2);
+        AssertThat(s.size(), Is().EqualTo(2u));
+        s.write(2);
+        AssertThat(s.size(), Is().EqualTo(3u));
+        s.write(4);
+        AssertThat(s.size(), Is().EqualTo(4u));
+      });
+
+      it("can read elements backwards", [&s]() {
+        AssertThat(s.size(), Is().EqualTo(4u));
+        AssertThat(s.has_next(), Is().False());
+
+        AssertThat(s.has_prev(), Is().True());
+        AssertThat(s.prev(), Is().EqualTo(4));
+        AssertThat(s.has_prev(), Is().True());
+        AssertThat(s.prev(), Is().EqualTo(2));
+        AssertThat(s.has_prev(), Is().True());
+        AssertThat(s.prev(), Is().EqualTo(2));
+        AssertThat(s.has_prev(), Is().True());
+        AssertThat(s.prev(), Is().EqualTo(1));
+        AssertThat(s.has_prev(), Is().False());
+      });
+
+      it("can read elements forwards", [&s]() {
+        AssertThat(s.size(), Is().EqualTo(4u));
+        AssertThat(s.has_prev(), Is().False());
+
+        AssertThat(s.has_next(), Is().True());
+        AssertThat(s.next(), Is().EqualTo(1));
+        AssertThat(s.has_next(), Is().True());
+        AssertThat(s.next(), Is().EqualTo(2));
+        AssertThat(s.has_next(), Is().True());
+        AssertThat(s.next(), Is().EqualTo(2));
+        AssertThat(s.has_next(), Is().True());
+        AssertThat(s.next(), Is().EqualTo(4));
+        AssertThat(s.has_next(), Is().False());
+      });
+
+      it("can seek to the beginning", [&s]() {
+        AssertThat(s.size(), Is().EqualTo(4u));
+        AssertThat(s.has_prev(), Is().True());
+        AssertThat(s.has_next(), Is().False());
+
+        s.seek_begin();
+
+        AssertThat(s.has_prev(), Is().False());
+        AssertThat(s.has_next(), Is().True());
+        AssertThat(s.next(), Is().EqualTo(1));
+      });
+
+      it("can seek to the end", [&s]() {
+        AssertThat(s.size(), Is().EqualTo(4u));
+        AssertThat(s.has_prev(), Is().True());
+        AssertThat(s.has_next(), Is().True());
+
+        s.seek_end();
+
+        AssertThat(s.has_prev(), Is().True());
+        AssertThat(s.has_next(), Is().False());
+        AssertThat(s.prev(), Is().EqualTo(4));
+      });
+
+      it("can seek to offset 2", [&s]() {
+        AssertThat(s.size(), Is().EqualTo(4u));
+        AssertThat(s.has_prev(), Is().True());
+        AssertThat(s.has_next(), Is().True());
+
+        s.seek(1);
+
+        AssertThat(s.has_prev(), Is().True());
+        AssertThat(s.has_next(), Is().True());
+        AssertThat(s.next(), Is().EqualTo(2));
+        AssertThat(s.has_next(), Is().True());
+        AssertThat(s.next(), Is().EqualTo(2));
+        AssertThat(s.has_next(), Is().True());
+        AssertThat(s.next(), Is().EqualTo(4));
+        AssertThat(s.has_next(), Is().False());
+      });
+
+      it("can overwrite a value", [&s]() {
+        AssertThat(s.size(), Is().EqualTo(4u));
+        AssertThat(s.has_prev(), Is().True());
+        AssertThat(s.has_next(), Is().False());
+
+        s.seek_begin();
+
+        s.write(3);
+        AssertThat(s.size(), Is().EqualTo(4u));
+        s.write(1);
+        AssertThat(s.size(), Is().EqualTo(4u));
+        s.write(5);
+        AssertThat(s.size(), Is().EqualTo(4u));
+        s.write(2);
+        AssertThat(s.size(), Is().EqualTo(4u));
+        s.write(4);
+        AssertThat(s.size(), Is().EqualTo(5u));
+      });
+    });
+
+    describe("file() + iofstream", []() {
+      file<int> f;
+
+      it("can write to file", [&f]() {
+        iofstream<int> s(f);
+
+        AssertThat(s.size(), Is().EqualTo(0u));
+        s.write(1);
+        AssertThat(s.size(), Is().EqualTo(1u));
+        s.write(2);
+        AssertThat(s.size(), Is().EqualTo(2u));
+        s.write(3);
+        AssertThat(s.size(), Is().EqualTo(3u));
+      });
+
+      it("can reopen file and read forwards", [&f]() {
+        iofstream<int> s(f);
+
+        AssertThat(s.has_next(), Is().True());
+        AssertThat(s.next(), Is().EqualTo(1));
+        AssertThat(s.has_next(), Is().True());
+        AssertThat(s.next(), Is().EqualTo(2));
+        AssertThat(s.has_next(), Is().True());
+        AssertThat(s.next(), Is().EqualTo(3));
+        AssertThat(s.has_next(), Is().False());
+      });
+
+      it("can reopen file, seek to the end, and read backwards", [&f]() {
+        iofstream<int> s(f);
+        s.seek_end();
+
+        AssertThat(s.has_prev(), Is().True());
+        AssertThat(s.prev(), Is().EqualTo(3));
+        AssertThat(s.has_prev(), Is().True());
+        AssertThat(s.prev(), Is().EqualTo(2));
+        AssertThat(s.has_prev(), Is().True());
+        AssertThat(s.prev(), Is().EqualTo(1));
+        AssertThat(s.has_prev(), Is().False());
+      });
+
+      it("can reopen file and overwrite its content", [&f]() {
+        iofstream<int> s(f);
+
+        AssertThat(s.size(), Is().EqualTo(3u));
+        s.write(4);
+        AssertThat(s.size(), Is().EqualTo(3u));
+
+        s.seek_begin();
+
+        AssertThat(s.has_next(), Is().True());
+        AssertThat(s.next(), Is().EqualTo(4));
+        AssertThat(s.has_next(), Is().True());
+        AssertThat(s.next(), Is().EqualTo(2));
+        AssertThat(s.has_next(), Is().True());
+        AssertThat(s.next(), Is().EqualTo(3));
+        AssertThat(s.has_next(), Is().False());
+      });
+
+      it("can reopen file and write to its end", [&f]() {
+        iofstream<int> s(f);
+        s.seek_end();
+
+        AssertThat(s.size(), Is().EqualTo(3u));
+        s.write(5);
+        AssertThat(s.size(), Is().EqualTo(4u));
+
+        AssertThat(s.has_prev(), Is().True());
+        AssertThat(s.prev(), Is().EqualTo(5));
+        AssertThat(s.has_prev(), Is().True());
+        AssertThat(s.prev(), Is().EqualTo(3));
+        AssertThat(s.has_prev(), Is().True());
+        AssertThat(s.prev(), Is().EqualTo(2));
+        AssertThat(s.has_prev(), Is().True());
+        AssertThat(s.prev(), Is().EqualTo(4));
+        AssertThat(s.has_prev(), Is().False());
       });
     });
 

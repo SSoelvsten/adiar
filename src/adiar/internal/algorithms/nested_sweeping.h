@@ -12,6 +12,7 @@
 #include <adiar/internal/data_types/ptr.h>
 #include <adiar/internal/data_types/request.h>
 #include <adiar/internal/dd_func.h>
+#include <adiar/internal/io/iofstream.h>
 #include <adiar/internal/io/node_raccess.h>
 #include <adiar/internal/memory.h>
 #include <adiar/internal/util.h>
@@ -1544,7 +1545,7 @@ namespace adiar::internal
 
         const size_t inner_pq_memory = inner_aux_available_memory / 2;
         const size_t inner_sorters_memory =
-          inner_aux_available_memory - inner_pq_memory - tpie::file_stream<mapping>::memory_usage();
+          inner_aux_available_memory - inner_pq_memory - iofstream<mapping>::memory_usage();
 
         const size_t inner_pq_memory_fits =
           up__pq_t<ADIAR_LPQ_LOOKAHEAD, memory_mode::Internal>::memory_fits(inner_pq_memory);
@@ -1680,7 +1681,7 @@ namespace adiar::internal
     // Outer Up Sweep: Use the 'inner_memory' for the per-level data structures
     // and streams. This is safe, since these data structures are only
     // instantiated when the Inner Sweep is not.
-    const size_t outer_sorters_memory = inner_memory - tpie::file_stream<mapping>::memory_usage();
+    const size_t outer_sorters_memory = inner_memory - iofstream<mapping>::memory_usage();
 
     const size_t outer_internal_sorter_can_fit =
       internal_sorter<node>::memory_fits(outer_sorters_memory / 2);
