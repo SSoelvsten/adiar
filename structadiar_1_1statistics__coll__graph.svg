@@ -381,10 +381,10 @@
 <!-- Node14 -->
 <g id="Node000014" class="node">
 <title>Node14</title>
-<g id="a_Node000014"><a xlink:href="structadiar_1_1statistics_1_1____random__access__base.html" target="_top" xlink:title="Common statistics for algorithms using random access.">
-<polygon fill="white" stroke="#666666" points="505.5,-136 374.5,-136 374.5,-106 505.5,-106 505.5,-136"/>
-<text text-anchor="start" x="382.5" y="-124" font-family="Helvetica,sans-Serif" font-size="10.00">adiar::statistics::</text>
-<text text-anchor="middle" x="440" y="-113" font-family="Helvetica,sans-Serif" font-size="10.00">__random_access_base</text>
+<g id="a_Node000014"><a xlink:href="structadiar_1_1statistics_1_1____raccess__base.html" target="_top" xlink:title="Common statistics for algorithms using random access.">
+<polygon fill="white" stroke="#666666" points="489,-136 391,-136 391,-106 489,-106 489,-136"/>
+<text text-anchor="start" x="399" y="-124" font-family="Helvetica,sans-Serif" font-size="10.00">adiar::statistics::</text>
+<text text-anchor="middle" x="440" y="-113" font-family="Helvetica,sans-Serif" font-size="10.00">__raccess_base</text>
 </a>
 </g>
 </g>
@@ -392,8 +392,8 @@
 <g id="edge18_Node000013_Node000014" class="edge">
 <title>Node14&#45;&gt;Node13</title>
 <g id="a_edge18_Node000013_Node000014"><a xlink:title=" ">
-<path fill="none" stroke="#9a32cd" stroke-dasharray="5,2" d="M507.36,-138.74C549.7,-150.19 605.68,-165.6 655,-180 667.82,-183.74 681.65,-187.94 694.44,-191.88"/>
-<polygon fill="#9a32cd" stroke="#9a32cd" points="508.02,-135.29 497.45,-136.06 506.19,-142.05 508.02,-135.29"/>
+<path fill="none" stroke="#9a32cd" stroke-dasharray="5,2" d="M498.89,-136.45C542.03,-148.09 602.32,-164.61 655,-180 667.82,-183.74 681.65,-187.94 694.44,-191.88"/>
+<polygon fill="#9a32cd" stroke="#9a32cd" points="499.7,-133.05 489.14,-133.82 497.88,-139.81 499.7,-133.05"/>
 </a>
 </g>
 <text text-anchor="middle" x="602" y="-183" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey"> ra</text>
@@ -402,8 +402,8 @@
 <g id="edge26_Node000017_Node000014" class="edge">
 <title>Node14&#45;&gt;Node17</title>
 <g id="a_edge26_Node000017_Node000014"><a xlink:title=" ">
-<path fill="none" stroke="#9a32cd" stroke-dasharray="5,2" d="M510.67,-103.93C523.35,-101.46 536.51,-99.31 549,-98 595.85,-93.07 608.06,-94.01 655,-98 667.75,-99.08 681.43,-101.04 694.09,-103.19"/>
-<polygon fill="#9a32cd" stroke="#9a32cd" points="509.73,-100.55 500.62,-105.97 511.12,-107.41 509.73,-100.55"/>
+<path fill="none" stroke="#9a32cd" stroke-dasharray="5,2" d="M498.86,-106.34C514.98,-102.9 532.58,-99.73 549,-98 595.85,-93.07 608.06,-94.01 655,-98 667.75,-99.08 681.43,-101.04 694.09,-103.19"/>
+<polygon fill="#9a32cd" stroke="#9a32cd" points="498.05,-102.94 489.04,-108.51 499.56,-109.77 498.05,-102.94"/>
 </a>
 </g>
 <text text-anchor="middle" x="602" y="-101" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey"> ra</text>

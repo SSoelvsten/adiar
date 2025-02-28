@@ -119,10 +119,10 @@
 <!-- Node7 -->
 <g id="Node000007" class="node">
 <title>Node7</title>
-<g id="a_Node000007"><a xlink:href="structadiar_1_1statistics_1_1____random__access__base.html" target="_top" xlink:title="Common statistics for algorithms using random access.">
-<polygon fill="white" stroke="#666666" points="505.5,-78 374.5,-78 374.5,-48 505.5,-48 505.5,-78"/>
-<text text-anchor="start" x="382.5" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">adiar::statistics::</text>
-<text text-anchor="middle" x="440" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">__random_access_base</text>
+<g id="a_Node000007"><a xlink:href="structadiar_1_1statistics_1_1____raccess__base.html" target="_top" xlink:title="Common statistics for algorithms using random access.">
+<polygon fill="white" stroke="#666666" points="489,-78 391,-78 391,-48 489,-48 489,-78"/>
+<text text-anchor="start" x="399" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">adiar::statistics::</text>
+<text text-anchor="middle" x="440" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">__raccess_base</text>
 </a>
 </g>
 </g>
@@ -130,8 +130,8 @@
 <g id="edge6_Node000001_Node000007" class="edge">
 <title>Node7&#45;&gt;Node1</title>
 <g id="a_edge6_Node000001_Node000007"><a xlink:title=" ">
-<path fill="none" stroke="#9a32cd" stroke-dasharray="5,2" d="M515.78,-73.21C556.97,-79.17 608.94,-87.23 655,-96 660.77,-97.1 666.81,-98.34 672.78,-99.63"/>
-<polygon fill="#9a32cd" stroke="#9a32cd" points="516.22,-69.74 505.82,-71.78 515.22,-76.67 516.22,-69.74"/>
+<path fill="none" stroke="#9a32cd" stroke-dasharray="5,2" d="M499.22,-70.85C542.36,-76.94 602.52,-86 655,-96 660.77,-97.1 666.81,-98.34 672.78,-99.63"/>
+<polygon fill="#9a32cd" stroke="#9a32cd" points="499.58,-67.36 489.19,-69.44 498.6,-74.3 499.58,-67.36"/>
 </a>
 </g>
 <text text-anchor="middle" x="602" y="-99" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey"> ra</text>

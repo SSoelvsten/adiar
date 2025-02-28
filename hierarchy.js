@@ -19,7 +19,7 @@ var hierarchy =
       [ "adiar::__zdd", "classadiar_1_1____zdd.html", null ]
     ] ],
     [ "adiar::statistics::__pq2_base", "structadiar_1_1statistics_1_1____pq2__base.html", null ],
-    [ "adiar::statistics::__random_access_base", "structadiar_1_1statistics_1_1____random__access__base.html", null ],
+    [ "adiar::statistics::__raccess_base", "structadiar_1_1statistics_1_1____raccess__base.html", null ],
     [ "adiar::statistics::arc_file_t", "structadiar_1_1statistics_1_1arc__file__t.html", null ],
     [ "adiar::builder< Policy >", "classadiar_1_1builder.html", null ],
     [ "adiar::builder_ptr< Policy >", "classadiar_1_1builder__ptr.html", null ],

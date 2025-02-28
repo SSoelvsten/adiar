@@ -37,9 +37,9 @@
 <area shape="poly" id="edge12_Node000001_Node000011" title=" " alt="" coords="1662,503,1984,521,1984,526,1662,508"/>
 <area shape="poly" id="edge14_Node000001_Node000012" title=" " alt="" coords="1259,554,1648,545,1984,528,1984,533,1648,551,1259,559"/>
 <area shape="poly" id="edge16_Node000001_Node000013" title=" " alt="" coords="1076,783,1280,786,1408,784,1542,778,1672,768,1791,751,1890,726,1928,710,1958,693,1977,676,1992,657,2016,613,2031,571,2039,539,2044,540,2036,573,2021,616,1997,660,1981,680,1962,697,1931,715,1891,731,1792,756,1673,773,1542,784,1408,789,1280,791,1076,788"/>
-<area shape="rect" id="Node000014" href="$structadiar_1_1statistics_1_1____random__access__base.html" title="Common statistics for algorithms using random access." alt="" coords="505,877,679,917"/>
-<area shape="poly" id="edge18_Node000013_Node000014" title=" " alt="" coords="681,871,878,816,930,800,932,805,879,821,683,876"/>
-<area shape="poly" id="edge26_Node000017_Node000014" title=" " alt="" coords="687,917,738,925,808,930,878,925,930,918,931,924,879,931,808,935,737,931,686,923"/>
+<area shape="rect" id="Node000014" href="$structadiar_1_1statistics_1_1____raccess__base.html" title="Common statistics for algorithms using random access." alt="" coords="527,877,657,917"/>
+<area shape="poly" id="edge18_Node000013_Node000014" title=" " alt="" coords="670,874,878,816,930,800,932,805,879,821,671,879"/>
+<area shape="poly" id="edge26_Node000017_Node000014" title=" " alt="" coords="671,914,738,925,808,930,878,925,930,918,931,924,879,931,808,935,737,931,670,920"/>
 <area shape="rect" id="Node000015" href="$structadiar_1_1statistics_1_1____pq2__base.html" title="Common statistics for algorithms using a second priority queue." alt="" coords="527,787,657,827"/>
 <area shape="poly" id="edge19_Node000013_Node000015" title=" " alt="" coords="671,799,931,784,931,789,671,805"/>
 <area shape="poly" id="edge27_Node000017_Node000015" title=" " alt="" coords="653,830,715,863,727,873,738,880,787,895,838,903,931,908,931,914,838,908,786,900,736,885,723,877,712,868,650,835"/>
