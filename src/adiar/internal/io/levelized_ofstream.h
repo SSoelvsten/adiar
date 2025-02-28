@@ -61,7 +61,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     levelized_ofstream(levelized_file<value_type>& f)
     {
-      attach(f);
+      open(f);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -71,7 +71,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     levelized_ofstream(adiar::shared_ptr<levelized_file<value_type>> f)
     {
-      attach(f);
+      open(f);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82,51 +82,51 @@ namespace adiar::internal
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Attach to a file.
+    /// \brief Open a file.
     ///
     /// \warning Since ownership is \em not shared with this writer, you have to ensure, that the
-    ///          file in question is not destructed before `.detach()` is called.
+    ///          file in question is not destructed before `.close()` is called.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    attach(levelized_file<value_type>& f)
+    open(levelized_file<value_type>& f)
     {
-      if (attached()) { detach(); }
+      if (is_open()) { close(); }
 
       // The stack variable is made accessible in '_file_ptr', but it should not
       // be garbage collected. Hence, we provide a do-nothing deleter to the
       // 'std::shared_ptr' directly.
       _file_ptr = std::shared_ptr<levelized_file<value_type>>(&f, [](void*) {});
 
-      _level_ofstream.attach(f._level_info_file, nullptr);
+      _level_ofstream.open(f._level_info_file, nullptr);
       for (size_t s_idx = 0; s_idx < file_traits<value_type>::files; s_idx++)
-        _elem_ofstreams[s_idx].attach(f._files[s_idx], nullptr);
+        _elem_ofstreams[s_idx].open(f._files[s_idx], nullptr);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Attach to a shared file.
+    /// \brief Open a shared file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    attach(adiar::shared_ptr<levelized_file<value_type>> f)
+    open(adiar::shared_ptr<levelized_file<value_type>> f)
     {
-      if (attached()) { detach(); }
+      if (is_open()) { close(); }
 
       _file_ptr = f;
 
-      _level_ofstream.attach(f->_level_info_file, f);
+      _level_ofstream.open(f->_level_info_file, f);
       for (size_t s_idx = 0; s_idx < file_traits<value_type>::files; s_idx++)
-        _elem_ofstreams[s_idx].attach(f->_files[s_idx], f);
+        _elem_ofstreams[s_idx].open(f->_files[s_idx], f);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the writer currently is attached to a levelized file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     bool
-    attached() const
+    is_open() const
     {
-      const bool res = _level_ofstream.attached();
+      const bool res = _level_ofstream.is_open();
 #ifndef NDEBUG
       for (size_t s_idx = 0; s_idx < elem_ofstreams; s_idx++) {
-        adiar_assert(_elem_ofstreams[s_idx].attached() == res,
+        adiar_assert(_elem_ofstreams[s_idx].is_open() == res,
                      "Attachment ought to be synchronised.");
       }
 #endif
@@ -137,10 +137,10 @@ namespace adiar::internal
     /// \brief Detach from a levelized file (if need be)
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    detach()
+    close()
     {
-      _level_ofstream.detach();
-      for (size_t s_idx = 0; s_idx < elem_ofstreams; s_idx++) _elem_ofstreams[s_idx].detach();
+      _level_ofstream.close();
+      for (size_t s_idx = 0; s_idx < elem_ofstreams; s_idx++) _elem_ofstreams[s_idx].close();
       _file_ptr.reset();
     }
 
@@ -150,7 +150,7 @@ namespace adiar::internal
     /// \param li
     ///    Level information to push.
     ///
-    /// \pre `attached() == true`.
+    /// \pre `is_open() == true`.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
     push(const level_info& li)
@@ -164,7 +164,7 @@ namespace adiar::internal
     /// \param li
     ///    Level information to push.
     ///
-    /// \pre `attached() == true`.
+    /// \pre `is_open() == true`.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     levelized_ofstream<value_type>&
     operator<<(const level_info& li)

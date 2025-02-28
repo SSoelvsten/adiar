@@ -12,7 +12,7 @@ go_bandit([]() {
 
         arc_ofstream aw(af);
         aw << (level_info{ 0, 1 }) << (level_info{ 1, 2 });
-        aw.detach();
+        aw.close();
 
         AssertThat(af.size(), Is().EqualTo(0u));
         AssertThat(af.levels(), Is().EqualTo(2u));
@@ -32,7 +32,7 @@ go_bandit([]() {
         aw.push_internal(arc(arc::pointer_type(0, 0), false, arc::pointer_type(1, 0)));
         aw.push_internal(arc(arc::pointer_type(0, 0), true, arc::pointer_type(1, 0)));
         aw.push_internal(arc(arc::pointer_type(1, 0), false, arc::pointer_type(2, 0)));
-        aw.detach();
+        aw.close();
 
         AssertThat(af.size(), Is().EqualTo(3u));
         AssertThat(af.size(0u), Is().EqualTo(3u));
@@ -55,7 +55,7 @@ go_bandit([]() {
         arc_ofstream aw(af);
         aw.push_terminal(arc(arc::pointer_type(0, 0), false, arc::pointer_type(true)));
         aw.push_terminal(arc(arc::pointer_type(0, 0), true, arc::pointer_type(true)));
-        aw.detach();
+        aw.close();
 
         AssertThat(af.size(), Is().EqualTo(2u));
         AssertThat(af.size(0u), Is().EqualTo(0u));
@@ -89,7 +89,7 @@ go_bandit([]() {
         arc_ofstream aw(af);
         aw.push_terminal(arc(arc::pointer_type(0, 0), true, arc::pointer_type(true)));
         aw.push_terminal(arc(arc::pointer_type(0, 0), false, arc::pointer_type(false)));
-        aw.detach();
+        aw.close();
 
         AssertThat(af.size(), Is().EqualTo(2u));
         AssertThat(af.size(0u), Is().EqualTo(0u));
@@ -129,7 +129,7 @@ go_bandit([]() {
            << arc(arc::pointer_type(2, 0), true, arc::pointer_type(true))   // <-- in-order
            << arc(arc::pointer_type(1, 1), true, arc::pointer_type(true));  // <-- out-of-order
 
-        aw.detach();
+        aw.close();
 
         AssertThat(af.size(), Is().EqualTo(8u));
         AssertThat(af.size(0u), Is().EqualTo(3u));
@@ -376,7 +376,7 @@ go_bandit([]() {
           aw.push_terminal(arc(arc::pointer_type(0, 0), true, arc::pointer_type(true)));
 
           aw.push(level_info(0, 1));
-          aw.detach();
+          aw.close();
         }
 
         AssertThat(af.semi_transposed, Is().True());
@@ -396,7 +396,7 @@ go_bandit([]() {
         aw.push_terminal(arc(arc::pointer_type(0, 0), true, arc::pointer_type(true)));
 
         aw.push(level_info(0, 1));
-        aw.detach();
+        aw.close();
       }
 
       levelized_file<arc> x0_unordered;
@@ -411,7 +411,7 @@ go_bandit([]() {
         aw.push_terminal(arc(arc::pointer_type(0, 0), false, arc::pointer_type(false)));
 
         aw.push(level_info(0, 1));
-        aw.detach();
+        aw.close();
       }
 
       it("can pull from 'x0' BDD [in-order]", [&]() {
@@ -530,7 +530,7 @@ go_bandit([]() {
         aw.push_terminal(arc(arc::pointer_type(3, 1), false, arc::pointer_type(true)));
         aw.push_terminal(arc(arc::pointer_type(3, 1), true, arc::pointer_type(false)));
 
-        aw.detach();
+        aw.close();
 
         large_untransposed.semi_transposed = false;
       }
@@ -656,7 +656,7 @@ go_bandit([]() {
 
           aw.push(level_info(2, 1));
 
-          aw.detach();
+          aw.close();
         }
 
         AssertThat(af.semi_transposed, Is().True());
@@ -719,7 +719,7 @@ go_bandit([]() {
         aw.push_terminal(arc(arc::pointer_type(3, 0), false, arc::pointer_type(false)));
         aw.push_terminal(arc(arc::pointer_type(3, 0), true, arc::pointer_type(true)));
 
-        aw.detach();
+        aw.close();
 
         large_untransposed2.semi_transposed = false;
       }
@@ -796,7 +796,7 @@ go_bandit([]() {
         aw.push_terminal(arc(arc::pointer_type(1, 0), true, arc::pointer_type(true)));
 
         aw.push(level_info(1, 1));
-        aw.detach();
+        aw.close();
       }
 
       const node A_n1(1, 0, node::pointer_type(false), node::pointer_type(true));
@@ -839,7 +839,7 @@ go_bandit([]() {
         aw.push(level_info(2, 3));
         aw.push(level_info(4, 2));
 
-        aw.detach();
+        aw.close();
       }
 
       const node B_n7(4, 1, node::pointer_type(false), node::pointer_type(true));

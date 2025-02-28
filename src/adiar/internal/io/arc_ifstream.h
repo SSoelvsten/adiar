@@ -54,7 +54,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     arc_ifstream(const levelized_file<arc>& file)
     {
-      attach(file);
+      open(file);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -62,7 +62,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     arc_ifstream(const shared_ptr<levelized_file<arc>>& file)
     {
-      attach(file);
+      open(file);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -72,29 +72,29 @@ namespace adiar::internal
 
   public:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Attach to a levelized arc file.
+    /// \brief Open a levelized arc file.
     ///
     /// \pre No `levelized_ofstream` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
     void
-    attach(const levelized_file<arc>& f)
+    open(const levelized_file<arc>& f)
     {
       // adiar_assert(f.semi_transposed);
-      parent_t::attach(f);
+      parent_t::open(f);
       _unread_terminals[false] = f.number_of_terminals[false];
       _unread_terminals[true]  = f.number_of_terminals[true];
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Attach to a shared levelized arc file.
+    /// \brief Open a shared levelized arc file.
     ///
     /// \pre No `levelized_ofstream` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
     void
-    attach(const shared_ptr<levelized_file<arc>>& f)
+    open(const shared_ptr<levelized_file<arc>>& f)
     {
       // adiar_assert(f->semi_transposed);
-      parent_t::attach(f);
+      parent_t::open(f);
       _unread_terminals[false] = f->number_of_terminals[false];
       _unread_terminals[true]  = f->number_of_terminals[true];
     }

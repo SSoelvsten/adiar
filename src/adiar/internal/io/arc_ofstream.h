@@ -44,7 +44,7 @@ namespace adiar::internal
     arc_ofstream(levelized_file<arc>& af)
       : levelized_ofstream<arc>()
     {
-      attach(af);
+      open(af);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -55,7 +55,7 @@ namespace adiar::internal
     arc_ofstream(shared_ptr<levelized_file<arc>> af)
       : levelized_ofstream<arc>()
     {
-      attach(af);
+      open(af);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -63,53 +63,53 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     ~arc_ofstream()
     {
-      // Sort the out-of-order terminals with 'detach()'.
-      detach();
+      // Sort the out-of-order terminals with 'close()'.
+      close();
     }
 
   public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Attach to a levelized file of arcs.
+    /// \brief Open a levelized file of arcs.
     ///
     /// \warning Since ownership is \em not shared with this writer, you have to ensure, that the
-    ///          file in question is not destructed before `.detach()` is called.
+    ///          file in question is not destructed before `.close()` is called.
     ///
     /// \pre The file is empty.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    attach(levelized_file<arc>& af)
+    open(levelized_file<arc>& af)
     {
-      if (attached()) detach();
+      if (is_open()) close();
       adiar_assert(af.empty());
 
       // TODO: remove precondition and set up __latest_terminal.
 
-      return levelized_ofstream::attach(af);
+      return levelized_ofstream::open(af);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Attach to a shared levelized file of arcs.
+    /// \brief Open a shared levelized file of arcs.
     ///
     /// \pre The file is empty.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    attach(shared_ptr<levelized_file<arc>>& af)
+    open(shared_ptr<levelized_file<arc>>& af)
     {
-      if (attached()) detach();
+      if (is_open()) close();
       adiar_assert(af->empty());
 
       // TODO: remove precondition and set up __latest_terminal.
 
-      return levelized_ofstream::attach(af);
+      return levelized_ofstream::open(af);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Detaches after having sort the out-of-order terminals.
     //////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    detach()
+    close()
     {
-      if (!attached()) return;
+      if (!is_open()) return;
 
 #ifdef ADIAR_STATS
       if (_elem_ofstreams[idx__terminals__out_of_order].size() != 0u) {
@@ -117,7 +117,7 @@ namespace adiar::internal
       }
 #endif
       _elem_ofstreams[idx__terminals__out_of_order].sort<arc_source_lt>();
-      levelized_ofstream::detach();
+      levelized_ofstream::close();
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -125,7 +125,7 @@ namespace adiar::internal
     ///
     /// \param li Level information to push.
     ///
-    /// \pre `attached() == true`.
+    /// \pre `is_open() == true`.
     //////////////////////////////////////////////////////////////////////////////////////////////////
     void
     push(const level_info& li)
@@ -142,7 +142,7 @@ namespace adiar::internal
     ///
     /// \param li Level information to push.
     ///
-    /// \pre `attached() == true`.
+    /// \pre `is_open() == true`.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     arc_ofstream&
     operator<<(const level_info& li)
@@ -156,7 +156,7 @@ namespace adiar::internal
     ///
     /// \param a An arc with `a.target() != a::pointer_type::nil`.
     ///
-    /// \pre `attached() == true`.
+    /// \pre `is_open() == true`.
     ///
     /// \see unsafe_push_internal unsafe_push_terminal
     //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -174,7 +174,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Push an ac to the relevant underlying file.
     ///
-    /// \pre `attached() == true`.
+    /// \pre `is_open() == true`.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     arc_ofstream&
     operator<<(const arc& a)
@@ -186,12 +186,12 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Push an internal arc to its file, i.e. where the target is a node.
     ///
-    /// \pre `attached() == true`.
+    /// \pre `is_open() == true`.
     //////////////////////////////////////////////////////////////////////////////////////////////////
     void
     push_internal(const arc& a)
     {
-      adiar_assert(attached());
+      adiar_assert(is_open());
       adiar_assert(a.target().is_node());
       adiar_assert(!a.source().is_nil());
 #ifdef ADIAR_STATS
@@ -203,12 +203,12 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Push a terminal arc to its file, i.e. where the target is a terminal.
     ///
-    /// \pre `attached() == true`.
+    /// \pre `is_open() == true`.
     //////////////////////////////////////////////////////////////////////////////////////////////////
     void
     push_terminal(const arc& a)
     {
-      adiar_assert(attached());
+      adiar_assert(is_open());
       adiar_assert(a.target().is_terminal());
       adiar_assert(!a.source().is_nil());
 

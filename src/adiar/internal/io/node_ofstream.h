@@ -93,16 +93,16 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////////////////////////
     ~node_ofstream()
     {
-      detach();
+      close();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief Attach to a file
+    /// \brief Open a file
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    attach(adiar::shared_ptr<levelized_file<node>>& f)
+    open(adiar::shared_ptr<levelized_file<node>>& f)
     {
-      levelized_ofstream::attach(f);
+      levelized_ofstream::open(f);
 
       // Reset all meta-data
       _latest_node = dummy();
@@ -123,18 +123,18 @@ namespace adiar::internal
     /// \brief Whether the writer currently is attached.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     bool
-    attached() const
+    is_open() const
     {
-      return levelized_ofstream::attached();
+      return levelized_ofstream::is_open();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Detach from a file (if need be)
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    detach()
+    close()
     {
-      if (!attached()) { return; }
+      if (!is_open()) { return; }
 
       // Has '.push' been used?
       if (_latest_node != dummy()) {
@@ -175,7 +175,7 @@ namespace adiar::internal
       // Run final i-level cut computations
       fixup_ilevel_cuts();
 
-      levelized_ofstream::detach();
+      levelized_ofstream::close();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -191,7 +191,7 @@ namespace adiar::internal
     void
     push(const node& n)
     {
-      if (!attached()) {
+      if (!is_open()) {
         throw domain_error("node_ofstream is not yet attached to any levelized_file<node>");
       }
 

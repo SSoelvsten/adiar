@@ -76,7 +76,7 @@ namespace adiar::internal
     {
       adiar_assert(negate == false);
       adiar_assert(level_shift == 0);
-      attach(file);
+      open(file);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89,7 +89,7 @@ namespace adiar::internal
     {
       adiar_assert(negate == false);
       adiar_assert(level_shift == 0);
-      attach(file);
+      open(file);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -102,37 +102,37 @@ namespace adiar::internal
     {
       adiar_assert(diagram.template has<__dd::shared_arc_file_type>());
       adiar_assert(diagram._negate == false);
-      attach(diagram.template get<__dd::shared_arc_file_type>());
+      open(diagram.template get<__dd::shared_arc_file_type>());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Attach to an arc file.
+    /// \brief  Open an arc file.
     ///
     /// \remark This sorts the internal arcs of the file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    attach(levelized_file<arc>& file)
+    open(levelized_file<arc>& file)
     {
       if (file.semi_transposed) {
         file.sort<arc_source_lt>(idx__internal);
         file.semi_transposed = false;
       }
-      _ifstream.attach(file);
+      _ifstream.open(file);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Attach to a shared arc file.
+    /// \brief  Open a shared arc file.
     ///
     /// \remark This sorts the internal arcs of the file.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void
-    attach(const shared_ptr<levelized_file<arc>>& file)
+    open(const shared_ptr<levelized_file<arc>>& file)
     {
       if (file->semi_transposed) {
         file->sort<arc_source_lt>(idx__internal);
         file->semi_transposed = false;
       }
-      _ifstream.attach(file);
+      _ifstream.open(file);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////

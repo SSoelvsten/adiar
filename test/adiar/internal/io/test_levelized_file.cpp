@@ -516,17 +516,17 @@ go_bandit([]() {
         it("it can attach to and detach from an empty file [member functions]", []() {
           levelized_file<int> lf;
           levelized_ifstream<int> lfs;
-          lfs.attach(lf);
-          lfs.detach();
+          lfs.open(lf);
+          lfs.close();
         });
 
         it("it remembers it was attached", []() {
           levelized_file<int> lf;
           levelized_ifstream<int> lfs(lf);
 
-          AssertThat(lfs.attached(), Is().True());
-          lfs.detach();
-          AssertThat(lfs.attached(), Is().False());
+          AssertThat(lfs.is_open(), Is().True());
+          lfs.close();
+          AssertThat(lfs.is_open(), Is().False());
         });
 
         it("it cannot be pulled from", []() {
@@ -542,7 +542,7 @@ go_bandit([]() {
           levelized_ifstream<int> lfs(lf);
 
           lfs.reset();
-          AssertThat(lfs.attached(), Is().True());
+          AssertThat(lfs.is_open(), Is().True());
           AssertThat(lfs.template can_pull<0>(), Is().False());
           AssertThat(lfs.template can_pull<1>(), Is().False());
         });
@@ -557,17 +557,17 @@ go_bandit([]() {
         it("it can attach to and detach from an empty file [member functions]", []() {
           levelized_file<int> lf;
           levelized_ofstream<int> lfw;
-          lfw.attach(lf);
-          lfw.detach();
+          lfw.open(lf);
+          lfw.close();
         });
 
         it("it remembers it was attached", []() {
           levelized_file<int> lf;
           levelized_ofstream<int> lfw(lf);
 
-          AssertThat(lfw.attached(), Is().True());
-          lfw.detach();
-          AssertThat(lfw.attached(), Is().False());
+          AssertThat(lfw.is_open(), Is().True());
+          lfw.close();
+          AssertThat(lfw.is_open(), Is().False());
         });
 
         it("exists after writer attach", []() {
@@ -575,7 +575,7 @@ go_bandit([]() {
           AssertThat(lf.exists(), Is().False());
 
           levelized_ofstream<int> lfw(lf);
-          lfw.detach();
+          lfw.close();
 
           AssertThat(lf.exists(), Is().True());
         });
@@ -645,7 +645,7 @@ go_bandit([]() {
           AssertThat(lfw.size(1), Is().EqualTo(0u));
           AssertThat(lfw.levels(), Is().EqualTo(0u));
 
-          lfw.detach();
+          lfw.close();
 
           AssertThat(lf.size(), Is().EqualTo(2u));
           AssertThat(lf.size(0), Is().EqualTo(2u));
@@ -673,7 +673,7 @@ go_bandit([]() {
           AssertThat(lfw.size(0), Is().EqualTo(0u));
           AssertThat(lfw.size(1), Is().EqualTo(2u));
 
-          lfw.detach();
+          lfw.close();
 
           AssertThat(lf.size(), Is().EqualTo(2u));
           AssertThat(lf.size(0), Is().EqualTo(0u));
@@ -725,7 +725,7 @@ go_bandit([]() {
           AssertThat(lfw.size(1), Is().EqualTo(3u));
           AssertThat(lfw.levels(), Is().EqualTo(0u));
 
-          lfw.detach();
+          lfw.close();
 
           AssertThat(lf.size(), Is().EqualTo(5u));
           AssertThat(lf.size(0), Is().EqualTo(2u));
@@ -755,7 +755,7 @@ go_bandit([]() {
           AssertThat(lfw.size(), Is().EqualTo(0u));
           AssertThat(lfw.levels(), Is().EqualTo(3u));
 
-          lfw.detach();
+          lfw.close();
 
           AssertThat(lf.size(), Is().EqualTo(0u));
           AssertThat(lf.levels(), Is().EqualTo(3u));
@@ -782,7 +782,7 @@ go_bandit([]() {
           lfw.push(level_info{ 0, 2 });
           lfw.push(level_info{ 2, 1 });
           lfw.push(level_info{ 3, 2 });
-          lfw.detach();
+          lfw.close();
 
           std::array<std::string, 2u + 1u> paths = lf.paths();
 
@@ -825,7 +825,7 @@ go_bandit([]() {
           lfw.push(level_info{ 0, 1 });
           lfw.push(level_info{ 2, 1 });
           lfw.push(level_info{ 3, 2 });
-          lfw.detach();
+          lfw.close();
 
           std::array<std::string, 2u + 1u> paths = lf.paths();
 
@@ -970,7 +970,7 @@ go_bandit([]() {
         lfw.push(level_info{ 1u, 2u });
         lfw.push(level_info{ 3u, 3u });
 
-        lfw.detach();
+        lfw.close();
 
         it("pulls by default level information in reverse", [&]() {
           level_info_ifstream fs(lf);
@@ -1304,7 +1304,7 @@ go_bandit([]() {
           lfw.push<0>(2);
           lfw.push<0>(8);
           lfw.push(level_info{ 0, 4 });
-          lfw.detach();
+          lfw.close();
 
           lf.make_persistent(path_prefix);
         }
@@ -1339,7 +1339,7 @@ go_bandit([]() {
         it("cannot reattach a writer to a persisted file", [&path_prefix]() {
           levelized_file<int> lf(path_prefix);
           levelized_ofstream<int> lfw;
-          AssertThrows(runtime_error, lfw.attach(lf));
+          AssertThrows(runtime_error, lfw.open(lf));
         });
 
         it("is unchanged after marking it persistent once more", [&path_prefix]() {
@@ -1421,7 +1421,7 @@ go_bandit([]() {
           lfw.push(level_info{ 1, 2 });
           lfw.push(level_info{ 2, 4 });
           lfw.push(level_info{ 3, 1 });
-          lfw.detach();
+          lfw.close();
 
           { // Check is unsorted first
             levelized_ifstream<int> lfs(lf);
@@ -1548,7 +1548,7 @@ go_bandit([]() {
             lfw.push(level_info{ 2, 1 });
             lfw.push(level_info{ 1, 1 });
 
-            lfw.detach();
+            lfw.close();
 
             lf.make_persistent(path_prefix);
           }
