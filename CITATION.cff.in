@@ -30,15 +30,15 @@ authors:
   - given-names: Anna Blume
     family-names: Jakobsen
     affiliation: Aarhus University
+  - given-names: Mathias Weller Berg
+    family-names: Thomasen
+    affiliation: Aarhus University
   - given-names: Casper Moldrup
     family-names: Rysgaard
     email: rysgaard@cs.au.dk
     affiliation: Aarhus University
   - given-names: Erik Funder
     family-names: Carstensen
-    affiliation: Aarhus University
-  - given-names: Mathias Weller Berg
-    family-names: Thomasen
     affiliation: Aarhus University
 identifiers:
   - type: doi
